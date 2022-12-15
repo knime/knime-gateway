@@ -116,6 +116,7 @@ import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemsEntMixIn;
+import org.knime.gateway.json.webui.entity.SpacePathSegmentEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
 import org.knime.gateway.json.webui.entity.TranslateCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
@@ -224,6 +225,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.class);
         res.add(SpaceItemEntMixIn.class);
         res.add(SpaceItemsEntMixIn.class);
+        res.add(SpacePathSegmentEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
         res.add(TranslateCommandEntMixIn.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
@@ -318,6 +320,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.SelectionEventTypeEntMixInBuilder.class);
         res.add(SpaceItemEntMixIn.SpaceItemEntMixInBuilder.class);
         res.add(SpaceItemsEntMixIn.SpaceItemsEntMixInBuilder.class);
+        res.add(SpacePathSegmentEntMixIn.SpacePathSegmentEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
         res.add(TranslateCommandEntMixIn.TranslateCommandEntMixInBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);

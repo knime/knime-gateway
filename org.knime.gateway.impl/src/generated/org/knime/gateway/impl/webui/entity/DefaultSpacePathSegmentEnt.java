@@ -50,41 +50,39 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
-
 /**
- * A list of items on a particular level in a space
+ * Holds the id and name of a space path segment.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
+public class DefaultSpacePathSegmentEnt implements SpacePathSegmentEnt {
 
-  protected java.util.List<SpacePathSegmentEnt> m_path;
-  protected java.util.List<SpaceItemEnt> m_items;
+  protected String m_id;
+  protected String m_name;
   
-  protected DefaultSpaceItemsEnt() {
+  protected DefaultSpacePathSegmentEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "SpaceItems";
+    return "SpacePathSegment";
   }
   
-  private DefaultSpaceItemsEnt(DefaultSpaceItemsEntBuilder builder) {
+  private DefaultSpacePathSegmentEnt(DefaultSpacePathSegmentEntBuilder builder) {
     
-    if(builder.m_path == null) {
-        throw new IllegalArgumentException("path must not be null.");
+    if(builder.m_id == null) {
+        throw new IllegalArgumentException("id must not be null.");
     }
-    m_path = immutable(builder.m_path);
-    if(builder.m_items == null) {
-        throw new IllegalArgumentException("items must not be null.");
+    m_id = immutable(builder.m_id);
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
     }
-    m_items = immutable(builder.m_items);
+    m_name = immutable(builder.m_name);
   }
   
    /**
@@ -101,8 +99,8 @@ public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultSpaceItemsEnt ent = (DefaultSpaceItemsEnt)o;
-        return Objects.equals(m_path, ent.m_path) && Objects.equals(m_items, ent.m_items);
+        DefaultSpacePathSegmentEnt ent = (DefaultSpacePathSegmentEnt)o;
+        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_name, ent.m_name);
     }
 
 
@@ -113,55 +111,55 @@ public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_path)
-               .append(m_items)
+               .append(m_id)
+               .append(m_name)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public java.util.List<SpacePathSegmentEnt> getPath() {
-        return m_path;
+  public String getId() {
+        return m_id;
   }
     
   @Override
-  public java.util.List<SpaceItemEnt> getItems() {
-        return m_items;
+  public String getName() {
+        return m_name;
   }
     
   
-    public static class DefaultSpaceItemsEntBuilder implements SpaceItemsEntBuilder {
+    public static class DefaultSpacePathSegmentEntBuilder implements SpacePathSegmentEntBuilder {
     
-        public DefaultSpaceItemsEntBuilder(){
+        public DefaultSpacePathSegmentEntBuilder(){
             
         }
     
-        private java.util.List<SpacePathSegmentEnt> m_path = new java.util.ArrayList<>();
-        private java.util.List<SpaceItemEnt> m_items = new java.util.ArrayList<>();
+        private String m_id;
+        private String m_name;
 
         @Override
-        public DefaultSpaceItemsEntBuilder setPath(java.util.List<SpacePathSegmentEnt> path) {
-             if(path == null) {
-                 throw new IllegalArgumentException("path must not be null.");
+        public DefaultSpacePathSegmentEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("id must not be null.");
              }
-             m_path = path;
+             m_id = id;
              return this;
         }
 
         @Override
-        public DefaultSpaceItemsEntBuilder setItems(java.util.List<SpaceItemEnt> items) {
-             if(items == null) {
-                 throw new IllegalArgumentException("items must not be null.");
+        public DefaultSpacePathSegmentEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
              }
-             m_items = items;
+             m_name = name;
              return this;
         }
 
         
         @Override
-        public DefaultSpaceItemsEnt build() {
-            return new DefaultSpaceItemsEnt(this);
+        public DefaultSpacePathSegmentEnt build() {
+            return new DefaultSpacePathSegmentEnt(this);
         }
     
     }

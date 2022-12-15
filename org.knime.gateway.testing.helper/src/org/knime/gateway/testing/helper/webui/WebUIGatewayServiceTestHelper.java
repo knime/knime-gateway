@@ -65,7 +65,7 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
+import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -195,9 +195,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * Non-deterministic field.
          */
-        objToString.addException(SpaceItemsEnt.class, "pathIds", (v, gen, e) -> {
-            gen.writeString("list of path-ids; list size: " + ((List)v).size());
-        });
+        objToString.addException(SpacePathSegmentEnt.class, "id", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_ID"));
 
         try {
             return new ResultChecker(objToString, CoreUtil.resolveToFile("/files/test_snapshots", testClass));

@@ -60,12 +60,13 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemsEnt.SpaceItemsEntBuilder;
+import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
+import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 
 /**
  * See {@link EntityBuilderUtil}.
@@ -96,13 +97,11 @@ public final class SpaceEntityBuilder {
         final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) throws IOException {
         var isRoot = absolutePath.equals(rootWorkspacePath);
         var relativePath = rootWorkspacePath.relativize(absolutePath);
-        var pathIds = isRoot ? Collections.<String> emptyList()
-            : getPathIds(absolutePath, relativePath.getNameCount(), getItemId);
-        var pathNames = isRoot ? Collections.<String> emptyList() : getPathNames(relativePath);
+        var path = isRoot ? Collections.<SpacePathSegmentEnt> emptyList()
+            : buildSpacePathSegmentEnts(absolutePath, relativePath.getNameCount(), getItemId);
         var items = buildSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter, comparator);
         return builder(SpaceItemsEntBuilder.class) //
-            .setPathIds(pathIds) //
-            .setPathNames(pathNames) //
+            .setPath(path) //
             .setItems(items) //
             .build();
     }
@@ -118,16 +117,14 @@ public final class SpaceEntityBuilder {
         }
     }
 
-    private static List<String> getPathNames(final Path relativePath) {
-        return StreamSupport.stream(relativePath.spliterator(), false).map(Path::toString).collect(Collectors.toList());
-    }
-
-    private static List<String> getPathIds(final Path absolutePath, final int relativePathNameCount,
-        final Function<Path, String> getItemId) {
-        var res = new String[relativePathNameCount];
+    private static List<SpacePathSegmentEnt> buildSpacePathSegmentEnts(final Path absolutePath,
+        final int relativePathNameCount, final Function<Path, String> getItemId) {
+        var res = new SpacePathSegmentEnt[relativePathNameCount];
         var parent = absolutePath;
-        for (int i = res.length - 1; i >= 0; i--) {
-            res[i] = getItemId.apply(parent);
+        for (int i = relativePathNameCount - 1; i >= 0; i--) {
+            res[i] = builder(SpacePathSegmentEntBuilder.class).setId(getItemId.apply(parent)) //
+                .setName(parent.getFileName().toString()) //
+                .build();
             parent = parent.getParent();
         }
         return Arrays.asList(res);

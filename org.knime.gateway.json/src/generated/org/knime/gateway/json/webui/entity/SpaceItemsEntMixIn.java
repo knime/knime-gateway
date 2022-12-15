@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -69,12 +70,8 @@ public interface SpaceItemsEntMixIn extends SpaceItemsEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("pathIds")
-    public java.util.List<String> getPathIds();
-    
-    @Override
-    @JsonProperty("pathNames")
-    public java.util.List<String> getPathNames();
+    @JsonProperty("path")
+    public java.util.List<SpacePathSegmentEnt> getPath();
     
     @Override
     @JsonProperty("items")
@@ -94,12 +91,8 @@ public interface SpaceItemsEntMixIn extends SpaceItemsEnt {
         public SpaceItemsEntMixIn build();
     
         @Override
-        @JsonProperty("pathIds")
-        public SpaceItemsEntMixInBuilder setPathIds(final java.util.List<String> pathIds);
-        
-        @Override
-        @JsonProperty("pathNames")
-        public SpaceItemsEntMixInBuilder setPathNames(final java.util.List<String> pathNames);
+        @JsonProperty("path")
+        public SpaceItemsEntMixInBuilder setPath(final java.util.List<SpacePathSegmentEnt> path);
         
         @Override
         @JsonProperty("items")

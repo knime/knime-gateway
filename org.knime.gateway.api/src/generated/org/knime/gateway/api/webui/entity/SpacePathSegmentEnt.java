@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -53,47 +51,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A list of items on a particular level in a space
+ * Holds the id and name of a space path segment.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceItemsEnt extends GatewayEntity {
+public interface SpacePathSegmentEnt extends GatewayEntity {
 
 
   /**
-   * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
-   * @return path , never <code>null</code>
+   * Id of the path segment.
+   * @return id , never <code>null</code>
    **/
-  public java.util.List<SpacePathSegmentEnt> getPath();
+  public String getId();
 
   /**
-   * List of space items in the order of appearance
-   * @return items , never <code>null</code>
+   * Name of the path segment.
+   * @return name , never <code>null</code>
    **/
-  public java.util.List<SpaceItemEnt> getItems();
+  public String getName();
 
 
     /**
      * The builder for the entity.
      */
-    public interface SpaceItemsEntBuilder extends GatewayEntityBuilder<SpaceItemsEnt> {
+    public interface SpacePathSegmentEntBuilder extends GatewayEntityBuilder<SpacePathSegmentEnt> {
 
         /**
-         * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
+         * Id of the path segment.
          * 
-         * @param path the property value, NOT <code>null</code>! 
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemsEntBuilder setPath(java.util.List<SpacePathSegmentEnt> path);
+        SpacePathSegmentEntBuilder setId(String id);
         
         /**
-         * List of space items in the order of appearance
+         * Name of the path segment.
          * 
-         * @param items the property value, NOT <code>null</code>! 
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemsEntBuilder setItems(java.util.List<SpaceItemEnt> items);
+        SpacePathSegmentEntBuilder setName(String name);
         
         
         /**
@@ -103,7 +101,7 @@ public interface SpaceItemsEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SpaceItemsEnt build();
+        SpacePathSegmentEnt build();
     
     }
 

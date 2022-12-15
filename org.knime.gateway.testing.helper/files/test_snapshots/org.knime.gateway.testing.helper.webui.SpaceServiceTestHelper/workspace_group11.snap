@@ -8,6 +8,11 @@
     "name" : "component",
     "type" : "Component"
   } ],
-  "pathIds" : "list of path-ids; list size: 2",
-  "pathNames" : [ "Group1", "Group11" ]
+  "path" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Group1"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Group11"
+  } ]
 }

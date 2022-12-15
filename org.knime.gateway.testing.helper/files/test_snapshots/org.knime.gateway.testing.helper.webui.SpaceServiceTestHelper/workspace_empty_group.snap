@@ -1,5 +1,7 @@
 {
   "items" : [ ],
-  "pathIds" : "list of path-ids; list size: 1",
-  "pathNames" : [ "EmptyGroup" ]
+  "path" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "EmptyGroup"
+  } ]
 }

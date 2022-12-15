@@ -32,6 +32,8 @@
     "name" : "template",
     "type" : "Other"
   } ],
-  "pathIds" : "list of path-ids; list size: 1",
-  "pathNames" : [ "Group1" ]
+  "path" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Group1"
+  } ]
 }

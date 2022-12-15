@@ -42,69 +42,62 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder;
 
 /**
- * A list of items on a particular level in a space
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceItemsEnt extends GatewayEntity {
 
+@JsonDeserialize(builder=DefaultSpacePathSegmentEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface SpacePathSegmentEntMixIn extends SpacePathSegmentEnt {
 
-  /**
-   * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
-   * @return path , never <code>null</code>
-   **/
-  public java.util.List<SpacePathSegmentEnt> getPath();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-  /**
-   * List of space items in the order of appearance
-   * @return items , never <code>null</code>
-   **/
-  public java.util.List<SpaceItemEnt> getItems();
-
+    @Override
+    @JsonProperty("id")
+    public String getId();
+    
+    @Override
+    @JsonProperty("name")
+    public String getName();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface SpaceItemsEntBuilder extends GatewayEntityBuilder<SpaceItemsEnt> {
 
-        /**
-         * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
-         * 
-         * @param path the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        SpaceItemsEntBuilder setPath(java.util.List<SpacePathSegmentEnt> path);
-        
-        /**
-         * List of space items in the order of appearance
-         * 
-         * @param items the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        SpaceItemsEntBuilder setItems(java.util.List<SpaceItemEnt> items);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        SpaceItemsEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface SpacePathSegmentEntMixInBuilder extends SpacePathSegmentEntBuilder {
     
+        @Override
+        public SpacePathSegmentEntMixIn build();
+    
+        @Override
+        @JsonProperty("id")
+        public SpacePathSegmentEntMixInBuilder setId(final String id);
+        
+        @Override
+        @JsonProperty("name")
+        public SpacePathSegmentEntMixInBuilder setName(final String name);
+        
     }
 
+
 }
+

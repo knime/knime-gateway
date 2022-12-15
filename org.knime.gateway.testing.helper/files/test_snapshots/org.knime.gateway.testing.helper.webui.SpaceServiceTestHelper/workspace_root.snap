@@ -28,6 +28,5 @@
     "name" : "öäüß.txt",
     "type" : "Other"
   } ],
-  "pathIds" : "list of path-ids; list size: 0",
-  "pathNames" : [ ]
+  "path" : [ ]
 }
