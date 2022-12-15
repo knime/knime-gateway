@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -209,7 +209,7 @@ public final class DefaultApplicationService implements ApplicationService {
         return allAvailablePortTypes.stream() //
             .collect(Collectors.toMap( //
                 CoreUtil::getPortTypeId, //
-                pt -> EntityBuilderUtil.PortType.buildPortTypeEnt(pt, allAvailablePortTypes, true) //
+                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, allAvailablePortTypes, true) //
             ));
     }
 

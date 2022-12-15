@@ -22,11 +22,11 @@
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
     "name" : "data.txt",
-    "type" : "Other"
+    "type" : "Data"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
     "name" : "öäüß.txt",
-    "type" : "Other"
+    "type" : "Data"
   } ],
   "path" : [ ]
 }

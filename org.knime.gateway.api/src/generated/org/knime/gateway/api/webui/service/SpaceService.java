@@ -47,7 +47,7 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
 /**
  * Operations on a single space (local workspace, hub space).
@@ -58,7 +58,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
 public interface SpaceService extends GatewayService {
 
     /**
-     * Get shallow list of workflows, files and folders within a given directory (aka workflow group).
+     * Get shallow list of workflows, components and data-files within a given workflow group.
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
@@ -67,6 +67,6 @@ public interface SpaceService extends GatewayService {
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      */
-    SpaceItemsEnt getSpaceItems(String spaceId, String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
+    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
         
 }

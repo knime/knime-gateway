@@ -181,8 +181,8 @@ public final class GatewayTestCollection {
         res.put("testNodeRecommendationsThrowingExceptions", (rc, sp, wl, we,
             es) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendationsThrowingExceptions());
 
-        res.put("testGetSpaceItemsForLocalWorkspace",
-            (rc, sp, wl, we, es) -> new SpaceServiceTestHelper(rc, sp, wl, we).testGetSpaceItemsForLocalWorkspace());
+        res.put("testListWorkflowGroupForLocalWorkspace",
+            (rc, sp, wl, we, es) -> new SpaceServiceTestHelper(rc, sp, wl, we).testListWorkflowGroupForLocalWorkspace());
 
         return res;
     }

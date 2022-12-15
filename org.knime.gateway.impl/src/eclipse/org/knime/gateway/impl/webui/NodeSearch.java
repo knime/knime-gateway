@@ -69,8 +69,8 @@ import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
-import org.knime.gateway.api.webui.util.WorkflowEntityBuilder;
+import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
@@ -113,7 +113,7 @@ public class NodeSearch {
      *            pagination
      * @param nodesLimit the maximum number of nodes to include in the search result (mainly for pagination)
      * @param fullTemplateInfo see
-     *            {@link WorkflowEntityBuilder#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
+     *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
      * @return the search result entity
      */
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
@@ -136,8 +136,8 @@ public class NodeSearch {
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
-            .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityBuilderUtil.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
-                : EntityBuilderUtil.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
+            .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
+                : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
             .filter(Objects::nonNull)
             .skip(nodesOffset == null ? 0 : nodesOffset).limit(nodesLimit == null ? Long.MAX_VALUE : nodesLimit)//
             .collect(Collectors.toList());

@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -75,15 +75,15 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "getSpaceItems")
+    @JsonRpcMethod(value = "listWorkflowGroup")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
             data = "IOException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceItemsEnt getSpaceItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException {
-        return m_service.get().getSpaceItems(spaceId, itemId);    
+    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException {
+        return m_service.get().listWorkflowGroup(spaceId, itemId);    
     }
 
 }

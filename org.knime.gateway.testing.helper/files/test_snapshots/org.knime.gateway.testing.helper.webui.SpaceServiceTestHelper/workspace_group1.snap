@@ -22,15 +22,15 @@
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
     "name" : "data.txt",
-    "type" : "Other"
+    "type" : "Data"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
     "name" : "data2.txt",
-    "type" : "Other"
+    "type" : "Data"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
     "name" : "template",
-    "type" : "Other"
+    "type" : "Data"
   } ],
   "path" : [ {
     "id" : "PLACEHOLDER_FOR_ID",

@@ -63,25 +63,26 @@ import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt.SpaceItemsEntBuilder;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder;
 
 /**
- * See {@link EntityBuilderUtil}.
+ * See {@link EntityFactory}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("static-method")
-public final class SpaceEntityBuilder {
+public final class SpaceEntityFactory {
 
-    SpaceEntityBuilder() {
+    SpaceEntityFactory() {
         //
     }
 
     /**
-     * Builds a {@link SpaceItemsEnt}-entity from an absolute local directory-path by listening all contained items.
+     * Builds a {@link WorkflowGroupContentEnt}-entity from an absolute local directory-path by listening all contained
+     * items.
      *
      * @param absolutePath the absolute path to list the items for
      * @param rootWorkspacePath workspace root path
@@ -92,7 +93,7 @@ public final class SpaceEntityBuilder {
      * @return a new entity instance
      * @throws IOException
      */
-    public SpaceItemsEnt buildSpaceItemsEnt(final Path absolutePath, final Path rootWorkspacePath,
+    public WorkflowGroupContentEnt buildWorkflowGroupContentEnt(final Path absolutePath, final Path rootWorkspacePath,
         final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
         final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) throws IOException {
         var isRoot = absolutePath.equals(rootWorkspacePath);
@@ -100,7 +101,7 @@ public final class SpaceEntityBuilder {
         var path = isRoot ? Collections.<SpacePathSegmentEnt> emptyList()
             : buildSpacePathSegmentEnts(absolutePath, relativePath.getNameCount(), getItemId);
         var items = buildSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter, comparator);
-        return builder(SpaceItemsEntBuilder.class) //
+        return builder(WorkflowGroupContentEntBuilder.class) //
             .setPath(path) //
             .setItems(items) //
             .build();

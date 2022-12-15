@@ -65,14 +65,14 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 
 /**
- * See {@link EntityBuilderUtil}.
+ * See {@link EntityFactory}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("static-method")
-public final class PortTypeBuilder {
+public final class PortTypeEntityFactory {
 
-    PortTypeBuilder() {
+    PortTypeEntityFactory() {
         //
     }
 
@@ -97,7 +97,7 @@ public final class PortTypeBuilder {
         return builder(PortTypeEntBuilder.class)//
             .setName(ptype.getName())//
             .setKind(kind)//
-            .setColor(EntityBuilderUtil.Workflow.hexStringColor(ptype.getColor()))//
+            .setColor(EntityFactory.Workflow.hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
             .setHidden(ptype.isHidden() ? Boolean.TRUE : null)//
             .setHasView(hasPortView(ptype, includeInteractionInfo))//

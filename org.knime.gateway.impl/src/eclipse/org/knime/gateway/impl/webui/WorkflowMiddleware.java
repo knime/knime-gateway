@@ -66,7 +66,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -152,7 +152,7 @@ public final class WorkflowMiddleware {
         final Supplier<WorkflowBuildContextBuilder> buildContextSupplier) {
         var workflowState = getWorkflowState(wfKey);
         var workflowEntity =
-            EntityBuilderUtil.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
+            EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
         if (workflowEntity == null) {
             // no workflow change -> check most recent commit
             Pair<String, WorkflowEnt> last = m_entityRepo.getLastCommit(wfKey).orElse(null);
@@ -162,7 +162,7 @@ public final class WorkflowMiddleware {
 
             // no commit, yet
             workflowEntity =
-                EntityBuilderUtil.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
+                EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
         }
 
         // commit the new workflow entity and return the snapshot
@@ -180,7 +180,7 @@ public final class WorkflowMiddleware {
                     return false;
                 }
             });
-            return workflowChanged ? EntityBuilderUtil.Workflow.buildWorkflowEnt(wfm, buildContextBuilder) : null;
+            return workflowChanged ? EntityFactory.Workflow.buildWorkflowEnt(wfm, buildContextBuilder) : null;
         }
     }
 

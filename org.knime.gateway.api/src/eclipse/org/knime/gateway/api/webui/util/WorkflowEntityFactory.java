@@ -189,12 +189,12 @@ import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContex
 import org.xml.sax.SAXException;
 
 /**
- * See {@link EntityBuilderUtil}.
+ * See {@link EntityFactory}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("static-method")
-public final class WorkflowEntityBuilder {
+public final class WorkflowEntityFactory {
 
     /*
      * The default background color for node annotations which usually translates to opaque.
@@ -334,7 +334,7 @@ public final class WorkflowEntityBuilder {
 
     private final Map<String, NodePortDescriptionEntBuilder> m_nodePortBuilderCache = new ConcurrentHashMap<>();
 
-    WorkflowEntityBuilder() {
+    WorkflowEntityFactory() {
         //
     }
 
@@ -593,14 +593,14 @@ public final class WorkflowEntityBuilder {
         try {
             icon = createIconDataURL(jobManager.getIcon());
         } catch (IOException ex) {
-            NodeLogger.getLogger(WorkflowEntityBuilder.class)
+            NodeLogger.getLogger(WorkflowEntityFactory.class)
                 .error(String.format("Icon for job manager '%s' couldn't be read", name), ex);
         }
         if (jobManager instanceof AbstractNodeExecutionJobManager) {
             try {
                 iconForWorkflow = createIconDataURL(((AbstractNodeExecutionJobManager)jobManager).getIconForWorkflow());
             } catch (IOException ex) {
-                NodeLogger.getLogger(WorkflowEntityBuilder.class)
+                NodeLogger.getLogger(WorkflowEntityFactory.class)
                     .error(String.format("Workflow icon for job manager '%s' couldn't be read", name), ex);
             }
         }
@@ -728,7 +728,7 @@ public final class WorkflowEntityBuilder {
             .setAnnotation(buildNodeAnnotationEnt(nnc.getNodeAnnotation()))//
             .setPosition(buildXYEnt(nnc.getUIInformation()))//
             .setState(buildNodeStateEnt(nnc))//
-            .setTemplateId(EntityBuilderUtil.NodeTemplateAndDescription.createTemplateId(nnc.getNode().getFactory()))//
+            .setTemplateId(EntityFactory.NodeTemplateAndDescription.createTemplateId(nnc.getNode().getFactory()))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nnc))//
             .setLoopInfo(buildLoopInfoEnt(nnc, buildContext))//
@@ -829,7 +829,7 @@ public final class WorkflowEntityBuilder {
                     .setIcon(createIconDataURL(((AbstractNodeExecutionJobManager)parentJobManager).getIconForChild(nc)))
                     .build();
             } catch (IOException ex) {
-                NodeLogger.getLogger(WorkflowEntityBuilder.class).error(String.format(
+                NodeLogger.getLogger(WorkflowEntityFactory.class).error(String.format(
                     "Problem reading icon for job manager '%s' and node '%s'.", parentJobManager.getID(), nc), ex);
                 return null;
             }
@@ -1037,7 +1037,7 @@ public final class WorkflowEntityBuilder {
             try {
                 metadata = Workflowalizer.readWorkflowGroup(metadataFile.toPath());
             } catch (XPathExpressionException | SAXException | IOException ex) {
-                NodeLogger.getLogger(WorkflowEntityBuilder.class).error("Workflow metadata could not be read", ex);
+                NodeLogger.getLogger(WorkflowEntityFactory.class).error("Workflow metadata could not be read", ex);
                 return null;
             }
             return builder(ProjectMetadataEntBuilder.class)
@@ -1283,7 +1283,7 @@ public final class WorkflowEntityBuilder {
         try {
             return createIconDataURL(nodeFactory.getIcon());
         } catch (IOException ex) {
-            NodeLogger.getLogger(WorkflowEntityBuilder.class)
+            NodeLogger.getLogger(WorkflowEntityFactory.class)
                 .error(String.format("Icon for node '%s' couldn't be read", nodeFactory.getNodeName()), ex);
             return null;
         }

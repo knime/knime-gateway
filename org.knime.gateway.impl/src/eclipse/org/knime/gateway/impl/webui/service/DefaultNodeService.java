@@ -76,7 +76,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.events.SelectionEventSource;
 import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -289,7 +289,7 @@ public final class DefaultNodeService implements NodeService {
             final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports
                 .orElseThrow(() -> new ServiceExceptions.NodeDescriptionNotAvailableException(
                     "Could not create instance of node"));
-            var description = EntityBuilderUtil.NodeTemplateAndDescription.buildNativeNodeDescriptionEnt(coreNode);
+            var description = EntityFactory.NodeTemplateAndDescription.buildNativeNodeDescriptionEnt(coreNode);
             m_nodeDescriptionCache.put(factoryKey, description);
             return description;
         }

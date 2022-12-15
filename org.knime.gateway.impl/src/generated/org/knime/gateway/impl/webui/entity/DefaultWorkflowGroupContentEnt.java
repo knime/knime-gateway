@@ -53,29 +53,29 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
 /**
- * A list of items on a particular level in a space
+ * A list of items in a workflow group and more.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
+public class DefaultWorkflowGroupContentEnt implements WorkflowGroupContentEnt {
 
   protected java.util.List<SpacePathSegmentEnt> m_path;
   protected java.util.List<SpaceItemEnt> m_items;
   
-  protected DefaultSpaceItemsEnt() {
+  protected DefaultWorkflowGroupContentEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "SpaceItems";
+    return "WorkflowGroupContent";
   }
   
-  private DefaultSpaceItemsEnt(DefaultSpaceItemsEntBuilder builder) {
+  private DefaultWorkflowGroupContentEnt(DefaultWorkflowGroupContentEntBuilder builder) {
     
     if(builder.m_path == null) {
         throw new IllegalArgumentException("path must not be null.");
@@ -101,7 +101,7 @@ public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultSpaceItemsEnt ent = (DefaultSpaceItemsEnt)o;
+        DefaultWorkflowGroupContentEnt ent = (DefaultWorkflowGroupContentEnt)o;
         return Objects.equals(m_path, ent.m_path) && Objects.equals(m_items, ent.m_items);
     }
 
@@ -131,9 +131,9 @@ public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
   }
     
   
-    public static class DefaultSpaceItemsEntBuilder implements SpaceItemsEntBuilder {
+    public static class DefaultWorkflowGroupContentEntBuilder implements WorkflowGroupContentEntBuilder {
     
-        public DefaultSpaceItemsEntBuilder(){
+        public DefaultWorkflowGroupContentEntBuilder(){
             
         }
     
@@ -141,7 +141,7 @@ public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
         private java.util.List<SpaceItemEnt> m_items = new java.util.ArrayList<>();
 
         @Override
-        public DefaultSpaceItemsEntBuilder setPath(java.util.List<SpacePathSegmentEnt> path) {
+        public DefaultWorkflowGroupContentEntBuilder setPath(java.util.List<SpacePathSegmentEnt> path) {
              if(path == null) {
                  throw new IllegalArgumentException("path must not be null.");
              }
@@ -150,7 +150,7 @@ public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
         }
 
         @Override
-        public DefaultSpaceItemsEntBuilder setItems(java.util.List<SpaceItemEnt> items) {
+        public DefaultWorkflowGroupContentEntBuilder setItems(java.util.List<SpaceItemEnt> items) {
              if(items == null) {
                  throw new IllegalArgumentException("items must not be null.");
              }
@@ -160,8 +160,8 @@ public class DefaultSpaceItemsEnt implements SpaceItemsEnt {
 
         
         @Override
-        public DefaultSpaceItemsEnt build() {
-            return new DefaultSpaceItemsEnt(this);
+        public DefaultWorkflowGroupContentEnt build() {
+            return new DefaultWorkflowGroupContentEnt(this);
         }
     
     }

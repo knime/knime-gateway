@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemsEnt.DefaultSpaceItemsEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowGroupContentEnt.DefaultWorkflowGroupContentEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,9 +61,9 @@ import org.knime.gateway.impl.webui.entity.DefaultSpaceItemsEnt.DefaultSpaceItem
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultSpaceItemsEntBuilder.class)
+@JsonDeserialize(builder=DefaultWorkflowGroupContentEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface SpaceItemsEntMixIn extends SpaceItemsEnt {
+public interface WorkflowGroupContentEntMixIn extends WorkflowGroupContentEnt {
 
     @Override
     @JsonIgnore
@@ -85,18 +85,18 @@ public interface SpaceItemsEntMixIn extends SpaceItemsEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface SpaceItemsEntMixInBuilder extends SpaceItemsEntBuilder {
+    public static interface WorkflowGroupContentEntMixInBuilder extends WorkflowGroupContentEntBuilder {
     
         @Override
-        public SpaceItemsEntMixIn build();
+        public WorkflowGroupContentEntMixIn build();
     
         @Override
         @JsonProperty("path")
-        public SpaceItemsEntMixInBuilder setPath(final java.util.List<SpacePathSegmentEnt> path);
+        public WorkflowGroupContentEntMixInBuilder setPath(final java.util.List<SpacePathSegmentEnt> path);
         
         @Override
         @JsonProperty("items")
-        public SpaceItemsEntMixInBuilder setItems(final java.util.List<SpaceItemEnt> items);
+        public WorkflowGroupContentEntMixInBuilder setItems(final java.util.List<SpaceItemEnt> items);
         
     }
 

@@ -146,7 +146,7 @@ import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.WorkflowEntityBuilder;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -1512,10 +1512,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * When a node has its default {@link NodeAnnotationData}, the {@link NodeAnnotationEnt} will be set to
-     * {@code null}, see {@link WorkflowEntityBuilder#buildNodeAnnotationEnt}. Setting the node label to something else and
+     * {@code null}, see {@link WorkflowEntityFactory#buildNodeAnnotationEnt}. Setting the node label to something else and
      * undoing this operation will yield to a non-empty {@link NodeAnnotationEnt}, since the {@link NodeAnnotationData}
      * is no longer considered the default. Instead, the node annotation text will be set to the empty string, see
-     * {@link WorkflowEntityBuilder#buildNodeAnnotationEnt}
+     * {@link WorkflowEntityFactory#buildNodeAnnotationEnt}
      */
     private static String getLabelFromNodeInWorkflow(final WorkflowEnt wf, final NodeIDEnt nodeId) {
         var annotation = wf.getNodes().get(nodeId.toString()).getAnnotation();

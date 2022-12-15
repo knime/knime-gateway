@@ -70,7 +70,7 @@ public interface SpaceItemEnt extends GatewayEntity {
     
     WORKFLOWTEMPLATE("WorkflowTemplate"),
     
-    OTHER("Other");
+    DATA("Data");
 
     private String value;
 

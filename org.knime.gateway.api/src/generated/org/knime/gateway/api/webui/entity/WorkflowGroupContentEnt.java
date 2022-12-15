@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,59 +40,71 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Dec 12, 2022 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.util;
+package org.knime.gateway.api.webui.entity;
+
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
 
 import org.knime.gateway.api.entity.GatewayEntity;
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 /**
- * Entry utility class to access builder-methods for all kind of entities (i.e. {@link GatewayEntity GatewayEntities}).
- * The actual builder-methods are organized in extra classes with the only purpose to namespace them and separate
- * builder-methods that are mostly independent from each other.
- *
- * A few remarks on the order of methods within the 'Builder'-classes being used for 'namespacing':<br>
- * 1. Properties come first and are sorted alphabetically. ENUMs are considered properties too. <br>
- * 2. Next in line is the package-scope constructor<br>
- * 3. Public methods (sorted alphabetically), since they got called externally and have to be found quickly.<br>
- * 4. Private methods (sorted alphabetically)
- *
+ * A list of items in a workflow group and more.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class EntityBuilderUtil {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface WorkflowGroupContentEnt extends GatewayEntity {
 
-    private EntityBuilderUtil() {
-        // utility class
+
+  /**
+   * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
+   * @return path , never <code>null</code>
+   **/
+  public java.util.List<SpacePathSegmentEnt> getPath();
+
+  /**
+   * List of space items in the order of appearance
+   * @return items , never <code>null</code>
+   **/
+  public java.util.List<SpaceItemEnt> getItems();
+
+
+    /**
+     * The builder for the entity.
+     */
+    public interface WorkflowGroupContentEntBuilder extends GatewayEntityBuilder<WorkflowGroupContentEnt> {
+
+        /**
+         * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
+         * 
+         * @param path the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowGroupContentEntBuilder setPath(java.util.List<SpacePathSegmentEnt> path);
+        
+        /**
+         * List of space items in the order of appearance
+         * 
+         * @param items the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowGroupContentEntBuilder setItems(java.util.List<SpaceItemEnt> items);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        WorkflowGroupContentEnt build();
+    
     }
-
-    /**
-     * Entity builder instance to mainly build {@link WorkflowEnt}s and related entities.
-     */
-    public static final WorkflowEntityBuilder Workflow = new WorkflowEntityBuilder();
-
-    /**
-     * Entity builder instance to mainly build {@link NodeTemplateEnt}s, {@link NodeDescriptionEnt}s and related
-     * entities.
-     */
-    public static final NodeTemplateAndDescriptionEntityBuilder NodeTemplateAndDescription =
-        new NodeTemplateAndDescriptionEntityBuilder();
-
-    /**
-     * Entity builder instance to mainly build {@link SpaceItemEnt}s and related entities.
-     */
-    public static final SpaceEntityBuilder Space = new SpaceEntityBuilder();
-
-    /**
-     * Entity builder instance to build {@link PortTypeEnt}s.
-     */
-    public static final PortTypeBuilder PortType = new PortTypeBuilder();
 
 }

@@ -64,9 +64,9 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.util.workflowalizer.MetadataConfig;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
-import org.knime.gateway.api.webui.util.WorkflowEntityBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 
 /**
  * {@link Space}-implementation that represents the local workspace.
@@ -102,7 +102,7 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public SpaceItemsEnt getItems(final String workflowGroupItemId) throws IOException {
+    public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
         Path relativePath = null;
         var isRoot = Space.ROOT_ITEM_ID.equals(workflowGroupItemId);
         if (!isRoot) {
@@ -115,8 +115,9 @@ public final class LocalWorkspace implements Space {
         if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
             throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
         }
-        return EntityBuilderUtil.Space.buildSpaceItemsEnt(absolutePath, m_localWorkspaceRootPath, getItemIdFunction(),
-            this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem, getItemComparator());
+        return EntityFactory.Space.buildWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
+            getItemIdFunction(), this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem,
+            getItemComparator());
     }
 
     private static boolean isValidWorkspaceItem(final Path p) {
@@ -124,7 +125,7 @@ public final class LocalWorkspace implements Space {
             return !Files.isHidden(p)
                 && !WorkflowPersistor.METAINFO_FILE.equals(p.getName(p.getNameCount() - 1).toString());
         } catch (IOException ex) {
-            NodeLogger.getLogger(WorkflowEntityBuilder.class)
+            NodeLogger.getLogger(WorkflowEntityFactory.class)
                 .warnWithFormat("Failed to evaluate 'isHidden' on path %s. Path ignored.", ex);
             return false;
         }
@@ -164,7 +165,7 @@ public final class LocalWorkspace implements Space {
                 } catch (InvalidSettingsException | IOException ex) {
                     NodeLogger.getLogger(LocalWorkspace.class)
                         .warnWithFormat("Space item type couldn't be determined for %s", item, ex);
-                    return SpaceItemEnt.TypeEnum.OTHER;
+                    return SpaceItemEnt.TypeEnum.DATA;
                 }
             } else if (containsFile(item, WorkflowPersistor.WORKFLOW_FILE)) {
                 return SpaceItemEnt.TypeEnum.WORKFLOW;
@@ -172,7 +173,7 @@ public final class LocalWorkspace implements Space {
                 return SpaceItemEnt.TypeEnum.WORKFLOWGROUP;
             }
         } else {
-            return SpaceItemEnt.TypeEnum.OTHER;
+            return SpaceItemEnt.TypeEnum.DATA;
         }
     }
 

@@ -91,14 +91,14 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescrip
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
- * See {@link EntityBuilderUtil}.
+ * See {@link EntityFactory}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("static-method")
-public final class NodeTemplateAndDescriptionEntityBuilder {
+public final class NodeTemplateAndDescriptionEntityFactory {
 
-    NodeTemplateAndDescriptionEntityBuilder() {
+    NodeTemplateAndDescriptionEntityFactory() {
         //
     }
 
@@ -199,8 +199,8 @@ public final class NodeTemplateAndDescriptionEntityBuilder {
             .setInPorts(buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
             .setOutPorts(
                 buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
-            .setIcon(EntityBuilderUtil.Workflow.createIconDataURL(factory))//
-            .setNodeFactory(EntityBuilderUtil.Workflow.buildNodeFactoryKeyEnt(factory)).build();
+            .setIcon(EntityFactory.Workflow.createIconDataURL(factory))//
+            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(factory)).build();
     }
 
     /**

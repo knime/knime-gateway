@@ -115,7 +115,6 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
@@ -126,6 +125,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
@@ -225,7 +225,6 @@ public class ListEntities {
         res.add(RemovePortCommandEnt.class);
         res.add(SelectionEventTypeEnt.class);
         res.add(SpaceItemEnt.class);
-        res.add(SpaceItemsEnt.class);
         res.add(SpacePathSegmentEnt.class);
         res.add(StyleRangeEnt.class);
         res.add(TranslateCommandEnt.class);
@@ -236,6 +235,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEnt.class);
         res.add(WorkflowCommandEnt.class);
         res.add(WorkflowEnt.class);
+        res.add(WorkflowGroupContentEnt.class);
         res.add(WorkflowInfoEnt.class);
         res.add(WorkflowProjectEnt.class);
         res.add(WorkflowSnapshotEnt.class);
@@ -320,7 +320,6 @@ public class ListEntities {
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(SelectionEventTypeEnt.SelectionEventTypeEntBuilder.class);
         res.add(SpaceItemEnt.SpaceItemEntBuilder.class);
-        res.add(SpaceItemsEnt.SpaceItemsEntBuilder.class);
         res.add(SpacePathSegmentEnt.SpacePathSegmentEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
         res.add(TranslateCommandEnt.TranslateCommandEntBuilder.class);
@@ -331,6 +330,7 @@ public class ListEntities {
         res.add(WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder.class);
         res.add(WorkflowCommandEnt.WorkflowCommandEntBuilder.class);
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
+        res.add(WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder.class);
         res.add(WorkflowInfoEnt.WorkflowInfoEntBuilder.class);
         res.add(WorkflowProjectEnt.WorkflowProjectEntBuilder.class);
         res.add(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class);

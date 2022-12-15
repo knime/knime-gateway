@@ -74,7 +74,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -195,8 +195,8 @@ public class NodeRecommendations {
             .map(n -> n.factory)//
             .filter(f -> sourcePortType == null || isCompatibleWithSourcePortType(f, sourcePortType))//
             .limit(limit)// Limit the number of results after filtering by port type compatibility
-            .map(f -> fullInfo ? EntityBuilderUtil.NodeTemplateAndDescription.buildNodeTemplateEnt(f)
-                : EntityBuilderUtil.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(f))//
+            .map(f -> fullInfo ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(f)
+                : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(f))//
             .filter(Objects::nonNull)// `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
             .collect(Collectors.toList());
     }

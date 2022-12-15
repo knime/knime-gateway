@@ -86,34 +86,34 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link SpaceService#getSpaceItems(String, String)} for the local workspace.
+     * Tests {@link SpaceService#listWorkflowGroup(String, String)} for the local workspace.
      */
-    public void testGetSpaceItemsForLocalWorkspace() throws Exception {
-        Path testWorkspacePath = getTestWorkspacePath();
+    public void testListWorkflowGroupForLocalWorkspace() throws Exception {
+        var testWorkspacePath = getTestWorkspacePath();
         var localWorkspace = new LocalWorkspace(testWorkspacePath);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> List.of(() -> List.of(localWorkspace)));
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_SPACE_ID;
-        var root = ss().getSpaceItems(spaceId, Space.ROOT_ITEM_ID);
+        var root = ss().listWorkflowGroup(spaceId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_root");
 
         var group1Id = getItemIdForItemWithName(root.getItems(), "Group1");
-        var group1 = ss().getSpaceItems(spaceId, group1Id);
+        var group1 = ss().listWorkflowGroup(spaceId, group1Id);
         cr(group1, "workspace_group1");
 
         var group11Id = getItemIdForItemWithName(group1.getItems(), "Group11");
-        var group11 = ss().getSpaceItems(spaceId, group11Id);
+        var group11 = ss().listWorkflowGroup(spaceId, group11Id);
         cr(group11, "workspace_group11");
 
         var emptyGroupId = getItemIdForItemWithName(root.getItems(), "EmptyGroup");
-        var emptyGroup = ss().getSpaceItems(spaceId, emptyGroupId);
+        var emptyGroup = ss().listWorkflowGroup(spaceId, emptyGroupId);
         cr(emptyGroup, "workspace_empty_group");
 
         var dataTxtId = getItemIdForItemWithName(root.getItems(), "data.txt");
-        assertThrows(InvalidRequestException.class, () -> ss().getSpaceItems(spaceId, dataTxtId));
+        assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, dataTxtId));
     }
 
     private static String getItemIdForItemWithName(final List<SpaceItemEnt> items, final String name) {
-        return items.stream().filter(i -> i.getName().equals(name)).map(i -> i.getId()).findFirst().orElse(null);
+        return items.stream().filter(i -> i.getName().equals(name)).map(SpaceItemEnt::getId).findFirst().orElse(null);
     }
 
     private static Path getTestWorkspacePath() throws IOException {

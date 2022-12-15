@@ -51,7 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.Space;
@@ -84,10 +84,10 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public SpaceItemsEnt getSpaceItems(final String spaceId, final String itemId)
+    public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String itemId)
         throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
-            return getSpace(spaceId).getItems(itemId);
+            return getSpace(spaceId).listWorkflowGroup(itemId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {

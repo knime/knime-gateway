@@ -186,8 +186,6 @@ import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTy
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemsEnt.SpaceItemsEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemsEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
@@ -208,6 +206,8 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntB
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
@@ -451,9 +451,6 @@ public class Interface2ImplMap {
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();
         }        
-        if(clazz == SpaceItemsEntBuilder.class) {
-            return (B)new DefaultSpaceItemsEnt.DefaultSpaceItemsEntBuilder();
-        }        
         if(clazz == SpacePathSegmentEntBuilder.class) {
             return (B)new DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder();
         }        
@@ -483,6 +480,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowEntBuilder.class) {
             return (B)new DefaultWorkflowEnt.DefaultWorkflowEntBuilder();
+        }        
+        if(clazz == WorkflowGroupContentEntBuilder.class) {
+            return (B)new DefaultWorkflowGroupContentEnt.DefaultWorkflowGroupContentEntBuilder();
         }        
         if(clazz == WorkflowInfoEntBuilder.class) {
             return (B)new DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder();

@@ -80,7 +80,7 @@ import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
@@ -109,7 +109,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
         try {
             m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
-                targetPosition[0], targetPosition[1] - EntityBuilderUtil.Workflow.NODE_Y_POS_CORRECTION, wfm, false);
+                targetPosition[0], targetPosition[1] - EntityFactory.Workflow.NODE_Y_POS_CORRECTION, wfm, false);
         } catch (IOException | NoSuchElementException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }

@@ -71,8 +71,8 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.util.EntityBuilderUtil;
-import org.knime.gateway.api.webui.util.WorkflowEntityBuilder;
+import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
@@ -112,7 +112,7 @@ public final class NodeGroups {
      * @param tagsOffset the number of tags to be skipped (the tags have a fixed order)
      * @param tagsLimit the maximum number of tags to select
      * @param fullTemplateInfo see
-     *            {@link WorkflowEntityBuilder#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
+     *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
      * @return the node groups entity
      */
     public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
@@ -195,8 +195,8 @@ public final class NodeGroups {
         }
         List<NodeTemplateEnt> res = nodesPerCategory.stream()//
             .limit(numNodesPerTag == null ? Integer.MAX_VALUE : numNodesPerTag)//
-            .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityBuilderUtil.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
-                : EntityBuilderUtil.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
+            .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
+                : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());
         return builder(NodeGroupEntBuilder.class).setNodes(res).setTag(name).build();
