@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -81,5 +82,13 @@ public interface Space {
      * @throws IOException if the there was a problem with read or fetching the items
      */
     WorkflowGroupContentEnt listWorkflowGroup(String workflowGroupItemId) throws IOException;
+
+    /**
+     * Turns a space item for the given id into a local absolute path.
+     *
+     * @param itemId id of the space item
+     * @return the path
+     */
+    Path toLocalAbsolutePath(String itemId);
 
 }

@@ -95,10 +95,15 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    private Space getSpace(final String spaceId) throws InvalidRequestException {
+    /**
+     * @param spaceId
+     * @return the space for the given id if available
+     * @throws NoSuchElementException if there is no space for the given id
+     */
+    public Space getSpace(final String spaceId) {
         return m_spaceProviders.get().stream().flatMap(sp -> sp.getSpaces().stream())
             .filter(s -> spaceId.equals(s.getId())).findFirst()
-            .orElseThrow(() -> new InvalidRequestException("No space available for space id '" + spaceId + "'"));
+            .orElseThrow(() -> new NoSuchElementException("No space available for space id '" + spaceId + "'"));
     }
 
 }

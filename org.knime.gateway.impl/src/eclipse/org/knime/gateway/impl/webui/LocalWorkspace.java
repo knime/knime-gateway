@@ -120,6 +120,18 @@ public final class LocalWorkspace implements Space {
             getItemComparator());
     }
 
+    @Override
+    public Path toLocalAbsolutePath(final String itemId) {
+        return m_itemIdToPathMap.get(Integer.valueOf(itemId));
+    }
+
+    /**
+     * @return the root path of the local workspace
+     */
+    public Path getLocalWorkspaceRoot() {
+        return m_localWorkspaceRootPath;
+    }
+
     private static boolean isValidWorkspaceItem(final Path p) {
         try {
             return !Files.isHidden(p)
