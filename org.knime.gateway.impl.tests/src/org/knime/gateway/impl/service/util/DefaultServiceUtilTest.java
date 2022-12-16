@@ -62,7 +62,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -207,8 +206,7 @@ public class DefaultServiceUtilTest {
      */
     @After
     public void removeWorkflowProjects() {
-        m_wpm.getWorkflowProjects().stream().map(WorkflowProject::getID).collect(Collectors.toList())
-            .forEach(m_wpm::removeWorkflowProject);
+        m_wpm.getWorkflowProjectsIds().stream().forEach(m_wpm::removeWorkflowProject);
     }
 
     /*
