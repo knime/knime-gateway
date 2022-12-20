@@ -218,6 +218,8 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectOriginEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -504,6 +506,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowProjectEntBuilder.class) {
             return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();
+        }        
+        if(clazz == WorkflowProjectOriginEntBuilder.class) {
+            return (B)new DefaultWorkflowProjectOriginEnt.DefaultWorkflowProjectOriginEntBuilder();
         }        
         if(clazz == WorkflowSnapshotEntBuilder.class) {
             return (B)new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();

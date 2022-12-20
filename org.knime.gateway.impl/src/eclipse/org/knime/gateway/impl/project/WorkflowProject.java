@@ -47,6 +47,8 @@ package org.knime.gateway.impl.project;
 
 import org.knime.core.node.workflow.WorkflowManager;
 
+import java.util.Optional;
+
 /**
  * Represents a workflow project.
  *
@@ -73,6 +75,10 @@ public interface WorkflowProject {
      */
     WorkflowManager openProject();
 
+    default Optional<Origin> getOrigin() {
+        return Optional.empty();
+    }
+
     /**
      * Clears the report directory of the workflow project (if there is any).
      */
@@ -89,5 +95,20 @@ public interface WorkflowProject {
      */
     default byte[] generateReport(final String format) {
         throw new UnsupportedOperationException("Report generation not supported");
+    }
+
+    /**
+     * Identifies space and item from which this workflow project has been opened.
+     */
+    public static interface Origin {
+        /**
+         * @return The space ID of the workflow project
+         */
+        String getSpaceId();
+
+        /**
+         * @return The item ID of the workflow project
+         */
+        String getItemId();
     }
 }

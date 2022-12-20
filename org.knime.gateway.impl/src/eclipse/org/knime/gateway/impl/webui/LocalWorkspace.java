@@ -147,7 +147,11 @@ public final class LocalWorkspace implements Space {
         return Comparator.comparing(SpaceItemEnt::getType).thenComparing(SpaceItemEnt::getName);
     }
 
-    private Function<Path, String> getItemIdFunction() {
+    /**
+     * Determine an item ID for a given path. Persist the mapping and handle collisions.
+     * @return A function performing the task.
+     */
+    public Function<Path, String> getItemIdFunction() {
         return path -> {
             var id = path.hashCode();
             Path existingPath;

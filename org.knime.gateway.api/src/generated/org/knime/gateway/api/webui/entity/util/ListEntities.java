@@ -131,6 +131,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -244,6 +245,7 @@ public class ListEntities {
         res.add(WorkflowGroupContentEnt.class);
         res.add(WorkflowInfoEnt.class);
         res.add(WorkflowProjectEnt.class);
+        res.add(WorkflowProjectOriginEnt.class);
         res.add(WorkflowSnapshotEnt.class);
         res.add(XYEnt.class);
         return res;
@@ -342,6 +344,7 @@ public class ListEntities {
         res.add(WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder.class);
         res.add(WorkflowInfoEnt.WorkflowInfoEntBuilder.class);
         res.add(WorkflowProjectEnt.WorkflowProjectEntBuilder.class);
+        res.add(WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder.class);
         res.add(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class);
         res.add(XYEnt.XYEntBuilder.class);
         return res;

@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -53,75 +51,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents an entire workflow project.
+ * Describes from where a workflow project originates.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowProjectEnt extends GatewayEntity {
+public interface WorkflowProjectOriginEnt extends GatewayEntity {
 
 
   /**
-   * Get projectId
-   * @return projectId , never <code>null</code>
+   * Get spaceId
+   * @return spaceId , never <code>null</code>
    **/
-  public String getProjectId();
+  public String getSpaceId();
 
   /**
-   * Get origin
-   * @return origin , never <code>null</code>
+   * Get itemId
+   * @return itemId , never <code>null</code>
    **/
-  public WorkflowProjectOriginEnt getOrigin();
-
-  /**
-   * Get name
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
-   * Get activeWorkflow
-   * @return activeWorkflow 
-   **/
-  public WorkflowSnapshotEnt getActiveWorkflow();
+  public String getItemId();
 
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowProjectEntBuilder extends GatewayEntityBuilder<WorkflowProjectEnt> {
+    public interface WorkflowProjectOriginEntBuilder extends GatewayEntityBuilder<WorkflowProjectOriginEnt> {
 
         /**
-   		 * Set projectId
+   		 * Set spaceId
          * 
-         * @param projectId the property value, NOT <code>null</code>! 
+         * @param spaceId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setProjectId(String projectId);
+        WorkflowProjectOriginEntBuilder setSpaceId(String spaceId);
         
         /**
-   		 * Set origin
+   		 * Set itemId
          * 
-         * @param origin the property value, NOT <code>null</code>! 
+         * @param itemId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setOrigin(WorkflowProjectOriginEnt origin);
-        
-        /**
-   		 * Set name
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowProjectEntBuilder setName(String name);
-        
-        /**
-   		 * Set activeWorkflow
-         * 
-         * @param activeWorkflow the property value,  
-         * @return this entity builder for chaining
-         */
-        WorkflowProjectEntBuilder setActiveWorkflow(WorkflowSnapshotEnt activeWorkflow);
+        WorkflowProjectOriginEntBuilder setItemId(String itemId);
         
         
         /**
@@ -131,7 +101,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowProjectEnt build();
+        WorkflowProjectOriginEnt build();
     
     }
 

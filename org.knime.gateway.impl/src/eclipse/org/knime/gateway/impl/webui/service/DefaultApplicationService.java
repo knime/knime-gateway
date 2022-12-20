@@ -69,6 +69,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
@@ -237,7 +238,7 @@ public final class DefaultApplicationService implements ApplicationService {
             return null;
         }
 
-        final WorkflowProjectEntBuilder builder =
+        final WorkflowProjectEntBuilder projectEntBuilder =
             builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
 
         // optionally set an active workflow for this workflow project
@@ -256,7 +257,7 @@ public final class DefaultApplicationService implements ApplicationService {
                 }
             }
             if (wfm != null) {
-                builder.setActiveWorkflow(
+                projectEntBuilder.setActiveWorkflow(
                     workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
                         () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
             } else {
@@ -264,7 +265,16 @@ public final class DefaultApplicationService implements ApplicationService {
                     "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));
             }
         }
-        return builder.build();
+
+        wp.getOrigin().ifPresent(origin -> {
+            final WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder originEntBuilder =
+                builder(WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder.class);
+            originEntBuilder.setSpaceId(origin.getSpaceId());
+            originEntBuilder.setItemId(origin.getItemId());
+            projectEntBuilder.setOrigin(originEntBuilder.build());
+        });
+
+        return projectEntBuilder.build();
     }
 
 }

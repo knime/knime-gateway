@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 
@@ -73,6 +74,10 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
     public String getProjectId();
     
     @Override
+    @JsonProperty("origin")
+    public WorkflowProjectOriginEnt getOrigin();
+    
+    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -96,6 +101,10 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
         @Override
         @JsonProperty("projectId")
         public WorkflowProjectEntMixInBuilder setProjectId(final String projectId);
+        
+        @Override
+        @JsonProperty("origin")
+        public WorkflowProjectEntMixInBuilder setOrigin(final WorkflowProjectOriginEnt origin);
         
         @Override
         @JsonProperty("name")

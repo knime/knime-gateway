@@ -50,48 +50,39 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
 
 /**
- * Represents an entire workflow project.
+ * Describes from where a workflow project originates.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
+public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt {
 
-  protected String m_projectId;
-  protected WorkflowProjectOriginEnt m_origin;
-  protected String m_name;
-  protected WorkflowSnapshotEnt m_activeWorkflow;
+  protected String m_spaceId;
+  protected String m_itemId;
   
-  protected DefaultWorkflowProjectEnt() {
+  protected DefaultWorkflowProjectOriginEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "WorkflowProject";
+    return "WorkflowProjectOrigin";
   }
   
-  private DefaultWorkflowProjectEnt(DefaultWorkflowProjectEntBuilder builder) {
+  private DefaultWorkflowProjectOriginEnt(DefaultWorkflowProjectOriginEntBuilder builder) {
     
-    if(builder.m_projectId == null) {
-        throw new IllegalArgumentException("projectId must not be null.");
+    if(builder.m_spaceId == null) {
+        throw new IllegalArgumentException("spaceId must not be null.");
     }
-    m_projectId = immutable(builder.m_projectId);
-    if(builder.m_origin == null) {
-        throw new IllegalArgumentException("origin must not be null.");
+    m_spaceId = immutable(builder.m_spaceId);
+    if(builder.m_itemId == null) {
+        throw new IllegalArgumentException("itemId must not be null.");
     }
-    m_origin = immutable(builder.m_origin);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_activeWorkflow = immutable(builder.m_activeWorkflow);
+    m_itemId = immutable(builder.m_itemId);
   }
   
    /**
@@ -108,8 +99,8 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultWorkflowProjectEnt ent = (DefaultWorkflowProjectEnt)o;
-        return Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_origin, ent.m_origin) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_activeWorkflow, ent.m_activeWorkflow);
+        DefaultWorkflowProjectOriginEnt ent = (DefaultWorkflowProjectOriginEnt)o;
+        return Objects.equals(m_spaceId, ent.m_spaceId) && Objects.equals(m_itemId, ent.m_itemId);
     }
 
 
@@ -120,84 +111,55 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_projectId)
-               .append(m_origin)
-               .append(m_name)
-               .append(m_activeWorkflow)
+               .append(m_spaceId)
+               .append(m_itemId)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getProjectId() {
-        return m_projectId;
+  public String getSpaceId() {
+        return m_spaceId;
   }
     
   @Override
-  public WorkflowProjectOriginEnt getOrigin() {
-        return m_origin;
-  }
-    
-  @Override
-  public String getName() {
-        return m_name;
-  }
-    
-  @Override
-  public WorkflowSnapshotEnt getActiveWorkflow() {
-        return m_activeWorkflow;
+  public String getItemId() {
+        return m_itemId;
   }
     
   
-    public static class DefaultWorkflowProjectEntBuilder implements WorkflowProjectEntBuilder {
+    public static class DefaultWorkflowProjectOriginEntBuilder implements WorkflowProjectOriginEntBuilder {
     
-        public DefaultWorkflowProjectEntBuilder(){
+        public DefaultWorkflowProjectOriginEntBuilder(){
             
         }
     
-        private String m_projectId;
-        private WorkflowProjectOriginEnt m_origin;
-        private String m_name;
-        private WorkflowSnapshotEnt m_activeWorkflow;
+        private String m_spaceId;
+        private String m_itemId;
 
         @Override
-        public DefaultWorkflowProjectEntBuilder setProjectId(String projectId) {
-             if(projectId == null) {
-                 throw new IllegalArgumentException("projectId must not be null.");
+        public DefaultWorkflowProjectOriginEntBuilder setSpaceId(String spaceId) {
+             if(spaceId == null) {
+                 throw new IllegalArgumentException("spaceId must not be null.");
              }
-             m_projectId = projectId;
+             m_spaceId = spaceId;
              return this;
         }
 
         @Override
-        public DefaultWorkflowProjectEntBuilder setOrigin(WorkflowProjectOriginEnt origin) {
-             if(origin == null) {
-                 throw new IllegalArgumentException("origin must not be null.");
+        public DefaultWorkflowProjectOriginEntBuilder setItemId(String itemId) {
+             if(itemId == null) {
+                 throw new IllegalArgumentException("itemId must not be null.");
              }
-             m_origin = origin;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowProjectEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
-             }
-             m_name = name;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowProjectEntBuilder setActiveWorkflow(WorkflowSnapshotEnt activeWorkflow) {
-             m_activeWorkflow = activeWorkflow;
+             m_itemId = itemId;
              return this;
         }
 
         
         @Override
-        public DefaultWorkflowProjectEnt build() {
-            return new DefaultWorkflowProjectEnt(this);
+        public DefaultWorkflowProjectOriginEnt build() {
+            return new DefaultWorkflowProjectOriginEnt(this);
         }
     
     }
