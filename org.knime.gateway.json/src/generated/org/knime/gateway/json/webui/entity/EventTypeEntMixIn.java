@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateStateChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
 
@@ -75,6 +76,8 @@ import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
     @Type(value = DefaultEventTypeEnt.class, name="EventType")
 ,
   @Type(value = DefaultSelectionEventTypeEnt.class, name = "SelectionEventType")
+,
+  @Type(value = DefaultUpdateStateChangedEventTypeEnt.class, name = "UpdateStateChangedEventType")
 ,
   @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
 ,
@@ -108,6 +111,8 @@ public interface EventTypeEntMixIn extends EventTypeEnt {
     @Type(value = DefaultEventTypeEnt.class, name="EventType")
 ,
   @Type(value = DefaultSelectionEventTypeEnt.class, name = "SelectionEventType")
+,
+  @Type(value = DefaultUpdateStateChangedEventTypeEnt.class, name = "UpdateStateChangedEventType")
 ,
   @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
 ,

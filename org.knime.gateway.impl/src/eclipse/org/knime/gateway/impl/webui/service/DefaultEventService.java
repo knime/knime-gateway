@@ -55,6 +55,7 @@ import java.util.Map;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -62,15 +63,18 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSourceDelegator;
+import org.knime.gateway.impl.webui.service.events.UpdateStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 
 /**
  * Default implementation of the {@link EventService}-interface.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public final class DefaultEventService implements EventService {
 
@@ -87,6 +91,9 @@ public final class DefaultEventService implements EventService {
 
     private final WorkflowProjectManager m_workflowProjectManager =
         ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
+
+    private final UpdateStateProvider m_updateStateProvider =
+        ServiceDependencies.getServiceDependency(UpdateStateProvider.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -118,6 +125,13 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SelectionEventSourceDelegator(this::sendEvent));
+        } else if (eventTypeEnt instanceof UpdateStateChangedEventTypeEnt) {
+            if (m_updateStateProvider == null) {
+                throw new InvalidRequestException(
+                    "Cannot register listener to update state changed events if no update state provider was declared.");
+            }
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new UpdateStateChangedEventSource(this::sendEvent, m_updateStateProvider));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }

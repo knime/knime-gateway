@@ -51,33 +51,61 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
+ * Information about an available update, derived from &#x60;UpdateInfo&#x60; core class.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EventTypeEnt extends GatewayEntity {
+public interface UpdateInfoEnt extends GatewayEntity {
 
 
   /**
-   * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-   * @return typeId 
+   * The name for the update, e.g. \&quot;KNIME Analytics Platform 5.0\&quot;.
+   * @return name , never <code>null</code>
    **/
-  public String getTypeId();
+  public String getName();
+
+  /**
+   * Short name for the update, e.g. \&quot;5.0\&quot;
+   * @return shortName , never <code>null</code>
+   **/
+  public String getShortName();
+
+  /**
+   * Whether a direct update is possible or not.
+   * @return isUpdatePossible 
+   **/
+  public Boolean isIsUpdatePossible();
 
 
     /**
      * The builder for the entity.
      */
-    public interface EventTypeEntBuilder extends GatewayEntityBuilder<EventTypeEnt> {
+    public interface UpdateInfoEntBuilder extends GatewayEntityBuilder<UpdateInfoEnt> {
 
         /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
+         * The name for the update, e.g. \&quot;KNIME Analytics Platform 5.0\&quot;.
          * 
-         * @param typeId the property value,  
+         * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        EventTypeEntBuilder setTypeId(String typeId);
+        UpdateInfoEntBuilder setName(String name);
+        
+        /**
+         * Short name for the update, e.g. \&quot;5.0\&quot;
+         * 
+         * @param shortName the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        UpdateInfoEntBuilder setShortName(String shortName);
+        
+        /**
+         * Whether a direct update is possible or not.
+         * 
+         * @param isUpdatePossible the property value,  
+         * @return this entity builder for chaining
+         */
+        UpdateInfoEntBuilder setIsUpdatePossible(Boolean isUpdatePossible);
         
         
         /**
@@ -87,7 +115,7 @@ public interface EventTypeEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        EventTypeEnt build();
+        UpdateInfoEnt build();
     
     }
 

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.EventTypeEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,25 +52,19 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
+ * Event type to register for &#x60;UpdateStateChangedEvent&#x60;s
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EventTypeEnt extends GatewayEntity {
+public interface UpdateStateChangedEventTypeEnt extends GatewayEntity, EventTypeEnt {
 
-
-  /**
-   * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-   * @return typeId 
-   **/
-  public String getTypeId();
 
 
     /**
      * The builder for the entity.
      */
-    public interface EventTypeEntBuilder extends GatewayEntityBuilder<EventTypeEnt> {
+    public interface UpdateStateChangedEventTypeEntBuilder extends GatewayEntityBuilder<UpdateStateChangedEventTypeEnt> {
 
         /**
          * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
@@ -77,7 +72,7 @@ public interface EventTypeEnt extends GatewayEntity {
          * @param typeId the property value,  
          * @return this entity builder for chaining
          */
-        EventTypeEntBuilder setTypeId(String typeId);
+        UpdateStateChangedEventTypeEntBuilder setTypeId(String typeId);
         
         
         /**
@@ -87,7 +82,7 @@ public interface EventTypeEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        EventTypeEnt build();
+        UpdateStateChangedEventTypeEnt build();
     
     }
 

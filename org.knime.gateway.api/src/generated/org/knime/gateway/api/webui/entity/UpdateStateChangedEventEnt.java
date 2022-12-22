@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.EventEnt;
+import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -51,33 +53,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
+ * Event for changes to the update state indicating updates are available.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EventTypeEnt extends GatewayEntity {
+public interface UpdateStateChangedEventEnt extends GatewayEntity, EventEnt {
 
 
   /**
-   * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-   * @return typeId 
+   * List of new release updates available.
+   * @return newReleases 
    **/
-  public String getTypeId();
+  public java.util.List<UpdateInfoEnt> getNewReleases();
+
+  /**
+   * List of bugfixes available.
+   * @return bugfixes 
+   **/
+  public java.util.List<String> getBugfixes();
 
 
     /**
      * The builder for the entity.
      */
-    public interface EventTypeEntBuilder extends GatewayEntityBuilder<EventTypeEnt> {
+    public interface UpdateStateChangedEventEntBuilder extends GatewayEntityBuilder<UpdateStateChangedEventEnt> {
 
         /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
+         * List of new release updates available.
          * 
-         * @param typeId the property value,  
+         * @param newReleases the property value,  
          * @return this entity builder for chaining
          */
-        EventTypeEntBuilder setTypeId(String typeId);
+        UpdateStateChangedEventEntBuilder setNewReleases(java.util.List<UpdateInfoEnt> newReleases);
+        
+        /**
+         * List of bugfixes available.
+         * 
+         * @param bugfixes the property value,  
+         * @return this entity builder for chaining
+         */
+        UpdateStateChangedEventEntBuilder setBugfixes(java.util.List<String> bugfixes);
         
         
         /**
@@ -87,7 +103,7 @@ public interface EventTypeEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        EventTypeEnt build();
+        UpdateStateChangedEventEnt build();
     
     }
 

@@ -42,53 +42,55 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateStateChangedEventTypeEnt.DefaultUpdateStateChangedEventTypeEntBuilder;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EventTypeEnt extends GatewayEntity {
 
+@JsonDeserialize(builder=DefaultUpdateStateChangedEventTypeEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface UpdateStateChangedEventTypeEntMixIn extends UpdateStateChangedEventTypeEnt {
 
-  /**
-   * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-   * @return typeId 
-   **/
-  public String getTypeId();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
+    @Override
+    @JsonProperty("typeId")
+    public String getTypeId();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface EventTypeEntBuilder extends GatewayEntityBuilder<EventTypeEnt> {
 
-        /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-         * 
-         * @param typeId the property value,  
-         * @return this entity builder for chaining
-         */
-        EventTypeEntBuilder setTypeId(String typeId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        EventTypeEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface UpdateStateChangedEventTypeEntMixInBuilder extends UpdateStateChangedEventTypeEntBuilder {
     
+        @Override
+        public UpdateStateChangedEventTypeEntMixIn build();
+    
+        @Override
+        @JsonProperty("typeId")
+        public UpdateStateChangedEventTypeEntMixInBuilder setTypeId(final String typeId);
+        
     }
 
+
 }
+

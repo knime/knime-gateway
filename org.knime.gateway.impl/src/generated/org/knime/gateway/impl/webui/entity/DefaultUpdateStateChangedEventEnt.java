@@ -50,31 +50,35 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
-import org.knime.gateway.api.webui.entity.EventTypeEnt;
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
+ * Event for changes to the update state indicating updates are available.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultEventTypeEnt implements EventTypeEnt {
+public class DefaultUpdateStateChangedEventEnt implements UpdateStateChangedEventEnt {
 
-  protected String m_typeId;
+  protected java.util.List<UpdateInfoEnt> m_newReleases;
+  protected java.util.List<String> m_bugfixes;
   
-  protected DefaultEventTypeEnt() {
+  protected DefaultUpdateStateChangedEventEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "EventType";
+    return "UpdateStateChangedEvent";
   }
   
-  private DefaultEventTypeEnt(DefaultEventTypeEntBuilder builder) {
-    
-    m_typeId = immutable(builder.m_typeId);
+  private DefaultUpdateStateChangedEventEnt(DefaultUpdateStateChangedEventEntBuilder builder) {
+    super();
+    m_newReleases = immutable(builder.m_newReleases);
+    m_bugfixes = immutable(builder.m_bugfixes);
   }
   
    /**
@@ -91,8 +95,8 @@ public class DefaultEventTypeEnt implements EventTypeEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultEventTypeEnt ent = (DefaultEventTypeEnt)o;
-        return Objects.equals(m_typeId, ent.m_typeId);
+        DefaultUpdateStateChangedEventEnt ent = (DefaultUpdateStateChangedEventEnt)o;
+        return Objects.equals(m_newReleases, ent.m_newReleases) && Objects.equals(m_bugfixes, ent.m_bugfixes);
     }
 
 
@@ -103,36 +107,49 @@ public class DefaultEventTypeEnt implements EventTypeEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_typeId)
+               .append(m_newReleases)
+               .append(m_bugfixes)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getTypeId() {
-        return m_typeId;
+  public java.util.List<UpdateInfoEnt> getNewReleases() {
+        return m_newReleases;
+  }
+    
+  @Override
+  public java.util.List<String> getBugfixes() {
+        return m_bugfixes;
   }
     
   
-    public static class DefaultEventTypeEntBuilder implements EventTypeEntBuilder {
+    public static class DefaultUpdateStateChangedEventEntBuilder implements UpdateStateChangedEventEntBuilder {
     
-        public DefaultEventTypeEntBuilder(){
-            
+        public DefaultUpdateStateChangedEventEntBuilder(){
+            super();
         }
     
-        private String m_typeId;
+        private java.util.List<UpdateInfoEnt> m_newReleases;
+        private java.util.List<String> m_bugfixes;
 
         @Override
-        public DefaultEventTypeEntBuilder setTypeId(String typeId) {
-             m_typeId = typeId;
+        public DefaultUpdateStateChangedEventEntBuilder setNewReleases(java.util.List<UpdateInfoEnt> newReleases) {
+             m_newReleases = newReleases;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateStateChangedEventEntBuilder setBugfixes(java.util.List<String> bugfixes) {
+             m_bugfixes = bugfixes;
              return this;
         }
 
         
         @Override
-        public DefaultEventTypeEnt build() {
-            return new DefaultEventTypeEnt(this);
+        public DefaultUpdateStateChangedEventEnt build() {
+            return new DefaultUpdateStateChangedEventEnt(this);
         }
     
     }

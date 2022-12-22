@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,55 +41,63 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Dec 21, 2022 (kai): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.api.webui.util;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import java.util.List;
+import java.util.stream.Collectors;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
+import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt.UpdateStateChangedEventTypeEntBuilder;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
- * 
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * See {@link EntityFactory}.
+ *
+ * @author Kai Franze, KNIME GmbH
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EventTypeEnt extends GatewayEntity {
-
-
-  /**
-   * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-   * @return typeId 
-   **/
-  public String getTypeId();
-
+@SuppressWarnings("static-method")
+public final class UpdateStateEntityFactory {
 
     /**
-     * The builder for the entity.
+     * @param newReleases A list of new releases.
+     * @param bugfixes A list of bugfixes.
+     * @return The update state changed event entity.
      */
-    public interface EventTypeEntBuilder extends GatewayEntityBuilder<EventTypeEnt> {
+    public UpdateStateChangedEventEnt buildEventEnt(final List<UpdateInfo> newReleases,
+        final List<String> bugfixes) {
+        var nr = newReleases.stream()//
+            .map(info -> buildUpdateInfoEnt(info))//
+            .collect(Collectors.toList());
+        return builder(UpdateStateChangedEventEnt.UpdateStateChangedEventEntBuilder.class)//
+            .setNewReleases(newReleases.isEmpty() ? null : nr)//
+            .setBugfixes(bugfixes.isEmpty() ? null : bugfixes)//
+            .build();
+    }
 
-        /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-         * 
-         * @param typeId the property value,  
-         * @return this entity builder for chaining
-         */
-        EventTypeEntBuilder setTypeId(String typeId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        EventTypeEnt build();
-    
+    private static UpdateInfoEnt buildUpdateInfoEnt(final UpdateInfo updateInfo) {
+        return builder(UpdateInfoEnt.UpdateInfoEntBuilder.class)//
+            .setName(updateInfo.getName())//
+            .setShortName(updateInfo.getShortName())//
+            .setIsUpdatePossible(updateInfo.isUpdatePossible())//
+            .build();
+    }
+
+    /**
+     * @return The update state changed event type entity
+     */
+    public UpdateStateChangedEventTypeEnt buildEventTypeEnt() {
+        return builder(UpdateStateChangedEventTypeEntBuilder.class)//
+            .setTypeId("UpdateStateChangedEventType")//
+            .build();
     }
 
 }

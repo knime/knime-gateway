@@ -42,52 +42,99 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.entity;
 
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
- * 
+ * Event type to register for &#x60;UpdateStateChangedEvent&#x60;s
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EventTypeEnt extends GatewayEntity {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultUpdateStateChangedEventTypeEnt implements UpdateStateChangedEventTypeEnt {
 
-
-  /**
-   * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-   * @return typeId 
-   **/
-  public String getTypeId();
-
-
-    /**
-     * The builder for the entity.
+  protected String m_typeId;
+  
+  protected DefaultUpdateStateChangedEventTypeEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "UpdateStateChangedEventType";
+  }
+  
+  private DefaultUpdateStateChangedEventTypeEnt(DefaultUpdateStateChangedEventTypeEntBuilder builder) {
+    super();
+    m_typeId = immutable(builder.m_typeId);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-    public interface EventTypeEntBuilder extends GatewayEntityBuilder<EventTypeEnt> {
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultUpdateStateChangedEventTypeEnt ent = (DefaultUpdateStateChangedEventTypeEnt)o;
+        return Objects.equals(m_typeId, ent.m_typeId);
+    }
 
-        /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-         * 
-         * @param typeId the property value,  
-         * @return this entity builder for chaining
-         */
-        EventTypeEntBuilder setTypeId(String typeId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_typeId)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public String getTypeId() {
+        return m_typeId;
+  }
+    
+  
+    public static class DefaultUpdateStateChangedEventTypeEntBuilder implements UpdateStateChangedEventTypeEntBuilder {
+    
+        public DefaultUpdateStateChangedEventTypeEntBuilder(){
+            super();
+        }
+    
+        private String m_typeId;
+
         @Override
-        EventTypeEnt build();
+        public DefaultUpdateStateChangedEventTypeEntBuilder setTypeId(String typeId) {
+             m_typeId = typeId;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultUpdateStateChangedEventTypeEnt build() {
+            return new DefaultUpdateStateChangedEventTypeEnt(this);
+        }
     
     }
 

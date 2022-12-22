@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,55 +41,89 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Dec 15, 2022 (kai): created
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
- * 
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * Source of truth regarding available application updates
+ *
+ * @author Kai Franze, KNIME GmbH
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EventTypeEnt extends GatewayEntity {
+public class UpdateStateProvider {
 
+    private final Supplier<UpdateState> m_updateStateSupplier;
 
-  /**
-   * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-   * @return typeId 
-   **/
-  public String getTypeId();
+    private final Set<Consumer<UpdateState>> m_listeners = new HashSet<>();
 
+    private UpdateState m_updateState;
 
     /**
-     * The builder for the entity.
+     * Create a new instance.
+     *
+     * @param supplier A callable supplying the update state
      */
-    public interface EventTypeEntBuilder extends GatewayEntityBuilder<EventTypeEnt> {
+    public UpdateStateProvider(final Supplier<UpdateState> supplier) {
+        m_updateStateSupplier = supplier;
+    }
+
+    /**
+     * Check for updates and notify listeners
+     */
+    public void checkForUpdates() {
+        var updateState = m_updateStateSupplier.get();
+        if (!updateState.getNewReleases().isEmpty() || !updateState.getBugfixes().isEmpty()) {
+            m_updateState = updateState;
+        }
+        update();
+    }
+
+    /**
+     * @param consumer The event listener to register
+     */
+    public void addUpdateStateChangedListener(final Consumer<UpdateState> consumer) {
+        m_listeners.add(consumer);
+    }
+
+    /**
+     * @param consumer The event listener to unregister
+     */
+    public void removeUpdateStateChangedListener(final Consumer<UpdateState> consumer) {
+        m_listeners.remove(consumer);
+    }
+
+    private void update() {
+        if (m_updateState != null) {
+            m_listeners.forEach(listener -> listener.accept(m_updateState));
+        }
+    }
+
+    /**
+     * Internal update state representation
+     */
+    public interface UpdateState {
 
         /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-         * 
-         * @param typeId the property value,  
-         * @return this entity builder for chaining
+         * @return A list of new releases
          */
-        EventTypeEntBuilder setTypeId(String typeId);
-        
-        
+        List<UpdateInfo> getNewReleases();
+
         /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        EventTypeEnt build();
-    
+         * @return A list of bugfixes
+         */
+        List<String> getBugfixes();
+
     }
 
 }

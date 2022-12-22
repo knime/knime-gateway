@@ -44,62 +44,66 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 12, 2022 (hornm): created
+ *   Dec 15, 2022 (kai): created
  */
-package org.knime.gateway.api.webui.util;
+package org.knime.gateway.impl.webui.service.events;
 
-import org.knime.gateway.api.entity.GatewayEntity;
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
+import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.service.events.EventSource;
+import org.knime.gateway.impl.service.util.EventConsumer;
+import org.knime.gateway.impl.webui.UpdateStateProvider;
+import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
 
 /**
- * Entry utility class to access builder-methods for all kind of entities (i.e. {@link GatewayEntity GatewayEntities}).
- * The actual builder-methods are organized in extra classes with the only purpose to namespace them and separate
- * builder-methods that are mostly independent from each other.
+ * Event source that emits event at the beginning of the application life cycle if there where available updates
+ * discovered
  *
- * A few remarks on the order of methods within the 'Builder'-classes being used for 'namespacing':<br>
- * 1. Properties come first and are sorted alphabetically. ENUMs are considered properties too. <br>
- * 2. Next in line is the package-scope constructor<br>
- * 3. Public methods (sorted alphabetically), since they got called externally and have to be found quickly.<br>
- * 4. Private methods (sorted alphabetically)
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-public final class EntityFactory {
+public class UpdateStateChangedEventSource
+    extends EventSource<UpdateStateChangedEventTypeEnt, UpdateStateChangedEventEnt> {
 
-    private EntityFactory() {
-        // utility class
+    private final Consumer<UpdateState> m_callback;
+
+    private final UpdateStateProvider m_updateStateProvider;
+
+    /**
+     * @param eventConsumer Consumes the emitted events
+     * @param updateStateProvider Provides the update state
+     */
+    public UpdateStateChangedEventSource(final EventConsumer eventConsumer,
+        final UpdateStateProvider updateStateProvider) {
+        super(eventConsumer);
+        m_updateStateProvider = updateStateProvider;
+        m_callback = updateState -> sendEvent(EntityFactory.UpdateState
+            .buildEventEnt(updateState.getNewReleases(), updateState.getBugfixes()));
     }
 
-    /**
-     * Entity builder instance to mainly build {@link WorkflowEnt}s and related entities.
-     */
-    public static final WorkflowEntityFactory Workflow = new WorkflowEntityFactory();
+    @Override
+    public Optional<UpdateStateChangedEventEnt>
+        addEventListenerAndGetInitialEventFor(final UpdateStateChangedEventTypeEnt eventTypeEnt) {
+        m_updateStateProvider.addUpdateStateChangedListener(m_callback);
+        return Optional.empty(); // Will be set before update check is triggered, so there will never be an event to emit
+    }
 
-    /**
-     * Entity builder instance to mainly build {@link NodeTemplateEnt}s, {@link NodeDescriptionEnt}s and related
-     * entities.
-     */
-    public static final NodeTemplateAndDescriptionEntityFactory NodeTemplateAndDescription =
-        new NodeTemplateAndDescriptionEntityFactory();
+    @Override
+    public void removeEventListener(final UpdateStateChangedEventTypeEnt eventTypeEnt) {
+        m_updateStateProvider.removeUpdateStateChangedListener(m_callback);
+    }
 
-    /**
-     * Entity builder instance to mainly build {@link SpaceItemEnt}s and related entities.
-     */
-    public static final SpaceEntityFactory Space = new SpaceEntityFactory();
+    @Override
+    public void removeAllEventListeners() {
+        removeEventListener(null);
+    }
 
-    /**
-     * Entity builder instance to build {@link PortTypeEnt}s.
-     */
-    public static final PortTypeEntityFactory PortType = new PortTypeEntityFactory();
-
-    /**
-     * Entity builder instance to mainly build {@link UpdateStateChangedEventEnt}s and related entities.
-     */
-    public static final UpdateStateEntityFactory UpdateState = new UpdateStateEntityFactory();
+    @Override
+    protected String getName() {
+        return "UpdateStateChangedEvent";
+    }
 
 }

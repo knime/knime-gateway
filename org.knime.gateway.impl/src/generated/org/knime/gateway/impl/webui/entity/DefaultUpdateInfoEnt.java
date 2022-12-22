@@ -51,30 +51,40 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-import org.knime.gateway.api.webui.entity.EventTypeEnt;
+import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 
 /**
- * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
+ * Information about an available update, derived from &#x60;UpdateInfo&#x60; core class.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultEventTypeEnt implements EventTypeEnt {
+public class DefaultUpdateInfoEnt implements UpdateInfoEnt {
 
-  protected String m_typeId;
+  protected String m_name;
+  protected String m_shortName;
+  protected Boolean m_isUpdatePossible;
   
-  protected DefaultEventTypeEnt() {
+  protected DefaultUpdateInfoEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "EventType";
+    return "UpdateInfo";
   }
   
-  private DefaultEventTypeEnt(DefaultEventTypeEntBuilder builder) {
+  private DefaultUpdateInfoEnt(DefaultUpdateInfoEntBuilder builder) {
     
-    m_typeId = immutable(builder.m_typeId);
+    if(builder.m_name == null) {
+        throw new IllegalArgumentException("name must not be null.");
+    }
+    m_name = immutable(builder.m_name);
+    if(builder.m_shortName == null) {
+        throw new IllegalArgumentException("shortName must not be null.");
+    }
+    m_shortName = immutable(builder.m_shortName);
+    m_isUpdatePossible = immutable(builder.m_isUpdatePossible);
   }
   
    /**
@@ -91,8 +101,8 @@ public class DefaultEventTypeEnt implements EventTypeEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultEventTypeEnt ent = (DefaultEventTypeEnt)o;
-        return Objects.equals(m_typeId, ent.m_typeId);
+        DefaultUpdateInfoEnt ent = (DefaultUpdateInfoEnt)o;
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_shortName, ent.m_shortName) && Objects.equals(m_isUpdatePossible, ent.m_isUpdatePossible);
     }
 
 
@@ -103,36 +113,68 @@ public class DefaultEventTypeEnt implements EventTypeEnt {
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_typeId)
+               .append(m_name)
+               .append(m_shortName)
+               .append(m_isUpdatePossible)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public String getTypeId() {
-        return m_typeId;
+  public String getName() {
+        return m_name;
+  }
+    
+  @Override
+  public String getShortName() {
+        return m_shortName;
+  }
+    
+  @Override
+  public Boolean isIsUpdatePossible() {
+        return m_isUpdatePossible;
   }
     
   
-    public static class DefaultEventTypeEntBuilder implements EventTypeEntBuilder {
+    public static class DefaultUpdateInfoEntBuilder implements UpdateInfoEntBuilder {
     
-        public DefaultEventTypeEntBuilder(){
+        public DefaultUpdateInfoEntBuilder(){
             
         }
     
-        private String m_typeId;
+        private String m_name;
+        private String m_shortName;
+        private Boolean m_isUpdatePossible;
 
         @Override
-        public DefaultEventTypeEntBuilder setTypeId(String typeId) {
-             m_typeId = typeId;
+        public DefaultUpdateInfoEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("name must not be null.");
+             }
+             m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateInfoEntBuilder setShortName(String shortName) {
+             if(shortName == null) {
+                 throw new IllegalArgumentException("shortName must not be null.");
+             }
+             m_shortName = shortName;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateInfoEntBuilder setIsUpdatePossible(Boolean isUpdatePossible) {
+             m_isUpdatePossible = isUpdatePossible;
              return this;
         }
 
         
         @Override
-        public DefaultEventTypeEnt build() {
-            return new DefaultEventTypeEnt(this);
+        public DefaultUpdateInfoEnt build() {
+            return new DefaultUpdateInfoEnt(this);
         }
     
     }
