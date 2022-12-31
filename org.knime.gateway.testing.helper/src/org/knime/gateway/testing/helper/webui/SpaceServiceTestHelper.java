@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -88,30 +89,52 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link SpaceService#listWorkflowGroup(String, String)} for the local workspace.
+     * Tests {@link SpaceService#listWorkflowGroup(String, String, String)} for the local workspace.
      */
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath();
-        var spaceProviders = List.of(createLocalSpaceProviderForTesting(testWorkspacePath));
+        var local = LocalWorkspace.LOCAL_WORKSPACE_AND_PROVIDER_ID;
+        var spaceProviders = Map.of(local, createLocalSpaceProviderForTesting(testWorkspacePath));
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_SPACE_ID;
-        var root = ss().listWorkflowGroup(spaceId, Space.ROOT_ITEM_ID);
+        var root = ss().listWorkflowGroup(spaceId, local, Space.ROOT_ITEM_ID);
         cr(root, "workspace_root");
 
         var group1Id = getItemIdForItemWithName(root.getItems(), "Group1");
-        var group1 = ss().listWorkflowGroup(spaceId, group1Id);
+        var group1 = ss().listWorkflowGroup(spaceId, local, group1Id);
         cr(group1, "workspace_group1");
 
         var group11Id = getItemIdForItemWithName(group1.getItems(), "Group11");
-        var group11 = ss().listWorkflowGroup(spaceId, group11Id);
+        var group11 = ss().listWorkflowGroup(spaceId, local, group11Id);
         cr(group11, "workspace_group11");
 
         var emptyGroupId = getItemIdForItemWithName(root.getItems(), "EmptyGroup");
-        var emptyGroup = ss().listWorkflowGroup(spaceId, emptyGroupId);
+        var emptyGroup = ss().listWorkflowGroup(spaceId, local, emptyGroupId);
         cr(emptyGroup, "workspace_empty_group");
 
         var dataTxtId = getItemIdForItemWithName(root.getItems(), "data.txt");
-        assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, dataTxtId));
+        assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, local, dataTxtId));
+    }
+
+    private static SpaceProvider createSpaceProvider(final Space space, final String spaceProviderName) {
+       return new SpaceProvider()  {
+
+           @Override
+           public String getId() {
+               return "local";
+           }
+
+           @Override
+           public String getName() {
+               return spaceProviderName;
+           }
+
+           @Override
+           public Map<String, Space> getSpaceMap() {
+               return Collections.singletonMap("local", space);
+           }
+
+       };
     }
 
     private static SpaceProvider createLocalSpaceProviderForTesting(final Path testWorkspacePath)  {

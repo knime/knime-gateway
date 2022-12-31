@@ -42,43 +42,109 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Operations on a single space (local workspace, hub space).
- *
+ * Represents a single space (local workspace, hub space, ...).
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceService extends GatewayService {
+public interface SpaceEnt extends GatewayEntity {
+
+
+  /**
+   * Identifier of this space, unique within a space provider.
+   * @return id , never <code>null</code>
+   **/
+  public String getId();
+
+  /**
+   * Human readable space name.
+   * @return name , never <code>null</code>
+   **/
+  public String getName();
+
+  /**
+   * The user that owns this space.
+   * @return owner , never <code>null</code>
+   **/
+  public String getOwner();
+
+  /**
+   * A space description.
+   * @return description 
+   **/
+  public String getDescription();
+
+  /**
+   * Whether this space is private or public (available to everyone).
+   * @return _private 
+   **/
+  public Boolean isPrivate();
+
 
     /**
-     * Mainly returns the spaces provided by this space-provider.
-     *
-     * @param spaceProviderId Identifies a space-provider.
-     *
-     * @return the result
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * The builder for the entity.
      */
-    SpaceProviderEnt getSpaceProvider(String spaceProviderId)  throws ServiceExceptions.InvalidRequestException;
+    public interface SpaceEntBuilder extends GatewayEntityBuilder<SpaceEnt> {
+
+        /**
+         * Identifier of this space, unique within a space provider.
+         * 
+         * @param id the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceEntBuilder setId(String id);
         
-    /**
-     * Get shallow list of workflows, components and data-files within a given workflow group.
-     *
-     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
-     * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
-     *
-     * @return the result
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     */
-    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
+        /**
+         * Human readable space name.
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceEntBuilder setName(String name);
         
+        /**
+         * The user that owns this space.
+         * 
+         * @param owner the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceEntBuilder setOwner(String owner);
+        
+        /**
+         * A space description.
+         * 
+         * @param description the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceEntBuilder setDescription(String description);
+        
+        /**
+         * Whether this space is private or public (available to everyone).
+         * 
+         * @param _private the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceEntBuilder setPrivate(Boolean _private);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        SpaceEnt build();
+    
+    }
+
 }

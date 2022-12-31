@@ -76,9 +76,9 @@ import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 public final class LocalWorkspace implements Space {
 
     /**
-     * ID of the local workspace.
+     * ID of the local workspace and its space provider.
      */
-    public static final String LOCAL_WORKSPACE_SPACE_ID = "local";
+    public static final String LOCAL_WORKSPACE_AND_PROVIDER_ID = "local";
 
     // assumption is that there is exactly one user of the local workspace at a time
     private final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>();
@@ -98,7 +98,17 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public String getId() {
-        return LOCAL_WORKSPACE_SPACE_ID;
+        return LOCAL_WORKSPACE_AND_PROVIDER_ID;
+    }
+
+    @Override
+    public String getName() {
+        return "Local Workspace";
+    }
+
+    @Override
+    public String getOwner() {
+        return "local user";
     }
 
     @Override

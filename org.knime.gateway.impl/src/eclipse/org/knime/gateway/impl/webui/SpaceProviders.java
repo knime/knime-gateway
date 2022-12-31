@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.List;
+import java.util.Map;
 
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 
@@ -61,8 +61,16 @@ import org.knime.gateway.impl.webui.service.ServiceDependencies;
 public interface SpaceProviders {
 
     /**
-     * @return list of available {@link SpaceProvider}s
+     * @return {@code true} this space provider only returns local spaces, i.e. spaces that don't require a remote
+     *         connection.
      */
-    List<SpaceProvider> get();
+    default boolean isLocal() {
+        return false;
+    }
+
+    /**
+     * @return map of available {@link SpaceProvider}s; maps the space-provider-id to the space-provider.
+     */
+    Map<String, SpaceProvider> getProvidersMap();
 
 }

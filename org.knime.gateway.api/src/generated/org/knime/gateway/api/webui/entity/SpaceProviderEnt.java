@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,78 +40,56 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Dec 8, 2022 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.api.webui.entity;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.NoSuchElementException;
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 
-import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a space in order to abstract from different space implementations (e.g. the local workspace or a hub
- * space).
- *
+ * Provides one or more spaces.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface Space {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface SpaceProviderEnt extends GatewayEntity {
+
+
+  /**
+   * Get spaces
+   * @return spaces , never <code>null</code>
+   **/
+  public java.util.List<SpaceEnt> getSpaces();
+
 
     /**
-     * Id of the root 'workflow group'.
+     * The builder for the entity.
      */
-    String ROOT_ITEM_ID = "root";
+    public interface SpaceProviderEntBuilder extends GatewayEntityBuilder<SpaceProviderEnt> {
 
-    /**
-     * @return a space id unique within a {@link SpaceProvider}
-     */
-    String getId();
-
-    /**
-     * @return space name
-     */
-    String getName();
-
-    /**
-     * @return space owner
-     */
-    String getOwner();
-
-    /**
-     * @return space description
-     */
-    default String getDescription() {
-        return "";
+        /**
+   		 * Set spaces
+         * 
+         * @param spaces the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setSpaces(java.util.List<SpaceEnt> spaces);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        SpaceProviderEnt build();
+    
     }
-
-    /**
-     * @return whether it's a private or a public space
-     */
-    default boolean isPrivate() {
-        return false;
-    }
-
-    /**
-     * Gets the items.
-     *
-     * @param workflowGroupItemId the id to list item for
-     *
-     * @return the items and some metadata
-     * @throws NoSuchElementException if the given workflow group item id doesn't refer to a workflow group
-     * @throws IOException if the there was a problem with read or fetching the items
-     */
-    WorkflowGroupContentEnt listWorkflowGroup(String workflowGroupItemId) throws IOException;
-
-    /**
-     * Turns a space item for the given id into a local absolute path.
-     *
-     * @param itemId id of the space item
-     * @return the path
-     */
-    Path toLocalAbsolutePath(String itemId);
 
 }

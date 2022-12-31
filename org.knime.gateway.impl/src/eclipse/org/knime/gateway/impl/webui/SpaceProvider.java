@@ -48,7 +48,9 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Represents an entity that holds spaces. E.g. a Hub instance.
@@ -58,13 +60,46 @@ import java.util.List;
 public interface SpaceProvider {
 
     /**
-     * @return The ID of this space provider
+     * @return a globally unique id
      */
     String getId();
 
     /**
-     * @return the list of available spaces
+     * @return a human readable name for the space provider
      */
-    List<Space> getSpaces();
+    String getName();
+
+    /**
+     * @return map of available spaces; maps from space-id to space
+     * @throws NoSuchElementException if there is none for the given id
+     */
+    Map<String, Space> getSpaceMap();
+
+    /**
+     * Returns the connection if this provider is connected to its remote location.
+     *
+     * @param doConnect whether to connect if there isn't a connection, yet
+     * @return the connection or an empty optional if this provider is not connected
+     */
+    default Optional<SpaceProviderConnection> getConnection(final boolean doConnect) {
+        return Optional.empty();
+    }
+
+    /**
+     * Represents a connection of a space provider to its remote location (e.g. a Hub).
+     */
+    public interface SpaceProviderConnection {
+
+        /**
+         * @return the user that is connected
+         */
+        String getUsername();
+
+        /**
+         * Cuts the connection.
+         */
+        void disconnect();
+
+    }
 
 }

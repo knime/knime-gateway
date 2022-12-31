@@ -184,10 +184,14 @@ import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommand
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
@@ -456,11 +460,17 @@ public class Interface2ImplMap {
         if(clazz == SelectionEventTypeEntBuilder.class) {
             return (B)new DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder();
         }        
+        if(clazz == SpaceEntBuilder.class) {
+            return (B)new DefaultSpaceEnt.DefaultSpaceEntBuilder();
+        }        
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();
         }        
         if(clazz == SpacePathSegmentEntBuilder.class) {
             return (B)new DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder();
+        }        
+        if(clazz == SpaceProviderEntBuilder.class) {
+            return (B)new DefaultSpaceProviderEnt.DefaultSpaceProviderEntBuilder();
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();

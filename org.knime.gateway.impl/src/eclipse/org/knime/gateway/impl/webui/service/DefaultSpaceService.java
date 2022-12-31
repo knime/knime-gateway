@@ -49,11 +49,17 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
+import org.knime.gateway.api.webui.entity.SpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.Space;
 import org.knime.gateway.impl.webui.SpaceProviders;
 
@@ -84,10 +90,33 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String itemId)
+    public SpaceProviderEnt getSpaceProvider(final String spaceProviderId) throws InvalidRequestException {
+        List<SpaceEnt> spaces;
+        if (spaceProviderId != null && !spaceProviderId.isBlank()) {
+            try {
+                spaces = m_spaceProviders.getProvidersMap().get(spaceProviderId) //
+                    .getSpaceMap().values().stream() //
+                    .map(s -> EntityFactory.Space.buildSpaceEnt(s.getId(), s.getName(), s.getOwner(),
+                        s.getDescription(), s.isPrivate())) //
+                    .collect(Collectors.toList());
+            } catch (NoSuchElementException e) {
+                throw new InvalidRequestException("Problem fetching space provider content", e);
+            }
+        } else {
+            spaces = Collections.emptyList();
+        }
+        return EntityFactory.Space.buildSpaceProviderEnt(spaces);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
+        final String itemId)
         throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
-            return getSpace(spaceId).listWorkflowGroup(itemId);
+            return getSpace(spaceId, spaceProviderId).listWorkflowGroup(itemId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {
@@ -97,13 +126,12 @@ public class DefaultSpaceService implements SpaceService {
 
     /**
      * @param spaceId
+     * @param spaceProviderId
      * @return the space for the given id if available
      * @throws NoSuchElementException if there is no space for the given id
      */
-    public Space getSpace(final String spaceId) {
-        return m_spaceProviders.get().stream().flatMap(sp -> sp.getSpaces().stream())
-            .filter(s -> spaceId.equals(s.getId())).findFirst()
-            .orElseThrow(() -> new NoSuchElementException("No space available for space id '" + spaceId + "'"));
+    public Space getSpace(final String spaceId, final String spaceProviderId) {
+        return m_spaceProviders.getProvidersMap().get(spaceProviderId).getSpaceMap().get(spaceId);
     }
 
 }

@@ -42,62 +42,106 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.jsonrpc.service;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
+
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
-
-import com.googlecode.jsonrpc4j.JsonRpcError;
-import com.googlecode.jsonrpc4j.JsonRpcErrors;
-import com.googlecode.jsonrpc4j.JsonRpcMethod;
-import com.googlecode.jsonrpc4j.JsonRpcParam;
-import com.googlecode.jsonrpc4j.JsonRpcService;
-
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-
-import org.knime.gateway.api.webui.service.SpaceService;
 
 /**
- * Json rpc annotated class that wraps another service and delegates the method calls. 
+ * Provides one or more spaces.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonRpcService(value = "SpaceService")
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
-public class JsonRpcSpaceServiceWrapper implements SpaceService {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public class DefaultSpaceProviderEnt implements SpaceProviderEnt {
 
-    private final java.util.function.Supplier<SpaceService> m_service;
+  protected java.util.List<SpaceEnt> m_spaces;
+  
+  protected DefaultSpaceProviderEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "SpaceProvider";
+  }
+  
+  private DefaultSpaceProviderEnt(DefaultSpaceProviderEntBuilder builder) {
     
-    public JsonRpcSpaceServiceWrapper(java.util.function.Supplier<SpaceService> service) {
-        m_service = service;
+    if(builder.m_spaces == null) {
+        throw new IllegalArgumentException("spaces must not be null.");
     }
-
-	/**
+    m_spaces = immutable(builder.m_spaces);
+  }
+  
+   /**
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "getSpaceProvider")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
-    })
-    public SpaceProviderEnt getSpaceProvider(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.InvalidRequestException {
-        return m_service.get().getSpaceProvider(spaceProviderId);    
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultSpaceProviderEnt ent = (DefaultSpaceProviderEnt)o;
+        return Objects.equals(m_spaces, ent.m_spaces);
     }
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "listWorkflowGroup")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
-            data = "IOException" /*per convention the data property contains the exception name*/)
-    })
-    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException {
-        return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, itemId);    
+
+  
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_spaces)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public java.util.List<SpaceEnt> getSpaces() {
+        return m_spaces;
+  }
+    
+  
+    public static class DefaultSpaceProviderEntBuilder implements SpaceProviderEntBuilder {
+    
+        public DefaultSpaceProviderEntBuilder(){
+            
+        }
+    
+        private java.util.List<SpaceEnt> m_spaces = new java.util.ArrayList<>();
+
+        @Override
+        public DefaultSpaceProviderEntBuilder setSpaces(java.util.List<SpaceEnt> spaces) {
+             if(spaces == null) {
+                 throw new IllegalArgumentException("spaces must not be null.");
+             }
+             m_spaces = spaces;
+             return this;
+        }
+
+        
+        @Override
+        public DefaultSpaceProviderEnt build() {
+            return new DefaultSpaceProviderEnt(this);
+        }
+    
     }
 
 }

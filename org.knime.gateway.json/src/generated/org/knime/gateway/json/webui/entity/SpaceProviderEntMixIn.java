@@ -42,62 +42,55 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.jsonrpc.service;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.api.webui.entity.SpaceEnt;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
-
-import com.googlecode.jsonrpc4j.JsonRpcError;
-import com.googlecode.jsonrpc4j.JsonRpcErrors;
-import com.googlecode.jsonrpc4j.JsonRpcMethod;
-import com.googlecode.jsonrpc4j.JsonRpcParam;
-import com.googlecode.jsonrpc4j.JsonRpcService;
-
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-
-import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt.DefaultSpaceProviderEntBuilder;
 
 /**
- * Json rpc annotated class that wraps another service and delegates the method calls. 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonRpcService(value = "SpaceService")
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
-public class JsonRpcSpaceServiceWrapper implements SpaceService {
 
-    private final java.util.function.Supplier<SpaceService> m_service;
+@JsonDeserialize(builder=DefaultSpaceProviderEntBuilder.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("spaces")
+    public java.util.List<SpaceEnt> getSpaces();
     
-    public JsonRpcSpaceServiceWrapper(java.util.function.Supplier<SpaceService> service) {
-        m_service = service;
+
+    /**
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
+     */
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface SpaceProviderEntMixInBuilder extends SpaceProviderEntBuilder {
+    
+        @Override
+        public SpaceProviderEntMixIn build();
+    
+        @Override
+        @JsonProperty("spaces")
+        public SpaceProviderEntMixInBuilder setSpaces(final java.util.List<SpaceEnt> spaces);
+        
     }
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getSpaceProvider")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
-    })
-    public SpaceProviderEnt getSpaceProvider(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.InvalidRequestException {
-        return m_service.get().getSpaceProvider(spaceProviderId);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "listWorkflowGroup")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
-            data = "IOException" /*per convention the data property contains the exception name*/)
-    })
-    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException {
-        return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, itemId);    
-    }
 
 }
+

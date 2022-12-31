@@ -61,10 +61,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.knime.gateway.api.webui.entity.SpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder;
 
@@ -78,6 +82,37 @@ public final class SpaceEntityFactory {
 
     SpaceEntityFactory() {
         //
+    }
+
+    /**
+     * @param spaces
+     *
+     * @return a new {@link SpaceProviderEnt}-instance
+     */
+    public SpaceProviderEnt buildSpaceProviderEnt(final List<SpaceEnt> spaces) {
+        return builder(SpaceProviderEntBuilder.class) //
+            .setSpaces(spaces) //
+            .build();
+    }
+
+    /**
+     * @param id
+     * @param name
+     * @param owner
+     * @param description
+     * @param isPrivate
+     *
+     * @return a new {@link SpaceEnt}-instance
+     */
+    public SpaceEnt buildSpaceEnt(final String id, final String name, final String owner, final String description,
+        final Boolean isPrivate) {
+        return builder(SpaceEntBuilder.class) //
+            .setId(id) //
+            .setName(name) //
+            .setOwner(owner) //
+            .setDescription(description) //
+            .setPrivate(isPrivate) //
+            .build();
     }
 
     /**
