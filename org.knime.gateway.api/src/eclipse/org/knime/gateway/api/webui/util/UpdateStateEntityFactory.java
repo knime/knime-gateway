@@ -54,10 +54,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt.UpdateAvailableEventEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt.UpdateAvailableEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt.UpdateStateChangedEventTypeEntBuilder;
 
 /**
  * See {@link EntityFactory}.
@@ -72,12 +73,12 @@ public final class UpdateStateEntityFactory {
      * @param bugfixes A list of bugfixes.
      * @return The update state changed event entity.
      */
-    public UpdateStateChangedEventEnt buildEventEnt(final List<UpdateInfo> newReleases,
+    public UpdateAvailableEventEnt buildEventEnt(final List<UpdateInfo> newReleases,
         final List<String> bugfixes) {
         var nr = newReleases.stream()//
             .map(info -> buildUpdateInfoEnt(info))//
             .collect(Collectors.toList());
-        return builder(UpdateStateChangedEventEnt.UpdateStateChangedEventEntBuilder.class)//
+        return builder(UpdateAvailableEventEntBuilder.class)//
             .setNewReleases(newReleases.isEmpty() ? null : nr)//
             .setBugfixes(bugfixes.isEmpty() ? null : bugfixes)//
             .build();
@@ -94,8 +95,8 @@ public final class UpdateStateEntityFactory {
     /**
      * @return The update state changed event type entity
      */
-    public UpdateStateChangedEventTypeEnt buildEventTypeEnt() {
-        return builder(UpdateStateChangedEventTypeEntBuilder.class)//
+    public UpdateAvailableEventTypeEnt buildEventTypeEnt() {
+        return builder(UpdateAvailableEventTypeEntBuilder.class)//
             .setTypeId("UpdateStateChangedEventType")//
             .build();
     }

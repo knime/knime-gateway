@@ -51,8 +51,8 @@ package org.knime.gateway.impl.webui.service.events;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.EventConsumer;
@@ -66,7 +66,7 @@ import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
  * @author Kai Franze, KNIME GmbH
  */
 public class UpdateStateChangedEventSource
-    extends EventSource<UpdateStateChangedEventTypeEnt, UpdateStateChangedEventEnt> {
+    extends EventSource<UpdateAvailableEventTypeEnt, UpdateAvailableEventEnt> {
 
     private final Consumer<UpdateState> m_callback;
 
@@ -85,14 +85,14 @@ public class UpdateStateChangedEventSource
     }
 
     @Override
-    public Optional<UpdateStateChangedEventEnt>
-        addEventListenerAndGetInitialEventFor(final UpdateStateChangedEventTypeEnt eventTypeEnt) {
+    public Optional<UpdateAvailableEventEnt>
+        addEventListenerAndGetInitialEventFor(final UpdateAvailableEventTypeEnt eventTypeEnt) {
         m_updateStateProvider.addUpdateStateChangedListener(m_callback);
         return Optional.empty(); // Will be set before update check is triggered, so there will never be an event to emit
     }
 
     @Override
-    public void removeEventListener(final UpdateStateChangedEventTypeEnt eventTypeEnt) {
+    public void removeEventListener(final UpdateAvailableEventTypeEnt eventTypeEnt) {
         m_updateStateProvider.removeUpdateStateChangedListener(m_callback);
     }
 
@@ -103,7 +103,7 @@ public class UpdateStateChangedEventSource
 
     @Override
     protected String getName() {
-        return "UpdateStateChangedEvent";
+        return "UpdateAvailableEvent";
     }
 
 }

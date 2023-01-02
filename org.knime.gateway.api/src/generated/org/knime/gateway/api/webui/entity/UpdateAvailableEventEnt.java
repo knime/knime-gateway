@@ -58,17 +58,17 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface UpdateStateChangedEventEnt extends GatewayEntity, EventEnt {
+public interface UpdateAvailableEventEnt extends GatewayEntity, EventEnt {
 
 
   /**
-   * List of new release updates available.
+   * List of new major releases.
    * @return newReleases 
    **/
   public java.util.List<UpdateInfoEnt> getNewReleases();
 
   /**
-   * List of bugfixes available.
+   * List of new bugfixes releases.
    * @return bugfixes 
    **/
   public java.util.List<String> getBugfixes();
@@ -77,23 +77,23 @@ public interface UpdateStateChangedEventEnt extends GatewayEntity, EventEnt {
     /**
      * The builder for the entity.
      */
-    public interface UpdateStateChangedEventEntBuilder extends GatewayEntityBuilder<UpdateStateChangedEventEnt> {
+    public interface UpdateAvailableEventEntBuilder extends GatewayEntityBuilder<UpdateAvailableEventEnt> {
 
         /**
-         * List of new release updates available.
+         * List of new major releases.
          * 
          * @param newReleases the property value,  
          * @return this entity builder for chaining
          */
-        UpdateStateChangedEventEntBuilder setNewReleases(java.util.List<UpdateInfoEnt> newReleases);
+        UpdateAvailableEventEntBuilder setNewReleases(java.util.List<UpdateInfoEnt> newReleases);
         
         /**
-         * List of bugfixes available.
+         * List of new bugfixes releases.
          * 
          * @param bugfixes the property value,  
          * @return this entity builder for chaining
          */
-        UpdateStateChangedEventEntBuilder setBugfixes(java.util.List<String> bugfixes);
+        UpdateAvailableEventEntBuilder setBugfixes(java.util.List<String> bugfixes);
         
         
         /**
@@ -103,7 +103,7 @@ public interface UpdateStateChangedEventEnt extends GatewayEntity, EventEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        UpdateStateChangedEventEnt build();
+        UpdateAvailableEventEnt build();
     
     }
 

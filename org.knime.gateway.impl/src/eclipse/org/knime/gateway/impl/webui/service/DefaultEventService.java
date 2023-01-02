@@ -55,7 +55,7 @@ import java.util.Map;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -125,7 +125,7 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SelectionEventSourceDelegator(this::sendEvent));
-        } else if (eventTypeEnt instanceof UpdateStateChangedEventTypeEnt) {
+        } else if (eventTypeEnt instanceof UpdateAvailableEventTypeEnt) {
             if (m_updateStateProvider == null) {
                 throw new InvalidRequestException(
                     "Cannot register listener to update state changed events if no update state provider was declared.");

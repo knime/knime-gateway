@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -82,11 +83,13 @@ public class UpdateStateProvider {
      * Check for updates and notify listeners
      */
     public void checkForUpdates() {
-        var updateState = m_updateStateSupplier.get();
-        if (!updateState.getNewReleases().isEmpty() || !updateState.getBugfixes().isEmpty()) {
-            m_updateState = updateState;
-        }
-        update();
+        CompletableFuture.supplyAsync(m_updateStateSupplier)//
+            .thenAccept(updateState -> {
+                if (!updateState.getNewReleases().isEmpty() || !updateState.getBugfixes().isEmpty()) {
+                    m_updateState = updateState;
+                }
+                notifyListeners();
+            });
     }
 
     /**
@@ -103,7 +106,7 @@ public class UpdateStateProvider {
         m_listeners.remove(consumer);
     }
 
-    private void update() {
+    private void notifyListeners() {
         if (m_updateState != null) {
             m_listeners.forEach(listener -> listener.accept(m_updateState));
         }

@@ -53,7 +53,7 @@ import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 /**
@@ -98,7 +98,7 @@ public final class EntityFactory {
     public static final PortTypeEntityFactory PortType = new PortTypeEntityFactory();
 
     /**
-     * Entity builder instance to mainly build {@link UpdateStateChangedEventEnt}s and related entities.
+     * Entity builder instance to mainly build {@link UpdateAvailableEventEnt}s and related entities.
      */
     public static final UpdateStateEntityFactory UpdateState = new UpdateStateEntityFactory();
 

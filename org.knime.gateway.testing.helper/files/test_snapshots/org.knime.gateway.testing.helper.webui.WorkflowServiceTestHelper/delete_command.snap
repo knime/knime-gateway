@@ -1350,6 +1350,7 @@
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -1358,6 +1359,7 @@
         "text" : "dynamic\nports",
         "textAlign" : "center"
       },
+      "hasDialog" : true,
       "id" : "root:27",
       "inPorts" : [ {
         "canRemove" : false,

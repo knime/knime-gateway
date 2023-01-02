@@ -50,35 +50,32 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 
 /**
- * Event for changes to the update state indicating updates are available.
+ * Event type to register for &#x60;UpdateAvailableEvent&#x60;s
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultUpdateStateChangedEventEnt implements UpdateStateChangedEventEnt {
+public class DefaultUpdateAvailableEventTypeEnt implements UpdateAvailableEventTypeEnt {
 
-  protected java.util.List<UpdateInfoEnt> m_newReleases;
-  protected java.util.List<String> m_bugfixes;
+  protected String m_typeId;
   
-  protected DefaultUpdateStateChangedEventEnt() {
+  protected DefaultUpdateAvailableEventTypeEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "UpdateStateChangedEvent";
+    return "UpdateAvailableEventType";
   }
   
-  private DefaultUpdateStateChangedEventEnt(DefaultUpdateStateChangedEventEntBuilder builder) {
+  private DefaultUpdateAvailableEventTypeEnt(DefaultUpdateAvailableEventTypeEntBuilder builder) {
     super();
-    m_newReleases = immutable(builder.m_newReleases);
-    m_bugfixes = immutable(builder.m_bugfixes);
+    m_typeId = immutable(builder.m_typeId);
   }
   
    /**
@@ -95,8 +92,8 @@ public class DefaultUpdateStateChangedEventEnt implements UpdateStateChangedEven
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultUpdateStateChangedEventEnt ent = (DefaultUpdateStateChangedEventEnt)o;
-        return Objects.equals(m_newReleases, ent.m_newReleases) && Objects.equals(m_bugfixes, ent.m_bugfixes);
+        DefaultUpdateAvailableEventTypeEnt ent = (DefaultUpdateAvailableEventTypeEnt)o;
+        return Objects.equals(m_typeId, ent.m_typeId);
     }
 
 
@@ -107,49 +104,36 @@ public class DefaultUpdateStateChangedEventEnt implements UpdateStateChangedEven
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
-               .append(m_newReleases)
-               .append(m_bugfixes)
+               .append(m_typeId)
                .toHashCode();
    }
   
 	
 	
   @Override
-  public java.util.List<UpdateInfoEnt> getNewReleases() {
-        return m_newReleases;
-  }
-    
-  @Override
-  public java.util.List<String> getBugfixes() {
-        return m_bugfixes;
+  public String getTypeId() {
+        return m_typeId;
   }
     
   
-    public static class DefaultUpdateStateChangedEventEntBuilder implements UpdateStateChangedEventEntBuilder {
+    public static class DefaultUpdateAvailableEventTypeEntBuilder implements UpdateAvailableEventTypeEntBuilder {
     
-        public DefaultUpdateStateChangedEventEntBuilder(){
+        public DefaultUpdateAvailableEventTypeEntBuilder(){
             super();
         }
     
-        private java.util.List<UpdateInfoEnt> m_newReleases;
-        private java.util.List<String> m_bugfixes;
+        private String m_typeId;
 
         @Override
-        public DefaultUpdateStateChangedEventEntBuilder setNewReleases(java.util.List<UpdateInfoEnt> newReleases) {
-             m_newReleases = newReleases;
-             return this;
-        }
-
-        @Override
-        public DefaultUpdateStateChangedEventEntBuilder setBugfixes(java.util.List<String> bugfixes) {
-             m_bugfixes = bugfixes;
+        public DefaultUpdateAvailableEventTypeEntBuilder setTypeId(String typeId) {
+             m_typeId = typeId;
              return this;
         }
 
         
         @Override
-        public DefaultUpdateStateChangedEventEnt build() {
-            return new DefaultUpdateStateChangedEventEnt(this);
+        public DefaultUpdateAvailableEventTypeEnt build() {
+            return new DefaultUpdateAvailableEventTypeEnt(this);
         }
     
     }

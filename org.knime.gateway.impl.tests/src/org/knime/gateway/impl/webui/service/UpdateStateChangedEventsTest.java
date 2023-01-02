@@ -57,13 +57,15 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
@@ -156,14 +158,16 @@ public class UpdateStateChangedEventsTest extends GatewayServiceTest {
 
         addEventListenerAndcheckForUpdates(supplier);
 
-        verify(m_testConsumer, times(1)).accept(eq("UpdateStateChangedEvent"), argThat(e -> {
-            // Compare names of first update info must do
-            var newReleasesMatch = ((UpdateStateChangedEventEnt)e).getNewReleases().get(0).getName()//
-                .equals(newReleases.get(0).getName());
-            // Compare list of strings
-            var bugFixesMatch = ((UpdateStateChangedEventEnt)e).getBugfixes().equals(bugfixes);
-            return newReleasesMatch && bugFixesMatch;
-        }));
+        Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            verify(m_testConsumer, times(1)).accept(eq("UpdateAvailableEvent"), argThat(e -> {
+                // Compare names of first update info must do
+                var newReleasesMatch = ((UpdateAvailableEventEnt)e).getNewReleases().get(0).getName()//
+                    .equals(newReleases.get(0).getName());
+                // Compare list of strings
+                var bugFixesMatch = ((UpdateAvailableEventEnt)e).getBugfixes().equals(bugfixes);
+                return newReleasesMatch && bugFixesMatch;
+            }));
+        });
     }
 
     private static Supplier<UpdateState> createUpdateStateSupplier(final List<UpdateInfo> newReleases,
@@ -191,8 +195,10 @@ public class UpdateStateChangedEventsTest extends GatewayServiceTest {
     private void assertUpdateStateChangedEvents(final Supplier<UpdateState> supplier, final int numberOfEvents)
         throws Exception {
         addEventListenerAndcheckForUpdates(supplier);
-        verify(m_testConsumer, times(numberOfEvents)).accept(eq("UpdateStateChangedEvent"),
-            isA(UpdateStateChangedEventEnt.class));
+        Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            verify(m_testConsumer, times(numberOfEvents)).accept(eq("UpdateAvailableEvent"),
+                isA(UpdateAvailableEventEnt.class));
+        });
     }
 
 }

@@ -192,16 +192,16 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt.UpdateAvailableEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventEnt;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt.UpdateAvailableEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt.UpdateInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateInfoEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventEnt.UpdateStateChangedEventEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateStateChangedEventEnt;
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt.UpdateStateChangedEventTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
@@ -466,6 +466,12 @@ public class Interface2ImplMap {
         if(clazz == TranslateCommandEntBuilder.class) {
             return (B)new DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder();
         }        
+        if(clazz == UpdateAvailableEventEntBuilder.class) {
+            return (B)new DefaultUpdateAvailableEventEnt.DefaultUpdateAvailableEventEntBuilder();
+        }        
+        if(clazz == UpdateAvailableEventTypeEntBuilder.class) {
+            return (B)new DefaultUpdateAvailableEventTypeEnt.DefaultUpdateAvailableEventTypeEntBuilder();
+        }        
         if(clazz == UpdateComponentOrMetanodeNameCommandEntBuilder.class) {
             return (B)new DefaultUpdateComponentOrMetanodeNameCommandEnt.DefaultUpdateComponentOrMetanodeNameCommandEntBuilder();
         }        
@@ -474,12 +480,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == UpdateNodeLabelCommandEntBuilder.class) {
             return (B)new DefaultUpdateNodeLabelCommandEnt.DefaultUpdateNodeLabelCommandEntBuilder();
-        }        
-        if(clazz == UpdateStateChangedEventEntBuilder.class) {
-            return (B)new DefaultUpdateStateChangedEventEnt.DefaultUpdateStateChangedEventEntBuilder();
-        }        
-        if(clazz == UpdateStateChangedEventTypeEntBuilder.class) {
-            return (B)new DefaultUpdateStateChangedEventTypeEnt.DefaultUpdateStateChangedEventTypeEntBuilder();
         }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();

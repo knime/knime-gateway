@@ -44,15 +44,16 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
+import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
+import org.knime.gateway.json.webui.entity.EventEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.UpdateStateChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateStateChangedEventTypeEnt.DefaultUpdateStateChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventEnt.DefaultUpdateAvailableEventEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,17 +61,21 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateStateChangedEventTypeEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultUpdateStateChangedEventTypeEntBuilder.class)
+@JsonDeserialize(builder=DefaultUpdateAvailableEventEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface UpdateStateChangedEventTypeEntMixIn extends UpdateStateChangedEventTypeEnt {
+public interface UpdateAvailableEventEntMixIn extends UpdateAvailableEventEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("typeId")
-    public String getTypeId();
+    @JsonProperty("newReleases")
+    public java.util.List<UpdateInfoEnt> getNewReleases();
+    
+    @Override
+    @JsonProperty("bugfixes")
+    public java.util.List<String> getBugfixes();
     
 
     /**
@@ -80,14 +85,18 @@ public interface UpdateStateChangedEventTypeEntMixIn extends UpdateStateChangedE
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface UpdateStateChangedEventTypeEntMixInBuilder extends UpdateStateChangedEventTypeEntBuilder {
+    public static interface UpdateAvailableEventEntMixInBuilder extends UpdateAvailableEventEntBuilder {
     
         @Override
-        public UpdateStateChangedEventTypeEntMixIn build();
+        public UpdateAvailableEventEntMixIn build();
     
         @Override
-        @JsonProperty("typeId")
-        public UpdateStateChangedEventTypeEntMixInBuilder setTypeId(final String typeId);
+        @JsonProperty("newReleases")
+        public UpdateAvailableEventEntMixInBuilder setNewReleases(final java.util.List<UpdateInfoEnt> newReleases);
+        
+        @Override
+        @JsonProperty("bugfixes")
+        public UpdateAvailableEventEntMixInBuilder setBugfixes(final java.util.List<String> bugfixes);
         
     }
 

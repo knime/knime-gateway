@@ -52,19 +52,19 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event type to register for &#x60;UpdateStateChangedEvent&#x60;s
+ * Event type to register for &#x60;UpdateAvailableEvent&#x60;s
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface UpdateStateChangedEventTypeEnt extends GatewayEntity, EventTypeEnt {
+public interface UpdateAvailableEventTypeEnt extends GatewayEntity, EventTypeEnt {
 
 
 
     /**
      * The builder for the entity.
      */
-    public interface UpdateStateChangedEventTypeEntBuilder extends GatewayEntityBuilder<UpdateStateChangedEventTypeEnt> {
+    public interface UpdateAvailableEventTypeEntBuilder extends GatewayEntityBuilder<UpdateAvailableEventTypeEnt> {
 
         /**
          * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
@@ -72,7 +72,7 @@ public interface UpdateStateChangedEventTypeEnt extends GatewayEntity, EventType
          * @param typeId the property value,  
          * @return this entity builder for chaining
          */
-        UpdateStateChangedEventTypeEntBuilder setTypeId(String typeId);
+        UpdateAvailableEventTypeEntBuilder setTypeId(String typeId);
         
         
         /**
@@ -82,7 +82,7 @@ public interface UpdateStateChangedEventTypeEnt extends GatewayEntity, EventType
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        UpdateStateChangedEventTypeEnt build();
+        UpdateAvailableEventTypeEnt build();
     
     }
 
