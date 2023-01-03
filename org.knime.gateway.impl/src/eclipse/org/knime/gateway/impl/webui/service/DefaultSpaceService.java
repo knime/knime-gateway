@@ -93,15 +93,15 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceProviderEnt getSpaceProvider(final String spaceProviderId) throws InvalidRequestException {
         List<SpaceEnt> spaces;
         if (spaceProviderId != null && !spaceProviderId.isBlank()) {
-            try {
-                spaces = m_spaceProviders.getProvidersMap().get(spaceProviderId) //
-                    .getSpaceMap().values().stream() //
+            var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
+            if (spaceProvider == null) {
+                throw new InvalidRequestException("No space provider available for id '" + spaceProviderId + "'");
+            }
+            spaces = //
+                spaceProvider.getSpaceMap().values().stream() //
                     .map(s -> EntityFactory.Space.buildSpaceEnt(s.getId(), s.getName(), s.getOwner(),
                         s.getDescription(), s.isPrivate())) //
                     .collect(Collectors.toList());
-            } catch (NoSuchElementException e) {
-                throw new InvalidRequestException("Problem fetching space provider content", e);
-            }
         } else {
             spaces = Collections.emptyList();
         }

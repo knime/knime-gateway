@@ -183,6 +183,8 @@ public final class GatewayTestCollection {
 
         res.put("testListWorkflowGroupForLocalWorkspace",
             (rc, sp, wl, we, es) -> new SpaceServiceTestHelper(rc, sp, wl, we).testListWorkflowGroupForLocalWorkspace());
+        res.put("testGetSpaceProvider",
+            (rc, sp, wl, we, es) -> new SpaceServiceTestHelper(rc, sp, wl, we).testGetSpaceProvider());
 
         return res;
     }

@@ -52,12 +52,14 @@ import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.LocalWorkspace;
@@ -116,25 +118,96 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, local, dataTxtId));
     }
 
+    /**
+     * Tests {@link SpaceService#getSpaceProvider(String)}.
+     * @throws InvalidRequestException
+     */
+    public void testGetSpaceProvider() throws InvalidRequestException {
+        var spaces = new Space[5];
+        for (var i = 0; i < 4; i++) {
+            spaces[i] = createSpace("id" + i, "name" + i, "owner" + i, "description" + i, i % 2 == 0);
+        }
+        var provider1 = createSpaceProvider("id1", "name1", spaces[0], spaces[1]);
+        var provider2 = createSpaceProvider("id2", "name2", spaces[2], spaces[3]);
+
+        ServiceDependencies.setServiceDependency(SpaceProviders.class,
+            () -> Map.of(provider1.getId(), provider1, provider2.getId(), provider2));
+
+        var spaceProvider = ss().getSpaceProvider("id1");
+        cr(spaceProvider, "space_provider1");
+
+        spaceProvider = ss().getSpaceProvider("id2");
+        cr(spaceProvider, "space_provider2");
+
+        assertThrows(InvalidRequestException.class, () -> ss().getSpaceProvider("non_existing_id"));
+    }
+
     private static SpaceProvider createSpaceProvider(final Space space, final String spaceProviderName) {
-       return new SpaceProvider()  {
+        return createSpaceProvider("local", spaceProviderName, space);
+    }
 
-           @Override
-           public String getId() {
-               return "local";
-           }
+    private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
+        final Space... spaces) {
+        return new SpaceProvider() {
 
-           @Override
-           public String getName() {
-               return spaceProviderName;
-           }
+            @Override
+            public String getId() {
+                return id;
+            }
 
-           @Override
-           public Map<String, Space> getSpaceMap() {
-               return Collections.singletonMap("local", space);
-           }
+            @Override
+            public String getName() {
+                return spaceProviderName;
+            }
 
-       };
+            @Override
+            public Map<String, Space> getSpaceMap() {
+                return Arrays.stream(spaces).collect(Collectors.toMap(Space::getId, s -> s));
+            }
+
+        };
+    }
+
+    private static Space createSpace(final String id, final String name, final String owner, final String description,
+        final boolean isPrivate) {
+        return new Space() { // NOSONAR
+
+            @Override
+            public String getId() {
+                return id;
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public String getOwner() {
+                return owner;
+            }
+
+            @Override
+            public String getDescription() {
+                return description;
+            }
+
+            @Override
+            public boolean isPrivate() {
+                return isPrivate;
+            }
+
+            @Override
+            public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
+                return null;
+            }
+
+            @Override
+            public Path toLocalAbsolutePath(final String itemId) {
+                return null;
+            }
+
+        };
     }
 
     private static SpaceProvider createLocalSpaceProviderForTesting(final Path testWorkspacePath)  {
