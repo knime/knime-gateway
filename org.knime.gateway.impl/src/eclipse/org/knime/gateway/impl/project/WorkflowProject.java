@@ -102,6 +102,11 @@ public interface WorkflowProject {
      */
     public static interface Origin {
         /**
+         * @return The ID of the space provider containing the workflow project
+         */
+        String getProviderId();
+
+        /**
          * @return The space ID of the workflow project
          */
         String getSpaceId();

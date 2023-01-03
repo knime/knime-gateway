@@ -58,6 +58,11 @@ import java.util.List;
 public interface SpaceProvider {
 
     /**
+     * @return The ID of this space provider
+     */
+    String getId();
+
+    /**
      * @return the list of available spaces
      */
     List<Space> getSpaces();

@@ -68,6 +68,10 @@ public interface WorkflowProjectOriginEntMixIn extends WorkflowProjectOriginEnt 
     public String getTypeID();
 
     @Override
+    @JsonProperty("providerId")
+    public String getProviderId();
+    
+    @Override
     @JsonProperty("spaceId")
     public String getSpaceId();
     
@@ -88,6 +92,10 @@ public interface WorkflowProjectOriginEntMixIn extends WorkflowProjectOriginEnt 
         @Override
         public WorkflowProjectOriginEntMixIn build();
     
+        @Override
+        @JsonProperty("providerId")
+        public WorkflowProjectOriginEntMixInBuilder setProviderId(final String providerId);
+        
         @Override
         @JsonProperty("spaceId")
         public WorkflowProjectOriginEntMixInBuilder setSpaceId(final String spaceId);

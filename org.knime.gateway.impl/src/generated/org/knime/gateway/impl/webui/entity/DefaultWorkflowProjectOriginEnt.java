@@ -61,6 +61,7 @@ import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt {
 
+  protected String m_providerId;
   protected String m_spaceId;
   protected String m_itemId;
   
@@ -75,6 +76,10 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
   
   private DefaultWorkflowProjectOriginEnt(DefaultWorkflowProjectOriginEntBuilder builder) {
     
+    if(builder.m_providerId == null) {
+        throw new IllegalArgumentException("providerId must not be null.");
+    }
+    m_providerId = immutable(builder.m_providerId);
     if(builder.m_spaceId == null) {
         throw new IllegalArgumentException("spaceId must not be null.");
     }
@@ -100,7 +105,7 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
             return false;
         }
         DefaultWorkflowProjectOriginEnt ent = (DefaultWorkflowProjectOriginEnt)o;
-        return Objects.equals(m_spaceId, ent.m_spaceId) && Objects.equals(m_itemId, ent.m_itemId);
+        return Objects.equals(m_providerId, ent.m_providerId) && Objects.equals(m_spaceId, ent.m_spaceId) && Objects.equals(m_itemId, ent.m_itemId);
     }
 
 
@@ -111,6 +116,7 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
    @Override
    public int hashCode() {
        return new HashCodeBuilder()
+               .append(m_providerId)
                .append(m_spaceId)
                .append(m_itemId)
                .toHashCode();
@@ -118,6 +124,11 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
   
 	
 	
+  @Override
+  public String getProviderId() {
+        return m_providerId;
+  }
+    
   @Override
   public String getSpaceId() {
         return m_spaceId;
@@ -135,8 +146,18 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
             
         }
     
+        private String m_providerId;
         private String m_spaceId;
         private String m_itemId;
+
+        @Override
+        public DefaultWorkflowProjectOriginEntBuilder setProviderId(String providerId) {
+             if(providerId == null) {
+                 throw new IllegalArgumentException("providerId must not be null.");
+             }
+             m_providerId = providerId;
+             return this;
+        }
 
         @Override
         public DefaultWorkflowProjectOriginEntBuilder setSpaceId(String spaceId) {

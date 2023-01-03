@@ -60,6 +60,12 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
 
 
   /**
+   * Get providerId
+   * @return providerId , never <code>null</code>
+   **/
+  public String getProviderId();
+
+  /**
    * Get spaceId
    * @return spaceId , never <code>null</code>
    **/
@@ -77,6 +83,14 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
      */
     public interface WorkflowProjectOriginEntBuilder extends GatewayEntityBuilder<WorkflowProjectOriginEnt> {
 
+        /**
+   		 * Set providerId
+         * 
+         * @param providerId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowProjectOriginEntBuilder setProviderId(String providerId);
+        
         /**
    		 * Set spaceId
          * 

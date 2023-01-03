@@ -55,10 +55,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
@@ -243,23 +246,13 @@ public final class DefaultApplicationService implements ApplicationService {
 
         // optionally set an active workflow for this workflow project
         if (wf.isVisible()) {
-            String wfId = wf.getWorkflowId();
-            WorkflowManager wfm = workflowProjectManager.openAndCacheWorkflow(wf.getProjectId()).orElse(null);
-            if (wfm != null && !wfId.equals(NodeIDEnt.getRootID().toString())) {
-                var nc =
-                    wfm.findNodeContainer(DefaultServiceUtil.entityToNodeID(wf.getProjectId(), new NodeIDEnt(wfId)));
-                if (nc instanceof SubNodeContainer) {
-                    wfm = ((SubNodeContainer)nc).getWorkflowManager();
-                } else if (nc instanceof WorkflowManager) {
-                    wfm = (WorkflowManager)nc;
-                } else {
-                    //
-                }
-            }
-            if (wfm != null) {
-                projectEntBuilder.setActiveWorkflow(
-                    workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey(wp.getID(), new NodeIDEnt(wfm.getID())),
-                        () -> WorkflowBuildContext.builder().includeInteractionInfo(true)));
+            var wfId = getActiveWorkflowId(wf, workflowProjectManager);
+            if (wfId.isPresent()) {
+                var activeWorkflow = workflowMiddleware.buildWorkflowSnapshotEnt( //
+                    new WorkflowKey(wp.getID(), new NodeIDEnt(wfId.get())), //
+                    () -> WorkflowBuildContext.builder().includeInteractionInfo(true) //
+                );
+                projectEntBuilder.setActiveWorkflow(activeWorkflow);
             } else {
                 NodeLogger.getLogger(DefaultApplicationService.class).warn(String.format(
                     "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));
@@ -267,14 +260,43 @@ public final class DefaultApplicationService implements ApplicationService {
         }
 
         wp.getOrigin().ifPresent(origin -> {
-            final WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder originEntBuilder =
-                builder(WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder.class);
-            originEntBuilder.setSpaceId(origin.getSpaceId());
-            originEntBuilder.setItemId(origin.getItemId());
-            projectEntBuilder.setOrigin(originEntBuilder.build());
+            projectEntBuilder.setOrigin(buildWorkflowProjectOriginEnt(origin));
         });
 
         return projectEntBuilder.build();
+    }
+
+    private static WorkflowProjectOriginEnt buildWorkflowProjectOriginEnt(final WorkflowProject.Origin origin) {
+        final WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder originEntBuilder =
+            builder(WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder.class);
+        originEntBuilder.setProviderId(origin.getProviderId());
+        originEntBuilder.setSpaceId(origin.getSpaceId());
+        originEntBuilder.setItemId(origin.getItemId());
+        return originEntBuilder.build();
+    }
+
+    private static Optional<NodeID> getActiveWorkflowId(final OpenedWorkflow openedWorkflow,
+        final WorkflowProjectManager workflowProjectManager) {
+        var projectWfm = workflowProjectManager.openAndCacheWorkflow(openedWorkflow.getProjectId());
+        var activeWorkflowWfm = projectWfm.map(wfm -> {
+            String openedId = openedWorkflow.getWorkflowId();
+            if (openedId.equals(NodeIDEnt.getRootID().toString())) {
+                // active workflow is the project (top-level) wfm
+                return wfm;
+            } else {
+                // find ID of container node corresponding to active (sub-)workflow
+                var nc = wfm.findNodeContainer(
+                    DefaultServiceUtil.entityToNodeID(openedWorkflow.getProjectId(), new NodeIDEnt(openedId)));
+                if (nc instanceof SubNodeContainer) {
+                    return ((SubNodeContainer)nc).getWorkflowManager();
+                } else if (nc instanceof WorkflowManager) {
+                    return (WorkflowManager)nc;
+                } else {
+                    return null;
+                }
+            }
+        });
+        return activeWorkflowWfm.map(NodeContainer::getID);
     }
 
 }
