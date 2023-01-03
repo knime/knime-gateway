@@ -68,8 +68,6 @@ public class UpdateStateProvider {
 
     private final Set<Consumer<UpdateState>> m_listeners = new HashSet<>();
 
-    private UpdateState m_updateState;
-
     /**
      * Create a new instance.
      *
@@ -85,10 +83,10 @@ public class UpdateStateProvider {
     public void checkForUpdates() {
         KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(() -> {
             var updateState = m_updateStateSupplier.get();
-            if (!updateState.getNewReleases().isEmpty() || !updateState.getBugfixes().isEmpty()) {
-                m_updateState = updateState;
+            if (updateState != null
+                && (!updateState.getNewReleases().isEmpty() || !updateState.getBugfixes().isEmpty())) {
+                m_listeners.forEach(listener -> listener.accept(updateState));
             }
-            notifyListeners();
         });
     }
 
@@ -104,12 +102,6 @@ public class UpdateStateProvider {
      */
     public void removeUpdateStateChangedListener(final Consumer<UpdateState> consumer) {
         m_listeners.remove(consumer);
-    }
-
-    private void notifyListeners() {
-        if (m_updateState != null) {
-            m_listeners.forEach(listener -> listener.accept(m_updateState));
-        }
     }
 
     /**
