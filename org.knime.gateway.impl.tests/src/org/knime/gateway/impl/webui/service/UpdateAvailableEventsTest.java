@@ -73,14 +73,14 @@ import org.knime.gateway.impl.webui.AppStateProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.service.events.UpdateStateChangedEventSource;
+import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 
 /**
  * Tests that the expected update state change events are issued by the event service.
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class UpdateStateChangedEventsTest extends GatewayServiceTest {
+public class UpdateAvailableEventsTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
@@ -101,57 +101,57 @@ public class UpdateStateChangedEventsTest extends GatewayServiceTest {
     }
 
     /**
-     * Tests event emitted by {@link UpdateStateChangedEventSource}.
+     * Tests event emitted by {@link UpdateAvailableEventSource}.
      *
      * @throws Exception
      */
     @Test
-    public void testUpdateStateChangedEventEmittedWithBothTypesOfUpdates() throws Exception {
+    public void testUpdateAvailableEventEmittedWithBothTypesOfUpdates() throws Exception {
         List<UpdateInfo> newReleases = List.of(new UpdateInfo(null, "KNIME Analytics Platform 5.0", "5.0", true));
         List<String> bugfixes = List.of("First bugfix", "Yet another bugfix");
         var supplier = createUpdateStateSupplier(newReleases, bugfixes);
 
         // Expect one event since there is at least one update
-        assertUpdateStateChangedEvents(supplier, 1);
+        assertUpdateAvailableEvents(supplier, 1);
     }
 
     /**
-     * Tests event emitted by {@link UpdateStateChangedEventSource}.
+     * Tests event emitted by {@link UpdateAvailableEventSource}.
      *
      * @throws Exception
      */
     @Test
-    public void testUpdateStateChangedEventEmittedWithOnlyOneTypeOfUpdate() throws Exception {
+    public void testUpdateAvailableEventEmittedWithOnlyOneTypeOfUpdate() throws Exception {
         List<UpdateInfo> newReleases = List.of(new UpdateInfo(null, "KNIME Analytics Platform 5.0", "5.0", true));
         List<String> bugfixes = Collections.emptyList();
         var supplier = createUpdateStateSupplier(newReleases, bugfixes);
 
         // Expect one event since there is at least one update
-        assertUpdateStateChangedEvents(supplier, 1);
+        assertUpdateAvailableEvents(supplier, 1);
     }
 
     /**
-     * Tests event not emitted by {@link UpdateStateChangedEventSource}.
+     * Tests event not emitted by {@link UpdateAvailableEventSource}.
      *
      * @throws Exception
      */
     @Test
-    public void testUpdateStateChangedEventNotEmittedWithoutUpdates() throws Exception {
+    public void testUpdateAvailableEventNotEmittedWithoutUpdates() throws Exception {
         List<UpdateInfo> newReleases = Collections.emptyList();
         List<String> bugfixes = Collections.emptyList();
         var supplier = createUpdateStateSupplier(newReleases, bugfixes);
 
         // Expect no event since there is no update
-        assertUpdateStateChangedEvents(supplier, 0);
+        assertUpdateAvailableEvents(supplier, 0);
     }
 
     /**
-     * Tests event content emitted by {@link UpdateStateChangedEventSource}.
+     * Tests event content emitted by {@link UpdateAvailableEventSource}.
      *
      * @throws Exception
      */
     @Test
-    public void testUpdateStateChangedEventContent() throws Exception {
+    public void testUpdateAvailableEventContent() throws Exception {
         List<UpdateInfo> newReleases = List.of(new UpdateInfo(null, "KNIME Analytics Platform 5.0", "5.0", true));
         List<String> bugfixes = List.of("First bugfix", "Yet another bugfix");
         var supplier = createUpdateStateSupplier(newReleases, bugfixes);
@@ -192,7 +192,7 @@ public class UpdateStateChangedEventsTest extends GatewayServiceTest {
         updateStateProvider.checkForUpdates();
     }
 
-    private void assertUpdateStateChangedEvents(final Supplier<UpdateState> supplier, final int numberOfEvents)
+    private void assertUpdateAvailableEvents(final Supplier<UpdateState> supplier, final int numberOfEvents)
         throws Exception {
         addEventListenerAndcheckForUpdates(supplier);
         Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {

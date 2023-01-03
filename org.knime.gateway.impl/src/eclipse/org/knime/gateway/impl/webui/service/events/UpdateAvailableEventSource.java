@@ -65,7 +65,7 @@ import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class UpdateStateChangedEventSource
+public class UpdateAvailableEventSource
     extends EventSource<UpdateAvailableEventTypeEnt, UpdateAvailableEventEnt> {
 
     private final Consumer<UpdateState> m_callback;
@@ -76,7 +76,7 @@ public class UpdateStateChangedEventSource
      * @param eventConsumer Consumes the emitted events
      * @param updateStateProvider Provides the update state
      */
-    public UpdateStateChangedEventSource(final EventConsumer eventConsumer,
+    public UpdateAvailableEventSource(final EventConsumer eventConsumer,
         final UpdateStateProvider updateStateProvider) {
         super(eventConsumer);
         m_updateStateProvider = updateStateProvider;

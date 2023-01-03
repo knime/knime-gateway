@@ -67,7 +67,7 @@ import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSourceDelegator;
-import org.knime.gateway.impl.webui.service.events.UpdateStateChangedEventSource;
+import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 
 /**
@@ -131,7 +131,7 @@ public final class DefaultEventService implements EventService {
                     "Cannot register listener to update state changed events if no update state provider was declared.");
             }
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new UpdateStateChangedEventSource(this::sendEvent, m_updateStateProvider));
+                t -> new UpdateAvailableEventSource(this::sendEvent, m_updateStateProvider));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
