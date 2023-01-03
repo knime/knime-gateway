@@ -51,11 +51,11 @@ package org.knime.gateway.impl.webui;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
+import org.knime.core.node.KNIMEConstants;
 
 /**
  * Source of truth regarding available application updates
@@ -83,13 +83,13 @@ public class UpdateStateProvider {
      * Check for updates and notify listeners
      */
     public void checkForUpdates() {
-        CompletableFuture.supplyAsync(m_updateStateSupplier)//
-            .thenAccept(updateState -> {
-                if (!updateState.getNewReleases().isEmpty() || !updateState.getBugfixes().isEmpty()) {
-                    m_updateState = updateState;
-                }
-                notifyListeners();
-            });
+        KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(() -> {
+            var updateState = m_updateStateSupplier.get();
+            if (!updateState.getNewReleases().isEmpty() || !updateState.getBugfixes().isEmpty()) {
+                m_updateState = updateState;
+            }
+            notifyListeners();
+        });
     }
 
     /**
