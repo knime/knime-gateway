@@ -52,6 +52,7 @@ import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 import org.knime.gateway.api.util.CoreUtil;
@@ -60,6 +61,7 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.LocalWorkspace;
 import org.knime.gateway.impl.webui.Space;
+import org.knime.gateway.impl.webui.SpaceProvider;
 import org.knime.gateway.impl.webui.SpaceProviders;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -90,8 +92,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath();
-        var localWorkspace = new LocalWorkspace(testWorkspacePath);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> List.of(() -> List.of(localWorkspace)));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> List.of(createLocalSpaceProviderForTesting(testWorkspacePath)));
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_SPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_root");
@@ -110,6 +111,19 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var dataTxtId = getItemIdForItemWithName(root.getItems(), "data.txt");
         assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, dataTxtId));
+    }
+
+    private static SpaceProvider createLocalSpaceProviderForTesting(final Path testWorkspacePath)  {
+        var localWorkspace = new LocalWorkspace(testWorkspacePath);
+        return new SpaceProvider() {
+            @Override public String getId() {
+                return "local-testing";
+            }
+
+            @Override public List<Space> getSpaces() {
+                return Collections.singletonList(localWorkspace);
+            }
+        };
     }
 
     private static String getItemIdForItemWithName(final List<SpaceItemEnt> items, final String name) {
