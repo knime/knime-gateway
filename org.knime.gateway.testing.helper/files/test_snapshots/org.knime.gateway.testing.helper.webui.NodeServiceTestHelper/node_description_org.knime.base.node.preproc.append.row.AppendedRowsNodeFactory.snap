@@ -26,24 +26,12 @@
   } ],
   "options" : [ {
     "fields" : [ {
-      "description" : " Duplicate row identifiers (RowID) occurring in the \n\t        second table are not appended to the output table. This option is \n\t        relatively memory intensive as it needs to cache the row IDs in\n\t        order to find duplicates. Furthermore a full data\n\t\t\tduplication is needed.",
-      "name" : "Skip Rows",
+      "description" : "\n\t\t\t<ul>\n\t\t\t\t<li><b>Columns in all tables:</b> Use only the columns that appear\n                    in every input table. Any other column is ignored and won't appear\n                    in the output table.</li>\n                <li><b>Columns in any table:</b> Use all columns from all input\n                    tables. Fill rows with missing values if they miss cells for some columns.</li>\n\t\t\t</ul>\n\t\t",
+      "name" : "Output columns",
       "optional" : false
     }, {
-      "description" : " The output table will contain all rows, but\n            duplicate row identifiers are labeled with a suffix. Similar to\n            the \"Skip Rows\" option this method is also memory intensive. ",
-      "name" : "Append suffix",
-      "optional" : false
-    }, {
-      "description" : "The node will fail during execution if duplicate \n            row IDs are encountered. This option is efficient while checking \n            uniqueness.",
-      "name" : "Fail",
-      "optional" : false
-    }, {
-      "description" : "\n        \tUse only the columns that appear in both input tables. Any other\n        \tcolumn is ignored and won't appear in the output table.\n        ",
-      "name" : "Use intersection of columns",
-      "optional" : false
-    }, {
-      "description" : "\n        \tUse all columns available in the input tables. Fill rows with \n        \tmissing values if they miss cells for some columns.\n        ",
-      "name" : "Use union of columns",
+      "description" : "\n\t\t\t<ul>\n\t\t\t\t<li><b>Skip:</b> Duplicate row identifiers (RowID) occurring in the \n\t        second table are not appended to the output table. This option is \n\t        relatively memory intensive as it needs to cache the row IDs in\n\t        order to find duplicates. Furthermore a full data\n\t\t\tduplication is needed.</li>\n\t\t\t\t<li><b>Append suffix:</b> The output table will contain all rows, but\n            duplicate row identifiers are labeled with a suffix. Similar to\n            the \"Skip\" option this method is also memory intensive.</li>\n            \t<li><b>Fail:</b> The node will fail during execution if duplicate \n            row IDs are encountered. This option is efficient while checking \n            uniqueness.</li>\n\t\t\t</ul>\n\t\t",
+      "name" : "Resolution action for duplicate RowIDs",
       "optional" : false
     }, {
       "description" : "\n            Enables hiliting between both inputs and the concatenated output\n            table.\n        ",
