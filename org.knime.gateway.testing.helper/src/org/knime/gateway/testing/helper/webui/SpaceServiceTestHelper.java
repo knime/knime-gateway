@@ -53,6 +53,7 @@ import static org.junit.Assert.assertThrows;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,33 +96,34 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath();
-        var local = LocalWorkspace.LOCAL_WORKSPACE_AND_PROVIDER_ID;
-        var spaceProviders = Map.of(local, createLocalSpaceProviderForTesting(testWorkspacePath));
+        var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = spaceProvider.getId();
+        var spaceProviders = Map.of(providerId, spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
-        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_SPACE_ID;
-        var root = ss().listWorkflowGroup(spaceId, local, Space.ROOT_ITEM_ID);
+        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_root");
 
         var group1Id = getItemIdForItemWithName(root.getItems(), "Group1");
-        var group1 = ss().listWorkflowGroup(spaceId, local, group1Id);
+        var group1 = ss().listWorkflowGroup(spaceId, providerId, group1Id);
         cr(group1, "workspace_group1");
 
         var group11Id = getItemIdForItemWithName(group1.getItems(), "Group11");
-        var group11 = ss().listWorkflowGroup(spaceId, local, group11Id);
+        var group11 = ss().listWorkflowGroup(spaceId, providerId, group11Id);
         cr(group11, "workspace_group11");
 
         var emptyGroupId = getItemIdForItemWithName(root.getItems(), "EmptyGroup");
-        var emptyGroup = ss().listWorkflowGroup(spaceId, local, emptyGroupId);
+        var emptyGroup = ss().listWorkflowGroup(spaceId, providerId, emptyGroupId);
         cr(emptyGroup, "workspace_empty_group");
 
         var dataTxtId = getItemIdForItemWithName(root.getItems(), "data.txt");
-        assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, local, dataTxtId));
+        assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, providerId, dataTxtId));
 
         assertThrows(InvalidRequestException.class,
             () -> ss().listWorkflowGroup(null, "non-existing-provider-id", "blub"));
 
         assertThrows(InvalidRequestException.class,
-            () -> ss().listWorkflowGroup("non-existing-space-id", local, "blub"));
+            () -> ss().listWorkflowGroup("non-existing-space-id", providerId, "blub"));
     }
 
     /**
@@ -223,8 +225,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 return "local-testing";
             }
 
-            @Override public List<Space> getSpaces() {
-                return Collections.singletonList(localWorkspace);
+            @Override
+            public Map<String, Space> getSpaceMap() {
+                return Collections.singletonMap(localWorkspace.getId(), localWorkspace);
+            }
+
+            @Override
+            public String getName() {
+                return "local-testing-name";
             }
         };
     }

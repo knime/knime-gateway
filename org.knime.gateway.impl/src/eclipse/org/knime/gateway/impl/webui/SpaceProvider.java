@@ -76,6 +76,13 @@ public interface SpaceProvider {
     Map<String, Space> getSpaceMap();
 
     /**
+     * @return {@code true} if this provider only returns {@link LocalWorkspace LocalWorkspace(s)}
+     */
+    default boolean isLocal() {
+        return false;
+    }
+
+    /**
      * Returns the connection if this provider is connected to its remote location.
      *
      * @param doConnect whether to connect if there isn't a connection, yet
