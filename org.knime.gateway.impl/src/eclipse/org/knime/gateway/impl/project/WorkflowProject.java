@@ -45,9 +45,9 @@
  */
 package org.knime.gateway.impl.project;
 
-import org.knime.core.node.workflow.WorkflowManager;
-
 import java.util.Optional;
+
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Represents a workflow project.
@@ -75,6 +75,10 @@ public interface WorkflowProject {
      */
     WorkflowManager openProject();
 
+    /**
+     * @return describes from where this workflow project originates, i.e. from where it has been created; an empty
+     *         optional if the origin in unknown
+     */
     default Optional<Origin> getOrigin() {
         return Optional.empty();
     }
