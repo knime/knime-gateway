@@ -76,6 +76,7 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupC
  * See {@link EntityFactory}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @SuppressWarnings("static-method")
 public final class SpaceEntityFactory {
@@ -212,4 +213,19 @@ public final class SpaceEntityFactory {
             .setType(type) //
             .build();
     }
+
+    /**
+     * Builds a {@link SpaceItemEnt} from an absolute local directory path pointing to a workflow.
+     *
+     * @param absolutePath The absolute path of the newly created workflow
+     * @param rootWorkspacePath Workspace root path
+     * @param id The ID of the newly created workflow
+     * @return The space item entity
+     */
+    public SpaceItemEnt buildSpaceItemEnt(final Path absolutePath, final Path rootWorkspacePath,
+        final String id) {
+        var relativePath = rootWorkspacePath.relativize(absolutePath);
+        return buildSpaceItemEnt(relativePath, id, TypeEnum.WORKFLOW);
+    }
+
 }

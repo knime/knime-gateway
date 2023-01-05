@@ -1,0 +1,32 @@
+{
+  "items" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "EmptyGroup",
+    "type" : "WorkflowGroup"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Group1",
+    "type" : "WorkflowGroup"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Group2",
+    "type" : "WorkflowGroup"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "workflow",
+    "type" : "Workflow"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "component",
+    "type" : "Component"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "data.txt",
+    "type" : "Data"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "öäüß.txt",
+    "type" : "Data"
+  } ],
+  "path" : [ ]
+}

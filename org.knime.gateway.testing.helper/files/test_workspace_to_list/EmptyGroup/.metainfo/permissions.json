@@ -1,0 +1,16 @@
+{
+  "ownerName" : "knime",
+  "inheritPermissions" : false,
+  "owner" : {
+    "name" : "knime",
+    "rights" : [ "READ", "WRITE", "EXECUTE" ]
+  },
+  "world" : {
+    "name" : "<world>",
+    "rights" : [ "READ", "EXECUTE" ]
+  },
+  "group" : [ {
+    "name" : "Test",
+    "rights" : [ "READ", "WRITE", "EXECUTE" ]
+  } ]
+}

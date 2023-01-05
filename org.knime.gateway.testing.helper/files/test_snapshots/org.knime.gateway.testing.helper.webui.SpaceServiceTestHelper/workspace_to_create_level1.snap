@@ -1,0 +1,15 @@
+{
+  "items" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "level2",
+    "type" : "WorkflowGroup"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "KNIME_project",
+    "type" : "Workflow"
+  } ],
+  "path" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "level1"
+  } ]
+}

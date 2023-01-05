@@ -1,2 +1,0 @@
-knime://knime.workflow/data.all
-file:/Users/morent/runtimes/runtime-New_configuration2/temp/testflow/File%20Reader%20(%231)/drop/data.all

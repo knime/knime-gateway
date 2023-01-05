@@ -1,0 +1,21 @@
+[ {
+  "workflowPath" : "/Group1/workflow",
+  "flowVars" : [ ],
+  "credentials" : { },
+  "reset" : false,
+  "discard" : false,
+  "targetName" : "New Job",
+  "schedule" : {
+    "@class" : "com.knime.enterprise.client.api.scheduled.JobSchedule",
+    "start" : "2013-11-01T14:37:59.621+01:00[Europe/Berlin]",
+    "disabled" : false
+  },
+  "inputParameters" : { },
+  "userId" : "knime",
+  "id" : "4fa7992a-d105-4ba0-b1de-25e7b9ab14be",
+  "authToken" : "no-auth-token-available",
+  "notifications" : {
+    "emails" : [ ],
+    "reportFormats" : [ ]
+  }
+} ]

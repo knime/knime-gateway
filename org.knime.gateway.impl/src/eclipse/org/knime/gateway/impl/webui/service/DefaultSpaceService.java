@@ -54,6 +54,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
@@ -66,6 +67,7 @@ import org.knime.gateway.impl.webui.SpaceProviders;
  * The default workflow service implementation for the web-ui.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public class DefaultSpaceService implements SpaceService {
 
@@ -116,6 +118,22 @@ public class DefaultSpaceService implements SpaceService {
         throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
             return getSpace(spaceId, spaceProviderId).listWorkflowGroup(itemId);
+        } catch (NoSuchElementException e) {
+            throw new InvalidRequestException("Problem fetching space items", e);
+        } catch (IOException e) {
+            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String itemId)
+        throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
+        try {
+            return getSpace(spaceId, spaceProviderId).createWorkflow(itemId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {

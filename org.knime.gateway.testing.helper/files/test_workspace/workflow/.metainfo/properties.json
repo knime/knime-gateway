@@ -1,5 +1,0 @@
-{
-  "properties" : {
-    "com.knime.enterprise.server.jobpool.size" : "10"
-  }
-}

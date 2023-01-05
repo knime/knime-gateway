@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
 /**
@@ -59,6 +60,7 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
  * space).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public interface Space {
 
@@ -106,6 +108,16 @@ public interface Space {
      * @throws IOException if the there was a problem with read or fetching the items
      */
     WorkflowGroupContentEnt listWorkflowGroup(String workflowGroupItemId) throws IOException;
+
+    /**
+     * Creates a new workflow.
+     *
+     * @param workflowGroupItemId The ID of the workflow group where to create the new workflow
+     * @return The newly created space item
+     * @throws IOException If there was a problem creating the files for the new workflow
+     * @throws NoSuchElementException If the given workflow group item id doesn't refer to a workflow group
+     */
+    SpaceItemEnt createWorkflow(String workflowGroupItemId) throws IOException;
 
     /**
      * Turns a space item for the given id into a local absolute path.

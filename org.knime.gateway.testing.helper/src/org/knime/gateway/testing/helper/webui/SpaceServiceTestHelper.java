@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -77,6 +78,7 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
  * Tests {@link SpaceService}-implementations.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
@@ -93,28 +95,31 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link SpaceService#listWorkflowGroup(String, String, String)} for the local workspace.
+     *
+     * @throws Exception
      */
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
-        var testWorkspacePath = getTestWorkspacePath();
+
+        var testWorkspacePath = getTestWorkspacePath(WorkspaceType.LIST);
         var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
         var providerId = spaceProvider.getId();
         var spaceProviders = Map.of(providerId, spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
-        cr(root, "workspace_root");
+        cr(root, "workspace_to_list_root");
 
         var group1Id = getItemIdForItemWithName(root.getItems(), "Group1");
         var group1 = ss().listWorkflowGroup(spaceId, providerId, group1Id);
-        cr(group1, "workspace_group1");
+        cr(group1, "workspace_to_list_group1");
 
         var group11Id = getItemIdForItemWithName(group1.getItems(), "Group11");
         var group11 = ss().listWorkflowGroup(spaceId, providerId, group11Id);
-        cr(group11, "workspace_group11");
+        cr(group11, "workspace_to_list_group11");
 
         var emptyGroupId = getItemIdForItemWithName(root.getItems(), "EmptyGroup");
         var emptyGroup = ss().listWorkflowGroup(spaceId, providerId, emptyGroupId);
-        cr(emptyGroup, "workspace_empty_group");
+        cr(emptyGroup, "workspace_to_list_empty_group");
 
         var dataTxtId = getItemIdForItemWithName(root.getItems(), "data.txt");
         assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, providerId, dataTxtId));
@@ -128,6 +133,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link SpaceService#getSpaceProvider(String)}.
+     *
      * @throws InvalidRequestException
      */
     public void testGetSpaceProvider() throws InvalidRequestException {
@@ -148,10 +154,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(spaceProvider, "space_provider2");
 
         assertThrows(InvalidRequestException.class, () -> ss().getSpaceProvider("non_existing_id"));
-    }
-
-    private static SpaceProvider createSpaceProvider(final Space space, final String spaceProviderName) {
-        return createSpaceProvider("local", spaceProviderName, space);
     }
 
     private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
@@ -215,6 +217,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 return null;
             }
 
+            @Override
+            public SpaceItemEnt createWorkflow(final String workflowGroupItemId) throws IOException {
+                return null;
+            }
+
         };
     }
 
@@ -241,8 +248,65 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return items.stream().filter(i -> i.getName().equals(name)).map(SpaceItemEnt::getId).findFirst().orElse(null);
     }
 
-    private static Path getTestWorkspacePath() throws IOException {
-        return CoreUtil.resolveToFile("/files/test_workspace", SpaceServiceTestHelper.class).toPath();
+    private static Path getTestWorkspacePath(final WorkspaceType type) throws IOException {
+        if (type == WorkspaceType.LIST) {
+            return CoreUtil.resolveToFile("/files/test_workspace_to_list", SpaceServiceTestHelper.class).toPath();
+        } else {
+            return CoreUtil.resolveToFile("/files/test_workspace_to_create", SpaceServiceTestHelper.class).toPath();
+        }
+    }
+
+    /**
+     * Tests {@link SpaceService#createWorkflow(String, String, String)} for the local workspace.
+     *
+     * @throws Exception
+     */
+    public void testCreateWorkflowForLocalWorkspace() throws Exception {
+        var testWorkspacePath = getTestWorkspacePath(WorkspaceType.LIST);
+        var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = spaceProvider.getId();
+        var spaceProviders = Map.of(providerId, spaceProvider);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
+
+        try {
+            // Create workflows and check
+            var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+            var wf0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+            cr(wf0, "created_workflow_0");
+            var level0 = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
+            cr(level0, "workspace_to_create_level0");
+
+            var level1Id = getItemIdForItemWithName(level0.getItems(), "level1");
+            var wf1 = ss().createWorkflow(spaceId, providerId, level1Id);
+            cr(wf1, "created_workflow_1");
+            var level1 = ss().listWorkflowGroup(spaceId, providerId, level1Id);
+            cr(level1, "workspace_to_create_level1");
+
+            var level2Id = getItemIdForItemWithName(level1.getItems(), "level2");
+            var wf2 = ss().createWorkflow(spaceId, providerId, level2Id);
+            cr(wf2, "created_workflow_2");
+            var level2 = ss().listWorkflowGroup(spaceId, providerId, level2Id);
+            cr(level2, "workspace_to_create_level2");
+        } finally {
+            // Make sure cleanup is always performed
+            var pathWf0 = testWorkspacePath//
+                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME);
+            var pathWf1 = testWorkspacePath//
+                .resolve("level1")//
+                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME);
+            var pathWf2 = testWorkspacePath//
+                .resolve("level1")//
+                .resolve("level2")//
+                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME);
+            for (var path : List.of(pathWf0, pathWf1, pathWf2)) {
+                FileUtils.deleteDirectory(path.toFile()); // To delete directory recursively
+            }
+        }
+    }
+
+    private enum WorkspaceType {
+        CREATE,
+        LIST
     }
 
 }

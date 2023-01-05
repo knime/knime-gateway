@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -58,6 +59,19 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface SpaceService extends GatewayService {
 
+    /**
+     * Create a new workflow within a given workflow group.
+     *
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param spaceProviderId Identifies a space-provider.
+     * @param workflowGroupId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
+     *
+     * @return the result
+     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String workflowGroupId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+        
     /**
      * Mainly returns the spaces provided by this space-provider.
      *
@@ -73,12 +87,12 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param workflowGroupId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      */
-    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
+    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String workflowGroupId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
         
 }

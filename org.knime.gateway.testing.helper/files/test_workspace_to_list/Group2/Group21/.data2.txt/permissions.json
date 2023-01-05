@@ -1,0 +1,16 @@
+{
+  "ownerName" : "other user",
+  "inheritPermissions" : false,
+  "owner" : {
+    "name" : "other user",
+    "rights" : [ "READ", "WRITE", "EXECUTE" ]
+  },
+  "world" : {
+    "name" : "<world>",
+    "rights" : [ ]
+  },
+  "group" : [ {
+    "name" : "Test",
+    "rights" : [ ]
+  } ]
+}

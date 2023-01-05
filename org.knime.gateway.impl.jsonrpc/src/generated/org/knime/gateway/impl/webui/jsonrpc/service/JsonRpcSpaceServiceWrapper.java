@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -76,6 +77,21 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "createWorkflow")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
+            data = "IOException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public SpaceItemEnt createWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="workflowGroupId") String workflowGroupId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().createWorkflow(spaceId, spaceProviderId, workflowGroupId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getSpaceProvider")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
@@ -96,8 +112,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
             data = "IOException" /*per convention the data property contains the exception name*/)
     })
-    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException {
-        return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, itemId);    
+    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="workflowGroupId") String workflowGroupId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException {
+        return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, workflowGroupId);    
     }
 
 }

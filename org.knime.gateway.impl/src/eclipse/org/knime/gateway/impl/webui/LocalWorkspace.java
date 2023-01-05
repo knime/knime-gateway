@@ -72,6 +72,7 @@ import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
  * {@link Space}-implementation that represents the local workspace.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public final class LocalWorkspace implements Space {
 
@@ -79,6 +80,11 @@ public final class LocalWorkspace implements Space {
      * ID of the local workspace.
      */
     public static final String LOCAL_WORKSPACE_ID = "local";
+
+    /**
+     * Default name for a newly created workflow.
+     */
+    public static final String DEFAULT_WORKFLOW_NAME = "KNIME_project";
 
     // assumption is that there is exactly one user of the local workspace at a time
     private final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>();
@@ -113,21 +119,32 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
-        Path relativePath = null;
-        var isRoot = Space.ROOT_ITEM_ID.equals(workflowGroupItemId);
-        if (!isRoot) {
-            relativePath = m_itemIdToPathMap.get(Integer.valueOf(workflowGroupItemId));
-            if (relativePath == null) {
-                throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
-            }
-        }
-        var absolutePath = isRoot ? m_localWorkspaceRootPath : m_localWorkspaceRootPath.resolve(relativePath);
-        if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
-            throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
-        }
-        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
+//        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
+        var absolutePath = getAbsolutePath(workflowGroupItemId);
+        return EntityFactory.Space.buildWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
             getItemIdFunction(), this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem,
             getItemComparator());
+    }
+
+    @Override
+    public SpaceItemEnt createWorkflow(final String workflowGroupItemId) throws IOException {
+        var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+        var workflowName = generateUniqueWorkflowName(parentWorkflowGroupPath);
+
+        // Create the directory and the `workflow.knime` file
+        var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowName));
+        var filePath = Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
+
+        // Sync Modern UI (sync of Classic UI is done on perspective switch)
+        if (cacheOrGetSpaceItemTypeFromCache(directoryPath) != TypeEnum.WORKFLOW) {
+            Files.deleteIfExists(filePath);
+            Files.deleteIfExists(directoryPath);
+            throw new IOException(String.format("Creating the workflow <%s> did not work.", workflowName));
+        }
+
+        // Return space item for new workflow (FE handles space store update and opens the workflow)
+        var id = getItemIdFunction().apply(directoryPath);
+        return EntityFactory.Space.buildSpaceItemEnt(directoryPath, m_localWorkspaceRootPath, id);
     }
 
     @Override
@@ -140,6 +157,22 @@ public final class LocalWorkspace implements Space {
      */
     public Path getLocalWorkspaceRoot() {
         return m_localWorkspaceRootPath;
+    }
+
+    private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
+        Path relativePath = null;
+        var isRoot = Space.ROOT_ITEM_ID.equals(workflowGroupItemId);
+        if (!isRoot) {
+            relativePath = m_itemIdToPathMap.get(Integer.valueOf(workflowGroupItemId));
+            if (relativePath == null) {
+                throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
+            }
+        }
+        var absolutePath = isRoot ? m_localWorkspaceRootPath : m_localWorkspaceRootPath.resolve(relativePath);
+        if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
+            throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
+        }
+        return absolutePath;
     }
 
     private static boolean isValidWorkspaceItem(final Path p) {
@@ -205,6 +238,23 @@ public final class LocalWorkspace implements Space {
 
     private static boolean containsFile(final Path directory, final String filename) {
         return Files.exists(directory.resolve(filename));
+    }
+
+    /**
+     * @return The default workflow name if that doesn't exist. Otherwise it appends a "1", "2" etc.
+     */
+    private static String generateUniqueWorkflowName(final Path directory) {
+        if (!Files.exists(directory.resolve(DEFAULT_WORKFLOW_NAME))) {
+            return DEFAULT_WORKFLOW_NAME;
+        } else {
+            var counter = 0;
+            String name;
+            do {
+                counter++;
+                name = DEFAULT_WORKFLOW_NAME + counter;
+            } while (Files.exists(directory.resolve(name)));
+            return name;
+        }
     }
 
 }

@@ -68,7 +68,7 @@ public interface UpdateAvailableEventEnt extends GatewayEntity, EventEnt {
   public java.util.List<UpdateInfoEnt> getNewReleases();
 
   /**
-   * List of new bugfixes releases.
+   * List of new bugfix releases.
    * @return bugfixes 
    **/
   public java.util.List<String> getBugfixes();
@@ -88,7 +88,7 @@ public interface UpdateAvailableEventEnt extends GatewayEntity, EventEnt {
         UpdateAvailableEventEntBuilder setNewReleases(java.util.List<UpdateInfoEnt> newReleases);
         
         /**
-         * List of new bugfixes releases.
+         * List of new bugfix releases.
          * 
          * @param bugfixes the property value,  
          * @return this entity builder for chaining
