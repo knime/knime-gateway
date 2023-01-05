@@ -116,6 +116,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var dataTxtId = getItemIdForItemWithName(root.getItems(), "data.txt");
         assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, local, dataTxtId));
+
+        assertThrows(InvalidRequestException.class,
+            () -> ss().listWorkflowGroup(null, "non-existing-provider-id", "blub"));
+
+        assertThrows(InvalidRequestException.class,
+            () -> ss().listWorkflowGroup("non-existing-space-id", local, "blub"));
     }
 
     /**

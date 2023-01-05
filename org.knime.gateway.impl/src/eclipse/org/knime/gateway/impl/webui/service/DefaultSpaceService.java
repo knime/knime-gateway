@@ -49,7 +49,6 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -103,7 +102,7 @@ public class DefaultSpaceService implements SpaceService {
                         s.getDescription(), s.isPrivate())) //
                     .collect(Collectors.toList());
         } else {
-            spaces = Collections.emptyList();
+            throw new InvalidRequestException("Invalid space-provider-id (empty/null)");
         }
         return EntityFactory.Space.buildSpaceProviderEnt(spaces);
     }
@@ -128,10 +127,18 @@ public class DefaultSpaceService implements SpaceService {
      * @param spaceId
      * @param spaceProviderId
      * @return the space for the given id if available
-     * @throws NoSuchElementException if there is no space for the given id
+     * @throws NoSuchElementException if there is no space or space-provider for the given ids
      */
     public Space getSpace(final String spaceId, final String spaceProviderId) {
-        return m_spaceProviders.getProvidersMap().get(spaceProviderId).getSpaceMap().get(spaceId);
+        var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
+        if (spaceProvider == null) {
+            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
+        }
+        var space = spaceProvider.getSpaceMap().get(spaceId);
+        if (space == null) {
+            throw new NoSuchElementException("No space found for id '" + spaceId + "'");
+        }
+        return space;
     }
 
 }
