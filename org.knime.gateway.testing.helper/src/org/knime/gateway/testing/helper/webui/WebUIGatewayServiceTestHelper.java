@@ -53,6 +53,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -167,11 +168,11 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
         /**
          * Canonical sorting of the patch operations.
-         * And skip the values of patches for 'portObjectVersion' - non-deterministic.
+         * And skip the values of patches that are non-deterministic (e.g. 'portObjectVersion').
          */
         objToString.addException(PatchEnt.class, "ops", (v, gen, e) -> {
             List<PatchOpEnt> l = ((List<PatchOpEnt>)v).stream()
-                .map(WebUIGatewayServiceTestHelper::replacePortObjectVersionPatchValue)//
+                .map(WebUIGatewayServiceTestHelper::replaceNonDeterministicPatchValues)//
                 .sorted(Comparator.<PatchOpEnt, String> comparing(o -> o.getOp().toString())
                     .thenComparing(o -> String.valueOf(o.getFrom())).thenComparing(PatchOpEnt::getPath))//
                 .collect(Collectors.toList());
@@ -192,13 +193,24 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         }
     }
 
-    private static PatchOpEnt replacePortObjectVersionPatchValue(final PatchOpEnt o) {
-        if (o.getPath().contains("portObjectVersion")) {
-            return builder(PatchOpEntBuilder.class).setPath(o.getPath()).setOp(o.getOp())
-                .setValue("PLACEHOLDER_FOR_VERSION").build();
-        } else {
-            return o;
+    private static PatchOpEnt replaceNonDeterministicPatchValues(final PatchOpEnt o) {
+        String newValue = null;
+        if (o.getPath().endsWith("/portObjectVersion")) {
+            newValue = "PLACEHOLDER_FOR_VERSION";
+        } else if (o.getPath().endsWith("/state/warning")) {
+            newValue = replaceNodeIdsWithPlaceholder((String)o.getValue());
         }
+        return newValue == null ? o
+            : builder(PatchOpEntBuilder.class).setPath(o.getPath()).setOp(o.getOp()).setValue(newValue).build();
+    }
+
+    private static final Pattern NODE_ID_PATTERN = Pattern.compile("\\d+(:\\d+)+");
+
+    private static String replaceNodeIdsWithPlaceholder(final String stringWithNodeIds) {
+        if (stringWithNodeIds == null) {
+            return null;
+        }
+        return NODE_ID_PATTERN.matcher(stringWithNodeIds).replaceAll("NODE_ID_PLACEHOLDER");
     }
 
     /**
