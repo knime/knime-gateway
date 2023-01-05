@@ -128,51 +128,88 @@ public final class SpaceEntityFactory {
      * @return a new entity instance
      * @throws IOException
      */
-    public WorkflowGroupContentEnt buildWorkflowGroupContentEnt(final Path absolutePath, final Path rootWorkspacePath,
-        final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
-        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) throws IOException {
-        var isRoot = absolutePath.equals(rootWorkspacePath);
-        var relativePath = rootWorkspacePath.relativize(absolutePath);
-        var path = isRoot ? Collections.<SpacePathSegmentEnt> emptyList()
+    public WorkflowGroupContentEnt buildLocalWorkflowGroupContentEnt(final Path absolutePath,
+            final Path rootWorkspacePath, final Function<Path, String> getItemId,
+            final Function<Path, SpaceItemEnt.TypeEnum> getItemType, final Predicate<Path> itemFilter,
+            final Comparator<SpaceItemEnt> comparator) throws IOException {
+        final var isRoot = absolutePath.equals(rootWorkspacePath);
+        final var relativePath = rootWorkspacePath.relativize(absolutePath);
+        final var path = isRoot ? Collections.<SpacePathSegmentEnt> emptyList()
             : buildSpacePathSegmentEnts(absolutePath, relativePath.getNameCount(), getItemId);
-        var items = buildSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter, comparator);
+        final var items = buildLocalSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter,
+            comparator);
         return builder(WorkflowGroupContentEntBuilder.class) //
             .setPath(path) //
             .setItems(items) //
             .build();
     }
 
-    private static List<SpaceItemEnt> buildSpaceItemEnts(final Path absolutePath, final Path rootWorkspacePath,
+    /**
+     * Builds a {@link WorkflowGroupContentEnt}-entity for a workflow group on Hub.
+     *
+     * @param path path of the workflow group
+     * @param items items in the workflow group
+     * @return group contents entity
+     */
+    public WorkflowGroupContentEnt buildHubWorkflowGroupContentEnt(final List<SpacePathSegmentEnt> path,
+            final List<SpaceItemEnt> items) {
+        return builder(WorkflowGroupContentEntBuilder.class) //
+            .setPath(path) //
+            .setItems(items) //
+            .build();
+    }
+
+    private List<SpaceItemEnt> buildLocalSpaceItemEnts(final Path absolutePath, final Path rootWorkspacePath,
         final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
         final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) throws IOException {
         try (var pathsStream = Files.list(absolutePath)) {
             return pathsStream.filter(itemFilter) //
-                .map(p -> buildSpaceItemEnt(rootWorkspacePath.relativize(p), getItemId.apply(p), getItemType.apply(p))) //
+                .map(p -> {
+                        final var relativePath = rootWorkspacePath.relativize(p);
+                        final var name = relativePath.getName(relativePath.getNameCount() - 1).toString();
+                        return buildSpaceItemEnt(name, getItemId.apply(p), getItemType.apply(p));
+                    }) //
                 .sorted(comparator) //
                 .collect(Collectors.toList());
         }
     }
 
-    private static List<SpacePathSegmentEnt> buildSpacePathSegmentEnts(final Path absolutePath,
+    private List<SpacePathSegmentEnt> buildSpacePathSegmentEnts(final Path absolutePath,
         final int relativePathNameCount, final Function<Path, String> getItemId) {
         var res = new SpacePathSegmentEnt[relativePathNameCount];
         var parent = absolutePath;
         for (int i = relativePathNameCount - 1; i >= 0; i--) {
-            res[i] = builder(SpacePathSegmentEntBuilder.class).setId(getItemId.apply(parent)) //
-                .setName(parent.getFileName().toString()) //
-                .build();
+            res[i] = buildSpacePathSegmentEnt(getItemId.apply(parent), parent.getFileName().toString());
             parent = parent.getParent();
         }
         return Arrays.asList(res);
     }
 
-    private static SpaceItemEnt buildSpaceItemEnt(final Path relativePath, final String id,
+    /**
+     * Builds a space path segment entity.
+     *
+     * @param itemId item ID of the entity the segment represents
+     * @param name name of the entity the segment represents
+     * @return path segment entity
+     */
+    public SpacePathSegmentEnt buildSpacePathSegmentEnt(final String itemId, final String name) {
+        return builder(SpacePathSegmentEntBuilder.class).setId(itemId).setName(name).build();
+    }
+
+    /**
+     * Creates a space item entity.
+     *
+     * @param name item name
+     * @param id item ID
+     * @param type item type
+     * @return resulting entity
+     */
+    public SpaceItemEnt buildSpaceItemEnt(final String name, final String id,
         final SpaceItemEnt.TypeEnum type) {
         return builder(SpaceItemEntBuilder.class) //
             .setId(id) //
-            .setName(relativePath.getName(relativePath.getNameCount() - 1).toString()) //
+            .setName(name) //
             .setType(type) //
             .build();
     }
-
 }

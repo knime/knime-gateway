@@ -125,7 +125,7 @@ public final class LocalWorkspace implements Space {
         if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
             throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
         }
-        return EntityFactory.Space.buildWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
+        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
             getItemIdFunction(), this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem,
             getItemComparator());
     }
