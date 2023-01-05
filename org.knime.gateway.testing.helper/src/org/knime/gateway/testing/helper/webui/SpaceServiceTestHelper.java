@@ -92,7 +92,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath();
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> List.of(createLocalSpaceProviderForTesting(testWorkspacePath)));
+        var spaceProviders = List.of(createLocalSpaceProviderForTesting(testWorkspacePath));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_SPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_root");
