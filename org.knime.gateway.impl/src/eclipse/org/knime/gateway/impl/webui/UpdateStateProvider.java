@@ -56,6 +56,7 @@ import java.util.function.Supplier;
 
 import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
 import org.knime.core.node.KNIMEConstants;
+import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 
 /**
  * Source of truth regarding available application updates
@@ -88,6 +89,27 @@ public class UpdateStateProvider {
                 m_listeners.forEach(listener -> listener.accept(updateState));
             }
         });
+    }
+
+    /**
+     * Triggers and {@link UpdateAvailableEventEnt} for testing.
+     *
+     * @param newReleases The new release update information to emit
+     * @param bugfixes The bugfix update information to emit
+     */
+    public void emitUpdateNotificationsForTesting(final List<UpdateInfo> newReleases, final List<String> bugfixes) {
+        var updateState = new UpdateState() {
+            @Override
+            public List<UpdateInfo> getNewReleases() {
+                return newReleases;
+            }
+
+            @Override
+            public List<String> getBugfixes() {
+                return bugfixes;
+            }
+        };
+        m_listeners.forEach(listener -> listener.accept(updateState));
     }
 
     /**

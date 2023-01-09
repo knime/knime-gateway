@@ -97,7 +97,7 @@ public final class UpdateStateEntityFactory {
      */
     public UpdateAvailableEventTypeEnt buildEventTypeEnt() {
         return builder(UpdateAvailableEventTypeEntBuilder.class)//
-            .setTypeId("UpdateStateChangedEventType")//
+            .setTypeId("UpdateAvailableEventType")//
             .build();
     }
 
