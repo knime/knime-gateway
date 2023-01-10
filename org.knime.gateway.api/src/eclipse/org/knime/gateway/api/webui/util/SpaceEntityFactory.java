@@ -65,6 +65,7 @@ import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -130,15 +131,15 @@ public final class SpaceEntityFactory {
      * @throws IOException
      */
     public WorkflowGroupContentEnt buildLocalWorkflowGroupContentEnt(final Path absolutePath,
-            final Path rootWorkspacePath, final Function<Path, String> getItemId,
-            final Function<Path, SpaceItemEnt.TypeEnum> getItemType, final Predicate<Path> itemFilter,
-            final Comparator<SpaceItemEnt> comparator) throws IOException {
+        final Path rootWorkspacePath, final Function<Path, String> getItemId,
+        final Function<Path, SpaceItemEnt.TypeEnum> getItemType, final Predicate<Path> itemFilter,
+        final Comparator<SpaceItemEnt> comparator) throws IOException {
         final var isRoot = absolutePath.equals(rootWorkspacePath);
         final var relativePath = rootWorkspacePath.relativize(absolutePath);
         final var path = isRoot ? Collections.<SpacePathSegmentEnt> emptyList()
             : buildSpacePathSegmentEnts(absolutePath, relativePath.getNameCount(), getItemId);
-        final var items = buildLocalSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter,
-            comparator);
+        final var items =
+            buildLocalSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter, comparator);
         return builder(WorkflowGroupContentEntBuilder.class) //
             .setPath(path) //
             .setItems(items) //
@@ -153,7 +154,7 @@ public final class SpaceEntityFactory {
      * @return group contents entity
      */
     public WorkflowGroupContentEnt buildHubWorkflowGroupContentEnt(final List<SpacePathSegmentEnt> path,
-            final List<SpaceItemEnt> items) {
+        final List<SpaceItemEnt> items) {
         return builder(WorkflowGroupContentEntBuilder.class) //
             .setPath(path) //
             .setItems(items) //
@@ -166,10 +167,10 @@ public final class SpaceEntityFactory {
         try (var pathsStream = Files.list(absolutePath)) {
             return pathsStream.filter(itemFilter) //
                 .map(p -> {
-                        final var relativePath = rootWorkspacePath.relativize(p);
-                        final var name = relativePath.getName(relativePath.getNameCount() - 1).toString();
-                        return buildSpaceItemEnt(name, getItemId.apply(p), getItemType.apply(p));
-                    }) //
+                    final var relativePath = rootWorkspacePath.relativize(p);
+                    final var name = getNameFromRelativePath(relativePath);
+                    return buildSpaceItemEnt(name, getItemId.apply(p), getItemType.apply(p));
+                }) //
                 .sorted(comparator) //
                 .collect(Collectors.toList());
         }
@@ -186,6 +187,10 @@ public final class SpaceEntityFactory {
         return Arrays.asList(res);
     }
 
+    private String getNameFromRelativePath(final Path relativePath) {
+        return relativePath.getName(relativePath.getNameCount() - 1).toString();
+    }
+
     /**
      * Builds a space path segment entity.
      *
@@ -198,23 +203,6 @@ public final class SpaceEntityFactory {
     }
 
     /**
-     * Creates a space item entity.
-     *
-     * @param name item name
-     * @param id item ID
-     * @param type item type
-     * @return resulting entity
-     */
-    public SpaceItemEnt buildSpaceItemEnt(final String name, final String id,
-        final SpaceItemEnt.TypeEnum type) {
-        return builder(SpaceItemEntBuilder.class) //
-            .setId(id) //
-            .setName(name) //
-            .setType(type) //
-            .build();
-    }
-
-    /**
      * Builds a {@link SpaceItemEnt} from an absolute local directory path pointing to a workflow.
      *
      * @param absolutePath The absolute path of the newly created workflow
@@ -222,10 +210,26 @@ public final class SpaceEntityFactory {
      * @param id The ID of the newly created workflow
      * @return The space item entity
      */
-    public SpaceItemEnt buildSpaceItemEnt(final Path absolutePath, final Path rootWorkspacePath,
-        final String id) {
-        var relativePath = rootWorkspacePath.relativize(absolutePath);
-        return buildSpaceItemEnt(relativePath, id, TypeEnum.WORKFLOW);
+    public SpaceItemEnt buildSpaceItemEnt(final Path absolutePath, final Path rootWorkspacePath, final String id) {
+        final var relativePath = rootWorkspacePath.relativize(absolutePath);
+        final var name = getNameFromRelativePath(relativePath);
+        return buildSpaceItemEnt(name, id, TypeEnum.WORKFLOW);
+    }
+
+    /**
+     * Creates a space item entity.
+     *
+     * @param name item name
+     * @param id item ID
+     * @param type item type
+     * @return resulting entity
+     */
+    public SpaceItemEnt buildSpaceItemEnt(final String name, final String id, final SpaceItemEnt.TypeEnum type) {
+        return builder(SpaceItemEntBuilder.class) //
+            .setId(id) //
+            .setName(name) //
+            .setType(type) //
+            .build();
     }
 
 }

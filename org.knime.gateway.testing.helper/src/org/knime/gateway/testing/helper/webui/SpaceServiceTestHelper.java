@@ -262,7 +262,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCreateWorkflowForLocalWorkspace() throws Exception {
-        var testWorkspacePath = getTestWorkspacePath(WorkspaceType.LIST);
+        var testWorkspacePath = getTestWorkspacePath(WorkspaceType.CREATE);
         var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
         var providerId = spaceProvider.getId();
         var spaceProviders = Map.of(providerId, spaceProvider);

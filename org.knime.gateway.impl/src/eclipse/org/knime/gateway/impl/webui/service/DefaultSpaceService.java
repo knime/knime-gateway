@@ -114,10 +114,10 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
-        final String itemId)
+        final String workflowGroupId)
         throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
-            return getSpace(spaceId, spaceProviderId).listWorkflowGroup(itemId);
+            return getSpace(spaceId, spaceProviderId).listWorkflowGroup(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {
@@ -130,10 +130,10 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String itemId)
+    public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId)
         throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
-            return getSpace(spaceId, spaceProviderId).createWorkflow(itemId);
+            return getSpace(spaceId, spaceProviderId).createWorkflow(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {

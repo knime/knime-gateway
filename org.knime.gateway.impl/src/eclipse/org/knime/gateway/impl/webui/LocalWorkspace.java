@@ -119,9 +119,8 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
-//        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
         var absolutePath = getAbsolutePath(workflowGroupItemId);
-        return EntityFactory.Space.buildWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
+        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
             getItemIdFunction(), this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem,
             getItemComparator());
     }
@@ -130,19 +129,8 @@ public final class LocalWorkspace implements Space {
     public SpaceItemEnt createWorkflow(final String workflowGroupItemId) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var workflowName = generateUniqueWorkflowName(parentWorkflowGroupPath);
-
-        // Create the directory and the `workflow.knime` file
         var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowName));
-        var filePath = Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
-
-        // Sync Modern UI (sync of Classic UI is done on perspective switch)
-        if (cacheOrGetSpaceItemTypeFromCache(directoryPath) != TypeEnum.WORKFLOW) {
-            Files.deleteIfExists(filePath);
-            Files.deleteIfExists(directoryPath);
-            throw new IOException(String.format("Creating the workflow <%s> did not work.", workflowName));
-        }
-
-        // Return space item for new workflow (FE handles space store update and opens the workflow)
+        Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
         var id = getItemIdFunction().apply(directoryPath);
         return EntityFactory.Space.buildSpaceItemEnt(directoryPath, m_localWorkspaceRootPath, id);
     }
