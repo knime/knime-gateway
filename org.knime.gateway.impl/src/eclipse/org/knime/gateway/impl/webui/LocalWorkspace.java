@@ -132,7 +132,7 @@ public final class LocalWorkspace implements Space {
         var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowName));
         Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
         var id = getItemIdFunction().apply(directoryPath);
-        return EntityFactory.Space.buildSpaceItemEnt(directoryPath, m_localWorkspaceRootPath, id);
+        return EntityFactory.Space.buildLocalSpaceItemEnt(directoryPath, m_localWorkspaceRootPath, id);
     }
 
     @Override

@@ -210,7 +210,7 @@ public final class SpaceEntityFactory {
      * @param id The ID of the newly created workflow
      * @return The space item entity
      */
-    public SpaceItemEnt buildSpaceItemEnt(final Path absolutePath, final Path rootWorkspacePath, final String id) {
+    public SpaceItemEnt buildLocalSpaceItemEnt(final Path absolutePath, final Path rootWorkspacePath, final String id) {
         final var relativePath = rootWorkspacePath.relativize(absolutePath);
         final var name = getNameFromRelativePath(relativePath);
         return buildSpaceItemEnt(name, id, TypeEnum.WORKFLOW);
