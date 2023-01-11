@@ -49,6 +49,8 @@
 package org.knime.gateway.impl.webui;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -57,6 +59,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
@@ -138,6 +141,22 @@ public final class LocalWorkspace implements Space {
     @Override
     public Path toLocalAbsolutePath(final String itemId) {
         return m_itemIdToPathMap.get(Integer.valueOf(itemId));
+    }
+
+    @Override
+    public URI toKnimeUrl(final String itemId) {
+        final var rootUri = m_localWorkspaceRootPath.toUri();
+        final var workflowFilePath = toLocalAbsolutePath(itemId).resolve("workflow.knime");
+        final var itemRelUri = rootUri.relativize(workflowFilePath.toUri());
+        if (itemRelUri.isAbsolute()) {
+            throw new IllegalStateException("Workflow '" + workflowFilePath + "' is not inside root '"
+                + m_localWorkspaceRootPath + "'");
+        }
+        try {
+            return new URIBuilder(itemRelUri).setScheme("knime").setHost("LOCAL").build();
+        } catch (URISyntaxException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /**

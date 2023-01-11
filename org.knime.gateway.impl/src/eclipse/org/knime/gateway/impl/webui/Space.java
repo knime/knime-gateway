@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
@@ -127,4 +128,5 @@ public interface Space {
      */
     Path toLocalAbsolutePath(String itemId);
 
+    URI toKnimeUrl(String itemId);
 }

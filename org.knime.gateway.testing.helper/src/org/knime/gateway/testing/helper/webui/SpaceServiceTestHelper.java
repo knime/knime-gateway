@@ -51,6 +51,7 @@ package org.knime.gateway.testing.helper.webui;
 import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -222,6 +223,10 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 return null;
             }
 
+            @Override
+            public URI toKnimeUrl(final String itemId) {
+                return null;
+            }
         };
     }
 
