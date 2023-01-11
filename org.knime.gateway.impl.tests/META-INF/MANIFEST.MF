@@ -4,21 +4,21 @@ Bundle-Name: Unit-Tests for org.knime.gateway.impl
 Bundle-SymbolicName: org.knime.gateway.impl.tests;singleton:=true
 Bundle-Version: 5.0.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Fragment-Host: org.knime.gateway.impl;bundle-version="[4.3.0.qualifier,6.0.0)"
+Fragment-Host: org.knime.gateway.impl;bundle-version="[5.0.0,6.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.knime.gateway.impl.tests
-Require-Bundle: org.knime.testing;bundle-version="[4.3.0,6.0.0)",
- org.knime.gateway.testing.helper;bundle-version="[4.3.0,6.0.0)",
- org.knime.ext.weka_3.7;bundle-version="[4.3.0,6.0.0)",
- org.knime.distmatrix;bundle-version="[4.3.0,6.0.0)",
- org.knime.js.views;bundle-version="[4.3.0,6.0.0)",
- org.knime.stats;bundle-version="[4.3.0,6.0.0)",
+Require-Bundle: org.knime.testing;bundle-version="[5.0.0,6.0.0)",
+ org.knime.gateway.testing.helper;bundle-version="[5.0.0,6.0.0)",
+ org.knime.ext.weka_3.7;bundle-version="[5.0.0,6.0.0)",
+ org.knime.distmatrix;bundle-version="[5.0.0,6.0.0)",
+ org.knime.js.views;bundle-version="[5.0.0,6.0.0)",
+ org.knime.stats;bundle-version="[5.0.0,6.0.0)",
  org.mockito.mockito-core;bundle-version="[2.18.3,3.0.0)",
  org.awaitility;bundle-version="[3.0.0,4.0.0)",
  org.hamcrest.library;bundle-version="[1.3.0,2.0.0)",
- org.knime.js.quickforms;bundle-version="[4.3.0,6.0.0)",
- org.knime.gateway.impl.jsonrpc;bundle-version="[4.3.0,6.0.0)",
- org.knime.core.streaming;bundle-version="[4.4.0,6.0.0)",
- org.knime.core.ui;bundle-version="[4.5.0,6.0.0)",
- org.knime.core.ui.testing;bundle-version="[4.7.0,6.0.0)",
- org.knime.base.views;bundle-version="[4.6.0,6.0.0)"
+ org.knime.js.quickforms;bundle-version="[5.0.0,6.0.0)",
+ org.knime.gateway.impl.jsonrpc;bundle-version="[5.0.0,6.0.0)",
+ org.knime.core.streaming;bundle-version="[5.0.0,6.0.0)",
+ org.knime.core.ui;bundle-version="[5.0.0,6.0.0)",
+ org.knime.core.ui.testing;bundle-version="[5.0.0,6.0.0)",
+ org.knime.base.views;bundle-version="[5.0.0,6.0.0)"
