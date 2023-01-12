@@ -136,7 +136,7 @@ public final class NodeGroups {
             if (!topLevelCats.contains(uncat)) {
                 topLevelCats.add(uncat);
             }
-            Map<String, List<Node>> nodesPerCategory = categorizeNodes(m_nodeRepo.getNodes(), topLevelCats);
+            Map<String, List<Node>> nodesPerCategory = categorizeNodes(m_nodeRepo.getNodes(false), topLevelCats);
 
             m_topLevelCats = Collections.synchronizedList(topLevelCats);
             m_nodesPerCategory = Collections.synchronizedMap(nodesPerCategory);

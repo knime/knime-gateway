@@ -48,8 +48,13 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
@@ -69,6 +74,8 @@ import org.knime.gateway.impl.webui.NodeSearch;
  */
 public final class DefaultNodeRepositoryService implements NodeRepositoryService {
 
+    private static final String NODE_COLLECTION_FILE = "/files/node_collections/spreadsheet_nodes.txt";
+
     private final NodeRepository m_nodeRepo;
 
     private final NodeSearch m_nodeSearch;
@@ -87,7 +94,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     }
 
     DefaultNodeRepositoryService() {
-        m_nodeRepo = new NodeRepository();
+        m_nodeRepo = new NodeRepository(createCollectionFilter());
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
@@ -107,8 +114,8 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo) {
-        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);
+        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
+        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo, includeAll);
     }
 
     /**
@@ -132,4 +139,11 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
             fullTemplateInfo);
     }
 
+    /** Create a simple filter that only includes the node factories that are listed in the speadsheet_nodes.txt file */
+    private static Predicate<String> createCollectionFilter() {
+        var reader = new BufferedReader(
+            new InputStreamReader(DefaultNodeRepositoryService.class.getResourceAsStream(NODE_COLLECTION_FILE)));
+        final var includedNodes = reader.lines().collect(Collectors.toCollection(HashSet::new));
+        return includedNodes::contains;
+    }
 }

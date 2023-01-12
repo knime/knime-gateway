@@ -91,14 +91,28 @@ public final class NodeRepository {
 
     private static final Pattern MULTIPLE_SLASHES = Pattern.compile("/{2,}");
 
+    private final Predicate<String> m_filter;
+
     /*
      * All available nodes. Loaded/filled once with the call of any of the non-private methods.
      */
-    private Map<String, Node> m_nodes;
+    private Map<String, Node> m_allNodes;
+
+    private Map<String, Node> m_filteredNodes;
 
     private Map<String, Node> m_hiddenNodes;
 
     private Map<String, Node> m_deprecatedNodes;
+
+    /**
+     * Create a new node repository that filters all nodes with the given filter.
+     *
+     * @param filter defines which nodes should be included in this node repository by matching the templateId of the
+     *            node
+     */
+    public NodeRepository(final Predicate<String> filter) {
+        m_filter = filter;
+    }
 
     /**
      * Compiles the map of {@link NodeTemplateEnt} with all properties set (including the node/component icon etc.) for
@@ -120,12 +134,13 @@ public final class NodeRepository {
 
     /**
      * Find a node by template id
+     *
      * @param templateId
      * @return The node
      */
     Node getNode(final String templateId) {
         loadAllNodesAndNodeSets();
-        var n = m_nodes.get(templateId);
+        var n = m_allNodes.get(templateId);
         if (n != null) {
             return n;
         }
@@ -137,11 +152,17 @@ public final class NodeRepository {
     }
 
     /**
-     * @return all nodes available in the node repository
+     * @param includeAll set to true to include all nodes in the return value. Otherwise only the nodes that satisfy the
+     *            current filter are included.
+     * @return nodes available in the node repository
      */
-    Collection<Node> getNodes() {
+    Collection<Node> getNodes(final boolean includeAll) {
         loadAllNodesAndNodeSets();
-        return m_nodes.values();
+        if (includeAll) {
+            return m_allNodes.values();
+        } else {
+            return m_filteredNodes.values();
+        }
     }
 
     /**
@@ -173,14 +194,19 @@ public final class NodeRepository {
     }
 
     private synchronized void loadAllNodesAndNodeSets() {
-        if (m_nodes == null) { // Do not run this if nodes have already been fetched
+        if (m_allNodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
             Map<String, CategoryExtension> categories = CategoryExtensionManager.getInstance().getCategoryExtensions();
-            m_nodes = new HashMap<>();
-            loadNodes(categories, m_nodes, ext -> ext.isDeprecated() || ext.isHidden());
-            loadNodeSets(categories, m_nodes, NodeSetFactoryExtension::isDeprecated, NodeSetFactory::isHidden,
+            m_allNodes = new HashMap<>();
+            loadNodes(categories, m_allNodes, ext -> ext.isDeprecated() || ext.isHidden());
+            loadNodeSets(categories, m_allNodes, NodeSetFactoryExtension::isDeprecated, NodeSetFactory::isHidden,
                 NodeFactory::isDeprecated);
-            addNodeWeights(m_nodes);
+            addNodeWeights(m_allNodes);
+            addIsIncluded(m_allNodes, m_filter);
+
+            m_filteredNodes = m_allNodes.values().stream() //
+                .filter(n -> n.isIncluded) //
+                .collect(Collectors.toMap(n -> n.templateId, n -> n));
         }
     }
 
@@ -230,8 +256,8 @@ public final class NodeRepository {
         }
     }
 
-    private static Set<String> getTagsFromCategoryPath(final String catPath,
-        final Map<String, CategoryExtension> cats, final String nodeName) {
+    private static Set<String> getTagsFromCategoryPath(final String catPath, final Map<String, CategoryExtension> cats,
+        final String nodeName) {
         String path = catPath;
         Set<String> tags = new HashSet<>();
         while (!path.isEmpty() && !path.equals("/")) {
@@ -276,6 +302,12 @@ public final class NodeRepository {
                 throw new UncheckedIOException(ex);
             }
         });
+    }
+
+    private static void addIsIncluded(final Map<String, Node> nodes, final Predicate<String> filter) {
+        nodes.values().stream() //
+            .filter(n -> filter.test(n.templateId)) // Only keep the included nodes
+            .forEach(n -> n.isIncluded = true); // Set the included nodes to true
     }
 
     /**
@@ -333,6 +365,10 @@ public final class NodeRepository {
          */
         int weight;
 
+        /**
+         * If the node is included in the current filter.
+         */
+        boolean isIncluded;
     }
 
 }

@@ -129,11 +129,11 @@ public class NodeSearch {
             allNodes = m_nodeRepo.getDeprecatedNodes();
             query = q.replace("//deprecated", "");
         } else {
-            allNodes = m_nodeRepo.getNodes();
+            allNodes = m_nodeRepo.getNodes(Boolean.TRUE.equals(includeAll));
             query = q;
         }
 
-        List<Node> foundNodes = m_foundNodesCache.computeIfAbsent(new SearchQuery(q, tags, allTagsMatch),
+        List<Node> foundNodes = m_foundNodesCache.computeIfAbsent(new SearchQuery(q, tags, allTagsMatch, includeAll),
             key -> searchNodes(allNodes, query, tags, allTagsMatch));
 
         // map templates
@@ -223,16 +223,18 @@ public class NodeSearch {
 
         private Boolean m_allTagsMatch;
 
-        SearchQuery(final String q, final List<String> tags, final Boolean allTagsMatch) {
+        private Boolean m_includeAll;
+
+        SearchQuery(final String q, final List<String> tags, final Boolean allTagsMatch, final Boolean includeAll) {
             m_q = q;
             m_tags = tags;
             m_allTagsMatch = allTagsMatch;
-
+            m_includeAll = includeAll;
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(m_q).append(m_tags).append(m_allTagsMatch).build();
+            return new HashCodeBuilder().append(m_q).append(m_tags).append(m_allTagsMatch).append(m_includeAll).build();
         }
 
         @Override
@@ -246,7 +248,7 @@ public class NodeSearch {
             if (this.getClass() == obj.getClass()) {
                 SearchQuery sq = (SearchQuery)obj;
                 return new EqualsBuilder().append(m_q, sq.m_q).append(m_tags, sq.m_tags)
-                    .append(m_allTagsMatch, sq.m_allTagsMatch).build();
+                    .append(m_allTagsMatch, sq.m_allTagsMatch).append(m_includeAll, sq.m_includeAll).build();
             }
             return false;
         }

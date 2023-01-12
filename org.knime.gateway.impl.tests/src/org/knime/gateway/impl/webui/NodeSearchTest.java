@@ -82,7 +82,7 @@ public class NodeSearchTest {
 
     @BeforeClass
     public static void initRepo() {
-        repo = new NodeRepository();
+        repo = NodeRepositoryTestingUtil.createNodeRepository();
     }
 
     @Before

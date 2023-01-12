@@ -85,7 +85,7 @@ public class NodeRepositoryTest {
 
     @BeforeClass
     public static void initNodeRepo() {
-        repo = new NodeRepository();
+        repo = NodeRepositoryTestingUtil.createNodeRepository();
     }
 
     @Test
@@ -179,4 +179,22 @@ public class NodeRepositoryTest {
         }
     }
 
+    /**
+     * Test the filtering of nodes.
+     */
+    @Test
+    public void testNodeFilter() {
+        var filteredNodes = repo.getNodes(false);
+        assertThat("found filtered node with isIncluded = false", filteredNodes.stream().anyMatch(n -> !n.isIncluded),
+            is(false));
+        var filteredNodeIds = filteredNodes.stream().map(n -> n.templateId).collect(Collectors.toSet());
+        assertThat("list of filtered nodes is wrong", filteredNodeIds, is(NodeRepositoryTestingUtil.INCLUDED_NODES));
+
+        var allNodes = repo.getNodes(true);
+        assertThat("included nodes are not part of all nodes", allNodes.stream().anyMatch(n -> n.isIncluded), is(true));
+        var includedFromAllNodes =
+            allNodes.stream().filter(n -> n.isIncluded).map(n -> n.templateId).collect(Collectors.toSet());
+        assertThat("list of included nodes is wrong", includedFromAllNodes,
+            is(NodeRepositoryTestingUtil.INCLUDED_NODES));
+    }
 }
