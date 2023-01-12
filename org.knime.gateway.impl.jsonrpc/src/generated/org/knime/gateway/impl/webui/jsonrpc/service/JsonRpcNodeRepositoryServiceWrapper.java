@@ -109,8 +109,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      */
     @Override
     @JsonRpcMethod(value = "searchNodes")
-    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo)  {
-        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo);    
+    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean includeAll)  {
+        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo, includeAll);    
     }
 
 }

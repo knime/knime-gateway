@@ -91,7 +91,8 @@ public class NodeRepositoryTest {
     @Test
     public void testGetNodeTemplates() {
         NodeSearch search = new NodeSearch(repo);
-        NodeSearchResultEnt res = search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE);
+        NodeSearchResultEnt res =
+            search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE, Boolean.TRUE);
 
         NodeTemplateEnt nodeFromSearch = res.getNodes().get(0);
         List<String> ids = asList(nodeFromSearch.getId());
@@ -119,12 +120,13 @@ public class NodeRepositoryTest {
         NodeSearch search = new NodeSearch(repo);
 
         NodeTemplateEnt nodeFromSearch =
-            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE).getNodes().get(0);
+            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, Boolean.TRUE).getNodes().get(0);
         NodeTemplateEnt nodeFromRepo =
             repo.getNodeTemplates(asList(nodeFromSearch.getId())).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
 
-        nodeFromSearch = search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE).getNodes().get(0);
+        nodeFromSearch =
+            search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, Boolean.TRUE).getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplates(asList(nodeFromSearch.getId())).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
         assertThat(nodeFromRepo.getName(), containsString("deprecated"));
@@ -139,8 +141,8 @@ public class NodeRepositoryTest {
         NodeGroups select = new NodeGroups(repo);
         NodeSearch search = new NodeSearch(repo);
 
-        NodeGroupsEnt groupsRes = select.getNodesGroupedByTags(null, null, null, null);
-        NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null);
+        NodeGroupsEnt groupsRes = select.getNodesGroupedByTags(null, null, null, null, Boolean.TRUE);
+        NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null, Boolean.TRUE);
 
         Map<String, NodeTemplateEnt> overplus = new HashMap<>();
         for (NodeTemplateEnt n1 : groupsRes.getGroups().stream().flatMap(s -> s.getNodes().stream())
@@ -168,8 +170,9 @@ public class NodeRepositoryTest {
                 sb.append(";name: ");
                 sb.append(entry.getValue().getName());
                 sb.append(";path: ");
-                sb.append(repo.getNodes().stream().filter(node -> node.templateId.equals(entry.getValue().getId()))
-                    .map(node -> node.path).findFirst().orElse(null));
+                sb.append(repo.getNodes(Boolean.TRUE).stream()
+                    .filter(node -> node.templateId.equals(entry.getValue().getId())).map(node -> node.path).findFirst()
+                    .orElse(null));
                 sb.append("\n");
             }
             Assert.fail(sb.toString());

@@ -114,10 +114,12 @@ public class NodeSearch {
      * @param nodesLimit the maximum number of nodes to include in the search result (mainly for pagination)
      * @param fullTemplateInfo see
      *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
+     * @param includeAll If true, all nodes/components will be included in the search result. Otherwise, only the
+     *            nodes/components that are part of the current collection will be included.
      * @return the search result entity
      */
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo) {
+        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
         Collection<Node> allNodes;
         String query;
         if (q != null && q.endsWith("//hidden")) {

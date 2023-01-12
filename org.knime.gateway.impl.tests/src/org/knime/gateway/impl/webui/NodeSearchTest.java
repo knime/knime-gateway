@@ -60,6 +60,8 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -90,15 +92,15 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAllNullParameters() {
-        m_search.searchNodes(null, null, null, null, null, null);
-        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null);
-        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null);
+        m_search.searchNodes(null, null, null, null, null, null, Boolean.TRUE);
+        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, Boolean.TRUE);
+        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, Boolean.TRUE);
         assertThat("unexpected cache size", m_search.cacheSize(), is(3));
     }
 
     @Test
     public void testSimpleSearchNodesWithOffsetAndLimitAndMinimumInfo() {
-        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null);
+        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null, Boolean.TRUE);
         assertThat("unexpected number of nodes", res.getNodes().size(), is(10));
         assertThat("column filter not expected to be the first node (offset)", res.getNodes().get(0).getName(),
             is(not("Column Filter")));
@@ -109,7 +111,7 @@ public class NodeSearchTest {
         assertThat("no in-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
         assertThat("no out-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
 
-        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null);
+        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null, Boolean.TRUE);
         assertThat("unexpected number of nodes", res2.getNodes().size(), is(9));
         assertThat("unexpected node", res.getNodes().get(1), is(res2.getNodes().get(0)));
 
@@ -118,7 +120,7 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAndGetFullTemplateInfo() {
-        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE);
+        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE, Boolean.TRUE);
         assertThat("icon property expected", res.getNodes().get(0).getIcon(), is(notNullValue()));
         assertThat("in-port property expected", res.getNodes().get(0).getInPorts(), is(not((empty()))));
         assertThat("out-port property expected", res.getNodes().get(0).getOutPorts(), is(not((empty()))));
@@ -127,9 +129,9 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesAnyOrAllTagsMatch() {
         NodeSearchResultEnt resAll =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE, Boolean.TRUE);
         NodeSearchResultEnt resAny =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE, Boolean.TRUE);
         assertThat("any match expected to hold more found nodes than all match", resAny.getTotalNumNodes(),
             is(greaterThan(resAll.getTotalNumNodes())));
 
@@ -138,14 +140,49 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesEasterEggs() {
-        NodeSearchResultEnt res = m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false);
+        NodeSearchResultEnt res = m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false, Boolean.TRUE);
         assertThat("some hidden nodes are expected to be found", res.getTotalNumNodes(), is(greaterThan(0)));
 
         NodeSearchResultEnt res2 =
-            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false);
+            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false, Boolean.TRUE);
         assertThat("some deprecated nodes are expected to be found", res2.getTotalNumNodes(), is(greaterThan(0)));
         assertThat("deprecated string expected in node name", res2.getNodes().get(0).getName(),
             containsString("deprecated"));
     }
 
+    @Test
+    public void testSearchFilteredNodes() {
+        var res = m_search.searchNodes("table", Collections.emptyList(), null, 0, 10, true, Boolean.FALSE);
+        var resFactories = getNodeFactoryNames(res);
+        assertThat("some filtered nodes are expected", resFactories.size(), is(greaterThan(0)));
+        assertThat("filtered nodes included in the result",
+            resFactories.stream().allMatch(NodeRepositoryTestingUtil.INCLUDED_NODES::contains), is(true));
+
+        // Compare with unfiltered search
+        var resAll = m_search.searchNodes("table", Collections.emptyList(), null, 0, 10, true, Boolean.TRUE);
+        var resAllFactories = getNodeFactoryNames(resAll);
+        assertThat("filterd nodes not first in result of search all", resAllFactories.subList(0, resFactories.size()),
+            is(resFactories));
+    }
+
+    @Test
+    public void testSearchTagsFilteredNodes() {
+        var res = m_search.searchNodes("", asList("Manipulation"), null, 0, 10, true, Boolean.FALSE);
+        var resFactories = getNodeFactoryNames(res);
+        assertThat("some filtered nodes are expected", resFactories.size(), is(greaterThan(0)));
+        assertThat("only filtered nodes included in the result",
+            resFactories.stream().allMatch(NodeRepositoryTestingUtil.INCLUDED_NODES::contains), is(true));
+
+        // Compare with unfiltered search
+        var resAll = m_search.searchNodes("", asList("Manipulation"), null, 0, 10, true, Boolean.TRUE);
+        var resAllFactories = getNodeFactoryNames(resAll);
+        assertThat("filterd nodes not first in result of search all", resAllFactories.subList(0, resFactories.size()),
+            is(resFactories));
+    }
+
+    private static List<String> getNodeFactoryNames(final NodeSearchResultEnt searchResult) {
+        return searchResult.getNodes().stream() //
+            .map(n -> n.getNodeFactory().getClassName()) //
+            .collect(Collectors.toList());
+    }
 }

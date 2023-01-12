@@ -104,9 +104,10 @@ public interface NodeRepositoryService extends GatewayService {
      * @param nodesOffset Number of nodes/components to be skipped in the search result (for pagination).
      * @param nodesLimit The maximum number of nodes/components in the search result (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
+     * @param includeAll If true, all nodes/components will be included in the result. Otherwise, only the nodes/components that are part of the current collection will be included.
      *
      * @return the result
      */
-    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo) ;
+    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean includeAll) ;
         
 }
