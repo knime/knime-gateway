@@ -65,6 +65,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.knime.core.data.sort.AlphanumericComparator;
 import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
@@ -79,6 +80,8 @@ import org.knime.gateway.impl.webui.NodeRepository.Node;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class NodeSearch {
+
+    private static final Comparator<String> ALPHANUMERIC_COMPARATOR = new AlphanumericComparator(Comparator.naturalOrder());
 
     /*
      * Upper excluding bound of distances to a query a node may have to be labeled as a match.
@@ -178,12 +181,17 @@ public class NodeSearch {
                     return new FoundNode(n, score);
                 })//
                     .filter(n -> n.score < DISTANCE_THRESHOLD)//
-                    .sorted(Comparator.<FoundNode> comparingDouble(n -> n.score).thenComparingInt(n -> -n.node.weight))//
+                    .sorted(Comparator.<FoundNode> comparingInt(n -> n.node.isIncluded ? 0 : 1)
+                        .thenComparingDouble(n -> n.score).thenComparingInt(n -> -n.node.weight)
+                        .thenComparing(n -> n.node.name, ALPHANUMERIC_COMPARATOR))//
                     .map(wn -> wn.node)//
                     .collect(Collectors.toList());
             } else {
                 foundNodes =
-                    tagFiltered.sorted(Comparator.<Node> comparingInt(n -> -n.weight)).collect(Collectors.toList());
+                    tagFiltered
+                        .sorted(Comparator.<Node> comparingInt(n -> n.isIncluded ? 0 : 1)
+                            .thenComparingInt(n -> -n.weight).thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))
+                        .collect(Collectors.toList());
             }
         }
         return foundNodes;
