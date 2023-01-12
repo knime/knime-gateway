@@ -133,10 +133,10 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
-        throws OperationNotAllowedException {
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo,
+        final Boolean includeAll) throws OperationNotAllowedException {
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
-            fullTemplateInfo);
+            fullTemplateInfo, includeAll);
     }
 
     /** Create a simple filter that only includes the node factories that are listed in the speadsheet_nodes.txt file */

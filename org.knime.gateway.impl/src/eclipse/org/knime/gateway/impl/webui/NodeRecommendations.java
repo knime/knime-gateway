@@ -111,12 +111,14 @@ public class NodeRecommendations {
      * @param portIdx The index of your port
      * @param nodesLimit The maximum number of node recommendations to return, 12 by default
      * @param fullTemplateInfo Whether to return complete result or not, true by default
+     * @param includeAll If true, all nodes/components will be included in the recommendation result. Otherwise, only
+     *            the nodes/components that are part of the current collection will be included.
      * @return The node recommendations
      * @throws OperationNotAllowedException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
-        throws OperationNotAllowedException {
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo,
+        final Boolean includeAll) throws OperationNotAllowedException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }
@@ -136,7 +138,8 @@ public class NodeRecommendations {
         var sourcePortType = nodeId == null ? null : determineSourcePortType(nnc, portIdx);
 
         var recommendations = getFlatListOfRecommendations(nnc);
-        return getNodeTemplatesAndFilterByPortType(recommendations, sourcePortType, limit, fullInfo);
+        return getNodeTemplatesAndFilter(recommendations, sourcePortType, limit, fullInfo,
+            Boolean.TRUE.equals(includeAll));
     }
 
     /**
@@ -186,12 +189,13 @@ public class NodeRecommendations {
         return recommendationsWithoutDups.stream().map(ObjectUtils::firstNonNull).collect(Collectors.toList());
     }
 
-    private List<NodeTemplateEnt> getNodeTemplatesAndFilterByPortType(final List<NodeRecommendation> recommendations,
-        final PortType sourcePortType, final int limit, final boolean fullInfo) {
+    private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final List<NodeRecommendation> recommendations,
+        final PortType sourcePortType, final int limit, final boolean fullInfo, final boolean includeAll) {
         return recommendations.stream()//
             .map(r -> NodeTemplateId.callWithNodeTemplateIdVariants(r.getNodeFactoryClassName(), r.getNodeName(),
                 m_nodeRepo::getNode))//
             .filter(Objects::nonNull)// `NodeTemplateId.callWithNodeTemplateIdVariants(...)` could return null
+            .filter(n -> includeAll || n.isIncluded)
             .map(n -> n.factory)//
             .filter(f -> sourcePortType == null || isCompatibleWithSourcePortType(f, sourcePortType))//
             .limit(limit)// Limit the number of results after filtering by port type compatibility
