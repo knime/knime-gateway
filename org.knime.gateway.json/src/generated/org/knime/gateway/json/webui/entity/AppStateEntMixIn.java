@@ -89,6 +89,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("featureFlags")
     public java.util.Map<String, Object> getFeatureFlags();
     
+    @Override
+    @JsonProperty("nodeRepoFilterEnabled")
+    public Boolean isNodeRepoFilterEnabled();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -121,6 +125,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("featureFlags")
         public AppStateEntMixInBuilder setFeatureFlags(final java.util.Map<String, Object> featureFlags);
+        
+        @Override
+        @JsonProperty("nodeRepoFilterEnabled")
+        public AppStateEntMixInBuilder setNodeRepoFilterEnabled(final Boolean nodeRepoFilterEnabled);
         
     }
 

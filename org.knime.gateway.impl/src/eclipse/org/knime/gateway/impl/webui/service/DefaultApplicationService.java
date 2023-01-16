@@ -138,11 +138,13 @@ public final class DefaultApplicationService implements ApplicationService {
         List<WorkflowProjectEnt> projectEnts = null;
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
+        Boolean nodeRepoFilterEnabled = null;
         if (newAppState != null) { // Only do something if we have a current app state
             if (oldAppState == null) { // If there is no previous app state, no checks are needed
                 projectEnts = getProjectEnts(newAppState, workflowProjectManager, workflowMiddleware);
                 availablePortTypeEnts = getAvailablePortTypeEnts(newAppState);
                 suggestedPortTypeIds = getSuggestedPortTypeIds(newAppState);
+                nodeRepoFilterEnabled = newAppState.isNodeRepoFilterEnabled();
             } else { // Only set what has changed
                 if (!areOpenProjectsEqual(oldAppState, newAppState)) {
                     projectEnts = getProjectEnts(newAppState, workflowProjectManager, workflowMiddleware);
@@ -152,6 +154,9 @@ public final class DefaultApplicationService implements ApplicationService {
                 }
                 if (!areSuggestedPortTypesEqual(oldAppState, newAppState)) {
                     suggestedPortTypeIds = getSuggestedPortTypeIds(newAppState);
+                }
+                if (oldAppState.isNodeRepoFilterEnabled() != newAppState.isNodeRepoFilterEnabled()) {
+                    nodeRepoFilterEnabled = newAppState.isNodeRepoFilterEnabled();
                 }
             }
         } else { // Send an empty state otherwise
@@ -163,6 +168,7 @@ public final class DefaultApplicationService implements ApplicationService {
             .setOpenProjects(projectEnts) //
             .setAvailablePortTypes(availablePortTypeEnts) //
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
+            .setNodeRepoFilterEnabled(nodeRepoFilterEnabled) //
             .setHasNodeRecommendationsEnabled(NodeRecommendationManager.isEnabled()) // This setting is always sent
             .setFeatureFlags(getFeatureFlags()) // This setting is always sent
             .build();

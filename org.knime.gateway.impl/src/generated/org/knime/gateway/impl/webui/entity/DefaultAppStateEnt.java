@@ -68,6 +68,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
   protected java.util.List<String> m_suggestedPortTypeIds;
   protected Boolean m_hasNodeRecommendationsEnabled;
   protected java.util.Map<String, Object> m_featureFlags;
+  protected Boolean m_nodeRepoFilterEnabled;
   
   protected DefaultAppStateEnt() {
     //for sub-classes
@@ -85,6 +86,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
     m_suggestedPortTypeIds = immutable(builder.m_suggestedPortTypeIds);
     m_hasNodeRecommendationsEnabled = immutable(builder.m_hasNodeRecommendationsEnabled);
     m_featureFlags = immutable(builder.m_featureFlags);
+    m_nodeRepoFilterEnabled = immutable(builder.m_nodeRepoFilterEnabled);
   }
   
    /**
@@ -102,7 +104,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
             return false;
         }
         DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags);
+        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags) && Objects.equals(m_nodeRepoFilterEnabled, ent.m_nodeRepoFilterEnabled);
     }
 
 
@@ -118,6 +120,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
                .append(m_suggestedPortTypeIds)
                .append(m_hasNodeRecommendationsEnabled)
                .append(m_featureFlags)
+               .append(m_nodeRepoFilterEnabled)
                .toHashCode();
    }
   
@@ -148,6 +151,11 @@ public class DefaultAppStateEnt implements AppStateEnt {
         return m_featureFlags;
   }
     
+  @Override
+  public Boolean isNodeRepoFilterEnabled() {
+        return m_nodeRepoFilterEnabled;
+  }
+    
   
     public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
     
@@ -160,6 +168,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
         private java.util.List<String> m_suggestedPortTypeIds;
         private Boolean m_hasNodeRecommendationsEnabled;
         private java.util.Map<String, Object> m_featureFlags;
+        private Boolean m_nodeRepoFilterEnabled;
 
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects) {
@@ -188,6 +197,12 @@ public class DefaultAppStateEnt implements AppStateEnt {
         @Override
         public DefaultAppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags) {
              m_featureFlags = featureFlags;
+             return this;
+        }
+
+        @Override
+        public DefaultAppStateEntBuilder setNodeRepoFilterEnabled(Boolean nodeRepoFilterEnabled) {
+             m_nodeRepoFilterEnabled = nodeRepoFilterEnabled;
              return this;
         }
 

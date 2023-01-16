@@ -153,6 +153,12 @@ public final class AppStateProvider {
         List<OpenedWorkflow> getOpenedWorkflows();
 
         /**
+         * @return true, if the node repository should be filtered to show only the nodes that fit the current filter.
+         *         This will have an effect on the node search, on the category groups, and on the node recommendations.
+         */
+        boolean isNodeRepoFilterEnabled();
+
+        /**
          * @return All port types available in the current extension
          */
         default Set<PortType> getAvailablePortTypes() {

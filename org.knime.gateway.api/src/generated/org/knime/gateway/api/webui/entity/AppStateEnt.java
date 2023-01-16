@@ -91,6 +91,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public java.util.Map<String, Object> getFeatureFlags();
 
+  /**
+   * If true, the node repository will be filtered to show only the nodes that fit the current filter. This will have an effect on the node search, on the category groups, and on the node recommendations.
+   * @return nodeRepoFilterEnabled 
+   **/
+  public Boolean isNodeRepoFilterEnabled();
+
 
     /**
      * The builder for the entity.
@@ -136,6 +142,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags);
+        
+        /**
+         * If true, the node repository will be filtered to show only the nodes that fit the current filter. This will have an effect on the node search, on the category groups, and on the node recommendations.
+         * 
+         * @param nodeRepoFilterEnabled the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setNodeRepoFilterEnabled(Boolean nodeRepoFilterEnabled);
         
         
         /**
