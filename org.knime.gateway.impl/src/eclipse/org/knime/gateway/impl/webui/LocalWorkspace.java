@@ -64,6 +64,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
+import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.Pair;
 import org.knime.core.util.workflowalizer.MetadataConfig;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
@@ -139,14 +142,14 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public Path toLocalAbsolutePath(final String itemId) {
-        return m_itemIdToPathMap.get(Integer.valueOf(itemId));
+    public Pair<Path, LocationInfo> toLocalAbsolutePath(final String itemId) {
+        return Pair.create(m_itemIdToPathMap.get(Integer.valueOf(itemId)), LocalLocationInfo.getInstance(null));
     }
 
     @Override
     public URI toKnimeUrl(final String itemId) {
         final var rootUri = m_localWorkspaceRootPath.toUri();
-        final var workflowFilePath = toLocalAbsolutePath(itemId).resolve("workflow.knime");
+        final var workflowFilePath = toLocalAbsolutePath(itemId).getFirst().resolve("workflow.knime");
         final var itemRelUri = rootUri.relativize(workflowFilePath.toUri());
         if (itemRelUri.isAbsolute()) {
             throw new IllegalStateException("Workflow '" + workflowFilePath + "' is not inside root '"
@@ -263,5 +266,4 @@ public final class LocalWorkspace implements Space {
             return name;
         }
     }
-
 }

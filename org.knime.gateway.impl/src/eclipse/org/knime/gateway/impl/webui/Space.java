@@ -53,6 +53,8 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
+import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -121,12 +123,18 @@ public interface Space {
     SpaceItemEnt createWorkflow(String workflowGroupItemId) throws IOException;
 
     /**
-     * Turns a space item for the given id into a local absolute path.
+     * Resolves the item with the given ID into a local file, potentially downloading it.
      *
-     * @param itemId id of the space item
-     * @return the path
+     * @param itemId ID if the item to resolve
+     * @return the local path of the item and (if available, otherwise {@code null}) its location info
      */
-    Path toLocalAbsolutePath(String itemId);
+    Pair<Path, LocationInfo> toLocalAbsolutePath(String itemId);
 
+    /**
+     * Creates a mountpoint-absolute KNIME URL for the given space item.
+     *
+     * @param itemId item ID
+     * @return KNIME URL
+     */
     URI toKnimeUrl(String itemId);
 }
