@@ -55,7 +55,7 @@ import java.util.Optional;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 
 /**
- * Summarizes all available space provides. Mainly used as a service dependency (see, e.g.,
+ * Summarizes all available space providers. Mainly used as a service dependency (see, e.g.,
  * {@link ServiceDependencies}).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany

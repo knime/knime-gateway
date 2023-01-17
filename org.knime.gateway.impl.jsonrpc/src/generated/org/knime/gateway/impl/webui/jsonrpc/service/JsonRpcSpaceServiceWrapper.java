@@ -131,4 +131,19 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, workflowGroupId);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "renameItem")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
+            data = "IOException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, String newName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().renameItem(spaceProviderId, spaceId, itemId, newName);    
+    }
+
 }

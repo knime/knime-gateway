@@ -48,8 +48,13 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URI;
@@ -60,8 +65,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.apache.commons.io.FileUtils;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
@@ -71,6 +79,11 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.util.SpaceEntityFactory;
+import org.knime.gateway.impl.webui.LocalWorkspace;
+import org.knime.gateway.impl.webui.Space;
+import org.knime.gateway.impl.webui.SpaceProvider;
+import org.knime.gateway.impl.webui.SpaceProviders;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -80,24 +93,88 @@ import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.knime.core.util.PathUtils;
+
+import com.knime.explorer.server.internal.HubSpaceProviders;
+import com.knime.explorer.server.internal.WorkflowHubFacade;
 
 /**
  * Tests {@link SpaceService}-implementations.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
+ * @authr Benjamin Moser, KNIME GmbH
  */
+@SuppressWarnings("javadoc")
 public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
-    /**
-     * @param entityResultChecker
-     * @param serviceProvider
-     * @param workflowLoader
-     * @param workflowExecutor
-     */
     protected SpaceServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(SpaceServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+    }
+
+    /**
+     * Test the interfacing between space service, space providers and spaces w.r.t renaming.
+     */
+    public void testRenameSpaceItem() throws Exception {
+        String spaceId = "some_space_id";
+        String providerId = "some_provider_id";
+        String itemId = "some_item_id";
+        String newName = "some_new_name";
+
+        Space mockedSpace = mock(Space.class);
+        when(mockedSpace.getId()).thenReturn(spaceId);
+        SpaceItemEnt newSpaceItemEnt =
+            SpaceEntityFactory.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
+        when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
+
+        var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", mockedSpace);
+        var spaceProviders = Map.of(providerId, spaceProvider);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
+
+        // trigger operation under test
+        var renamedItemEnt = ss().renameItem(providerId, spaceId, itemId, newName);
+        MatcherAssert.assertThat("Rename return value describes renamed item",
+            renamedItemEnt.getId().equals(newSpaceItemEnt.getId())
+                && renamedItemEnt.getType() == newSpaceItemEnt.getType() && renamedItemEnt.getName().equals(newName));
+
+        // verify that rename method of individual space was called
+        verify(mockedSpace).renameItem(itemId, newName);
+    }
+
+    public void testRenameSpaceItemLocal() throws Exception {
+        // set up a workspace -- copy workspace directory to temp. path
+        var tempPath = PathUtils.createTempDir("testRenameSpaceItemLocal");
+        PathUtils.copyDirectory(getTestWorkspacePath(), tempPath);
+        var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
+        var space = spaceProvider.getSpaceMap().get(LocalWorkspace.LOCAL_WORKSPACE_ID);
+        var providerId = spaceProvider.getId();
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(providerId, spaceProvider));
+
+        // find some item to rename
+        var group = space.listWorkflowGroup(Space.ROOT_ITEM_ID);
+        var originalItemEnt = group.getItems().stream() //
+            .filter(itemEnt -> itemEnt.getType().equals(SpaceItemEnt.TypeEnum.WORKFLOW)) //
+            .findAny().orElseThrow();
+        var itemPathBeforeRename = space.toLocalAbsolutePath(originalItemEnt.getId());
+
+        // perform rename
+        var newName = "newItemName";
+        var renamedItemEnt = ss().renameItem(providerId, space.getId(), originalItemEnt.getId(), newName);
+
+        // ID remains the same, name changes
+        MatcherAssert.assertThat("Rename return value describes renamed item",
+            renamedItemEnt.getId().equals(originalItemEnt.getId()) //
+                && renamedItemEnt.getType() == originalItemEnt.getType() //
+                && renamedItemEnt.getName().equals(newName));
+
+        // verify that id map was updated: ID should remain the same, associated path should have changed
+        var itemPathAfterRename = space.toLocalAbsolutePath(originalItemEnt.getId());
+        assertNotEquals("Item path has been updated", itemPathBeforeRename, itemPathAfterRename);
+
+        // verify that file exists at new path
+        MatcherAssert.assertThat("File exists at new name",
+            itemPathBeforeRename.resolveSibling(newName).toFile().exists());
     }
 
     /**
@@ -212,6 +289,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
+                return null;
+            }
+
+            @Override
+            public SpaceItemEnt renameItem(final String itemId, final String newName) throws IOException {
                 return null;
             }
 

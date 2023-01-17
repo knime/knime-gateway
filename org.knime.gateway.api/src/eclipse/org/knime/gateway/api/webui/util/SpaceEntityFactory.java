@@ -233,5 +233,4 @@ public final class SpaceEntityFactory {
             .setType(type) //
             .build();
     }
-
 }

@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
+ * @author Benjamin Moser, KNIME GmbH
  */
 public interface Space {
 
@@ -132,6 +133,15 @@ public interface Space {
      * @throws NoSuchElementException If the given workflow group item id doesn't refer to a workflow group
      */
     SpaceItemEnt createWorkflow(String workflowGroupItemId) throws IOException;
+
+    /**
+     * Rename a space item
+     *
+     * @param itemId The space item ID of the item to rename
+     * @return {@link SpaceItemEnt} describing the item after renaming
+     * @throws IOException
+     */
+    SpaceItemEnt renameItem(String itemId, String newName) throws IOException, IllegalArgumentException;
 
     /**
      * Resolves the item with the given ID into a local file, potentially downloading it.

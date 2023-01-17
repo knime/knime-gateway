@@ -152,4 +152,38 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
+            final String newName)
+            throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
+        try {
+            return getSpace(spaceId, spaceProviderId).renameItem(itemId, newName);
+        } catch (NoSuchElementException e) {
+            throw new InvalidRequestException("Could not access space", e);
+        } catch (IOException e) {
+            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * @param spaceId
+     * @param spaceProviderId
+     * @return the space for the given id if available
+     * @throws NoSuchElementException if there is no space or space-provider for the given ids
+     */
+    public Space getSpace(final String spaceId, final String spaceProviderId) {
+        var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
+        if (spaceProvider == null) {
+            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
+        }
+        var space = spaceProvider.getSpaceMap().get(spaceId);
+        if (space == null) {
+            throw new NoSuchElementException("No space found for id '" + spaceId + "'");
+        }
+        return space;
+    }
+
 }

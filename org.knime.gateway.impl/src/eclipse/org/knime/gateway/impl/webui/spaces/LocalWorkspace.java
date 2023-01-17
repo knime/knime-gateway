@@ -58,6 +58,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -68,6 +70,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.util.FileUtil;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.FileUtil;
@@ -78,13 +81,16 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.api.webui.util.SpaceEntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 
 /**
  * {@link Space}-implementation that represents the local workspace.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
+ * @author Benjamin Moser, KNIME GmbH
  */
 public final class LocalWorkspace implements Space {
 
@@ -99,8 +105,8 @@ public final class LocalWorkspace implements Space {
     public static final String DEFAULT_WORKFLOW_NAME = "KNIME_project";
 
     // Map from hash code representing the item-id to the absolute path.
-    // Assumption is that there is exactly one user of the local workspace at a time.
-    final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>(); // package private for tests
+    // assumption is that there is exactly one user of the local workspace at a time
+    final ItemIdToPathMap m_itemIdToPathMap = new ItemIdToPathMap(); // package-private for testing
 
     // just for optimization purposes: avoids the repeated determination of the item type
     // which sometimes involves reading and parsing files (in order to determine the component type)
@@ -309,7 +315,7 @@ public final class LocalWorkspace implements Space {
      * @throws IllegalArgumentException if the provided path is not absolute
      * @return the item id
      */
-    public String getItemId(final Path absolutePath) {
+    public String getItemId(final Path path) {
         CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
         var id = absolutePath.hashCode();
         Path existingPath;
@@ -325,7 +331,20 @@ public final class LocalWorkspace implements Space {
         return m_pathToTypeMap.computeIfAbsent(item, LocalWorkspace::getSpaceItemType);
     }
 
+    private SpaceItemEnt.TypeEnum updateSpaceItemTypeCache(final Path oldKey, final Path newKey) {
+        if (!m_pathToTypeMap.containsKey(oldKey)) {
+            throw new IllegalArgumentException("Item not yet in cache");
+        }
+        var value = m_pathToTypeMap.get(oldKey);
+        m_pathToTypeMap.remove(oldKey);
+        m_pathToTypeMap.put(newKey, value);
+        return value;
+    }
+
     private static SpaceItemEnt.TypeEnum getSpaceItemType(final Path item) {
+        if (!Files.exists(item)) {
+            return null;
+        }
         if (Files.isDirectory(item)) {
             // the order of checking is important because, e.g., a component also contains a workflow.knime file
             if (containsFile(item, WorkflowPersistor.TEMPLATE_FILE)) {
@@ -374,6 +393,181 @@ public final class LocalWorkspace implements Space {
                 newName = isWorkflow ? (oldName + counter) : (oldName + "(" + counter + ")"); // No brackets in workflow names
             } while (Files.exists(workflowGroup.resolve(newName + fileExtension)));
             return newName + fileExtension;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SpaceItemEnt renameItem(final String itemId, final String newName)
+            throws IOException, IllegalArgumentException {
+
+        // TODO not checked whether renamed item is parent of an open workflow
+        //  this can be verified once we determine itemIDs of ancestors, cf. NXT-1432
+        if (isItemAnOpenWorkflowProject(itemId)) {
+            throw new IllegalArgumentException(
+                    "At least one of the workflows or components affected by the renaming are still open and have to be closed.");
+        }
+
+        var sourcePath = toLocalAbsolutePath(itemId);
+        if (sourcePath == null) {
+            throw new IllegalArgumentException("Unknown item ID");
+        }
+        var itemType = getSpaceItemType(sourcePath);
+        var destinationPath = sourcePath.resolveSibling(Path.of(newName));
+        if (sourcePath.equals(destinationPath)) {
+            var oldName = sourcePath.getName(sourcePath.getNameCount() - 1).toString();
+            return SpaceEntityFactory.buildSpaceItemEnt(oldName, itemId, itemType);
+        }
+        var sourceFile = sourcePath.toFile();
+        var destinationFile = destinationPath.toFile();
+
+        if (destinationFile.exists()) {
+            throw new IllegalArgumentException("There already exists a file of that name");
+        }
+        assertValidItemNameOrThrow(newName);
+
+        try {
+            var renamingSucceeded = sourceFile.renameTo(destinationFile);
+            if (!renamingSucceeded) {
+                throw new IOException("Could not rename item");
+            }
+        } catch (SecurityException e) {
+            throw new IOException(e);
+        }
+
+        m_itemIdToPathMap.update(itemId, destinationPath);
+        updateSpaceItemTypeCache(sourcePath, destinationPath);
+
+        return SpaceEntityFactory.buildSpaceItemEnt(newName, itemId, itemType);
+    }
+
+    private static boolean isItemAnOpenWorkflowProject(final String itemId) {
+        return WorkflowProjectManager.getInstance().getWorkflowProjects().stream()
+                .flatMap(proj -> proj.getOrigin().stream()).anyMatch(origin -> origin.getItemId().equals(itemId));
+    }
+
+    private static final class ItemIdToPathMap {
+
+        private final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>();
+
+        /**
+         * @param itemId
+         * @return The cached path of the given item ID
+         */
+        public Path get(final String itemId) {
+            return get(Integer.parseInt(itemId));
+        }
+
+        /**
+         * @param itemId
+         * @return The cached path of the given item ID
+         */
+        public Path get(final int itemId) {
+            return m_itemIdToPathMap.get(itemId);
+        }
+
+        /**
+         * Add or update the mapping for given item ID
+         *
+         * @param itemId The key
+         * @param path The new value, expected to be an absolute path
+         * @return The previous value associated with the key or <code>null</code> if there was no previous value.
+         */
+        public Path put(final String itemId, final Path path) {
+            return put(Integer.parseInt(itemId), path);
+        }
+
+        /**
+         * Add or update the mapping for given item ID
+         *
+         * @param itemId The key
+         * @param path The new value, expected to be an absolute path
+         * @return The previous value associated with the key or <code>null</code> if there was no previous value.
+         */
+        public Path put(final int itemId, final Path path) {
+            if (!path.isAbsolute()) {
+                throw new IllegalArgumentException("Expecting absolute path");
+            }
+            return m_itemIdToPathMap.put(itemId, path);
+        }
+
+        /**
+         * Update the mapping for a given item ID
+         *
+         * @param itemId The key, expected to be already present in the mapping
+         * @param path The new value, expected to be an absolute path
+         * @return The previous value associated with the key or <code>null</code> if there was no previous value.
+         */
+        public Path update(final String itemId, final Path path) {
+            return update(Integer.parseInt(itemId), path);
+        }
+
+        /**
+         * Update the mapping for a given item ID
+         *
+         * @param itemId The key, expected to be already present in the mapping
+         * @param path The new value, expected to be an absolute path
+         * @return The previous value associated with the key or <code>null</code> if there was no previous value.
+         */
+        public Path update(final int itemId, final Path path) {
+            if (!m_itemIdToPathMap.containsKey(itemId)) {
+                throw new IllegalArgumentException("Key not yet in map");
+            }
+            return put(itemId, path);
+        }
+
+        /**
+         * Determine an item ID for a given path. Persist the mapping and handle collisions.
+         *
+         * @return A function performing the task.
+         */
+        public Function<Path, String> getItemIdFunction() {
+            return path -> {
+                var id = path.hashCode();
+                Path existingPath;
+                while ((existingPath = m_itemIdToPathMap.get(id)) != null && !path.equals(existingPath)) {
+                    // handle hash collision
+                    id = 31 * id;
+                }
+                m_itemIdToPathMap.put(id, path);
+                return Integer.toString(id);
+            };
+        }
+
+    }
+
+    /**
+     * Verify that the given name is a valid name for an item in a {@link LocalWorkspace}.
+     *
+     * @see FileStoreNameValidator#isValid
+     * @see ExplorerFileSystem#validateFilename
+     * @param name The candidate new name.
+     */
+    public static void assertValidItemNameOrThrow(final String name) throws IllegalArgumentException {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Please choose a name");
+        }
+        if (Path.of(name).getParent() != null) {
+            throw new IllegalArgumentException("Name cannot be a path");
+        }
+        if (Character.isWhitespace(name.charAt(0))) {
+            throw new IllegalArgumentException("Name cannot contain leading whitespace.");
+        }
+        if (Character.isWhitespace(name.charAt(name.length() - 1))) {
+            throw new IllegalArgumentException("Name cannot contain trailing whitespace.");
+        }
+        if (name.startsWith(".")) {
+            throw new IllegalArgumentException("Name cannot start with dot.");
+        }
+        if (name.endsWith(".")) {
+            throw new IllegalArgumentException("Name cannot end with dot.");
+        }
+        Matcher matcher = FileUtil.ILLEGAL_FILENAME_CHARS_PATTERN.matcher(name);
+        if (matcher.find()) {
+            throw new IllegalArgumentException(
+                    "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
         }
     }
 

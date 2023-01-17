@@ -132,6 +132,10 @@ public final class WorkflowProjectManager {
         return new LinkedHashSet<>(m_workflowProjectMap.keySet());
     }
 
+    public Set<WorkflowProject> getWorkflowProjects() {
+        return new HashSet<>(m_workflowProjectMap.values());
+    }
+
     /**
      * Adds the workflow project with the id to the manager. If a workflow project with the given id already exists, it
      * will be replaced.
