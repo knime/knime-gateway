@@ -90,10 +90,11 @@ public interface NodeRepositoryService extends GatewayService {
      * @param tagsOffset The number of tags to be skipped (for pagination).
      * @param tagsLimit The maximum number of tags to be returned (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
+     * @param includeAll If true, all nodes/components will be included in the result. Otherwise, only the nodes/components that are part of the current collection will be included.
      *
      * @return the result
      */
-    NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo) ;
+    NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo, Boolean includeAll) ;
         
     /**
      * Searches for nodes (and components) in the node repository.

@@ -49,10 +49,13 @@
 package org.knime.gateway.impl.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -84,7 +87,7 @@ public class NodeGroupTest {
 
     @Test
     public void testSelectNodesMinimalTemplateInfo() {
-        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 1, 2, Boolean.FALSE);
+        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 1, 2, Boolean.FALSE, Boolean.TRUE);
         assertThat("unexpected number of groups", res.getGroups().size(), lessThanOrEqualTo(2));
         assertThat("unexpected 2nd group", res.getGroups().get(0).getTag(), is("Manipulation"));
         assertThat("unexpected number of nodes per tag", res.getGroups().get(0).getNodes().size(), is(6));
@@ -97,7 +100,7 @@ public class NodeGroupTest {
 
     @Test
     public void testSelectNodesFullTemplateInfo() {
-        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 2, 3, Boolean.TRUE);
+        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(6, 2, 3, Boolean.TRUE, Boolean.TRUE);
         assertThat("unexpected number of groups", res.getGroups().size(), lessThanOrEqualTo(3));
         assertThat("unexpected 3rd group", res.getGroups().get(0).getTag(), is("Views"));
         assertThat("unexpected number of nodes per tag", res.getGroups().get(0).getNodes().size(), is(6));
@@ -109,9 +112,19 @@ public class NodeGroupTest {
 
     @Test
     public void testSelectNodesNoEmptySelections() {
-        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(1, 0, null, Boolean.FALSE);
+        NodeGroupsEnt res = m_groups.getNodesGroupedByTags(1, 0, null, Boolean.FALSE, Boolean.TRUE);
         int numTotalNodes = (int)res.getGroups().stream().mapToInt(s -> s.getNodes().size()).count();
         assertThat("unexpected number of total nodes", res.getTotalNumGroups(), is(numTotalNodes));
     }
 
+    @Test
+    public void testSelectNodesFiltered() {
+        var res = m_groups.getNodesGroupedByTags(1, 0, null, Boolean.TRUE, Boolean.FALSE);
+        var resNodeFactories = res.getGroups().stream().flatMap(g -> g.getNodes().stream())
+            .map(n -> n.getNodeFactory().getClassName()).collect(Collectors.toList());
+        assertThat("some filtered nodes are expected", resNodeFactories.size(), is(greaterThan(0)));
+        assertThat("only filtered nodes included in the result",
+            resNodeFactories.stream().allMatch(NodeRepositoryTestingUtil.INCLUDED_NODES::contains), is(true));
+        assertThat("unexpected number of total nodes", res.getTotalNumGroups(), is(resNodeFactories.size()));
+    }
 }

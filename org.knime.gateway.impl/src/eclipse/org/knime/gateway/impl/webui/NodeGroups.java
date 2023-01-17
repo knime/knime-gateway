@@ -92,7 +92,9 @@ public final class NodeGroups {
 
     private final NodeRepository m_nodeRepo;
 
-    private Map<String, List<Node>> m_nodesPerCategory;
+    private Map<String, List<Node>> m_allNodesPerCategory;
+
+    private Map<String, List<Node>> m_filteredNodesPerCategory;
 
     private List<Pair<String, String>> m_topLevelCats;
 
@@ -113,33 +115,51 @@ public final class NodeGroups {
      * @param tagsLimit the maximum number of tags to select
      * @param fullTemplateInfo see
      *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
+     * @param includeAll If true, all nodes/components will be included in the groups. Otherwise, only the
+     *            nodes/components that are part of the current collection will be included.
      * @return the node groups entity
      */
     public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
-        final Integer tagsLimit, final Boolean fullTemplateInfo) {
-        initNodesAndCategories();
+        final Integer tagsLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
+        initCategories();
+        var nodesPerCategory = getNodesPerCategory(Boolean.TRUE.equals(includeAll));
+
         List<NodeGroupEnt> groups = m_topLevelCats.stream()//
+            .filter(p -> nodesPerCategory.containsKey(p.getFirst()))//
             .skip(tagsOffset == null ? 0 : tagsOffset)//
             .limit(tagsLimit == null ? Integer.MAX_VALUE : tagsLimit)//
-            .map(p -> buildNodeGroupEnt(p.getFirst(), p.getSecond(), numNodesPerTag, fullTemplateInfo))//
+            .map(p -> buildNodeGroupEnt(nodesPerCategory.get(p.getFirst()), p.getSecond(), numNodesPerTag, fullTemplateInfo))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());
         return builder(NodeGroupsEntBuilder.class).setGroups(groups)
-            .setTotalNumGroups(m_nodesPerCategory.size()).build();
+            .setTotalNumGroups(nodesPerCategory.size()).build();
     }
 
-    private synchronized void initNodesAndCategories() {
-        if (m_nodesPerCategory == null) {
+    private synchronized void initCategories() {
+        if (m_topLevelCats == null) {
             Map<String, CategoryExtension> cats = CategoryExtensionManager.getInstance().getCategoryExtensions();
             List<Pair<String, String>> topLevelCats = getSortedCategoriesAtLevel("/", cats.values());
             Pair<String, String> uncat = Pair.create(UNCATEGORIZED_KEY, UNCATEGORIZED_NAME);
             if (!topLevelCats.contains(uncat)) {
                 topLevelCats.add(uncat);
             }
-            Map<String, List<Node>> nodesPerCategory = categorizeNodes(m_nodeRepo.getNodes(false), topLevelCats);
-
             m_topLevelCats = Collections.synchronizedList(topLevelCats);
-            m_nodesPerCategory = Collections.synchronizedMap(nodesPerCategory);
+        }
+    }
+
+    private synchronized Map<String, List<Node>> getNodesPerCategory(final boolean includeAll) {
+        if (includeAll) {
+            if (m_allNodesPerCategory == null) {
+                m_allNodesPerCategory =
+                    Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(true), m_topLevelCats));
+            }
+            return m_allNodesPerCategory;
+        } else {
+            if (m_filteredNodesPerCategory == null) {
+                m_filteredNodesPerCategory =
+                    Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(false), m_topLevelCats));
+            }
+            return m_filteredNodesPerCategory;
         }
     }
 
@@ -187,9 +207,8 @@ public final class NodeGroups {
         return res;
     }
 
-    private NodeGroupEnt buildNodeGroupEnt(final String completePath, final String name,
+    private static NodeGroupEnt buildNodeGroupEnt(final List<Node> nodesPerCategory, final String name,
         final Integer numNodesPerTag, final Boolean fullTemplateInfo) {
-        List<Node> nodesPerCategory = m_nodesPerCategory.get(completePath);
         if (nodesPerCategory == null || nodesPerCategory.isEmpty()) {
             return null;
         }

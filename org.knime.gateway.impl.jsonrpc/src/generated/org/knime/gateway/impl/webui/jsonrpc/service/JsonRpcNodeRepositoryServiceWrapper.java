@@ -100,8 +100,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      */
     @Override
     @JsonRpcMethod(value = "getNodesGroupedByTags")
-    public NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo)  {
-        return m_service.get().getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
+    public NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo, Boolean includeAll)  {
+        return m_service.get().getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo, includeAll);    
     }
 
 	/**
