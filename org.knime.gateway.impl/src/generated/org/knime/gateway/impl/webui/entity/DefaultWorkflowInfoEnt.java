@@ -66,6 +66,7 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
   protected org.knime.gateway.api.entity.NodeIDEnt m_containerId;
   protected ContainerTypeEnum m_containerType;
   protected Boolean m_linked;
+  protected Boolean m_onHub;
   protected JobManagerEnt m_jobManager;
   
   protected DefaultWorkflowInfoEnt() {
@@ -92,6 +93,7 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
     }
     m_containerType = immutable(builder.m_containerType);
     m_linked = immutable(builder.m_linked);
+    m_onHub = immutable(builder.m_onHub);
     m_jobManager = immutable(builder.m_jobManager);
   }
   
@@ -110,7 +112,7 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
             return false;
         }
         DefaultWorkflowInfoEnt ent = (DefaultWorkflowInfoEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_containerId, ent.m_containerId) && Objects.equals(m_containerType, ent.m_containerType) && Objects.equals(m_linked, ent.m_linked) && Objects.equals(m_jobManager, ent.m_jobManager);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_containerId, ent.m_containerId) && Objects.equals(m_containerType, ent.m_containerType) && Objects.equals(m_linked, ent.m_linked) && Objects.equals(m_onHub, ent.m_onHub) && Objects.equals(m_jobManager, ent.m_jobManager);
     }
 
 
@@ -125,6 +127,7 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
                .append(m_containerId)
                .append(m_containerType)
                .append(m_linked)
+               .append(m_onHub)
                .append(m_jobManager)
                .toHashCode();
    }
@@ -152,6 +155,11 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
   }
     
   @Override
+  public Boolean isOnHub() {
+        return m_onHub;
+  }
+    
+  @Override
   public JobManagerEnt getJobManager() {
         return m_jobManager;
   }
@@ -167,6 +175,7 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
         private org.knime.gateway.api.entity.NodeIDEnt m_containerId;
         private ContainerTypeEnum m_containerType;
         private Boolean m_linked;
+        private Boolean m_onHub;
         private JobManagerEnt m_jobManager;
 
         @Override
@@ -199,6 +208,12 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
         @Override
         public DefaultWorkflowInfoEntBuilder setLinked(Boolean linked) {
              m_linked = linked;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowInfoEntBuilder setOnHub(Boolean onHub) {
+             m_onHub = onHub;
              return this;
         }
 

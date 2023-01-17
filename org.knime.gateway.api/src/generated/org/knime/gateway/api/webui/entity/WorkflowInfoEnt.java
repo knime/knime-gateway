@@ -102,10 +102,16 @@ public interface WorkflowInfoEnt extends GatewayEntity {
   public ContainerTypeEnum getContainerType();
 
   /**
-   * True, if the component or metanode is linked. If not, this property is absent.
+   * True if the component or metanode is linked. If not, this property is absent.
    * @return linked 
    **/
   public Boolean isLinked();
+
+  /**
+   * True if the workflow is a temporary copy from a Hub. If not, this property is absent.
+   * @return onHub 
+   **/
+  public Boolean isOnHub();
 
   /**
    * Get jobManager
@@ -144,12 +150,20 @@ public interface WorkflowInfoEnt extends GatewayEntity {
         WorkflowInfoEntBuilder setContainerType(ContainerTypeEnum containerType);
         
         /**
-         * True, if the component or metanode is linked. If not, this property is absent.
+         * True if the component or metanode is linked. If not, this property is absent.
          * 
          * @param linked the property value,  
          * @return this entity builder for chaining
          */
         WorkflowInfoEntBuilder setLinked(Boolean linked);
+        
+        /**
+         * True if the workflow is a temporary copy from a Hub. If not, this property is absent.
+         * 
+         * @param onHub the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowInfoEntBuilder setOnHub(Boolean onHub);
         
         /**
    		 * Set jobManager

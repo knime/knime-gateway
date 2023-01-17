@@ -66,6 +66,7 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.KnimeUrlType;
 import org.knime.core.util.Pair;
 import org.knime.core.util.workflowalizer.MetadataConfig;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -156,7 +157,10 @@ public final class LocalWorkspace implements Space {
                 + m_localWorkspaceRootPath + "'");
         }
         try {
-            return new URIBuilder(itemRelUri).setScheme("knime").setHost("LOCAL").build();
+            return new URIBuilder(itemRelUri) //
+                    .setScheme(KnimeUrlType.SCHEME) //
+                    .setHost(LOCAL_WORKSPACE_ID.toUpperCase()) //
+                    .build();
         } catch (URISyntaxException ex) {
             throw new IllegalStateException(ex);
         }

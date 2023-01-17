@@ -85,6 +85,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
     public Boolean isLinked();
     
     @Override
+    @JsonProperty("onHub")
+    public Boolean isOnHub();
+    
+    @Override
     @JsonProperty("jobManager")
     public JobManagerEnt getJobManager();
     
@@ -116,6 +120,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
         @Override
         @JsonProperty("linked")
         public WorkflowInfoEntMixInBuilder setLinked(final Boolean linked);
+        
+        @Override
+        @JsonProperty("onHub")
+        public WorkflowInfoEntMixInBuilder setOnHub(final Boolean onHub);
         
         @Override
         @JsonProperty("jobManager")

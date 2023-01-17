@@ -99,6 +99,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2.LocationType;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
 import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
@@ -1128,7 +1130,11 @@ public final class WorkflowEntityFactory {
             .setName(wfm.getName())//
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
-            .setLinked(getTemplateLink(template) == null ? null : Boolean.TRUE)//
+            .setLinked(getTemplateLink(template) != null ? Boolean.TRUE : null)//
+            .setOnHub(Optional.ofNullable(wfm.getContextV2())//
+                .map(WorkflowContextV2::getLocationType)//
+                .filter(LocationType.HUB_SPACE::equals)//
+                .isPresent() ? Boolean.TRUE : null)//
             .setJobManager(buildJobManagerEnt(wfm.findJobManager())).build();
     }
 
