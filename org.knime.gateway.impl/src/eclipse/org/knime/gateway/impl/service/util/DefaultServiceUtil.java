@@ -52,7 +52,6 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
@@ -286,7 +285,7 @@ public final class DefaultServiceUtil {
                 throw new IOException(
                     "Problem reading factory settings while trying to create node from '" + factoryClassName + "'", ex);
             }
-        } else if (nodeFactory instanceof DynamicNodeFactory) {
+        } else if (nodeFactory.isLazilyInitialized()) {
             //no settings stored with a dynamic node factory (which is the, e.g., with the spark nodes)
             //at least init the node factory in order to have the node description available
             nodeFactory.init();
