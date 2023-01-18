@@ -84,9 +84,9 @@ public class NodeSearch {
     private static final Comparator<String> ALPHANUMERIC_COMPARATOR = new AlphanumericComparator(Comparator.naturalOrder());
 
     /*
-     * Upper excluding bound of distances to a query a node may have to be labeled as a match.
+     * Lower (including) bound of similarity to a query a node may have to be labeled as a match.
      */
-    private static final double DISTANCE_THRESHOLD = 0.85;
+    private static final double SIMILARITY_THRESHOLD = 0.15;
 
     /*
      * Maps a search query to the list of found nodes.
@@ -174,15 +174,10 @@ public class NodeSearch {
                 .filter(n -> filterByTags(n, tags, allTagsMatch));
             if (isSearchQueryGiven) {
                 final String upperCaseQuery = q.toUpperCase();
-                foundNodes = tagFiltered.map(n -> {
-                    String upperCaseName = n.name.toUpperCase();
-                    double score = upperCaseName.contains(upperCaseQuery) ? 0.0
-                        : TanimotoBiGramDistance.computeTanimotoBiGramDistance(upperCaseName, upperCaseQuery);
-                    return new FoundNode(n, score);
-                })//
-                    .filter(n -> n.score < DISTANCE_THRESHOLD)//
+                foundNodes = tagFiltered.map(n -> toFoundNode(n, upperCaseQuery))//
+                    .filter(n -> n.score >= SIMILARITY_THRESHOLD)//
                     .sorted(Comparator.<FoundNode> comparingInt(n -> n.node.isIncluded ? 0 : 1)
-                        .thenComparingDouble(n -> n.score).thenComparingInt(n -> -n.node.weight)
+                        .thenComparingDouble(n -> -n.score).thenComparingInt(n -> -n.node.weight)
                         .thenComparing(n -> n.node.name, ALPHANUMERIC_COMPARATOR))//
                     .map(wn -> wn.node)//
                     .collect(Collectors.toList());
@@ -195,6 +190,20 @@ public class NodeSearch {
             }
         }
         return foundNodes;
+    }
+
+    /**
+     * For a node and a search query, create an instance representing the node and the similarity score.
+     */
+    private static FoundNode toFoundNode(final Node node, final String upperCaseQuery) {
+        double score;
+        final var searchable = node.getFuzzySearchable();
+        if (searchable.contains(upperCaseQuery)) {
+            score = 1.0;
+        } else {
+            score = searchable.computeSimilarity(upperCaseQuery);
+        }
+        return new FoundNode(node, score);
     }
 
     private static boolean filterByTags(final Node n, final List<String> tags, final Boolean allTagsMatch) {

@@ -64,6 +64,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
@@ -74,6 +76,7 @@ import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.extension.NodeFactoryExtension;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.extension.NodeSetFactoryExtension;
+import org.knime.core.ui.util.FuzzySearchable;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService;
@@ -221,10 +224,8 @@ public final class NodeRepository {
                     LOGGER.error(ex.getMessage(), ex);
                     continue;
                 }
-                Node n = new Node();
+                Node n = new Node(factory);
                 n.templateId = EntityFactory.NodeTemplateAndDescription.createTemplateId(factory);
-                n.factory = factory;
-                n.name = factory.getNodeName();
                 n.path = normalizeCategoryPath(ext.getCategoryPath());
                 n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
                 nodes.put(n.templateId, n);
@@ -245,10 +246,8 @@ public final class NodeRepository {
                 if (factory == null || excludeFactory.test(factory)) {
                     continue;
                 }
-                Node n = new Node();
+                Node n = new Node(factory);
                 n.templateId = EntityFactory.NodeTemplateAndDescription.createTemplateId(factory);
-                n.factory = factory;
-                n.name = factory.getNodeName();
                 n.path = normalizeCategoryPath(ext.getCategoryPath(factoryId));
                 n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
                 nodes.put(n.templateId, n);
@@ -333,10 +332,18 @@ public final class NodeRepository {
     @SuppressWarnings("java:S116")
     static class Node {
 
+        private final LazyInitializer<FuzzySearchable> m_fuzzySearchableInitializer =
+            new LazyInitializer<FuzzySearchable>() {
+                @Override
+                protected FuzzySearchable initialize() throws ConcurrentException {
+                    return new FuzzySearchable(name, factory.getKeywords());
+                }
+            };
+
         /**
          * The node name.
          */
-        String name;
+        final String name;
 
         /**
          * The tags associated with this node (for nodes these are all the categories, i.e. their names, along the
@@ -357,7 +364,7 @@ public final class NodeRepository {
         /**
          * The node's factory instance.
          */
-        NodeFactory<? extends NodeModel> factory;
+        final NodeFactory<? extends NodeModel> factory;
 
         /**
          * A weight used for sorting nodes if no other sort criteria is available (such as the search score). The weight
@@ -369,6 +376,19 @@ public final class NodeRepository {
          * If the node is included in the current filter.
          */
         boolean isIncluded;
+
+        private Node(final NodeFactory<? extends NodeModel> f) {
+            this.factory = f;
+            this.name = f.getNodeName();
+        }
+
+        FuzzySearchable getFuzzySearchable() {
+            try {
+                return m_fuzzySearchableInitializer.get();
+            } catch (ConcurrentException ex) {
+                throw new IllegalStateException(ex);
+            }
+        }
     }
 
 }
