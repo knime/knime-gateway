@@ -140,9 +140,11 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
             data = "IOException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, String newName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, String newName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException, ServiceExceptions.OperationNotAllowedException {
         return m_service.get().renameItem(spaceProviderId, spaceId, itemId, newName);    
     }
 

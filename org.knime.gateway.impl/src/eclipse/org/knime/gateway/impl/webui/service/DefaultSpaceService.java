@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -158,7 +159,8 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
             final String newName)
-            throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
+            throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException,
+            ServiceExceptions.OperationNotAllowedException {
         try {
             return getSpace(spaceId, spaceProviderId).renameItem(itemId, newName);
         } catch (NoSuchElementException e) {

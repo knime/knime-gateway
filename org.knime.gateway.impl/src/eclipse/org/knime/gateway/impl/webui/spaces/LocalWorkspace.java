@@ -80,6 +80,7 @@ import org.knime.core.util.workflowalizer.MetadataConfig;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.SpaceEntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
@@ -401,18 +402,22 @@ public final class LocalWorkspace implements Space {
      */
     @Override
     public SpaceItemEnt renameItem(final String itemId, final String newName)
-            throws IOException, IllegalArgumentException {
+            throws IOException, ServiceExceptions.OperationNotAllowedException {
 
         // TODO not checked whether renamed item is parent of an open workflow
         //  this can be verified once we determine itemIDs of ancestors, cf. NXT-1432
         if (isItemAnOpenWorkflowProject(itemId)) {
-            throw new IllegalArgumentException(
+            throw new ServiceExceptions.OperationNotAllowedException(
                     "At least one of the workflows or components affected by the renaming are still open and have to be closed.");
+        }
+
+        if (itemId.equals(LocalWorkspace.ROOT_ITEM_ID)) {
+            throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
         }
 
         var sourcePath = toLocalAbsolutePath(itemId);
         if (sourcePath == null) {
-            throw new IllegalArgumentException("Unknown item ID");
+            throw new IOException("Unknown item ID");
         }
         var itemType = getSpaceItemType(sourcePath);
         var destinationPath = sourcePath.resolveSibling(Path.of(newName));
@@ -424,7 +429,7 @@ public final class LocalWorkspace implements Space {
         var destinationFile = destinationPath.toFile();
 
         if (destinationFile.exists()) {
-            throw new IllegalArgumentException("There already exists a file of that name");
+            throw new ServiceExceptions.OperationNotAllowedException("There already exists a file of that name");
         }
         assertValidItemNameOrThrow(newName);
 

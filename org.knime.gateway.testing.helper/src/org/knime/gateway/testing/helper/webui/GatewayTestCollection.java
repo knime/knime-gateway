@@ -195,6 +195,10 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameSpaceItem());
         res.put("testRenameSpaceItemLocal",
             (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameSpaceItemLocal());
+        res.put("testRenameToExistingLocal",
+            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameToExistingLocal());
+        res.put("testRenameRootLocal",
+            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameRootLocal());
 
         return res;
     }

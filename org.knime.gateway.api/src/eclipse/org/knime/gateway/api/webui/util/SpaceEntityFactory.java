@@ -226,7 +226,7 @@ public final class SpaceEntityFactory {
      * @param type item type
      * @return resulting entity
      */
-    public SpaceItemEnt buildSpaceItemEnt(final String name, final String id, final SpaceItemEnt.TypeEnum type) {
+    public static SpaceItemEnt buildSpaceItemEnt(final String name, final String id, final SpaceItemEnt.TypeEnum type) {
         return builder(SpaceItemEntBuilder.class) //
             .setId(id) //
             .setName(name) //

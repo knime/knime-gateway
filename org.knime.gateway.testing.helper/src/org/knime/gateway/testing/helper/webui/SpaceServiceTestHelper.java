@@ -64,13 +64,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Consumer;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.apache.commons.io.FileUtils;
+import org.knime.core.util.Pair;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.PathUtils;
@@ -78,6 +79,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.SpaceEntityFactory;
 import org.knime.gateway.impl.webui.LocalWorkspace;
@@ -94,9 +96,6 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 import org.knime.core.util.PathUtils;
-
-import com.knime.explorer.server.internal.HubSpaceProviders;
-import com.knime.explorer.server.internal.WorkflowHubFacade;
 
 /**
  * Tests {@link SpaceService}-implementations.
@@ -142,16 +141,23 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         verify(mockedSpace).renameItem(itemId, newName);
     }
 
-    public void testRenameSpaceItemLocal() throws Exception {
-        // set up a workspace -- copy workspace directory to temp. path
-        var tempPath = PathUtils.createTempDir("testRenameSpaceItemLocal");
-        PathUtils.copyDirectory(getTestWorkspacePath(), tempPath);
+    private Pair<SpaceProvider, Space> createTempLocalSpaceProvider(String directoryNamePrefix, WorkspaceType type)
+        throws IOException {
+        var tempPath = PathUtils.createTempDir(directoryNamePrefix);
         var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
         var space = spaceProvider.getSpaceMap().get(LocalWorkspace.LOCAL_WORKSPACE_ID);
-        var providerId = spaceProvider.getId();
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(providerId, spaceProvider));
+        PathUtils.copyDirectory(getTestWorkspacePath(type), tempPath);
+        return new Pair<>(spaceProvider, space);
+    }
 
-        // find some item to rename
+    public void testRenameSpaceItemLocal() throws Exception {
+        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", WorkspaceType.LIST);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class,
+            () -> Map.of(p.getFirst().getId(), p.getFirst()));
+        var providerId = p.getFirst().getId();
+        var space = p.getSecond();
+
+        // find some arbitrary item to rename
         var group = space.listWorkflowGroup(Space.ROOT_ITEM_ID);
         var originalItemEnt = group.getItems().stream() //
             .filter(itemEnt -> itemEnt.getType().equals(SpaceItemEnt.TypeEnum.WORKFLOW)) //
@@ -175,6 +181,63 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // verify that file exists at new path
         MatcherAssert.assertThat("File exists at new name",
             itemPathBeforeRename.resolveSibling(newName).toFile().exists());
+    }
+
+    public void testRenameToExistingLocal() throws Exception {
+        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", WorkspaceType.LIST);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class,
+            () -> Map.of(p.getFirst().getId(), p.getFirst()));
+        var providerId = p.getFirst().getId();
+        var space = p.getSecond();
+
+        var group1 = getItemByName("Group1", space);
+        var group2 = getItemByName("Group2", space);
+        var newName = group2.getName();
+
+        // note that we explicitly do not allow overwriting items of same type
+        // see legacy GlobalRenameAction
+        assertThrows(ServiceExceptions.OperationNotAllowedException.class, () -> {
+            ss().renameItem(providerId, space.getId(), group1.getId(), newName);
+        });
+    }
+
+    public void testRenameRootLocal() throws Exception {
+        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", WorkspaceType.LIST);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class,
+                () -> Map.of(p.getFirst().getId(), p.getFirst()));
+        var providerId = p.getFirst().getId();
+        var space = p.getSecond();
+        var rootItem = getItemById(LocalWorkspace.ROOT_ITEM_ID, space);
+        assertThrows(ServiceExceptions.OperationNotAllowedException.class, () -> {
+            ss().renameItem(providerId, space.getId(), rootItem.getId(), "newName");
+        });
+    }
+
+
+    /**
+     * Obtain with given id in root level of space
+     *
+     * @param id The ID of the item to locate
+     * @return an entity describing the item, or an empty optional if it could not be found
+     */
+    private SpaceItemEnt getItemById(String id, Space space) throws IOException {
+        return getItem(space, item -> item.getId().equals(id));
+    }
+
+    /**
+     * Obtain with given name in root level of space
+     *
+     * @param name The filename of the item to locate
+     * @return an entity describing the item, or an empty optional if it could not be found
+     */
+    private SpaceItemEnt getItemByName(String name, Space space) throws IOException {
+        return getItem(space, item -> item.getName().equals(name));
+    }
+
+    private SpaceItemEnt getItem(Space space, Predicate<SpaceItemEnt> predicate) throws IOException {
+        var group = space.listWorkflowGroup(Space.ROOT_ITEM_ID);
+        return group.getItems().stream().filter(predicate).findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
     }
 
     /**

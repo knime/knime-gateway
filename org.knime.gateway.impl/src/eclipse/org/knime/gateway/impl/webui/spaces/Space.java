@@ -60,6 +60,7 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
  * Represents a space in order to abstract from different space implementations (e.g. the local workspace or a hub
@@ -141,7 +142,8 @@ public interface Space {
      * @return {@link SpaceItemEnt} describing the item after renaming
      * @throws IOException
      */
-    SpaceItemEnt renameItem(String itemId, String newName) throws IOException, IllegalArgumentException;
+    SpaceItemEnt renameItem(String itemId, String newName) throws IOException,
+            ServiceExceptions.OperationNotAllowedException;
 
     /**
      * Resolves the item with the given ID into a local file, potentially downloading it.
