@@ -119,5 +119,12 @@ public interface WorkflowProject {
          * @return The item ID of the workflow project
          */
         String getItemId();
+
+        /**
+         * @return the relative path of the original space item - usually only given for the local space
+         */
+        default Optional<String> getRelativePath() {
+            return Optional.empty();
+        }
     }
 }

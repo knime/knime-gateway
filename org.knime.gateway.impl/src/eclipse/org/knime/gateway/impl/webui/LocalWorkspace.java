@@ -57,7 +57,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.knime.core.node.InvalidSettingsException;
@@ -128,7 +127,7 @@ public final class LocalWorkspace implements Space {
     public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
         var absolutePath = getAbsolutePath(workflowGroupItemId);
         return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
-            getItemIdFunction(), this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem,
+            this::getItemId, this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem,
             getItemComparator());
     }
 
@@ -138,7 +137,7 @@ public final class LocalWorkspace implements Space {
         var workflowName = generateUniqueWorkflowName(parentWorkflowGroupPath);
         var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowName));
         Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
-        var id = getItemIdFunction().apply(directoryPath);
+        var id = getItemId(directoryPath);
         return EntityFactory.Space.buildLocalSpaceItemEnt(directoryPath, m_localWorkspaceRootPath, id);
     }
 
@@ -204,21 +203,23 @@ public final class LocalWorkspace implements Space {
         return Comparator.comparing(SpaceItemEnt::getType).thenComparing(SpaceItemEnt::getName);
     }
 
+
     /**
      * Determine an item ID for a given path. Persist the mapping and handle collisions.
-     * @return A function performing the task.
+     *
+     * @param path the path to get the id for
+     *
+     * @return the item id
      */
-    public Function<Path, String> getItemIdFunction() {
-        return path -> {
-            var id = path.hashCode();
-            Path existingPath;
-            while ((existingPath = m_itemIdToPathMap.get(id)) != null && !path.equals(existingPath)) {
-                // handle hash collision
-                id = 31 * id;
-            }
-            m_itemIdToPathMap.put(id, path);
-            return Integer.toString(id);
-        };
+    public String getItemId(final Path path) {
+        var id = path.hashCode();
+        Path existingPath;
+        while ((existingPath = m_itemIdToPathMap.get(id)) != null && !path.equals(existingPath)) {
+            // handle hash collision
+            id = 31 * id;
+        }
+        m_itemIdToPathMap.put(id, path);
+        return Integer.toString(id);
     }
 
     private SpaceItemEnt.TypeEnum cacheOrGetSpaceItemTypeFromCache(final Path item) {

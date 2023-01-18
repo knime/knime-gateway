@@ -169,7 +169,8 @@ public final class WorkflowProjectManager {
      * will be returned instead.
      *
      * @param workflowProjectID
-     * @return the opened workflow or an empty optional if there is no workflow project with the given id
+     * @return the opened workflow or an empty optional if there is no workflow project with the given id or the project
+     *         couldn't be opened
      */
     public Optional<WorkflowManager> openAndCacheWorkflow(final String workflowProjectID) {
         WorkflowManager wfm = getCachedWorkflow(workflowProjectID).orElse(null);
@@ -179,6 +180,9 @@ public final class WorkflowProjectManager {
                 return Optional.empty();
             }
             wfm = wp.openProject();
+            if (wfm == null) {
+                return Optional.empty();
+            }
             cacheWorkflow(workflowProjectID, wfm);
         }
         return Optional.of(wfm);
