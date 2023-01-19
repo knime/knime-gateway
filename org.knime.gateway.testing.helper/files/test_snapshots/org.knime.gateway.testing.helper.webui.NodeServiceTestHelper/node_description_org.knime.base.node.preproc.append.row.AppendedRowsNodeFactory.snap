@@ -34,7 +34,7 @@
       "name" : "Resolution action for duplicate RowIDs",
       "optional" : false
     }, {
-      "description" : "\n            Enables hiliting between both inputs and the concatenated output\n            table.\n        ",
+      "description" : "\n            Advanced setting that enables hiliting between both inputs and the concatenated output\n            table.\n        ",
       "name" : "Enable hiliting",
       "optional" : false
     } ]
