@@ -53,7 +53,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -128,7 +127,7 @@ public final class LocalWorkspace implements Space {
         var absolutePath = getAbsolutePath(workflowGroupItemId);
         return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
             this::getItemId, this::cacheOrGetSpaceItemTypeFromCache, LocalWorkspace::isValidWorkspaceItem,
-            getItemComparator());
+            ITEM_COMPARATOR);
     }
 
     @Override
@@ -198,11 +197,6 @@ public final class LocalWorkspace implements Space {
             return false;
         }
     }
-
-    private static Comparator<SpaceItemEnt> getItemComparator() {
-        return Comparator.comparing(SpaceItemEnt::getType).thenComparing(SpaceItemEnt::getName);
-    }
-
 
     /**
      * Determine an item ID for a given path. Persist the mapping and handle collisions.

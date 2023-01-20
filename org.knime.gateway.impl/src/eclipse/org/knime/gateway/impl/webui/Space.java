@@ -51,8 +51,10 @@ package org.knime.gateway.impl.webui;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
+import org.knime.core.data.sort.AlphanumericComparator;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -66,6 +68,15 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
  * @author Kai Franze, KNIME GmbH
  */
 public interface Space {
+
+    /**
+     * Comparator used for ordering items inside a space. While names are compared ignoring upper/lower case, ties are
+     * broken by comparing the original strings. This guarantees that the order is consistent even if items are only
+     * distinguished by case.
+     */
+    static final Comparator<SpaceItemEnt> ITEM_COMPARATOR = Comparator.comparing(SpaceItemEnt::getType) //
+                .thenComparing(SpaceItemEnt::getName, //
+                    new AlphanumericComparator(String::compareToIgnoreCase).thenComparing(Comparator.naturalOrder()));
 
     /**
      * Id of the root 'workflow group'.
