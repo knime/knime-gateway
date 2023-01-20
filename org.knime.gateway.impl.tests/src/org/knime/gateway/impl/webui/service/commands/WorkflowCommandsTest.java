@@ -67,7 +67,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.awaitility.Awaitility;
@@ -110,7 +109,8 @@ import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.DefaultEventService;
@@ -292,10 +292,11 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
 
         Semaphore semaphore = new Semaphore(0);
         AtomicReference<Object> event = new AtomicReference<>();
@@ -411,8 +412,9 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testCanUndoAndCanRedoCalledAfterExecuteUndoAndRedo() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW).getFirst().toString();
 
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         var workflowMiddleware = new WorkflowMiddleware(WorkflowProjectManager.getInstance());
         var commands = workflowMiddleware.getCommands();
         var wfKey = new WorkflowKey(wfId, getRootID());
@@ -527,8 +529,10 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
      */
     @Test
     public void testWaitForCommandResultReturnsLatestSnapshotId() throws Exception {
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
+
         Stack<CommandResultEnt> results = new Stack<>();
         Stack<WorkflowChangedEventEnt> events = new Stack<>();
         ServiceDependencies.setServiceDependency(EventConsumer.class,

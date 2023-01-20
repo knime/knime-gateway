@@ -59,7 +59,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import org.awaitility.Awaitility;
 import org.junit.After;
@@ -81,7 +80,8 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.SelectionEvent;
 import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.impl.service.util.EventConsumer;
-import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
@@ -98,11 +98,12 @@ public class EventServiceTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @Before
     public void setupServiceDependencies() {
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(EventConsumer.class, m_testConsumer);
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
     }
 
     @SuppressWarnings("javadoc")

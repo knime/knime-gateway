@@ -62,7 +62,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.EventConsumer;
-import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
@@ -83,8 +84,8 @@ public final class DefaultEventService implements EventService {
     private final Map<Class<? extends EventTypeEnt>, EventSource<? extends EventTypeEnt, ?>> m_eventSources =
         Collections.synchronizedMap(new HashMap<>());
 
-    private final AppStateProvider m_appStateProvider =
-        ServiceDependencies.getServiceDependency(AppStateProvider.class, true);
+    private final AppStateUpdater m_appStateUpdater =
+        ServiceDependencies.getServiceDependency(AppStateUpdater.class, true);
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
@@ -94,6 +95,9 @@ public final class DefaultEventService implements EventService {
 
     private final UpdateStateProvider m_updateStateProvider =
         ServiceDependencies.getServiceDependency(UpdateStateProvider.class, false);
+
+    private final PreferencesProvider m_preferencesProvider =
+            ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -120,8 +124,8 @@ public final class DefaultEventService implements EventService {
                 t -> new WorkflowChangedEventSource(this::sendEvent, m_workflowMiddleware));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateProvider, m_workflowProjectManager,
-                    m_workflowMiddleware));
+                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateUpdater, m_workflowProjectManager,
+                    m_workflowMiddleware, m_preferencesProvider));
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SelectionEventSourceDelegator(this::sendEvent));

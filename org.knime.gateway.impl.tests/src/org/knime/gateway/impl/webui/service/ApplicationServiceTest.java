@@ -53,11 +53,9 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotSame;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.knime.core.node.BufferedDataTable;
@@ -65,12 +63,10 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.webui.AppStateProvider;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState.OpenedWorkflow;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
@@ -90,60 +86,26 @@ public class ApplicationServiceTest extends GatewayServiceTest {
     public void testGetAppState() throws Exception {
         String workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+        WorkflowProjectManager.getInstance().openAndCacheWorkflow(workflowProjectId);
+        WorkflowProjectManager.getInstance().setWorkflowProjectActive(workflowProjectId);
 
-        var appState = mockAppStateAndSetServiceDependencies();
+        mockAppStateAndSetServiceDependencies();
         var appService = DefaultApplicationService.getInstance();
 
-        AppStateEnt appStateEnt0 = appService.getState();
-        assertThat(appStateEnt0.hasNodeRecommendationsEnabled(), not(is(nullValue())));
-        AppStateEnt appStateEnt0Stripped = stripHasNodeRecommendationsEnabled(appStateEnt0);
-        cr(appStateEnt0Stripped, "empty_appstate");
-
-        when(appState.getOpenedWorkflows()).thenReturn(List.of(createOpenedWorkflow(workflowProjectId)));
-        var assumedAvailablePortTypes = Set.of(BufferedDataTable.TYPE, //
-            DatabaseConnectionPortObject.TYPE, // a port type compatible with another port type
-            PortObject.TYPE, // generic port
-            DatabasePortObject.TYPE, // a port type compatible with another port type
-            ShapeHandlerPortObject.TYPE // hidden port type
-        );
-        when(appState.getAvailablePortTypes()).thenReturn(assumedAvailablePortTypes);
-        var assumedSuggestedPortTypes = AppState.SUGGESTED_PORT_TYPES;
-        when(appState.getSuggestedPortTypes()).thenReturn(assumedSuggestedPortTypes);
-
-        AppStateEnt appStateEnt1 = appService.getState();
-        assertThat(appStateEnt1.hasNodeRecommendationsEnabled(), not(is(nullValue())));
-        AppStateEnt appStateEnt1Stripped = stripHasNodeRecommendationsEnabled(appStateEnt1);
-        cr(appStateEnt1Stripped, "appstate");
+        AppStateEnt appStateEnt = appService.getState();
+        assertThat(appStateEnt.hasNodeRecommendationsEnabled(), not(is(nullValue())));
+        AppStateEnt appStateEntStripped = stripAppState(appStateEnt);
+        cr(appStateEntStripped, "appstate");
 
         // test that a new workflow entity instance is created even though the workflow didn't change (see NXT-866)
         AppStateEnt appStateEnt2 = appService.getState();
         assertNotSame(
-            appStateEnt1.getOpenProjects().get(0).getActiveWorkflow().getWorkflow(),
+            appStateEnt.getOpenProjects().get(0).getActiveWorkflow().getWorkflow(),
             appStateEnt2.getOpenProjects().get(0).getActiveWorkflow().getWorkflow()
         );
 
         ServiceInstances.disposeAllServiceInstancesAndDependencies();
 
-    }
-
-    private static OpenedWorkflow createOpenedWorkflow(final String workflowProjectId) {
-        return new OpenedWorkflow() {
-
-            @Override
-            public String getProjectId() {
-                return workflowProjectId;
-            }
-
-            @Override
-            public String getWorkflowId() {
-                return NodeIDEnt.getRootID().toString();
-            }
-
-            @Override
-            public boolean isVisible() {
-                return true;
-            }
-        };
     }
 
     /**
@@ -170,25 +132,25 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
-    private static AppState mockAppStateAndSetServiceDependencies() {
-        AppState appState = mock(AppState.class);
-        Supplier<AppState> appStateSupplier = mock(Supplier.class);
-        AppStateProvider appStateProvider = new AppStateProvider(appStateSupplier);
-
-        when(appState.getOpenedWorkflows()).thenReturn(List.of(mock(OpenedWorkflow.class), mock(OpenedWorkflow.class)));
-        when(appStateSupplier.get()).thenReturn(appState);
-
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, appStateProvider);
+    private static void mockAppStateAndSetServiceDependencies() {
+        AppStateUpdater appStateUpdater = new AppStateUpdater();
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
-        return appState;
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
     }
 
-    private static AppStateEnt stripHasNodeRecommendationsEnabled(final AppStateEnt appStateEnt) {
+    private static AppStateEnt stripAppState(final AppStateEnt appStateEnt) {
+        var availablePortTypes = appStateEnt.getAvailablePortTypes().entrySet().stream().filter(e -> {
+            var k = e.getKey();
+            return k.equals(BufferedDataTable.class.getName()) || k.equals(PortObject.class.getName())
+                || k.equals(DatabaseConnectionPortObject.class.getName())
+                || k.equals(DatabasePortObject.class.getName()) || k.equals(ShapeHandlerPortObject.class.getName());
+        }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         return builder(AppStateEnt.AppStateEntBuilder.class) //
             .setOpenProjects(appStateEnt.getOpenProjects()) //
-            .setAvailablePortTypes(appStateEnt.getAvailablePortTypes()) //
+            .setAvailablePortTypes(availablePortTypes) //
             .setSuggestedPortTypeIds(appStateEnt.getSuggestedPortTypeIds()) //
             .setFeatureFlags(appStateEnt.getFeatureFlags()) //
             .build();

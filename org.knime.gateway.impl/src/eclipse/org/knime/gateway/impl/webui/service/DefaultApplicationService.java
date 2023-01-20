@@ -51,20 +51,21 @@ package org.knime.gateway.impl.webui.service;
 import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.port.database.DatabaseConnectionPortObject;
+import org.knime.core.node.port.database.DatabasePortObject;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -78,10 +79,8 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.AppStateProvider;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState.OpenedWorkflow;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
@@ -94,14 +93,32 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 public final class DefaultApplicationService implements ApplicationService {
 
-    private final AppStateProvider m_appStateProvider =
-        ServiceDependencies.getServiceDependency(AppStateProvider.class, true);
+    private final AppStateUpdater m_appStateUpdater =
+        ServiceDependencies.getServiceDependency(AppStateUpdater.class, true);
 
     private final WorkflowProjectManager m_workflowProjectManager =
         ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+
+    private final PreferencesProvider m_preferencesProvider =
+        ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
+
+    private static final Set<PortType> AVAILABLE_PORT_TYPES =
+        PortTypeRegistry.getInstance().availablePortTypes().stream()//
+            .collect(Collectors.toSet());
+
+    /**
+     * When the user is prompted to select a port type, this subset of types may be used as suggestions.
+     */
+    private static final List<PortType> SUGGESTED_PORT_TYPES = List.of(BufferedDataTable.TYPE, // Data
+        DatabaseConnectionPortObject.TYPE, // Database Connection, TODO: Update deprecated type here
+        DatabasePortObject.TYPE, // Database Query, TODO: Update deprecated type here, too
+        FlowVariablePortObject.TYPE, // Flow Variable
+        PortObject.TYPE, // Generic
+        WorkflowPortObject.TYPE // Workflow
+    );
 
     /**
      * Returns the singleton instance for this service.
@@ -120,111 +137,90 @@ public final class DefaultApplicationService implements ApplicationService {
      * {@inheritDoc}
      */
     @Override
-    public AppStateEnt getState() {
-        return buildAppStateEnt(null, m_appStateProvider.getAppState(), m_workflowProjectManager, m_workflowMiddleware);
+    public void dispose() {
+        m_appStateUpdater.setLastAppState(null);
     }
 
     /**
-     * Helper to create a {@link AppStateEnt}-instance from an {@link AppState}.
-     *
-     * @param oldAppState
-     * @param newAppState
+     * {@inheritDoc}
+     */
+    @Override
+    public AppStateEnt getState() {
+        var appState = buildAppStateEnt(null, m_workflowProjectManager, m_workflowMiddleware, m_preferencesProvider);
+        m_appStateUpdater.setLastAppState(appState);
+        return appState;
+    }
+
+    /**
+     * @param previousAppState
      * @param workflowProjectManager
      * @param workflowMiddleware
+     * @param preferenceProvider
      * @return a new entity instance
      */
-    public static AppStateEnt buildAppStateEnt(final AppState oldAppState, final AppState newAppState,
-        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
-        List<WorkflowProjectEnt> projectEnts = null;
+    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
+        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
+        final PreferencesProvider preferenceProvider) {
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
-        Boolean nodeRepoFilterEnabled = null;
-        if (newAppState != null) { // Only do something if we have a current app state
-            if (oldAppState == null) { // If there is no previous app state, no checks are needed
-                projectEnts = getProjectEnts(newAppState, workflowProjectManager, workflowMiddleware);
-                availablePortTypeEnts = getAvailablePortTypeEnts(newAppState);
-                suggestedPortTypeIds = getSuggestedPortTypeIds(newAppState);
-                nodeRepoFilterEnabled = newAppState.isNodeRepoFilterEnabled();
-            } else { // Only set what has changed
-                if (!areOpenProjectsEqual(oldAppState, newAppState)) {
-                    projectEnts = getProjectEnts(newAppState, workflowProjectManager, workflowMiddleware);
-                }
-                if (!areAvailablePortTypesEqual(oldAppState, newAppState)) {
-                    availablePortTypeEnts = getAvailablePortTypeEnts(newAppState);
-                }
-                if (!areSuggestedPortTypesEqual(oldAppState, newAppState)) {
-                    suggestedPortTypeIds = getSuggestedPortTypeIds(newAppState);
-                }
-                if (oldAppState.isNodeRepoFilterEnabled() != newAppState.isNodeRepoFilterEnabled()) {
-                    nodeRepoFilterEnabled = newAppState.isNodeRepoFilterEnabled();
-                }
+        Boolean nodeRepoFilterEnabled = preferenceProvider.isNodeRepoFilterEnabled();
+        var projectEnts = getProjectEnts(workflowProjectManager, workflowMiddleware);
+        if (previousAppState == null) { // If there is no previous app state, no checks are needed
+            availablePortTypeEnts = getAvailablePortTypeEnts();
+            suggestedPortTypeIds = getSuggestedPortTypeIds();
+        } else { // Only set what has changed
+            if (areOpenProjectsEqual(previousAppState.getOpenProjects(), projectEnts)) {
+                projectEnts = null;
             }
-        } else { // Send an empty state otherwise
-            projectEnts = Collections.emptyList();
-            availablePortTypeEnts = Collections.emptyMap();
-            suggestedPortTypeIds = Collections.emptyList();
+            if (previousAppState.isNodeRepoFilterEnabled().equals(nodeRepoFilterEnabled)) {
+                nodeRepoFilterEnabled = null;
+            }
         }
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
             .setAvailablePortTypes(availablePortTypeEnts) //
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
             .setNodeRepoFilterEnabled(nodeRepoFilterEnabled) //
-            .setHasNodeRecommendationsEnabled(NodeRecommendationManager.isEnabled()) // This setting is always sent
+            .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) // This setting is always sent
             .setFeatureFlags(getFeatureFlags()) // This setting is always sent
             .build();
 
     }
 
-    private static boolean areOpenProjectsEqual(final AppState oldAppState, final AppState newAppState) {
-        if (oldAppState.getOpenedWorkflows() == null && newAppState.getOpenedWorkflows() == null) {
+    private static boolean areOpenProjectsEqual(final List<WorkflowProjectEnt> previousProjects,
+        final List<WorkflowProjectEnt> newProjects) {
+        if (previousProjects == null && newProjects == null) {
             return true;
         }
-        if ((oldAppState.getOpenedWorkflows() == null ^ newAppState.getOpenedWorkflows() == null)
-            || (oldAppState.getOpenedWorkflows().size() != newAppState.getOpenedWorkflows().size())) {
+        if ((previousProjects == null ^ newProjects == null) || (previousProjects.size() != newProjects.size())) {
             return false;
         }
-        return IntStream.range(0, oldAppState.getOpenedWorkflows().size()).allMatch(i -> {
-            var left = oldAppState.getOpenedWorkflows().get(i);
-            var right = newAppState.getOpenedWorkflows().get(i);
-            return left.getProjectId().equals(right.getProjectId())
-                && left.getWorkflowId().equals(right.getWorkflowId());
+        return IntStream.range(0, previousProjects.size()).allMatch(i -> {
+            var left = previousProjects.get(i);
+            var right = newProjects.get(i);
+            return left.equals(right);
         });
     }
 
-    private static boolean areAvailablePortTypesEqual(final AppState oldAppState, final AppState newAppState) {
-        if (oldAppState.getAvailablePortTypes() == null && newAppState.getAvailablePortTypes() == null) {
-            return true;
-        }
-        return oldAppState.getAvailablePortTypes().equals(newAppState.getAvailablePortTypes());
-    }
-
-    private static boolean areSuggestedPortTypesEqual(final AppState oldAppState, final AppState newAppState) {
-        if (oldAppState.getSuggestedPortTypes() == null && newAppState.getSuggestedPortTypes() == null) {
-            return true;
-        }
-        return oldAppState.getSuggestedPortTypes().equals(newAppState.getSuggestedPortTypes());
-    }
-
-    private static List<WorkflowProjectEnt> getProjectEnts(final AppState appState,
-        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
-        return appState.getOpenedWorkflows().stream() //
-            .map(w -> buildWorkflowProjectEnt(w, workflowProjectManager, workflowMiddleware)) //
+    private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
+        final WorkflowMiddleware workflowMiddleware) {
+        return workflowProjectManager.getWorkflowProjectsIds().stream() //
+            .map(id -> workflowProjectManager.getWorkflowProject(id).orElse(null)) //
             .filter(Objects::nonNull)//
+            .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, workflowMiddleware)) //
             .collect(toList());
     }
 
-
-    private static Map<String, PortTypeEnt> getAvailablePortTypeEnts(final AppState appState) {
-        var allAvailablePortTypes = appState.getAvailablePortTypes();
-        return allAvailablePortTypes.stream() //
+    private static Map<String, PortTypeEnt> getAvailablePortTypeEnts() {
+        return AVAILABLE_PORT_TYPES.stream() //
             .collect(Collectors.toMap( //
                 CoreUtil::getPortTypeId, //
-                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, allAvailablePortTypes, true) //
+                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, AVAILABLE_PORT_TYPES, true) //
             ));
     }
 
-    private static List<String> getSuggestedPortTypeIds(final AppState appState) {
-        return appState.getSuggestedPortTypes().stream() //
+    private static List<String> getSuggestedPortTypeIds() {
+        return SUGGESTED_PORT_TYPES.stream() //
             .map(CoreUtil::getPortTypeId) //
             .collect(toList());
     }
@@ -240,29 +236,18 @@ public final class DefaultApplicationService implements ApplicationService {
         return Map.of(f1, Boolean.getBoolean(f1));
     }
 
-    private static WorkflowProjectEnt buildWorkflowProjectEnt(final OpenedWorkflow wf,
+    private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
-        WorkflowProject wp = workflowProjectManager.getWorkflowProject(wf.getProjectId()).orElse(null);
-        if (wp == null) {
-            return null;
-        }
-
         final WorkflowProjectEntBuilder projectEntBuilder =
             builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
 
         // optionally set an active workflow for this workflow project
-        if (wf.isVisible()) {
-            var wfId = getActiveWorkflowId(wf, workflowProjectManager);
-            if (wfId.isPresent()) {
-                var activeWorkflow = workflowMiddleware.buildWorkflowSnapshotEnt( //
-                    new WorkflowKey(wp.getID(), new NodeIDEnt(wfId.get())), //
-                    () -> WorkflowBuildContext.builder().includeInteractionInfo(true) //
-                );
-                projectEntBuilder.setActiveWorkflow(activeWorkflow);
-            } else {
-                NodeLogger.getLogger(DefaultApplicationService.class).warn(String.format(
-                    "Workflow '%s' of project '%s' could not be loaded", wf.getWorkflowId(), wf.getProjectId()));
-            }
+        if (workflowProjectManager.isActiveWorkflowProject(wp.getID())) {
+            var activeWorkflow = workflowMiddleware.buildWorkflowSnapshotEnt( //
+                new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()), //
+                () -> WorkflowBuildContext.builder().includeInteractionInfo(true) //
+            );
+            projectEntBuilder.setActiveWorkflow(activeWorkflow);
         }
 
         wp.getOrigin().ifPresent(origin -> projectEntBuilder.setOrigin(buildWorkflowProjectOriginEnt(origin)));
@@ -275,34 +260,6 @@ public final class DefaultApplicationService implements ApplicationService {
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
             .build();
-    }
-
-    private static Optional<NodeID> getActiveWorkflowId(final OpenedWorkflow openedWorkflow,
-        final WorkflowProjectManager workflowProjectManager) {
-        var projectWfm = workflowProjectManager.openAndCacheWorkflow(openedWorkflow.getProjectId());
-        var activeWorkflowWfm = projectWfm.map(wfm -> {
-            String openedId = openedWorkflow.getWorkflowId();
-            if (openedId.equals(NodeIDEnt.getRootID().toString())) {
-                // active workflow is the project (top-level) wfm
-                return wfm;
-            } else {
-                return getWorkflowManager(openedWorkflow.getProjectId(), wfm, openedId);
-            }
-        });
-        return activeWorkflowWfm.map(NodeContainer::getID);
-    }
-
-    private static WorkflowManager getWorkflowManager(final String projectId, final WorkflowManager parent,
-        final String openedId) {
-        // find ID of container node corresponding to active (sub-)workflow
-        var nc = parent.findNodeContainer(DefaultServiceUtil.entityToNodeID(projectId, new NodeIDEnt(openedId)));
-        if (nc instanceof SubNodeContainer) {
-            return ((SubNodeContainer)nc).getWorkflowManager();
-        } else if (nc instanceof WorkflowManager) {
-            return (WorkflowManager)nc;
-        } else {
-            return null;
-        }
     }
 
 }

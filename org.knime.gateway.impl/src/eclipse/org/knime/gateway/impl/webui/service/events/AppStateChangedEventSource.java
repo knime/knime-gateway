@@ -47,7 +47,6 @@
 package org.knime.gateway.impl.webui.service.events;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
@@ -56,8 +55,8 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.EventConsumer;
-import org.knime.gateway.impl.webui.AppStateProvider;
-import org.knime.gateway.impl.webui.AppStateProvider.AppState;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.DefaultApplicationService;
 
@@ -69,28 +68,33 @@ import org.knime.gateway.impl.webui.service.DefaultApplicationService;
  */
 public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, AppStateChangedEventEnt> {
 
-    private final BiConsumer<AppState, AppState> m_callback;
+    private final Runnable m_callback;
 
-    private final AppStateProvider m_appStateProvider;
+    private final AppStateUpdater m_appStateUpdater;
 
     /**
      * @param eventConsumer consumes the emitted events
-     * @param appStateProvider
+     * @param appStateUpdater
      * @param workflowProjectManager
      * @param workflowMiddleware
      */
-    public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateProvider appStateProvider,
-        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
+    public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateUpdater appStateUpdater,
+        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
+        final PreferencesProvider preferenceProvider) {
         super(eventConsumer);
-        m_appStateProvider = appStateProvider;
-        m_callback = (oldAppState, newAppState) -> sendEvent(buildEventEnt(
-            DefaultApplicationService.buildAppStateEnt(oldAppState, newAppState, workflowProjectManager, workflowMiddleware)));
+        m_appStateUpdater = appStateUpdater;
+        m_callback = () -> {
+            var appState = DefaultApplicationService.buildAppStateEnt(appStateUpdater.getLastAppState().orElse(null),
+                workflowProjectManager, workflowMiddleware, preferenceProvider);
+            appStateUpdater.setLastAppState(appState);
+            sendEvent(buildEventEnt(appState));
+        };
     }
 
     @Override
     public Optional<AppStateChangedEventEnt>
         addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
-        m_appStateProvider.addAppStateChangedListener(m_callback);
+        m_appStateUpdater.addAppStateChangedListener(m_callback);
         return Optional.empty();
     }
 
@@ -101,7 +105,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
     @Override
     public void removeEventListener(final AppStateChangedEventTypeEnt eventTypeEnt) {
-        m_appStateProvider.removeAppStateChangedListener(m_callback);
+        m_appStateUpdater.removeAppStateChangedListener(m_callback);
     }
 
     @Override

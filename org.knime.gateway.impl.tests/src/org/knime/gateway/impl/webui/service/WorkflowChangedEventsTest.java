@@ -64,7 +64,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 import org.junit.After;
 import org.junit.Before;
@@ -81,7 +80,8 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
-import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
@@ -121,11 +121,12 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @Before
     public void setupServiceDependencies() {
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, new AppStateProvider(mock(Supplier.class)));
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(EventConsumer.class, m_testEventConsumer);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
     }
 
     @SuppressWarnings("javadoc")

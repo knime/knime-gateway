@@ -45,6 +45,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Map;
 
 import org.junit.After;
@@ -62,7 +64,8 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
-import org.knime.gateway.impl.webui.AppStateProvider;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
@@ -200,7 +203,8 @@ public class GatewayDefaultServiceTests {
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
-        ServiceDependencies.setServiceDependency(AppStateProvider.class, null);
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, null);
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
     }
 
     @SuppressWarnings("javadoc")
