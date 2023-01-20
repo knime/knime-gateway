@@ -60,8 +60,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
-import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -216,8 +216,18 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public Pair<Path, LocationInfo> toLocalAbsolutePath(final String itemId) {
-                return Pair.create(null, null);
+            public Path toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+                return null;
+            }
+
+            @Override
+            public Path getLocalRootPath() {
+                return null;
+            }
+
+            @Override
+            public LocationInfo getLocationInfo(final String itemId) {
+                return null;
             }
 
             @Override

@@ -55,8 +55,8 @@ import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 import org.knime.core.data.sort.AlphanumericComparator;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
-import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -136,10 +136,22 @@ public interface Space {
     /**
      * Resolves the item with the given ID into a local file, potentially downloading it.
      *
+     * @param monitor to report progress, progress messages and for cancellation
      * @param itemId ID if the item to resolve
      * @return the local path of the item and (if available, otherwise {@code null}) its location info
      */
-    Pair<Path, LocationInfo> toLocalAbsolutePath(String itemId);
+    Path toLocalAbsolutePath(ExecutionMonitor monitor, String itemId);
+
+    /**
+     * @return the local root path of the space
+     */
+    Path getLocalRootPath();
+
+    /**
+     * @param itemId
+     * @return the location info for the given item
+     */
+    LocationInfo getLocationInfo(String itemId);
 
     /**
      * Creates a mountpoint-absolute KNIME URL for the given space item.

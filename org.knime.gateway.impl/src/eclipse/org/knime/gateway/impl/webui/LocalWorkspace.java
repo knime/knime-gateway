@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
@@ -65,7 +66,6 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.KnimeUrlType;
-import org.knime.core.util.Pair;
 import org.knime.core.util.workflowalizer.MetadataConfig;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
@@ -141,14 +141,14 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public Pair<Path, LocationInfo> toLocalAbsolutePath(final String itemId) {
-        return Pair.create(m_itemIdToPathMap.get(Integer.valueOf(itemId)), LocalLocationInfo.getInstance(null));
+    public Path toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+        return m_itemIdToPathMap.get(Integer.valueOf(itemId));
     }
 
     @Override
     public URI toKnimeUrl(final String itemId) {
         final var rootUri = m_localWorkspaceRootPath.toUri();
-        final var workflowFilePath = toLocalAbsolutePath(itemId).getFirst().resolve("workflow.knime");
+        final var workflowFilePath = toLocalAbsolutePath(null, itemId).resolve("workflow.knime");
         final var itemRelUri = rootUri.relativize(workflowFilePath.toUri());
         if (itemRelUri.isAbsolute()) {
             throw new IllegalStateException("Workflow '" + workflowFilePath + "' is not inside root '"
@@ -164,11 +164,14 @@ public final class LocalWorkspace implements Space {
         }
     }
 
-    /**
-     * @return the root path of the local workspace
-     */
-    public Path getLocalWorkspaceRoot() {
+    @Override
+    public Path getLocalRootPath() {
         return m_localWorkspaceRootPath;
+    }
+
+    @Override
+    public LocationInfo getLocationInfo(final String itemId) {
+        return LocalLocationInfo.getInstance(null);
     }
 
     private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
