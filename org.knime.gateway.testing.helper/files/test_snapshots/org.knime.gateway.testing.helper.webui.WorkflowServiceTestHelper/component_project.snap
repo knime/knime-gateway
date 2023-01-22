@@ -200,8 +200,10 @@
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
+      "hasDialog" : true,
       "id" : "root:8",
       "inPorts" : [ {
         "canRemove" : false,

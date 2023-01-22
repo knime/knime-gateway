@@ -25,6 +25,7 @@
     "canDelete" : true,
     "canExecute" : false,
     "canOpenDialog" : true,
+    "canOpenLegacyFlowVariableDialog" : true,
     "canReset" : true
   },
   "root:14" : {

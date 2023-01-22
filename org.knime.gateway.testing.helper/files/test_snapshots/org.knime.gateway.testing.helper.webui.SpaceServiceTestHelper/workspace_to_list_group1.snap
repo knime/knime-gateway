@@ -1,11 +1,11 @@
 {
   "items" : [ {
     "id" : "PLACEHOLDER_FOR_ID",
-    "name" : "Group11",
+    "name" : "empty group",
     "type" : "WorkflowGroup"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
-    "name" : "empty group",
+    "name" : "Group11",
     "type" : "WorkflowGroup"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
@@ -21,11 +21,11 @@
     "type" : "WorkflowTemplate"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
-    "name" : "data.txt",
+    "name" : "data2.txt",
     "type" : "Data"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",
-    "name" : "data2.txt",
+    "name" : "data.txt",
     "type" : "Data"
   }, {
     "id" : "PLACEHOLDER_FOR_ID",

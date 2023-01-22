@@ -1159,6 +1159,7 @@
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -1167,6 +1168,7 @@
         "text" : "node annotation",
         "textAlign" : "center"
       },
+      "hasDialog" : true,
       "id" : "root:2",
       "inPorts" : [ {
         "canRemove" : false,
