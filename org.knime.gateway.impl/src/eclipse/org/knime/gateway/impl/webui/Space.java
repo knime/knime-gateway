@@ -54,7 +54,6 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
-import org.knime.core.data.sort.AlphanumericComparator;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -75,8 +74,7 @@ public interface Space {
      * distinguished by case.
      */
     static final Comparator<SpaceItemEnt> ITEM_COMPARATOR = Comparator.comparing(SpaceItemEnt::getType) //
-                .thenComparing(SpaceItemEnt::getName, //
-                    new AlphanumericComparator(String::compareToIgnoreCase).thenComparing(Comparator.naturalOrder()));
+            .thenComparing(SpaceItemEnt::getName, SpaceItemNameComparator.INSTANCE);
 
     /**
      * Id of the root 'workflow group'.
