@@ -57,7 +57,6 @@ org.knime.time.node.manipulate.datetimeshift.DateTimeShiftNodeFactory
 org.knime.base.node.preproc.unpivot2.Unpivot2NodeFactory
 org.knime.time.node.filter.datetimebasedrowfilter.DateTimeBasedRowFilterNodeFactory
 org.knime.ext.jep.multicolumn.MultiColumnJEPNodeFactory
-org.knime.base.node.stats.viz.extended.ExtendedStatisticsNodeFactory
 org.knime.base.node.preproc.double2int2.DoubleToIntNodeFactory
 org.knime.base.node.preproc.colcombine2.ColCombine2NodeFactory
 org.knime.ext.poi3.node.io.filehandling.excel.sheets.ExcelSheetReaderNodeFactory
