@@ -59,6 +59,7 @@ import java.util.stream.Collectors;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
@@ -197,6 +198,9 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
          * Non-deterministic field.
          */
         objToString.addException(SpacePathSegmentEnt.class, "id", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_ID"));
+
+        objToString.addException(NodeFactoryKeyEnt.class, "settings",
+            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_FACTORY_SETTINGS"));
 
         try {
             return new ResultChecker(objToString, CoreUtil.resolveToFile("/files/test_snapshots", testClass));

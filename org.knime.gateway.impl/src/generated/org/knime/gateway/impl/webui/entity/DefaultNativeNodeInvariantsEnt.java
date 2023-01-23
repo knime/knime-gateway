@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 
@@ -64,6 +65,7 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
   protected String m_name;
   protected TypeEnum m_type;
   protected String m_icon;
+  protected NodeFactoryKeyEnt m_nodeFactory;
   
   protected DefaultNativeNodeInvariantsEnt() {
     //for sub-classes
@@ -85,6 +87,7 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
     }
     m_type = immutable(builder.m_type);
     m_icon = immutable(builder.m_icon);
+    m_nodeFactory = immutable(builder.m_nodeFactory);
   }
   
    /**
@@ -102,7 +105,7 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
             return false;
         }
         DefaultNativeNodeInvariantsEnt ent = (DefaultNativeNodeInvariantsEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_nodeFactory, ent.m_nodeFactory);
     }
 
 
@@ -116,6 +119,7 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
                .append(m_name)
                .append(m_type)
                .append(m_icon)
+               .append(m_nodeFactory)
                .toHashCode();
    }
   
@@ -136,6 +140,11 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
         return m_icon;
   }
     
+  @Override
+  public NodeFactoryKeyEnt getNodeFactory() {
+        return m_nodeFactory;
+  }
+    
   
     public static class DefaultNativeNodeInvariantsEntBuilder implements NativeNodeInvariantsEntBuilder {
     
@@ -146,6 +155,7 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
         private String m_name;
         private TypeEnum m_type;
         private String m_icon;
+        private NodeFactoryKeyEnt m_nodeFactory;
 
         @Override
         public DefaultNativeNodeInvariantsEntBuilder setName(String name) {
@@ -168,6 +178,12 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
         @Override
         public DefaultNativeNodeInvariantsEntBuilder setIcon(String icon) {
              m_icon = icon;
+             return this;
+        }
+
+        @Override
+        public DefaultNativeNodeInvariantsEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory) {
+             m_nodeFactory = nodeFactory;
              return this;
         }
 

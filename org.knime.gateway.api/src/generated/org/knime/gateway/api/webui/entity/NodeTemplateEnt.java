@@ -86,12 +86,6 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
    **/
   public java.util.List<NodePortTemplateEnt> getOutPorts();
 
-  /**
-   * Get nodeFactory
-   * @return nodeFactory 
-   **/
-  public NodeFactoryKeyEnt getNodeFactory();
-
 
     /**
      * The builder for the entity.
@@ -121,6 +115,14 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
          * @return this entity builder for chaining
          */
         NodeTemplateEntBuilder setIcon(String icon);
+        
+        /**
+   		 * Set nodeFactory
+         * 
+         * @param nodeFactory the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
         
         /**
          * A unique identifier for this template.
@@ -153,14 +155,6 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
          * @return this entity builder for chaining
          */
         NodeTemplateEntBuilder setOutPorts(java.util.List<NodePortTemplateEnt> outPorts);
-        
-        /**
-   		 * Set nodeFactory
-         * 
-         * @param nodeFactory the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
         
         
         /**

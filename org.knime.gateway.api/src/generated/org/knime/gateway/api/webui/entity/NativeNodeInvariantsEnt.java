@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -134,6 +135,12 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
    **/
   public String getIcon();
 
+  /**
+   * Get nodeFactory
+   * @return nodeFactory 
+   **/
+  public NodeFactoryKeyEnt getNodeFactory();
+
 
     /**
      * The builder for the entity.
@@ -163,6 +170,14 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NativeNodeInvariantsEntBuilder setIcon(String icon);
+        
+        /**
+   		 * Set nodeFactory
+         * 
+         * @param nodeFactory the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeInvariantsEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
         
         
         /**

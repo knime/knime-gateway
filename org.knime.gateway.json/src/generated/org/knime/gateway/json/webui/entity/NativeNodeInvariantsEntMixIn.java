@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -79,6 +80,10 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
     @JsonProperty("icon")
     public String getIcon();
     
+    @Override
+    @JsonProperty("nodeFactory")
+    public NodeFactoryKeyEnt getNodeFactory();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -103,6 +108,10 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
         @Override
         @JsonProperty("icon")
         public NativeNodeInvariantsEntMixInBuilder setIcon(final String icon);
+        
+        @Override
+        @JsonProperty("nodeFactory")
+        public NativeNodeInvariantsEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
         
     }
 

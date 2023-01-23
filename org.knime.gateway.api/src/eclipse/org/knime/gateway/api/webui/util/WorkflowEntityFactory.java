@@ -743,7 +743,9 @@ public final class WorkflowEntityFactory {
         NativeNodeInvariantsEntBuilder builder = builder(NativeNodeInvariantsEntBuilder.class)
             .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()));
         if (nc.getType() != NodeType.Missing) {
-            builder.setName(nc.getName()).setIcon(createIconDataURL(nc.getNode().getFactory()));
+            var factory = nc.getNode().getFactory();
+            builder.setName(nc.getName()).setIcon(createIconDataURL(factory))
+                .setNodeFactory(buildNodeFactoryKeyEnt(factory));
         } else {
             NodeFactory<? extends NodeModel> factory = nc.getNode().getFactory();
             NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)factory).getNodeAndBundleInfo();

@@ -21,16 +21,27 @@
     "org.knime.base.node.util.sampledata.SampleDataNodeFactory" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkRBMkI1RTE4QTIyMTFFNTkyQzJBQjlCNTFCMUUyMzIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkRBMkI1RTA4QTIyMTFFNTkyQzJBQjlCNTFCMUUyMzIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBM0VBMDE1RTJFMkYxMUU1OUMzRUMzQkRFMzNFNTk1RiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCQTI5MjQyMjJFMkYxMUU1OUMzRUMzQkRFMzNFNTk1RiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pp5Rd2EAAAE8SURBVHjaYmSAAu8WJ242btZ2ZhYmRyZWZn6Q2L/ffz/+/fNv/6+vvyu31uz7ChL7//8/AzJgBBF+HS7qrJwsW0SU+FVYedlQFPz+/Ivhzb2Pd35//+OzqWLPTQwDQDZz8LJdkNQRUWFgZmTACv7+Z3h+5c2dH59/GWyp3vsVWYoJ5GyQzTg1gwBQDqQGpBZdigXkZ2Rnf335neHSottgtl6cKgO3OCeYDVIDUotpACsTP7IASPPzM2/gfMtSPYRD0NSCvcBAIWD5+/vfRyAtCxMAORsbGxyWELVoBgDjGRhVOrBwAPkZ2dnI0QlSi+EFUCIBxTMoqnACoBxIDUgthgGgFAZKJKB4BtmCzWawHFANSC0jI+N/KGYAY1KTMig1I6diRvSkiQuAbMUmTnk0kqCWEZsXKHYBQIABAPVenM3vr81YAAAAAElFTkSuQmCC",
       "name" : "Data Generator",
+      "nodeFactory" : {
+        "className" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
+      },
       "type" : "Source"
     },
     "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component+Input" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Input",
+      "nodeFactory" : {
+        "className" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory",
+        "settings" : "PLACEHOLDER_FOR_FACTORY_SETTINGS"
+      },
       "type" : "VirtualIn"
     },
     "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component+Output" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Output",
+      "nodeFactory" : {
+        "className" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory",
+        "settings" : "PLACEHOLDER_FOR_FACTORY_SETTINGS"
+      },
       "type" : "VirtualOut"
     }
   },

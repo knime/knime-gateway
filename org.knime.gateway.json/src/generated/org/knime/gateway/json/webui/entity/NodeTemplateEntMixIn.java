@@ -83,6 +83,10 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
     public String getIcon();
     
     @Override
+    @JsonProperty("nodeFactory")
+    public NodeFactoryKeyEnt getNodeFactory();
+    
+    @Override
     @JsonProperty("id")
     public String getId();
     
@@ -97,10 +101,6 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
     @Override
     @JsonProperty("outPorts")
     public java.util.List<NodePortTemplateEnt> getOutPorts();
-    
-    @Override
-    @JsonProperty("nodeFactory")
-    public NodeFactoryKeyEnt getNodeFactory();
     
 
     /**
@@ -128,6 +128,10 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
         public NodeTemplateEntMixInBuilder setIcon(final String icon);
         
         @Override
+        @JsonProperty("nodeFactory")
+        public NodeTemplateEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
+        
+        @Override
         @JsonProperty("id")
         public NodeTemplateEntMixInBuilder setId(final String id);
         
@@ -142,10 +146,6 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
         @Override
         @JsonProperty("outPorts")
         public NodeTemplateEntMixInBuilder setOutPorts(final java.util.List<NodePortTemplateEnt> outPorts);
-        
-        @Override
-        @JsonProperty("nodeFactory")
-        public NodeTemplateEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
         
     }
 

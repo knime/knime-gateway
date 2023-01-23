@@ -67,11 +67,11 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
   protected String m_name;
   protected TypeEnum m_type;
   protected String m_icon;
+  protected NodeFactoryKeyEnt m_nodeFactory;
   protected String m_id;
   protected Boolean m_component;
   protected java.util.List<NodePortTemplateEnt> m_inPorts;
   protected java.util.List<NodePortTemplateEnt> m_outPorts;
-  protected NodeFactoryKeyEnt m_nodeFactory;
   
   protected DefaultNodeTemplateEnt() {
     //for sub-classes
@@ -93,6 +93,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
     }
     m_type = immutable(builder.m_type);
     m_icon = immutable(builder.m_icon);
+    m_nodeFactory = immutable(builder.m_nodeFactory);
     if(builder.m_id == null) {
         throw new IllegalArgumentException("id must not be null.");
     }
@@ -100,7 +101,6 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
     m_component = immutable(builder.m_component);
     m_inPorts = immutable(builder.m_inPorts);
     m_outPorts = immutable(builder.m_outPorts);
-    m_nodeFactory = immutable(builder.m_nodeFactory);
   }
   
    /**
@@ -118,7 +118,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
             return false;
         }
         DefaultNodeTemplateEnt ent = (DefaultNodeTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_component, ent.m_component) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_nodeFactory, ent.m_nodeFactory);
+        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_nodeFactory, ent.m_nodeFactory) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_component, ent.m_component) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts);
     }
 
 
@@ -132,11 +132,11 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
                .append(m_name)
                .append(m_type)
                .append(m_icon)
+               .append(m_nodeFactory)
                .append(m_id)
                .append(m_component)
                .append(m_inPorts)
                .append(m_outPorts)
-               .append(m_nodeFactory)
                .toHashCode();
    }
   
@@ -155,6 +155,11 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
   @Override
   public String getIcon() {
         return m_icon;
+  }
+    
+  @Override
+  public NodeFactoryKeyEnt getNodeFactory() {
+        return m_nodeFactory;
   }
     
   @Override
@@ -177,11 +182,6 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         return m_outPorts;
   }
     
-  @Override
-  public NodeFactoryKeyEnt getNodeFactory() {
-        return m_nodeFactory;
-  }
-    
   
     public static class DefaultNodeTemplateEntBuilder implements NodeTemplateEntBuilder {
     
@@ -192,11 +192,11 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         private String m_name;
         private TypeEnum m_type;
         private String m_icon;
+        private NodeFactoryKeyEnt m_nodeFactory;
         private String m_id;
         private Boolean m_component;
         private java.util.List<NodePortTemplateEnt> m_inPorts;
         private java.util.List<NodePortTemplateEnt> m_outPorts;
-        private NodeFactoryKeyEnt m_nodeFactory;
 
         @Override
         public DefaultNodeTemplateEntBuilder setName(String name) {
@@ -219,6 +219,12 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         @Override
         public DefaultNodeTemplateEntBuilder setIcon(String icon) {
              m_icon = icon;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory) {
+             m_nodeFactory = nodeFactory;
              return this;
         }
 
@@ -246,12 +252,6 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         @Override
         public DefaultNodeTemplateEntBuilder setOutPorts(java.util.List<NodePortTemplateEnt> outPorts) {
              m_outPorts = outPorts;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory) {
-             m_nodeFactory = nodeFactory;
              return this;
         }
 
