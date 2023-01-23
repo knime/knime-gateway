@@ -48,10 +48,12 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,6 +64,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -102,12 +105,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
-
-        var testWorkspacePath = getTestWorkspacePath(WorkspaceType.LIST);
-        var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
-        var providerId = spaceProvider.getId();
-        var spaceProviders = Map.of(providerId, spaceProvider);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
+        var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_to_list_root");
@@ -239,6 +238,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             public URI toKnimeUrl(final String itemId) {
                 return null;
             }
+
+            @Override
+            public void deleteItems(final List<String> itemIds) throws IOException {
+                // do nothing
+            }
         };
     }
 
@@ -261,16 +265,20 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         };
     }
 
+    private static String registerLocalSpaceProviderForTesting(final Path testWorkspacePath) {
+        var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = spaceProvider.getId();
+        var spaceProviders = Map.of(providerId, spaceProvider);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
+        return providerId;
+    }
+
     private static String getItemIdForItemWithName(final List<SpaceItemEnt> items, final String name) {
         return items.stream().filter(i -> i.getName().equals(name)).map(SpaceItemEnt::getId).findFirst().orElse(null);
     }
 
-    private static Path getTestWorkspacePath(final WorkspaceType type) throws IOException {
-        if (type == WorkspaceType.LIST) {
-            return CoreUtil.resolveToFile("/files/test_workspace_to_list", SpaceServiceTestHelper.class).toPath();
-        } else {
-            return CoreUtil.resolveToFile("/files/test_workspace_to_create", SpaceServiceTestHelper.class).toPath();
-        }
+    private static Path getTestWorkspacePath(final String name) throws IOException {
+        return CoreUtil.resolveToFile("/files/" + name, SpaceServiceTestHelper.class).toPath();
     }
 
     /**
@@ -279,11 +287,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCreateWorkflowForLocalWorkspace() throws Exception {
-        var testWorkspacePath = getTestWorkspacePath(WorkspaceType.CREATE);
-        var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
-        var providerId = spaceProvider.getId();
-        var spaceProviders = Map.of(providerId, spaceProvider);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
+        var testWorkspacePath = getTestWorkspacePath("test_workspace_to_create");
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
 
         try {
             // Create workflows and check
@@ -321,9 +326,77 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
     }
 
-    private enum WorkspaceType {
-        CREATE,
-        LIST
+    private static String findItemId(final WorkflowGroupContentEnt groupContent, final String name) {
+        return groupContent.getItems().stream() //
+            .filter(e -> name.equals(e.getName())) //
+            .map(SpaceItemEnt::getId) //
+            .findFirst() //
+            .orElse(null);
     }
 
+    /**
+     * Tests {@link SpaceService#deleteItems(String, String, List)} for the local workspace.
+     *
+     * @throws Exception
+     */
+    public void testDeleteItemForLocalWorkspace() throws Exception {
+        var testWorkspacePath = getTestWorkspacePath("test_workspace_to_delete");
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var workflowGroupName = "workflow_group";
+        var fileName = "testfile.txt";
+
+        // Create a workflow and delete it
+        var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
+        assertThat("Workflow must not exist anymore",
+            !Files.exists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+
+        // Create a workflow group with some content and delete it
+        var workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
+        Files.createDirectory(workflowGroupPath);
+        var workflowGroupId =
+            findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId);
+        Files.createFile(workflowGroupPath.resolve(fileName));
+        ss().deleteItems(spaceId, providerId, List.of(workflowGroupId));
+        assertThat("Workflow group must not exist anymore", !Files.exists(workflowGroupPath));
+
+        // Delete a single data file
+        var filePath = testWorkspacePath.resolve(fileName);
+        Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
+        var fileId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
+        ss().deleteItems(spaceId, providerId, List.of(fileId));
+        assertThat("File must not exist anymore", !Files.exists(filePath));
+
+        // Call delete on the root
+        assertThrows("Deleting root must fail", InvalidRequestException.class,
+            () -> ss().deleteItems(spaceId, providerId, List.of("root")));
+
+        // Call delete with an item id that does not exist
+        assertThrows("Deleting unknown item must fail", InvalidRequestException.class,
+            () -> ss().deleteItems(spaceId, providerId, List.of("0")));
+
+        // Call delete on a workflow that was deleted by another application
+        wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        PathUtils.deleteDirectoryIfExists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME));
+        ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
+
+        // Delete multiple items at once
+        ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        filePath = testWorkspacePath.resolve(fileName);
+        Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
+        workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
+        Files.createDirectory(workflowGroupPath);
+        workflowGroupId =
+            findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId);
+        Files.createFile(workflowGroupPath.resolve(fileName));
+        ss().listWorkflowGroup(spaceId, providerId, workflowGroupId);
+        var rootFiles = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
+        ss().deleteItems(spaceId, providerId,
+            rootFiles.getItems().stream().map(SpaceItemEnt::getId).collect(Collectors.toList()));
+    }
 }

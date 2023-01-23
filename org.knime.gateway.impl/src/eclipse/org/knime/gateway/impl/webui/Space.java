@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.knime.core.node.ExecutionMonitor;
@@ -158,4 +159,13 @@ public interface Space {
      * @return KNIME URL
      */
     URI toKnimeUrl(String itemId);
+
+    /**
+     * Deletes the items from the space.
+     *
+     * @param itemIds item IDs
+     * @throws IOException If there was a problem deleting the items
+     * @throws NoSuchElementException If one of the given item ids does not exist
+     */
+    void deleteItems(List<String> itemIds) throws IOException;
 }

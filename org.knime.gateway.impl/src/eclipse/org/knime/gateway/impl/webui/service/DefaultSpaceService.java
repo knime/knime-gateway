@@ -141,6 +141,18 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
+    @Override
+    public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
+        throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
+        try {
+            getSpace(spaceId, spaceProviderId).deleteItems(spaceItemIds);
+        } catch (NoSuchElementException | UnsupportedOperationException e) {
+            throw new InvalidRequestException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+        }
+    }
+
     /**
      * @param spaceId
      * @param spaceProviderId

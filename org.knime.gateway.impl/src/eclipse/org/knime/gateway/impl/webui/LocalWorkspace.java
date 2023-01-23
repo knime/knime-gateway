@@ -53,9 +53,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.knime.core.node.ExecutionMonitor;
@@ -66,6 +69,7 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.KnimeUrlType;
+import org.knime.core.util.PathUtils;
 import org.knime.core.util.workflowalizer.MetadataConfig;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
@@ -92,11 +96,11 @@ public final class LocalWorkspace implements Space {
     public static final String DEFAULT_WORKFLOW_NAME = "KNIME_project";
 
     // assumption is that there is exactly one user of the local workspace at a time
-    private final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>();
+    final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>(); // package private for tests
 
     // just for optimization purposes: avoids the repeated determination of the item type
     // which sometimes involves reading and parsing files (in order to determine the component type)
-    private final Map<Path, SpaceItemEnt.TypeEnum> m_pathToTypeMap = new HashMap<>();
+    final Map<Path, SpaceItemEnt.TypeEnum> m_pathToTypeMap = new HashMap<>(); // package private for tests
 
     private final Path m_localWorkspaceRootPath;
 
@@ -172,6 +176,37 @@ public final class LocalWorkspace implements Space {
     @Override
     public LocationInfo getLocationInfo(final String itemId) {
         return LocalLocationInfo.getInstance(null);
+    }
+
+    @Override
+    public void deleteItems(final List<String> itemIds) throws IOException {
+        // Check if the root is part of the
+        if (itemIds.contains(Space.ROOT_ITEM_ID)) {
+            throw new UnsupportedOperationException("The root of the space cannot be deleted.");
+        }
+
+        // Check if there are any item ids that do not exist
+        var unknownItemIds = itemIds.stream().filter(id -> !m_itemIdToPathMap.containsKey(Integer.parseInt(id)))
+            .collect(Collectors.joining(", "));
+        if (unknownItemIds != null && !unknownItemIds.isEmpty()) {
+            throw new NoSuchElementException("Unknown item ids: '" + unknownItemIds + "'");
+        }
+
+        var deletedPaths = new ArrayList<Path>(itemIds.size());
+        try {
+            for (var stringItemId : itemIds) {
+                // NB: Should not be null because we checked this before
+                var itemId = Integer.parseInt(stringItemId);
+                var path = m_itemIdToPathMap.get(itemId);
+                // NB: This also works for files
+                PathUtils.deleteDirectoryIfExists(path);
+                deletedPaths.add(path);
+            }
+        } finally {
+            // NB: We only remove the paths that were deleted successfully
+            m_itemIdToPathMap.entrySet().removeIf(e -> deletedPaths.stream().anyMatch(p -> e.getValue().startsWith(p)));
+            m_pathToTypeMap.keySet().removeIf(k -> deletedPaths.stream().anyMatch(k::startsWith));
+        }
     }
 
     private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {

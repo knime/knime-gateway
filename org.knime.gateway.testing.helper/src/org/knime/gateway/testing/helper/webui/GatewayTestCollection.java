@@ -189,6 +189,8 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we, es) -> new SpaceServiceTestHelper(rc, sp, wl, we).testGetSpaceProvider());
         res.put("testCreateWorkflowForLocalWorkspace",
             (rc, sp, wl, we, es) -> new SpaceServiceTestHelper(rc, sp, wl, we).testCreateWorkflowForLocalWorkspace());
+        res.put("testDeleteItemForLocalWorkspace",
+            (rc, sp, wl, we, es) -> new SpaceServiceTestHelper(rc, sp, wl, we).testDeleteItemForLocalWorkspace());
 
         return res;
     }
