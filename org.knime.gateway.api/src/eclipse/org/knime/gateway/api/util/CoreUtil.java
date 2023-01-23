@@ -187,7 +187,10 @@ public final class CoreUtil {
             SubNodeContainer snc = (SubNodeContainer)wfm.getDirectNCParent();
             snc.getParent().removeProject(snc.getID());
         } else if (wfm.isProject()) {
-            wfm.getParent().removeProject(wfm.getID());
+            var parent = wfm.getParent();
+            if (parent.containsNodeContainer(wfm.getID())) {
+                parent.removeProject(wfm.getID());
+            }
         } else {
             throw new IllegalArgumentException("The passed workflow ('" + wfm.getNameWithID()
                 + "' it neither a workflow project nor a component project.");
