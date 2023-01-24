@@ -105,7 +105,6 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             @Override
             public WorkflowManager openProject() {
                 wfm.setName(name);
-                m_loadedWorkflows.add(projectId);
                 return wfm;
             }
 
@@ -124,6 +123,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
                 return Optional.of(createOriginForTesting());
             }
         });
+        m_loadedWorkflows.add(projectId);
     }
 
     /**
@@ -167,8 +167,8 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             WorkflowManager wfm = WorkflowProjectManager.getInstance().openAndCacheWorkflow(projectId).orElse(null);
             if (wfm != null) {
                 CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-                WorkflowProjectManager.getInstance().removeWorkflowProject(projectId);
             }
+            WorkflowProjectManager.getInstance().removeWorkflowProject(projectId);
         }
     }
 
