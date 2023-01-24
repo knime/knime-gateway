@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
@@ -66,6 +67,12 @@ public interface AppStateEnt extends GatewayEntity {
    * @return openProjects 
    **/
   public java.util.List<WorkflowProjectEnt> getOpenProjects();
+
+  /**
+   * List of example projects, e.g., to be shown on and opened from the &#39;get started&#39; page.
+   * @return exampleProjects 
+   **/
+  public java.util.List<ExampleProjectEnt> getExampleProjects();
 
   /**
    * All port types available in this installation. Map from port type ID to port type entity.
@@ -110,6 +117,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects);
+        
+        /**
+         * List of example projects, e.g., to be shown on and opened from the &#39;get started&#39; page.
+         * 
+         * @param exampleProjects the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setExampleProjects(java.util.List<ExampleProjectEnt> exampleProjects);
         
         /**
          * All port types available in this installation. Map from port type ID to port type entity.

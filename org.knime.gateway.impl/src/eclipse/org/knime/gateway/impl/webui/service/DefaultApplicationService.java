@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.service;
 import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,6 +61,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
@@ -70,16 +73,20 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
+import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
+import org.knime.gateway.api.webui.entity.ExampleProjectEnt.ExampleProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.LocalWorkspace;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -164,10 +171,12 @@ public final class DefaultApplicationService implements ApplicationService {
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
         Boolean nodeRepoFilterEnabled = preferenceProvider.isNodeRepoFilterEnabled();
+        List<ExampleProjectEnt> exampleProjects = null;
         var projectEnts = getProjectEnts(workflowProjectManager, workflowMiddleware);
         if (previousAppState == null) { // If there is no previous app state, no checks are needed
             availablePortTypeEnts = getAvailablePortTypeEnts();
             suggestedPortTypeIds = getSuggestedPortTypeIds();
+            exampleProjects = buildExampleProjects();
         } else { // Only set what has changed
             if (areOpenProjectsEqual(previousAppState.getOpenProjects(), projectEnts)) {
                 projectEnts = null;
@@ -178,6 +187,7 @@ public final class DefaultApplicationService implements ApplicationService {
         }
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
+            .setExampleProjects(exampleProjects) //
             .setAvailablePortTypes(availablePortTypeEnts) //
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
             .setNodeRepoFilterEnabled(nodeRepoFilterEnabled) //
@@ -223,6 +233,32 @@ public final class DefaultApplicationService implements ApplicationService {
         return SUGGESTED_PORT_TYPES.stream() //
             .map(CoreUtil::getPortTypeId) //
             .collect(toList());
+    }
+
+    private static List<ExampleProjectEnt> buildExampleProjects() {
+        String dummySvg;
+        try (var is = DefaultNodeRepositoryService.class.getResourceAsStream("/files/workflow.svg")) {
+            dummySvg = Base64.getEncoder().encodeToString(is.readAllBytes());
+        } catch (IOException ex) {
+            NodeLogger.getLogger(DefaultApplicationService.class).error("Failed to read workflow svg", ex);
+            return List.of();
+        }
+        return List.of( //
+            buildExampleProject("Read excel file", dummySvg), //
+            buildExampleProject("How to do v-lookup", dummySvg), //
+            buildExampleProject("Merge excel file", dummySvg));
+    }
+
+    private static ExampleProjectEnt buildExampleProject(final String name, final String svg) {
+        var origin = builder(WorkflowProjectOriginEntBuilder.class) //
+            .setItemId("TODO") //
+            .setSpaceId(LocalWorkspace.LOCAL_WORKSPACE_ID) //
+            .setProviderId("local").build();
+        return builder(ExampleProjectEntBuilder.class) //
+            .setName(name) //
+            .setSvg(svg) //
+            .setOrigin(origin) //
+            .build();
     }
 
     /**

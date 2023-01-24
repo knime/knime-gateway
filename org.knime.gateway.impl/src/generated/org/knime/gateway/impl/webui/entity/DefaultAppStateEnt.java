@@ -50,6 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
@@ -64,6 +65,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 public class DefaultAppStateEnt implements AppStateEnt {
 
   protected java.util.List<WorkflowProjectEnt> m_openProjects;
+  protected java.util.List<ExampleProjectEnt> m_exampleProjects;
   protected java.util.Map<String, PortTypeEnt> m_availablePortTypes;
   protected java.util.List<String> m_suggestedPortTypeIds;
   protected Boolean m_hasNodeRecommendationsEnabled;
@@ -82,6 +84,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
   private DefaultAppStateEnt(DefaultAppStateEntBuilder builder) {
     
     m_openProjects = immutable(builder.m_openProjects);
+    m_exampleProjects = immutable(builder.m_exampleProjects);
     m_availablePortTypes = immutable(builder.m_availablePortTypes);
     m_suggestedPortTypeIds = immutable(builder.m_suggestedPortTypeIds);
     m_hasNodeRecommendationsEnabled = immutable(builder.m_hasNodeRecommendationsEnabled);
@@ -104,7 +107,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
             return false;
         }
         DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags) && Objects.equals(m_nodeRepoFilterEnabled, ent.m_nodeRepoFilterEnabled);
+        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_exampleProjects, ent.m_exampleProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags) && Objects.equals(m_nodeRepoFilterEnabled, ent.m_nodeRepoFilterEnabled);
     }
 
 
@@ -116,6 +119,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
    public int hashCode() {
        return new HashCodeBuilder()
                .append(m_openProjects)
+               .append(m_exampleProjects)
                .append(m_availablePortTypes)
                .append(m_suggestedPortTypeIds)
                .append(m_hasNodeRecommendationsEnabled)
@@ -129,6 +133,11 @@ public class DefaultAppStateEnt implements AppStateEnt {
   @Override
   public java.util.List<WorkflowProjectEnt> getOpenProjects() {
         return m_openProjects;
+  }
+    
+  @Override
+  public java.util.List<ExampleProjectEnt> getExampleProjects() {
+        return m_exampleProjects;
   }
     
   @Override
@@ -164,6 +173,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
         }
     
         private java.util.List<WorkflowProjectEnt> m_openProjects;
+        private java.util.List<ExampleProjectEnt> m_exampleProjects;
         private java.util.Map<String, PortTypeEnt> m_availablePortTypes;
         private java.util.List<String> m_suggestedPortTypeIds;
         private Boolean m_hasNodeRecommendationsEnabled;
@@ -173,6 +183,12 @@ public class DefaultAppStateEnt implements AppStateEnt {
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects) {
              m_openProjects = openProjects;
+             return this;
+        }
+
+        @Override
+        public DefaultAppStateEntBuilder setExampleProjects(java.util.List<ExampleProjectEnt> exampleProjects) {
+             m_exampleProjects = exampleProjects;
              return this;
         }
 

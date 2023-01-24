@@ -44,17 +44,15 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt.DefaultAppStateEntBuilder;
+import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
+import org.knime.gateway.impl.webui.entity.DefaultExampleProjectEnt.DefaultExampleProjectEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,41 +60,25 @@ import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt.DefaultAppStateEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultAppStateEntBuilder.class)
+@JsonDeserialize(builder=DefaultExampleProjectEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface AppStateEntMixIn extends AppStateEnt {
+public interface ExampleProjectEntMixIn extends ExampleProjectEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("openProjects")
-    public java.util.List<WorkflowProjectEnt> getOpenProjects();
+    @JsonProperty("name")
+    public String getName();
     
     @Override
-    @JsonProperty("exampleProjects")
-    public java.util.List<ExampleProjectEnt> getExampleProjects();
+    @JsonProperty("svg")
+    public String getSvg();
     
     @Override
-    @JsonProperty("availablePortTypes")
-    public java.util.Map<String, PortTypeEnt> getAvailablePortTypes();
-    
-    @Override
-    @JsonProperty("suggestedPortTypeIds")
-    public java.util.List<String> getSuggestedPortTypeIds();
-    
-    @Override
-    @JsonProperty("hasNodeRecommendationsEnabled")
-    public Boolean hasNodeRecommendationsEnabled();
-    
-    @Override
-    @JsonProperty("featureFlags")
-    public java.util.Map<String, Object> getFeatureFlags();
-    
-    @Override
-    @JsonProperty("nodeRepoFilterEnabled")
-    public Boolean isNodeRepoFilterEnabled();
+    @JsonProperty("origin")
+    public WorkflowProjectOriginEnt getOrigin();
     
 
     /**
@@ -106,38 +88,22 @@ public interface AppStateEntMixIn extends AppStateEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AppStateEntMixInBuilder extends AppStateEntBuilder {
+    public static interface ExampleProjectEntMixInBuilder extends ExampleProjectEntBuilder {
     
         @Override
-        public AppStateEntMixIn build();
+        public ExampleProjectEntMixIn build();
     
         @Override
-        @JsonProperty("openProjects")
-        public AppStateEntMixInBuilder setOpenProjects(final java.util.List<WorkflowProjectEnt> openProjects);
+        @JsonProperty("name")
+        public ExampleProjectEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("exampleProjects")
-        public AppStateEntMixInBuilder setExampleProjects(final java.util.List<ExampleProjectEnt> exampleProjects);
+        @JsonProperty("svg")
+        public ExampleProjectEntMixInBuilder setSvg(final String svg);
         
         @Override
-        @JsonProperty("availablePortTypes")
-        public AppStateEntMixInBuilder setAvailablePortTypes(final java.util.Map<String, PortTypeEnt> availablePortTypes);
-        
-        @Override
-        @JsonProperty("suggestedPortTypeIds")
-        public AppStateEntMixInBuilder setSuggestedPortTypeIds(final java.util.List<String> suggestedPortTypeIds);
-        
-        @Override
-        @JsonProperty("hasNodeRecommendationsEnabled")
-        public AppStateEntMixInBuilder setHasNodeRecommendationsEnabled(final Boolean hasNodeRecommendationsEnabled);
-        
-        @Override
-        @JsonProperty("featureFlags")
-        public AppStateEntMixInBuilder setFeatureFlags(final java.util.Map<String, Object> featureFlags);
-        
-        @Override
-        @JsonProperty("nodeRepoFilterEnabled")
-        public AppStateEntMixInBuilder setNodeRepoFilterEnabled(final Boolean nodeRepoFilterEnabled);
+        @JsonProperty("origin")
+        public ExampleProjectEntMixInBuilder setOrigin(final WorkflowProjectOriginEnt origin);
         
     }
 

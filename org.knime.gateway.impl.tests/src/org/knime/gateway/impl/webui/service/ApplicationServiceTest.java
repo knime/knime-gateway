@@ -150,6 +150,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         return builder(AppStateEnt.AppStateEntBuilder.class) //
             .setOpenProjects(appStateEnt.getOpenProjects()) //
+            .setExampleProjects(appStateEnt.getExampleProjects()) //
             .setAvailablePortTypes(availablePortTypes) //
             .setSuggestedPortTypeIds(appStateEnt.getSuggestedPortTypeIds()) //
             .setFeatureFlags(appStateEnt.getFeatureFlags()) //
