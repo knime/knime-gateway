@@ -60,8 +60,8 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.webui.Space;
-import org.knime.gateway.impl.webui.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * The default workflow service implementation for the web-ui.

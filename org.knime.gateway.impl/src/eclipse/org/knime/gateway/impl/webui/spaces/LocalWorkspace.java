@@ -46,7 +46,7 @@
  * History
  *   Dec 8, 2022 (hornm): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.spaces;
 
 import java.io.IOException;
 import java.net.URI;

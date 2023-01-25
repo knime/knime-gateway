@@ -46,67 +46,31 @@
  * History
  *   Dec 9, 2022 (hornm): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.spaces;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
 
 /**
- * Represents an entity that holds spaces. E.g. a Hub instance.
+ * Summarizes all available space provides. Mainly used as a service dependency (see, e.g.,
+ * {@link ServiceDependencies}).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface SpaceProvider {
+public interface SpaceProviders {
 
     /**
-     * @return a globally unique id
-     */
-    String getId();
-
-    /**
-     * @return a human readable name for the space provider
-     */
-    String getName();
-
-    /**
-     * @return map of available spaces; maps from space-id to space
-     * @throws NoSuchElementException if there is none for the given id
-     */
-    Map<String, Space> getSpaceMap();
-
-    /**
-     * @return {@code true} if this provider only returns {@link LocalWorkspace LocalWorkspace(s)}
+     * @return {@code true} this space provider only returns local spaces, i.e. spaces that don't require a remote
+     *         connection.
      */
     default boolean isLocal() {
         return false;
     }
 
     /**
-     * Returns the connection if this provider is connected to its remote location.
-     *
-     * @param doConnect whether to connect if there isn't a connection, yet
-     * @return the connection or an empty optional if this provider is not connected
+     * @return map of available {@link SpaceProvider}s; maps the space-provider-id to the space-provider.
      */
-    default Optional<SpaceProviderConnection> getConnection(final boolean doConnect) {
-        return Optional.empty();
-    }
-
-    /**
-     * Represents a connection of a space provider to its remote location (e.g. a Hub).
-     */
-    public interface SpaceProviderConnection {
-
-        /**
-         * @return the user that is connected
-         */
-        String getUsername();
-
-        /**
-         * Cuts the connection.
-         */
-        void disconnect();
-
-    }
+    Map<String, SpaceProvider> getProvidersMap();
 
 }

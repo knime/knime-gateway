@@ -86,10 +86,10 @@ import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.LocalWorkspace;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.

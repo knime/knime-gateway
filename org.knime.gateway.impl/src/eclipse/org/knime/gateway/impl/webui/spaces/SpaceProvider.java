@@ -44,45 +44,69 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 22, 2023 (leonard.woerteler): created
+ *   Dec 9, 2022 (hornm): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.spaces;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.regex.Pattern;
-
-import org.knime.core.data.sort.AlphanumericComparator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
- * Comparator for comparing the names of space items. Since file names are naturally structured by periods and other
- * special characters, we partition the input strings into alphanumeric and non-alphanumeric characters and compare the
- * resulting sequences lexicographically using the a case-insensitive {@link AlphanumericComparator} for string
- * comparisons.
+ * Represents an entity that holds spaces. E.g. a Hub instance.
  *
- * If two strings compare as equal using this scheme, they are compared according to their
- * {@link Comparator#naturalOrder() natural order} to make sure that case differences don't lead to ambiguity.
- *
- * @author Leonard Wörteler, KNIME GmbH, Konstanz, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public enum SpaceItemNameComparator implements Comparator<String> {
+public interface SpaceProvider {
 
-    /** Singleton instance of this comparator. */
-    INSTANCE;
+    /**
+     * @return a globally unique id
+     */
+    String getId();
 
-    /** Comparator for string segments. */
-    private static final Comparator<String> INNER = new AlphanumericComparator(String::compareToIgnoreCase);
+    /**
+     * @return a human readable name for the space provider
+     */
+    String getName();
 
-    /** Pattern for splitting a name into alternating segments of alphanumeric and non-alphanumeric characters. */
-    private static final Pattern ALPHANUM_BORDER = Pattern.compile(
-        "(?<=\\p{Alnum})(?!\\p{Alnum})|" + // border between an alphanumeric and a non-alphanumeric character or...
-        "(?<!\\p{Alnum})(?=\\p{Alnum})",   // border between a non-alphanumeric and an alphanumeric character
-        Pattern.UNICODE_CHARACTER_CLASS
-    );
+    /**
+     * @return map of available spaces; maps from space-id to space
+     * @throws NoSuchElementException if there is none for the given id
+     */
+    Map<String, Space> getSpaceMap();
 
-    @Override
-    public int compare(final String o1, final String o2) {
-        final var res = Arrays.compare(ALPHANUM_BORDER.split(o1), ALPHANUM_BORDER.split(o2), INNER);
-        return res != 0 ? res : o1.compareTo(o2);
+    /**
+     * @return {@code true} if this provider only returns {@link LocalWorkspace LocalWorkspace(s)}
+     */
+    default boolean isLocal() {
+        return false;
     }
+
+    /**
+     * Returns the connection if this provider is connected to its remote location.
+     *
+     * @param doConnect whether to connect if there isn't a connection, yet
+     * @return the connection or an empty optional if this provider is not connected
+     */
+    default Optional<SpaceProviderConnection> getConnection(final boolean doConnect) {
+        return Optional.empty();
+    }
+
+    /**
+     * Represents a connection of a space provider to its remote location (e.g. a Hub).
+     */
+    public interface SpaceProviderConnection {
+
+        /**
+         * @return the user that is connected
+         */
+        String getUsername();
+
+        /**
+         * Cuts the connection.
+         */
+        void disconnect();
+
+    }
+
 }

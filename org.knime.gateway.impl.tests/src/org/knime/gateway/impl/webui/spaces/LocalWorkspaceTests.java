@@ -46,7 +46,7 @@
  * History
  *   Jan 24, 2023 (benjamin): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.spaces;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -59,6 +59,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.knime.core.util.PathUtils;
+import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
 /**

@@ -44,33 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 9, 2022 (hornm): created
+ *   Jan 22, 2023 (leonard.woerteler): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.spaces;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.regex.Pattern;
 
-import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.core.data.sort.AlphanumericComparator;
 
 /**
- * Summarizes all available space provides. Mainly used as a service dependency (see, e.g.,
- * {@link ServiceDependencies}).
+ * Comparator for comparing the names of space items. Since file names are naturally structured by periods and other
+ * special characters, we partition the input strings into alphanumeric and non-alphanumeric characters and compare the
+ * resulting sequences lexicographically using the a case-insensitive {@link AlphanumericComparator} for string
+ * comparisons.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * If two strings compare as equal using this scheme, they are compared according to their
+ * {@link Comparator#naturalOrder() natural order} to make sure that case differences don't lead to ambiguity.
+ *
+ * @author Leonard Wörteler, KNIME GmbH, Konstanz, Germany
  */
-public interface SpaceProviders {
+public enum SpaceItemNameComparator implements Comparator<String> {
 
-    /**
-     * @return {@code true} this space provider only returns local spaces, i.e. spaces that don't require a remote
-     *         connection.
-     */
-    default boolean isLocal() {
-        return false;
+    /** Singleton instance of this comparator. */
+    INSTANCE;
+
+    /** Comparator for string segments. */
+    private static final Comparator<String> INNER = new AlphanumericComparator(String::compareToIgnoreCase);
+
+    /** Pattern for splitting a name into alternating segments of alphanumeric and non-alphanumeric characters. */
+    private static final Pattern ALPHANUM_BORDER = Pattern.compile(
+        "(?<=\\p{Alnum})(?!\\p{Alnum})|" + // border between an alphanumeric and a non-alphanumeric character or...
+        "(?<!\\p{Alnum})(?=\\p{Alnum})",   // border between a non-alphanumeric and an alphanumeric character
+        Pattern.UNICODE_CHARACTER_CLASS
+    );
+
+    @Override
+    public int compare(final String o1, final String o2) {
+        final var res = Arrays.compare(ALPHANUM_BORDER.split(o1), ALPHANUM_BORDER.split(o2), INNER);
+        return res != 0 ? res : o1.compareTo(o2);
     }
-
-    /**
-     * @return map of available {@link SpaceProvider}s; maps the space-provider-id to the space-provider.
-     */
-    Map<String, SpaceProvider> getProvidersMap();
-
 }
