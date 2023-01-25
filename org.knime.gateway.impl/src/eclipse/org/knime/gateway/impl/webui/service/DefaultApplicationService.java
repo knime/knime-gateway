@@ -181,7 +181,7 @@ public final class DefaultApplicationService implements ApplicationService {
             if (areOpenProjectsEqual(previousAppState.getOpenProjects(), projectEnts)) {
                 projectEnts = null;
             }
-            if (previousAppState.isNodeRepoFilterEnabled().equals(nodeRepoFilterEnabled)) {
+            if (Objects.equals(previousAppState.isNodeRepoFilterEnabled(), nodeRepoFilterEnabled)) {
                 nodeRepoFilterEnabled = null;
             }
         }
