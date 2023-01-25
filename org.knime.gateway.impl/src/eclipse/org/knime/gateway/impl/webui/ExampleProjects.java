@@ -44,73 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 21, 2020 (hornm): created
+ *   Jan 25, 2023 (hornm): created
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.webui;
 
-import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.ExampleProjects;
-import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import java.util.List;
+
+import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 
 /**
- * The default implementation of the {@link ApplicationService}-interface.
+ * Provides information about example projects, e.g., shown at the get-started page.
  *
- * @noextend This class is not intended to be subclassed by clients.
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
-public final class DefaultApplicationService implements ApplicationService {
-
-    private final AppStateUpdater m_appStateUpdater =
-        ServiceDependencies.getServiceDependency(AppStateUpdater.class, true);
-
-    private final WorkflowProjectManager m_workflowProjectManager =
-        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
-
-    private final WorkflowMiddleware m_workflowMiddleware =
-        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
-
-    private final PreferencesProvider m_preferencesProvider =
-        ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
-
-    private final ExampleProjects m_exampleProjects =
-            ServiceDependencies.getServiceDependency(ExampleProjects.class, false);
+public interface ExampleProjects {
 
     /**
-     * Returns the singleton instance for this service.
-     *
-     * @return the singleton instance
+     * @return list of relative paths pointing add workflows in the local workspace
      */
-    public static DefaultApplicationService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultApplicationService.class);
-    }
-
-    DefaultApplicationService() {
-        // singleton
-    }
+    List<String> getRelativeExampleProjectPaths();
 
     /**
-     * {@inheritDoc}
+     * @return the local workspace instance in use
      */
-    @Override
-    public void dispose() {
-        m_appStateUpdater.setLastAppState(null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AppStateEnt getState() {
-        var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_workflowMiddleware,
-            m_preferencesProvider, m_exampleProjects);
-        m_appStateUpdater.setLastAppState(appState);
-        return appState;
-    }
+    LocalWorkspace getLocalWorkspace();
 
 }

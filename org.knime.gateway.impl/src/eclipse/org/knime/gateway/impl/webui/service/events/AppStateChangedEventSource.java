@@ -77,6 +77,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
      * @param appStateUpdater
      * @param workflowProjectManager
      * @param workflowMiddleware
+     * @param preferenceProvider
      */
     public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateUpdater appStateUpdater,
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
@@ -85,7 +86,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         m_appStateUpdater = appStateUpdater;
         m_callback = () -> {
             var appState = AppStateEntityFactory.buildAppStateEnt(appStateUpdater.getLastAppState().orElse(null),
-                workflowProjectManager, workflowMiddleware, preferenceProvider);
+                workflowProjectManager, workflowMiddleware, preferenceProvider, null);
             appStateUpdater.setLastAppState(appState);
             sendEvent(buildEventEnt(appState));
         };

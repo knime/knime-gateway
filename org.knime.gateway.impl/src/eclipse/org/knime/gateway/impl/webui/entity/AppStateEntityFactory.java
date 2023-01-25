@@ -52,6 +52,8 @@ import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,7 @@ import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
@@ -84,11 +87,10 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.service.DefaultApplicationService;
-import org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService;
 import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 
 /**
@@ -124,20 +126,23 @@ public final class AppStateEntityFactory {
      * @param workflowProjectManager
      * @param workflowMiddleware
      * @param preferenceProvider
+     * @param exampleProjects if {@code null}, no example projects will be added to the app-state
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
-        final PreferencesProvider preferenceProvider) {
+        final PreferencesProvider preferenceProvider, final ExampleProjects exampleProjects) {
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
         Boolean nodeRepoFilterEnabled = preferenceProvider.isNodeRepoFilterEnabled();
-        List<ExampleProjectEnt> exampleProjects = null;
+        List<ExampleProjectEnt> exampleProjectEnts = null;
         var projectEnts = getProjectEnts(workflowProjectManager, workflowMiddleware);
         if (previousAppState == null) { // If there is no previous app state, no checks are needed
             availablePortTypeEnts = getAvailablePortTypeEnts();
             suggestedPortTypeIds = getSuggestedPortTypeIds();
-            exampleProjects = buildExampleProjects();
+            if (exampleProjects != null) {
+                exampleProjectEnts = buildExampleProjects(exampleProjects);
+            }
         } else { // Only set what has changed
             if (areOpenProjectsEqual(previousAppState.getOpenProjects(), projectEnts)) {
                 projectEnts = null;
@@ -148,7 +153,7 @@ public final class AppStateEntityFactory {
         }
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
-            .setExampleProjects(exampleProjects) //
+            .setExampleProjects(exampleProjectEnts) //
             .setAvailablePortTypes(availablePortTypeEnts) //
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
             .setNodeRepoFilterEnabled(nodeRepoFilterEnabled) //
@@ -196,23 +201,36 @@ public final class AppStateEntityFactory {
             .collect(toList());
     }
 
-    private static List<ExampleProjectEnt> buildExampleProjects() {
-        String dummySvg;
-        try (var is = DefaultNodeRepositoryService.class.getResourceAsStream("/files/workflow.svg")) {
-            dummySvg = Base64.getEncoder().encodeToString(is.readAllBytes());
-        } catch (IOException ex) {
-            NodeLogger.getLogger(DefaultApplicationService.class).error("Failed to read workflow svg", ex);
-            return List.of();
-        }
-        return List.of( //
-            buildExampleProject("Read excel file", dummySvg), //
-            buildExampleProject("How to do v-lookup", dummySvg), //
-            buildExampleProject("Merge excel file", dummySvg));
+    private static List<ExampleProjectEnt> buildExampleProjects(final ExampleProjects exampleProjects) {
+        var localWorkspace = exampleProjects.getLocalWorkspace();
+        return exampleProjects.getRelativeExampleProjectPaths().stream() //
+            .map(s -> localWorkspace.getLocalRootPath().resolve(Path.of(s))) //
+            .filter(Files::exists) //
+            .map(f -> buildExampleProject(f, localWorkspace)) //
+            .filter(Objects::nonNull) //
+            .collect(Collectors.toList());
     }
 
-    private static ExampleProjectEnt buildExampleProject(final String name, final String svg) {
+
+    private static ExampleProjectEnt buildExampleProject(final Path workflowDir, final LocalWorkspace localWorkspace) {
+        var name = workflowDir.getFileName().toString();
+        var svgFile = workflowDir.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE);
+        byte[] svg;
+        try {
+            svg = Files.readAllBytes(svgFile);
+        } catch (IOException ex) {
+            NodeLogger.getLogger(AppStateEntityFactory.class)
+                .error("Svg for workflow '" + workflowDir + "' could not be read", ex);
+            return null;
+        }
+        var svgEncoded = Base64.getEncoder().encodeToString(svg);
+        var itemId = localWorkspace.getItemId(workflowDir);
+        return buildExampleProject(name, svgEncoded, itemId);
+    }
+
+    private static ExampleProjectEnt buildExampleProject(final String name, final String svg, final String itemId) {
         var origin = builder(WorkflowProjectOriginEntBuilder.class) //
-            .setItemId("TODO") //
+            .setItemId(itemId) //
             .setSpaceId(LocalWorkspace.LOCAL_WORKSPACE_ID) //
             .setProviderId("local").build();
         return builder(ExampleProjectEntBuilder.class) //
