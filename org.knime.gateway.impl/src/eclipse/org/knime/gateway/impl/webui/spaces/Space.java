@@ -54,6 +54,7 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
@@ -168,4 +169,26 @@ public interface Space {
      * @throws NoSuchElementException If one of the given item ids does not exist
      */
     void deleteItems(List<String> itemIds) throws IOException;
+
+    /**
+     * Imports a data file to a workflow group.
+     *
+     * @param srcPath The source path of the data file to import
+     * @param workflowGroupItemId The workflow group item ID
+     * @return The imported space item entity
+     * @throws IOException If the import failed
+     */
+    SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId) throws IOException;
+
+    /**
+     * Imports a workflow (group) to the specified workflow group.
+     *
+     * @param srcPath The source path of the *.knwf or *.knar file
+     * @param workflowGroupItemId The workflow group item ID
+     * @param createMetaInfoFileFor Consumer to create the necessary `MetaInfoFile` for an imported workflow (group)
+     * @return The imported space item entity
+     * @throws IOException If the import failed
+     */
+    SpaceItemEnt importWorkflows(final Path srcPath, final String workflowGroupItemId,
+        final Consumer<Path> createMetaInfoFileFor) throws IOException;
 }

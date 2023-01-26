@@ -208,12 +208,14 @@ public final class SpaceEntityFactory {
      * @param absolutePath The absolute path of the newly created workflow
      * @param rootWorkspacePath Workspace root path
      * @param id The ID of the newly created workflow
+     * @param type The space item type
      * @return The space item entity
      */
-    public SpaceItemEnt buildLocalSpaceItemEnt(final Path absolutePath, final Path rootWorkspacePath, final String id) {
+    public SpaceItemEnt buildLocalSpaceItemEnt(final Path absolutePath, final Path rootWorkspacePath, final String id,
+        final TypeEnum type) {
         final var relativePath = rootWorkspacePath.relativize(absolutePath);
         final var name = getNameFromRelativePath(relativePath);
-        return buildSpaceItemEnt(name, id, TypeEnum.WORKFLOW);
+        return buildSpaceItemEnt(name, id, type);
     }
 
     /**

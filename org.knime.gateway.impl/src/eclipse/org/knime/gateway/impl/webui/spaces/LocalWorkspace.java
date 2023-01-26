@@ -58,6 +58,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -68,6 +70,7 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.FileUtil;
 import org.knime.core.util.KnimeUrlType;
 import org.knime.core.util.PathUtils;
 import org.knime.core.util.workflowalizer.MetadataConfig;
@@ -137,11 +140,10 @@ public final class LocalWorkspace implements Space {
     @Override
     public SpaceItemEnt createWorkflow(final String workflowGroupItemId) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
-        var workflowName = generateUniqueWorkflowName(parentWorkflowGroupPath);
+        var workflowName = generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_NAME, true);
         var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowName));
         Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
-        var id = getItemId(directoryPath);
-        return EntityFactory.Space.buildLocalSpaceItemEnt(directoryPath, m_localWorkspaceRootPath, id);
+        return getSpaceItemEntFromPath(directoryPath);
     }
 
     @Override
@@ -207,6 +209,50 @@ public final class LocalWorkspace implements Space {
             m_itemIdToPathMap.entrySet().removeIf(e -> deletedPaths.stream().anyMatch(p -> e.getValue().startsWith(p)));
             m_pathToTypeMap.keySet().removeIf(k -> deletedPaths.stream().anyMatch(k::startsWith));
         }
+    }
+
+    @Override
+    public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId) throws IOException {
+        var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+        var uniqueName = generateUniqueSpaceItemName(parentWorkflowGroupPath, srcPath.getFileName().toString(), false);
+        var destPath = parentWorkflowGroupPath.resolve(uniqueName);
+        FileUtil.copy(srcPath.toFile(), destPath.toFile());
+        return getSpaceItemEntFromPath(destPath);
+    }
+
+    @Override
+    public SpaceItemEnt importWorkflows(final Path srcPath, final String workflowGroupItemId,
+        final Consumer<Path> createMetaInfoFileFor) throws IOException {
+        var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+
+        // Extract archive to temporary location
+        var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
+        FileUtil.unzip(srcPath.toFile(), tmpDir);
+        var tmpSrcPath = tmpDir.listFiles()[0].toPath();
+        // Import the workflow (group)
+        var uniqueName =
+            generateUniqueSpaceItemName(parentWorkflowGroupPath, tmpSrcPath.getFileName().toString(), true);
+        var destPath = parentWorkflowGroupPath.resolve(uniqueName);
+        FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
+        // Add `MetaInfoFile` to workflow (group)
+        createMetaInfoFileFor.accept(destPath);
+
+        return getSpaceItemEntFromPath(destPath);
+    }
+
+    /**
+     * @param workflowGroupItemId The workflow group item ID
+     * @return A predicate checking for name collision within the corresponding workflow group
+     */
+    public Predicate<String> getNameCollisionCheckerForWorkflowGroup(final String workflowGroupItemId) {
+        var workflowGroup = getAbsolutePath(workflowGroupItemId);
+        return fileName -> Files.exists(workflowGroup.resolve(fileName));
+    }
+
+    private SpaceItemEnt getSpaceItemEntFromPath(final Path spaceItemPath) {
+        var id = getItemId(spaceItemPath);
+        var type = getSpaceItemType(spaceItemPath);
+        return EntityFactory.Space.buildLocalSpaceItemEnt(spaceItemPath, m_localWorkspaceRootPath, id, type);
     }
 
     private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
@@ -288,19 +334,26 @@ public final class LocalWorkspace implements Space {
     }
 
     /**
-     * @return The default workflow name if that doesn't exist. Otherwise it appends a "1", "2" etc.
+     * Generates unique space item names, preserves file extensions
+     *
+     * @return The initial name if that doesn't exist, the unique one otherwise.
      */
-    private static String generateUniqueWorkflowName(final Path directory) {
-        if (!Files.exists(directory.resolve(DEFAULT_WORKFLOW_NAME))) {
-            return DEFAULT_WORKFLOW_NAME;
+    private static String generateUniqueSpaceItemName(final Path workflowGroup, final String name,
+        final boolean isWorkflow) {
+        if (!Files.exists(workflowGroup.resolve(name))) {
+            return name;
         } else {
+            var lastIndexOfDot = isWorkflow ? -1 : name.lastIndexOf("."); // Ignore dots in workflow names
+            var fileExtension = lastIndexOfDot > -1 ? name.substring(lastIndexOfDot) : "";
+            var oldName = lastIndexOfDot > -1 ? name.substring(0, lastIndexOfDot) : name;
             var counter = 0;
-            String name;
+            String newName;
             do {
                 counter++;
-                name = DEFAULT_WORKFLOW_NAME + counter;
-            } while (Files.exists(directory.resolve(name)));
-            return name;
+                newName = isWorkflow ? (oldName + counter) : (oldName + "(" + counter + ")"); // No brackets in workflow names
+            } while (Files.exists(workflowGroup.resolve(newName + fileExtension)));
+            return newName + fileExtension;
         }
     }
+
 }

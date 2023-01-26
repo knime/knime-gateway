@@ -59,6 +59,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -242,6 +243,17 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public void deleteItems(final List<String> itemIds) throws IOException {
                 // do nothing
+            }
+
+            @Override
+            public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId) throws IOException {
+                return null;
+            }
+
+            @Override
+            public SpaceItemEnt importWorkflows(final Path srcPath, final String workflowGroupItemId,
+                final Consumer<Path> createMetaInfoFileFor) throws IOException {
+                return null;
             }
         };
     }
