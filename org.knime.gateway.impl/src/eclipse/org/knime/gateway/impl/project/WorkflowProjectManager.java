@@ -47,7 +47,8 @@ package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -76,7 +77,7 @@ public final class WorkflowProjectManager {
 
     };
 
-    private final Map<String, WorkflowProject> m_workflowProjectMap = new HashMap<>();
+    private final Map<String, WorkflowProject> m_workflowProjectMap = new LinkedHashMap<>();
 
     private final List<Consumer<String>> m_workflowRemovedListeners = new ArrayList<>();
 
@@ -128,7 +129,7 @@ public final class WorkflowProjectManager {
      * @return the IDs of all registered workflow projects
      */
     public Set<String> getWorkflowProjectsIds() {
-        return new HashSet<>(m_workflowProjectMap.keySet());
+        return new LinkedHashSet<>(m_workflowProjectMap.keySet());
     }
 
     /**
