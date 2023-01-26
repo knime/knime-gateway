@@ -2,16 +2,17 @@ org.knime.ext.poi3.node.io.filehandling.excel.reader.ExcelTableReaderNodeFactory
 org.knime.ext.poi3.node.io.filehandling.excel.writer.ExcelTableWriterNodeFactory
 org.knime.google.api.sheets.nodes.reader.GoogleSheetsReaderFactory
 org.knime.google.api.sheets.nodes.spreadsheetwriter.GoogleSpreadsheetWriterFactory
-org.knime.base.node.preproc.cellreplace.CellReplacerNodeFactory
+org.knime.base.node.preproc.valuelookup.ValueLookupNodeFactory
 org.knime.base.node.preproc.table.cropper.TableCropperNodeFactory
 org.knime.base.node.preproc.table.cellextractor.CellExtractorNodeFactory
 org.knime.base.node.preproc.table.splitter.TableSplitterNodeFactory
 org.knime.base.node.preproc.table.updater.TableUpdaterNodeFactory
+org.knime.base.node.preproc.rowagg.RowAggregatorNodeFactory
 org.knime.base.node.preproc.rowtocolumnheader.RowToColumnHeaderNodeFactory
 org.knime.base.node.preproc.columnheaderextract.ColumnHeaderExtractorNodeFactory
 org.knime.base.node.preproc.stringreplacer.StringReplacerNodeFactory
 org.knime.base.node.preproc.stringreplacer.dict.SearchReplaceDictNodeFactory
-org.knime.base.node.preproc.rename.RenameNodeFactory
+org.knime.base.node.preproc.column.renamer.ColumnRenamerNodeFactory
 org.knime.base.node.preproc.columnheaderinsert.ColumnHeaderInsertNodeFactory
 org.knime.base.node.preproc.duplicates.DuplicateRowFilterNodeFactory
 org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory
@@ -39,7 +40,6 @@ org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory#Scatter+Plot+%28Lab
 org.knime.base.views.node.stackedareachart.StackedAreaChartNodeFactory#Stacked+Area+Chart+%28Labs%29
 org.knime.base.views.node.statistics.StatisticsNodeFactory#Statistics+%28Labs%29
 org.knime.base.views.node.tableview.TableViewNodeFactory#Table+View+%28Labs%29
-org.knime.base.node.preproc.groupby.GroupByNodeFactory
 org.knime.base.node.preproc.stringmanipulation.StringManipulationNodeFactory
 org.knime.time.node.extract.datetime.ExtractDateTimeFieldsNodeFactory2
 org.knime.ext.jep.JEPNodeFactory
@@ -59,7 +59,6 @@ org.knime.time.node.filter.datetimebasedrowfilter.DateTimeBasedRowFilterNodeFact
 org.knime.ext.jep.multicolumn.MultiColumnJEPNodeFactory
 org.knime.base.node.preproc.double2int2.DoubleToIntNodeFactory
 org.knime.base.node.preproc.colcombine2.ColCombine2NodeFactory
-org.knime.ext.poi3.node.io.filehandling.excel.sheets.ExcelSheetReaderNodeFactory
 org.knime.base.node.preproc.columnheaderinsert.ColumnHeaderInsertNodeFactory
 org.knime.base.node.preproc.columnheaderextract.ColumnHeaderExtractorNodeFactory
 org.knime.base.node.preproc.columnaggregator.ColumnAggregatorNodeFactory
@@ -76,3 +75,5 @@ org.knime.base.node.preproc.topk.TopKSelectorNodeFactory
 org.knime.base.node.preproc.columnlag.LagColumnNodeFactory
 org.knime.ext.poi3.node.io.filehandling.excel.updater.cell.ExcelCellUpdaterNodeFactory
 org.knime.timeseries.node.movagg.MovingAggregationNodeFactory
+org.knime.ext.microsoft.authentication.node.auth.MicrosoftAuthenticationNodeFactory
+org.knime.ext.sharepoint.filehandling.node.SharepointConnectionNodeFactory
