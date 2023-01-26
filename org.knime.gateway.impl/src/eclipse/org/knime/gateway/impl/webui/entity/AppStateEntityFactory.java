@@ -60,7 +60,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
@@ -144,7 +143,7 @@ public final class AppStateEntityFactory {
                 exampleProjectEnts = buildExampleProjects(exampleProjects);
             }
         } else { // Only set what has changed
-            if (areOpenProjectsEqual(previousAppState.getOpenProjects(), projectEnts)) {
+            if (Objects.equals(previousAppState.getOpenProjects(), projectEnts)) {
                 projectEnts = null;
             }
             if (Objects.equals(previousAppState.isNodeRepoFilterEnabled(), nodeRepoFilterEnabled)) {
@@ -163,26 +162,10 @@ public final class AppStateEntityFactory {
 
     }
 
-    private static boolean areOpenProjectsEqual(final List<WorkflowProjectEnt> previousProjects,
-        final List<WorkflowProjectEnt> newProjects) {
-        if (previousProjects == null && newProjects == null) {
-            return true;
-        }
-        if ((previousProjects == null ^ newProjects == null) || (previousProjects.size() != newProjects.size())) {
-            return false;
-        }
-        return IntStream.range(0, previousProjects.size()).allMatch(i -> {
-            var left = previousProjects.get(i);
-            var right = newProjects.get(i);
-            return left.equals(right);
-        });
-    }
-
     private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
         final WorkflowMiddleware workflowMiddleware) {
         return workflowProjectManager.getWorkflowProjectsIds().stream() //
-            .map(id -> workflowProjectManager.getWorkflowProject(id).orElse(null)) //
-            .filter(Objects::nonNull)//
+            .flatMap(id -> workflowProjectManager.getWorkflowProject(id).stream()) //
             .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, workflowMiddleware)) //
             .collect(toList());
     }
