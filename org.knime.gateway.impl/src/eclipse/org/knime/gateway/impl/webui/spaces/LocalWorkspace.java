@@ -65,6 +65,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
@@ -97,7 +98,8 @@ public final class LocalWorkspace implements Space {
      */
     public static final String DEFAULT_WORKFLOW_NAME = "KNIME_project";
 
-    // assumption is that there is exactly one user of the local workspace at a time
+    // Map from hash code representing the item-id to the absolute path.
+    // Assumption is that there is exactly one user of the local workspace at a time.
     final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>(); // package private for tests
 
     // just for optimization purposes: avoids the repeated determination of the item type
@@ -256,17 +258,19 @@ public final class LocalWorkspace implements Space {
     }
 
     private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
-        Path relativePath = null;
+        Path absolutePath = null;
         var isRoot = Space.ROOT_ITEM_ID.equals(workflowGroupItemId);
-        if (!isRoot) {
-            relativePath = m_itemIdToPathMap.get(Integer.valueOf(workflowGroupItemId));
-            if (relativePath == null) {
+        if (isRoot) {
+            absolutePath = m_localWorkspaceRootPath;
+        } else {
+            absolutePath = m_itemIdToPathMap.get(Integer.valueOf(workflowGroupItemId));
+            if (absolutePath == null) {
                 throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
             }
         }
-        var absolutePath = isRoot ? m_localWorkspaceRootPath : m_localWorkspaceRootPath.resolve(relativePath);
         if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
-            throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
+            throw new IllegalArgumentException(
+                "The item with id '" + workflowGroupItemId + "' is not a workflow group");
         }
         return absolutePath;
     }
@@ -283,20 +287,21 @@ public final class LocalWorkspace implements Space {
     }
 
     /**
-     * Determine an item ID for a given path. Persist the mapping and handle collisions.
+     * Determine an item ID for a given absolute path. Persist the mapping and handle collisions.
      *
-     * @param path the path to get the id for
-     *
+     * @param absolutePath the absolute(!) path to get the id for
+     * @throws IllegalArgumentException if the provided path is not absolute
      * @return the item id
      */
-    public String getItemId(final Path path) {
-        var id = path.hashCode();
+    public String getItemId(final Path absolutePath) {
+        CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
+        var id = absolutePath.hashCode();
         Path existingPath;
-        while ((existingPath = m_itemIdToPathMap.get(id)) != null && !path.equals(existingPath)) {
+        while ((existingPath = m_itemIdToPathMap.get(id)) != null && !absolutePath.equals(existingPath)) {
             // handle hash collision
             id = 31 * id;
         }
-        m_itemIdToPathMap.put(id, path);
+        m_itemIdToPathMap.put(id, absolutePath);
         return Integer.toString(id);
     }
 
