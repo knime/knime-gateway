@@ -67,6 +67,8 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
   protected String m_progressMessage;
   protected String m_error;
   protected String m_warning;
+  protected String m_issue;
+  protected java.util.List<String> m_resolutions;
   
   protected DefaultNodeStateEnt() {
     //for sub-classes
@@ -84,6 +86,8 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
     m_progressMessage = immutable(builder.m_progressMessage);
     m_error = immutable(builder.m_error);
     m_warning = immutable(builder.m_warning);
+    m_issue = immutable(builder.m_issue);
+    m_resolutions = immutable(builder.m_resolutions);
   }
   
    /**
@@ -101,7 +105,7 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
             return false;
         }
         DefaultNodeStateEnt ent = (DefaultNodeStateEnt)o;
-        return Objects.equals(m_executionState, ent.m_executionState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_progressMessage, ent.m_progressMessage) && Objects.equals(m_error, ent.m_error) && Objects.equals(m_warning, ent.m_warning);
+        return Objects.equals(m_executionState, ent.m_executionState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_progressMessage, ent.m_progressMessage) && Objects.equals(m_error, ent.m_error) && Objects.equals(m_warning, ent.m_warning) && Objects.equals(m_issue, ent.m_issue) && Objects.equals(m_resolutions, ent.m_resolutions);
     }
 
 
@@ -117,6 +121,8 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
                .append(m_progressMessage)
                .append(m_error)
                .append(m_warning)
+               .append(m_issue)
+               .append(m_resolutions)
                .toHashCode();
    }
   
@@ -147,6 +153,16 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
         return m_warning;
   }
     
+  @Override
+  public String getIssue() {
+        return m_issue;
+  }
+    
+  @Override
+  public java.util.List<String> getResolutions() {
+        return m_resolutions;
+  }
+    
   
     public static class DefaultNodeStateEntBuilder implements NodeStateEntBuilder {
     
@@ -159,6 +175,8 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
         private String m_progressMessage;
         private String m_error;
         private String m_warning;
+        private String m_issue;
+        private java.util.List<String> m_resolutions;
 
         @Override
         public DefaultNodeStateEntBuilder setExecutionState(ExecutionStateEnum executionState) {
@@ -187,6 +205,18 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
         @Override
         public DefaultNodeStateEntBuilder setWarning(String warning) {
              m_warning = warning;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeStateEntBuilder setIssue(String issue) {
+             m_issue = issue;
+             return this;
+        }
+
+        @Override
+        public DefaultNodeStateEntBuilder setResolutions(java.util.List<String> resolutions) {
+             m_resolutions = resolutions;
              return this;
         }
 

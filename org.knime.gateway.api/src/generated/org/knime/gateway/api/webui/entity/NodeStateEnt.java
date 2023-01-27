@@ -119,6 +119,18 @@ public interface NodeStateEnt extends GatewayEntity {
    **/
   public String getWarning();
 
+  /**
+   * Get issue
+   * @return issue 
+   **/
+  public String getIssue();
+
+  /**
+   * Get resolutions
+   * @return resolutions 
+   **/
+  public java.util.List<String> getResolutions();
+
 
     /**
      * The builder for the entity.
@@ -164,6 +176,22 @@ public interface NodeStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeStateEntBuilder setWarning(String warning);
+        
+        /**
+   		 * Set issue
+         * 
+         * @param issue the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeStateEntBuilder setIssue(String issue);
+        
+        /**
+   		 * Set resolutions
+         * 
+         * @param resolutions the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeStateEntBuilder setResolutions(java.util.List<String> resolutions);
         
         
         /**

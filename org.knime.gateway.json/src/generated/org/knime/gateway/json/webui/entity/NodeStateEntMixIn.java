@@ -88,6 +88,14 @@ public interface NodeStateEntMixIn extends NodeStateEnt {
     @JsonProperty("warning")
     public String getWarning();
     
+    @Override
+    @JsonProperty("issue")
+    public String getIssue();
+    
+    @Override
+    @JsonProperty("resolutions")
+    public java.util.List<String> getResolutions();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -120,6 +128,14 @@ public interface NodeStateEntMixIn extends NodeStateEnt {
         @Override
         @JsonProperty("warning")
         public NodeStateEntMixInBuilder setWarning(final String warning);
+        
+        @Override
+        @JsonProperty("issue")
+        public NodeStateEntMixInBuilder setIssue(final String issue);
+        
+        @Override
+        @JsonProperty("resolutions")
+        public NodeStateEntMixInBuilder setResolutions(final java.util.List<String> resolutions);
         
     }
 

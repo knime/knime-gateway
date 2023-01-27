@@ -958,6 +958,10 @@ public final class WorkflowEntityFactory {
         } else {
             //
         }
+        
+        builder.setIssue(nodeMessage.getIssue().orElse(null));
+        builder.setResolutions(nodeMessage.getResolutions());
+
         if (ncState.isExecutionInProgress()) {
             NodeProgressMonitor progressMonitor = nc.getProgressMonitor();
             Double progress = progressMonitor.getProgress();
