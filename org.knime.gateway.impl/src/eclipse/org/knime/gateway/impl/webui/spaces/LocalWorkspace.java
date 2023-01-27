@@ -269,8 +269,7 @@ public final class LocalWorkspace implements Space {
             }
         }
         if (cacheOrGetSpaceItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
-            throw new IllegalArgumentException(
-                "The item with id '" + workflowGroupItemId + "' is not a workflow group");
+            throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
         }
         return absolutePath;
     }
