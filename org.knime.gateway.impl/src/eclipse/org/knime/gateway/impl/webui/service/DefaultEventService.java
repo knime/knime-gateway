@@ -70,6 +70,7 @@ import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSourceDelegator;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -99,6 +100,9 @@ public final class DefaultEventService implements EventService {
     private final PreferencesProvider m_preferencesProvider =
             ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
 
+    private final SpaceProviders m_spaceProviders =
+            ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -125,7 +129,7 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new AppStateChangedEventSource(this::sendEvent, m_appStateUpdater, m_workflowProjectManager,
-                    m_workflowMiddleware, m_preferencesProvider));
+                    m_workflowMiddleware, m_preferencesProvider, m_spaceProviders));
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SelectionEventSourceDelegator(this::sendEvent));

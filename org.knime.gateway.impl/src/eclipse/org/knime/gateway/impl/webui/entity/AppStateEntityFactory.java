@@ -91,6 +91,7 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -126,16 +127,18 @@ public final class AppStateEntityFactory {
      * @param workflowMiddleware
      * @param preferenceProvider
      * @param exampleProjects if {@code null}, no example projects will be added to the app-state
+     * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
-        final PreferencesProvider preferenceProvider, final ExampleProjects exampleProjects) {
+        final PreferencesProvider preferenceProvider, final ExampleProjects exampleProjects,
+        final SpaceProviders spaceProviders) {
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
         Boolean nodeRepoFilterEnabled = preferenceProvider.isNodeRepoFilterEnabled();
         List<ExampleProjectEnt> exampleProjectEnts = null;
-        var projectEnts = getProjectEnts(workflowProjectManager, workflowMiddleware);
+        var projectEnts = getProjectEnts(workflowProjectManager, workflowMiddleware, spaceProviders);
         if (previousAppState == null) { // If there is no previous app state, no checks are needed
             availablePortTypeEnts = getAvailablePortTypeEnts();
             suggestedPortTypeIds = getSuggestedPortTypeIds();
@@ -163,10 +166,10 @@ public final class AppStateEntityFactory {
     }
 
     private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
-        final WorkflowMiddleware workflowMiddleware) {
+        final WorkflowMiddleware workflowMiddleware, final SpaceProviders spaceProviders) {
         return workflowProjectManager.getWorkflowProjectsIds().stream() //
             .flatMap(id -> workflowProjectManager.getWorkflowProject(id).stream()) //
-            .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, workflowMiddleware)) //
+            .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, workflowMiddleware, spaceProviders)) //
             .collect(toList());
     }
 
@@ -235,7 +238,8 @@ public final class AppStateEntityFactory {
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
-        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware) {
+        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
+        final SpaceProviders spaceProviders) {
         final WorkflowProjectEntBuilder projectEntBuilder =
             builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
 
@@ -248,16 +252,31 @@ public final class AppStateEntityFactory {
             projectEntBuilder.setActiveWorkflow(activeWorkflow);
         }
 
-        wp.getOrigin().ifPresent(origin -> projectEntBuilder.setOrigin(buildWorkflowProjectOriginEnt(origin)));
+        wp.getOrigin()
+            .ifPresent(origin -> projectEntBuilder.setOrigin(buildWorkflowProjectOriginEnt(origin, spaceProviders)));
         return projectEntBuilder.build();
     }
 
-    private static WorkflowProjectOriginEnt buildWorkflowProjectOriginEnt(final WorkflowProject.Origin origin) {
+    private static WorkflowProjectOriginEnt buildWorkflowProjectOriginEnt(final WorkflowProject.Origin origin,
+        final SpaceProviders spaceProviders) {
         return builder(WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder.class)
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
+            .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
+    }
+
+    private static List<String> getAncestorItemIds(final WorkflowProject.Origin origin,
+        final SpaceProviders spaceProviders) {
+        var space =
+            SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()).orElse(null);
+        if (space != null) {
+            return space.getAncestorItemIds(origin.getItemId());
+        }
+        NodeLogger.getLogger(AppStateEntityFactory.class)
+            .error("Ancestor item-ids couldn't be determined for workflow project '" + origin.getItemId() + "'");
+        return List.of();
     }
 
 }

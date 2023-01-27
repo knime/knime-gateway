@@ -61,8 +61,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -76,13 +74,9 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowCh
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.SelectionEvent;
 import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.impl.service.util.EventConsumer;
-import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 
@@ -95,21 +89,9 @@ public class EventServiceTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
-    @SuppressWarnings("javadoc")
-    @Before
-    public void setupServiceDependencies() {
-        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
-        ServiceDependencies.setServiceDependency(EventConsumer.class, m_testConsumer);
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
-        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-    }
-
-    @SuppressWarnings("javadoc")
-    @After
-    public void disposeServices() {
-        ServiceInstances.disposeAllServiceInstancesAndDependencies();
+    @Override
+    protected EventConsumer createEventConsumer() {
+        return m_testConsumer;
     }
 
     /**

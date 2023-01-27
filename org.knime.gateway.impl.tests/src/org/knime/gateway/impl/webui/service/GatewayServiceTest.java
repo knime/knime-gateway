@@ -48,14 +48,23 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.UUID;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.util.EventConsumer;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.ExampleProjects;
+import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflow;
@@ -66,7 +75,7 @@ import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class GatewayServiceTest {
+public abstract class GatewayServiceTest {
 
     private static ResultChecker entityResultChecker;
 
@@ -86,6 +95,55 @@ public class GatewayServiceTest {
      */
     protected GatewayServiceTest() {
         //
+    }
+
+    @SuppressWarnings("javadoc")
+    @Before
+    public void setupServiceDependencies() {
+        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(EventConsumer.class, createEventConsumer());
+        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders());
+        var exampleProjects = createExampleProjects();
+        if (exampleProjects != null) {
+            ServiceDependencies.setServiceDependency(ExampleProjects.class, exampleProjects);
+        }
+    }
+
+    /**
+     * TODO
+     *
+     * @return
+     */
+    protected SpaceProviders createSpaceProviders() {
+        return mock(SpaceProviders.class);
+    }
+
+    /**
+     * TODO
+     *
+     * @return
+     */
+    protected ExampleProjects createExampleProjects() {
+        return null;
+    }
+
+    /**
+     * TODO
+     *
+     * @return
+     */
+    protected EventConsumer createEventConsumer() {
+        return mock(EventConsumer.class);
+    }
+
+    @SuppressWarnings("javadoc")
+    @After
+    public void disposeServices() {
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
     /**

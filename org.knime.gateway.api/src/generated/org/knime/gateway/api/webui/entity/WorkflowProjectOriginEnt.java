@@ -77,6 +77,12 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
    **/
   public String getItemId();
 
+  /**
+   * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
+   * @return ancestorItemIds , never <code>null</code>
+   **/
+  public java.util.List<String> getAncestorItemIds();
+
 
     /**
      * The builder for the entity.
@@ -106,6 +112,14 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowProjectOriginEntBuilder setItemId(String itemId);
+        
+        /**
+         * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
+         * 
+         * @param ancestorItemIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowProjectOriginEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
         
         
         /**

@@ -191,4 +191,12 @@ public interface Space {
      */
     SpaceItemEnt importWorkflows(final Path srcPath, final String workflowGroupItemId,
         final Consumer<Path> createMetaInfoFileFor) throws IOException;
+
+    /**
+     * @param itemId the id of the item to get the ancestors for
+     * @return the list of ids of the ancestor items; with the first element being the direct parent, the second the
+     *         parent of the parent etc. Returns an empty list if the item is at root-level.
+     */
+    List<String> getAncestorItemIds(final String itemId);
+
 }

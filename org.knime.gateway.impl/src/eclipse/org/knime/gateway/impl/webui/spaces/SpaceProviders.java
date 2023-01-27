@@ -49,6 +49,8 @@
 package org.knime.gateway.impl.webui.spaces;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 
@@ -59,6 +61,40 @@ import org.knime.gateway.impl.webui.service.ServiceDependencies;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public interface SpaceProviders {
+
+    /**
+     * @param spaceProviders
+     * @param spaceId
+     * @param spaceProviderId
+     * @return the space for the given id if available
+     * @throws NoSuchElementException if there is no space or space-provider for the given ids
+     */
+    static Space getSpace(final SpaceProviders spaceProviders, final String spaceProviderId, final String spaceId) {
+        var spaceProvider = spaceProviders.getProvidersMap().get(spaceProviderId);
+        if (spaceProvider == null) {
+            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
+        }
+        var space = spaceProvider.getSpaceMap().get(spaceId);
+        if (space == null) {
+            throw new NoSuchElementException("No space found for id '" + spaceId + "'");
+        }
+        return space;
+    }
+
+    /**
+     * @param spaceProviders
+     * @param spaceProviderId
+     * @param spaceId
+     * @return
+     */
+    static Optional<Space> getSpaceOptional(final SpaceProviders spaceProviders, final String spaceProviderId,
+        final String spaceId) {
+        try {
+            return Optional.of(getSpace(spaceProviders, spaceProviderId, spaceId));
+        } catch (NoSuchElementException e) { // NOSONAR
+            return Optional.empty();
+        }
+    }
 
     /**
      * @return {@code true} this space provider only returns local spaces, i.e. spaces that don't require a remote

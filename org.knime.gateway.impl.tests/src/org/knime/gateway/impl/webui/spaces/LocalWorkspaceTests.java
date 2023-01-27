@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.spaces;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,10 +58,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.core.util.PathUtils;
-import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
-import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
 /**
@@ -68,8 +68,41 @@ import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
  * cannot access the internal data structures.
  *
  * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class LocalWorkspaceTests {
+
+    /**
+     * Tests {@link LocalWorkspace#getAncestorItemIds(String)}.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testGetAncestorItemIds() throws IOException {
+        var workspaceFolder = PathUtils.createTempDir("workspace");
+        var workspace = new LocalWorkspace(workspaceFolder);
+
+        var dir3 = Files.createDirectories(workspaceFolder.resolve("dir1/dir2/dir3"));
+        createFile(workspaceFolder.resolve("dir1"), "test.txt");
+        createFile(workspaceFolder.resolve("dir1/dir2"), "test2.txt");
+        createWorkflow(workspace, workspaceFolder.resolve("dir1/dir2/dir3"), workspace.getItemId(dir3));
+
+        var spaceItemsRoot = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
+        assertThat(workspace.getAncestorItemIds(spaceItemsRoot.get(0).getId()),
+            Matchers.emptyCollectionOf(String.class));
+
+        var spaceItemsDir1 = workspace.listWorkflowGroup(spaceItemsRoot.get(0).getId()).getItems();
+        assertThat(workspace.getAncestorItemIds(spaceItemsDir1.get(1).getId()),
+            is(List.of(spaceItemsRoot.get(0).getId())));
+
+        var spaceItemsDir2 = workspace.listWorkflowGroup(spaceItemsDir1.get(0).getId()).getItems();
+        assertThat(workspace.getAncestorItemIds(spaceItemsDir2.get(1).getId()),
+            is(List.of(spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
+
+        var spaceItemsDir3 = workspace.listWorkflowGroup(spaceItemsDir2.get(0).getId()).getItems();
+        assertThat(workspace.getAncestorItemIds(spaceItemsDir3.get(0).getId()),
+            is(List.of(spaceItemsDir2.get(0).getId(), spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
+    }
 
     /**
      * Tests that the maps containing the id to path mapping and the path to type mapping get updated correctly whenever

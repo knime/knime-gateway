@@ -255,6 +255,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 final Consumer<Path> createMetaInfoFileFor) throws IOException {
                 return null;
             }
+
+            @Override
+            public List<String> getAncestorItemIds(final String itemId) {
+                return List.of();
+            }
         };
     }
 

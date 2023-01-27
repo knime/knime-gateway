@@ -17,7 +17,6 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
-import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
@@ -36,11 +35,9 @@ public interface GatewayTestRunner {
      * @param serviceProvider
      * @param workflowLoader provides the workflows to run the test
      * @param workflowExecutor executes workflows if desired during the test run
-     * @param eventSource
      * @throws Exception
      */
     void runGatewayTest(final ResultChecker entityResultChecker, ServiceProvider serviceProvider,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor, EventSource eventSource)
-        throws Exception; //NOSONAR
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) throws Exception; //NOSONAR
 
 }

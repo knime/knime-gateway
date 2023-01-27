@@ -118,6 +118,7 @@ import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.impl.webui.service.GatewayServiceTest;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -297,6 +298,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
 
         Semaphore semaphore = new Semaphore(0);
         AtomicReference<Object> event = new AtomicReference<>();
@@ -318,12 +320,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
                 .build());
 
         semaphore.acquire();
-        try {
-            assertThat(((WorkflowChangedEventEnt)event.get()).getPatch().getOps().stream().map(op -> op.getPath())
-                .collect(Collectors.toList()), Matchers.hasItem("/allowedActions/canUndo"));
-        } finally {
-            ServiceInstances.disposeAllServiceInstancesAndDependencies();
-        }
+        assertThat(((WorkflowChangedEventEnt)event.get()).getPatch().getOps().stream().map(op -> op.getPath())
+            .collect(Collectors.toList()), Matchers.hasItem("/allowedActions/canUndo"));
     }
 
     private static void disposeWorkflowProject(final WorkflowProject wp) {
@@ -426,6 +424,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         };
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
 
         var snapshotId = DefaultWorkflowService.getInstance()
             .getWorkflow(wfId, getRootID(), true).getSnapshotId();
@@ -532,6 +531,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
 
         Stack<CommandResultEnt> results = new Stack<>();
         Stack<WorkflowChangedEventEnt> events = new Stack<>();
@@ -584,6 +584,11 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
                 events.peek().getSnapshotId());
         }
         results.push(result);
+    }
+
+    @Override
+    public void setupServiceDependencies() {
+        // prevent service dependencies from being set
     }
 
 }

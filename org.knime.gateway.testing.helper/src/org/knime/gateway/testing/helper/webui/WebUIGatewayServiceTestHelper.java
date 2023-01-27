@@ -75,10 +75,8 @@ import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.json.util.JsonUtil;
-import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
 import org.knime.gateway.testing.helper.ObjectToString;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -98,8 +96,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     private final ServiceProvider m_serviceProvider;
-
-    private EventSource m_eventSource;
 
     /**
      * Helps to create an {@link ResultChecker}-instance.
@@ -264,25 +260,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     }
 
     /**
-     * Creates a new abstract service test.
-     *
-     * @param testClass
-     * @param entityResultChecker
-     * @param serviceProvider
-     * @param workflowLoader
-     * @param workflowExecutor
-     * @param eventSource allows one to receive the event service events, can be <code>null</code> if not required by
-     *            the test
-     */
-    protected WebUIGatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
-        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader,
-        final WorkflowExecutor workflowExecutor, final EventSource eventSource) {
-        super(testClass, entityResultChecker, workflowLoader, workflowExecutor);
-        m_serviceProvider = serviceProvider;
-        m_eventSource = eventSource;
-    }
-
-    /**
      * A shortcut to get the workflow service instance.
      *
      * @return a workflow service instance
@@ -335,12 +312,4 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         return m_serviceProvider.getSpaceService();
     }
 
-    /**
-     * Sets the event consumer to receive events issued by the event service.
-     *
-     * @param c the callback
-     */
-    protected final void setEventConsumer(final EventConsumer c) {
-        m_eventSource.setEventConsumer(c);
-    }
 }

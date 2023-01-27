@@ -304,6 +304,20 @@ public final class LocalWorkspace implements Space {
         return Integer.toString(id);
     }
 
+    @Override
+    public List<String> getAncestorItemIds(final String itemId) {
+        var path = m_itemIdToPathMap.get(Integer.parseInt(itemId));
+        if (path == null) {
+            throw new NoSuchElementException("No item for id '" + itemId + "'");
+        }
+        var parent = path;
+        var res = new ArrayList<String>();
+        while (!(parent = parent.getParent()).equals(m_localWorkspaceRootPath)) {
+            res.add(getItemId(parent));
+        }
+        return res;
+    }
+
     private SpaceItemEnt.TypeEnum cacheOrGetSpaceItemTypeFromCache(final Path item) {
         return m_pathToTypeMap.computeIfAbsent(item, LocalWorkspace::getSpaceItemType);
     }

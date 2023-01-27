@@ -52,11 +52,14 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotSame;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -69,11 +72,11 @@ import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
-import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
 /**
@@ -95,7 +98,6 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         WorkflowProjectManager.getInstance().openAndCacheWorkflow(workflowProjectId);
         WorkflowProjectManager.getInstance().setWorkflowProjectActive(workflowProjectId);
 
-        setServiceDependencies(createExampleProjects());
         var appService = DefaultApplicationService.getInstance();
 
         AppStateEnt appStateEnt = appService.getState();
@@ -110,8 +112,6 @@ public class ApplicationServiceTest extends GatewayServiceTest {
             appStateEnt2.getOpenProjects().get(0).getActiveWorkflow().getWorkflow()
         );
 
-        ServiceInstances.disposeAllServiceInstancesAndDependencies();
-
     }
 
     /**
@@ -125,7 +125,6 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         String workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
 
-        setServiceDependencies();
         var appService = DefaultApplicationService.getInstance();
 
         var featureFlagKey = "org.knime.ui.feature.embedded_views_and_dialogs";
@@ -135,10 +134,21 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         assertThat(appStateEnt.getFeatureFlags().get(featureFlagKey), is(true));
 
         System.clearProperty(featureFlagKey);
-        ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
-    private static ExampleProjects createExampleProjects() {
+    @Override
+    protected SpaceProviders createSpaceProviders() {
+        var space = mock(Space.class);
+        when(space.getAncestorItemIds(any())).thenReturn(List.of("ancestor 1", "ancestor 2"));
+        var spaceProvider = mock(SpaceProvider.class);
+        when(spaceProvider.getSpaceMap()).thenReturn(Map.of("Space ID for testing", space));
+        var spaceProviders = mock(SpaceProviders.class);
+        when(spaceProviders.getProvidersMap()).thenReturn(Map.of("Provider ID for testing", spaceProvider));
+        return spaceProviders;
+    }
+
+    @Override
+    protected ExampleProjects createExampleProjects() {
         return new ExampleProjects() {
 
             @Override
@@ -166,22 +176,6 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         Files.createDirectory(wfDir2);
         Files.writeString(wfDir2.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE), "svg file content 2");
         return new LocalWorkspace(root);
-    }
-
-    private static void setServiceDependencies() {
-        setServiceDependencies(null);
-    }
-
-    private static void setServiceDependencies(final ExampleProjects exampleProjects) {
-        AppStateUpdater appStateUpdater = new AppStateUpdater();
-        ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
-        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-        if (exampleProjects != null) {
-            ServiceDependencies.setServiceDependency(ExampleProjects.class, exampleProjects);
-        }
     }
 
     private static AppStateEnt stripAppState(final AppStateEnt appStateEnt) {

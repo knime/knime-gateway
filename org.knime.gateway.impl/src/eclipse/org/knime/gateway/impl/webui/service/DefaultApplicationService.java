@@ -56,6 +56,7 @@ import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -80,6 +81,9 @@ public final class DefaultApplicationService implements ApplicationService {
 
     private final ExampleProjects m_exampleProjects =
             ServiceDependencies.getServiceDependency(ExampleProjects.class, false);
+
+    private final SpaceProviders m_spaceProviders =
+        ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -108,7 +112,7 @@ public final class DefaultApplicationService implements ApplicationService {
     @Override
     public AppStateEnt getState() {
         var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_workflowMiddleware,
-            m_preferencesProvider, m_exampleProjects);
+            m_preferencesProvider, m_exampleProjects, m_spaceProviders);
         m_appStateUpdater.setLastAppState(appState);
         return appState;
     }

@@ -64,6 +64,7 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
   protected String m_providerId;
   protected String m_spaceId;
   protected String m_itemId;
+  protected java.util.List<String> m_ancestorItemIds;
   
   protected DefaultWorkflowProjectOriginEnt() {
     //for sub-classes
@@ -88,6 +89,10 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
         throw new IllegalArgumentException("itemId must not be null.");
     }
     m_itemId = immutable(builder.m_itemId);
+    if(builder.m_ancestorItemIds == null) {
+        throw new IllegalArgumentException("ancestorItemIds must not be null.");
+    }
+    m_ancestorItemIds = immutable(builder.m_ancestorItemIds);
   }
   
    /**
@@ -105,7 +110,7 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
             return false;
         }
         DefaultWorkflowProjectOriginEnt ent = (DefaultWorkflowProjectOriginEnt)o;
-        return Objects.equals(m_providerId, ent.m_providerId) && Objects.equals(m_spaceId, ent.m_spaceId) && Objects.equals(m_itemId, ent.m_itemId);
+        return Objects.equals(m_providerId, ent.m_providerId) && Objects.equals(m_spaceId, ent.m_spaceId) && Objects.equals(m_itemId, ent.m_itemId) && Objects.equals(m_ancestorItemIds, ent.m_ancestorItemIds);
     }
 
 
@@ -119,6 +124,7 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
                .append(m_providerId)
                .append(m_spaceId)
                .append(m_itemId)
+               .append(m_ancestorItemIds)
                .toHashCode();
    }
   
@@ -139,6 +145,11 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
         return m_itemId;
   }
     
+  @Override
+  public java.util.List<String> getAncestorItemIds() {
+        return m_ancestorItemIds;
+  }
+    
   
     public static class DefaultWorkflowProjectOriginEntBuilder implements WorkflowProjectOriginEntBuilder {
     
@@ -149,6 +160,7 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
         private String m_providerId;
         private String m_spaceId;
         private String m_itemId;
+        private java.util.List<String> m_ancestorItemIds = new java.util.ArrayList<>();
 
         @Override
         public DefaultWorkflowProjectOriginEntBuilder setProviderId(String providerId) {
@@ -174,6 +186,15 @@ public class DefaultWorkflowProjectOriginEnt implements WorkflowProjectOriginEnt
                  throw new IllegalArgumentException("itemId must not be null.");
              }
              m_itemId = itemId;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowProjectOriginEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds) {
+             if(ancestorItemIds == null) {
+                 throw new IllegalArgumentException("ancestorItemIds must not be null.");
+             }
+             m_ancestorItemIds = ancestorItemIds;
              return this;
         }
 

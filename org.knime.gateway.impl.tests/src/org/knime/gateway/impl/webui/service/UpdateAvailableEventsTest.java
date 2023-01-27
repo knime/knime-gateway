@@ -85,21 +85,12 @@ public class UpdateAvailableEventsTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
-    @SuppressWarnings("javadoc")
-    @Before
-    public void setupServiceDependencies() {
-        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
-        ServiceDependencies.setServiceDependency(EventConsumer.class, m_testConsumer);
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
-        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-    }
-
-    @SuppressWarnings("javadoc")
-    @After
-    public void disposeServices() {
-        ServiceInstances.disposeAllServiceInstancesAndDependencies();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EventConsumer createEventConsumer() {
+        return m_testConsumer;
     }
 
     /**

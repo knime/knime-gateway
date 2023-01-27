@@ -63,11 +63,9 @@ import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -98,9 +96,6 @@ public class GatewayDefaultServiceTests {
     private final WorkflowExecutor m_workflowExecutor;
 
     private final ServiceProvider m_serviceProvider;
-
-    private final EventSource m_eventSource;
-
 
     /**
      * @return all names of the tests of {@link GatewayTestCollection}
@@ -163,10 +158,6 @@ public class GatewayDefaultServiceTests {
             }
         };
         m_gatewayTestName = gatewayTestName;
-        m_eventSource = c -> {
-            ServiceDependencies.setServiceDependency(EventConsumer.class, c);
-            DefaultEventService.getInstance().setPreEventCreationCallbackForTesting(null);
-        };
     }
 
     /**
@@ -177,7 +168,7 @@ public class GatewayDefaultServiceTests {
     @Test
     public void test() throws Exception {
         GATEWAY_TESTS.get(m_gatewayTestName).runGatewayTest(resultChecker, m_serviceProvider, m_workflowLoader,
-            m_workflowExecutor, m_eventSource);
+            m_workflowExecutor);
     }
 
     /**

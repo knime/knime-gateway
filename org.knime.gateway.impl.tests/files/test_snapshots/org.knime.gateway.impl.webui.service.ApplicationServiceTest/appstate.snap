@@ -33,6 +33,7 @@
   "exampleProjects" : [ {
     "name" : "wfDir1",
     "origin" : {
+      "ancestorItemIds" : [ ],
       "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
       "providerId" : "local",
       "spaceId" : "local"
@@ -41,6 +42,7 @@
   }, {
     "name" : "wfDir2",
     "origin" : {
+      "ancestorItemIds" : [ ],
       "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
       "providerId" : "local",
       "spaceId" : "local"
@@ -147,6 +149,7 @@
     },
     "name" : "hollow",
     "origin" : {
+      "ancestorItemIds" : [ "ancestor 1", "ancestor 2" ],
       "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
       "providerId" : "Provider ID for testing",
       "spaceId" : "Space ID for testing"

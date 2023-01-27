@@ -72,7 +72,6 @@ import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -80,7 +79,6 @@ import org.knime.gateway.impl.webui.jsonrpc.DefaultJsonRpcRequestHandler;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.json.util.ObjectMapperUtil;
-import org.knime.gateway.testing.helper.EventSource;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -120,8 +118,6 @@ public class GatewayJsonRpcWrapperServiceTests {
     private final WorkflowExecutor m_workflowExecutor;
 
     private final ServiceProvider m_serviceProvider;
-
-    private final EventSource m_eventSource;
 
     /**
      * @return all names of the tests of {@link GatewayTestCollection}
@@ -190,7 +186,6 @@ public class GatewayJsonRpcWrapperServiceTests {
         };
 
         m_gatewayTestName = gatewayTestName;
-        m_eventSource = c -> ServiceDependencies.setServiceDependency(EventConsumer.class, c);
     }
 
     /**
@@ -201,7 +196,7 @@ public class GatewayJsonRpcWrapperServiceTests {
     @Test
     public void test() throws Exception {
         GATEWAY_TESTS.get(m_gatewayTestName).runGatewayTest(resultChecker, m_serviceProvider, m_workflowLoader,
-            m_workflowExecutor, m_eventSource);
+            m_workflowExecutor);
     }
 
     /**

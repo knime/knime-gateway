@@ -79,6 +79,10 @@ public interface WorkflowProjectOriginEntMixIn extends WorkflowProjectOriginEnt 
     @JsonProperty("itemId")
     public String getItemId();
     
+    @Override
+    @JsonProperty("ancestorItemIds")
+    public java.util.List<String> getAncestorItemIds();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -103,6 +107,10 @@ public interface WorkflowProjectOriginEntMixIn extends WorkflowProjectOriginEnt 
         @Override
         @JsonProperty("itemId")
         public WorkflowProjectOriginEntMixInBuilder setItemId(final String itemId);
+        
+        @Override
+        @JsonProperty("ancestorItemIds")
+        public WorkflowProjectOriginEntMixInBuilder setAncestorItemIds(final java.util.List<String> ancestorItemIds);
         
     }
 

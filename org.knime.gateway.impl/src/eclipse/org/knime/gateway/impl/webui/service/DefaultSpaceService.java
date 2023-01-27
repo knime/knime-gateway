@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -117,14 +116,14 @@ public class DefaultSpaceService implements SpaceService {
         final String workflowGroupId)
         throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
-            return getSpace(spaceId, spaceProviderId).listWorkflowGroup(workflowGroupId);
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId)
+                .listWorkflowGroup(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {
             throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -133,7 +132,7 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId)
         throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
         try {
-            return getSpace(spaceId, spaceProviderId).createWorkflow(workflowGroupId);
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).createWorkflow(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {
@@ -145,30 +144,12 @@ public class DefaultSpaceService implements SpaceService {
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
         throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
         try {
-            getSpace(spaceId, spaceProviderId).deleteItems(spaceItemIds);
+            SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).deleteItems(spaceItemIds);
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
             throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
         }
-    }
-
-    /**
-     * @param spaceId
-     * @param spaceProviderId
-     * @return the space for the given id if available
-     * @throws NoSuchElementException if there is no space or space-provider for the given ids
-     */
-    public Space getSpace(final String spaceId, final String spaceProviderId) {
-        var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
-        if (spaceProvider == null) {
-            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
-        }
-        var space = spaceProvider.getSpaceMap().get(spaceId);
-        if (space == null) {
-            throw new NoSuchElementException("No space found for id '" + spaceId + "'");
-        }
-        return space;
     }
 
 }

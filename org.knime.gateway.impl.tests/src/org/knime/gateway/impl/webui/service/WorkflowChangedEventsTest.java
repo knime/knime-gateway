@@ -66,7 +66,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -77,12 +76,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
-import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
@@ -118,21 +113,12 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         m_transformations = transformations;
     }
 
-    @SuppressWarnings("javadoc")
-    @Before
-    public void setupServiceDependencies() {
-        ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
-        ServiceDependencies.setServiceDependency(EventConsumer.class, m_testEventConsumer);
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
-        ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-    }
-
-    @SuppressWarnings("javadoc")
-    @After
-    public void disposeServices() {
-        ServiceInstances.disposeAllServiceInstancesAndDependencies();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected EventConsumer createEventConsumer() {
+        return m_testEventConsumer;
     }
 
     /**

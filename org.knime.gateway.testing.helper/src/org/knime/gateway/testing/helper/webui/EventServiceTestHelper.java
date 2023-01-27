@@ -54,6 +54,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertFalse;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +72,9 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.testing.helper.EventSource;
+import org.knime.gateway.impl.service.util.EventConsumer;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -87,22 +90,15 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
  */
 public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
-    private final List<Object> m_events = Collections.synchronizedList(new ArrayList<>());
-    
-    private final String m_patchPatch = "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3";
-
     /**
      * @param entityResultChecker
      * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
-     * @param eventSource
      */
     protected EventServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor, final EventSource eventSource) {
-        super(EventServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor,
-            eventSource);
-        setEventConsumer((name, event) -> m_events.add(event));
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+        super(EventServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
     /**
@@ -114,6 +110,10 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteAndUndoDeleteCommandPatches() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var events = Collections.synchronizedList(new ArrayList<Object>());
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
+        ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
+
         WorkflowSnapshotEnt wf = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE);
         WorkflowChangedEventTypeEnt eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId(wfId).setWorkflowId(getRootID()).setSnapshotId(wf.getSnapshotId())
@@ -123,35 +123,36 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
             Collections.emptyList(), Collections.emptyList());
         ws().executeWorkflowCommand(wfId, getRootID(), command);
-        var patchPath = "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3";
-        var patchOpEnt = waitAndFindPatchOpForPath(patchPath);
-        m_events.clear();
+        var patchPath =
+            "/nodeTemplates/org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3";
+        var patchOpEnt = waitAndFindPatchOpForPath(patchPath, events);
+        events.clear();
         assertThat("unexpected operation", patchOpEnt.getOp(), is(OpEnum.REMOVE));
 
         ws().undoWorkflowCommand(wfId, getRootID());
-        patchOpEnt = waitAndFindPatchOpForPath(patchPath);
+        patchOpEnt = waitAndFindPatchOpForPath(patchPath, events);
         // make sure that 'sub-objects' of an object added as a patch op, aren't added again
         // (e.g. the node annotation of a to be added node)
-        assertThatThereIsNoPathForPatchOp("/nodes/root:5/annotation");
-        m_events.clear();
+        assertThatThereIsNoPathForPatchOp("/nodes/root:5/annotation", events);
+        events.clear();
         assertThat("unexpected operation", patchOpEnt.getOp(), is(OpEnum.ADD));
         assertThat("patch op value expected", patchOpEnt.getValue(), is(notNullValue()));
         es().removeEventListener(eventType);
     }
 
-    private PatchOpEnt waitAndFindPatchOpForPath(final String path) {
+    private static PatchOpEnt waitAndFindPatchOpForPath(final String path, final List<Object> events) {
         AtomicReference<PatchOpEnt> res = new AtomicReference<>();
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            res.set(m_events.stream().flatMap(e -> ((WorkflowChangedEventEnt)e).getPatch().getOps().stream())
+            res.set(events.stream().flatMap(e -> ((WorkflowChangedEventEnt)e).getPatch().getOps().stream())
                 .filter(op -> op.getPath().equals(path)).findFirst().orElse(null));
             assertThat("No patch op found for path " + path, res.get(), is(notNullValue()));
         });
         return res.get();
     }
 
-    private void assertThatThereIsNoPathForPatchOp(final String path) {
+    private static void assertThatThereIsNoPathForPatchOp(final String path, final List<Object> events) {
         assertFalse("unexpected patch op for path " + path,
-            m_events.stream().flatMap(e -> ((WorkflowChangedEventEnt)e).getPatch().getOps().stream())
+            events.stream().flatMap(e -> ((WorkflowChangedEventEnt)e).getPatch().getOps().stream())
                 .anyMatch(op -> op.getPath().equals(path)));
     }
 

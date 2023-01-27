@@ -172,7 +172,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         }
     }
 
-    private WorkflowProject.Origin createOriginForTesting() {
+    private static WorkflowProject.Origin createOriginForTesting() {
         return new WorkflowProject.Origin() {
             @Override
             public String getProviderId() {

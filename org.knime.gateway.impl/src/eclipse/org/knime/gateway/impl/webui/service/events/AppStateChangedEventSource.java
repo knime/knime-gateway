@@ -59,6 +59,7 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Event source that emits events whenever the cached application state changes.
@@ -78,15 +79,16 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
      * @param workflowProjectManager
      * @param workflowMiddleware
      * @param preferenceProvider
+     * @param spaceProviders
      */
     public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateUpdater appStateUpdater,
         final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
-        final PreferencesProvider preferenceProvider) {
+        final PreferencesProvider preferenceProvider, final SpaceProviders spaceProviders) {
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;
         m_callback = () -> {
             var appState = AppStateEntityFactory.buildAppStateEnt(appStateUpdater.getLastAppState().orElse(null),
-                workflowProjectManager, workflowMiddleware, preferenceProvider, null);
+                workflowProjectManager, workflowMiddleware, preferenceProvider, null, spaceProviders);
             appStateUpdater.setLastAppState(appState);
             sendEvent(buildEventEnt(appState));
         };
