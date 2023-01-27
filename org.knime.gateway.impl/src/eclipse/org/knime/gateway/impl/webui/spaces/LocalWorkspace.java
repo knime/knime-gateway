@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -242,11 +241,12 @@ public final class LocalWorkspace implements Space {
 
     /**
      * @param workflowGroupItemId The workflow group item ID
+     * @param name the name to check
      * @return A predicate checking for name collision within the corresponding workflow group
      */
-    public Predicate<String> getNameCollisionCheckerForWorkflowGroup(final String workflowGroupItemId) {
+    public boolean containsItemWithName(final String workflowGroupItemId, final String name) {
         var workflowGroup = getAbsolutePath(workflowGroupItemId);
-        return fileName -> Files.exists(workflowGroup.resolve(fileName));
+        return Files.exists(workflowGroup.resolve(name));
     }
 
     private SpaceItemEnt getSpaceItemEntFromPath(final Path spaceItemPath) {
