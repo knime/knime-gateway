@@ -61,7 +61,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -81,9 +80,9 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
 
 /**
  * {@link Space}-implementation that represents the local workspace.
@@ -155,7 +154,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public Path toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
-        return m_itemIdToPathMap.get(Integer.parseInt(itemId));
+        return m_itemIdToPathMap.get(itemId);
     }
 
     @Override
@@ -205,7 +204,7 @@ public final class LocalWorkspace implements Space {
         try {
             for (var stringItemId : itemIds) {
                 // NB: Should not be null because we checked this before
-                var itemId = Integer.parseInt(stringItemId);
+                var itemId = stringItemId;
                 var path = m_itemIdToPathMap.get(itemId);
                 // NB: This also works for files
                 PathUtils.deleteDirectoryIfExists(path);
@@ -286,7 +285,7 @@ public final class LocalWorkspace implements Space {
         if (isRoot) {
             absolutePath = m_localWorkspaceRootPath;
         } else {
-            absolutePath = m_itemIdToPathMap.get(Integer.valueOf(workflowGroupItemId));
+            absolutePath = m_itemIdToPathMap.get(workflowGroupItemId);
             if (absolutePath == null) {
                 throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
             }
@@ -412,7 +411,7 @@ public final class LocalWorkspace implements Space {
         var itemType = getSpaceItemType(sourcePath);
         var destinationPath = sourcePath.resolveSibling(Path.of(newName));
         if (sourcePath.equals(destinationPath)) {
-            var oldName = sourcePath.getName(sourcePath.getNameCount() - 1).toString();
+            var oldName = sourcePath.getFileName().toString();
             return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
         }
         var sourceFile = sourcePath.toFile();
@@ -447,21 +446,13 @@ public final class LocalWorkspace implements Space {
      */
     static final class ItemIdToPathMap {
 
-        private final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>();
+        private final Map<String, Path> m_itemIdToPathMap = new HashMap<>();
 
         /**
          * @param itemId
          * @return The cached path of the given item ID
          */
         public Path get(final String itemId) {
-            return get(Integer.parseInt(itemId));
-        }
-
-        /**
-         * @param itemId
-         * @return The cached path of the given item ID
-         */
-        public Path get(final int itemId) {
             return m_itemIdToPathMap.get(itemId);
         }
 
@@ -473,23 +464,16 @@ public final class LocalWorkspace implements Space {
          * @return The previous value associated with the key or <code>null</code> if there was no previous value.
          */
         public Path put(final String itemId, final Path path) {
-            return put(Integer.parseInt(itemId), path);
-        }
-
-        /**
-         * Add or update the mapping for given item ID
-         *
-         * @param itemId The key
-         * @param path The new value, expected to be an absolute path
-         * @return The previous value associated with the key or <code>null</code> if there was no previous value.
-         */
-        public Path put(final int itemId, final Path path) {
             CheckUtils.checkArgument(path.isAbsolute(), "Provided path is not absolute");
             return m_itemIdToPathMap.put(itemId, path);
         }
 
+        /**
+         * @param itemId
+         * @return {@code true} if the item id is known
+         */
         public boolean containsKey(final String itemId) {
-            return m_itemIdToPathMap.containsKey(Integer.parseInt(itemId));
+            return m_itemIdToPathMap.containsKey(itemId);
         }
 
         /**
@@ -500,17 +484,6 @@ public final class LocalWorkspace implements Space {
          * @return The previous value associated with the key or <code>null</code> if there was no previous value.
          */
         public Path update(final String itemId, final Path path) {
-            return update(Integer.parseInt(itemId), path);
-        }
-
-        /**
-         * Update the mapping for a given item ID
-         *
-         * @param itemId The key, expected to be already present in the mapping
-         * @param path The new value, expected to be an absolute path
-         * @return The previous value associated with the key or <code>null</code> if there was no previous value.
-         */
-        public Path update(final int itemId, final Path path) {
             CheckUtils.checkArgument(m_itemIdToPathMap.containsKey(itemId), "Key not yet in map");
             return put(itemId, path);
         }
@@ -524,7 +497,7 @@ public final class LocalWorkspace implements Space {
             m_itemIdToPathMap.entrySet().removeIf(e -> e.getValue().startsWith(path));
         }
 
-        public Set<Map.Entry<Integer, Path>> entrySet() {
+        public Set<Map.Entry<String, Path>> entrySet() {
             return m_itemIdToPathMap.entrySet();
         }
 
@@ -547,12 +520,14 @@ public final class LocalWorkspace implements Space {
             CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
             var id = absolutePath.hashCode();
             Path existingPath;
-            while ((existingPath = m_itemIdToPathMap.get(id)) != null && !absolutePath.equals(existingPath)) {
+            while ((existingPath = m_itemIdToPathMap.get(Integer.toString(id))) != null
+                && !absolutePath.equals(existingPath)) {
                 // handle hash collision
                 id = 31 * id;
             }
-            m_itemIdToPathMap.put(id, absolutePath);
-            return Integer.toString(id);
+            var idString = Integer.toString(id);
+            m_itemIdToPathMap.put(idString, absolutePath);
+            return idString;
         }
 
     }
@@ -564,22 +539,22 @@ public final class LocalWorkspace implements Space {
      * @see ExplorerFileSystem#validateFilename
      * @param name The candidate new name.
      */
-    public static void assertValidItemNameOrThrow(final String name) throws IllegalArgumentException {
+    private static void assertValidItemNameOrThrow(final String name) throws OperationNotAllowedException {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Please choose a name");
+            throw new OperationNotAllowedException("Please choose a name");
         }
         if (Path.of(name).getParent() != null) {
-            throw new IllegalArgumentException("Name cannot be a path");
+            throw new OperationNotAllowedException("Name cannot be a path");
         }
         if (name.startsWith(".")) {
-            throw new IllegalArgumentException("Name cannot start with dot.");
+            throw new OperationNotAllowedException("Name cannot start with dot.");
         }
         if (name.endsWith(".")) {
-            throw new IllegalArgumentException("Name cannot end with dot.");
+            throw new OperationNotAllowedException("Name cannot end with dot.");
         }
-        Matcher matcher = FileUtil.ILLEGAL_FILENAME_CHARS_PATTERN.matcher(name);
+        var matcher = FileUtil.ILLEGAL_FILENAME_CHARS_PATTERN.matcher(name);
         if (matcher.find()) {
-            throw new IllegalArgumentException(
+            throw new OperationNotAllowedException(
                     "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
         }
     }

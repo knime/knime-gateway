@@ -139,8 +139,10 @@ public interface Space {
      * Rename a space item
      *
      * @param itemId The space item ID of the item to rename
+     * @param newName The new name
      * @return {@link SpaceItemEnt} describing the item after renaming
      * @throws IOException
+     * @throws ServiceExceptions.OperationNotAllowedException
      */
     SpaceItemEnt renameItem(String itemId, String newName) throws IOException,
             ServiceExceptions.OperationNotAllowedException;
