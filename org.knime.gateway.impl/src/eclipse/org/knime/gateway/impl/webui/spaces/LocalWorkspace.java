@@ -54,13 +54,14 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.regex.Matcher;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -70,7 +71,6 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.WorkflowPersistor;
-import org.knime.core.util.FileUtil;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.FileUtil;
@@ -82,7 +82,6 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.api.webui.util.SpaceEntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 
@@ -156,7 +155,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public Path toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
-        return m_itemIdToPathMap.get(Integer.valueOf(itemId));
+        return m_itemIdToPathMap.get(Integer.parseInt(itemId));
     }
 
     @Override
@@ -196,7 +195,7 @@ public final class LocalWorkspace implements Space {
         }
 
         // Check if there are any item ids that do not exist
-        var unknownItemIds = itemIds.stream().filter(id -> !m_itemIdToPathMap.containsKey(Integer.parseInt(id)))
+        var unknownItemIds = itemIds.stream().filter(id -> !m_itemIdToPathMap.containsKey(id))
             .collect(Collectors.joining(", "));
         if (unknownItemIds != null && !unknownItemIds.isEmpty()) {
             throw new NoSuchElementException("Unknown item ids: '" + unknownItemIds + "'");
@@ -214,7 +213,7 @@ public final class LocalWorkspace implements Space {
             }
         } finally {
             // NB: We only remove the paths that were deleted successfully
-            m_itemIdToPathMap.entrySet().removeIf(e -> deletedPaths.stream().anyMatch(p -> e.getValue().startsWith(p)));
+            deletedPaths.forEach(m_itemIdToPathMap::prunePath);
             m_pathToTypeMap.keySet().removeIf(k -> deletedPaths.stream().anyMatch(k::startsWith));
         }
     }
@@ -316,16 +315,8 @@ public final class LocalWorkspace implements Space {
      * @throws IllegalArgumentException if the provided path is not absolute
      * @return the item id
      */
-    public String getItemId(final Path path) {
-        CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
-        var id = absolutePath.hashCode();
-        Path existingPath;
-        while ((existingPath = m_itemIdToPathMap.get(id)) != null && !absolutePath.equals(existingPath)) {
-            // handle hash collision
-            id = 31 * id;
-        }
-        m_itemIdToPathMap.put(id, absolutePath);
-        return Integer.toString(id);
+    public String getItemId(final Path absolutePath) {
+        return m_itemIdToPathMap.getItemId(absolutePath);
     }
 
     private SpaceItemEnt.TypeEnum cacheOrGetSpaceItemTypeFromCache(final Path item) {
@@ -401,21 +392,24 @@ public final class LocalWorkspace implements Space {
      * {@inheritDoc}
      */
     @Override
-    public SpaceItemEnt renameItem(final String itemId, final String newName)
+    public SpaceItemEnt renameItem(final String itemId, final String queriedName)
             throws IOException, ServiceExceptions.OperationNotAllowedException {
 
-        // TODO not checked whether renamed item is parent of an open workflow
+        // TODO: not checked whether renamed item is ancestor of an open workflow
         //  this can be verified once we determine itemIDs of ancestors, cf. NXT-1432
         if (isItemAnOpenWorkflowProject(itemId)) {
             throw new ServiceExceptions.OperationNotAllowedException(
                     "At least one of the workflows or components affected by the renaming are still open and have to be closed.");
         }
 
-        if (itemId.equals(LocalWorkspace.ROOT_ITEM_ID)) {
+        if (itemId.equals(Space.ROOT_ITEM_ID)) {
             throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
         }
 
-        var sourcePath = toLocalAbsolutePath(itemId);
+        var newName = queriedName.trim();
+        assertValidItemNameOrThrow(newName);
+
+        var sourcePath = toLocalAbsolutePath(null, itemId);
         if (sourcePath == null) {
             throw new IOException("Unknown item ID");
         }
@@ -423,7 +417,7 @@ public final class LocalWorkspace implements Space {
         var destinationPath = sourcePath.resolveSibling(Path.of(newName));
         if (sourcePath.equals(destinationPath)) {
             var oldName = sourcePath.getName(sourcePath.getNameCount() - 1).toString();
-            return SpaceEntityFactory.buildSpaceItemEnt(oldName, itemId, itemType);
+            return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
         }
         var sourceFile = sourcePath.toFile();
         var destinationFile = destinationPath.toFile();
@@ -431,7 +425,7 @@ public final class LocalWorkspace implements Space {
         if (destinationFile.exists()) {
             throw new ServiceExceptions.OperationNotAllowedException("There already exists a file of that name");
         }
-        assertValidItemNameOrThrow(newName);
+
 
         try {
             var renamingSucceeded = sourceFile.renameTo(destinationFile);
@@ -445,7 +439,7 @@ public final class LocalWorkspace implements Space {
         m_itemIdToPathMap.update(itemId, destinationPath);
         updateSpaceItemTypeCache(sourcePath, destinationPath);
 
-        return SpaceEntityFactory.buildSpaceItemEnt(newName, itemId, itemType);
+        return EntityFactory.Space.buildSpaceItemEnt(newName, itemId, itemType);
     }
 
     private static boolean isItemAnOpenWorkflowProject(final String itemId) {
@@ -453,7 +447,14 @@ public final class LocalWorkspace implements Space {
                 .flatMap(proj -> proj.getOrigin().stream()).anyMatch(origin -> origin.getItemId().equals(itemId));
     }
 
-    private static final class ItemIdToPathMap {
+    /**
+     * Map Item IDs to local paths.
+     *
+     * Package-private for testing.
+     *
+     * @author Benjamin Moser
+     */
+    static final class ItemIdToPathMap {
 
         private final Map<Integer, Path> m_itemIdToPathMap = new HashMap<>();
 
@@ -492,10 +493,12 @@ public final class LocalWorkspace implements Space {
          * @return The previous value associated with the key or <code>null</code> if there was no previous value.
          */
         public Path put(final int itemId, final Path path) {
-            if (!path.isAbsolute()) {
-                throw new IllegalArgumentException("Expecting absolute path");
-            }
+            CheckUtils.checkArgument(path.isAbsolute(), "Provided path is not absolute");
             return m_itemIdToPathMap.put(itemId, path);
+        }
+
+        public boolean containsKey(final String itemId) {
+            return m_itemIdToPathMap.containsKey(Integer.parseInt(itemId));
         }
 
         /**
@@ -517,28 +520,48 @@ public final class LocalWorkspace implements Space {
          * @return The previous value associated with the key or <code>null</code> if there was no previous value.
          */
         public Path update(final int itemId, final Path path) {
-            if (!m_itemIdToPathMap.containsKey(itemId)) {
-                throw new IllegalArgumentException("Key not yet in map");
-            }
+            CheckUtils.checkArgument(m_itemIdToPathMap.containsKey(itemId), "Key not yet in map");
             return put(itemId, path);
         }
 
         /**
-         * Determine an item ID for a given path. Persist the mapping and handle collisions.
-         *
-         * @return A function performing the task.
+         * Remove all entries corresponding to a given path. This also removes items that are path-wise children of the
+         * given path.
+         * @param path The path to prune from the map.
          */
-        public Function<Path, String> getItemIdFunction() {
-            return path -> {
-                var id = path.hashCode();
-                Path existingPath;
-                while ((existingPath = m_itemIdToPathMap.get(id)) != null && !path.equals(existingPath)) {
-                    // handle hash collision
-                    id = 31 * id;
-                }
-                m_itemIdToPathMap.put(id, path);
-                return Integer.toString(id);
-            };
+        public void prunePath(final Path path) {
+            m_itemIdToPathMap.entrySet().removeIf(e -> e.getValue().startsWith(path));
+        }
+
+        public Set<Map.Entry<Integer, Path>> entrySet() {
+            return m_itemIdToPathMap.entrySet();
+        }
+
+        public int size() {
+            return m_itemIdToPathMap.size();
+        }
+
+        public Collection<Path> values() {
+            return m_itemIdToPathMap.values();
+        }
+
+        /**
+         * Determine an item ID for a given absolute path. Persist the mapping and handle collisions.
+         *
+         * @param absolutePath the absolute(!) path to get the id for
+         * @throws IllegalArgumentException if the provided path is not absolute
+         * @return the item id
+         */
+        public String getItemId(final Path absolutePath) {
+            CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
+            var id = absolutePath.hashCode();
+            Path existingPath;
+            while ((existingPath = m_itemIdToPathMap.get(id)) != null && !absolutePath.equals(existingPath)) {
+                // handle hash collision
+                id = 31 * id;
+            }
+            m_itemIdToPathMap.put(id, absolutePath);
+            return Integer.toString(id);
         }
 
     }
@@ -556,12 +579,6 @@ public final class LocalWorkspace implements Space {
         }
         if (Path.of(name).getParent() != null) {
             throw new IllegalArgumentException("Name cannot be a path");
-        }
-        if (Character.isWhitespace(name.charAt(0))) {
-            throw new IllegalArgumentException("Name cannot contain leading whitespace.");
-        }
-        if (Character.isWhitespace(name.charAt(name.length() - 1))) {
-            throw new IllegalArgumentException("Name cannot contain trailing whitespace.");
         }
         if (name.startsWith(".")) {
             throw new IllegalArgumentException("Name cannot start with dot.");

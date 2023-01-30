@@ -64,14 +64,14 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param workflowGroupId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String workflowGroupId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
-
+    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+        
     /**
      * Deletes items from the space.
      *
@@ -79,12 +79,12 @@ public interface SpaceService extends GatewayService {
      * @param spaceProviderId Identifies a space-provider.
      * @param spaceItemIds A list of identifiers of items in the space.
      *
-     *
+     * 
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
     void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> spaceItemIds)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
-
+        
     /**
      * Mainly returns the spaces provided by this space-provider.
      *

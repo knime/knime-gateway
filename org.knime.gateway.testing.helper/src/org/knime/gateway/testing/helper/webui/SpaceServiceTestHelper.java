@@ -48,9 +48,8 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -64,16 +63,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.function.Consumer;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.hamcrest.MatcherAssert;
 import org.apache.commons.io.FileUtils;
-import org.knime.core.util.Pair;
+import org.hamcrest.MatcherAssert;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -81,11 +78,7 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.util.SpaceEntityFactory;
-import org.knime.gateway.impl.webui.LocalWorkspace;
-import org.knime.gateway.impl.webui.Space;
-import org.knime.gateway.impl.webui.SpaceProvider;
-import org.knime.gateway.impl.webui.SpaceProviders;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -95,7 +88,6 @@ import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-import org.knime.core.util.PathUtils;
 
 /**
  * Tests {@link SpaceService}-implementations.
@@ -124,7 +116,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Space mockedSpace = mock(Space.class);
         when(mockedSpace.getId()).thenReturn(spaceId);
         SpaceItemEnt newSpaceItemEnt =
-            SpaceEntityFactory.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
+            EntityFactory.Space.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
         when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
 
         var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", mockedSpace);
@@ -141,17 +133,18 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         verify(mockedSpace).renameItem(itemId, newName);
     }
 
-    private Pair<SpaceProvider, Space> createTempLocalSpaceProvider(String directoryNamePrefix, WorkspaceType type)
+    private static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
+        final String workspaceName)
         throws IOException {
         var tempPath = PathUtils.createTempDir(directoryNamePrefix);
         var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
         var space = spaceProvider.getSpaceMap().get(LocalWorkspace.LOCAL_WORKSPACE_ID);
-        PathUtils.copyDirectory(getTestWorkspacePath(type), tempPath);
+        PathUtils.copyDirectory(getTestWorkspacePath(workspaceName), tempPath);
         return new Pair<>(spaceProvider, space);
     }
 
     public void testRenameSpaceItemLocal() throws Exception {
-        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", WorkspaceType.LIST);
+        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
         ServiceDependencies.setServiceDependency(SpaceProviders.class,
             () -> Map.of(p.getFirst().getId(), p.getFirst()));
         var providerId = p.getFirst().getId();
@@ -162,7 +155,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var originalItemEnt = group.getItems().stream() //
             .filter(itemEnt -> itemEnt.getType().equals(SpaceItemEnt.TypeEnum.WORKFLOW)) //
             .findAny().orElseThrow();
-        var itemPathBeforeRename = space.toLocalAbsolutePath(originalItemEnt.getId());
+        var itemPathBeforeRename = space.toLocalAbsolutePath(null, originalItemEnt.getId());
 
         // perform rename
         var newName = "newItemName";
@@ -175,7 +168,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 && renamedItemEnt.getName().equals(newName));
 
         // verify that id map was updated: ID should remain the same, associated path should have changed
-        var itemPathAfterRename = space.toLocalAbsolutePath(originalItemEnt.getId());
+        var itemPathAfterRename = space.toLocalAbsolutePath(null, originalItemEnt.getId());
         assertNotEquals("Item path has been updated", itemPathBeforeRename, itemPathAfterRename);
 
         // verify that file exists at new path
@@ -184,7 +177,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testRenameToExistingLocal() throws Exception {
-        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", WorkspaceType.LIST);
+        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
         ServiceDependencies.setServiceDependency(SpaceProviders.class,
             () -> Map.of(p.getFirst().getId(), p.getFirst()));
         var providerId = p.getFirst().getId();
@@ -202,26 +195,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testRenameRootLocal() throws Exception {
-        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", WorkspaceType.LIST);
+        var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
         ServiceDependencies.setServiceDependency(SpaceProviders.class,
                 () -> Map.of(p.getFirst().getId(), p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
-        var rootItem = getItemById(LocalWorkspace.ROOT_ITEM_ID, space);
         assertThrows(ServiceExceptions.OperationNotAllowedException.class, () -> {
-            ss().renameItem(providerId, space.getId(), rootItem.getId(), "newName");
+            ss().renameItem(providerId, space.getId(), Space.ROOT_ITEM_ID, "newName");
         });
-    }
-
-
-    /**
-     * Obtain with given id in root level of space
-     *
-     * @param id The ID of the item to locate
-     * @return an entity describing the item, or an empty optional if it could not be found
-     */
-    private SpaceItemEnt getItemById(String id, Space space) throws IOException {
-        return getItem(space, item -> item.getId().equals(id));
     }
 
     /**
@@ -230,14 +211,10 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param name The filename of the item to locate
      * @return an entity describing the item, or an empty optional if it could not be found
      */
-    private SpaceItemEnt getItemByName(String name, Space space) throws IOException {
-        return getItem(space, item -> item.getName().equals(name));
-    }
-
-    private SpaceItemEnt getItem(Space space, Predicate<SpaceItemEnt> predicate) throws IOException {
+    private static SpaceItemEnt getItemByName(final String name, final Space space) throws IOException {
         var group = space.listWorkflowGroup(Space.ROOT_ITEM_ID);
-        return group.getItems().stream().filter(predicate).findAny()
-            .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
+        return group.getItems().stream().filter(item -> item.getName().equals(name)).findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
     }
 
     /**
