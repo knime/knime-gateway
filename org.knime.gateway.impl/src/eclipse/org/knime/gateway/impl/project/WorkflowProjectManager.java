@@ -47,6 +47,7 @@ package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -130,10 +131,6 @@ public final class WorkflowProjectManager {
      */
     public Set<String> getWorkflowProjectsIds() {
         return new LinkedHashSet<>(m_workflowProjectMap.keySet());
-    }
-
-    public Set<WorkflowProject> getWorkflowProjects() {
-        return new HashSet<>(m_workflowProjectMap.values());
     }
 
     /**

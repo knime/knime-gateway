@@ -397,10 +397,6 @@ public final class LocalWorkspace implements Space {
 
         // TODO: not checked whether renamed item is ancestor of an open workflow
         //  this can be verified once we determine itemIDs of ancestors, cf. NXT-1432
-        if (isItemAnOpenWorkflowProject(itemId)) {
-            throw new ServiceExceptions.OperationNotAllowedException(
-                    "At least one of the workflows or components affected by the renaming are still open and have to be closed.");
-        }
 
         if (itemId.equals(Space.ROOT_ITEM_ID)) {
             throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
@@ -440,11 +436,6 @@ public final class LocalWorkspace implements Space {
         updateSpaceItemTypeCache(sourcePath, destinationPath);
 
         return EntityFactory.Space.buildSpaceItemEnt(newName, itemId, itemType);
-    }
-
-    private static boolean isItemAnOpenWorkflowProject(final String itemId) {
-        return WorkflowProjectManager.getInstance().getWorkflowProjects().stream()
-                .flatMap(proj -> proj.getOrigin().stream()).anyMatch(origin -> origin.getItemId().equals(itemId));
     }
 
     /**
