@@ -465,14 +465,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
     }
 
-    private static String findItemId(final WorkflowGroupContentEnt groupContent, final String name) {
-        return groupContent.getItems().stream() //
-            .filter(e -> name.equals(e.getName())) //
-            .map(SpaceItemEnt::getId) //
-            .findFirst() //
-            .orElse(null);
-    }
-
     /**
      * Tests {@link SpaceService#deleteItems(String, String, List)} for the local workspace.
      *
@@ -494,8 +486,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Create a workflow group with some content and delete it
         var workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
         Files.createDirectory(workflowGroupPath);
-        var workflowGroupId =
-            findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
+        var workflowGroupId = getItemIdForItemWithName(
+            ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID).getItems(), workflowGroupName);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         Files.createFile(workflowGroupPath.resolve(fileName));
@@ -505,7 +497,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Delete a single data file
         var filePath = testWorkspacePath.resolve(fileName);
         Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
-        var fileId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
+        var fileId = getItemIdForItemWithName(
+            ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID).getItems(), fileName);
         ss().deleteItems(spaceId, providerId, List.of(fileId));
         assertThat("File must not exist anymore", !Files.exists(filePath));
 
@@ -528,8 +521,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
         workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
         Files.createDirectory(workflowGroupPath);
-        workflowGroupId =
-            findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
+        workflowGroupId = getItemIdForItemWithName(
+            ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID).getItems(), workflowGroupName);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         Files.createFile(workflowGroupPath.resolve(fileName));
