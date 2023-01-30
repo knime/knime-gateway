@@ -138,6 +138,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component+Input"

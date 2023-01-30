@@ -48,6 +48,10 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
@@ -57,6 +61,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
@@ -115,6 +120,33 @@ public class WorkflowServiceTest extends GatewayServiceTest {
             workflowService.getWorkflow(wfId.toString(), getRootID(), true).getWorkflow().getNodes().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
         cr(allowedActionsMapExecuted, "allowed_actions_for_view_nodes_executed");
+    }
+
+    /**
+     * Test for node warning/error messages, especially testing the enriched node message format (with 'issue' and
+     * 'resolutions').
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testNodeMessage() throws Exception {
+        var wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.NODE_MESSAGE, "wf_id");
+
+        var workflowService = DefaultWorkflowService.getInstance();
+        var stateEnt =
+            ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes().get("root:4")).getState();
+        assertThat(stateEnt.getWarning(), is(nullValue()));
+        assertThat(stateEnt.getIssue(), is(nullValue()));
+        assertThat(stateEnt.getResolutions(), is(nullValue()));
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var stateEntExecuted = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow()
+            .getNodes().get("root:4")).getState();
+        assertThat(stateEntExecuted.getWarning(), containsString("can not be transformed"));
+        assertThat(stateEntExecuted.getIssue(), containsString("For input string"));
+        assertThat(stateEntExecuted.getResolutions().size(), is(0));
     }
 
 }

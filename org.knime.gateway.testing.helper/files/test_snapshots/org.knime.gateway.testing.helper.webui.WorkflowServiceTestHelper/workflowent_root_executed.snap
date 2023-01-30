@@ -630,7 +630,8 @@
       },
       "state" : {
         "error" : "PLACEHOLDER_FOR_ERROR_MESSAGE",
-        "executionState" : "CONFIGURED"
+        "executionState" : "CONFIGURED",
+        "resolutions" : [ ]
       },
       "templateId" : "org.knime.testing.node.failing.FailingNodeFactory"
     },
@@ -687,7 +688,8 @@
       },
       "state" : {
         "error" : "PLACEHOLDER_FOR_ERROR_MESSAGE",
-        "executionState" : "CONFIGURED"
+        "executionState" : "CONFIGURED",
+        "resolutions" : [ ]
       }
     },
     "root:13" : {
@@ -942,6 +944,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory#MISSING+Input+File"
@@ -1043,6 +1046,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING+Variants2Proteins"
@@ -1881,6 +1885,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"

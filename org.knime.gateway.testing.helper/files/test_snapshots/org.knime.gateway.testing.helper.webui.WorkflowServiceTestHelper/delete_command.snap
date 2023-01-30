@@ -532,6 +532,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "org.knime.base.node.flowvariable.variabletotablerow2.VariableToTable2NodeFactory"
@@ -667,6 +668,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory#MISSING+Input+File"
@@ -766,6 +768,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING+Variants2Proteins"
@@ -894,6 +897,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       }
     },
@@ -1531,6 +1535,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
       "templateId" : "org.knime.base.node.mine.decisiontree2.learner2.DecisionTreeLearnerNodeFactory3"
