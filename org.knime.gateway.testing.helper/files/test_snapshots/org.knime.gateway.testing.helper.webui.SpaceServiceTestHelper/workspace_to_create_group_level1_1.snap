@@ -1,0 +1,15 @@
+{
+  "items" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Folder",
+    "type" : "WorkflowGroup"
+  }, {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Folder(1)",
+    "type" : "WorkflowGroup"
+  } ],
+  "path" : [ {
+    "id" : "PLACEHOLDER_FOR_ID",
+    "name" : "Folder"
+  } ]
+}

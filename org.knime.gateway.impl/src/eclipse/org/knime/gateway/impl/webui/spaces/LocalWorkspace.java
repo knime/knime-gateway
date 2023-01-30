@@ -103,6 +103,11 @@ public final class LocalWorkspace implements Space {
      */
     public static final String DEFAULT_WORKFLOW_NAME = "KNIME_project";
 
+    /**
+     * Default name for a newly created workflow groups.
+     */
+    public static final String DEFAULT_WORKFLOW_GROUP_NAME = "Folder";
+
     // Map from hash code representing the item-id to the absolute path.
     // assumption is that there is exactly one user of the local workspace at a time
     final ItemIdToPathMap m_itemIdToPathMap = new ItemIdToPathMap(); // package-private for testing
@@ -149,6 +154,15 @@ public final class LocalWorkspace implements Space {
         var workflowName = generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_NAME, true);
         var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowName));
         Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
+        return getSpaceItemEntFromPath(directoryPath);
+    }
+
+    @Override
+    public SpaceItemEnt createWorkflowGroup(final String workflowGroupItemId) throws IOException {
+        var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+        var workflowGroupName = generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_GROUP_NAME, false);
+        var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowGroupName));
+        // TODO(NXT-1484) create a meta info file for the folder
         return getSpaceItemEntFromPath(directoryPath);
     }
 

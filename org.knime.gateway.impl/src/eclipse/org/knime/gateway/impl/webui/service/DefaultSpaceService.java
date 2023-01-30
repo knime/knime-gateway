@@ -153,6 +153,18 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
+    @Override
+    public SpaceItemEnt createWorkflowGroup(final String spaceId, final String spaceProviderId, final String itemId)
+        throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
+        try {
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).createWorkflowGroup(itemId);
+        } catch (NoSuchElementException | UnsupportedOperationException e) {
+            throw new InvalidRequestException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

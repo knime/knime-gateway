@@ -358,6 +358,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
+            public SpaceItemEnt createWorkflowGroup(final String workflowGroupItemId) throws IOException {
+                return null;
+            }
+
+            @Override
             public URI toKnimeUrl(final String itemId) {
                 return null;
             }
@@ -385,10 +390,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         };
     }
 
-    private static SpaceProvider createLocalSpaceProviderForTesting(final Path testWorkspacePath)  {
+    private static SpaceProvider createLocalSpaceProviderForTesting(final Path testWorkspacePath) {
         var localWorkspace = new LocalWorkspace(testWorkspacePath);
         return new SpaceProvider() {
-            @Override public String getId() {
+            @Override
+            public String getId() {
                 return "local-testing";
             }
 
@@ -530,5 +536,44 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var rootFiles = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
         ss().deleteItems(spaceId, providerId,
             rootFiles.getItems().stream().map(SpaceItemEnt::getId).collect(Collectors.toList()));
+    }
+
+    /**
+     * Tests {@link SpaceService#createWorkflowGroup(String, String, String)} for the local workspace.
+     *
+     * @throws Exception
+     */
+    public void testCreateWorkflowGroupForLocalWorkspace() throws Exception {
+        var testWorkspacePath = getTestWorkspacePath("test_workspace_to_create_group");
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+
+        try {
+            // Create workflow groups and check
+            var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+            var wfg0 = ss().createWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
+            cr(wfg0, "created_workflow_group_0");
+            var level0 = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
+            cr(level0, "workspace_to_create_group_level0");
+            var wfg0Path = testWorkspacePath.resolve("Folder");
+            assertThat("Folder must be created", Files.isDirectory(wfg0Path));
+
+            var level1Id = wfg0.getId();
+            var wfg1 = ss().createWorkflowGroup(spaceId, providerId, level1Id);
+            cr(wfg1, "created_workflow_group_1");
+            var level1 = ss().listWorkflowGroup(spaceId, providerId, level1Id);
+            cr(level1, "workspace_to_create_group_level1_0");
+            assertThat("Folder/Folder must be created", Files.isDirectory(wfg0Path.resolve("Folder")));
+
+            var wfg2 = ss().createWorkflowGroup(spaceId, providerId, level1Id);
+            cr(wfg2, "created_workflow_group_2");
+            var level2 = ss().listWorkflowGroup(spaceId, providerId, level1Id);
+            cr(level2, "workspace_to_create_group_level1_1");
+            assertThat("Folder/Folder(1) must be created with", Files.isDirectory(wfg0Path.resolve("Folder(1)")));
+        } finally {
+            // Make sure cleanup is always performed
+            var pathWfg0 = testWorkspacePath//
+                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_GROUP_NAME);
+            PathUtils.deleteDirectoryIfExists(pathWfg0);
+        }
     }
 }

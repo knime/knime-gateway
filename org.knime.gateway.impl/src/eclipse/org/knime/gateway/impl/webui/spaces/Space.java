@@ -136,6 +136,16 @@ public interface Space {
     SpaceItemEnt createWorkflow(String workflowGroupItemId) throws IOException;
 
     /**
+     * Creates a new workflow group within a given workflow group.
+     *
+     * @param workflowGroupItemId The ID of the workflow group where to create the new workflow group
+     * @return the newly created space item
+     * @throws IOException If there was a problem creating the folder
+     * @throws NoSuchElementException If the given workflow group item id doesn't refer to a workflow group
+     */
+    SpaceItemEnt createWorkflowGroup(String workflowGroupItemId) throws IOException;
+
+    /**
      * Rename a space item
      *
      * @param itemId The space item ID of the item to rename
