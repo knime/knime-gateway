@@ -114,27 +114,21 @@ public abstract class GatewayServiceTest {
     }
 
     /**
-     * TODO
-     *
-     * @return
+     * @return the {@link SpaceProviders} service dependency
      */
     protected SpaceProviders createSpaceProviders() {
         return mock(SpaceProviders.class);
     }
 
     /**
-     * TODO
-     *
-     * @return
+     * @return the {@link ExampleProjects} service dependency, can be {@code null}
      */
     protected ExampleProjects createExampleProjects() {
         return null;
     }
 
     /**
-     * TODO
-     *
-     * @return
+     * @return the {@link EventConsumer} service dependency
      */
     protected EventConsumer createEventConsumer() {
         return mock(EventConsumer.class);

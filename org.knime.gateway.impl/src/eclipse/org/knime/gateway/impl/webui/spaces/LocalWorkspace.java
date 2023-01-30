@@ -241,6 +241,23 @@ public final class LocalWorkspace implements Space {
         return getSpaceItemEntFromPath(destPath);
     }
 
+    @Override
+    public List<String> getAncestorItemIds(final String itemId) {
+        if (ROOT_ITEM_ID.equals(itemId)) {
+            return List.of();
+        }
+        var path = m_itemIdToPathMap.get(Integer.parseInt(itemId));
+        if (path == null) {
+            throw new NoSuchElementException("No item for id '" + itemId + "'");
+        }
+        var parent = path;
+        var res = new ArrayList<String>();
+        while (!(parent = parent.getParent()).equals(m_localWorkspaceRootPath)) {
+            res.add(getItemId(parent));
+        }
+        return res;
+    }
+
     /**
      * @param workflowGroupItemId The workflow group item ID
      * @param name the name to check
@@ -302,20 +319,6 @@ public final class LocalWorkspace implements Space {
         }
         m_itemIdToPathMap.put(id, absolutePath);
         return Integer.toString(id);
-    }
-
-    @Override
-    public List<String> getAncestorItemIds(final String itemId) {
-        var path = m_itemIdToPathMap.get(Integer.parseInt(itemId));
-        if (path == null) {
-            throw new NoSuchElementException("No item for id '" + itemId + "'");
-        }
-        var parent = path;
-        var res = new ArrayList<String>();
-        while (!(parent = parent.getParent()).equals(m_localWorkspaceRootPath)) {
-            res.add(getItemId(parent));
-        }
-        return res;
     }
 
     private SpaceItemEnt.TypeEnum cacheOrGetSpaceItemTypeFromCache(final Path item) {
