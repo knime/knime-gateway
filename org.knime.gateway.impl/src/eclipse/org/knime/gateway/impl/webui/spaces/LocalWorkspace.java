@@ -251,7 +251,7 @@ public final class LocalWorkspace implements Space {
         if (ROOT_ITEM_ID.equals(itemId)) {
             return List.of();
         }
-        var path = m_itemIdToPathMap.get(Integer.parseInt(itemId));
+        var path = m_itemIdToPathMap.get(itemId);
         if (path == null) {
             throw new NoSuchElementException("No item for id '" + itemId + "'");
         }

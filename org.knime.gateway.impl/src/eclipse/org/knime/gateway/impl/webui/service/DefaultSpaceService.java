@@ -61,6 +61,7 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
