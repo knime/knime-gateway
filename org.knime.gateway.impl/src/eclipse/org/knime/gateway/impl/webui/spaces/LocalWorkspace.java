@@ -394,9 +394,6 @@ public final class LocalWorkspace implements Space {
     public SpaceItemEnt renameItem(final String itemId, final String queriedName)
             throws IOException, ServiceExceptions.OperationNotAllowedException {
 
-        // TODO: not checked whether renamed item is ancestor of an open workflow
-        //  this can be verified once we determine itemIDs of ancestors, cf. NXT-1432
-
         if (itemId.equals(Space.ROOT_ITEM_ID)) {
             throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
         }
@@ -420,7 +417,6 @@ public final class LocalWorkspace implements Space {
         if (destinationFile.exists()) {
             throw new ServiceExceptions.OperationNotAllowedException("There already exists a file of that name");
         }
-
 
         try {
             var renamingSucceeded = sourceFile.renameTo(destinationFile);
