@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
@@ -61,6 +63,9 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.WorkflowProject;
+import org.knime.gateway.impl.project.WorkflowProject.Origin;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -83,6 +88,9 @@ public class DefaultSpaceService implements SpaceService {
 
     private final SpaceProviders m_spaceProviders =
         ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+
+    private final WorkflowProjectManager m_workflowProjectManager =
+        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
 
     DefaultSpaceService() {
         //
@@ -145,8 +153,22 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
         throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
+        // Deleting an open workflow is not allowed
+        var openWorkflowIds = getOpenWorkflowIds(spaceId, spaceProviderId);
+        if (spaceItemIds.stream().anyMatch(openWorkflowIds::contains)) {
+            throw new InvalidRequestException("Deleting an open workflow is not possible.");
+        }
+
         try {
-            SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).deleteItems(spaceItemIds);
+            final Space space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
+
+            // Deleting a workflow group containing an open workflow is not allowed
+            var openWorkflowGroups = getOpenWorkflowGroupIds(openWorkflowIds, space);
+            if (spaceItemIds.stream().anyMatch(openWorkflowGroups::contains)) {
+                throw new InvalidRequestException("Deleting a folder that contains an open workflow is not possible.");
+            }
+
+            space.deleteItems(spaceItemIds);
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
@@ -189,4 +211,18 @@ public class DefaultSpaceService implements SpaceService {
         return space;
     }
 
+    private Set<String> getOpenWorkflowIds(final String spaceId, final String spaceProviderId) {
+        return m_workflowProjectManager.getWorkflowProjects().stream() //
+            .map(WorkflowProject::getOrigin) //
+            .flatMap(Optional::stream) //
+            .filter(o -> o.getSpaceId().equals(spaceId) && o.getProviderId().equals(spaceProviderId)) //
+            .map(Origin::getItemId) //
+            .collect(Collectors.toSet());
+    }
+
+    private static Set<String> getOpenWorkflowGroupIds(final Set<String> openWorkflowIds, final Space space) {
+        return openWorkflowIds.stream() //
+            .flatMap(id -> space.getAncestorItemIds(id).stream()) //
+            .collect(Collectors.toSet());
+    }
 }

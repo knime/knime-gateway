@@ -46,8 +46,8 @@
 package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -205,6 +205,13 @@ public final class WorkflowProjectManager {
      */
     public Optional<WorkflowManager> getCachedWorkflow(final String workflowProjectID) {
         return Optional.ofNullable(m_chachedWorkflowsMap.get(workflowProjectID));
+    }
+
+    /**
+     * @return a collection of all workflow projects
+     */
+    public Collection<WorkflowProject> getWorkflowProjects() {
+        return m_workflowProjectMap.values();
     }
 
     /**
