@@ -21,9 +21,10 @@ try {
         'Tycho Build': {
                 knimetools.defaultTychoBuild('org.knime.update.gateway')
         },
-        'Integrated Workflowtests': {
-                workflowTests.runIntegratedWorkflowTests(profile: 'test')
-         },
+        'Integration Tests': {
+                workflowTests.runIntegratedWorkflowTests(
+                    profile: 'test',  nodeType: 'maven', configurations: workflowTests.DEFAULT_FEATURE_BRANCH_CONFIGURATIONS)
+        },
      )
 
     stage('Sonarqube analysis') {
