@@ -63,12 +63,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.MatcherAssert;
 import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
@@ -79,6 +83,8 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.WorkflowProject;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -484,9 +490,20 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
         var workflowGroupName = "workflow_group";
         var fileName = "testfile.txt";
+        var innerWFGName = "inner_workflow_group";
+
+        // Open workflow that is not used in the tests -> should have no effect
+        var unusedWfName = "Unused_open_workflow";
+        var unusedWfPath = testWorkspacePath.resolve(unusedWfName);
+        Files.createDirectories(unusedWfPath);
+        Files.createFile(unusedWfPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
+        var unusedWfId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), unusedWfName);
+        addWorkflowProjectToManager(spaceId, providerId, unusedWfId, unusedWfName);
 
         // Create a workflow and delete it
         var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        addWorkflowProjectToManager("another_space", providerId, wf.getId(), wf.getName()); // Open workflow on another space
+        addWorkflowProjectToManager(spaceId, "another_provider", wf.getId(), wf.getName()); // Open workflow from another provider
         ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
         assertThat("Workflow must not exist anymore",
             !Files.exists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
@@ -535,7 +552,71 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Files.createFile(workflowGroupPath.resolve(fileName));
         ss().listWorkflowGroup(spaceId, providerId, workflowGroupId);
         var rootFiles = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
-        ss().deleteItems(spaceId, providerId,
-            rootFiles.getItems().stream().map(SpaceItemEnt::getId).collect(Collectors.toList()));
+        ss().deleteItems(spaceId, providerId, rootFiles.getItems().stream().map(SpaceItemEnt::getId)
+            .filter(i -> !i.equals(unusedWfId)).collect(Collectors.toList()));
+
+        // Delete a workflow that is open
+        wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        final var wfId = wf.getId();
+        addWorkflowProjectToManager(spaceId, providerId, wfId, wf.getName());
+        assertThrows("Deleting open workflow must fail", InvalidRequestException.class,
+            () -> ss().deleteItems(spaceId, providerId, List.of(wfId)));
+
+        // Delete a folder with an open workflow
+        workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
+        Files.createDirectory(workflowGroupPath);
+        final var wfgId =
+            findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
+        var innerWfgPath = testWorkspacePath.resolve(innerWFGName);
+        Files.createDirectory(innerWfgPath);
+        var innerWfgId = findItemId(ss().listWorkflowGroup(spaceId, providerId, wfgId), innerWFGName);
+        wf = ss().createWorkflow(spaceId, providerId, innerWfgId);
+        addWorkflowProjectToManager(spaceId, providerId, wf.getId(), wf.getName());
+        assertThrows("Deleting folder with open workflow must fail", InvalidRequestException.class,
+            () -> ss().deleteItems(spaceId, providerId, List.of(wfgId)));
+
+        // TODO cleanup: remove workflows from workflow manager and delete all files
+    }
+
+    private static void addWorkflowProjectToManager(final String spaceId, final String providerId, final String itemId,
+        final String name) {
+        String wfId = UUID.randomUUID().toString();
+        WorkflowProjectManager.getInstance().addWorkflowProject(wfId, new WorkflowProject() {
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public String getID() {
+                return wfId;
+            }
+
+            @Override
+            public WorkflowManager openProject() {
+                return null;
+            }
+
+            @Override
+            public Optional<Origin> getOrigin() {
+                return Optional.of(new Origin() {
+
+                    @Override
+                    public String getSpaceId() {
+                        return spaceId;
+                    }
+
+                    @Override
+                    public String getProviderId() {
+                        return providerId;
+                    }
+
+                    @Override
+                    public String getItemId() {
+                        return itemId;
+                    }
+                });
+            }
+        });
     }
 }
