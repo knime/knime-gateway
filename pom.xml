@@ -129,6 +129,11 @@
 			<layout>p2</layout>
 			<url>${knime.base.views.p2}</url>
 		</repository>
+		<repository>
+			<id>p2-knime-cef</id>
+			<layout>p2</layout>
+			<url>${knime.cef.p2}</url>
+		</repository>
 	</repositories>
 
 </project><!-- vim: set shiftwidth=4 expandtab smarttab: -->
