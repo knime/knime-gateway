@@ -136,8 +136,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testRedoCommandOrder() throws Exception {
         WorkflowProject wp = createEmptyWorkflowProject();
 
-        WorkflowCommands commands =
-            new WorkflowCommands(5, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        WorkflowCommands commands = new WorkflowCommands(5);
+        WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(WorkflowProjectManager.getInstance());
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
         var wfm = wp.openProject();
@@ -146,8 +146,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         var n1 = addNodeDirectly(sleepNodeClassname, wfm);
         var n2 = addNodeDirectly(sleepNodeClassname, wfm);
 
-        commands.execute(wfKey, buildDeleteCommandEnt(n2));
-        commands.execute(wfKey, buildDeleteCommandEnt(n1));
+        commands.execute(wfKey, buildDeleteCommandEnt(n2), workflowMiddleware, null);
+        commands.execute(wfKey, buildDeleteCommandEnt(n1), workflowMiddleware, null);
 
         commands.undo(wfKey);
         commands.undo(wfKey);
@@ -171,8 +171,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testUndoAndRedoStackSizes() throws Exception {
         WorkflowProject wp = createEmptyWorkflowProject();
 
-        WorkflowCommands commands =
-            new WorkflowCommands(5, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        WorkflowCommands commands = new WorkflowCommands(5);
         TranslateCommandEnt commandEntity = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
@@ -437,7 +436,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         commands.setCommandToExecuteForTesting(testCommand);
 
         try {
-            commands.execute(wfKey, null);
+            commands.execute(wfKey, null, workflowMiddleware, null);
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
                 .until(() -> eventConsumerCalls.get() == 1);
 

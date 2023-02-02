@@ -138,10 +138,14 @@ public final class GatewayTestCollection {
                 (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandLockedMetanode());
         res.put("testExpandLockedComponent",
                 (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandLockedComponent());
-
-        res.put("testExecuteCopyCommand", (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCopyCommand());
-        res.put("testExecuteCutCommand", (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCutCommand());
-        res.put("testExecutePasteCommand", (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecutePasteCommand());
+        res.put("testExecuteCopyCommand",
+            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCopyCommand());
+        res.put("testExecuteCutCommand",
+            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCutCommand());
+        res.put("testExecutePasteCommand",
+            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecutePasteCommand());
+        res.put("testAddNodeCommandFromURI",
+            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testAddNodeCommandFromURI());
 
         res.put("testChangeNodeState",
             (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());

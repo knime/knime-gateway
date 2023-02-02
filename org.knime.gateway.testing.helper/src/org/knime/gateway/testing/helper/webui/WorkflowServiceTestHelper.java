@@ -69,6 +69,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,6 +84,7 @@ import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
@@ -147,6 +149,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -156,6 +160,8 @@ import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVer
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
 import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -2155,6 +2161,29 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setContent(clipboardContent)//
             .setPosition(position != null ? builder(XYEntBuilder.class).setX(position.get(0)).setY(position.get(1)).build() : null)
             .build();
+    }
+
+    /**
+     * Tests the {@link AddNodeCommandEnt} with {@link AddNodeCommandEnt#getUrl()} set.
+     *
+     * @throws Exception
+     */
+    public void testAddNodeCommandFromURI() throws Exception {
+        var nodeFactoryProvider = mock(NodeFactoryProvider.class);
+        Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
+            .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
+            .getClass();
+        Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.eq("file:/file.csv")))
+            .thenReturn(nodeFactoryClass);
+        ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
+        String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        var addNodeCommand = builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
+            .setUrl("file:/file.csv").setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build())//
+            .build();
+        AddNodeResultEnt res = (AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), addNodeCommand);
+        var nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
+        assertThat(((NativeNodeEnt)nodes.get(res.getNewNodeId().toString())).getTemplateId(),
+            is("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory"));
     }
 
 }

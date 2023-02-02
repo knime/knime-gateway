@@ -51,6 +51,10 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -79,10 +83,13 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
 
 /**
  * Workflow command to add a native node.
@@ -94,10 +101,17 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
     private NodeID m_addedNode;
 
-    private AddNodeCommandEnt m_commandEnt;
+    private final AddNodeCommandEnt m_commandEnt;
+
+    private final NodeFactoryProvider m_nodeFactoryProvider;
 
     AddNode(final AddNodeCommandEnt commandEnt) {
+        this(commandEnt, null);
+    }
+
+    AddNode(final AddNodeCommandEnt commandEnt, final NodeFactoryProvider nodeFactoryProvider) {
         m_commandEnt = commandEnt;
+        m_nodeFactoryProvider = nodeFactoryProvider;
     }
 
     @Override
@@ -106,10 +120,17 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         // Add node
         var positionEnt = m_commandEnt.getPosition();
         var factoryKeyEnt = m_commandEnt.getNodeFactory();
+        var url = parseURL(m_commandEnt.getUrl());
+        if (factoryKeyEnt == null && url != null) {
+            factoryKeyEnt = getNodeFactoryKey(m_commandEnt.getUrl());
+        }
+        if (factoryKeyEnt == null) {
+            throw new OperationNotAllowedException("No node factory class given");
+        }
         var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
         try {
             m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
-                targetPosition[0], targetPosition[1] - EntityFactory.Workflow.NODE_Y_POS_CORRECTION, wfm, false);
+                url, targetPosition[0], targetPosition[1] - WorkflowEntityFactory.NODE_Y_POS_CORRECTION, wfm, false);
         } catch (IOException | NoSuchElementException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
@@ -130,6 +151,29 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             throw e;
         }
         return true; // Workflow changed if no exceptions were thrown
+    }
+
+    private NodeFactoryKeyEnt getNodeFactoryKey(final String url) {
+        if (m_nodeFactoryProvider == null) {
+            return null;
+        }
+        var factory = m_nodeFactoryProvider.fromFileExtension(url);
+        if (factory == null) {
+            return null;
+        }
+        return builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getName()).build();
+    }
+
+    private static URL parseURL(final String urlString) {
+        if (urlString == null) {
+            return null;
+        }
+        try {
+            return new URI(urlString).toURL();
+        } catch (MalformedURLException | URISyntaxException ex) {
+            // TODO log
+            return null;
+        }
     }
 
     /**

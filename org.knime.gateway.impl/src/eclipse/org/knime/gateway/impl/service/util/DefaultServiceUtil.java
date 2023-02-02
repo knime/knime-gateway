@@ -47,17 +47,20 @@ package org.knime.gateway.impl.service.util;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
@@ -250,10 +253,39 @@ public final class DefaultServiceUtil {
      */
     public static NodeID createAndAddNode(final String factoryClassName, final String factorySettings, final Integer x,
         final Integer y, final WorkflowManager wfm, final boolean centerNode) throws IOException {
+        return createAndAddNode(factoryClassName, factorySettings, null, x, y, wfm, centerNode);
+    }
+
+    /**
+     * Creates and adds a node to a workflow.
+     *
+     * @param factoryClassName the node's fully qualified factory class name
+     * @param factorySettings optional factory settings in case of dynamic nodes, otherwise <code>null</code>
+     * @param url optional parameter for the case when a node is to be added which can be configured with an initial URL
+     *            (e.g. representing a pre-configured file)
+     * @param x the x-coordinate to add the node at
+     * @param y the y-coordinate to add the node at
+     * @param wfm the workflow to add the node to
+     * @param centerNode if {@code true} the node is centered at the given coordinates, otherwise the coordinates refer
+     *            to the upper left corner of the node 'body'
+     * @return the id of the new node
+     * @throws NoSuchElementException if no node couldn't be found for the given factory class name
+     * @throws IOException if a problem occurred while reading in the factory settings
+     */
+    public static NodeID createAndAddNode(final String factoryClassName, final String factorySettings, final URL url,
+        final Integer x, final Integer y, final WorkflowManager wfm, final boolean centerNode) throws IOException {
         NodeFactory<NodeModel> nodeFactory = getNodeFactory(factoryClassName, factorySettings);
-        NodeID nodeID = wfm.createAndAddNode(nodeFactory);
+        NodeID nodeID;
+        if (nodeFactory instanceof ConfigurableNodeFactory && url != null) {
+            final ModifiableNodeCreationConfiguration config =
+                ((ConfigurableNodeFactory)nodeFactory).createNodeCreationConfig();
+            config.setURLConfiguration(url);
+            nodeID = wfm.addNodeAndApplyContext(nodeFactory, config, -1);
+        } else {
+            nodeID = wfm.createAndAddNode(nodeFactory);
+        }
         NodeUIInformation info =
-                NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(centerNode).build();
+            NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setIsDropLocation(centerNode).build();
         wfm.getNodeContainer(nodeID).setUIInformation(info);
         return nodeID;
     }

@@ -77,6 +77,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
@@ -98,20 +99,15 @@ public final class WorkflowCommands {
 
     private final int m_maxNumUndoAndRedoCommandsPerWorkflow;
 
-    private final WorkflowMiddleware m_workflowMiddleware;
-
     private WorkflowCommand m_workflowCommandForTesting;
 
     /**
      * Creates a new instance with initially empty undo- and redo-stacks.
      *
      * @param maxNumUndoAndRedoCommandsPerWorkflow the maximum size of undo- and redo-stack for each workflow
-     * @param workflowMiddleware
      */
-    public WorkflowCommands(final int maxNumUndoAndRedoCommandsPerWorkflow,
-        final WorkflowMiddleware workflowMiddleware) {
+    public WorkflowCommands(final int maxNumUndoAndRedoCommandsPerWorkflow) {
         m_maxNumUndoAndRedoCommandsPerWorkflow = maxNumUndoAndRedoCommandsPerWorkflow;
-        m_workflowMiddleware = workflowMiddleware;
         m_redoStacks = new HashMap<>();
         m_undoStacks = new HashMap<>();
     }
@@ -132,38 +128,61 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
         final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        var command = createWorkflowCommand(commandEnt);
+        return execute(wfKey, commandEnt, null, null);
+    }
+
+    /**
+     * Executes the given workflow command, represented by the command entity, to a workflow referenced by the given
+     * {@link WorkflowKey}.
+     *
+     * @param <E> the type of workflow command
+     * @param wfKey reference to the workflow to execute the command for
+     * @param commandEnt the workflow command entity to execute
+     * @param workflowMiddleware additional dependency required to rexecute some commands
+     * @param nodeFactoryProvider additional dependency required to execute some commands
+     *
+     * @return The instance of the executed command
+     *
+     * @throws OperationNotAllowedException if the command couldn't be executed
+     * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
+     * @throws NodeNotFoundException if the reference doesn't point to a workflow
+     */
+    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
+        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider)
+        throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
+        var command = createWorkflowCommand(commandEnt, workflowMiddleware, nodeFactoryProvider);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
         if (hasResult) {
-            wfChangeWaiter = prepareCommandResult(wfKey, command).orElse(null);
+            wfChangeWaiter = prepareCommandResult(wfKey, command, workflowMiddleware).orElse(null);
         }
         executeCommandAndModifyCommandStacks(wfKey, command);
-        return hasResult ? waitForCommandResult(wfKey, command, wfChangeWaiter) : null;
+        return hasResult ? waitForCommandResult(wfKey, command, wfChangeWaiter, workflowMiddleware) : null;
     }
 
     @SuppressWarnings("java:S1541")
-    private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt) // NOSONAR: See below.
+    private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
+        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider)
         throws OperationNotAllowedException {
         WorkflowCommand command;
         // TODO: Replace this by pattern matching once Java 17 is available
         if (commandEnt instanceof TranslateCommandEnt) {
             command = new Translate((TranslateCommandEnt)commandEnt);
         } else if (commandEnt instanceof DeleteCommandEnt) {
-            command = new Delete((DeleteCommandEnt)commandEnt, m_workflowMiddleware);
+            command = new Delete((DeleteCommandEnt)commandEnt, workflowMiddleware);
         } else if (commandEnt instanceof ConnectCommandEnt) {
             command = new Connect((ConnectCommandEnt)commandEnt);
         } else if (commandEnt instanceof AddNodeCommandEnt) {
-            command = new AddNode((AddNodeCommandEnt)commandEnt);
+            command = new AddNode((AddNodeCommandEnt)commandEnt, nodeFactoryProvider);
         } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
             command = new UpdateComponentOrMetanodeName((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
         } else if (commandEnt instanceof UpdateNodeLabelCommandEnt) {
             command = new UpdateNodeLabel((UpdateNodeLabelCommandEnt)commandEnt);
         } else if (commandEnt instanceof CollapseCommandEnt) {
-            command = new Collapse((CollapseCommandEnt)commandEnt, m_workflowMiddleware);
+            command = new Collapse((CollapseCommandEnt)commandEnt, workflowMiddleware);
         } else if (commandEnt instanceof ExpandCommandEnt) {
-            command = new Expand((ExpandCommandEnt)commandEnt, m_workflowMiddleware);
+            command = new Expand((ExpandCommandEnt)commandEnt, workflowMiddleware);
         } else if (commandEnt instanceof AddPortCommandEnt) {
           command = new AddPort((AddPortCommandEnt)commandEnt);
         } else if (commandEnt instanceof RemovePortCommandEnt) {
@@ -171,7 +190,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof CopyCommandEnt) {
             command = new Copy((CopyCommandEnt)commandEnt);
         } else if (commandEnt instanceof CutCommandEnt) {
-            command = new Cut((CutCommandEnt)commandEnt, m_workflowMiddleware);
+            command = new Cut((CutCommandEnt)commandEnt, workflowMiddleware);
         } else if (commandEnt instanceof PasteCommandEnt) {
             command = new Paste((PasteCommandEnt)commandEnt);
         } else {
@@ -197,10 +216,11 @@ public final class WorkflowCommands {
         return false;
     }
 
-    private Optional<WorkflowChangeWaiter> prepareCommandResult(final WorkflowKey wfKey, final WorkflowCommand command) {
+    private static Optional<WorkflowChangeWaiter> prepareCommandResult(final WorkflowKey wfKey,
+        final WorkflowCommand command, final WorkflowMiddleware workflowMiddleware) {
         // Only commands with results that trigger a real workflow change need a waiter
         if (!((WithResult)command).getChangesToWaitFor().isEmpty()) {
-            var wfChangesListener = m_workflowMiddleware.getWorkflowChangesListener(wfKey);
+            var wfChangesListener = workflowMiddleware.getWorkflowChangesListener(wfKey);
             return Optional.of(wfChangesListener.createWorkflowChangeWaiter(
                 ((WithResult)command).getChangesToWaitFor().toArray(WorkflowChange[]::new)));
         }
@@ -235,14 +255,15 @@ public final class WorkflowCommands {
         return stacks.computeIfAbsent(wfKey, k -> new CommandStack(m_maxNumUndoAndRedoCommandsPerWorkflow));
     }
 
-    private CommandResultEnt waitForCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
-        final WorkflowChangeWaiter wfChangeWaiter) throws OperationNotAllowedException {
+    private static CommandResultEnt waitForCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
+        final WorkflowChangeWaiter wfChangeWaiter, final WorkflowMiddleware workflowMiddleware)
+        throws OperationNotAllowedException {
         String latestSnapshotId = null;
         if (wfChangeWaiter != null) {
             try {
                 wfChangeWaiter.blockUntilOccurred();
                 // Only set a snapshot id if there is a workflow change to wait for
-                latestSnapshotId = m_workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
+                latestSnapshotId = workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
             } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
                 throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change", e);
             }

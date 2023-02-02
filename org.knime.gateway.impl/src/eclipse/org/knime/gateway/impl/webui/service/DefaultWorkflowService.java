@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
@@ -69,6 +70,9 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+
+    private final NodeFactoryProvider m_nodeFactoryProvider =
+        ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -108,8 +112,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
-        return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId),
-            workflowCommandEnt);
+        return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
+            m_workflowMiddleware, m_nodeFactoryProvider);
     }
 
     /**

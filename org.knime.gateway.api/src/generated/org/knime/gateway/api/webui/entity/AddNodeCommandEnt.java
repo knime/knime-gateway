@@ -70,9 +70,15 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
   /**
    * Get nodeFactory
-   * @return nodeFactory , never <code>null</code>
+   * @return nodeFactory 
    **/
   public NodeFactoryKeyEnt getNodeFactory();
+
+  /**
+   * a url to a file which then determines what node to add
+   * @return url 
+   **/
+  public String getUrl();
 
   /**
    * Optional parameter identifying the existing node to connect to
@@ -111,10 +117,18 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         /**
    		 * Set nodeFactory
          * 
-         * @param nodeFactory the property value, NOT <code>null</code>! 
+         * @param nodeFactory the property value,  
          * @return this entity builder for chaining
          */
         AddNodeCommandEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
+        
+        /**
+         * a url to a file which then determines what node to add
+         * 
+         * @param url the property value,  
+         * @return this entity builder for chaining
+         */
+        AddNodeCommandEntBuilder setUrl(String url);
         
         /**
          * Optional parameter identifying the existing node to connect to

@@ -83,6 +83,10 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
     public NodeFactoryKeyEnt getNodeFactory();
     
     @Override
+    @JsonProperty("url")
+    public String getUrl();
+    
+    @Override
     @JsonProperty("sourceNodeId")
     public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
     
@@ -114,6 +118,10 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
         @Override
         @JsonProperty("nodeFactory")
         public AddNodeCommandEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
+        
+        @Override
+        @JsonProperty("url")
+        public AddNodeCommandEntMixInBuilder setUrl(final String url);
         
         @Override
         @JsonProperty("sourceNodeId")

@@ -110,7 +110,7 @@ public final class WorkflowMiddleware {
      */
     public WorkflowMiddleware(final WorkflowProjectManager workflowProjectManager) {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
-        m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW, this);
+        m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
         workflowProjectManager.addWorkflowProjectRemovedListener(
             projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
