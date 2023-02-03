@@ -104,6 +104,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public Boolean isNodeRepoFilterEnabled();
 
+  /**
+   * If true, dev mode specific buttons will be shown.
+   * @return devMode 
+   **/
+  public Boolean isDevMode();
+
 
     /**
      * The builder for the entity.
@@ -165,6 +171,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setNodeRepoFilterEnabled(Boolean nodeRepoFilterEnabled);
+        
+        /**
+         * If true, dev mode specific buttons will be shown.
+         * 
+         * @param devMode the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setDevMode(Boolean devMode);
         
         
         /**

@@ -71,6 +71,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
   protected Boolean m_hasNodeRecommendationsEnabled;
   protected java.util.Map<String, Object> m_featureFlags;
   protected Boolean m_nodeRepoFilterEnabled;
+  protected Boolean m_devMode;
   
   protected DefaultAppStateEnt() {
     //for sub-classes
@@ -90,6 +91,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
     m_hasNodeRecommendationsEnabled = immutable(builder.m_hasNodeRecommendationsEnabled);
     m_featureFlags = immutable(builder.m_featureFlags);
     m_nodeRepoFilterEnabled = immutable(builder.m_nodeRepoFilterEnabled);
+    m_devMode = immutable(builder.m_devMode);
   }
   
    /**
@@ -107,7 +109,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
             return false;
         }
         DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_exampleProjects, ent.m_exampleProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags) && Objects.equals(m_nodeRepoFilterEnabled, ent.m_nodeRepoFilterEnabled);
+        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_exampleProjects, ent.m_exampleProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags) && Objects.equals(m_nodeRepoFilterEnabled, ent.m_nodeRepoFilterEnabled) && Objects.equals(m_devMode, ent.m_devMode);
     }
 
 
@@ -125,6 +127,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
                .append(m_hasNodeRecommendationsEnabled)
                .append(m_featureFlags)
                .append(m_nodeRepoFilterEnabled)
+               .append(m_devMode)
                .toHashCode();
    }
   
@@ -165,6 +168,11 @@ public class DefaultAppStateEnt implements AppStateEnt {
         return m_nodeRepoFilterEnabled;
   }
     
+  @Override
+  public Boolean isDevMode() {
+        return m_devMode;
+  }
+    
   
     public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
     
@@ -179,6 +187,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
         private Boolean m_hasNodeRecommendationsEnabled;
         private java.util.Map<String, Object> m_featureFlags;
         private Boolean m_nodeRepoFilterEnabled;
+        private Boolean m_devMode;
 
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects) {
@@ -219,6 +228,12 @@ public class DefaultAppStateEnt implements AppStateEnt {
         @Override
         public DefaultAppStateEntBuilder setNodeRepoFilterEnabled(Boolean nodeRepoFilterEnabled) {
              m_nodeRepoFilterEnabled = nodeRepoFilterEnabled;
+             return this;
+        }
+
+        @Override
+        public DefaultAppStateEntBuilder setDevMode(Boolean devMode) {
+             m_devMode = devMode;
              return this;
         }
 

@@ -71,6 +71,7 @@ import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
+import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -161,6 +162,7 @@ public final class AppStateEntityFactory {
             .setNodeRepoFilterEnabled(nodeRepoFilterEnabled) //
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) // This setting is always sent
             .setFeatureFlags(getFeatureFlags()) // This setting is always sent
+            .setDevMode(WebUIUtil.isInDevMode()) //
             .build();
 
     }

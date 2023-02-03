@@ -98,6 +98,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("nodeRepoFilterEnabled")
     public Boolean isNodeRepoFilterEnabled();
     
+    @Override
+    @JsonProperty("devMode")
+    public Boolean isDevMode();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -138,6 +142,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("nodeRepoFilterEnabled")
         public AppStateEntMixInBuilder setNodeRepoFilterEnabled(final Boolean nodeRepoFilterEnabled);
+        
+        @Override
+        @JsonProperty("devMode")
+        public AppStateEntMixInBuilder setDevMode(final Boolean devMode);
         
     }
 
