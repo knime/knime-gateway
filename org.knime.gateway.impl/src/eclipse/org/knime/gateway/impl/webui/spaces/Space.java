@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -229,11 +230,12 @@ public interface Space {
      * @param srcPath The source path of the data file to import
      * @param workflowGroupItemId The workflow group item ID
      * @param collisionHandling How to handle name collisions
+     * @param progressMonitor progress monitor
      * @return The imported space item entity
      * @throws IOException If the import failed
      */
     SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-        Space.NameCollisionHandling collisionHandling) throws IOException;
+        Space.NameCollisionHandling collisionHandling, IProgressMonitor progressMonitor) throws IOException;
 
     /**
      * Imports a workflow (group) to the specified workflow group.
@@ -264,4 +266,13 @@ public interface Space {
      * @throws NoSuchElementException If there is no workflow group for the given id.
      */
     boolean containsItemWithName(final String workflowGroupItemId, final String itemName) throws NoSuchElementException;
+
+    /**
+     * Returns the name of a space item.
+     *
+     * @param itemId The space item ID
+     * @return The space item's name
+     * @throws NoSuchElementException If no such item is present
+     */
+    String getItemName(String itemId);
 }

@@ -108,5 +108,4 @@ public interface SpaceProviders {
      * @return map of available {@link SpaceProvider}s; maps the space-provider-id to the space-provider.
      */
     Map<String, SpaceProvider> getProvidersMap();
-
 }

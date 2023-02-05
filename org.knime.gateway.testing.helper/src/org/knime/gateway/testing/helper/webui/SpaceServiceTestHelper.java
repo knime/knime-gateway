@@ -65,9 +65,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.hamcrest.MatcherAssert;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -305,9 +307,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public Map<String, Space> getSpaceMap() {
-                return Arrays.stream(spaces).collect(Collectors.toMap(Space::getId, s -> s));
+                return Arrays.stream(spaces).collect(Collectors.toMap(Space::getId, Function.identity()));
             }
-
         };
     }
 
@@ -393,7 +394,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-                final Space.NameCollisionHandling collisionHandling) throws IOException {
+                    final Space.NameCollisionHandling collisionHandling, final IProgressMonitor progress)
+                    throws IOException {
                 return null;
             }
 
@@ -407,6 +409,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public List<String> getAncestorItemIds(final String itemId) {
                 return List.of();
+            }
+
+            @Override
+            public String getItemName(final String itemId) {
+                return null;
             }
 
             @Override

@@ -64,6 +64,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowPersistor;
@@ -304,7 +305,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-        final NameCollisionHandling collisionHandling) throws IOException {
+        final NameCollisionHandling collisionHandling, final IProgressMonitor progress) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var fileName = srcPath.getFileName().toString();
 
@@ -441,13 +442,7 @@ public final class LocalWorkspace implements Space {
         return m_spaceItemPathAndTypeCache.determineItemIdOrGetFromCache(absolutePath);
     }
 
-    /**
-     * Returns the name of a space item
-     *
-     * @param itemId The space item ID
-     * @return The space items name
-     * @throws NoSuchElementException If no such item is present cache
-     */
+    @Override
     public String getItemName(final String itemId) throws NoSuchElementException {
         if (itemId.equals(ROOT_ITEM_ID)) {
             return ROOT_ITEM_ID;
