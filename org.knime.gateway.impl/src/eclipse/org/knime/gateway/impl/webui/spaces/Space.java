@@ -55,6 +55,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
@@ -85,6 +86,16 @@ public interface Space {
      * Id of the root 'workflow group'.
      */
     String ROOT_ITEM_ID = "root";
+
+    /**
+     * Default name for a newly created workflow.
+     */
+    String DEFAULT_WORKFLOW_NAME = "KNIME_project";
+
+    /**
+     * Default name for a newly created workflow groups.
+     */
+    String DEFAULT_WORKFLOW_GROUP_NAME = "Folder";
 
     /**
      * Name collision handling options.
@@ -275,4 +286,32 @@ public interface Space {
      * @throws NoSuchElementException If no such item is present
      */
     String getItemName(String itemId);
+
+    /**
+     * Generates unique space item names, preserves file extensions.
+     *
+     * @param taken predicate for determining whether a name is already taken in a space
+     * @param name initial recommendation for the item name
+     * @param isWorkflowOrWorkflowGroup {@code true} if the name is for a workflow(group), {@code false} otherwise
+     * @return the initial name if that doesn't exist, the unique one otherwise
+     */
+    static String generateUniqueSpaceItemName(final Predicate<String> taken, final String name,
+            final boolean isWorkflowOrWorkflowGroup) {
+        if (!taken.test(name)) {
+            return name;
+        } else {
+            // Ignore dots in workflow names
+            var lastIndexOfDot = isWorkflowOrWorkflowGroup ? -1 : name.lastIndexOf(".");
+            var fileExtension = lastIndexOfDot > -1 ? name.substring(lastIndexOfDot) : "";
+            var oldName = lastIndexOfDot > -1 ? name.substring(0, lastIndexOfDot) : name;
+            var counter = 0;
+            String newName;
+            do {
+                counter++;
+                // No brackets in workflow names
+                newName = isWorkflowOrWorkflowGroup ? (oldName + counter) : (oldName + "(" + counter + ")");
+            } while (taken.test(newName + fileExtension));
+            return newName + fileExtension;
+        }
+    }
 }

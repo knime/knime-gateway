@@ -98,16 +98,6 @@ public final class LocalWorkspace implements Space {
     public static final String LOCAL_WORKSPACE_ID = "local";
 
     /**
-     * Default name for a newly created workflow.
-     */
-    public static final String DEFAULT_WORKFLOW_NAME = "KNIME_project";
-
-    /**
-     * Default name for a newly created workflow groups.
-     */
-    public static final String DEFAULT_WORKFLOW_GROUP_NAME = "Folder";
-
-    /**
      * Holds both, the item ID to path map and the path to type map
      */
     final SpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache = new SpaceItemPathAndTypeCache(); // Package scope for testing
@@ -157,7 +147,8 @@ public final class LocalWorkspace implements Space {
     @Override
     public SpaceItemEnt createWorkflowGroup(final String workflowGroupItemId) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
-        var workflowGroupName = generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_GROUP_NAME, false);
+        var workflowGroupName =
+                generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_GROUP_NAME, false);
         var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowGroupName));
         // TODO(NXT-1484) create a meta info file for the folder
         return getSpaceItemEntFromPathAndUpdateCache(directoryPath);
@@ -461,21 +452,9 @@ public final class LocalWorkspace implements Space {
      * @return The initial name if that doesn't exist, the unique one otherwise.
      */
     private static String generateUniqueSpaceItemName(final Path workflowGroup, final String name,
-        final boolean isWorkflowOrWorkflowGroup) {
-        if (!Files.exists(workflowGroup.resolve(name))) {
-            return name;
-        } else {
-            var lastIndexOfDot = isWorkflowOrWorkflowGroup ? -1 : name.lastIndexOf("."); // Ignore dots in workflow names
-            var fileExtension = lastIndexOfDot > -1 ? name.substring(lastIndexOfDot) : "";
-            var oldName = lastIndexOfDot > -1 ? name.substring(0, lastIndexOfDot) : name;
-            var counter = 0;
-            String newName;
-            do {
-                counter++;
-                newName = isWorkflowOrWorkflowGroup ? (oldName + counter) : (oldName + "(" + counter + ")"); // No brackets in workflow names
-            } while (Files.exists(workflowGroup.resolve(newName + fileExtension)));
-            return newName + fileExtension;
-        }
+            final boolean isWorkflowOrWorkflowGroup) {
+        return Space.generateUniqueSpaceItemName(newName -> Files.exists(workflowGroup.resolve(newName)), name,
+            isWorkflowOrWorkflowGroup);
     }
 
     private void assertAllItemIdsExistOrElseThrow(final List<String> itemIds) throws NoSuchElementException {
