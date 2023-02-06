@@ -63,13 +63,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.MatcherAssert;
 import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
@@ -79,11 +82,14 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.WorkflowProject;
+import org.knime.gateway.impl.project.WorkflowProject.Origin;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
-import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
@@ -108,14 +114,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Test the interfacing between space service, space providers and spaces w.r.t renaming.
      */
     public void testRenameSpaceItem() throws Exception {
-        String spaceId = "some_space_id";
-        String providerId = "some_provider_id";
-        String itemId = "some_item_id";
-        String newName = "some_new_name";
+        var spaceId = "some_space_id";
+        var providerId = "some_provider_id";
+        var itemId = "some_item_id";
+        var newName = "some_new_name";
 
-        Space mockedSpace = mock(Space.class);
+        var mockedSpace = mock(Space.class);
         when(mockedSpace.getId()).thenReturn(spaceId);
-        SpaceItemEnt newSpaceItemEnt =
+        var newSpaceItemEnt =
             EntityFactory.Space.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
         when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
 
@@ -153,7 +159,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // find some arbitrary item to rename
         var group = space.listWorkflowGroup(Space.ROOT_ITEM_ID);
         var originalItemEnt = group.getItems().stream() //
-            .filter(itemEnt -> itemEnt.getType().equals(SpaceItemEnt.TypeEnum.WORKFLOW)) //
+            .filter(itemEnt -> itemEnt.getType() == SpaceItemEnt.TypeEnum.WORKFLOW) //
             .findAny().orElseThrow();
         var itemPathBeforeRename = space.toLocalAbsolutePath(null, originalItemEnt.getId());
 
@@ -217,6 +223,13 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
     }
 
+    private static String findItemId(final WorkflowGroupContentEnt groupContent, final String name) {
+        return groupContent.getItems().stream() //
+            .filter(e -> name.equals(e.getName())) //
+            .map(SpaceItemEnt::getId) //
+            .findFirst() //
+            .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
+    }
     /**
      * Tests {@link SpaceService#listWorkflowGroup(String, String, String)} for the local workspace.
      *
@@ -229,19 +242,19 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_to_list_root");
 
-        var group1Id = getItemIdForItemWithName(root.getItems(), "Group1");
+        var group1Id = findItemId(root, "Group1");
         var group1 = ss().listWorkflowGroup(spaceId, providerId, group1Id);
         cr(group1, "workspace_to_list_group1");
 
-        var group11Id = getItemIdForItemWithName(group1.getItems(), "Group11");
+        var group11Id = findItemId(group1, "Group11");
         var group11 = ss().listWorkflowGroup(spaceId, providerId, group11Id);
         cr(group11, "workspace_to_list_group11");
 
-        var emptyGroupId = getItemIdForItemWithName(root.getItems(), "EmptyGroup");
+        var emptyGroupId = findItemId(root, "EmptyGroup");
         var emptyGroup = ss().listWorkflowGroup(spaceId, providerId, emptyGroupId);
         cr(emptyGroup, "workspace_to_list_empty_group");
 
-        var dataTxtId = getItemIdForItemWithName(root.getItems(), "data.txt");
+        var dataTxtId = findItemId(root, "data.txt");
         assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, providerId, dataTxtId));
 
         assertThrows(InvalidRequestException.class,
@@ -373,19 +386,32 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId) throws IOException {
+            public void moveItems(final List<String> itemIds, final String destWorkflowGroupItemId,
+                final Space.NameCollisionHandling collisionHandling) throws IOException {
+                // do nothing
+            }
+
+            @Override
+            public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
+                final Space.NameCollisionHandling collisionHandling) throws IOException {
                 return null;
             }
 
             @Override
-            public SpaceItemEnt importWorkflows(final Path srcPath, final String workflowGroupItemId,
-                final Consumer<Path> createMetaInfoFileFor) throws IOException {
+            public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
+                final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling)
+                throws IOException {
                 return null;
             }
 
             @Override
             public List<String> getAncestorItemIds(final String itemId) {
                 return List.of();
+            }
+
+            @Override
+            public boolean containsItemWithName(final String workflowGroupItemId, final String itemName) {
+                return false;
             }
         };
     }
@@ -418,10 +444,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return providerId;
     }
 
-    private static String getItemIdForItemWithName(final List<SpaceItemEnt> items, final String name) {
-        return items.stream().filter(i -> i.getName().equals(name)).map(SpaceItemEnt::getId).findFirst().orElse(null);
-    }
-
     private static Path getTestWorkspacePath(final String name) throws IOException {
         return CoreUtil.resolveToFile("/files/" + name, SpaceServiceTestHelper.class).toPath();
     }
@@ -443,13 +465,13 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             var level0 = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
             cr(level0, "workspace_to_create_level0");
 
-            var level1Id = getItemIdForItemWithName(level0.getItems(), "level1");
+            var level1Id = findItemId(level0, "level1");
             var wf1 = ss().createWorkflow(spaceId, providerId, level1Id);
             cr(wf1, "created_workflow_1");
             var level1 = ss().listWorkflowGroup(spaceId, providerId, level1Id);
             cr(level1, "workspace_to_create_level1");
 
-            var level2Id = getItemIdForItemWithName(level1.getItems(), "level2");
+            var level2Id = findItemId(level1, "level2");
             var wf2 = ss().createWorkflow(spaceId, providerId, level2Id);
             cr(wf2, "created_workflow_2");
             var level2 = ss().listWorkflowGroup(spaceId, providerId, level2Id);
@@ -466,7 +488,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 .resolve("level2")//
                 .resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME);
             for (var path : List.of(pathWf0, pathWf1, pathWf2)) {
-                FileUtils.deleteDirectory(path.toFile()); // To delete directory recursively
+                FileUtils.deleteQuietly(path.toFile()); // To delete directory recursively
             }
         }
     }
@@ -477,7 +499,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testDeleteItemForLocalWorkspace() throws Exception {
-        var testWorkspacePath = getTestWorkspacePath("test_workspace_to_delete");
+        var testWorkspacePath = FileUtil.createTempDir("delete").toPath();
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
         var workflowGroupName = "workflow_group";
@@ -492,8 +514,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Create a workflow group with some content and delete it
         var workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
         Files.createDirectory(workflowGroupPath);
-        var workflowGroupId = getItemIdForItemWithName(
-            ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID).getItems(), workflowGroupName);
+        var workflowGroupId =
+            findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         Files.createFile(workflowGroupPath.resolve(fileName));
@@ -503,8 +525,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Delete a single data file
         var filePath = testWorkspacePath.resolve(fileName);
         Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
-        var fileId = getItemIdForItemWithName(
-            ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID).getItems(), fileName);
+        var fileId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
         ss().deleteItems(spaceId, providerId, List.of(fileId));
         assertThat("File must not exist anymore", !Files.exists(filePath));
 
@@ -527,8 +548,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
         workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
         Files.createDirectory(workflowGroupPath);
-        workflowGroupId = getItemIdForItemWithName(
-            ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID).getItems(), workflowGroupName);
+        workflowGroupId =
+            findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         ss().createWorkflow(spaceId, providerId, workflowGroupId);
         Files.createFile(workflowGroupPath.resolve(fileName));
@@ -576,4 +597,199 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             PathUtils.deleteDirectoryIfExists(pathWfg0);
         }
     }
+
+    /**
+     * Tests {@link SpaceService#moveItems(String, String, List, String)} for the local workspace.
+     *
+     * @throws Exception
+     */
+    public void testMoveItemsLocal() throws Exception {
+        var testWorkspacePath = FileUtil.createTempDir("move").toPath();
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var fileName = "testfile.txt";
+        var level1 = "level1";
+        var level1Path = testWorkspacePath.resolve(level1);
+        var level2 = "level2";
+        var level2Path = level1Path.resolve(level2);
+
+        try {
+            // Create a workflow, a workflow group and a file
+            var wfName = LocalWorkspace.DEFAULT_WORKFLOW_NAME;
+            var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+            Files.createDirectory(level1Path);
+            var level1Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), level1);
+            var filePathLevel0 = testWorkspacePath.resolve(fileName);
+            Files.createFile(filePathLevel0);
+            var fileId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
+            var wfPathLevel0 = testWorkspacePath.resolve(wfName);
+
+            // Move workflow into level1
+            ss().moveItems(spaceId, providerId, List.of(wf.getId()), level1Id, Space.NameCollisionHandling.NOOP.toString());
+            assertThat("The newly created workflow didn't move out of <root>", Files.notExists(wfPathLevel0));
+            var wfPathLevel1 = level1Path.resolve(wfName);
+            assertThat("The newly created workflow didn't move to <level1>", Files.exists(wfPathLevel1));
+
+            // Move file into level1
+            ss().moveItems(spaceId, providerId, List.of(fileId), level1Id, Space.NameCollisionHandling.NOOP.toString());
+            assertThat("The newly created file didn't move out of <root>", Files.notExists(filePathLevel0));
+            var filePathLevel1 = level1Path.resolve(fileName);
+            assertThat("The newly created file didn't move to <level1>", Files.exists(filePathLevel1));
+
+            // Move workflow and file into level2
+            Files.createDirectory(level2Path);
+            var level2Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), level2);
+            var itemsToMove = List.of(//
+                findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), LocalWorkspace.DEFAULT_WORKFLOW_NAME), //
+                findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), fileName)//
+            );
+            ss().moveItems(spaceId, providerId, itemsToMove, level2Id, Space.NameCollisionHandling.NOOP.toString());
+            var wfPathLevel2 = level2Path.resolve(wfName);
+            assertThat("The workflow didn't move to <level2>", Files.exists(wfPathLevel2));
+            var filePathLevel2 = level2Path.resolve(fileName);
+            assertThat("The file didn't move to <level2>", Files.exists(filePathLevel2));
+
+            // Moving items that do not exist
+            assertThrows("Invalid IDs cannot be moved", InvalidRequestException.class, () -> ss().moveItems(spaceId,
+                providerId, List.of("a", "b", "c"), Space.ROOT_ITEM_ID, Space.NameCollisionHandling.NOOP.toString()));
+
+            // Moving the root
+            assertThrows("The workspace root cannot be moved", InvalidRequestException.class,
+                () -> ss().moveItems(spaceId, providerId, List.of(Space.ROOT_ITEM_ID), level1Id,
+                    Space.NameCollisionHandling.NOOP.toString()));
+
+            // Move item to itself
+            assertThrows("Cannot move an item to itself", InvalidRequestException.class, () -> ss().moveItems(spaceId,
+                providerId, List.of(level1Id), level1Id, Space.NameCollisionHandling.NOOP.toString()));
+        } finally {
+            FileUtils.deleteQuietly(testWorkspacePath.resolve(fileName).toFile());
+            FileUtils.deleteQuietly(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME).toFile());
+            FileUtils.deleteQuietly(level1Path.toFile());
+        }
+    }
+
+    public void testMoveItemsWithOpenWorkflowLocal() throws Exception {
+        var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var wfName = "workflow";
+        var wfGroupName = "EmptyGroup";
+        var fileName = "data.txt";
+
+        // Find space IDs
+        var wfId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), wfName);
+        var wfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), wfGroupName);
+        var fileId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
+
+        // Add open project to workflow project manager
+        var workflowProject = createWorkflowProject(providerId, spaceId, wfId);
+        WorkflowProjectManager.getInstance().addWorkflowProject("some_id", workflowProject);
+
+        // Try to move data file and open workflow
+        assertThrows("Moving an open workflow should not work", ServiceExceptions.InvalidRequestException.class,
+            () -> ss().moveItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
+                Space.NameCollisionHandling.NOOP.toString()));
+    }
+
+    private static WorkflowProject createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
+        var origin = new Origin() {
+
+            @Override
+            public String getProviderId() {
+                return providerId;
+            }
+
+            @Override
+            public String getSpaceId() {
+                return spaceId;
+            }
+
+            @Override
+            public String getItemId() {
+                return itemId;
+            }
+        };
+        return new WorkflowProject() {
+
+            @Override
+            public WorkflowManager openProject() {
+                return null;
+            }
+
+            @Override
+            public String getName() {
+                return "some_name";
+            }
+
+            @Override
+            public String getID() {
+                return "some_id";
+            }
+
+            @Override
+            public Optional<Origin> getOrigin() {
+                return Optional.of(origin);
+            }
+        };
+    }
+
+    public void testMoveItemsWithNameCollisionsLocal() throws Exception {
+        var testWorkspacePath = FileUtil.createTempDir("move-with-collisions").toPath();
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var level1 = "level1";
+        var level1Path = testWorkspacePath.resolve(level1);
+        var fileName = "testfile.txt";
+
+        try {
+            // Create folders, files and workflows
+            Files.createFile(testWorkspacePath.resolve(fileName));
+            Files.createDirectory(level1Path);
+            Files.createFile(level1Path.resolve(fileName));
+            var level1Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), level1);
+            var wfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+            ss().createWorkflow(spaceId, providerId, level1Id); // This space item is not needed
+
+            // Try to move without name collision handling
+            var fileIdLevel0 = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
+            assertThrows("Cannot move a file that already exists at the destination",
+                ServiceExceptions.IOException.class, () -> ss().moveItems(spaceId, providerId, List.of(fileIdLevel0),
+                    level1Id, Space.NameCollisionHandling.NOOP.toString()));
+            assertThrows("Cannot move a workflow that already exists at the destination",
+                ServiceExceptions.IOException.class, () -> ss().moveItems(spaceId, providerId,
+                    List.of(wfLevel0.getId()), level1Id, Space.NameCollisionHandling.NOOP.toString()));
+
+            // Move with overwrite collision handling
+            ss().moveItems(spaceId, providerId, List.of(fileIdLevel0, wfLevel0.getId()), level1Id,
+                Space.NameCollisionHandling.OVERWRITE.toString());
+            assertThat("The newly created file didn't move out of <root>",
+                Files.notExists(testWorkspacePath.resolve(fileName)));
+            assertThat("The newly created file didn't move to <level1>", Files.exists(level1Path.resolve(fileName)));
+            assertThat("The newly created workflow didn't move out of <root>",
+                Files.notExists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+            assertThat("The newly created workflow didn't move to <level1>",
+                Files.exists(level1Path.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+
+            // Move with auto-rename collision handling
+            Files.createFile(testWorkspacePath.resolve(fileName));
+            var anotherWfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+            var anotherFileIdLevel0 =
+                findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
+            ss().moveItems(spaceId, providerId, List.of(anotherFileIdLevel0, anotherWfLevel0.getId()), level1Id,
+                Space.NameCollisionHandling.AUTORENAME.toString());
+            assertThat("The newly created file didn't move out of <root>",
+                Files.notExists(testWorkspacePath.resolve(fileName)));
+            assertThat("The newly created file didn't move to <level1>",
+                Files.exists(level1Path.resolve("testfile(1).txt")));
+            assertThat("The newly created workflow didn't move out of <root>",
+                Files.notExists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+            assertThat("The newly created workflow didn't move to <level1>",
+                Files.exists(level1Path.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME + "1")));
+        } finally {
+            FileUtils.deleteQuietly(testWorkspacePath.resolve(fileName).toFile());
+            FileUtils.deleteQuietly(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME).toFile());
+            FileUtils.deleteQuietly(level1Path.toFile());
+        }
+    }
+
 }

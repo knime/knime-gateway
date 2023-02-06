@@ -64,7 +64,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
@@ -77,7 +77,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
@@ -90,13 +90,13 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param spaceItemIds A list of identifiers of items in the space.
+     * @param itemIds A list of identifiers of items in the space.
      *
      * 
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> spaceItemIds)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Mainly returns the spaces provided by this space-provider.
@@ -113,7 +113,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
@@ -122,11 +122,26 @@ public interface SpaceService extends GatewayService {
     WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
         
     /**
+     * Move a space items to a different workflow group within its space.
+     *
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param spaceProviderId Identifies a space-provider.
+     * @param itemIds A list of identifiers of items in the space.
+     * @param destWorkflowGroupItemId The destination workflow group item id, therefore the new parent.
+     * @param collisionHandling How to solve potential name collisions.
+     *
+     * 
+     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    void moveItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destWorkflowGroupItemId, String collisionHandling)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+        
+    /**
      * Rename a space Item
      *
      * @param spaceProviderId Identifies a space-provider.
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
-     * @param itemId The unique identifier of the workflow group to get the contained space items for. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
      * @param newName The new name of the space item
      *
      * @return the result

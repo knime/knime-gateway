@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -61,7 +62,12 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.WorkflowProject;
+import org.knime.gateway.impl.project.WorkflowProject.Origin;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -82,6 +88,9 @@ public class DefaultSpaceService implements SpaceService {
 
     private final SpaceProviders m_spaceProviders =
         ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+
+    private final WorkflowProjectManager m_workflowProjectManager =
+            ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
 
     DefaultSpaceService() {
         //
@@ -114,15 +123,14 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
-        final String workflowGroupId)
-        throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
+        final String workflowGroupId) throws InvalidRequestException, ServiceExceptions.IOException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId)
                 .listWorkflowGroup(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {
-            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 
@@ -131,37 +139,73 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId)
-        throws InvalidRequestException, org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException {
+        throws InvalidRequestException, ServiceExceptions.IOException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).createWorkflow(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {
-            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
-        throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
+        throws ServiceExceptions.IOException, InvalidRequestException {
         try {
+            // TODO: Check for open workflows in local workspace (included in NXT-1481)
             SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).deleteItems(spaceItemIds);
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SpaceItemEnt createWorkflowGroup(final String spaceId, final String spaceProviderId, final String itemId)
-        throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException {
+        throws ServiceExceptions.IOException, InvalidRequestException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).createWorkflowGroup(itemId);
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void moveItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
+        final String destWorkflowGroupItemId, final String collisionHandling)
+        throws ServiceExceptions.IOException, InvalidRequestException {
+        try {
+            var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
+            if (space instanceof LocalWorkspace) {
+                var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(), itemIds, space);
+                if (!workflowsToClose.isEmpty()) {
+                    throw new InvalidRequestException(
+                        "Not all items can be moved. The following workflows need to be closed first: "
+                            + workflowsToClose);
+                }
+            }
+            var collisionHandlingEnum = Space.NameCollisionHandling.toEnum(collisionHandling);
+            if (collisionHandlingEnum == Space.NameCollisionHandling.CANCEL) {
+                throw new InvalidRequestException("This method should not be called with collisionHandling == CANCEL");
+            }
+            space.moveItems(itemIds, destWorkflowGroupItemId, collisionHandlingEnum);
+        } catch (NoSuchElementException | UnsupportedOperationException e) {
+            throw new InvalidRequestException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 
@@ -170,17 +214,36 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
-            final String newName)
-            throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException,
-            ServiceExceptions.OperationNotAllowedException {
+        final String newName)
+        throws ServiceExceptions.IOException, InvalidRequestException, ServiceExceptions.OperationNotAllowedException {
         try {
+            // TODO: Check for open workflows in local workspace (included in NXT-1481)
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameItem(itemId, newName);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Could not access space", e);
         } catch (IOException e) {
-            throw new org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 
+    private Stream<String> getOpenWorkflowIds() {
+        return m_workflowProjectManager.getWorkflowProjectsIds().stream()//
+            .flatMap(id -> m_workflowProjectManager.getWorkflowProject(id)//
+                .flatMap(WorkflowProject::getOrigin)//
+                .map(Origin::getItemId)//
+                .stream());
+    }
+
+    private static List<String> checkForWorkflowsToClose(final Stream<String> openWorkflowIds,
+        final List<String> itemIds, final Space space) {
+        return openWorkflowIds//
+            .filter(workflowId -> {
+                var isOpenedDirectly = itemIds.contains(workflowId);
+                var ancestorsItemIds = space.getAncestorItemIds(workflowId);
+                var hasOpenedDescendants = ancestorsItemIds.stream().anyMatch(itemIds::contains);
+                return isOpenedDirectly || hasOpenedDescendants;
+            })//
+            .collect(Collectors.toList());
+    }
 
 }

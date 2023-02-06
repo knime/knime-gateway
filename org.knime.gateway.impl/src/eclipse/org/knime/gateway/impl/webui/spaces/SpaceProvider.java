@@ -52,6 +52,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
+
 /**
  * Represents an entity that holds spaces. E.g. a Hub instance.
  *

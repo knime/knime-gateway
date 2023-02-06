@@ -50,7 +50,7 @@ package org.knime.gateway.impl.webui;
 
 import java.util.List;
 
-import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
  * Provides information about example projects, e.g., shown at the get-started page.

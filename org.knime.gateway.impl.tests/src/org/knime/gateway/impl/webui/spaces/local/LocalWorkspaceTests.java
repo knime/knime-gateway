@@ -46,7 +46,7 @@
  * History
  *   Jan 24, 2023 (benjamin): created
  */
-package org.knime.gateway.impl.webui.spaces;
+package org.knime.gateway.impl.webui.spaces.local;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -61,6 +61,7 @@ import java.util.stream.Collectors;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.core.util.PathUtils;
+import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
 /**
@@ -69,6 +70,7 @@ import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
  *
  * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 public final class LocalWorkspaceTests {
 
@@ -153,10 +155,55 @@ public final class LocalWorkspaceTests {
             List.of(fileNotToBeDeleted, workflowInRoot, groupNotToBeDeleted));
     }
 
+    /**
+     * Tests that {@link LocalWorkspace#moveItems(List, String, String)} updates the {@link SpaceItemPathAndTypeCache}
+     * accordingly.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testMoveItemsUpdatesCache() throws IOException {
+        var workspaceFolder = PathUtils.createTempDir("workspace");
+        var workspace = new LocalWorkspace(workspaceFolder);
+
+        // Add some items to the root
+        var fileNotToBeMoved = createFile(workspaceFolder, "file_not_to_be_moved.txt");
+        var fileToBeMoved = createFile(workspaceFolder, "file_to_be_moved.txt");
+        var fileToBeMovedId = findItemId(workspace, Space.ROOT_ITEM_ID, fileNotToBeMoved.getFileName().toString());
+        var workflowInRoot = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID);
+        var workflowInRootToBeMoved = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID);
+        var workflowInRootToBeMovedId =
+            findItemId(workspace, Space.ROOT_ITEM_ID, workflowInRootToBeMoved.getFileName().toString());
+
+        // Create a workflow group
+        var workflowGroup = workspaceFolder.resolve("workflowGroup");
+        Files.createDirectories(workflowGroup);
+        var workflowGroupId = findItemId(workspace, Space.ROOT_ITEM_ID, workflowGroup.getFileName().toString());
+
+        assertIdAndTypeMapContain(workspace, fileNotToBeMoved, fileToBeMoved, workflowInRootToBeMoved, workflowInRoot,
+            workflowGroup);
+
+        // Move file and workflow
+        workspace.moveItems(List.of(fileToBeMovedId, workflowInRootToBeMovedId), workflowGroupId,
+            Space.NameCollisionHandling.NOOP);
+
+        // Assert paths are updated
+        var newfilePath = workspace.m_spaceItemPathAndTypeCache.getPath(fileToBeMovedId);
+        assertThat("Workflow path should be the new parent of the moved file path", newfilePath.getParent(),
+            equalTo(workflowGroup));
+        var newWorkflowPath = workspace.m_spaceItemPathAndTypeCache.getPath(workflowInRootToBeMovedId);
+        assertThat("Workflow path should be the new parent of the moved workflow path", newWorkflowPath.getParent(),
+            equalTo(workflowGroup));
+    }
+
+    // TODO: Add test for {@link LocalWorkspace#importFile(...)}
+
+    // TODO: Add test for {@link LocalWorkspace#importWorkflowOrWorkflowGroup(...)}
+
     private static void deleteAndCheckMaps(final LocalWorkspace workspace, final List<Path> itemsToDelete,
         final List<Path> itemsToKeep) throws IOException {
         var idsToDelete =
-            workspace.m_itemIdToPathMap.entrySet().stream().filter(e -> itemsToDelete.contains(e.getValue()))
+            workspace.m_spaceItemPathAndTypeCache.entrySet().stream().filter(e -> itemsToDelete.contains(e.getValue()))
                 .map(e -> e.getKey()).map(i -> "" + i).collect(Collectors.toList());
         workspace.deleteItems(idsToDelete);
         assertIdAndTypeMapContain(workspace, itemsToKeep.toArray(Path[]::new));
@@ -180,13 +227,13 @@ public final class LocalWorkspaceTests {
     }
 
     private static void assertIdAndTypeMapContain(final LocalWorkspace workspace, final Path... expectedPaths) {
-        assertThat("must be expected amount of ids", workspace.m_itemIdToPathMap.size(), equalTo(expectedPaths.length));
+        assertThat("must be expected amount of ids", workspace.m_spaceItemPathAndTypeCache.sizeOfItemIdToPathMap(), equalTo(expectedPaths.length));
         // NB: The root is also in the map
-        assertThat("must be expected anount of cached types", workspace.m_pathToTypeMap.size(),
+        assertThat("must be expected anount of cached types", workspace.m_spaceItemPathAndTypeCache.sizeOfPathToTypeMap(),
             equalTo(expectedPaths.length + 1));
         for (var path : expectedPaths) {
-            assertThat("ids map must contain the expected paths", workspace.m_itemIdToPathMap.values().contains(path));
-            assertThat("types map must contain the expected paths", workspace.m_pathToTypeMap.keySet().contains(path));
+            assertThat("ids map must contain the expected paths", workspace.m_spaceItemPathAndTypeCache.containsValue(path));
+            assertThat("types map must contain the expected paths", workspace.m_spaceItemPathAndTypeCache.containsKey(path));
         }
     }
 }

@@ -114,8 +114,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public void deleteItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, java.util.List<String> spaceItemIds)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
-        m_service.get().deleteItems(spaceId, spaceProviderId, spaceItemIds);    
+    public void deleteItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, java.util.List<String> itemIds)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        m_service.get().deleteItems(spaceId, spaceProviderId, itemIds);    
     }
 
 	/**
@@ -144,6 +144,21 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     })
     public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException {
         return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, itemId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "moveItems")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
+            data = "IOException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public void moveItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, java.util.List<String> itemIds, String destWorkflowGroupItemId, String collisionHandling)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        m_service.get().moveItems(spaceId, spaceProviderId, itemIds, destWorkflowGroupItemId, collisionHandling);    
     }
 
 	/**

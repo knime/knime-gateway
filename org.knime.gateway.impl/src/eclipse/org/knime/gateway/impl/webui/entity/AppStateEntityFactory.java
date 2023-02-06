@@ -91,8 +91,8 @@ import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.

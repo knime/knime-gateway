@@ -73,10 +73,10 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
-import org.knime.gateway.impl.webui.spaces.LocalWorkspace;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
 /**

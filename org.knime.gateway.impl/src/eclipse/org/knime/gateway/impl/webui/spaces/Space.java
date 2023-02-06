@@ -86,6 +86,38 @@ public interface Space {
     String ROOT_ITEM_ID = "root";
 
     /**
+     * Name collision handling options.
+     */
+    enum NameCollisionHandling {
+
+            /** Nothing needs to be done */
+            NOOP,
+
+            /** Do not proceed, cancel operation instead */
+            CANCEL,
+
+            /** Automatically rename items with identical names */
+            AUTORENAME,
+
+            /** Overwrite items with identical names */
+            OVERWRITE;
+
+        public static NameCollisionHandling toEnum(final String label) throws NoSuchElementException {
+            if (label.equals(NOOP.toString())) {
+                return NOOP;
+            } else if (label.equals(CANCEL.toString())) {
+                return CANCEL;
+            } else if (label.equals(AUTORENAME.toString())) {
+                return AUTORENAME;
+            } else if (label.equals(OVERWRITE.toString())) {
+                return OVERWRITE;
+            } else {
+                throw new NoSuchElementException("There is no name collision handling enum for " + label);
+            }
+        }
+    }
+
+    /**
      * @return a space id unique within a {@link SpaceProvider}
      */
     String getId();
@@ -190,19 +222,33 @@ public interface Space {
      *
      * @param itemIds item IDs
      * @throws IOException If there was a problem deleting the items
-     * @throws NoSuchElementException If one of the given item ids does not exist
+     * @throws NoSuchElementException If one of the given item IDs does not exist
      */
     void deleteItems(List<String> itemIds) throws IOException;
+
+    /**
+     * Moves the items to the new location within the space.
+     *
+     * @param itemIds The item IDs
+     * @param destWorkflowGroupItemId The ID of the new parent item
+     * @param collisionHandling How to handle name collisions
+     * @throws IOException If there was a problem moving the items
+     * @throws NoSuchElementException If one of the given item IDs does not exist
+     */
+    void moveItems(List<String> itemIds, String destWorkflowGroupItemId, Space.NameCollisionHandling collisionHandling)
+        throws IOException;
 
     /**
      * Imports a data file to a workflow group.
      *
      * @param srcPath The source path of the data file to import
      * @param workflowGroupItemId The workflow group item ID
+     * @param collisionHandling How to handle name collisions
      * @return The imported space item entity
      * @throws IOException If the import failed
      */
-    SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId) throws IOException;
+    SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
+        Space.NameCollisionHandling collisionHandling) throws IOException;
 
     /**
      * Imports a workflow (group) to the specified workflow group.
@@ -210,11 +256,12 @@ public interface Space {
      * @param srcPath The source path of the *.knwf or *.knar file
      * @param workflowGroupItemId The workflow group item ID
      * @param createMetaInfoFileFor Consumer to create the necessary `MetaInfoFile` for an imported workflow (group)
+     * @param collisionHandling How to handle name collisions
      * @return The imported space item entity
      * @throws IOException If the import failed
      */
-    SpaceItemEnt importWorkflows(final Path srcPath, final String workflowGroupItemId,
-        final Consumer<Path> createMetaInfoFileFor) throws IOException;
+    SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
+        final Consumer<Path> createMetaInfoFileFor, Space.NameCollisionHandling collisionHandling) throws IOException;
 
     /**
      * @param itemId the id of the item to get the ancestors for
@@ -223,4 +270,13 @@ public interface Space {
      */
     List<String> getAncestorItemIds(final String itemId);
 
+    /**
+     * Checks whether a certain workflow group (or the workspace root) already contains an item with the given name.
+     *
+     * @param workflowGroupItemId The workflow group item ID
+     * @param itemName The item name to check
+     * @return Returns {@code true} if an item with that name already exists, {@code false} otherwise.
+     * @throws NoSuchElementException If there is no workflow group for the given id.
+     */
+    boolean containsItemWithName(final String workflowGroupItemId, final String itemName) throws NoSuchElementException;
 }

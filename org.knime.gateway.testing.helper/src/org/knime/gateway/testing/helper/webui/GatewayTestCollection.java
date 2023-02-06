@@ -205,6 +205,12 @@ public final class GatewayTestCollection {
             (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameRootLocal());
         res.put("testCreateWorkflowGroupForLocalWorkspace",
             (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testCreateWorkflowGroupForLocalWorkspace());
+        res.put("testMoveItemsLocal",
+            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testMoveItemsLocal());
+        res.put("testMoveItemsWithOpenWorkflowLocal",
+            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testMoveItemsWithOpenWorkflowLocal());
+        res.put("testMoveItemsWithNameCollisionsLocal",
+            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testMoveItemsWithNameCollisionsLocal());
 
         return res;
     }
