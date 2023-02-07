@@ -102,19 +102,6 @@ public interface Space {
             /** Overwrite items with identical names */
             OVERWRITE;
 
-        public static NameCollisionHandling toEnum(final String label) throws NoSuchElementException {
-            if (label.equals(NOOP.toString())) {
-                return NOOP;
-            } else if (label.equals(CANCEL.toString())) {
-                return CANCEL;
-            } else if (label.equals(AUTORENAME.toString())) {
-                return AUTORENAME;
-            } else if (label.equals(OVERWRITE.toString())) {
-                return OVERWRITE;
-            } else {
-                throw new NoSuchElementException("There is no name collision handling enum for " + label);
-            }
-        }
     }
 
     /**

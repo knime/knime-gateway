@@ -197,9 +197,10 @@ public class DefaultSpaceService implements SpaceService {
                             + workflowsToClose);
                 }
             }
-            var collisionHandlingEnum = Space.NameCollisionHandling.toEnum(collisionHandling);
+            var collisionHandlingEnum = Space.NameCollisionHandling.valueOf(collisionHandling);
             if (collisionHandlingEnum == Space.NameCollisionHandling.CANCEL) {
-                throw new InvalidRequestException("This method should not be called with collisionHandling == CANCEL");
+                throw new InvalidRequestException(
+                    "This method should not be called with collisionHandling == \"CANCEL\"");
             }
             space.moveItems(itemIds, destWorkflowGroupItemId, collisionHandlingEnum);
         } catch (NoSuchElementException | UnsupportedOperationException e) {

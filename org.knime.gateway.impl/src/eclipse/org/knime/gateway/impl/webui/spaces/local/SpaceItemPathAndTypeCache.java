@@ -69,7 +69,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
  * @author Benjamin Moser
  * @author Kai Franze, KNIME GmbH
  */
-public class SpaceItemPathAndTypeCache {
+class SpaceItemPathAndTypeCache {
 
         private final Map<String, Path> m_itemIdToPathMap = new HashMap<>();
 
