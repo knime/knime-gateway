@@ -93,9 +93,6 @@ public interface Space {
             /** Nothing needs to be done */
             NOOP,
 
-            /** Do not proceed, cancel operation instead */
-            CANCEL,
-
             /** Automatically rename items with identical names */
             AUTORENAME,
 

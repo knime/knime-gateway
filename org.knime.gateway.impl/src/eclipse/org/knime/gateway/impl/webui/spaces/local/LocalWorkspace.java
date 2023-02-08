@@ -140,7 +140,7 @@ public final class LocalWorkspace implements Space {
     public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
         var absolutePath = getAbsolutePath(workflowGroupItemId);
         return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
-            this::getItemId, m_spaceItemPathAndTypeCache::cacheOrGetItemTypeFromCache,
+            this::getItemId, m_spaceItemPathAndTypeCache::determineTypeOrGetFromCache,
             LocalWorkspace::isValidWorkspaceItem, ITEM_COMPARATOR);
     }
 
@@ -300,7 +300,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-        final Space.NameCollisionHandling collisionHandling) throws IOException {
+        final NameCollisionHandling collisionHandling) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var fileName = srcPath.getFileName().toString();
 
@@ -392,10 +392,10 @@ public final class LocalWorkspace implements Space {
         return Files.move(srcPath, destPath); // Moves the file/directory and returns its destination path
     }
 
-    private SpaceItemEnt getSpaceItemEntFromPathAndUpdateCache(final Path spaceItemPath) {
-        var id = m_spaceItemPathAndTypeCache.cacheAndGetItemIdFromCache(spaceItemPath);
-        var type = m_spaceItemPathAndTypeCache.cacheOrGetItemTypeFromCache(spaceItemPath);
-        return EntityFactory.Space.buildLocalSpaceItemEnt(spaceItemPath, m_localWorkspaceRootPath, id, type);
+    private SpaceItemEnt getSpaceItemEntFromPathAndUpdateCache(final Path absolutePath) {
+        var id = m_spaceItemPathAndTypeCache.determineItemIdOrGetFromCache(absolutePath);
+        var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath);
+        return EntityFactory.Space.buildLocalSpaceItemEnt(absolutePath, m_localWorkspaceRootPath, id, type);
     }
 
     private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
@@ -409,7 +409,7 @@ public final class LocalWorkspace implements Space {
                 throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
             }
         }
-        if (m_spaceItemPathAndTypeCache.cacheOrGetItemTypeFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
+        if (m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
             throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
         }
         return absolutePath;
@@ -434,7 +434,7 @@ public final class LocalWorkspace implements Space {
      * @return the item id
      */
     public String getItemId(final Path absolutePath) {
-        return m_spaceItemPathAndTypeCache.cacheAndGetItemIdFromCache(absolutePath);
+        return m_spaceItemPathAndTypeCache.determineItemIdOrGetFromCache(absolutePath);
     }
 
     /**

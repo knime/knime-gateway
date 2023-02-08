@@ -66,6 +66,7 @@ import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProject.Origin;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -197,12 +198,7 @@ public class DefaultSpaceService implements SpaceService {
                             + workflowsToClose);
                 }
             }
-            var collisionHandlingEnum = Space.NameCollisionHandling.valueOf(collisionHandling);
-            if (collisionHandlingEnum == Space.NameCollisionHandling.CANCEL) {
-                throw new InvalidRequestException(
-                    "This method should not be called with collisionHandling == \"CANCEL\"");
-            }
-            space.moveItems(itemIds, destWorkflowGroupItemId, collisionHandlingEnum);
+            space.moveItems(itemIds, destWorkflowGroupItemId, NameCollisionHandling.valueOf(collisionHandling));
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
@@ -239,10 +235,11 @@ public class DefaultSpaceService implements SpaceService {
         final List<String> itemIds, final Space space) {
         return openWorkflowIds//
             .filter(workflowId -> {
-                var isOpenedDirectly = itemIds.contains(workflowId);
+                if (itemIds.contains(workflowId)) {
+                    return true;
+                }
                 var ancestorsItemIds = space.getAncestorItemIds(workflowId);
-                var hasOpenedDescendants = ancestorsItemIds.stream().anyMatch(itemIds::contains);
-                return isOpenedDirectly || hasOpenedDescendants;
+                return ancestorsItemIds.stream().anyMatch(itemIds::contains);
             })//
             .collect(Collectors.toList());
     }

@@ -55,6 +55,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
@@ -68,19 +70,20 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
  *
  * @author Benjamin Moser
  * @author Kai Franze, KNIME GmbH
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 class SpaceItemPathAndTypeCache {
 
-        private final Map<String, Path> m_itemIdToPathMap = new HashMap<>();
+    private final BidiMap<String, Path> m_itemIdAndPathMapping = new DualHashBidiMap<>();
 
-        private final Map<Path, SpaceItemEnt.TypeEnum> m_pathToTypeMap = new HashMap<>();
+    private final Map<Path, SpaceItemEnt.TypeEnum> m_pathToTypeMap = new HashMap<>();
 
         /**
          * @param itemId
          * @return The cached path of the given item ID
          */
         Path getPath(final String itemId) {
-            return m_itemIdToPathMap.get(itemId);
+            return m_itemIdAndPathMapping.get(itemId);
         }
 
         /**
@@ -92,23 +95,11 @@ class SpaceItemPathAndTypeCache {
         }
 
         /**
-         * Add or update the mapping for given item ID
-         *
-         * @param itemId The key
-         * @param path The new value, expected to be an absolute path
-         * @return The previous value associated with the key or <code>null</code> if there was no previous value.
-         */
-        Path putPath(final String itemId, final Path path) {
-            CheckUtils.checkArgument(path.isAbsolute(), "Provided path is not absolute");
-            return m_itemIdToPathMap.put(itemId, path);
-        }
-
-        /**
          * @param itemId
          * @return {@code true} if the item id is known
          */
         boolean containsKey(final String itemId) {
-            return m_itemIdToPathMap.containsKey(itemId);
+            return m_itemIdAndPathMapping.containsKey(itemId);
         }
 
         /**
@@ -124,7 +115,7 @@ class SpaceItemPathAndTypeCache {
          * @return {@code true} if the path is known
          */
         boolean containsValue(final Path path) {
-            return m_itemIdToPathMap.values().contains(path);
+            return m_itemIdAndPathMapping.inverseBidiMap().containsKey(path);
         }
 
         /**
@@ -133,16 +124,16 @@ class SpaceItemPathAndTypeCache {
          * @param path The path to prune from the map.
          */
         void prunePath(final Path path) {
-            m_itemIdToPathMap.entrySet().removeIf(e -> e.getValue().startsWith(path));
+            m_itemIdAndPathMapping.entrySet().removeIf(e -> e.getValue().startsWith(path));
             m_pathToTypeMap.keySet().removeIf(k -> k.startsWith(path));
         }
 
         Set<Map.Entry<String, Path>> entrySet() {
-            return m_itemIdToPathMap.entrySet();
+            return m_itemIdAndPathMapping.entrySet();
         }
 
         int sizeOfItemIdToPathMap() {
-            return m_itemIdToPathMap.size();
+            return m_itemIdAndPathMapping.size();
         }
 
         int sizeOfPathToTypeMap() {
@@ -155,7 +146,7 @@ class SpaceItemPathAndTypeCache {
          * @param item The path of the space item
          * @return The type of the space item
          */
-        SpaceItemEnt.TypeEnum cacheOrGetItemTypeFromCache(final Path item) {
+        SpaceItemEnt.TypeEnum determineTypeOrGetFromCache(final Path item) {
             return m_pathToTypeMap.computeIfAbsent(item, SpaceItemPathAndTypeCache::getSpaceItemType);
         }
 
@@ -166,23 +157,29 @@ class SpaceItemPathAndTypeCache {
          * @throws IllegalArgumentException if the provided path is not absolute
          * @return the item id
          */
-        String cacheAndGetItemIdFromCache(final Path absolutePath) {
+        String determineItemIdOrGetFromCache(final Path absolutePath) {
+            var idString = m_itemIdAndPathMapping.inverseBidiMap().get(absolutePath);
+            if (idString != null) {
+                return idString;
+            }
+
             CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
             var id = absolutePath.hashCode();
             Path existingPath;
-            while ((existingPath = m_itemIdToPathMap.get(Integer.toString(id))) != null
+            while ((existingPath = m_itemIdAndPathMapping.get(Integer.toString(id))) != null
                 && !absolutePath.equals(existingPath)) {
                 // handle hash collision
                 id = 31 * id;
             }
-            var idString = Integer.toString(id);
-            m_itemIdToPathMap.put(idString, absolutePath);
+            idString = Integer.toString(id);
+            m_itemIdAndPathMapping.put(idString, absolutePath);
             return idString;
         }
 
-        private Path updateItemPathCache(final String itemId, final Path path) {
-            CheckUtils.checkArgument(m_itemIdToPathMap.containsKey(itemId), "Key not yet in map");
-            return putPath(itemId, path);
+        private void updateItemPathCache(final String itemId, final Path absolutePath) {
+            CheckUtils.checkArgument(m_itemIdAndPathMapping.containsKey(itemId), "Item id not yet in map");
+            CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
+            m_itemIdAndPathMapping.put(itemId, absolutePath);
         }
 
         private SpaceItemEnt.TypeEnum updateItemTypeCache(final Path oldKey, final Path newKey) {

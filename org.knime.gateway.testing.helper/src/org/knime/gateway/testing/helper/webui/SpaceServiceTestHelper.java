@@ -685,10 +685,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowProject = createWorkflowProject(providerId, spaceId, wfId);
         WorkflowProjectManager.getInstance().addWorkflowProject("some_id", workflowProject);
 
-        // Try to move data file and open workflow
-        assertThrows("Moving an open workflow should not work", ServiceExceptions.InvalidRequestException.class,
-            () -> ss().moveItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
-                Space.NameCollisionHandling.NOOP.toString()));
+        try {
+            // Try to move data file and open workflow
+            assertThrows("Moving an open workflow should not work", ServiceExceptions.InvalidRequestException.class,
+                () -> ss().moveItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
+                    Space.NameCollisionHandling.NOOP.toString()));
+        } finally {
+            WorkflowProjectManager.getInstance().removeWorkflowProject("some_id");
+        }
     }
 
     private static WorkflowProject createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
