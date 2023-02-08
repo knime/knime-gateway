@@ -196,6 +196,27 @@ public final class LocalWorkspaceTests {
             equalTo(workflowGroup));
     }
 
+    /**
+     * Some tests for the {@link LocalWorkspace#toKnimeUrl(String)}-method.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testToKnimeURl() throws IOException {
+        var workspaceFolder = PathUtils.createTempDir("workspace");
+        var workspace = new LocalWorkspace(workspaceFolder);
+
+        createFile(workspaceFolder, "test.txt");
+        Files.createDirectories(workspaceFolder.resolve("dir"));
+        createWorkflow(workspace, workspaceFolder, workspace.getItemId(workspaceFolder));
+
+        var items = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
+        assertThat(workspace.toKnimeUrl(items.get(0).getId()).toString(), is("knime://LOCAL/dir/"));
+        assertThat(workspace.toKnimeUrl(items.get(1).getId()).toString(),
+            is("knime://LOCAL/KNIME_project/workflow.knime"));
+        assertThat(workspace.toKnimeUrl(items.get(2).getId()).toString(), is("knime://LOCAL/test.txt"));
+    }
+
     // TODO: Add test for {@link LocalWorkspace#importFile(...)}
 
     // TODO: Add test for {@link LocalWorkspace#importWorkflowOrWorkflowGroup(...)}

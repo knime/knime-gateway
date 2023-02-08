@@ -169,18 +169,22 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public URI toKnimeUrl(final String itemId) {
+        var absolutePath = toLocalAbsolutePath(null, itemId);
+        var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath);
+        if (type == TypeEnum.WORKFLOW) {
+            absolutePath = absolutePath.resolve("workflow.knime");
+        }
         final var rootUri = m_localWorkspaceRootPath.toUri();
-        final var workflowFilePath = toLocalAbsolutePath(null, itemId).resolve("workflow.knime");
-        final var itemRelUri = rootUri.relativize(workflowFilePath.toUri());
+        final var itemRelUri = rootUri.relativize(absolutePath.toUri());
         if (itemRelUri.isAbsolute()) {
-            throw new IllegalStateException("Workflow '" + workflowFilePath + "' is not inside root '"
-                + m_localWorkspaceRootPath + "'");
+            throw new IllegalStateException(
+                "Space item '" + absolutePath + "' is not inside root '" + m_localWorkspaceRootPath + "'");
         }
         try {
             return new URIBuilder(itemRelUri) //
-                    .setScheme(KnimeUrlType.SCHEME) //
-                    .setHost(LOCAL_WORKSPACE_ID.toUpperCase()) //
-                    .build();
+                .setScheme(KnimeUrlType.SCHEME) //
+                .setHost(LOCAL_WORKSPACE_ID.toUpperCase()) //
+                .build();
         } catch (URISyntaxException ex) {
             throw new IllegalStateException(ex);
         }
