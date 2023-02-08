@@ -199,7 +199,7 @@ public class DefaultSpaceService implements SpaceService {
                 }
             }
             space.moveItems(itemIds, destWorkflowGroupItemId, NameCollisionHandling.valueOf(collisionHandling));
-        } catch (NoSuchElementException | UnsupportedOperationException e) {
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
             throw new ServiceExceptions.IOException(e.getMessage(), e);

@@ -218,6 +218,7 @@ public interface Space {
      * @param collisionHandling How to handle name collisions
      * @throws IOException If there was a problem moving the items
      * @throws NoSuchElementException If one of the given item IDs does not exist
+     * @throws IllegalArgumentException
      */
     void moveItems(List<String> itemIds, String destWorkflowGroupItemId, Space.NameCollisionHandling collisionHandling)
         throws IOException;

@@ -78,164 +78,157 @@ class SpaceItemPathAndTypeCache {
 
     private final Map<Path, SpaceItemEnt.TypeEnum> m_pathToTypeMap = new HashMap<>();
 
-        /**
-         * @param itemId
-         * @return The cached path of the given item ID
-         */
-        Path getPath(final String itemId) {
-            return m_itemIdAndPathMapping.get(itemId);
-        }
+    /**
+     * @param itemId
+     * @return The cached path of the given item ID
+     */
+    Path getPath(final String itemId) {
+        return m_itemIdAndPathMapping.get(itemId);
+    }
 
-        /**
-         * @param path
-         * @return The cached space item type for the given path
-         */
-        SpaceItemEnt.TypeEnum getType(final Path path) {
-            return m_pathToTypeMap.get(path);
-        }
+    /**
+     * @param itemId
+     * @return {@code true} if the item id is known
+     */
+    boolean containsKey(final String itemId) {
+        return m_itemIdAndPathMapping.containsKey(itemId);
+    }
 
-        /**
-         * @param itemId
-         * @return {@code true} if the item id is known
-         */
-        boolean containsKey(final String itemId) {
-            return m_itemIdAndPathMapping.containsKey(itemId);
-        }
+    /**
+     * @param path
+     * @return {@code true} if the path is known
+     */
+    boolean containsKey(final Path path) {
+        return m_pathToTypeMap.containsKey(path);
+    }
 
-        /**
-         * @param path
-         * @return {@code true} if the path is known
-         */
-        boolean containsKey(final Path path) {
-            return m_pathToTypeMap.containsKey(path);
-        }
+    /**
+     * @param path
+     * @return {@code true} if the path is known
+     */
+    boolean containsValue(final Path path) {
+        return m_itemIdAndPathMapping.inverseBidiMap().containsKey(path);
+    }
 
-        /**
-         * @param path
-         * @return {@code true} if the path is known
-         */
-        boolean containsValue(final Path path) {
-            return m_itemIdAndPathMapping.inverseBidiMap().containsKey(path);
-        }
+    /**
+     * Remove all entries corresponding to a given path. This also removes items that are path-wise children of the
+     * given path.
+     *
+     * @param path The path to prune from the map.
+     */
+    void prunePath(final Path path) {
+        m_itemIdAndPathMapping.entrySet().removeIf(e -> e.getValue().startsWith(path));
+        m_pathToTypeMap.keySet().removeIf(k -> k.startsWith(path));
+    }
 
-        /**
-         * Remove all entries corresponding to a given path. This also removes items that are path-wise children of the
-         * given path.
-         * @param path The path to prune from the map.
-         */
-        void prunePath(final Path path) {
-            m_itemIdAndPathMapping.entrySet().removeIf(e -> e.getValue().startsWith(path));
-            m_pathToTypeMap.keySet().removeIf(k -> k.startsWith(path));
-        }
+    Set<Map.Entry<String, Path>> entrySet() {
+        return m_itemIdAndPathMapping.entrySet();
+    }
 
-        Set<Map.Entry<String, Path>> entrySet() {
-            return m_itemIdAndPathMapping.entrySet();
-        }
+    int sizeOfItemIdToPathMap() {
+        return m_itemIdAndPathMapping.size();
+    }
 
-        int sizeOfItemIdToPathMap() {
-            return m_itemIdAndPathMapping.size();
-        }
+    int sizeOfPathToTypeMap() {
+        return m_pathToTypeMap.size();
+    }
 
-        int sizeOfPathToTypeMap() {
-            return m_pathToTypeMap.size();
-        }
+    /**
+     * Returns a space item type if the path is already in the cache. Otherwise it will be added to the cache.
+     *
+     * @param item The path of the space item
+     * @return The type of the space item
+     */
+    SpaceItemEnt.TypeEnum determineTypeOrGetFromCache(final Path item) {
+        return m_pathToTypeMap.computeIfAbsent(item, SpaceItemPathAndTypeCache::getSpaceItemType);
+    }
 
-        /**
-         * Returns a space item type if the path is already in the cache. Otherwise it will be added to the cache.
-         *
-         * @param item The path of the space item
-         * @return The type of the space item
-         */
-        SpaceItemEnt.TypeEnum determineTypeOrGetFromCache(final Path item) {
-            return m_pathToTypeMap.computeIfAbsent(item, SpaceItemPathAndTypeCache::getSpaceItemType);
-        }
-
-        /**
-         * Determine an item ID for a given absolute path. Persist the mapping and handle collisions.
-         *
-         * @param absolutePath the absolute(!) path to get the id for
-         * @throws IllegalArgumentException if the provided path is not absolute
-         * @return the item id
-         */
-        String determineItemIdOrGetFromCache(final Path absolutePath) {
-            var idString = m_itemIdAndPathMapping.inverseBidiMap().get(absolutePath);
-            if (idString != null) {
-                return idString;
-            }
-
-            CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
-            var id = absolutePath.hashCode();
-            Path existingPath;
-            while ((existingPath = m_itemIdAndPathMapping.get(Integer.toString(id))) != null
-                && !absolutePath.equals(existingPath)) {
-                // handle hash collision
-                id = 31 * id;
-            }
-            idString = Integer.toString(id);
-            m_itemIdAndPathMapping.put(idString, absolutePath);
+    /**
+     * Determine an item ID for a given absolute path. Persist the mapping and handle collisions.
+     *
+     * @param absolutePath the absolute(!) path to get the id for
+     * @throws IllegalArgumentException if the provided path is not absolute
+     * @return the item id
+     */
+    String determineItemIdOrGetFromCache(final Path absolutePath) {
+        var idString = m_itemIdAndPathMapping.inverseBidiMap().get(absolutePath);
+        if (idString != null) {
             return idString;
         }
 
-        private void updateItemPathCache(final String itemId, final Path absolutePath) {
-            CheckUtils.checkArgument(m_itemIdAndPathMapping.containsKey(itemId), "Item id not yet in map");
-            CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
-            m_itemIdAndPathMapping.put(itemId, absolutePath);
+        CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
+        var id = absolutePath.hashCode();
+        Path existingPath;
+        while ((existingPath = m_itemIdAndPathMapping.get(Integer.toString(id))) != null
+            && !absolutePath.equals(existingPath)) {
+            // handle hash collision
+            id = 31 * id;
         }
+        idString = Integer.toString(id);
+        m_itemIdAndPathMapping.put(idString, absolutePath);
+        return idString;
+    }
 
-        private SpaceItemEnt.TypeEnum updateItemTypeCache(final Path oldKey, final Path newKey) {
-            if (!m_pathToTypeMap.containsKey(oldKey)) {
-                throw new IllegalArgumentException("Item not yet in cache");
-            }
-            var value = m_pathToTypeMap.get(oldKey);
-            m_pathToTypeMap.remove(oldKey);
-            m_pathToTypeMap.put(newKey, value);
-            return value;
+    private void updateItemPathCache(final String itemId, final Path absolutePath) {
+        CheckUtils.checkArgument(m_itemIdAndPathMapping.containsKey(itemId), "Item id not yet in map");
+        CheckUtils.checkArgument(absolutePath.isAbsolute(), "Provided path is not absolute");
+        m_itemIdAndPathMapping.put(itemId, absolutePath);
+    }
+
+    private SpaceItemEnt.TypeEnum updateItemTypeCache(final Path oldKey, final Path newKey) {
+        if (!m_pathToTypeMap.containsKey(oldKey)) {
+            throw new IllegalArgumentException("Item not yet in cache");
         }
+        var value = m_pathToTypeMap.get(oldKey);
+        m_pathToTypeMap.remove(oldKey);
+        m_pathToTypeMap.put(newKey, value);
+        return value;
+    }
 
-        /**
-         * Updates the space item path and the space item type cache.
-         *
-         * @param itemId The space item ID
-         * @param oldPath The old path of the space item
-         * @param newPath The new path of the space item
-         */
-        void update(final String itemId, final Path oldPath, final Path newPath) {
-            updateItemPathCache(itemId, newPath);
-            updateItemTypeCache(oldPath, newPath);
+    /**
+     * Updates the space item path and the space item type cache.
+     *
+     * @param itemId The space item ID
+     * @param oldPath The old path of the space item
+     * @param newPath The new path of the space item
+     */
+    void update(final String itemId, final Path oldPath, final Path newPath) {
+        updateItemPathCache(itemId, newPath);
+        updateItemTypeCache(oldPath, newPath);
+    }
+
+    private static SpaceItemEnt.TypeEnum getSpaceItemType(final Path item) {
+        if (!Files.exists(item)) {
+            return null;
         }
-
-        private static SpaceItemEnt.TypeEnum getSpaceItemType(final Path item) {
-            if (!Files.exists(item)) {
-                return null;
-            }
-            if (Files.isDirectory(item)) {
-                SpaceItemEnt.TypeEnum type;
-                // the order of checking is important because, e.g., a component also contains a workflow.knime file
-                if (containsFile(item, WorkflowPersistor.TEMPLATE_FILE)) {
-                    try (final var s = Files.newInputStream(item.resolve(WorkflowPersistor.TEMPLATE_FILE))) {
-                        final var c = new MetadataConfig("ignored");
-                        c.load(s);
-                        var isComponent = c.getConfigBase("workflow_template_information").getString("templateType")
-                            .equals(MetaNodeTemplateInformation.TemplateType.SubNode.toString());
-                        type = isComponent ? SpaceItemEnt.TypeEnum.COMPONENT : SpaceItemEnt.TypeEnum.WORKFLOWTEMPLATE;
-                    } catch (InvalidSettingsException | IOException ex) {
-                        NodeLogger.getLogger(LocalWorkspace.class)
-                            .warnWithFormat("Space item type couldn't be determined for %s", item, ex);
-                        type = SpaceItemEnt.TypeEnum.DATA;
-                    }
-                } else if (containsFile(item, WorkflowPersistor.WORKFLOW_FILE)) {
-                    type = SpaceItemEnt.TypeEnum.WORKFLOW;
-                } else {
-                    type = SpaceItemEnt.TypeEnum.WORKFLOWGROUP;
+        if (Files.isDirectory(item)) {
+            SpaceItemEnt.TypeEnum type;
+            // the order of checking is important because, e.g., a component also contains a workflow.knime file
+            if (containsFile(item, WorkflowPersistor.TEMPLATE_FILE)) {
+                try (final var s = Files.newInputStream(item.resolve(WorkflowPersistor.TEMPLATE_FILE))) {
+                    final var c = new MetadataConfig("ignored");
+                    c.load(s);
+                    var isComponent = c.getConfigBase("workflow_template_information").getString("templateType")
+                        .equals(MetaNodeTemplateInformation.TemplateType.SubNode.toString());
+                    type = isComponent ? SpaceItemEnt.TypeEnum.COMPONENT : SpaceItemEnt.TypeEnum.WORKFLOWTEMPLATE;
+                } catch (InvalidSettingsException | IOException ex) {
+                    NodeLogger.getLogger(LocalWorkspace.class)
+                        .warnWithFormat("Space item type couldn't be determined for %s", item, ex);
+                    type = SpaceItemEnt.TypeEnum.DATA;
                 }
-                return type;
+            } else if (containsFile(item, WorkflowPersistor.WORKFLOW_FILE)) {
+                type = SpaceItemEnt.TypeEnum.WORKFLOW;
             } else {
-                return SpaceItemEnt.TypeEnum.DATA;
+                type = SpaceItemEnt.TypeEnum.WORKFLOWGROUP;
             }
+            return type;
+        } else {
+            return SpaceItemEnt.TypeEnum.DATA;
         }
+    }
 
-        private static boolean containsFile(final Path directory, final String filename) {
-            return Files.exists(directory.resolve(filename));
-        }
+    private static boolean containsFile(final Path directory, final String filename) {
+        return Files.exists(directory.resolve(filename));
+    }
 
 }

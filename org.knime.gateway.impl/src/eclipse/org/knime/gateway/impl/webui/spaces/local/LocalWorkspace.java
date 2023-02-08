@@ -237,7 +237,7 @@ public final class LocalWorkspace implements Space {
         if (sourcePath == null) {
             throw new IOException("Unknown item ID");
         }
-        var itemType = m_spaceItemPathAndTypeCache.getType((sourcePath));
+        var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
         var destinationPath = sourcePath.resolveSibling(Path.of(newName));
         if (sourcePath.equals(destinationPath)) {
             var oldName = sourcePath.getFileName().toString();
@@ -265,19 +265,19 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public void moveItems(final List<String> itemIds, final String destItemId, final Space.NameCollisionHandling collisionHandling)
-        throws IOException {
+    public void moveItems(final List<String> itemIds, final String destItemId,
+        final Space.NameCollisionHandling collisionHandling) throws IOException {
         if (itemIds.contains(Space.ROOT_ITEM_ID)) {
-            throw new UnsupportedOperationException("The root of the space cannot be moved.");
+            throw new IllegalArgumentException("The root of the space cannot be moved.");
         }
         if (itemIds.contains(destItemId)) {
-            throw new UnsupportedOperationException("Cannot move a space item to itself");
+            throw new IllegalArgumentException("Cannot move a space item to itself");
         }
         assertAllItemIdsExistOrElseThrow(
             Stream.concat(itemIds.stream(), Stream.of(destItemId)).collect(Collectors.toList()));
         var destPathParent = getAbsolutePath(destItemId);
-        if (m_spaceItemPathAndTypeCache.getType(destPathParent) != TypeEnum.WORKFLOWGROUP) {
-            throw new UnsupportedOperationException(
+        if (m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(destPathParent) != TypeEnum.WORKFLOWGROUP) {
+            throw new IllegalArgumentException(
                 "Cannot move space items to a location that is not a workflow group");
         }
 
@@ -375,7 +375,7 @@ public final class LocalWorkspace implements Space {
      */
     private Path moveItem(final Path srcPath, final Path destPathParent,
         final Space.NameCollisionHandling collisionHandling) throws IOException {
-        var type = m_spaceItemPathAndTypeCache.getType(srcPath);
+        var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(srcPath);
         var file = srcPath.getFileName();
         var name = file.toString();
         Path destPath;
