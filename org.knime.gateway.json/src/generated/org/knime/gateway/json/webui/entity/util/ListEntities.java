@@ -117,6 +117,7 @@ import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemEntMixIn;
+import org.knime.gateway.json.webui.entity.SpaceItemIdEntMixIn;
 import org.knime.gateway.json.webui.entity.SpacePathSegmentEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceProviderEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
@@ -134,7 +135,6 @@ import org.knime.gateway.json.webui.entity.WorkflowEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowGroupContentEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowProjectEntMixIn;
-import org.knime.gateway.json.webui.entity.WorkflowProjectOriginEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.XYEntMixIn;
 
@@ -233,6 +233,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.class);
         res.add(SpaceEntMixIn.class);
         res.add(SpaceItemEntMixIn.class);
+        res.add(SpaceItemIdEntMixIn.class);
         res.add(SpacePathSegmentEntMixIn.class);
         res.add(SpaceProviderEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
@@ -250,7 +251,6 @@ public class ListEntities {
         res.add(WorkflowGroupContentEntMixIn.class);
         res.add(WorkflowInfoEntMixIn.class);
         res.add(WorkflowProjectEntMixIn.class);
-        res.add(WorkflowProjectOriginEntMixIn.class);
         res.add(WorkflowSnapshotEntMixIn.class);
         res.add(XYEntMixIn.class);
         return res;
@@ -335,6 +335,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.SelectionEventTypeEntMixInBuilder.class);
         res.add(SpaceEntMixIn.SpaceEntMixInBuilder.class);
         res.add(SpaceItemEntMixIn.SpaceItemEntMixInBuilder.class);
+        res.add(SpaceItemIdEntMixIn.SpaceItemIdEntMixInBuilder.class);
         res.add(SpacePathSegmentEntMixIn.SpacePathSegmentEntMixInBuilder.class);
         res.add(SpaceProviderEntMixIn.SpaceProviderEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
@@ -352,7 +353,6 @@ public class ListEntities {
         res.add(WorkflowGroupContentEntMixIn.WorkflowGroupContentEntMixInBuilder.class);
         res.add(WorkflowInfoEntMixIn.WorkflowInfoEntMixInBuilder.class);
         res.add(WorkflowProjectEntMixIn.WorkflowProjectEntMixInBuilder.class);
-        res.add(WorkflowProjectOriginEntMixIn.WorkflowProjectOriginEntMixInBuilder.class);
         res.add(WorkflowSnapshotEntMixIn.WorkflowSnapshotEntMixInBuilder.class);
         res.add(XYEntMixIn.XYEntMixInBuilder.class);
         return res;

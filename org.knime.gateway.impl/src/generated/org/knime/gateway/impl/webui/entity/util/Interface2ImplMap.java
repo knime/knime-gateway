@@ -190,6 +190,8 @@ import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt.SpaceItemIdEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemIdEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
@@ -224,8 +226,6 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectOriginEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -471,6 +471,9 @@ public class Interface2ImplMap {
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();
         }        
+        if(clazz == SpaceItemIdEntBuilder.class) {
+            return (B)new DefaultSpaceItemIdEnt.DefaultSpaceItemIdEntBuilder();
+        }        
         if(clazz == SpacePathSegmentEntBuilder.class) {
             return (B)new DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder();
         }        
@@ -521,9 +524,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowProjectEntBuilder.class) {
             return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();
-        }        
-        if(clazz == WorkflowProjectOriginEntBuilder.class) {
-            return (B)new DefaultWorkflowProjectOriginEnt.DefaultWorkflowProjectOriginEntBuilder();
         }        
         if(clazz == WorkflowSnapshotEntBuilder.class) {
             return (B)new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();

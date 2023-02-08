@@ -60,6 +60,7 @@ import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -73,6 +74,9 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final NodeFactoryProvider m_nodeFactoryProvider =
         ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
+
+    private final SpaceProviders m_spaceProvides =
+        ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -113,7 +117,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
-            m_workflowMiddleware, m_nodeFactoryProvider);
+            m_workflowMiddleware, m_nodeFactoryProvider, m_spaceProvides);
     }
 
     /**

@@ -80,6 +80,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Allows one to execute, undo and redo workflow commands for workflows. Individual commands are assumed to be executed
@@ -128,7 +129,7 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
         final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        return execute(wfKey, commandEnt, null, null);
+        return execute(wfKey, commandEnt);
     }
 
     /**
@@ -140,6 +141,7 @@ public final class WorkflowCommands {
      * @param commandEnt the workflow command entity to execute
      * @param workflowMiddleware additional dependency required to rexecute some commands
      * @param nodeFactoryProvider additional dependency required to execute some commands
+     * @param spaceProviders TODO
      *
      * @return The instance of the executed command
      *
@@ -148,9 +150,10 @@ public final class WorkflowCommands {
      * @throws NodeNotFoundException if the reference doesn't point to a workflow
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
-        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider)
+        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
+        final SpaceProviders spaceProviders)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        var command = createWorkflowCommand(commandEnt, workflowMiddleware, nodeFactoryProvider);
+        var command = createWorkflowCommand(commandEnt, workflowMiddleware, nodeFactoryProvider, spaceProviders);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
@@ -163,8 +166,8 @@ public final class WorkflowCommands {
 
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
-        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider)
-        throws OperationNotAllowedException {
+        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
+        final SpaceProviders spaceProviders) throws OperationNotAllowedException {
         WorkflowCommand command;
         // TODO: Replace this by pattern matching once Java 17 is available
         if (commandEnt instanceof TranslateCommandEnt) {
@@ -174,7 +177,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof ConnectCommandEnt) {
             command = new Connect((ConnectCommandEnt)commandEnt);
         } else if (commandEnt instanceof AddNodeCommandEnt) {
-            command = new AddNode((AddNodeCommandEnt)commandEnt, nodeFactoryProvider);
+            command = new AddNode((AddNodeCommandEnt)commandEnt, nodeFactoryProvider, spaceProviders);
         } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
             command = new UpdateComponentOrMetanodeName((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
         } else if (commandEnt instanceof UpdateNodeLabelCommandEnt) {

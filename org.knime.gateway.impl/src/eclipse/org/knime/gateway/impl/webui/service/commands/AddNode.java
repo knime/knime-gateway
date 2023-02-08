@@ -90,6 +90,7 @@ import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Workflow command to add a native node.
@@ -105,13 +106,17 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
     private final NodeFactoryProvider m_nodeFactoryProvider;
 
+    private final SpaceProviders m_spaceProviders;
+
     AddNode(final AddNodeCommandEnt commandEnt) {
-        this(commandEnt, null);
+        this(commandEnt, null, null);
     }
 
-    AddNode(final AddNodeCommandEnt commandEnt, final NodeFactoryProvider nodeFactoryProvider) {
+    AddNode(final AddNodeCommandEnt commandEnt, final NodeFactoryProvider nodeFactoryProvider,
+        final SpaceProviders spaceProviders) {
         m_commandEnt = commandEnt;
         m_nodeFactoryProvider = nodeFactoryProvider;
+        m_spaceProviders = spaceProviders;
     }
 
     @Override
@@ -123,6 +128,20 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var url = parseURL(m_commandEnt.getUrl());
         if (factoryKeyEnt == null && url != null) {
             factoryKeyEnt = getNodeFactoryKey(m_commandEnt.getUrl());
+        }
+        if (factoryKeyEnt == null && m_commandEnt.getSpaceItemId() != null) {
+            final var spaceProviderId = m_commandEnt.getSpaceItemId().getProviderId();
+            final var spaceId = m_commandEnt.getSpaceItemId().getSpaceId();
+            final var itemId = m_commandEnt.getSpaceItemId().getItemId();
+            try {
+                url = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).toKnimeUrl(itemId).toURL();
+                var factory = m_nodeFactoryProvider.fromFileExtension(url.toString());
+                if (factory != null){
+                    factoryKeyEnt = builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getName()).build();
+                }
+            } catch (MalformedURLException ex) {
+                url = null;
+            }
         }
         if (factoryKeyEnt == null) {
             throw new OperationNotAllowedException("No node factory class given");

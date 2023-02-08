@@ -50,8 +50,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectOriginEnt.DefaultWorkflowProjectOriginEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemIdEnt.DefaultSpaceItemIdEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -59,9 +59,9 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectOriginEnt.Defau
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultWorkflowProjectOriginEntBuilder.class)
+@JsonDeserialize(builder=DefaultSpaceItemIdEntBuilder.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowProjectOriginEntMixIn extends WorkflowProjectOriginEnt {
+public interface SpaceItemIdEntMixIn extends SpaceItemIdEnt {
 
     @Override
     @JsonIgnore
@@ -91,26 +91,26 @@ public interface WorkflowProjectOriginEntMixIn extends WorkflowProjectOriginEnt 
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowProjectOriginEntMixInBuilder extends WorkflowProjectOriginEntBuilder {
+    public static interface SpaceItemIdEntMixInBuilder extends SpaceItemIdEntBuilder {
     
         @Override
-        public WorkflowProjectOriginEntMixIn build();
+        public SpaceItemIdEntMixIn build();
     
         @Override
         @JsonProperty("providerId")
-        public WorkflowProjectOriginEntMixInBuilder setProviderId(final String providerId);
+        public SpaceItemIdEntMixInBuilder setProviderId(final String providerId);
         
         @Override
         @JsonProperty("spaceId")
-        public WorkflowProjectOriginEntMixInBuilder setSpaceId(final String spaceId);
+        public SpaceItemIdEntMixInBuilder setSpaceId(final String spaceId);
         
         @Override
         @JsonProperty("itemId")
-        public WorkflowProjectOriginEntMixInBuilder setItemId(final String itemId);
+        public SpaceItemIdEntMixInBuilder setItemId(final String itemId);
         
         @Override
         @JsonProperty("ancestorItemIds")
-        public WorkflowProjectOriginEntMixInBuilder setAncestorItemIds(final java.util.List<String> ancestorItemIds);
+        public SpaceItemIdEntMixInBuilder setAncestorItemIds(final java.util.List<String> ancestorItemIds);
         
     }
 

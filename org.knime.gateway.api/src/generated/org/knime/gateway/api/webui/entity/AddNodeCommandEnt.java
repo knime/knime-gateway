@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -79,6 +80,12 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    * @return url 
    **/
   public String getUrl();
+
+  /**
+   * Get spaceItemId
+   * @return spaceItemId 
+   **/
+  public SpaceItemIdEnt getSpaceItemId();
 
   /**
    * Optional parameter identifying the existing node to connect to
@@ -129,6 +136,14 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @return this entity builder for chaining
          */
         AddNodeCommandEntBuilder setUrl(String url);
+        
+        /**
+   		 * Set spaceItemId
+         * 
+         * @param spaceItemId the property value,  
+         * @return this entity builder for chaining
+         */
+        AddNodeCommandEntBuilder setSpaceItemId(SpaceItemIdEnt spaceItemId);
         
         /**
          * Optional parameter identifying the existing node to connect to

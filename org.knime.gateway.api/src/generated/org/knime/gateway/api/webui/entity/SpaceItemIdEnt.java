@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowProjectOriginEnt extends GatewayEntity {
+public interface SpaceItemIdEnt extends GatewayEntity {
 
 
   /**
@@ -87,7 +87,7 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface WorkflowProjectOriginEntBuilder extends GatewayEntityBuilder<WorkflowProjectOriginEnt> {
+    public interface SpaceItemIdEntBuilder extends GatewayEntityBuilder<SpaceItemIdEnt> {
 
         /**
    		 * Set providerId
@@ -95,7 +95,7 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
          * @param providerId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectOriginEntBuilder setProviderId(String providerId);
+        SpaceItemIdEntBuilder setProviderId(String providerId);
         
         /**
    		 * Set spaceId
@@ -103,7 +103,7 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
          * @param spaceId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectOriginEntBuilder setSpaceId(String spaceId);
+        SpaceItemIdEntBuilder setSpaceId(String spaceId);
         
         /**
    		 * Set itemId
@@ -111,7 +111,7 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
          * @param itemId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectOriginEntBuilder setItemId(String itemId);
+        SpaceItemIdEntBuilder setItemId(String itemId);
         
         /**
          * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
@@ -119,7 +119,7 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
          * @param ancestorItemIds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectOriginEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
+        SpaceItemIdEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
         
         
         /**
@@ -129,7 +129,7 @@ public interface WorkflowProjectOriginEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowProjectOriginEnt build();
+        SpaceItemIdEnt build();
     
     }
 

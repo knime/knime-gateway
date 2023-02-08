@@ -79,10 +79,10 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt.ExampleProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt.SpaceItemIdEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
@@ -217,7 +217,7 @@ public final class AppStateEntityFactory {
     }
 
     private static ExampleProjectEnt buildExampleProject(final String name, final String svg, final String itemId) {
-        var origin = builder(WorkflowProjectOriginEntBuilder.class) //
+        var origin = builder(SpaceItemIdEntBuilder.class) //
             .setItemId(itemId) //
             .setSpaceId(LocalWorkspace.LOCAL_WORKSPACE_ID) //
             .setProviderId("local").build();
@@ -255,13 +255,13 @@ public final class AppStateEntityFactory {
         }
 
         wp.getOrigin()
-            .ifPresent(origin -> projectEntBuilder.setOrigin(buildWorkflowProjectOriginEnt(origin, spaceProviders)));
+            .ifPresent(origin -> projectEntBuilder.setOrigin(buildSpaceItemIdEntEnt(origin, spaceProviders)));
         return projectEntBuilder.build();
     }
 
-    private static WorkflowProjectOriginEnt buildWorkflowProjectOriginEnt(final WorkflowProject.Origin origin,
+    private static SpaceItemIdEnt buildSpaceItemIdEntEnt(final WorkflowProject.Origin origin,
         final SpaceProviders spaceProviders) {
-        return builder(WorkflowProjectOriginEnt.WorkflowProjectOriginEntBuilder.class)
+        return builder(SpaceItemIdEnt.SpaceItemIdEntBuilder.class)
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
