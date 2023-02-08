@@ -31,7 +31,6 @@ org.knime.base.node.preproc.rowtocolumnheader.RowToColumnHeaderNodeFactory
 org.knime.base.node.preproc.sorter.SorterNodeFactory
 org.knime.base.node.preproc.stringmanipulation.multicolumn.MultiColumnStringManipulationNodeFactory
 org.knime.base.node.preproc.stringmanipulation.StringManipulationNodeFactory
-org.knime.base.node.preproc.stringreplacer.dict.SearchReplaceDictNodeFactory
 org.knime.base.node.preproc.stringreplacer.StringReplacerNodeFactory
 org.knime.base.node.preproc.table.cellextractor.CellExtractorNodeFactory
 org.knime.base.node.preproc.table.cropper.TableCropperNodeFactory
