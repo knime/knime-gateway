@@ -129,7 +129,7 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
         final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        return execute(wfKey, commandEnt);
+        return execute(wfKey, commandEnt, null, null, null);
     }
 
     /**

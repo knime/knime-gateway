@@ -76,7 +76,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
 
     private final SpaceProviders m_spaceProvides =
-        ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+        ServiceDependencies.getServiceDependency(SpaceProviders.class, false);
 
     /**
      * Returns the singleton instance for this service.

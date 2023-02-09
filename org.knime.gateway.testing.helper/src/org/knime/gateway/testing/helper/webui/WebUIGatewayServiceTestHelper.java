@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
@@ -201,7 +202,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * Non-deterministic field.
          */
-        objToString.addException(SpaceItemEnt.class, "itemId",
+        objToString.addException(SpaceItemIdEnt.class, "itemId",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_ITEM_ID"));
 
         try {

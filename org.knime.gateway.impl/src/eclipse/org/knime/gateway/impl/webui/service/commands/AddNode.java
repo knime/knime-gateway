@@ -127,10 +127,11 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var positionEnt = m_commandEnt.getPosition();
         var factoryKeyEnt = m_commandEnt.getNodeFactory();
         var url = parseURL(m_commandEnt.getUrl());
-        if (factoryKeyEnt == null && url != null) {
+        if (factoryKeyEnt == null && url != null && m_nodeFactoryProvider != null) {
             factoryKeyEnt = getNodeFactoryKeyFromUrl(m_commandEnt.getUrl());
         }
-        if (factoryKeyEnt == null && m_commandEnt.getSpaceItemId() != null) {
+        if (factoryKeyEnt == null && m_commandEnt.getSpaceItemId() != null && m_nodeFactoryProvider != null
+            && m_spaceProviders != null) {
             var spaceItemIdResult = getNodeFactoryKeyAndUrlFromSpaceItemId(m_commandEnt.getSpaceItemId());
             url = spaceItemIdResult.getValue();
             factoryKeyEnt = spaceItemIdResult.getKey();
@@ -165,9 +166,6 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     private NodeFactoryKeyEnt getNodeFactoryKeyFromUrl(final String url) {
-        if (m_nodeFactoryProvider == null) {
-            return null;
-        }
         var factory = m_nodeFactoryProvider.fromFileExtension(url);
         if (factory == null) {
             return null;
@@ -278,7 +276,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             .map(ConfigurablePortGroup.class::cast)//
             .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())//
                 .filter(pt -> CoreUtil.arePortTypesCompatible(sourcePortType, pt))//
-                .map(pt -> Pair.of(cpg, pt)))//
+                .map(pt -> ImmutablePair.of(cpg, pt)))//
             .collect(Collectors.toList());
 
         // If there are no compatible port types, we are done
@@ -289,7 +287,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         // Determine which port group to use
         var portGroup = portGroupToCompatibleTypes.stream()//
             .filter(pair -> sourcePortType.equals(pair.getValue()))//
-            .map(Pair::getKey).findFirst() // If there is an equal port type, use its port group
+            .map(ImmutablePair::getKey).findFirst() // If there is an equal port type, use its port group
             .orElse(portGroupToCompatibleTypes.get(0).getKey()); // Otherwise use the first compatible port group
 
         // Create port and return index
