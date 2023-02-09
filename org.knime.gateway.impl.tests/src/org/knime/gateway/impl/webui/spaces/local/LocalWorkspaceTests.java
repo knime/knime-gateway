@@ -217,9 +217,11 @@ public final class LocalWorkspaceTests {
         assertThat(workspace.toKnimeUrl(items.get(2).getId()).toString(), is("knime://LOCAL/test.txt"));
     }
 
-    // TODO: Add test for {@link LocalWorkspace#importFile(...)}
+    // TODO: (NXT-1503) Add test for {@link LocalWorkspace#importFile(...)}
 
-    // TODO: Add test for {@link LocalWorkspace#importWorkflowOrWorkflowGroup(...)}
+    // TODO: (NXT-1503) Add test for {@link LocalWorkspace#importWorkflowOrWorkflowGroup(...)}
+
+    // TODO: (NXT-1503) Add test for {@link LocalWorkspace#moveItemFromTmp(...)}
 
     private static void deleteAndCheckMaps(final LocalWorkspace workspace, final List<Path> itemsToDelete,
         final List<Path> itemsToKeep) throws IOException {

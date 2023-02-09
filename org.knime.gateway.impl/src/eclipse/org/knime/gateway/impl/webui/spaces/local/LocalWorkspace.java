@@ -104,7 +104,6 @@ public final class LocalWorkspace implements Space {
 
     private final Path m_localWorkspaceRootPath;
 
-
     /**
      * @param localWorkspaceRootPath the path to the root of the local workspace
      */
@@ -369,25 +368,51 @@ public final class LocalWorkspace implements Space {
     }
 
     /**
+     * Moves a space item from a (potentially external) temporary directory into the local workspace
+     *
+     * @param srcPath The absolute path of the temporary workflow copy
+     * @param workflowGroupItemId The destination workflow group item ID
+     * @param collisionHandling The collision handling strategy
+     *
+     * @return The space item entity of the newly created workflow
+     * @throws IOException If it couldn't move the workflow
+     */
+    public SpaceItemEnt moveItemFromTmp(final Path srcPath, final String workflowGroupItemId,
+        final Space.NameCollisionHandling collisionHandling) throws IOException {
+        var destPathParent = getAbsolutePath(workflowGroupItemId);
+        var destPath = moveItem(srcPath, destPathParent, collisionHandling);
+        return getSpaceItemEntFromPathAndUpdateCache(destPath);
+    }
+
+    /**
      * @return The items path after it was moved.
      */
     private Path moveItem(final Path srcPath, final Path destPathParent,
         final Space.NameCollisionHandling collisionHandling) throws IOException {
         var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(srcPath);
-        var file = srcPath.getFileName();
-        var name = file.toString();
+        var fileName = srcPath.getFileName().toString();
+
         Path destPath;
         if (collisionHandling == Space.NameCollisionHandling.NOOP) { // Assume no name collisions
-            destPath = destPathParent.resolve(name);
+            destPath = destPathParent.resolve(fileName);
         } else if (collisionHandling == Space.NameCollisionHandling.AUTORENAME) { // Auto-rename in case of name collisions
             var isWorkflowOrWorkflowGroup = type == TypeEnum.WORKFLOW || type == TypeEnum.WORKFLOWGROUP;
-            var uniqueName = generateUniqueSpaceItemName(destPathParent, name, isWorkflowOrWorkflowGroup);
+            var uniqueName = generateUniqueSpaceItemName(destPathParent, fileName, isWorkflowOrWorkflowGroup);
             destPath = destPathParent.resolve(uniqueName);
         } else { // Overwrite in case of name collision
-            destPath = destPathParent.resolve(name);
+            destPath = destPathParent.resolve(fileName);
             FileUtil.deleteRecursively(destPath.toFile()); // Delete the existing space item first
         }
-        return Files.move(srcPath, destPath); // Moves the file/directory and returns its destination path
+
+        var srcFileStore = Files.getFileStore(srcPath);
+        var destParentFileStore = Files.getFileStore(destPathParent);
+        if (srcFileStore.equals(destParentFileStore)) { // Same file store, simple move is possible
+            return Files.move(srcPath, destPath);
+        } else { // Both files in different file systems, simple move is not possible
+            FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
+            FileUtil.deleteRecursively(srcPath.toFile()); // Delete the remaining space item
+            return destPath;
+        }
     }
 
     private SpaceItemEnt getSpaceItemEntFromPathAndUpdateCache(final Path absolutePath) {
