@@ -146,8 +146,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         var n1 = addNodeDirectly(sleepNodeClassname, wfm);
         var n2 = addNodeDirectly(sleepNodeClassname, wfm);
 
-        commands.execute(wfKey, buildDeleteCommandEnt(n2), workflowMiddleware, null);
-        commands.execute(wfKey, buildDeleteCommandEnt(n1), workflowMiddleware, null);
+        commands.execute(wfKey, buildDeleteCommandEnt(n2), workflowMiddleware, null, null);
+        commands.execute(wfKey, buildDeleteCommandEnt(n1), workflowMiddleware, null, null);
 
         commands.undo(wfKey);
         commands.undo(wfKey);
@@ -436,7 +436,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         commands.setCommandToExecuteForTesting(testCommand);
 
         try {
-            commands.execute(wfKey, null, workflowMiddleware, null);
+            commands.execute(wfKey, null, workflowMiddleware, null, null);
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
                 .until(() -> eventConsumerCalls.get() == 1);
 
