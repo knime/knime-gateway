@@ -72,5 +72,7 @@ org.knime.time.node.convert.stringtodatetime.StringToDateTimeNodeFactory
 org.knime.time.node.extract.datetime.ExtractDateTimeFieldsNodeFactory2
 org.knime.time.node.filter.datetimebasedrowfilter.DateTimeBasedRowFilterNodeFactory
 org.knime.time.node.manipulate.datetimeshift.DateTimeShiftNodeFactory
+org.knime.time.node.manipulate.modifydate.ModifyDateNodeFactory
 org.knime.time.node.manipulate.modifytime.ModifyTimeNodeFactory
+org.knime.time.node.manipulate.modifytimezone.ModifyTimeZoneNodeFactory
 org.knime.timeseries.node.movagg.MovingAggregationNodeFactory
