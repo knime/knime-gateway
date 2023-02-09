@@ -78,6 +78,10 @@ class SpaceItemPathAndTypeCache {
 
     private final Map<Path, SpaceItemEnt.TypeEnum> m_pathToTypeMap = new HashMap<>();
 
+    SpaceItemPathAndTypeCache(final String rootItemId, final Path localWorkspaceRootPath) {
+        m_itemIdAndPathMapping.put(rootItemId, localWorkspaceRootPath);
+    }
+
     /**
      * @param itemId
      * @return The cached path of the given item ID

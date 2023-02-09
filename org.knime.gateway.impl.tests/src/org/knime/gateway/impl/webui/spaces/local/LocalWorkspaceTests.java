@@ -248,13 +248,17 @@ public final class LocalWorkspaceTests {
     }
 
     private static void assertIdAndTypeMapContain(final LocalWorkspace workspace, final Path... expectedPaths) {
-        assertThat("must be expected amount of ids", workspace.m_spaceItemPathAndTypeCache.sizeOfItemIdToPathMap(), equalTo(expectedPaths.length));
         // NB: The root is also in the map
-        assertThat("must be expected anount of cached types", workspace.m_spaceItemPathAndTypeCache.sizeOfPathToTypeMap(),
+        assertThat("must be expected amount of ids", workspace.m_spaceItemPathAndTypeCache.sizeOfItemIdToPathMap(),
             equalTo(expectedPaths.length + 1));
+        // NB: The root is also in the map
+        assertThat("must be expected anount of cached types",
+            workspace.m_spaceItemPathAndTypeCache.sizeOfPathToTypeMap(), equalTo(expectedPaths.length + 1));
         for (var path : expectedPaths) {
-            assertThat("ids map must contain the expected paths", workspace.m_spaceItemPathAndTypeCache.containsValue(path));
-            assertThat("types map must contain the expected paths", workspace.m_spaceItemPathAndTypeCache.containsKey(path));
+            assertThat("ids map must contain the expected paths",
+                workspace.m_spaceItemPathAndTypeCache.containsValue(path));
+            assertThat("types map must contain the expected paths",
+                workspace.m_spaceItemPathAndTypeCache.containsKey(path));
         }
     }
 }

@@ -100,7 +100,7 @@ public final class LocalWorkspace implements Space {
     /**
      * Holds both, the item ID to path map and the path to type map
      */
-    final SpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache = new SpaceItemPathAndTypeCache(); // Package scope for testing
+    final SpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache; // Package scope for testing
 
     private final Path m_localWorkspaceRootPath;
 
@@ -110,6 +110,8 @@ public final class LocalWorkspace implements Space {
      */
     public LocalWorkspace(final Path localWorkspaceRootPath) {
         m_localWorkspaceRootPath = localWorkspaceRootPath;
+        // To make sure the path of the root item ID can also be retrieved from the cache
+        m_spaceItemPathAndTypeCache = new SpaceItemPathAndTypeCache(Space.ROOT_ITEM_ID, localWorkspaceRootPath);
     }
 
     @Override
@@ -395,15 +397,9 @@ public final class LocalWorkspace implements Space {
     }
 
     private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
-        Path absolutePath = null;
-        var isRoot = Space.ROOT_ITEM_ID.equals(workflowGroupItemId);
-        if (isRoot) {
-            absolutePath = m_localWorkspaceRootPath;
-        } else {
-            absolutePath = m_spaceItemPathAndTypeCache.getPath(workflowGroupItemId);
-            if (absolutePath == null) {
-                throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
-            }
+        var absolutePath = m_spaceItemPathAndTypeCache.getPath(workflowGroupItemId);
+        if (absolutePath == null) {
+            throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
         }
         if (m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath) != TypeEnum.WORKFLOWGROUP) {
             throw new NoSuchElementException("The item with id '" + workflowGroupItemId + "' is not a workflow group");
@@ -435,15 +431,10 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public String getItemName(final String itemId) throws NoSuchElementException {
-        if (itemId.equals(ROOT_ITEM_ID)) {
-            return ROOT_ITEM_ID;
-        } else {
-            return Optional.ofNullable(m_spaceItemPathAndTypeCache.getPath(itemId))//
-                .map(Path::getFileName)//
-                .map(Path::toString)//
-                .orElseThrow(
-                    () -> new NoSuchElementException(String.format("No item with <%s> present in cache", itemId)));
-        }
+        return Optional.ofNullable(m_spaceItemPathAndTypeCache.getPath(itemId))//
+            .map(Path::getFileName)//
+            .map(Path::toString)//
+            .orElseThrow(() -> new NoSuchElementException(String.format("No item with <%s> present in cache", itemId)));
     }
 
     /**
