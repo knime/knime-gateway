@@ -66,7 +66,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ConfigurablePortGroup;
 import org.knime.core.node.context.ports.ExchangeablePortGroup;
@@ -85,6 +85,7 @@ import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuild
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -127,21 +128,12 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var factoryKeyEnt = m_commandEnt.getNodeFactory();
         var url = parseURL(m_commandEnt.getUrl());
         if (factoryKeyEnt == null && url != null) {
-            factoryKeyEnt = getNodeFactoryKey(m_commandEnt.getUrl());
+            factoryKeyEnt = getNodeFactoryKeyFromUrl(m_commandEnt.getUrl());
         }
         if (factoryKeyEnt == null && m_commandEnt.getSpaceItemId() != null) {
-            final var spaceProviderId = m_commandEnt.getSpaceItemId().getProviderId();
-            final var spaceId = m_commandEnt.getSpaceItemId().getSpaceId();
-            final var itemId = m_commandEnt.getSpaceItemId().getItemId();
-            try {
-                url = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).toKnimeUrl(itemId).toURL();
-                var factory = m_nodeFactoryProvider.fromFileExtension(url.toString());
-                if (factory != null){
-                    factoryKeyEnt = builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getName()).build();
-                }
-            } catch (MalformedURLException ex) {
-                url = null;
-            }
+            var spaceItemIdResult = getNodeFactoryKeyAndUrlFromSpaceItemId(m_commandEnt.getSpaceItemId());
+            url = spaceItemIdResult.getValue();
+            factoryKeyEnt = spaceItemIdResult.getKey();
         }
         if (factoryKeyEnt == null) {
             throw new OperationNotAllowedException("No node factory class given");
@@ -172,7 +164,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         return true; // Workflow changed if no exceptions were thrown
     }
 
-    private NodeFactoryKeyEnt getNodeFactoryKey(final String url) {
+    private NodeFactoryKeyEnt getNodeFactoryKeyFromUrl(final String url) {
         if (m_nodeFactoryProvider == null) {
             return null;
         }
@@ -192,6 +184,23 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         } catch (MalformedURLException | URISyntaxException ex) {
             // TODO log
             return null;
+        }
+    }
+
+    private ImmutablePair<NodeFactoryKeyEnt, URL> getNodeFactoryKeyAndUrlFromSpaceItemId(final SpaceItemIdEnt spaceItemId) {
+        final var spaceProviderId = spaceItemId.getProviderId();
+        final var spaceId = spaceItemId.getSpaceId();
+        final var itemId = spaceItemId.getItemId();
+        try {
+            var url = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).toKnimeUrl(itemId).toURL();
+            var factory = m_nodeFactoryProvider.fromFileExtension(url.toString());
+            if (factory != null) {
+                var factoryKeyEnt = builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getName()).build();
+                return new ImmutablePair<>(factoryKeyEnt, url);
+            }
+            return new ImmutablePair<>(null, url);
+        } catch (MalformedURLException ex) {
+            return new ImmutablePair<>(null, null);
         }
     }
 
@@ -254,6 +263,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
      */
     private static Optional<Integer> createAndGetDestPortIdx(final PortType sourcePortType, final NodeID destNodeId,
         final WorkflowManager wfm) throws IllegalArgumentException, NoSuchElementException {
+
         var creationConfig = CoreUtil.getCopyOfCreationConfig(wfm, destNodeId).orElseThrow();
         var portsConfig = creationConfig.getPortConfig().orElseThrow();
         var portGroupIds = portsConfig.getPortGroupNames();
