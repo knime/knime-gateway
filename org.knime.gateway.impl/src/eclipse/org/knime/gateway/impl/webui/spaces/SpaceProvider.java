@@ -48,10 +48,14 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
@@ -82,6 +86,22 @@ public interface SpaceProvider {
      */
     default boolean isLocal() {
         return false;
+    }
+
+    /**
+     * Uploads a workflow to the location represented by the given KNIME URL.
+     *
+     * @param localWorkflow workflow directory
+     * @param targetUri target KNIME URL
+     * @param excludeDataInWorkflows data exclusion flag
+     * @param monitor progress monitor
+     * @param callback after-upload callback which is invoked from the UI thread
+     * @throws CoreException if something goes wrong
+     */
+    default void syncUploadWorkflow(final java.nio.file.Path localWorkflow, final URI targetUri,
+            final boolean excludeDataInWorkflows, final IProgressMonitor monitor,
+            final Consumer<Throwable> callback) throws CoreException {
+        throw new UnsupportedOperationException();
     }
 
     /**
