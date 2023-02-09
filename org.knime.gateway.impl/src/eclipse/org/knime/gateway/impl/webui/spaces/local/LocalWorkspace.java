@@ -221,7 +221,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt renameItem(final String itemId, final String queriedName)
-        throws IOException, ServiceExceptions.OperationNotAllowedException {
+            throws IOException, ServiceExceptions.OperationNotAllowedException {
 
         if (itemId.equals(Space.ROOT_ITEM_ID)) {
             throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
@@ -263,7 +263,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public void moveItems(final List<String> itemIds, final String destItemId,
-        final Space.NameCollisionHandling collisionHandling) throws IOException {
+            final Space.NameCollisionHandling collisionHandling) throws IOException {
         if (itemIds.contains(Space.ROOT_ITEM_ID)) {
             throw new IllegalArgumentException("The root of the space cannot be moved.");
         }
@@ -297,7 +297,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-        final NameCollisionHandling collisionHandling, final IProgressMonitor progress) throws IOException {
+            final NameCollisionHandling collisionHandling, final IProgressMonitor progress) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var fileName = srcPath.getFileName().toString();
 
@@ -318,8 +318,8 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
-        final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling)
-        throws IOException {
+            final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
+            final IProgressMonitor progressMonitor) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
 
         var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
@@ -388,7 +388,7 @@ public final class LocalWorkspace implements Space {
      * @return The items path after it was moved.
      */
     private Path moveItem(final Path srcPath, final Path destPathParent,
-        final Space.NameCollisionHandling collisionHandling) throws IOException {
+            final Space.NameCollisionHandling collisionHandling) throws IOException {
         var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(srcPath);
         var fileName = srcPath.getFileName().toString();
 

@@ -388,7 +388,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public void moveItems(final List<String> itemIds, final String destWorkflowGroupItemId,
-                final Space.NameCollisionHandling collisionHandling) throws IOException {
+                    final Space.NameCollisionHandling collisionHandling) throws IOException {
                 // do nothing
             }
 
@@ -401,8 +401,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
-                final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling)
-                throws IOException {
+                    final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
+                    final IProgressMonitor progress) throws IOException {
                 return null;
             }
 
@@ -486,14 +486,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         } finally {
             // Make sure cleanup is always performed
             var pathWf0 = testWorkspacePath//
-                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME);
+                .resolve(Space.DEFAULT_WORKFLOW_NAME);
             var pathWf1 = testWorkspacePath//
                 .resolve("level1")//
-                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME);
+                .resolve(Space.DEFAULT_WORKFLOW_NAME);
             var pathWf2 = testWorkspacePath//
                 .resolve("level1")//
                 .resolve("level2")//
-                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME);
+                .resolve(Space.DEFAULT_WORKFLOW_NAME);
             for (var path : List.of(pathWf0, pathWf1, pathWf2)) {
                 FileUtils.deleteQuietly(path.toFile()); // To delete directory recursively
             }
@@ -516,7 +516,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
         ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
         assertThat("Workflow must not exist anymore",
-            !Files.exists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+            !Files.exists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME)));
 
         // Create a workflow group with some content and delete it
         var workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
@@ -546,7 +546,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Call delete on a workflow that was deleted by another application
         wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
-        PathUtils.deleteDirectoryIfExists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME));
+        PathUtils.deleteDirectoryIfExists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME));
         ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
 
         // Delete multiple items at once
@@ -600,7 +600,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         } finally {
             // Make sure cleanup is always performed
             var pathWfg0 = testWorkspacePath//
-                .resolve(LocalWorkspace.DEFAULT_WORKFLOW_GROUP_NAME);
+                .resolve(Space.DEFAULT_WORKFLOW_GROUP_NAME);
             PathUtils.deleteDirectoryIfExists(pathWfg0);
         }
     }
@@ -622,7 +622,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         try {
             // Create a workflow, a workflow group and a file
-            var wfName = LocalWorkspace.DEFAULT_WORKFLOW_NAME;
+            var wfName = Space.DEFAULT_WORKFLOW_NAME;
             var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
             Files.createDirectory(level1Path);
             var level1Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), level1);
@@ -647,7 +647,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             Files.createDirectory(level2Path);
             var level2Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), level2);
             var itemsToMove = List.of(//
-                findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), LocalWorkspace.DEFAULT_WORKFLOW_NAME), //
+                findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), Space.DEFAULT_WORKFLOW_NAME), //
                 findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), fileName)//
             );
             ss().moveItems(spaceId, providerId, itemsToMove, level2Id, Space.NameCollisionHandling.NOOP.toString());
@@ -670,7 +670,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 providerId, List.of(level1Id), level1Id, Space.NameCollisionHandling.NOOP.toString()));
         } finally {
             FileUtils.deleteQuietly(testWorkspacePath.resolve(fileName).toFile());
-            FileUtils.deleteQuietly(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME).toFile());
+            FileUtils.deleteQuietly(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME).toFile());
             FileUtils.deleteQuietly(level1Path.toFile());
         }
     }
@@ -777,9 +777,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 Files.notExists(testWorkspacePath.resolve(fileName)));
             assertThat("The newly created file didn't move to <level1>", Files.exists(level1Path.resolve(fileName)));
             assertThat("The newly created workflow didn't move out of <root>",
-                Files.notExists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+                Files.notExists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME)));
             assertThat("The newly created workflow didn't move to <level1>",
-                Files.exists(level1Path.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+                Files.exists(level1Path.resolve(Space.DEFAULT_WORKFLOW_NAME)));
 
             // Move with auto-rename collision handling
             Files.createFile(testWorkspacePath.resolve(fileName));
@@ -793,12 +793,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             assertThat("The newly created file didn't move to <level1>",
                 Files.exists(level1Path.resolve("testfile(1).txt")));
             assertThat("The newly created workflow didn't move out of <root>",
-                Files.notExists(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME)));
+                Files.notExists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME)));
             assertThat("The newly created workflow didn't move to <level1>",
-                Files.exists(level1Path.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME + "1")));
+                Files.exists(level1Path.resolve(Space.DEFAULT_WORKFLOW_NAME + "1")));
         } finally {
             FileUtils.deleteQuietly(testWorkspacePath.resolve(fileName).toFile());
-            FileUtils.deleteQuietly(testWorkspacePath.resolve(LocalWorkspace.DEFAULT_WORKFLOW_NAME).toFile());
+            FileUtils.deleteQuietly(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME).toFile());
             FileUtils.deleteQuietly(level1Path.toFile());
         }
     }

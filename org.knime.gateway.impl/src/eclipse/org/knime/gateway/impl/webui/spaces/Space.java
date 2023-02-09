@@ -228,6 +228,7 @@ public interface Space {
      * @param itemIds The item IDs
      * @param destWorkflowGroupItemId The ID of the new parent item
      * @param collisionHandling How to handle name collisions
+     * @param progressMonitor progress monitor
      * @throws IOException If there was a problem moving the items
      * @throws NoSuchElementException If one of the given item IDs does not exist
      * @throws IllegalArgumentException
@@ -245,8 +246,8 @@ public interface Space {
      * @return The imported space item entity
      * @throws IOException If the import failed
      */
-    SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-        Space.NameCollisionHandling collisionHandling, IProgressMonitor progressMonitor) throws IOException;
+    SpaceItemEnt importFile(Path srcPath, String workflowGroupItemId, Space.NameCollisionHandling collisionHandling,
+        IProgressMonitor progressMonitor) throws IOException;
 
     /**
      * Imports a workflow (group) to the specified workflow group.
@@ -255,18 +256,20 @@ public interface Space {
      * @param workflowGroupItemId The workflow group item ID
      * @param createMetaInfoFileFor Consumer to create the necessary `MetaInfoFile` for an imported workflow (group)
      * @param collisionHandling How to handle name collisions
+     * @param progressMonitor progress monitor
      * @return The imported space item entity
      * @throws IOException If the import failed
      */
-    SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
-        final Consumer<Path> createMetaInfoFileFor, Space.NameCollisionHandling collisionHandling) throws IOException;
+    SpaceItemEnt importWorkflowOrWorkflowGroup(Path srcPath, String workflowGroupItemId,
+        Consumer<Path> createMetaInfoFileFor, Space.NameCollisionHandling collisionHandling,
+        IProgressMonitor progressMonitor) throws IOException;
 
     /**
      * @param itemId the id of the item to get the ancestors for
      * @return the list of ids of the ancestor items; with the first element being the direct parent, the second the
      *         parent of the parent etc. Returns an empty list if the item is at root-level.
      */
-    List<String> getAncestorItemIds(final String itemId);
+    List<String> getAncestorItemIds(String itemId);
 
     /**
      * Checks whether a certain workflow group (or the workspace root) already contains an item with the given name.
@@ -276,7 +279,7 @@ public interface Space {
      * @return Returns {@code true} if an item with that name already exists, {@code false} otherwise.
      * @throws NoSuchElementException If there is no workflow group for the given id.
      */
-    boolean containsItemWithName(final String workflowGroupItemId, final String itemName) throws NoSuchElementException;
+    boolean containsItemWithName(String workflowGroupItemId, String itemName) throws NoSuchElementException;
 
     /**
      * Returns the name of a space item.
