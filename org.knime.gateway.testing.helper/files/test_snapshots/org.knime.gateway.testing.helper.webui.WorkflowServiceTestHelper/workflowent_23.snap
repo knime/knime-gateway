@@ -61,7 +61,7 @@
     },
     "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPklEQVQ4je2RMQoAIBRCX13Mo3s024I//4agBBdBER1AaGB2zBcFJNm0jaSiJUEStot2rkEHgxM3/g2e32ABBL1vm0aW6zoAAAAASUVORK5CYII=",
-      "name" : "Table View",
+      "name" : "Table View (legacy)",
       "nodeFactory" : {
         "className" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
       },
