@@ -69,8 +69,11 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -133,6 +136,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemIdEnt.SpaceItemIdEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -151,6 +155,9 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -2179,6 +2186,39 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         var addNodeCommand = builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
             .setUrl("file:/file.csv").setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build())//
+            .build();
+        AddNodeResultEnt res = (AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), addNodeCommand);
+        var nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
+        assertThat(((NativeNodeEnt)nodes.get(res.getNewNodeId().toString())).getTemplateId(),
+            is("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory"));
+    }
+
+    /**
+     * Tests the {@link AddNodeCommandEnt} with {@link AddNodeCommandEnt#getSpaceItemId()} set.
+     *
+     * @throws Exception
+     */
+    public void testAddNodeCommandFromSpaceItemId() throws Exception {
+        var nodeFactoryProvider = mock(NodeFactoryProvider.class);
+        var spaceProviders = mock(SpaceProviders.class);
+        var spaceProvider = mock(SpaceProvider.class);
+        var space = mock(Space.class);
+        when(spaceProvider.getSpaceMap()).thenReturn(Map.of("spaceId", space));
+        when(spaceProviders.getProvidersMap()).thenReturn(Map.of("providerId", spaceProvider));
+        when(space.toKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
+
+        Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
+            .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
+            .getClass();
+        Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.eq("knime://LOCAL/test.csv")))
+            .thenReturn(nodeFactoryClass);
+        ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
+        String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+
+        var addNodeCommand = builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
+            .setSpaceItemId(builder(SpaceItemIdEntBuilder.class).setItemId("itemId").setSpaceId("spaceId")
+                .setProviderId("providerId").build())
+            .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build())//
             .build();
         AddNodeResultEnt res = (AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), addNodeCommand);
         var nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
