@@ -12,7 +12,7 @@
     <tags>topLevel</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_RMrLAXeqEe2sQ_FMLWPYoA" selectedElement="_RMrLAneqEe2sQ_FMLWPYoA" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_RMrLAneqEe2sQ_FMLWPYoA" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_RMrLBXeqEe2sQ_FMLWPYoA">
-        <children xsi:type="advanced:Perspective" xmi:id="_RMrLA3eqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.perspective" contributorURI="platform:/plugin/org.knime.ui.java" selectedElement="_RMrLBHeqEe2sQ_FMLWPYoA" label="KNIME Modern UI Preview" iconURI="platform:/plugin/org.knime.ui.java/icons/knime.png">
+        <children xsi:type="advanced:Perspective" xmi:id="_RMrLA3eqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.perspective" contributorURI="platform:/plugin/org.knime.ui.java" selectedElement="_RMrLBHeqEe2sQ_FMLWPYoA" label="KNIME Modern UI" iconURI="platform:/plugin/org.knime.ui.java/icons/knime.png">
           <tags>persp.actionSet:org.eclipse.ui.cheatsheets.actionSet</tags>
           <tags>persp.actionSet:org.eclipse.search.searchActionSet</tags>
           <tags>persp.actionSet:org.eclipse.text.quicksearch.actionSet</tags>
@@ -252,7 +252,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_RMryb3eqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.toolbar.0" contributorURI="platform:/plugin/org.knime.ui.java">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_RMrycHeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.handledtoolitem.openknimenext" contributorURI="platform:/plugin/org.knime.ui.java" label="Open KNIME Modern UI Preview" iconURI="platform:/plugin/org.knime.ui.java/icons/switch.png" tooltip="Open KNIME Modern UI Preview" command="_RMuP1XeqEe2sQ_FMLWPYoA">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_RMrycHeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.handledtoolitem.openknimenext" contributorURI="platform:/plugin/org.knime.ui.java" label="Open KNIME Modern UI" iconURI="platform:/plugin/org.knime.ui.java/icons/switch.png" tooltip="Open KNIME Modern UI" command="_RMuP1XeqEe2sQ_FMLWPYoA">
           <tags>FORCE_TEXT</tags>
         </children>
       </children>
@@ -1154,7 +1154,7 @@
     <tags>View</tags>
     <tags>categoryTag:KNIME Report Designer</tags>
   </descriptors>
-  <descriptors xmi:id="_RMtAPHeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.browser.view" label="KNIME Modern UI Preview" iconURI="platform:/plugin/org.knime.ui.java/icons/knime.png" tooltip="" category="Other" closeable="true" contributionURI="bundleclass://org.knime.ui.java/org.knime.ui.java.browser.KnimeBrowserView">
+  <descriptors xmi:id="_RMtAPHeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.browser.view" label="KNIME Modern UI" iconURI="platform:/plugin/org.knime.ui.java/icons/knime.png" tooltip="" category="Other" closeable="true" contributionURI="bundleclass://org.knime.ui.java/org.knime.ui.java.browser.KnimeBrowserView">
     <tags>View</tags>
     <tags>categoryTag:Other</tags>
     <tags>NoRestore</tags>
@@ -1232,12 +1232,12 @@
   </trimContributions>
   <snippets xsi:type="menu:TrimContribution" xmi:id="_RMtnyneqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.trimcontribution.0" contributorURI="platform:/plugin/org.knime.ui.java" parentId="org.eclipse.ui.main.toolbar">
     <children xsi:type="menu:ToolBar" xmi:id="_RMtny3eqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.toolbar.0" contributorURI="platform:/plugin/org.knime.ui.java">
-      <children xsi:type="menu:HandledToolItem" xmi:id="_RMtnzHeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.handledtoolitem.openknimenext" contributorURI="platform:/plugin/org.knime.ui.java" label="Open KNIME Modern UI Preview" iconURI="platform:/plugin/org.knime.ui.java/icons/switch.png" tooltip="Open KNIME Modern UI Preview" command="_RMuP1XeqEe2sQ_FMLWPYoA">
+      <children xsi:type="menu:HandledToolItem" xmi:id="_RMtnzHeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.handledtoolitem.openknimenext" contributorURI="platform:/plugin/org.knime.ui.java" label="Open KNIME Modern UI" iconURI="platform:/plugin/org.knime.ui.java/icons/switch.png" tooltip="Open KNIME Modern UI" command="_RMuP1XeqEe2sQ_FMLWPYoA">
         <tags>FORCE_TEXT</tags>
       </children>
     </children>
   </snippets>
-  <snippets xsi:type="advanced:Perspective" xmi:id="_RMtnzXeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.perspective" contributorURI="platform:/plugin/org.knime.ui.java" selectedElement="_RMtnzneqEe2sQ_FMLWPYoA" label="KNIME Modern UI Preview" iconURI="platform:/plugin/org.knime.ui.java/icons/knime.png">
+  <snippets xsi:type="advanced:Perspective" xmi:id="_RMtnzXeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.perspective" contributorURI="platform:/plugin/org.knime.ui.java" selectedElement="_RMtnzneqEe2sQ_FMLWPYoA" label="KNIME Modern UI" iconURI="platform:/plugin/org.knime.ui.java/icons/knime.png">
     <children xsi:type="basic:Part" xmi:id="_RMtnzneqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.browser.view" contributorURI="platform:/plugin/org.knime.ui.java" contributionURI="bundleclass://org.knime.ui.java/org.knime.ui.java.browser.KnimeBrowserView" iconURI="platform:/plugin/org.knime.ui.java/icons/knime.png"/>
   </snippets>
   <commands xmi:id="_RMtnz3eqEe2sQ_FMLWPYoA" elementId="org.eclipse.jdt.ui.correction.inlineLocal.assist" commandName="Quick Assist - Inline local variable" description="Invokes quick assist and selects 'Inline local variable'" category="_RMu11HeqEe2sQ_FMLWPYoA"/>
@@ -1949,7 +1949,7 @@
   </commands>
   <commands xmi:id="_RMuPxHeqEe2sQ_FMLWPYoA" elementId="org.eclipse.compare.copyAllLeftToRight" commandName="Copy All from Left to Right" description="Copy All Changes from Left to Right" category="_RMu1w3eqEe2sQ_FMLWPYoA"/>
   <commands xmi:id="_RMuPxXeqEe2sQ_FMLWPYoA" elementId="org.knime.workbench.workflowdiff.CompareNodesCommand" commandName="NodeCompare" category="_RMu113eqEe2sQ_FMLWPYoA"/>
-  <commands xmi:id="_RMuP1XeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.command.switch" contributorURI="platform:/plugin/org.knime.ui.java" commandName="Switch to KNIME Modern UI Preview"/>
+  <commands xmi:id="_RMuP1XeqEe2sQ_FMLWPYoA" elementId="org.knime.ui.java.command.switch" contributorURI="platform:/plugin/org.knime.ui.java" commandName="Switch to KNIME Modern UI"/>
   <commands xmi:id="_RMuP1neqEe2sQ_FMLWPYoA" elementId="AUTOGEN:::org.eclipse.ant.ui.actionSet.presentation/org.eclipse.ant.ui.toggleAutoReconcile" commandName="Toggle Ant Editor Auto Reconcile" description="Toggle Ant Editor Auto Reconcile" category="_RMu113eqEe2sQ_FMLWPYoA"/>
   <commands xmi:id="_RMuP13eqEe2sQ_FMLWPYoA" elementId="AUTOGEN:::org.eclipse.birt.report.debug.ui.DeubgScript/org.eclipse.birt.report.debug.ui.DebugScript" commandName="Debug Report" category="_RMu113eqEe2sQ_FMLWPYoA"/>
   <commands xmi:id="_RMuP2HeqEe2sQ_FMLWPYoA" elementId="AUTOGEN:::org.eclipse.birt.report.designer.ui.publishActionSet/org.eclipse.birt.report.designer.ui.TemplatepublisAction" commandName="Register Template with New Report Wizard..." category="_RMu113eqEe2sQ_FMLWPYoA"/>
