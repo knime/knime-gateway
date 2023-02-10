@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -80,10 +79,10 @@ public interface WorkflowProjectEnt extends GatewayEntity {
   public String getName();
 
   /**
-   * Get activeWorkflow
-   * @return activeWorkflow 
+   * If this workflow project is active, it provides the node id of the active workflow (e.g. the root workflow or a sub-workflow (component/metanode)).
+   * @return activeWorkflowId 
    **/
-  public WorkflowSnapshotEnt getActiveWorkflow();
+  public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId();
 
 
     /**
@@ -116,12 +115,12 @@ public interface WorkflowProjectEnt extends GatewayEntity {
         WorkflowProjectEntBuilder setName(String name);
         
         /**
-   		 * Set activeWorkflow
+         * If this workflow project is active, it provides the node id of the active workflow (e.g. the root workflow or a sub-workflow (component/metanode)).
          * 
-         * @param activeWorkflow the property value,  
+         * @param activeWorkflowId the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setActiveWorkflow(WorkflowSnapshotEnt activeWorkflow);
+        WorkflowProjectEntBuilder setActiveWorkflowId(org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
         
         
         /**

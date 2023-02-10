@@ -45,7 +45,6 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -82,8 +81,8 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
     public String getName();
     
     @Override
-    @JsonProperty("activeWorkflow")
-    public WorkflowSnapshotEnt getActiveWorkflow();
+    @JsonProperty("activeWorkflowId")
+    public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId();
     
 
     /**
@@ -111,8 +110,8 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
         public WorkflowProjectEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("activeWorkflow")
-        public WorkflowProjectEntMixInBuilder setActiveWorkflow(final WorkflowSnapshotEnt activeWorkflow);
+        @JsonProperty("activeWorkflowId")
+        public WorkflowProjectEntMixInBuilder setActiveWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
         
     }
 

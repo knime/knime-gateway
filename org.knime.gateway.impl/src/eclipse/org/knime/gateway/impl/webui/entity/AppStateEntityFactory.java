@@ -84,13 +84,10 @@ import org.knime.gateway.api.webui.entity.SpaceItemIdEnt.SpaceItemIdEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -125,21 +122,19 @@ public final class AppStateEntityFactory {
     /**
      * @param previousAppState
      * @param workflowProjectManager
-     * @param workflowMiddleware
      * @param preferenceProvider
      * @param exampleProjects if {@code null}, no example projects will be added to the app-state
      * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
-        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
-        final PreferencesProvider preferenceProvider, final ExampleProjects exampleProjects,
-        final SpaceProviders spaceProviders) {
+        final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
+        final ExampleProjects exampleProjects, final SpaceProviders spaceProviders) {
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
         Boolean nodeRepoFilterEnabled = preferenceProvider.isNodeRepoFilterEnabled();
         List<ExampleProjectEnt> exampleProjectEnts = null;
-        var projectEnts = getProjectEnts(workflowProjectManager, workflowMiddleware, spaceProviders);
+        var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders);
         if (previousAppState == null) { // If there is no previous app state, no checks are needed
             availablePortTypeEnts = getAvailablePortTypeEnts();
             suggestedPortTypeIds = getSuggestedPortTypeIds();
@@ -168,10 +163,10 @@ public final class AppStateEntityFactory {
     }
 
     private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
-        final WorkflowMiddleware workflowMiddleware, final SpaceProviders spaceProviders) {
+        final SpaceProviders spaceProviders) {
         return workflowProjectManager.getWorkflowProjectsIds().stream() //
             .flatMap(id -> workflowProjectManager.getWorkflowProject(id).stream()) //
-            .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, workflowMiddleware, spaceProviders)) //
+            .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, spaceProviders)) //
             .collect(toList());
     }
 
@@ -240,18 +235,13 @@ public final class AppStateEntityFactory {
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
-        final WorkflowProjectManager workflowProjectManager, final WorkflowMiddleware workflowMiddleware,
-        final SpaceProviders spaceProviders) {
+        final WorkflowProjectManager workflowProjectManager, final SpaceProviders spaceProviders) {
         final WorkflowProjectEntBuilder projectEntBuilder =
             builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
 
         // optionally set an active workflow for this workflow project
         if (workflowProjectManager.isActiveWorkflowProject(wp.getID())) {
-            var activeWorkflow = workflowMiddleware.buildWorkflowSnapshotEnt( //
-                new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()), //
-                () -> WorkflowBuildContext.builder().includeInteractionInfo(true) //
-            );
-            projectEntBuilder.setActiveWorkflow(activeWorkflow);
+            projectEntBuilder.setActiveWorkflowId(NodeIDEnt.getRootID());
         }
 
         wp.getOrigin()

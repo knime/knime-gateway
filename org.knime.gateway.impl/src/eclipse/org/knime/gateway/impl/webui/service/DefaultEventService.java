@@ -129,7 +129,7 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new AppStateChangedEventSource(this::sendEvent, m_appStateUpdater, m_workflowProjectManager,
-                    m_workflowMiddleware, m_preferencesProvider, m_spaceProviders));
+                    m_preferencesProvider, m_spaceProviders));
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SelectionEventSourceDelegator(this::sendEvent));

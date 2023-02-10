@@ -50,7 +50,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotSame;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -104,14 +103,6 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         assertThat(appStateEnt.hasNodeRecommendationsEnabled(), not(is(nullValue())));
         AppStateEnt appStateEntStripped = stripAppState(appStateEnt);
         cr(appStateEntStripped, "appstate");
-
-        // test that a new workflow entity instance is created even though the workflow didn't change (see NXT-866)
-        AppStateEnt appStateEnt2 = appService.getState();
-        assertNotSame(
-            appStateEnt.getOpenProjects().get(0).getActiveWorkflow().getWorkflow(),
-            appStateEnt2.getOpenProjects().get(0).getActiveWorkflow().getWorkflow()
-        );
-
     }
 
     /**

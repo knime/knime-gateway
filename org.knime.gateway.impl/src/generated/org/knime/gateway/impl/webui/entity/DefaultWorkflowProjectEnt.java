@@ -51,7 +51,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
@@ -66,7 +65,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
   protected String m_projectId;
   protected SpaceItemIdEnt m_origin;
   protected String m_name;
-  protected WorkflowSnapshotEnt m_activeWorkflow;
+  protected org.knime.gateway.api.entity.NodeIDEnt m_activeWorkflowId;
   
   protected DefaultWorkflowProjectEnt() {
     //for sub-classes
@@ -91,7 +90,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         throw new IllegalArgumentException("name must not be null.");
     }
     m_name = immutable(builder.m_name);
-    m_activeWorkflow = immutable(builder.m_activeWorkflow);
+    m_activeWorkflowId = immutable(builder.m_activeWorkflowId);
   }
   
    /**
@@ -109,7 +108,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
             return false;
         }
         DefaultWorkflowProjectEnt ent = (DefaultWorkflowProjectEnt)o;
-        return Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_origin, ent.m_origin) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_activeWorkflow, ent.m_activeWorkflow);
+        return Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_origin, ent.m_origin) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_activeWorkflowId, ent.m_activeWorkflowId);
     }
 
 
@@ -123,7 +122,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
                .append(m_projectId)
                .append(m_origin)
                .append(m_name)
-               .append(m_activeWorkflow)
+               .append(m_activeWorkflowId)
                .toHashCode();
    }
   
@@ -145,8 +144,8 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
   }
     
   @Override
-  public WorkflowSnapshotEnt getActiveWorkflow() {
-        return m_activeWorkflow;
+  public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId() {
+        return m_activeWorkflowId;
   }
     
   
@@ -159,7 +158,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         private String m_projectId;
         private SpaceItemIdEnt m_origin;
         private String m_name;
-        private WorkflowSnapshotEnt m_activeWorkflow;
+        private org.knime.gateway.api.entity.NodeIDEnt m_activeWorkflowId;
 
         @Override
         public DefaultWorkflowProjectEntBuilder setProjectId(String projectId) {
@@ -189,8 +188,8 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         }
 
         @Override
-        public DefaultWorkflowProjectEntBuilder setActiveWorkflow(WorkflowSnapshotEnt activeWorkflow) {
-             m_activeWorkflow = activeWorkflow;
+        public DefaultWorkflowProjectEntBuilder setActiveWorkflowId(org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId) {
+             m_activeWorkflowId = activeWorkflowId;
              return this;
         }
 

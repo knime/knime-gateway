@@ -54,7 +54,6 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -72,9 +71,6 @@ public final class DefaultApplicationService implements ApplicationService {
 
     private final WorkflowProjectManager m_workflowProjectManager =
         ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
-
-    private final WorkflowMiddleware m_workflowMiddleware =
-        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
     private final PreferencesProvider m_preferencesProvider =
         ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
@@ -111,8 +107,8 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public AppStateEnt getState() {
-        var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_workflowMiddleware,
-            m_preferencesProvider, m_exampleProjects, m_spaceProviders);
+        var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_preferencesProvider,
+            m_exampleProjects, m_spaceProviders);
         m_appStateUpdater.setLastAppState(appState);
         return appState;
     }
