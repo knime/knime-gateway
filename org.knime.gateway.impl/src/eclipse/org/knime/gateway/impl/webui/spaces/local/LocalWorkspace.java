@@ -163,10 +163,6 @@ public final class LocalWorkspace implements Space {
     @Override
     public URI toKnimeUrl(final String itemId) {
         var absolutePath = toLocalAbsolutePath(null, itemId);
-        var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath);
-        if (type == TypeEnum.WORKFLOW) {
-            absolutePath = absolutePath.resolve("workflow.knime");
-        }
         final var rootUri = m_localWorkspaceRootPath.toUri();
         final var itemRelUri = rootUri.relativize(absolutePath.toUri());
         if (itemRelUri.isAbsolute()) {
