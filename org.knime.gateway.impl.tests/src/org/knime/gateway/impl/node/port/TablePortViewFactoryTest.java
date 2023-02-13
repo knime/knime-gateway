@@ -136,7 +136,7 @@ public class TablePortViewFactoryTest {
         assertThat(settings.get("compactMode").asBoolean(), is(true));
         assertThat(settings.get("showRowKeys").asBoolean(), is(true));
         assertThat(settings.get("showColumnDataType").asBoolean(), is(true));
-        assertThat(settings.get("showRowIndices").asBoolean(), is(false));
+        assertThat(settings.get("showRowIndices").asBoolean(), is(true));
         assertThat(settings.get("enableGlobalSearch").asBoolean(), is(true));
         assertThat(settings.get("enableColumnSearch").asBoolean(), is(true));
         assertThat(settings.get("enableSortingByHeader").asBoolean(), is(true));
