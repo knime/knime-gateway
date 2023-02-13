@@ -136,7 +136,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt.SpaceItemIdEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -2216,7 +2216,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
 
         var addNodeCommand = builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
-            .setSpaceItemId(builder(SpaceItemIdEntBuilder.class).setItemId("itemId").setSpaceId("spaceId")
+            .setSpaceItemReference(builder(SpaceItemReferenceEntBuilder.class).setItemId("itemId").setSpaceId("spaceId")
                 .setProviderId("providerId").build())
             .setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build())//
             .build();

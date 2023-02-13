@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -76,7 +76,7 @@ public interface ExampleProjectEnt extends GatewayEntity {
    * Get origin
    * @return origin 
    **/
-  public SpaceItemIdEnt getOrigin();
+  public SpaceItemReferenceEnt getOrigin();
 
 
     /**
@@ -106,7 +106,7 @@ public interface ExampleProjectEnt extends GatewayEntity {
          * @param origin the property value,  
          * @return this entity builder for chaining
          */
-        ExampleProjectEntBuilder setOrigin(SpaceItemIdEnt origin);
+        ExampleProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin);
         
         
         /**

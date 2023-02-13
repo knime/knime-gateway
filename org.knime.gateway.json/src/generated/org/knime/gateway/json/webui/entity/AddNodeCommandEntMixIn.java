@@ -45,7 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
@@ -88,8 +88,8 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
     public String getUrl();
     
     @Override
-    @JsonProperty("spaceItemId")
-    public SpaceItemIdEnt getSpaceItemId();
+    @JsonProperty("spaceItemReference")
+    public SpaceItemReferenceEnt getSpaceItemReference();
     
     @Override
     @JsonProperty("sourceNodeId")
@@ -129,8 +129,8 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
         public AddNodeCommandEntMixInBuilder setUrl(final String url);
         
         @Override
-        @JsonProperty("spaceItemId")
-        public AddNodeCommandEntMixInBuilder setSpaceItemId(final SpaceItemIdEnt spaceItemId);
+        @JsonProperty("spaceItemReference")
+        public AddNodeCommandEntMixInBuilder setSpaceItemReference(final SpaceItemReferenceEnt spaceItemReference);
         
         @Override
         @JsonProperty("sourceNodeId")

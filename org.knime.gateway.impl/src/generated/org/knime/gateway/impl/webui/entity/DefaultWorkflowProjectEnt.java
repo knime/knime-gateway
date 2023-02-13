@@ -50,7 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
@@ -63,7 +63,7 @@ import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
 
   protected String m_projectId;
-  protected SpaceItemIdEnt m_origin;
+  protected SpaceItemReferenceEnt m_origin;
   protected String m_name;
   protected org.knime.gateway.api.entity.NodeIDEnt m_activeWorkflowId;
   
@@ -134,7 +134,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
   }
     
   @Override
-  public SpaceItemIdEnt getOrigin() {
+  public SpaceItemReferenceEnt getOrigin() {
         return m_origin;
   }
     
@@ -156,7 +156,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         }
     
         private String m_projectId;
-        private SpaceItemIdEnt m_origin;
+        private SpaceItemReferenceEnt m_origin;
         private String m_name;
         private org.knime.gateway.api.entity.NodeIDEnt m_activeWorkflowId;
 
@@ -170,7 +170,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         }
 
         @Override
-        public DefaultWorkflowProjectEntBuilder setOrigin(SpaceItemIdEnt origin) {
+        public DefaultWorkflowProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin) {
              if(origin == null) {
                  throw new IllegalArgumentException("origin must not be null.");
              }

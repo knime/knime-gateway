@@ -85,7 +85,7 @@ import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuild
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -130,9 +130,9 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         if (factoryKeyEnt == null && url != null && m_nodeFactoryProvider != null) {
             factoryKeyEnt = getNodeFactoryKeyFromUrl(m_commandEnt.getUrl());
         }
-        if (factoryKeyEnt == null && m_commandEnt.getSpaceItemId() != null && m_nodeFactoryProvider != null
+        if (factoryKeyEnt == null && m_commandEnt.getSpaceItemReference() != null && m_nodeFactoryProvider != null
             && m_spaceProviders != null) {
-            var spaceItemIdResult = getNodeFactoryKeyAndUrlFromSpaceItemId(m_commandEnt.getSpaceItemId());
+            var spaceItemIdResult = getNodeFactoryKeyAndUrlFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
             url = spaceItemIdResult.getValue();
             factoryKeyEnt = spaceItemIdResult.getKey();
         }
@@ -185,7 +185,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         }
     }
 
-    private ImmutablePair<NodeFactoryKeyEnt, URL> getNodeFactoryKeyAndUrlFromSpaceItemId(final SpaceItemIdEnt spaceItemId) {
+    private ImmutablePair<NodeFactoryKeyEnt, URL>
+        getNodeFactoryKeyAndUrlFromSpaceItemReference(final SpaceItemReferenceEnt spaceItemId) {
         final var spaceProviderId = spaceItemId.getProviderId();
         final var spaceId = spaceItemId.getSpaceId();
         final var itemId = spaceItemId.getItemId();

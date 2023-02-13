@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceItemIdEnt extends GatewayEntity {
+public interface SpaceItemReferenceEnt extends GatewayEntity {
 
 
   /**
@@ -79,7 +79,7 @@ public interface SpaceItemIdEnt extends GatewayEntity {
 
   /**
    * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
-   * @return ancestorItemIds , never <code>null</code>
+   * @return ancestorItemIds 
    **/
   public java.util.List<String> getAncestorItemIds();
 
@@ -87,7 +87,7 @@ public interface SpaceItemIdEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface SpaceItemIdEntBuilder extends GatewayEntityBuilder<SpaceItemIdEnt> {
+    public interface SpaceItemReferenceEntBuilder extends GatewayEntityBuilder<SpaceItemReferenceEnt> {
 
         /**
    		 * Set providerId
@@ -95,7 +95,7 @@ public interface SpaceItemIdEnt extends GatewayEntity {
          * @param providerId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemIdEntBuilder setProviderId(String providerId);
+        SpaceItemReferenceEntBuilder setProviderId(String providerId);
         
         /**
    		 * Set spaceId
@@ -103,7 +103,7 @@ public interface SpaceItemIdEnt extends GatewayEntity {
          * @param spaceId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemIdEntBuilder setSpaceId(String spaceId);
+        SpaceItemReferenceEntBuilder setSpaceId(String spaceId);
         
         /**
    		 * Set itemId
@@ -111,15 +111,15 @@ public interface SpaceItemIdEnt extends GatewayEntity {
          * @param itemId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemIdEntBuilder setItemId(String itemId);
+        SpaceItemReferenceEntBuilder setItemId(String itemId);
         
         /**
          * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
          * 
-         * @param ancestorItemIds the property value, NOT <code>null</code>! 
+         * @param ancestorItemIds the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemIdEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
+        SpaceItemReferenceEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
         
         
         /**
@@ -129,7 +129,7 @@ public interface SpaceItemIdEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SpaceItemIdEnt build();
+        SpaceItemReferenceEnt build();
     
     }
 

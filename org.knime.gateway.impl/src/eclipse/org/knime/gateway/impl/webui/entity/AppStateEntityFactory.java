@@ -79,8 +79,8 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt.ExampleProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt.SpaceItemIdEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
@@ -212,7 +212,7 @@ public final class AppStateEntityFactory {
     }
 
     private static ExampleProjectEnt buildExampleProject(final String name, final String svg, final String itemId) {
-        var origin = builder(SpaceItemIdEntBuilder.class) //
+        var origin = builder(SpaceItemReferenceEntBuilder.class) //
             .setItemId(itemId) //
             .setSpaceId(LocalWorkspace.LOCAL_WORKSPACE_ID) //
             .setProviderId("local").build();
@@ -245,13 +245,13 @@ public final class AppStateEntityFactory {
         }
 
         wp.getOrigin()
-            .ifPresent(origin -> projectEntBuilder.setOrigin(buildSpaceItemIdEntEnt(origin, spaceProviders)));
+            .ifPresent(origin -> projectEntBuilder.setOrigin(buildSpaceItemReferenceEnt(origin, spaceProviders)));
         return projectEntBuilder.build();
     }
 
-    private static SpaceItemIdEnt buildSpaceItemIdEntEnt(final WorkflowProject.Origin origin,
+    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final WorkflowProject.Origin origin,
         final SpaceProviders spaceProviders) {
-        return builder(SpaceItemIdEnt.SpaceItemIdEntBuilder.class)
+        return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class)
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //

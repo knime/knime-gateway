@@ -190,8 +190,8 @@ import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt.SpaceItemIdEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
@@ -471,8 +471,8 @@ public class Interface2ImplMap {
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();
         }        
-        if(clazz == SpaceItemIdEntBuilder.class) {
-            return (B)new DefaultSpaceItemIdEnt.DefaultSpaceItemIdEntBuilder();
+        if(clazz == SpaceItemReferenceEntBuilder.class) {
+            return (B)new DefaultSpaceItemReferenceEnt.DefaultSpaceItemReferenceEntBuilder();
         }        
         if(clazz == SpacePathSegmentEntBuilder.class) {
             return (B)new DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder();

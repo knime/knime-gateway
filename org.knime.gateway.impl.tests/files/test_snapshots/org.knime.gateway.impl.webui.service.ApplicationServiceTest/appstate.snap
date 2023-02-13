@@ -33,7 +33,6 @@
   "exampleProjects" : [ {
     "name" : "wfDir1",
     "origin" : {
-      "ancestorItemIds" : [ ],
       "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
       "providerId" : "local",
       "spaceId" : "local"
@@ -42,7 +41,6 @@
   }, {
     "name" : "wfDir2",
     "origin" : {
-      "ancestorItemIds" : [ ],
       "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
       "providerId" : "local",
       "spaceId" : "local"

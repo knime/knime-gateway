@@ -51,7 +51,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
@@ -69,7 +69,7 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
   protected XYEnt m_position;
   protected NodeFactoryKeyEnt m_nodeFactory;
   protected String m_url;
-  protected SpaceItemIdEnt m_spaceItemId;
+  protected SpaceItemReferenceEnt m_spaceItemReference;
   protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
   protected Integer m_sourcePortIdx;
   
@@ -94,7 +94,7 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
     m_position = immutable(builder.m_position);
     m_nodeFactory = immutable(builder.m_nodeFactory);
     m_url = immutable(builder.m_url);
-    m_spaceItemId = immutable(builder.m_spaceItemId);
+    m_spaceItemReference = immutable(builder.m_spaceItemReference);
     m_sourceNodeId = immutable(builder.m_sourceNodeId);
     m_sourcePortIdx = immutable(builder.m_sourcePortIdx);
   }
@@ -114,7 +114,7 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
             return false;
         }
         DefaultAddNodeCommandEnt ent = (DefaultAddNodeCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_nodeFactory, ent.m_nodeFactory) && Objects.equals(m_url, ent.m_url) && Objects.equals(m_spaceItemId, ent.m_spaceItemId) && Objects.equals(m_sourceNodeId, ent.m_sourceNodeId) && Objects.equals(m_sourcePortIdx, ent.m_sourcePortIdx);
+        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_nodeFactory, ent.m_nodeFactory) && Objects.equals(m_url, ent.m_url) && Objects.equals(m_spaceItemReference, ent.m_spaceItemReference) && Objects.equals(m_sourceNodeId, ent.m_sourceNodeId) && Objects.equals(m_sourcePortIdx, ent.m_sourcePortIdx);
     }
 
 
@@ -129,7 +129,7 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
                .append(m_position)
                .append(m_nodeFactory)
                .append(m_url)
-               .append(m_spaceItemId)
+               .append(m_spaceItemReference)
                .append(m_sourceNodeId)
                .append(m_sourcePortIdx)
                .toHashCode();
@@ -158,8 +158,8 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
   }
     
   @Override
-  public SpaceItemIdEnt getSpaceItemId() {
-        return m_spaceItemId;
+  public SpaceItemReferenceEnt getSpaceItemReference() {
+        return m_spaceItemReference;
   }
     
   @Override
@@ -183,7 +183,7 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
         private XYEnt m_position;
         private NodeFactoryKeyEnt m_nodeFactory;
         private String m_url;
-        private SpaceItemIdEnt m_spaceItemId;
+        private SpaceItemReferenceEnt m_spaceItemReference;
         private org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
         private Integer m_sourcePortIdx;
 
@@ -218,8 +218,8 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
         }
 
         @Override
-        public DefaultAddNodeCommandEntBuilder setSpaceItemId(SpaceItemIdEnt spaceItemId) {
-             m_spaceItemId = spaceItemId;
+        public DefaultAddNodeCommandEntBuilder setSpaceItemReference(SpaceItemReferenceEnt spaceItemReference) {
+             m_spaceItemReference = spaceItemReference;
              return this;
         }
 

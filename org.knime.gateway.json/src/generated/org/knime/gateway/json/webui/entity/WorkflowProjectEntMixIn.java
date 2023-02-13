@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -74,7 +74,7 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
     
     @Override
     @JsonProperty("origin")
-    public SpaceItemIdEnt getOrigin();
+    public SpaceItemReferenceEnt getOrigin();
     
     @Override
     @JsonProperty("name")
@@ -103,7 +103,7 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
         
         @Override
         @JsonProperty("origin")
-        public WorkflowProjectEntMixInBuilder setOrigin(final SpaceItemIdEnt origin);
+        public WorkflowProjectEntMixInBuilder setOrigin(final SpaceItemReferenceEnt origin);
         
         @Override
         @JsonProperty("name")

@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
@@ -70,7 +70,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
    * Get origin
    * @return origin , never <code>null</code>
    **/
-  public SpaceItemIdEnt getOrigin();
+  public SpaceItemReferenceEnt getOrigin();
 
   /**
    * Get name
@@ -104,7 +104,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
          * @param origin the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setOrigin(SpaceItemIdEnt origin);
+        WorkflowProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin);
         
         /**
    		 * Set name

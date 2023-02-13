@@ -117,7 +117,7 @@ import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemEntMixIn;
-import org.knime.gateway.json.webui.entity.SpaceItemIdEntMixIn;
+import org.knime.gateway.json.webui.entity.SpaceItemReferenceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpacePathSegmentEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceProviderEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
@@ -233,7 +233,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.class);
         res.add(SpaceEntMixIn.class);
         res.add(SpaceItemEntMixIn.class);
-        res.add(SpaceItemIdEntMixIn.class);
+        res.add(SpaceItemReferenceEntMixIn.class);
         res.add(SpacePathSegmentEntMixIn.class);
         res.add(SpaceProviderEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
@@ -335,7 +335,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.SelectionEventTypeEntMixInBuilder.class);
         res.add(SpaceEntMixIn.SpaceEntMixInBuilder.class);
         res.add(SpaceItemEntMixIn.SpaceItemEntMixInBuilder.class);
-        res.add(SpaceItemIdEntMixIn.SpaceItemIdEntMixInBuilder.class);
+        res.add(SpaceItemReferenceEntMixIn.SpaceItemReferenceEntMixInBuilder.class);
         res.add(SpacePathSegmentEntMixIn.SpacePathSegmentEntMixInBuilder.class);
         res.add(SpaceProviderEntMixIn.SpaceProviderEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);

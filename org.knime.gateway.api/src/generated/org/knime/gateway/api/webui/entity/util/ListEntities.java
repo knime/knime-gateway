@@ -117,7 +117,7 @@ import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
@@ -234,7 +234,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEnt.class);
         res.add(SpaceEnt.class);
         res.add(SpaceItemEnt.class);
-        res.add(SpaceItemIdEnt.class);
+        res.add(SpaceItemReferenceEnt.class);
         res.add(SpacePathSegmentEnt.class);
         res.add(SpaceProviderEnt.class);
         res.add(StyleRangeEnt.class);
@@ -336,7 +336,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEnt.SelectionEventTypeEntBuilder.class);
         res.add(SpaceEnt.SpaceEntBuilder.class);
         res.add(SpaceItemEnt.SpaceItemEntBuilder.class);
-        res.add(SpaceItemIdEnt.SpaceItemIdEntBuilder.class);
+        res.add(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class);
         res.add(SpacePathSegmentEnt.SpacePathSegmentEntBuilder.class);
         res.add(SpaceProviderEnt.SpaceProviderEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);

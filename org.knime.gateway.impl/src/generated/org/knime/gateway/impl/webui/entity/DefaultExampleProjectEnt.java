@@ -50,7 +50,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 
@@ -64,7 +64,7 @@ public class DefaultExampleProjectEnt implements ExampleProjectEnt {
 
   protected String m_name;
   protected String m_svg;
-  protected SpaceItemIdEnt m_origin;
+  protected SpaceItemReferenceEnt m_origin;
   
   protected DefaultExampleProjectEnt() {
     //for sub-classes
@@ -127,7 +127,7 @@ public class DefaultExampleProjectEnt implements ExampleProjectEnt {
   }
     
   @Override
-  public SpaceItemIdEnt getOrigin() {
+  public SpaceItemReferenceEnt getOrigin() {
         return m_origin;
   }
     
@@ -140,7 +140,7 @@ public class DefaultExampleProjectEnt implements ExampleProjectEnt {
     
         private String m_name;
         private String m_svg;
-        private SpaceItemIdEnt m_origin;
+        private SpaceItemReferenceEnt m_origin;
 
         @Override
         public DefaultExampleProjectEntBuilder setName(String name) {
@@ -155,7 +155,7 @@ public class DefaultExampleProjectEnt implements ExampleProjectEnt {
         }
 
         @Override
-        public DefaultExampleProjectEntBuilder setOrigin(SpaceItemIdEnt origin) {
+        public DefaultExampleProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin) {
              m_origin = origin;
              return this;
         }

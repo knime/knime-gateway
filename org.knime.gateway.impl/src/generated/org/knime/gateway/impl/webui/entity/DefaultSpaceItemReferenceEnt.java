@@ -51,7 +51,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 /**
  * Describes from where a workflow project originates.
@@ -59,23 +59,23 @@ import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpaceItemIdEnt implements SpaceItemIdEnt {
+public class DefaultSpaceItemReferenceEnt implements SpaceItemReferenceEnt {
 
   protected String m_providerId;
   protected String m_spaceId;
   protected String m_itemId;
   protected java.util.List<String> m_ancestorItemIds;
   
-  protected DefaultSpaceItemIdEnt() {
+  protected DefaultSpaceItemReferenceEnt() {
     //for sub-classes
   }
   
   @Override
   public String getTypeID() {
-    return "SpaceItemId";
+    return "SpaceItemReference";
   }
   
-  private DefaultSpaceItemIdEnt(DefaultSpaceItemIdEntBuilder builder) {
+  private DefaultSpaceItemReferenceEnt(DefaultSpaceItemReferenceEntBuilder builder) {
     
     if(builder.m_providerId == null) {
         throw new IllegalArgumentException("providerId must not be null.");
@@ -89,9 +89,6 @@ public class DefaultSpaceItemIdEnt implements SpaceItemIdEnt {
         throw new IllegalArgumentException("itemId must not be null.");
     }
     m_itemId = immutable(builder.m_itemId);
-    if(builder.m_ancestorItemIds == null) {
-        throw new IllegalArgumentException("ancestorItemIds must not be null.");
-    }
     m_ancestorItemIds = immutable(builder.m_ancestorItemIds);
   }
   
@@ -109,7 +106,7 @@ public class DefaultSpaceItemIdEnt implements SpaceItemIdEnt {
         if (getClass() != o.getClass()) {
             return false;
         }
-        DefaultSpaceItemIdEnt ent = (DefaultSpaceItemIdEnt)o;
+        DefaultSpaceItemReferenceEnt ent = (DefaultSpaceItemReferenceEnt)o;
         return Objects.equals(m_providerId, ent.m_providerId) && Objects.equals(m_spaceId, ent.m_spaceId) && Objects.equals(m_itemId, ent.m_itemId) && Objects.equals(m_ancestorItemIds, ent.m_ancestorItemIds);
     }
 
@@ -151,19 +148,19 @@ public class DefaultSpaceItemIdEnt implements SpaceItemIdEnt {
   }
     
   
-    public static class DefaultSpaceItemIdEntBuilder implements SpaceItemIdEntBuilder {
+    public static class DefaultSpaceItemReferenceEntBuilder implements SpaceItemReferenceEntBuilder {
     
-        public DefaultSpaceItemIdEntBuilder(){
+        public DefaultSpaceItemReferenceEntBuilder(){
             
         }
     
         private String m_providerId;
         private String m_spaceId;
         private String m_itemId;
-        private java.util.List<String> m_ancestorItemIds = new java.util.ArrayList<>();
+        private java.util.List<String> m_ancestorItemIds;
 
         @Override
-        public DefaultSpaceItemIdEntBuilder setProviderId(String providerId) {
+        public DefaultSpaceItemReferenceEntBuilder setProviderId(String providerId) {
              if(providerId == null) {
                  throw new IllegalArgumentException("providerId must not be null.");
              }
@@ -172,7 +169,7 @@ public class DefaultSpaceItemIdEnt implements SpaceItemIdEnt {
         }
 
         @Override
-        public DefaultSpaceItemIdEntBuilder setSpaceId(String spaceId) {
+        public DefaultSpaceItemReferenceEntBuilder setSpaceId(String spaceId) {
              if(spaceId == null) {
                  throw new IllegalArgumentException("spaceId must not be null.");
              }
@@ -181,7 +178,7 @@ public class DefaultSpaceItemIdEnt implements SpaceItemIdEnt {
         }
 
         @Override
-        public DefaultSpaceItemIdEntBuilder setItemId(String itemId) {
+        public DefaultSpaceItemReferenceEntBuilder setItemId(String itemId) {
              if(itemId == null) {
                  throw new IllegalArgumentException("itemId must not be null.");
              }
@@ -190,18 +187,15 @@ public class DefaultSpaceItemIdEnt implements SpaceItemIdEnt {
         }
 
         @Override
-        public DefaultSpaceItemIdEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds) {
-             if(ancestorItemIds == null) {
-                 throw new IllegalArgumentException("ancestorItemIds must not be null.");
-             }
+        public DefaultSpaceItemReferenceEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds) {
              m_ancestorItemIds = ancestorItemIds;
              return this;
         }
 
         
         @Override
-        public DefaultSpaceItemIdEnt build() {
-            return new DefaultSpaceItemIdEnt(this);
+        public DefaultSpaceItemReferenceEnt build() {
+            return new DefaultSpaceItemReferenceEnt(this);
         }
     
     }

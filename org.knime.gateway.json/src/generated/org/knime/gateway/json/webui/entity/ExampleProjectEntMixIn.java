@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemIdEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -78,7 +78,7 @@ public interface ExampleProjectEntMixIn extends ExampleProjectEnt {
     
     @Override
     @JsonProperty("origin")
-    public SpaceItemIdEnt getOrigin();
+    public SpaceItemReferenceEnt getOrigin();
     
 
     /**
@@ -103,7 +103,7 @@ public interface ExampleProjectEntMixIn extends ExampleProjectEnt {
         
         @Override
         @JsonProperty("origin")
-        public ExampleProjectEntMixInBuilder setOrigin(final SpaceItemIdEnt origin);
+        public ExampleProjectEntMixInBuilder setOrigin(final SpaceItemReferenceEnt origin);
         
     }
 
