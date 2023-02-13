@@ -430,8 +430,10 @@ public final class LocalWorkspace implements Space {
 
     private static boolean isValidWorkspaceItem(final Path p) {
         try {
-            return !Files.isHidden(p)
-                && !WorkflowPersistor.METAINFO_FILE.equals(p.getName(p.getNameCount() - 1).toString());
+            var filename = p.getFileName().toString();
+            return !Files.isHidden(p) //
+                && !WorkflowPersistor.METAINFO_FILE.equals(filename) //
+                && !filename.equals(".metadata");
         } catch (IOException ex) {
             NodeLogger.getLogger(WorkflowEntityFactory.class)
                 .warnWithFormat("Failed to evaluate 'isHidden' on path %s. Path ignored.", ex);
