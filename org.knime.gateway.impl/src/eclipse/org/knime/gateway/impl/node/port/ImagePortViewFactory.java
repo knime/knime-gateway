@@ -73,6 +73,12 @@ import org.knime.core.webui.page.Page;
  */
 public final class ImagePortViewFactory implements PortViewFactory<ImagePortObject> {
 
+    /*
+     * This map is sort of a 'very short term cache'. It keeps image data for a certain image id. The image-id is returned
+     * via the initial data service (as part of a (relative) url). And as soon as the provided URL is 'used' in the FE
+     * (e.g. in an img-src attribute or via another fetch), the actual image data is fetched through the CEF's
+     * middleware service and immediately removed from this map, once it has been fetch.
+     */
     static final Map<String, byte[]> IMAGE_DATA_MAP = new HashMap<>();
 
     /**
