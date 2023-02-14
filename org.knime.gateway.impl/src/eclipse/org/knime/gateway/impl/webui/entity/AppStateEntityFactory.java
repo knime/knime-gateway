@@ -148,7 +148,7 @@ public final class AppStateEntityFactory {
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(SUGGESTED_PORT_TYPE_IDS) //
             .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
-            .setNodeRepoFilterEnabled(preferenceProvider.isNodeRepoFilterEnabled()) //
+            .setHasNodeCollectionActive(preferenceProvider.activeNodeCollection() != null) //
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
@@ -169,8 +169,8 @@ public final class AppStateEntityFactory {
         } else { // Only set what has changed (except for properties we know that are static)
             var builder = builder(AppStateEntBuilder.class);
             setIfChanged(oldAppState, newAppState, AppStateEnt::getOpenProjects, builder::setOpenProjects);
-            setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepoFilterEnabled,
-                builder::setNodeRepoFilterEnabled);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeCollectionActive,
+                builder::setHasNodeCollectionActive);
             setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeRecommendationsEnabled,
                 builder::setHasNodeRecommendationsEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isScrollToZoomEnabled, builder::setScrollToZoomEnabled);

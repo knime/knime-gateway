@@ -82,8 +82,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo, Boolean includeAll)  throws ServiceExceptions.OperationNotAllowedException {
-        return m_service.get().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit, fullTemplateInfo, includeAll);    
+    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException {
+        return m_service.get().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit, fullTemplateInfo);    
     }
 
 	/**
@@ -100,8 +100,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      */
     @Override
     @JsonRpcMethod(value = "getNodesGroupedByTags")
-    public NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo, Boolean includeAll)  {
-        return m_service.get().getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo, includeAll);    
+    public NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo)  {
+        return m_service.get().getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
     }
 
 	/**
@@ -109,8 +109,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      */
     @Override
     @JsonRpcMethod(value = "searchNodes")
-    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean includeAll)  {
-        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo, includeAll);    
+    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean additionalNodes)  {
+        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo, additionalNodes);    
     }
 
 }

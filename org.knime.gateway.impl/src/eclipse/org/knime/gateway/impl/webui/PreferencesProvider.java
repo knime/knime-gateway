@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui;
 
+import java.util.function.Predicate;
+
 /**
  * Provides user preferences.
  *
@@ -56,9 +58,10 @@ package org.knime.gateway.impl.webui;
 public interface PreferencesProvider {
 
     /**
-     * @return {@code true} if the node repository filter is active
+     * @return a predicate that is true for nodes that are part of the active node collection. <code>null</code> if no
+     *         collection is active.
      */
-    boolean isNodeRepoFilterEnabled();
+    Predicate<String> activeNodeCollection();
 
     /**
      * @return {@code true} if the node recommendations are enabled

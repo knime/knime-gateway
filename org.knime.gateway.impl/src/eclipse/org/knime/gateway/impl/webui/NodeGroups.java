@@ -92,9 +92,7 @@ public final class NodeGroups {
 
     private final NodeRepository m_nodeRepo;
 
-    private Map<String, List<Node>> m_allNodesPerCategory;
-
-    private Map<String, List<Node>> m_filteredNodesPerCategory;
+    private Map<String, List<Node>> m_nodesPerCategory;
 
     private List<Pair<String, String>> m_topLevelCats;
 
@@ -115,24 +113,22 @@ public final class NodeGroups {
      * @param tagsLimit the maximum number of tags to select
      * @param fullTemplateInfo see
      *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
-     * @param includeAll If true, all nodes/components will be included in the groups. Otherwise, only the
-     *            nodes/components that are part of the current collection will be included.
      * @return the node groups entity
      */
     public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
-        final Integer tagsLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
+        final Integer tagsLimit, final Boolean fullTemplateInfo) {
         initCategories();
-        var nodesPerCategory = getNodesPerCategory(Boolean.TRUE.equals(includeAll));
+        var nodesPerCategory = getNodesPerCategory();
 
         List<NodeGroupEnt> groups = m_topLevelCats.stream()//
             .filter(p -> nodesPerCategory.containsKey(p.getFirst()))//
             .skip(tagsOffset == null ? 0 : tagsOffset)//
             .limit(tagsLimit == null ? Integer.MAX_VALUE : tagsLimit)//
-            .map(p -> buildNodeGroupEnt(nodesPerCategory.get(p.getFirst()), p.getSecond(), numNodesPerTag, fullTemplateInfo))//
+            .map(p -> buildNodeGroupEnt(nodesPerCategory.get(p.getFirst()), p.getSecond(), numNodesPerTag,
+                fullTemplateInfo))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());
-        return builder(NodeGroupsEntBuilder.class).setGroups(groups)
-            .setTotalNumGroups(nodesPerCategory.size()).build();
+        return builder(NodeGroupsEntBuilder.class).setGroups(groups).setTotalNumGroups(nodesPerCategory.size()).build();
     }
 
     private synchronized void initCategories() {
@@ -147,20 +143,11 @@ public final class NodeGroups {
         }
     }
 
-    private synchronized Map<String, List<Node>> getNodesPerCategory(final boolean includeAll) {
-        if (includeAll) {
-            if (m_allNodesPerCategory == null) {
-                m_allNodesPerCategory =
-                    Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(true), m_topLevelCats));
-            }
-            return m_allNodesPerCategory;
-        } else {
-            if (m_filteredNodesPerCategory == null) {
-                m_filteredNodesPerCategory =
-                    Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(false), m_topLevelCats));
-            }
-            return m_filteredNodesPerCategory;
+    private synchronized Map<String, List<Node>> getNodesPerCategory() {
+        if (m_nodesPerCategory == null) {
+            m_nodesPerCategory = Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
         }
+        return m_nodesPerCategory;
     }
 
     private static List<Pair<String, String>> getSortedCategoriesAtLevel(final String levelId,
@@ -199,8 +186,9 @@ public final class NodeGroups {
 
         // collect all nodes that didn't end up in any of the given categories
         // (e.g. because they are at root level '/' or don't have a category at all)
-        List<Node> uncategorizedNodes =
-            allNodes.stream().filter(n -> !categorized.contains(n.templateId)).collect(Collectors.toList());
+        List<Node> uncategorizedNodes = allNodes.stream() //
+            .filter(n -> !categorized.contains(n.templateId)) //
+            .collect(Collectors.toList());
         if (!uncategorizedNodes.isEmpty()) {
             res.put(UNCATEGORIZED_KEY, uncategorizedNodes);
         }
@@ -214,7 +202,8 @@ public final class NodeGroups {
         }
         List<NodeTemplateEnt> res = nodesPerCategory.stream()//
             .limit(numNodesPerTag == null ? Integer.MAX_VALUE : numNodesPerTag)//
-            .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
+            .map(n -> Boolean.TRUE.equals(fullTemplateInfo)
+                ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
                 : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());

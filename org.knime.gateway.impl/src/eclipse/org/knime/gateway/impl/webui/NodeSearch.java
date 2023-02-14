@@ -86,7 +86,8 @@ import org.knime.gateway.impl.webui.NodeRepository.Node;
  */
 public class NodeSearch {
 
-    private static final Comparator<String> ALPHANUMERIC_COMPARATOR = new AlphanumericComparator(Comparator.naturalOrder());
+    private static final Comparator<String> ALPHANUMERIC_COMPARATOR =
+        new AlphanumericComparator(Comparator.naturalOrder());
 
     /*
      * Lower (including) bound of similarity to a query a node may have to be labeled as a match.
@@ -132,14 +133,16 @@ public class NodeSearch {
      * @param nodesLimit the maximum number of nodes to include in the search result (mainly for pagination)
      * @param fullTemplateInfo see
      *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
-     * @param includeAll If true, all nodes/components will be included in the search result. Otherwise, only the
-     *            nodes/components that are part of the current collection will be included.
+     * @param additionalNodes If true, only the nodes that are not part of the active collection are returned. If
+     *            false, only the nodes that are part of the collection are returned. The default is false.
      * @return the search result entity
      */
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
+        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo,
+        final Boolean additionalNodes) {
+
         Collection<Node> allNodes;
-        final boolean allNodesFromRepo = Boolean.TRUE.equals(includeAll);
+        final boolean additionalNodesPrimitive = Boolean.TRUE.equals(additionalNodes);
         // this function gives us the chance to remove our "easter egg" before the search query normalizes the input
         Normalizer fn;
         if (q != null && q.endsWith("//hidden")) {
@@ -148,21 +151,27 @@ public class NodeSearch {
         } else if (q != null && q.endsWith("//deprecated")) {
             allNodes = m_nodeRepo.getDeprecatedNodes();
             fn = t -> t.replace("//deprecated", "");
+        } else if (additionalNodesPrimitive) {
+            // Only consider the nodes that are not part of the collection
+            allNodes = m_nodeRepo.getAdditionalNodes();
+            fn = Normalizer.identity();
         } else {
-            allNodes = m_nodeRepo.getNodes(allNodesFromRepo);
+            allNodes = m_nodeRepo.getNodes();
             fn = Normalizer.identity();
         }
 
         final var foundNodes = m_foundNodesCache.computeIfAbsent(
             new SearchQuery(q, SearchQuery.DEFAULT_NORMALIZATION.compose(fn), tags, Boolean.TRUE.equals(allTagsMatch),
-                allNodesFromRepo), searchQuery -> searchNodes(allNodes, searchQuery));
+                additionalNodesPrimitive), searchQuery -> searchNodes(allNodes, searchQuery));
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
-            .map(n -> Boolean.TRUE.equals(fullTemplateInfo) ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
+            .map(n -> Boolean.TRUE.equals(fullTemplateInfo)
+                ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
                 : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
-            .filter(Objects::nonNull)
-            .skip(nodesOffset == null ? 0 : nodesOffset).limit(nodesLimit == null ? Long.MAX_VALUE : nodesLimit)//
+            .filter(Objects::nonNull)//
+            .skip(nodesOffset == null ? 0 : nodesOffset)//
+            .limit(nodesLimit == null ? Long.MAX_VALUE : nodesLimit)//
             .collect(Collectors.toList());
 
         // collect all tags from the templates and sort according to their frequency
@@ -193,8 +202,7 @@ public class NodeSearch {
             // Case 2: filter only by tags, rank nodes
             return nodes.stream().filter(tagFilter)//
                     .sorted(//
-                        Comparator.<Node> comparingInt(n -> n.isIncluded ? 0 : 1)//
-                        .thenComparingInt(n -> -n.weight)//
+                        Comparator.<Node> comparingInt(n -> -n.weight)//
                         .thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))//
                     .collect(Collectors.toList());
         }
@@ -206,15 +214,13 @@ public class NodeSearch {
                 SCORING_FN.applyAsDouble(n.getFuzzySearchable(), term)))//
             .filter(n -> n.m_substringMatch || n.m_score >= SIMILARITY_THRESHOLD)//
             .sorted(//
-                // 1) included nodes
-                Comparator.<FoundNode> comparingInt(n -> n.m_node.isIncluded ? 0 : 1)//
-                // 2) then exact substring matches (only based on names)
-                .thenComparingInt(n -> n.m_substringMatch ? 0 : 1)//
-                // 3) then fuzzy matches (also based on "hidden" keywords)
+                // 1) exact substring matches (only based on names)
+                Comparator.<FoundNode> comparingInt(n -> n.m_substringMatch ? 0 : 1)//
+                // 2) then fuzzy matches (also based on "hidden" keywords)
                 .thenComparingDouble(n -> -n.m_score)//
-                // 4) then on manually defined weight
+                // 3) then on manually defined weight
                 .thenComparingInt(n -> -n.m_node.weight)//
-                // 5) tie-breaks
+                // 4) tie-breaks
                 .thenComparing(n -> n.m_node.name, ALPHANUMERIC_COMPARATOR))//
             .map(wn -> wn.m_node)//
             .collect(Collectors.toList());
@@ -284,7 +290,7 @@ public class NodeSearch {
 
         private final boolean m_allTagsMatch;
 
-        private final boolean m_includeAll;
+        private final boolean m_additionalNodes;
 
         /**
          * Creates a new search query, normalizing/analyzing the given search term.
@@ -292,15 +298,15 @@ public class NodeSearch {
          * @param normalization a function applied to the non-null term
          * @param tags
          * @param allTagsMatch
-         * @param includeAll
+         * @param additionalNodes
          */
         SearchQuery(final String searchTerm, final Normalizer normalization, final List<String> tags,
-                final boolean allTagsMatch, final boolean includeAll) {
+                final boolean allTagsMatch, final boolean additionalNodes) {
             m_surfaceForm = searchTerm;
             m_normalizedForm = normalize(searchTerm, normalization);
             m_tags = tags;
             m_allTagsMatch = allTagsMatch;
-            m_includeAll = includeAll;
+            m_additionalNodes = additionalNodes;
         }
 
         private static String normalize(final String searchTerm, final Normalizer normalization) {
@@ -332,7 +338,7 @@ public class NodeSearch {
         public int hashCode() {
             // explicitly don't include normalized form in hashCode/equals
             return new HashCodeBuilder().append(m_surfaceForm).append(m_tags).append(m_allTagsMatch)
-                    .append(m_includeAll).build();
+                .append(m_additionalNodes).build();
         }
 
         @Override
@@ -346,7 +352,7 @@ public class NodeSearch {
             if (this.getClass() == obj.getClass()) {
                 SearchQuery sq = (SearchQuery)obj;
                 return new EqualsBuilder().append(m_surfaceForm, sq.m_surfaceForm).append(m_tags, sq.m_tags)
-                    .append(m_allTagsMatch, sq.m_allTagsMatch).append(m_includeAll, sq.m_includeAll).build();
+                    .append(m_allTagsMatch, sq.m_allTagsMatch).append(m_additionalNodes, sq.m_additionalNodes).build();
             }
             return false;
         }

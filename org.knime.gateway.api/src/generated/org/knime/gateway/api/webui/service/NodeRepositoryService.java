@@ -68,12 +68,11 @@ public interface NodeRepositoryService extends GatewayService {
      * @param portIdx The port index to be used.
      * @param nodesLimit The maximum number of node recommendations to return.
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
-     * @param includeAll If true, all nodes/components will be included in the result. Otherwise, only the nodes/components that are part of the current collection will be included.
      *
      * @return the result
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo, Boolean includeAll)  throws ServiceExceptions.OperationNotAllowedException;
+    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
         
     /**
      * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).
@@ -91,11 +90,10 @@ public interface NodeRepositoryService extends GatewayService {
      * @param tagsOffset The number of tags to be skipped (for pagination).
      * @param tagsLimit The maximum number of tags to be returned (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
-     * @param includeAll If true, all nodes/components will be included in the result. Otherwise, only the nodes/components that are part of the current collection will be included.
      *
      * @return the result
      */
-    NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo, Boolean includeAll) ;
+    NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo) ;
         
     /**
      * Searches for nodes (and components) in the node repository.
@@ -106,10 +104,10 @@ public interface NodeRepositoryService extends GatewayService {
      * @param nodesOffset Number of nodes/components to be skipped in the search result (for pagination).
      * @param nodesLimit The maximum number of nodes/components in the search result (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
-     * @param includeAll If true, all nodes/components will be included in the result. Otherwise, only the nodes/components that are part of the current collection will be included.
+     * @param additionalNodes If true, only the nodes that are not part of the active collection are returned. If false, only the nodes that are part of the collection are returned. The default is false.
      *
      * @return the result
      */
-    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean includeAll) ;
+    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean additionalNodes) ;
         
 }

@@ -50,7 +50,6 @@ package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
@@ -113,11 +112,11 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
     private void executeRecommendationsTest(final NodeIDEnt nodeId, final Integer portIdx) throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
-        var resultDefault = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, null, null, true);
+        var resultDefault = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, null, null);
         assertRecommendations(resultDefault, 12, false);
-        var resultMinimal13 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 101, false, true); // Max number of 13 recommendations received
+        var resultMinimal13 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 101, false); // Max number of 13 recommendations received
         assertRecommendations(resultMinimal13, 13, false);
-        var resultFull7 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 7, true, true);
+        var resultFull7 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 7, true);
         assertRecommendations(resultFull7, 7, true);
     }
 
@@ -135,21 +134,6 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
     }
 
     /**
-     * Tests node recommendations filtered with includeAll=false
-     *
-     * @throws Exception
-     */
-    public void testFilteredNodeRecommendations() throws Exception {
-        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var workflowId = getRootID();
-        var portIdx = 1;
-
-        var resultFiltered = nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, portIdx, 1000, false, false);
-        var resultAll = nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, portIdx, 1000, false, true);
-        assertThat("filtered results must be less than all results", resultFiltered.size(), is(lessThan(resultAll.size())));
-    }
-
-    /**
      * Tests cases where it should throw exceptions
      *
      * @throws Exception
@@ -158,19 +142,19 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, null, null, null, true));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, null, null, null));
         assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, null, null, true));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, null, null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, null, true));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, null, true));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, null));
         assertThrows("Node recommendations for metanodes or components aren't supported yet",
             OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_metanode, null, null, null, true));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_metanode, null, null, null));
         assertThrows("Node recommendations for metanodes or components aren't supported yet",
             OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, true, true));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, true));
     }
 
 }

@@ -48,13 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
@@ -66,6 +61,7 @@ import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.NodeSearch;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 
 /**
  * The default implementation of {@link NodeRepositoryService}.
@@ -74,15 +70,16 @@ import org.knime.gateway.impl.webui.NodeSearch;
  */
 public final class DefaultNodeRepositoryService implements NodeRepositoryService {
 
-    private static final String NODE_COLLECTION_FILE = "/files/node_collections/spreadsheet_nodes.txt";
+    private NodeRepository m_nodeRepo;
 
-    private final NodeRepository m_nodeRepo;
+    private NodeSearch m_nodeSearch;
 
-    private final NodeSearch m_nodeSearch;
+    private NodeGroups m_nodeGroups;
 
-    private final NodeGroups m_nodeGroups;
+    private NodeRecommendations m_nodeRecommendations;
 
-    private final NodeRecommendations m_nodeRecommendations;
+    private final PreferencesProvider m_preferencesProvider =
+        ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -94,7 +91,15 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     }
 
     DefaultNodeRepositoryService() {
-        m_nodeRepo = new NodeRepository(createCollectionFilter());
+        resetNodeRepository();
+    }
+
+    /**
+     * Reset the node repository and apply the currently active node collection from the preference provider. All caches
+     * of the node search and node groups are deleted.
+     */
+    public void resetNodeRepository() {
+        m_nodeRepo = new NodeRepository(m_preferencesProvider.activeNodeCollection());
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
@@ -105,8 +110,8 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
-        final Integer tagsLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
-        return m_nodeGroups.getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo, includeAll);
+        final Integer tagsLimit, final Boolean fullTemplateInfo) {
+        return m_nodeGroups.getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);
     }
 
     /**
@@ -114,8 +119,10 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
-        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo, includeAll);
+        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo,
+        final Boolean additionalNodes) {
+        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo,
+            additionalNodes);
     }
 
     /**
@@ -133,17 +140,9 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo,
-        final Boolean includeAll) throws OperationNotAllowedException {
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
+        throws OperationNotAllowedException {
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
-            fullTemplateInfo, includeAll);
-    }
-
-    /** Create a simple filter that only includes the node factories that are listed in the speadsheet_nodes.txt file */
-    private static Predicate<String> createCollectionFilter() {
-        var reader = new BufferedReader(
-            new InputStreamReader(DefaultNodeRepositoryService.class.getResourceAsStream(NODE_COLLECTION_FILE)));
-        final var includedNodes = reader.lines().collect(Collectors.toCollection(HashSet::new));
-        return includedNodes::contains;
+            fullTemplateInfo);
     }
 }

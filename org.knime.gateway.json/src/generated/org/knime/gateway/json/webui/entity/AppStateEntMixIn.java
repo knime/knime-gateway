@@ -95,12 +95,12 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public java.util.Map<String, Object> getFeatureFlags();
     
     @Override
-    @JsonProperty("nodeRepoFilterEnabled")
-    public Boolean isNodeRepoFilterEnabled();
-    
-    @Override
     @JsonProperty("scrollToZoomEnabled")
     public Boolean isScrollToZoomEnabled();
+    
+    @Override
+    @JsonProperty("hasNodeCollectionActive")
+    public Boolean hasNodeCollectionActive();
     
     @Override
     @JsonProperty("devMode")
@@ -144,12 +144,12 @@ public interface AppStateEntMixIn extends AppStateEnt {
         public AppStateEntMixInBuilder setFeatureFlags(final java.util.Map<String, Object> featureFlags);
         
         @Override
-        @JsonProperty("nodeRepoFilterEnabled")
-        public AppStateEntMixInBuilder setNodeRepoFilterEnabled(final Boolean nodeRepoFilterEnabled);
-        
-        @Override
         @JsonProperty("scrollToZoomEnabled")
         public AppStateEntMixInBuilder setScrollToZoomEnabled(final Boolean scrollToZoomEnabled);
+        
+        @Override
+        @JsonProperty("hasNodeCollectionActive")
+        public AppStateEntMixInBuilder setHasNodeCollectionActive(final Boolean hasNodeCollectionActive);
         
         @Override
         @JsonProperty("devMode")

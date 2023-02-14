@@ -180,8 +180,6 @@ public final class GatewayTestCollection {
 
         res.put("testNodeRecommendations",
             (rc, sp, wl, we) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendations());
-        res.put("testFilteredNodeRecommendations",
-            (rc, sp, wl, we) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testFilteredNodeRecommendations());
         res.put("testNodeRecommendationsForSourceNodes", (rc, sp, wl,
             we) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendationsForSourceNodes());
         res.put("testNodeRecommendationsThrowingExceptions", (rc, sp, wl,

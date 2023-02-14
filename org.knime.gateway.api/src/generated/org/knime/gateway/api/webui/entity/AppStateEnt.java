@@ -99,16 +99,16 @@ public interface AppStateEnt extends GatewayEntity {
   public java.util.Map<String, Object> getFeatureFlags();
 
   /**
-   * If true, the node repository will be filtered to show only the nodes that fit the current filter. This will have an effect on the node search, on the category groups, and on the node recommendations.
-   * @return nodeRepoFilterEnabled 
-   **/
-  public Boolean isNodeRepoFilterEnabled();
-
-  /**
    * If true, scrolling in the workflow canvas will be interpreted as zooming
    * @return scrollToZoomEnabled 
    **/
   public Boolean isScrollToZoomEnabled();
+
+  /**
+   * If true, a node collection is configured on the preference page. The node search will show the nodes of the collection first and the category groups and node recommendations will only show nodes from the collection.
+   * @return hasNodeCollectionActive 
+   **/
+  public Boolean hasNodeCollectionActive();
 
   /**
    * If true, dev mode specific buttons will be shown.
@@ -171,20 +171,20 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags);
         
         /**
-         * If true, the node repository will be filtered to show only the nodes that fit the current filter. This will have an effect on the node search, on the category groups, and on the node recommendations.
-         * 
-         * @param nodeRepoFilterEnabled the property value,  
-         * @return this entity builder for chaining
-         */
-        AppStateEntBuilder setNodeRepoFilterEnabled(Boolean nodeRepoFilterEnabled);
-        
-        /**
          * If true, scrolling in the workflow canvas will be interpreted as zooming
          * 
          * @param scrollToZoomEnabled the property value,  
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setScrollToZoomEnabled(Boolean scrollToZoomEnabled);
+        
+        /**
+         * If true, a node collection is configured on the preference page. The node search will show the nodes of the collection first and the category groups and node recommendations will only show nodes from the collection.
+         * 
+         * @param hasNodeCollectionActive the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setHasNodeCollectionActive(Boolean hasNodeCollectionActive);
         
         /**
          * If true, dev mode specific buttons will be shown.

@@ -53,10 +53,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -94,27 +96,36 @@ public final class NodeRepository {
 
     private static final Pattern MULTIPLE_SLASHES = Pattern.compile("/{2,}");
 
-    private final Predicate<String> m_filter;
+    private final Predicate<String> m_isInCollection;
 
-    /*
-     * All available nodes. Loaded/filled once with the call of any of the non-private methods.
+    /**
+     * Nodes of the active collection or all nodes if no collection is active. Loaded/filled once with the call of any
+     * of the non-private methods.
      */
-    private Map<String, Node> m_allNodes;
+    private Map<String, Node> m_nodes;
 
-    private Map<String, Node> m_filteredNodes;
+    /** Nodes that are not part of the active collection (empty if no collection is active) */
+    private Map<String, Node> m_additionalNodes;
 
     private Map<String, Node> m_hiddenNodes;
 
     private Map<String, Node> m_deprecatedNodes;
 
     /**
-     * Create a new node repository that filters all nodes with the given filter.
-     *
-     * @param filter defines which nodes should be included in this node repository by matching the templateId of the
-     *            node
+     * Create a new node repository without a collection. All nodes are included.
      */
-    public NodeRepository(final Predicate<String> filter) {
-        m_filter = filter;
+    public NodeRepository() {
+        this(null);
+    }
+
+    /**
+     * Create a new node repository with the active collection.
+     *
+     * @param isInCollection defines which nodes should are included in the active collection by matching the templateId
+     *            of the node. Can be <code>null</code> if no collection is active
+     */
+    public NodeRepository(final Predicate<String> isInCollection) {
+        m_isInCollection = isInCollection;
     }
 
     /**
@@ -128,11 +139,22 @@ public final class NodeRepository {
         loadAllNodesAndNodeSets();
         // note: we could cache the already created node template entities here (which also contain, e.g., the icon)
         // but we expect the frontend to do it already
-        return templateIds.stream().map(this::getNode)//
+        return templateIds.stream().map(this::getNodeIncludeAdditionalNodes)//
             .filter(Objects::nonNull)//
             .map(n -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toMap(NodeTemplateEnt::getId, t -> t));
+    }
+
+    /**
+     * Find a node by template id if it is part of the active repository.
+     *
+     * @param templateId
+     * @return the node or <code>null<code> if it is not in the active collection
+     */
+    Node getNode(final String templateId) {
+        loadAllNodesAndNodeSets();
+        return m_nodes.get(templateId);
     }
 
     /**
@@ -141,9 +163,13 @@ public final class NodeRepository {
      * @param templateId
      * @return The node
      */
-    Node getNode(final String templateId) {
+    Node getNodeIncludeAdditionalNodes(final String templateId) {
         loadAllNodesAndNodeSets();
-        var n = m_allNodes.get(templateId);
+        var n = m_nodes.get(templateId);
+        if (n != null) {
+            return n;
+        }
+        n = m_additionalNodes != null ? m_additionalNodes.get(templateId) : null;
         if (n != null) {
             return n;
         }
@@ -155,17 +181,21 @@ public final class NodeRepository {
     }
 
     /**
-     * @param includeAll set to true to include all nodes in the return value. Otherwise only the nodes that satisfy the
-     *            current filter are included.
-     * @return nodes available in the node repository
+     * @return nodes available in the node repository. Only the nodes in the active collection if a node collection is
+     *         active.
      */
-    Collection<Node> getNodes(final boolean includeAll) {
+    Collection<Node> getNodes() {
         loadAllNodesAndNodeSets();
-        if (includeAll) {
-            return m_allNodes.values();
-        } else {
-            return m_filteredNodes.values();
-        }
+        return m_nodes.values();
+    }
+
+    /**
+     * @return nodes that are available in the node repository but are not included in the result from
+     *         {@link #getNodes()} because they are not part of the active collection
+     */
+    Collection<Node> getAdditionalNodes() {
+        loadAllNodesAndNodeSets();
+        return m_additionalNodes.values();
     }
 
     /**
@@ -197,20 +227,29 @@ public final class NodeRepository {
     }
 
     private synchronized void loadAllNodesAndNodeSets() {
-        if (m_allNodes == null) { // Do not run this if nodes have already been fetched
+        if (m_nodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
             Map<String, CategoryExtension> categories = CategoryExtensionManager.getInstance().getCategoryExtensions();
-            m_allNodes = new HashMap<>();
-            loadNodes(categories, m_allNodes, ext -> ext.isDeprecated() || ext.isHidden());
-            loadNodeSets(categories, m_allNodes, NodeSetFactoryExtension::isDeprecated, NodeSetFactory::isHidden,
+            HashMap<String, Node> allNodes = new HashMap<>();
+            loadNodes(categories, allNodes, ext -> ext.isDeprecated() || ext.isHidden());
+            loadNodeSets(categories, allNodes, NodeSetFactoryExtension::isDeprecated, NodeSetFactory::isHidden,
                 NodeFactory::isDeprecated);
-            addNodeWeights(m_allNodes);
-            addIsIncluded(m_allNodes, m_filter);
+            addNodeWeights(allNodes);
 
-            m_filteredNodes = m_allNodes.values().stream() //
-                .filter(n -> n.isIncluded) //
-                .collect(Collectors.toMap(n -> n.templateId, n -> n));
+            if (m_isInCollection == null) {
+                m_nodes = allNodes;
+                m_additionalNodes = Collections.emptyMap();
+            } else {
+                m_nodes = filterNodes(allNodes, m_isInCollection);
+                m_additionalNodes = filterNodes(allNodes, m_isInCollection.negate());
+            }
         }
+    }
+
+    private static Map<String, Node> filterNodes(final Map<String, Node> nodes, final Predicate<String> filter) {
+        return nodes.entrySet().stream() //
+            .filter(e -> filter.test(e.getValue().templateId)) //
+            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
     private static void loadNodes(final Map<String, CategoryExtension> categories, final Map<String, Node> nodes,
@@ -303,12 +342,6 @@ public final class NodeRepository {
         });
     }
 
-    private static void addIsIncluded(final Map<String, Node> nodes, final Predicate<String> filter) {
-        nodes.values().stream() //
-            .filter(n -> filter.test(n.templateId)) // Only keep the included nodes
-            .forEach(n -> n.isIncluded = true); // Set the included nodes to true
-    }
-
     /**
      * Makes sure a category path is always '/this/is/a/path' (i.e. with a leading '/', without a trailing '/' and
      * without double slashes).
@@ -371,11 +404,6 @@ public final class NodeRepository {
          * is, e.g., the node's popularity among the users.
          */
         int weight;
-
-        /**
-         * If the node is included in the current filter.
-         */
-        boolean isIncluded;
 
         private Node(final NodeFactory<? extends NodeModel> f) {
             this.factory = f;
