@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -92,6 +93,8 @@ final class Connect extends AbstractWorkflowCommand {
             return false;
         }
         m_newConnection = addNewConnection(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
+        NodeTimer.GLOBAL_TIMER.addConnectionCreation(wfm.getNodeContainer(sourceNodeId),
+            wfm.getNodeContainer(destNodeId));
         return true;
     }
 

@@ -67,6 +67,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ConfigurablePortGroup;
 import org.knime.core.node.context.ports.ExchangeablePortGroup;
@@ -76,6 +77,8 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeTimer;
+import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.NodeCreationType;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
@@ -143,6 +146,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         try {
             m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
                 url, targetPosition[0], targetPosition[1] - WorkflowEntityFactory.NODE_Y_POS_CORRECTION, wfm, false);
+            var nc = wfm.getNodeContainer(m_addedNode);
+            trackNodeCreation(nc, m_commandEnt);
         } catch (IOException | NoSuchElementException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
@@ -156,6 +161,11 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
                     Integer sourcePortIdx = entry.getKey();
                     Integer destPortIdx = entry.getValue();
                     Connect.addNewConnection(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
+                    // TODO as soon as we extended the quick insertion feature with search,
+                    // we need to track connection creations here, too! (but only for the nodes added via the search!)
+                    // NodeTimer.GLOBAL_TIMER.addConnectionCreation(wfm.getNodeContainer(sourceNodeId),
+                    //    wfm.getNodeContainer(destNodeId));
+
                 }
             }
         } catch (OperationNotAllowedException e) {
@@ -163,6 +173,19 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             throw e;
         }
         return true; // Workflow changed if no exceptions were thrown
+    }
+
+    private static void trackNodeCreation(final NodeContainer nc, final AddNodeCommandEnt commandEnt) {
+        NodeTimer.GLOBAL_TIMER.addNodeCreation(nc);
+        NodeTimer.GLOBAL_TIMER.incNodeCreatedVia(NodeCreationType.WEB_UI);
+        if (isNodeAddedViaQuickNodeInsertion(commandEnt)) {
+            NodeTimer.GLOBAL_TIMER.incNodeCreatedVia(NodeCreationType.WEB_UI_QUICK_INSERTION_RECOMMENDED);
+        }
+    }
+
+    private static boolean isNodeAddedViaQuickNodeInsertion(final AddNodeCommandEnt commandEnt) {
+        // at the moment nodes are added _and_ connected to a source node only via the quick node insertion feature
+        return commandEnt.getSourceNodeId() != null && commandEnt.getSourcePortIdx() != null;
     }
 
     private NodeFactoryKeyEnt getNodeFactoryKeyFromUrl(final String url) {
@@ -180,7 +203,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         try {
             return new URI(urlString).toURL();
         } catch (MalformedURLException | URISyntaxException ex) {
-            // TODO log
+            NodeLogger.getLogger(AddNode.class).warn("Failed to parse url: " + urlString, ex);
             return null;
         }
     }
