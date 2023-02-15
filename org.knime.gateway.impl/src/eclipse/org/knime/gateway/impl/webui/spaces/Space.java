@@ -60,6 +60,7 @@ import java.util.function.Predicate;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
@@ -122,25 +123,6 @@ public interface Space {
      * @return space name
      */
     String getName();
-
-    /**
-     * @return space owner
-     */
-    String getOwner();
-
-    /**
-     * @return space description
-     */
-    default String getDescription() {
-        return "";
-    }
-
-    /**
-     * @return whether it's a private or a public space
-     */
-    default boolean isPrivate() {
-        return false;
-    }
 
     /**
      * Gets the items.
@@ -289,6 +271,13 @@ public interface Space {
      * @throws NoSuchElementException If no such item is present
      */
     String getItemName(String itemId);
+
+    /**
+     * Creates a {@link SpaceEnt} for this space.
+     *
+     * @return space entity for this space
+     */
+    SpaceEnt toEntity();
 
     /**
      * Generates unique space item names, preserves file extensions.

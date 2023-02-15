@@ -54,14 +54,12 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProject.Origin;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -102,21 +100,15 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceProviderEnt getSpaceProvider(final String spaceProviderId) throws InvalidRequestException {
-        List<SpaceEnt> spaces;
         if (spaceProviderId != null && !spaceProviderId.isBlank()) {
             var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
             if (spaceProvider == null) {
                 throw new InvalidRequestException("No space provider available for id '" + spaceProviderId + "'");
             }
-            spaces = //
-                spaceProvider.getSpaceMap().values().stream() //
-                    .map(s -> EntityFactory.Space.buildSpaceEnt(s.getId(), s.getName(), s.getOwner(),
-                        s.getDescription(), s.isPrivate())) //
-                    .collect(Collectors.toList());
+            return spaceProvider.toEntity();
         } else {
             throw new InvalidRequestException("Invalid space-provider-id (empty/null)");
         }
-        return EntityFactory.Space.buildSpaceProviderEnt(spaces);
     }
 
     /**

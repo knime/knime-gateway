@@ -132,7 +132,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         var space = mock(Space.class);
         when(space.getAncestorItemIds(any())).thenReturn(List.of("ancestor 1", "ancestor 2"));
         var spaceProvider = mock(SpaceProvider.class);
-        when(spaceProvider.getSpaceMap()).thenReturn(Map.of("Space ID for testing", space));
+        when(spaceProvider.getSpace(any())).thenReturn(space);
         var spaceProviders = mock(SpaceProviders.class);
         when(spaceProviders.getProvidersMap()).thenReturn(Map.of("Provider ID for testing", spaceProvider));
         return spaceProviders;

@@ -60,12 +60,11 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -78,7 +77,9 @@ import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
@@ -146,7 +147,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         throws IOException {
         var tempPath = PathUtils.createTempDir(directoryNamePrefix);
         var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
-        var space = spaceProvider.getSpaceMap().get(LocalWorkspace.LOCAL_WORKSPACE_ID);
+        var space = spaceProvider.getSpace(LocalWorkspace.LOCAL_WORKSPACE_ID);
         PathUtils.copyDirectory(getTestWorkspacePath(workspaceName), tempPath);
         return new Pair<>(spaceProvider, space);
     }
@@ -292,7 +293,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
-        final Space... spaces) {
+            final Space... spaces) {
         return new SpaceProvider() {
 
             @Override
@@ -306,14 +307,22 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public Map<String, Space> getSpaceMap() {
-                return Arrays.stream(spaces).collect(Collectors.toMap(Space::getId, Function.identity()));
+            public SpaceProviderEnt toEntity() {
+                return EntityFactory.Space.buildSpaceProviderEnt(
+                    Arrays.stream(spaces).map(Space::toEntity).collect(Collectors.toList()));
+            }
+
+            @Override
+            public Space getSpace(final String spaceId) {
+                return Arrays.stream(spaces).filter(s -> s.getId().equals(spaceId)).findFirst() //
+                        .orElseThrow(() -> new NoSuchElementException("No space with ID " + spaceId + " found."));
             }
         };
     }
 
     private static Space createSpace(final String id, final String name, final String owner, final String description,
         final boolean isPrivate) {
+        final var spaceEntity = EntityFactory.Space.buildSpaceEnt(id, name, owner, description, isPrivate);
         return new Space() { // NOSONAR
 
             @Override
@@ -327,18 +336,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public String getOwner() {
-                return owner;
-            }
-
-            @Override
-            public String getDescription() {
-                return description;
-            }
-
-            @Override
-            public boolean isPrivate() {
-                return isPrivate;
+            public SpaceEnt toEntity() {
+                return spaceEntity;
             }
 
             @Override
@@ -432,13 +431,18 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public Map<String, Space> getSpaceMap() {
-                return Collections.singletonMap(localWorkspace.getId(), localWorkspace);
+            public SpaceProviderEnt toEntity() {
+                return EntityFactory.Space.buildSpaceProviderEnt(List.of(localWorkspace.toEntity()));
             }
 
             @Override
             public String getName() {
                 return "local-testing-name";
+            }
+
+            @Override
+            public Space getSpace(final String spaceId) {
+                return Optional.of(localWorkspace).filter(space -> space.getId().equals(spaceId)).orElseThrow();
             }
         };
     }

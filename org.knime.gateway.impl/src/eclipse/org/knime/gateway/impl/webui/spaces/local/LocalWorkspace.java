@@ -76,6 +76,7 @@ import org.knime.core.util.FileUtil;
 import org.knime.core.util.KnimeUrlType;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -126,8 +127,8 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public String getOwner() {
-        return "local user";
+    public SpaceEnt toEntity() {
+        return EntityFactory.Space.buildSpaceEnt(getId(), getName(), "local user", "", false);
     }
 
     @Override
@@ -511,5 +512,4 @@ public final class LocalWorkspace implements Space {
                     "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
         }
     }
-
 }

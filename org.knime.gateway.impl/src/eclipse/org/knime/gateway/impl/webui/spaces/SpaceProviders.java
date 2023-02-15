@@ -74,11 +74,7 @@ public interface SpaceProviders {
         if (spaceProvider == null) {
             throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
         }
-        var space = spaceProvider.getSpaceMap().get(spaceId);
-        if (space == null) {
-            throw new NoSuchElementException("No space found for id '" + spaceId + "'");
-        }
-        return space;
+        return spaceProvider.getSpace(spaceId);
     }
 
     /**

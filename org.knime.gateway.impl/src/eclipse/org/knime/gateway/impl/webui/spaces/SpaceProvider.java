@@ -49,13 +49,13 @@
 package org.knime.gateway.impl.webui.spaces;
 
 import java.net.URI;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
@@ -76,10 +76,11 @@ public interface SpaceProvider {
     String getName();
 
     /**
-     * @return map of available spaces; maps from space-id to space
-     * @throws NoSuchElementException if there is none for the given id
+     * @param spaceId space ID
+     * @return space with the given ID
+     * @throws NoSuchElementException if no space with the given ID exists
      */
-    Map<String, Space> getSpaceMap();
+    Space getSpace(String spaceId);
 
     /**
      * @return {@code true} if this provider only returns {@link LocalWorkspace LocalWorkspace(s)}
@@ -87,6 +88,13 @@ public interface SpaceProvider {
     default boolean isLocal() {
         return false;
     }
+
+    /**
+     * Creates an entity representing this space provider and its available spaces.
+     *
+     * @return entity representing this space provider
+     */
+    SpaceProviderEnt toEntity();
 
     /**
      * Uploads a workflow to the location represented by the given KNIME URL.

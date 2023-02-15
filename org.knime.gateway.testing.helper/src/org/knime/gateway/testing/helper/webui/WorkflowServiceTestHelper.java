@@ -2203,7 +2203,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var spaceProviders = mock(SpaceProviders.class);
         var spaceProvider = mock(SpaceProvider.class);
         var space = mock(Space.class);
-        when(spaceProvider.getSpaceMap()).thenReturn(Map.of("spaceId", space));
+        when(spaceProvider.getSpace(eq("spaceId"))).thenReturn(space);
         when(spaceProviders.getProvidersMap()).thenReturn(Map.of("providerId", spaceProvider));
         when(space.toKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
 
