@@ -1,3 +1,5 @@
+org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory
+org.knime.base.node.io.filehandling.csv.writer.CSVWriter2NodeFactory
 org.knime.base.node.io.tablecreator.TableCreator2NodeFactory
 org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory
 org.knime.base.node.preproc.cellsplit2.CellSplitter2NodeFactory
@@ -66,6 +68,8 @@ org.knime.ext.sharepoint.filehandling.node.SharepointConnectionNodeFactory
 org.knime.google.api.nodes.authconnector.GoogleAuthNodeFactory
 org.knime.google.api.sheets.nodes.connector.GoogleSheetsConnectorFactory
 org.knime.google.api.sheets.nodes.reader.GoogleSheetsReaderFactory
+org.knime.google.api.sheets.nodes.sheetappender.GoogleSheetAppenderFactory
+org.knime.google.api.sheets.nodes.sheetupdater.GoogleSheetUpdaterFactory
 org.knime.google.api.sheets.nodes.spreadsheetwriter.GoogleSpreadsheetWriterFactory
 org.knime.time.node.calculate.datetimedifference.DateTimeDifferenceNodeFactory
 org.knime.time.node.convert.datetimetostring.DateTimeToStringNodeFactory
