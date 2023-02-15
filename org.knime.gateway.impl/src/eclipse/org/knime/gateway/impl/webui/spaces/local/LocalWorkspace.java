@@ -51,8 +51,10 @@ package org.knime.gateway.impl.webui.spaces.local;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -400,14 +402,17 @@ public final class LocalWorkspace implements Space {
             FileUtil.deleteRecursively(destPath.toFile()); // Delete the existing space item first
         }
 
-        var srcFileStore = Files.getFileStore(srcPath);
-        var destParentFileStore = Files.getFileStore(destPathParent);
-        if (srcFileStore.equals(destParentFileStore)) { // Same file store, simple move is possible
-            return Files.move(srcPath, destPath);
-        } else { // Both files in different file systems, simple move is not possible
-            FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
-            FileUtil.deleteRecursively(srcPath.toFile()); // Delete the remaining space item
-            return destPath;
+        if (Files.exists(destPath)) {
+            throw new IOException(
+                String.format("Attempting to overwrite <%s>, name collision handling went wrong.", destPath));
+        }
+
+        try { // Moving within the same file system, simple move can be applied
+            return Files.move(srcPath, destPath, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException e) { // Moving across different file systems, simple move isn't possible
+          FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
+          FileUtil.deleteRecursively(srcPath.toFile()); // Delete the remaining space item
+          return destPath;
         }
     }
 
