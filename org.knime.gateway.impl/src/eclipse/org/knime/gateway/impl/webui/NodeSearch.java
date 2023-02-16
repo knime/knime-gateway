@@ -59,14 +59,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleBiFunction;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.data.sort.AlphanumericComparator;
-import org.knime.core.util.LRUCache;
+import org.knime.core.node.util.CheckUtils;
+import org.knime.core.ui.util.FuzzySearchable;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -88,10 +93,20 @@ public class NodeSearch {
      */
     private static final double SIMILARITY_THRESHOLD = 0.15;
 
+    /**
+     * Weight for the similarity score derived from keywords.
+     */
+    private static final double KEYWORD_SCORE_WEIGHT = 0.8;
+
+    private static final ToDoubleBiFunction<FuzzySearchable, String> SCORING_FN =
+            // keywords contribute slightly lower similarity values since their influence on the search result is
+            // less obvious to the user
+            (n, q) -> Math.max(n.computeNameSimilarity(q), KEYWORD_SCORE_WEIGHT * n.computeKeywordSimilarity(q));
+
     /*
      * Maps a search query to the list of found nodes.
      */
-    private final Map<SearchQuery, List<Node>> m_foundNodesCache = Collections.synchronizedMap(new LRUCache<>(100));
+    private final Map<SearchQuery, List<Node>> m_foundNodesCache = Collections.synchronizedMap(new LRUMap<>(100));
 
     private final NodeRepository m_nodeRepo;
 
@@ -124,20 +139,23 @@ public class NodeSearch {
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
         final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo, final Boolean includeAll) {
         Collection<Node> allNodes;
-        String query;
+        final boolean allNodesFromRepo = Boolean.TRUE.equals(includeAll);
+        // this function gives us the chance to remove our "easter egg" before the search query normalizes the input
+        Normalizer fn;
         if (q != null && q.endsWith("//hidden")) {
             allNodes = m_nodeRepo.getHiddenNodes();
-            query = q.replace("//hidden", "");
+            fn = t -> t.replace("//hidden", "");
         } else if (q != null && q.endsWith("//deprecated")) {
             allNodes = m_nodeRepo.getDeprecatedNodes();
-            query = q.replace("//deprecated", "");
+            fn = t -> t.replace("//deprecated", "");
         } else {
-            allNodes = m_nodeRepo.getNodes(Boolean.TRUE.equals(includeAll));
-            query = q;
+            allNodes = m_nodeRepo.getNodes(allNodesFromRepo);
+            fn = Normalizer.identity();
         }
 
-        List<Node> foundNodes = m_foundNodesCache.computeIfAbsent(new SearchQuery(q, tags, allTagsMatch, includeAll),
-            key -> searchNodes(allNodes, query, tags, allTagsMatch));
+        final var foundNodes = m_foundNodesCache.computeIfAbsent(
+            new SearchQuery(q, SearchQuery.DEFAULT_NORMALIZATION.compose(fn), tags, Boolean.TRUE.equals(allTagsMatch),
+                allNodesFromRepo), searchQuery -> searchNodes(allNodes, searchQuery));
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
@@ -162,96 +180,159 @@ public class NodeSearch {
             .build();
     }
 
-    @SuppressWarnings("java:S3776")
-    private static List<Node> searchNodes(final Collection<Node> nodes, final String q, final List<String> tags,
-        final Boolean allTagsMatch) {
-        List<Node> foundNodes;
-        boolean isSearchQueryGiven = !StringUtils.isBlank(q);
-        if (!isSearchQueryGiven && (tags == null || tags.isEmpty())) {
-            foundNodes = new ArrayList<>(nodes);
-        } else {
-            Stream<Node> tagFiltered = nodes.stream()//
-                .filter(n -> filterByTags(n, tags, allTagsMatch));
-            if (isSearchQueryGiven) {
-                final String upperCaseQuery = q.toUpperCase();
-                foundNodes = tagFiltered.map(n -> toFoundNode(n, upperCaseQuery))//
-                    .filter(n -> n.score >= SIMILARITY_THRESHOLD)//
-                    .sorted(Comparator.<FoundNode> comparingInt(n -> n.node.isIncluded ? 0 : 1)
-                        .thenComparingDouble(n -> -n.score).thenComparingInt(n -> -n.node.weight)
-                        .thenComparing(n -> n.node.name, ALPHANUMERIC_COMPARATOR))//
-                    .map(wn -> wn.node)//
-                    .collect(Collectors.toList());
-            } else {
-                foundNodes =
-                    tagFiltered
-                        .sorted(Comparator.<Node> comparingInt(n -> n.isIncluded ? 0 : 1)
-                            .thenComparingInt(n -> -n.weight).thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))
-                        .collect(Collectors.toList());
+    private static List<Node> searchNodes(final Collection<Node> nodes, final SearchQuery searchQuery) {
+        final var searchTerm = searchQuery.getSearchTerm();
+        final var tags = searchQuery.m_tags;
+        final var allTagsMatch = searchQuery.m_allTagsMatch;
+        final Predicate<Node> tagFilter = n -> filterByTags(n, tags, allTagsMatch);
+        if (searchTerm.isEmpty()) {
+            // Case 1: no filter, no ranking
+            if (tags == null || tags.isEmpty()) {
+                return Collections.unmodifiableList(new ArrayList<>(nodes));
             }
+            // Case 2: filter only by tags, rank nodes
+            return nodes.stream().filter(tagFilter)//
+                    .sorted(//
+                        Comparator.<Node> comparingInt(n -> n.isIncluded ? 0 : 1)//
+                        .thenComparingInt(n -> -n.weight)//
+                        .thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))//
+                    .collect(Collectors.toList());
         }
-        return foundNodes;
+        final var term = searchTerm.get();
+        // Case 3: filter by tags, rank by similarity to search term
+        return nodes.stream().filter(tagFilter)//
+            .map(n -> new FoundNode(n,//
+                StringUtils.containsIgnoreCase(n.name, term),//
+                SCORING_FN.applyAsDouble(n.getFuzzySearchable(), term)))//
+            .filter(n -> n.m_substringMatch || n.m_score >= SIMILARITY_THRESHOLD)//
+            .sorted(//
+                // 1) included nodes
+                Comparator.<FoundNode> comparingInt(n -> n.m_node.isIncluded ? 0 : 1)//
+                // 2) then exact substring matches (only based on names)
+                .thenComparingInt(n -> n.m_substringMatch ? 0 : 1)//
+                // 3) then fuzzy matches (also based on "hidden" keywords)
+                .thenComparingDouble(n -> -n.m_score)//
+                // 4) then on manually defined weight
+                .thenComparingInt(n -> -n.m_node.weight)//
+                // 5) tie-breaks
+                .thenComparing(n -> n.m_node.name, ALPHANUMERIC_COMPARATOR))//
+            .map(wn -> wn.m_node)//
+            .collect(Collectors.toList());
+    }
+
+    private static boolean filterByTags(final Node n, final List<String> tags, final boolean allTagsMatch) {
+        if (tags == null || tags.isEmpty()) {
+            return true;
+        }
+        if (allTagsMatch) {
+            return tags.stream().allMatch(n.tags::contains);
+        }
+        return tags.stream().anyMatch(n.tags::contains);
+    }
+
+    private static class FoundNode {
+
+        final Node m_node;
+
+        final boolean m_substringMatch;
+
+        final double m_score;
+
+        FoundNode(final Node node, final boolean substringMatch, final double score) {
+            m_node = node;
+            m_substringMatch = substringMatch;
+            m_score = score;
+        }
     }
 
     /**
-     * For a node and a search query, create an instance representing the node and the similarity score.
+     * This interface exists because UnaryOperator has no covariant overrides of {@code andThen} and {@code compose}.
+     * So either we use {@code Function<String, String>} throughout and silence sonar everywhere, or we use this
+     * interface.
      */
-    private static FoundNode toFoundNode(final Node node, final String upperCaseQuery) {
-        double score;
-        final var searchable = node.getFuzzySearchable();
-        if (searchable.contains(upperCaseQuery)) {
-            score = 1.0;
-        } else {
-            score = searchable.computeSimilarity(upperCaseQuery);
+    interface Normalizer extends UnaryOperator<String> {
+        static Normalizer identity() {
+            return s -> s;
         }
-        return new FoundNode(node, score);
-    }
 
-    private static boolean filterByTags(final Node n, final List<String> tags, final Boolean allTagsMatch) {
-        if (tags == null || tags.isEmpty()) {
-            return true;
-        } else {
-            if (Boolean.TRUE.equals(allTagsMatch)) {
-                return tags.stream().allMatch(n.tags::contains);
-            } else {
-                return tags.stream().anyMatch(n.tags::contains);
-            }
+        default Normalizer andThen(final Normalizer after) {
+            CheckUtils.checkNotNull(after);
+            return s -> after.apply(apply(s));
         }
-    }
 
-    @SuppressWarnings("java:S116")
-    private static class FoundNode {
-
-        Node node;
-
-        double score;
-
-        @SuppressWarnings("hiding")
-        FoundNode(final Node node, final double score) {
-            this.node = node;
-            this.score = score;
+        default Normalizer compose(final Normalizer before) {
+            CheckUtils.checkNotNull(before);
+            return s -> apply(before.apply(s));
         }
     }
 
     private static class SearchQuery {
 
-        private String m_q;
+        static final Normalizer DEFAULT_NORMALIZATION = t -> t.strip().toUpperCase();
 
-        private List<String> m_tags;
+        /**
+         * The search term exactly as given by the user.
+         */
+        private final String m_surfaceForm;
 
-        private Boolean m_allTagsMatch;
+        /**
+         * The search term after our normalization (e.g. stripping whitespace).
+         */
+        private final String m_normalizedForm;
 
-        private Boolean m_includeAll;
+        private final List<String> m_tags;
 
-        SearchQuery(final String q, final List<String> tags, final Boolean allTagsMatch, final Boolean includeAll) {
-            m_q = q;
+        private final boolean m_allTagsMatch;
+
+        private final boolean m_includeAll;
+
+        /**
+         * Creates a new search query, normalizing/analyzing the given search term.
+         * @param searchTerm search term
+         * @param normalization a function applied to the non-null term
+         * @param tags
+         * @param allTagsMatch
+         * @param includeAll
+         */
+        SearchQuery(final String searchTerm, final Normalizer normalization, final List<String> tags,
+                final boolean allTagsMatch, final boolean includeAll) {
+            m_surfaceForm = searchTerm;
+            m_normalizedForm = normalize(searchTerm, normalization);
             m_tags = tags;
             m_allTagsMatch = allTagsMatch;
             m_includeAll = includeAll;
         }
 
+        private static String normalize(final String searchTerm, final Normalizer normalization) {
+            if (searchTerm == null || normalization == null) {
+                return searchTerm;
+            }
+            return normalization.apply(searchTerm);
+        }
+
+        /**
+         * @return non-null and non-blank search term, or {@link Optional#empty()}
+         */
+        Optional<String> getSearchTerm() {
+            if (StringUtils.isEmpty(m_normalizedForm)) {
+                return Optional.empty();
+            }
+            return Optional.of(m_normalizedForm);
+        }
+
+        /**
+         * Gets the raw search term exactly as it was given in the constructor.
+         * @return raw search term
+         */
+        String getRawSearchTerm() {
+            return m_surfaceForm;
+        }
+
         @Override
         public int hashCode() {
-            return new HashCodeBuilder().append(m_q).append(m_tags).append(m_allTagsMatch).append(m_includeAll).build();
+            // explicitly don't include normalized form in hashCode/equals
+            return new HashCodeBuilder().append(m_surfaceForm).append(m_tags).append(m_allTagsMatch)
+                    .append(m_includeAll).build();
         }
 
         @Override
@@ -264,7 +345,7 @@ public class NodeSearch {
             }
             if (this.getClass() == obj.getClass()) {
                 SearchQuery sq = (SearchQuery)obj;
-                return new EqualsBuilder().append(m_q, sq.m_q).append(m_tags, sq.m_tags)
+                return new EqualsBuilder().append(m_surfaceForm, sq.m_surfaceForm).append(m_tags, sq.m_tags)
                     .append(m_allTagsMatch, sq.m_allTagsMatch).append(m_includeAll, sq.m_includeAll).build();
             }
             return false;
