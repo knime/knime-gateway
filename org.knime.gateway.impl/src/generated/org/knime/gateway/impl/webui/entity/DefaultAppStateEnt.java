@@ -71,7 +71,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
   protected Boolean m_hasNodeRecommendationsEnabled;
   protected java.util.Map<String, Object> m_featureFlags;
   protected Boolean m_nodeRepoFilterEnabled;
-  private Boolean m_scrollToZoomEnabled;
+  protected Boolean m_scrollToZoomEnabled;
   protected Boolean m_devMode;
   
   protected DefaultAppStateEnt() {
@@ -170,12 +170,12 @@ public class DefaultAppStateEnt implements AppStateEnt {
   public Boolean isNodeRepoFilterEnabled() {
         return m_nodeRepoFilterEnabled;
   }
-
+    
   @Override
   public Boolean isScrollToZoomEnabled() {
         return m_scrollToZoomEnabled;
   }
-
+    
   @Override
   public Boolean isDevMode() {
         return m_devMode;
@@ -241,7 +241,7 @@ public class DefaultAppStateEnt implements AppStateEnt {
         }
 
         @Override
-        public DefaultAppStateEntBuilder setScrollToZoomEnabled(final Boolean scrollToZoomEnabled) {
+        public DefaultAppStateEntBuilder setScrollToZoomEnabled(Boolean scrollToZoomEnabled) {
              m_scrollToZoomEnabled = scrollToZoomEnabled;
              return this;
         }

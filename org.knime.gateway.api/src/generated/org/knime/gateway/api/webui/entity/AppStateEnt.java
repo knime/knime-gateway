@@ -106,8 +106,8 @@ public interface AppStateEnt extends GatewayEntity {
 
   /**
    * If true, scrolling in the workflow canvas will be interpreted as zooming
-   * @return scrollToZoomEnabled
-   */
+   * @return scrollToZoomEnabled 
+   **/
   public Boolean isScrollToZoomEnabled();
 
   /**
@@ -177,15 +177,15 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setNodeRepoFilterEnabled(Boolean nodeRepoFilterEnabled);
-
+        
         /**
          * If true, scrolling in the workflow canvas will be interpreted as zooming
-         *
-         * @param scrollToZoomEnabled whether scroll to zoom should be enabled
+         * 
+         * @param scrollToZoomEnabled the property value,  
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setScrollToZoomEnabled(Boolean scrollToZoomEnabled);
-
+        
         /**
          * If true, dev mode specific buttons will be shown.
          * 

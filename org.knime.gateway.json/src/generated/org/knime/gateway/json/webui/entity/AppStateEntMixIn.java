@@ -99,6 +99,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public Boolean isNodeRepoFilterEnabled();
     
     @Override
+    @JsonProperty("scrollToZoomEnabled")
+    public Boolean isScrollToZoomEnabled();
+    
+    @Override
     @JsonProperty("devMode")
     public Boolean isDevMode();
     
@@ -142,6 +146,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("nodeRepoFilterEnabled")
         public AppStateEntMixInBuilder setNodeRepoFilterEnabled(final Boolean nodeRepoFilterEnabled);
+        
+        @Override
+        @JsonProperty("scrollToZoomEnabled")
+        public AppStateEntMixInBuilder setScrollToZoomEnabled(final Boolean scrollToZoomEnabled);
         
         @Override
         @JsonProperty("devMode")
