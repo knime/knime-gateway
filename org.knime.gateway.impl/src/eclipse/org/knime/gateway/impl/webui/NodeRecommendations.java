@@ -151,12 +151,12 @@ public class NodeRecommendations {
     private static boolean initializeNodeRecommendationManager(final NodeRepository nodeRepo) {
         Predicate<NodeInfo> isSourceNode = nodeInfo -> {
             var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
-                nodeRepo::getNode);
+                nodeRepo::getNode, true);
             return node != null && node.factory.getType() == NodeType.Source;
         };
         Predicate<NodeInfo> existsInRepository = nodeInfo -> {
             var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
-                nodeRepo::getNode);
+                nodeRepo::getNode, true);
             return node != null;
         };
         return NodeRecommendationManager.getInstance().initialize(isSourceNode, existsInRepository);
@@ -193,7 +193,7 @@ public class NodeRecommendations {
         final PortType sourcePortType, final int limit, final boolean fullInfo, final boolean includeAll) {
         return recommendations.stream()//
             .map(r -> NodeTemplateId.callWithNodeTemplateIdVariants(r.getNodeFactoryClassName(), r.getNodeName(),
-                m_nodeRepo::getNode))//
+                m_nodeRepo::getNode, true))//
             .filter(Objects::nonNull)// `NodeTemplateId.callWithNodeTemplateIdVariants(...)` could return null
             .filter(n -> includeAll || n.isIncluded)
             .map(n -> n.factory)//
