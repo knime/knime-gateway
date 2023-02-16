@@ -140,7 +140,7 @@ public class TablePortViewFactoryTest {
         assertThat(settings.get("enableGlobalSearch").asBoolean(), is(true));
         assertThat(settings.get("enableColumnSearch").asBoolean(), is(true));
         assertThat(settings.get("enableSortingByHeader").asBoolean(), is(true));
-        assertThat(settings.get("enableRendererSelection").asBoolean(), is(true));        
+        assertThat(settings.get("enableRendererSelection").asBoolean(), is(true));
         assertThat(settings.get("skipRemainingColumns").asBoolean(), is(true));
 
         portView.getSecond().dispose();
@@ -155,7 +155,7 @@ public class TablePortViewFactoryTest {
         var bdt = createTable(10);
         var portView = createPortView(bdt);
         var jsonRpcResponse = ((JsonRpcDataService)portView.getFirst().createDataService().get())
-            .handleRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true"));
+            .handleRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false"));
         assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
 
         portView.getSecond().dispose();
