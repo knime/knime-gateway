@@ -65,4 +65,8 @@ public interface PreferencesProvider {
      */
     boolean hasNodeRecommendationsEnabled();
 
+    /**
+     * @return {@code true} if scrolling should be interpreted as zooming
+     */
+    boolean isScrollToZoomEnabled();
 }

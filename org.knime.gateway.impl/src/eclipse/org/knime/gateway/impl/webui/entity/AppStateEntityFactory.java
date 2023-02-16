@@ -133,6 +133,7 @@ public final class AppStateEntityFactory {
         Map<String, PortTypeEnt> availablePortTypeEnts = null;
         List<String> suggestedPortTypeIds = null;
         Boolean nodeRepoFilterEnabled = preferenceProvider.isNodeRepoFilterEnabled();
+        Boolean isScrollToZoomEnabled = preferenceProvider.isScrollToZoomEnabled();
         List<ExampleProjectEnt> exampleProjectEnts = null;
         var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders);
         if (previousAppState == null) { // If there is no previous app state, no checks are needed
@@ -155,6 +156,7 @@ public final class AppStateEntityFactory {
             .setAvailablePortTypes(availablePortTypeEnts) //
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
             .setNodeRepoFilterEnabled(nodeRepoFilterEnabled) //
+            .setScrollToZoomEnabled(isScrollToZoomEnabled)
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) // This setting is always sent
             .setFeatureFlags(getFeatureFlags()) // This setting is always sent
             .setDevMode(WebUIUtil.isInDevMode()) //
