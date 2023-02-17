@@ -131,10 +131,11 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId)
-        throws InvalidRequestException, ServiceExceptions.IOException {
+    public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId,
+            final String name) throws InvalidRequestException, ServiceExceptions.IOException {
         try {
-            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).createWorkflow(workflowGroupId);
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId) //
+                    .createWorkflow(workflowGroupId, name);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching space items", e);
         } catch (IOException e) {

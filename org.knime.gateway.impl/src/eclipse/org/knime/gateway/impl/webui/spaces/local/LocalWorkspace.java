@@ -140,10 +140,10 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public SpaceItemEnt createWorkflow(final String workflowGroupItemId) throws IOException {
+    public SpaceItemEnt createWorkflow(final String workflowGroupItemId, final String workflowName) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
-        var workflowName = generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_NAME, true);
-        var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowName));
+        var realWorkflowName = generateUniqueSpaceItemName(parentWorkflowGroupPath, workflowName, true);
+        var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(realWorkflowName));
         Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
         return getSpaceItemEntFromPathAndUpdateCache(directoryPath);
     }

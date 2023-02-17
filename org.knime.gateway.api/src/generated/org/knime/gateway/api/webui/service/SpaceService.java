@@ -65,12 +65,13 @@ public interface SpaceService extends GatewayService {
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemName Name given to a space item.
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId, String itemName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Create a new workflow group within a given workflow group.
@@ -142,13 +143,13 @@ public interface SpaceService extends GatewayService {
      * @param spaceProviderId Identifies a space-provider.
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
-     * @param newName The new name of the space item
+     * @param itemName Name given to a space item.
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String newName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException, ServiceExceptions.OperationNotAllowedException;
+    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException, ServiceExceptions.OperationNotAllowedException;
         
 }

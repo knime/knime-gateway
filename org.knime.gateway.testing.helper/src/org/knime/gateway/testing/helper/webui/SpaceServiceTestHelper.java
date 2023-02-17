@@ -366,7 +366,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public SpaceItemEnt createWorkflow(final String workflowGroupItemId) throws IOException {
+            public SpaceItemEnt createWorkflow(final String workflowGroupItemId, final String name) throws IOException {
                 return null;
             }
 
@@ -471,19 +471,19 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         try {
             // Create workflows and check
             var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
-            var wf0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+            var wf0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
             cr(wf0, "created_workflow_0");
             var level0 = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
             cr(level0, "workspace_to_create_level0");
 
             var level1Id = findItemId(level0, "level1");
-            var wf1 = ss().createWorkflow(spaceId, providerId, level1Id);
+            var wf1 = ss().createWorkflow(spaceId, providerId, level1Id, Space.DEFAULT_WORKFLOW_NAME);
             cr(wf1, "created_workflow_1");
             var level1 = ss().listWorkflowGroup(spaceId, providerId, level1Id);
             cr(level1, "workspace_to_create_level1");
 
             var level2Id = findItemId(level1, "level2");
-            var wf2 = ss().createWorkflow(spaceId, providerId, level2Id);
+            var wf2 = ss().createWorkflow(spaceId, providerId, level2Id, Space.DEFAULT_WORKFLOW_NAME);
             cr(wf2, "created_workflow_2");
             var level2 = ss().listWorkflowGroup(spaceId, providerId, level2Id);
             cr(level2, "workspace_to_create_level2");
@@ -517,7 +517,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var fileName = "testfile.txt";
 
         // Create a workflow and delete it
-        var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
         ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
         assertThat("Workflow must not exist anymore",
             !Files.exists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME)));
@@ -527,8 +527,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Files.createDirectory(workflowGroupPath);
         var workflowGroupId =
             findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
-        ss().createWorkflow(spaceId, providerId, workflowGroupId);
-        ss().createWorkflow(spaceId, providerId, workflowGroupId);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId, Space.DEFAULT_WORKFLOW_NAME);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId, Space.DEFAULT_WORKFLOW_NAME);
         Files.createFile(workflowGroupPath.resolve(fileName));
         ss().deleteItems(spaceId, providerId, List.of(workflowGroupId));
         assertThat("Workflow group must not exist anymore", !Files.exists(workflowGroupPath));
@@ -549,20 +549,20 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> ss().deleteItems(spaceId, providerId, List.of("0")));
 
         // Call delete on a workflow that was deleted by another application
-        wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
         PathUtils.deleteDirectoryIfExists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME));
         ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
 
         // Delete multiple items at once
-        ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+        ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
         filePath = testWorkspacePath.resolve(fileName);
         Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
         workflowGroupPath = testWorkspacePath.resolve(workflowGroupName);
         Files.createDirectory(workflowGroupPath);
         workflowGroupId =
             findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), workflowGroupName);
-        ss().createWorkflow(spaceId, providerId, workflowGroupId);
-        ss().createWorkflow(spaceId, providerId, workflowGroupId);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId, Space.DEFAULT_WORKFLOW_NAME);
+        ss().createWorkflow(spaceId, providerId, workflowGroupId, Space.DEFAULT_WORKFLOW_NAME);
         Files.createFile(workflowGroupPath.resolve(fileName));
         ss().listWorkflowGroup(spaceId, providerId, workflowGroupId);
         var rootFiles = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
@@ -627,7 +627,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         try {
             // Create a workflow, a workflow group and a file
             var wfName = Space.DEFAULT_WORKFLOW_NAME;
-            var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+            var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
             Files.createDirectory(level1Path);
             var level1Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), level1);
             var filePathLevel0 = testWorkspacePath.resolve(fileName);
@@ -762,8 +762,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             Files.createDirectory(level1Path);
             Files.createFile(level1Path.resolve(fileName));
             var level1Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), level1);
-            var wfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
-            ss().createWorkflow(spaceId, providerId, level1Id); // This space item is not needed
+            var wfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+            ss().createWorkflow(spaceId, providerId, level1Id, Space.DEFAULT_WORKFLOW_NAME); // This space item is not needed
 
             // Try to move without name collision handling
             var fileIdLevel0 = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
@@ -787,7 +787,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             // Move with auto-rename collision handling
             Files.createFile(testWorkspacePath.resolve(fileName));
-            var anotherWfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID);
+            var anotherWfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
             var anotherFileIdLevel0 =
                 findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
             ss().moveItems(spaceId, providerId, List.of(anotherFileIdLevel0, anotherWfLevel0.getId()), level1Id,

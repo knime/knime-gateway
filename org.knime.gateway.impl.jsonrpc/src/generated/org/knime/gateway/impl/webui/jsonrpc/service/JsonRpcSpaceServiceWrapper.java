@@ -84,8 +84,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceItemEnt createWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
-        return m_service.get().createWorkflow(spaceId, spaceProviderId, itemId);    
+    public SpaceItemEnt createWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, String itemName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().createWorkflow(spaceId, spaceProviderId, itemId, itemName);    
     }
 
 	/**
@@ -174,8 +174,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, String newName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException, ServiceExceptions.OperationNotAllowedException {
-        return m_service.get().renameItem(spaceProviderId, spaceId, itemId, newName);    
+    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, String itemName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException, ServiceExceptions.OperationNotAllowedException {
+        return m_service.get().renameItem(spaceProviderId, spaceId, itemId, itemName);    
     }
 
 }
