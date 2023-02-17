@@ -1429,8 +1429,9 @@ public final class WorkflowEntityFactory {
             var flowObjectStack = outPort.getFlowObjectStack();
             if (flowObjectStack != null) {
                 for (FlowVariable v : flowObjectStack.getAllAvailableFlowVariables().values()) {
+                    var value = v.getValue(v.getVariableType());
                     hashCodeBuilder.append(v.getName());
-                    hashCodeBuilder.append(v.getValue(v.getVariableType()).hashCode());
+                    hashCodeBuilder.append(value == null ? 0 : value.hashCode());
                 }
             }
             return hashCodeBuilder.build();
