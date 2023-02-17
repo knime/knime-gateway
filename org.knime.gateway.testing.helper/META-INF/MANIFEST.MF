@@ -4,7 +4,7 @@ Bundle-Name: Helper for testing gateway API implementation
 Bundle-SymbolicName: org.knime.gateway.testing.helper;singleton:=true
 Bundle-Version: 5.0.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.knime.gateway.testing.helper
 Export-Package: org.knime.gateway.testing.helper,
  org.knime.gateway.testing.helper.rpc.node,
