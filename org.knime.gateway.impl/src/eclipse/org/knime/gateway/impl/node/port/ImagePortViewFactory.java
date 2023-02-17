@@ -86,16 +86,17 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
      */
     @Override
     public PortView createPortView(final ImagePortObject portObject) {
+        var imgValue = (ImageValue) portObject.toDataCell();
         // we append the object-hash to the imageId to make sure the FE re-renderes
         // the image whenever it changes (and not take it from the browser cache)
-        var imageId =
-            NodeContext.getContext().getNodeContainer().getID().toString() + ":" + System.identityHashCode(portObject);
+        var imageId = NodeContext.getContext().getNodeContainer().getID().toString() + ":"
+            + System.identityHashCode(portObject) + "." + imgValue.getImageExtension();
         return new PortView() {
 
             @Override
             public Optional<InitialDataService> createInitialDataService() {
                 return Optional.of(new JsonInitialDataServiceImpl<String>(() -> {
-                    IMAGE_DATA_MAP.put(imageId, getImageData(portObject));
+                    IMAGE_DATA_MAP.put(imageId, getImageData(imgValue));
                     return "ImagePortView/img/" + imageId;
                 }));
             }
@@ -117,14 +118,14 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
         };
     }
 
-    private static byte[] getImageData(final ImagePortObject po) {
-        var imageContent = ((ImageValue)po.toDataCell()).getImageContent();
+    private static byte[] getImageData(final ImageValue imgValue) {
+        var imageContent = imgValue.getImageContent();
         try (var baos = new ByteArrayOutputStream()) {
             imageContent.save(baos);
             return baos.toByteArray();
         } catch (IOException ex) {
             NodeLogger.getLogger(ImagePortViewFactory.class)
-                .error("Image content couldn't be extracted from image port: " + po.getSummary(), ex);
+                .error("Image content couldn't be extracted from image port", ex);
             return new byte[0];
         }
     }
