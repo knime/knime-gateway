@@ -49,9 +49,9 @@
 package org.knime.gateway.impl.webui.spaces;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -101,14 +101,31 @@ public interface SpaceProvider {
      *
      * @param localWorkflow workflow directory
      * @param targetUri target KNIME URL
+     * @param deleteSource flag indicating that the operation is a move instead of a copy operation
      * @param excludeDataInWorkflows data exclusion flag
-     * @param monitor progress monitor
-     * @param callback after-upload callback which is invoked from the UI thread
-     * @throws CoreException if something goes wrong
+     * @param progressMonitor monitor for aborting or receiving progress updates
+     * @throws CoreException if errors occur during upload
+     * @throws UnsupportedOperationException for local space providers
      */
-    default void syncUploadWorkflow(final java.nio.file.Path localWorkflow, final URI targetUri,
-            final boolean excludeDataInWorkflows, final IProgressMonitor monitor,
-            final Consumer<Throwable> callback) throws CoreException {
+    default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri,
+            final boolean deleteSource, final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
+            throws CoreException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Downloads a workflow from the location represented by the given KNIME URL.
+     *
+     * @param sourceUri source KNIME URL
+     * @param targetUri target KNIME URL
+     * @param deleteSource flag indicating that the operation is a move instead of a copy operation
+     * @param excludeDataInWorkflows data exclusion flag
+     * @param progressMonitor monitor for aborting or receiving progress updates
+     * @throws CoreException if errors occur during download
+     * @throws UnsupportedOperationException for local space providers
+     */
+    default void syncDownloadWorkflow(final URI sourceUri, final URI targetUri, final boolean deleteSource,
+            final IProgressMonitor progressMonitor) throws CoreException {
         throw new UnsupportedOperationException();
     }
 

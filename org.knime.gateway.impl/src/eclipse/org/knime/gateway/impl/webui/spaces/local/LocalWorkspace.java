@@ -351,8 +351,12 @@ public final class LocalWorkspace implements Space {
         if (path == null) {
             throw new NoSuchElementException("No item for id '" + itemId + "'");
         }
+        if (!path.startsWith(m_localWorkspaceRootPath)) {
+            // item not below the root (happens with Team Spaces opened in Classic AP, startup crash reported by Bernd)
+            return List.of();
+        }
+        final var res = new ArrayList<String>();
         var parent = path;
-        var res = new ArrayList<String>();
         while (!(parent = parent.getParent()).equals(m_localWorkspaceRootPath)) {
             res.add(getItemId(parent));
         }
