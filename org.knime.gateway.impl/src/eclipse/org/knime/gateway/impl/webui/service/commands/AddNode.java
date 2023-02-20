@@ -214,8 +214,10 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         final var spaceId = spaceItemId.getSpaceId();
         final var itemId = spaceItemId.getItemId();
         try {
-            var url = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).toKnimeUrl(itemId).toURL();
-            var factory = m_nodeFactoryProvider.fromFileExtension(url.toString());
+            var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
+            var url = space.toKnimeUrl(itemId).toURL();
+            var itemName = space.getItemName(itemId);
+            var factory = m_nodeFactoryProvider.fromFileExtension(itemName);
             if (factory != null) {
                 var factoryKeyEnt = builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getName()).build();
                 return new ImmutablePair<>(factoryKeyEnt, url);
