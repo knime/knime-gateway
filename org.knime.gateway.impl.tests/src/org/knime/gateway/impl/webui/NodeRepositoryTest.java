@@ -95,7 +95,7 @@ public class NodeRepositoryTest {
     public void testGetNodeTemplates() {
         NodeSearch search = new NodeSearch(repo);
         NodeSearchResultEnt res =
-            search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE, true);
+            search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE, false);
 
         NodeTemplateEnt nodeFromSearch = res.getNodes().get(0);
         List<String> ids = asList(nodeFromSearch.getId());
@@ -123,13 +123,13 @@ public class NodeRepositoryTest {
         NodeSearch search = new NodeSearch(repo);
 
         NodeTemplateEnt nodeFromSearch =
-            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, true).getNodes().get(0);
+            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, false).getNodes().get(0);
         NodeTemplateEnt nodeFromRepo =
             repo.getNodeTemplates(asList(nodeFromSearch.getId())).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
 
         nodeFromSearch =
-            search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, true).getNodes().get(0);
+            search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, false).getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplates(asList(nodeFromSearch.getId())).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
         assertThat(nodeFromRepo.getName(), containsString("deprecated"));

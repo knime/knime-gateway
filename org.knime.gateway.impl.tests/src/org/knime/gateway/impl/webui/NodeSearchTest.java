@@ -99,15 +99,15 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAllNullParameters() {
-        m_search.searchNodes(null, null, null, null, null, null, true);
-        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, true);
-        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, true);
+        m_search.searchNodes(null, null, null, null, null, null, false);
+        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, false);
+        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, false);
         assertThat("unexpected cache size", m_search.cacheSize(), is(3));
     }
 
     @Test
     public void testSimpleSearchNodesWithOffsetAndLimitAndMinimumInfo() {
-        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null, true);
+        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null, false);
         assertThat("unexpected number of nodes", res.getNodes().size(), is(10));
         assertThat("column filter not expected to be the first node (offset)", res.getNodes().get(0).getName(),
             is(not("Column Filter")));
@@ -118,7 +118,7 @@ public class NodeSearchTest {
         assertThat("no in-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
         assertThat("no out-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
 
-        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null, true);
+        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null, false);
         assertThat("unexpected number of nodes", res2.getNodes().size(), is(9));
         assertThat("unexpected node", res.getNodes().get(1), is(res2.getNodes().get(0)));
 
@@ -127,7 +127,7 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAndGetFullTemplateInfo() {
-        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE, true);
+        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE, false);
         assertThat("icon property expected", res.getNodes().get(0).getIcon(), is(notNullValue()));
         assertThat("in-port property expected", res.getNodes().get(0).getInPorts(), is(not((empty()))));
         assertThat("out-port property expected", res.getNodes().get(0).getOutPorts(), is(not((empty()))));
@@ -136,9 +136,9 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesAnyOrAllTagsMatch() {
         NodeSearchResultEnt resAll =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE, true);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE, false);
         NodeSearchResultEnt resAny =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE, true);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE, false);
         assertThat("any match expected to hold more found nodes than all match", resAny.getTotalNumNodes(),
             is(greaterThan(resAll.getTotalNumNodes())));
 
@@ -148,11 +148,11 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesEasterEggs() {
         NodeSearchResultEnt res =
-            m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false, true);
+            m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false, false);
         assertThat("some hidden nodes are expected to be found", res.getTotalNumNodes(), is(greaterThan(0)));
 
         NodeSearchResultEnt res2 =
-            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false, true);
+            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false, false);
         assertThat("some deprecated nodes are expected to be found", res2.getTotalNumNodes(), is(greaterThan(0)));
         assertThat("deprecated string expected in node name", res2.getNodes().get(0).getName(),
             containsString("deprecated"));
@@ -160,13 +160,13 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchCollectionNodes() {
-        var res = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true, true);
+        var res = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true, false);
         var resFactories = getNodeFactoryNames(res.getNodes());
         assertThat("should return some nodes in the active collection", resFactories.size(), is(greaterThan(0)));
         assertThat("should only contain nodes from the collection",
             resFactories.stream().allMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
 
-        var resAdditional = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true, false);
+        var resAdditional = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true, true);
         var additionalFactories = getNodeFactoryNames(resAdditional.getNodes());
         assertThat("should return some additional nodes", additionalFactories.size(), is(greaterThan(0)));
         assertThat("addtitional nodes should not be in the collection",
@@ -175,13 +175,13 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchTagsCollectionNodes() {
-        var res = m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, true);
+        var res = m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, false);
         var resFactories = getNodeFactoryNames(res.getNodes());
         assertThat("should return some nodes in the active collection", resFactories.size(), is(greaterThan(0)));
         assertThat("should only contain nodes from the collection",
             resFactories.stream().allMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
 
-        var resAdditional = m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, false);
+        var resAdditional = m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, true);
         var additionalFactories = getNodeFactoryNames(resAdditional.getNodes());
         assertThat("should return some additional nodes", additionalFactories.size(), is(greaterThan(0)));
         assertThat("addtitional nodes should not be in the collection",
