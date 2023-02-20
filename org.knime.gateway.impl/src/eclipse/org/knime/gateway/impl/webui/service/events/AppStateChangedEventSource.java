@@ -85,10 +85,11 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;
         m_callback = () -> {
-            var appState = AppStateEntityFactory.buildAppStateEnt(appStateUpdater.getLastAppState().orElse(null),
-                workflowProjectManager, preferenceProvider, null, spaceProviders);
+            var lastAppState = appStateUpdater.getLastAppState().orElse(null);
+            var appState = AppStateEntityFactory.buildAppStateEnt(lastAppState, workflowProjectManager,
+                preferenceProvider, null, spaceProviders);
             appStateUpdater.setLastAppState(appState);
-            sendEvent(buildEventEnt(appState));
+            sendEvent(buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(lastAppState, appState)));
         };
     }
 

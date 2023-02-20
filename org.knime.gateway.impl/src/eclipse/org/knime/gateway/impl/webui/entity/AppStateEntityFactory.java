@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.BufferedDataTable;
@@ -104,6 +106,8 @@ public final class AppStateEntityFactory {
         PortTypeRegistry.getInstance().availablePortTypes().stream()//
             .collect(Collectors.toSet());
 
+    private static final Map<String, PortTypeEnt> AVAILABLE_PORT_TYPE_ENTS = getAvailablePortTypeEnts();
+
     /**
      * When the user is prompted to select a port type, this subset of types may be used as suggestions.
      */
@@ -115,53 +119,72 @@ public final class AppStateEntityFactory {
         WorkflowPortObject.TYPE // Workflow
     );
 
+    private static final List<String> SUGGESTED_PORT_TYPE_IDS = getSuggestedPortTypeIds();
+
     private AppStateEntityFactory() {
         // utility class
     }
 
     /**
-     * @param previousAppState
+     * @param previousAppState the previously created app state, or {@code null} if there is none
      * @param workflowProjectManager
      * @param preferenceProvider
-     * @param exampleProjects if {@code null}, no example projects will be added to the app-state
+     * @param exampleProjects if {@code null}, example projects will be taken from the previous app state
      * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders) {
-        Map<String, PortTypeEnt> availablePortTypeEnts = null;
-        List<String> suggestedPortTypeIds = null;
-        Boolean nodeRepoFilterEnabled = preferenceProvider.isNodeRepoFilterEnabled();
-        Boolean isScrollToZoomEnabled = preferenceProvider.isScrollToZoomEnabled();
-        List<ExampleProjectEnt> exampleProjectEnts = null;
-        var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders);
-        if (previousAppState == null) { // If there is no previous app state, no checks are needed
-            availablePortTypeEnts = getAvailablePortTypeEnts();
-            suggestedPortTypeIds = getSuggestedPortTypeIds();
-            if (exampleProjects != null) {
-                exampleProjectEnts = buildExampleProjects(exampleProjects);
-            }
-        } else { // Only set what has changed
-            if (Objects.equals(previousAppState.getOpenProjects(), projectEnts)) {
-                projectEnts = null;
-            }
-            if (Objects.equals(previousAppState.isNodeRepoFilterEnabled(), nodeRepoFilterEnabled)) {
-                nodeRepoFilterEnabled = null;
-            }
+        List<ExampleProjectEnt> exampleProjectEnts =
+            exampleProjects == null ? null : buildExampleProjects(exampleProjects);
+        if (exampleProjectEnts == null && previousAppState != null) {
+            exampleProjectEnts = previousAppState.getExampleProjects();
         }
+        var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders);
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
             .setExampleProjects(exampleProjectEnts) //
-            .setAvailablePortTypes(availablePortTypeEnts) //
-            .setSuggestedPortTypeIds(suggestedPortTypeIds) //
-            .setNodeRepoFilterEnabled(nodeRepoFilterEnabled) //
-            .setScrollToZoomEnabled(isScrollToZoomEnabled)
-            .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) // This setting is always sent
-            .setFeatureFlags(getFeatureFlags()) // This setting is always sent
+            .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
+            .setSuggestedPortTypeIds(SUGGESTED_PORT_TYPE_IDS) //
+            .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
+            .setNodeRepoFilterEnabled(preferenceProvider.isNodeRepoFilterEnabled()) //
+            .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
+            .setFeatureFlags(getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
             .build();
 
+    }
+
+    /**
+     * Build an app state entity with only the changed properties set.
+     *
+     * @param oldAppState
+     * @param newAppState
+     * @return the app state where only the properties are set which have changed
+     */
+    public static AppStateEnt buildAppStateEntDiff(final AppStateEnt oldAppState, final AppStateEnt newAppState) {
+        if (oldAppState == null) { // If there is no previous app state, no checks are needed
+            return newAppState;
+        } else { // Only set what has changed (except for properties we know that are static)
+            var builder = builder(AppStateEntBuilder.class);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::getOpenProjects, builder::setOpenProjects);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepoFilterEnabled,
+                builder::setNodeRepoFilterEnabled);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeRecommendationsEnabled,
+                builder::setHasNodeRecommendationsEnabled);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isScrollToZoomEnabled, builder::setScrollToZoomEnabled);
+            return builder.build();
+        }
+    }
+
+    private static <T> void setIfChanged(final AppStateEnt oldAppState, final AppStateEnt newAppState,
+        final Function<AppStateEnt, T> getter, final Consumer<T> setter) {
+        var oldVal = getter.apply(oldAppState);
+        var newVal = getter.apply(newAppState);
+        if (!Objects.equals(oldVal, newVal)) {
+            setter.accept(newVal);
+        }
     }
 
     private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
