@@ -1186,7 +1186,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
         result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16, null, null));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory  + "#Box+Plot+%28legacy%29", 15, 16, result);
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + "#Box+Plot+%28JavaScript%29",
+            15, 16, result);
 
         // add a node that doesn't exists
         Exception ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId,
