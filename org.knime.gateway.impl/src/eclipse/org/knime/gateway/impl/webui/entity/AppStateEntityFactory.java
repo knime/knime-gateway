@@ -73,7 +73,6 @@ import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
-import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -136,24 +135,7 @@ public final class AppStateEntityFactory {
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders) {
-        List<ExampleProjectEnt> exampleProjectEnts =
-            exampleProjects == null ? null : buildExampleProjects(exampleProjects);
-        if (exampleProjectEnts == null && previousAppState != null) {
-            exampleProjectEnts = previousAppState.getExampleProjects();
-        }
-        var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders);
-        return builder(AppStateEntBuilder.class) //
-            .setOpenProjects(projectEnts) //
-            .setExampleProjects(exampleProjectEnts) //
-            .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
-            .setSuggestedPortTypeIds(SUGGESTED_PORT_TYPE_IDS) //
-            .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
-            .setHasNodeCollectionActive(preferenceProvider.activeNodeCollection() != null) //
-            .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
-            .setFeatureFlags(getFeatureFlags()) //
-            .setDevMode(WebUIUtil.isInDevMode()) //
-            .build();
-
+        return null;
     }
 
     /**
