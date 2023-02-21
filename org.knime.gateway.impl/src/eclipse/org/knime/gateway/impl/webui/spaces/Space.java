@@ -136,18 +136,6 @@ public interface Space {
     WorkflowGroupContentEnt listWorkflowGroup(String workflowGroupItemId) throws IOException;
 
     /**
-     * Creates a new workflow with the default name {@link #DEFAULT_WORKFLOW_NAME}.
-     *
-     * @param workflowGroupItemId The ID of the workflow group where to create the new workflow
-     * @return The newly created space item
-     * @throws IOException If there was a problem creating the files for the new workflow
-     * @throws NoSuchElementException If the given workflow group item id doesn't refer to a workflow group
-     */
-    default SpaceItemEnt createWorkflow(final String workflowGroupItemId) throws IOException {
-        return createWorkflow(workflowGroupItemId, DEFAULT_WORKFLOW_NAME);
-    }
-
-    /**
      * Creates a new workflow.
      *
      * @param workflowGroupItemId The ID of the workflow group where to create the new workflow

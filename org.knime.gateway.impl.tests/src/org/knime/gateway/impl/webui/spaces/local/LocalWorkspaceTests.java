@@ -87,7 +87,7 @@ public final class LocalWorkspaceTests {
         var dir3 = Files.createDirectories(workspaceFolder.resolve("dir1/dir2/dir3"));
         createFile(workspaceFolder.resolve("dir1"), "test.txt");
         createFile(workspaceFolder.resolve("dir1/dir2"), "test2.txt");
-        createWorkflow(workspace, workspaceFolder.resolve("dir1/dir2/dir3"), workspace.getItemId(dir3));
+        createWorkflow(workspace, workspaceFolder.resolve("dir1/dir2/dir3"), workspace.getItemId(dir3), Space.DEFAULT_WORKFLOW_NAME);
 
         var spaceItemsRoot = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
         assertThat(workspace.getAncestorItemIds(spaceItemsRoot.get(0).getId()),
@@ -120,8 +120,8 @@ public final class LocalWorkspaceTests {
         // Add some items to the root
         var fileNotToBeDeleted = createFile(workspaceFolder, "file_not_to_be_deleted.txt");
         var fileToBeDeleted = createFile(workspaceFolder, "file_to_be_deleted.txt");
-        var workflowInRootToBeDeleted = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID);
-        var workflowInRoot = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID);
+        var workflowInRootToBeDeleted = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+        var workflowInRoot = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
 
         // Create a workflow group
         var groupToBeDeleted = workspaceFolder.resolve("groupToBeDeleted");
@@ -130,7 +130,7 @@ public final class LocalWorkspaceTests {
 
         // Add some items to the group
         var fileInGroup = createFile(groupToBeDeleted, "file_in_group.txt");
-        var workflowInGroup = createWorkflow(workspace, groupToBeDeleted, groupToBeDeletedId);
+        var workflowInGroup = createWorkflow(workspace, groupToBeDeleted, groupToBeDeletedId, Space.DEFAULT_WORKFLOW_NAME);
 
         // Add another group with one file that gets deleted
         var groupNotToBeDeleted = workspaceFolder.resolve("groupNotToBeDeleted");
@@ -170,8 +170,8 @@ public final class LocalWorkspaceTests {
         var fileNotToBeMoved = createFile(workspaceFolder, "file_not_to_be_moved.txt");
         var fileToBeMoved = createFile(workspaceFolder, "file_to_be_moved.txt");
         var fileToBeMovedId = findItemId(workspace, Space.ROOT_ITEM_ID, fileNotToBeMoved.getFileName().toString());
-        var workflowInRoot = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID);
-        var workflowInRootToBeMoved = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID);
+        var workflowInRoot = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+        var workflowInRootToBeMoved = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME + "1");
         var workflowInRootToBeMovedId =
             findItemId(workspace, Space.ROOT_ITEM_ID, workflowInRootToBeMoved.getFileName().toString());
 
@@ -208,7 +208,7 @@ public final class LocalWorkspaceTests {
 
         createFile(workspaceFolder, "test.txt");
         Files.createDirectories(workspaceFolder.resolve("dir"));
-        createWorkflow(workspace, workspaceFolder, workspace.getItemId(workspaceFolder));
+        createWorkflow(workspace, workspaceFolder, workspace.getItemId(workspaceFolder), Space.DEFAULT_WORKFLOW_NAME);
 
         var items = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
         assertThat(workspace.toKnimeUrl(items.get(0).getId()).toString(), is("knime://LOCAL/dir/"));
@@ -237,9 +237,9 @@ public final class LocalWorkspaceTests {
             .findFirst().get().getId();
     }
 
-    private static Path createWorkflow(final LocalWorkspace workspace, final Path groupFolder, final String groupId)
+    private static Path createWorkflow(final LocalWorkspace workspace, final Path groupFolder, final String groupId, final String workflowName)
         throws IOException {
-        return groupFolder.resolve(workspace.createWorkflow(groupId).getName());
+        return groupFolder.resolve(workspace.createWorkflow(groupId, workflowName).getName());
     }
 
     private static Path createFile(final Path parent, final String name) throws IOException {
