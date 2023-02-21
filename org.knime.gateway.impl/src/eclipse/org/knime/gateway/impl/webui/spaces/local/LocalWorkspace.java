@@ -371,23 +371,6 @@ public final class LocalWorkspace implements Space {
     }
 
     /**
-     * Moves a space item from a (potentially external) temporary directory into the local workspace
-     *
-     * @param srcPath The absolute path of the temporary workflow copy
-     * @param workflowGroupItemId The destination workflow group item ID
-     * @param collisionHandling The collision handling strategy
-     *
-     * @return The space item entity of the newly created workflow
-     * @throws IOException If it couldn't move the workflow
-     */
-    public SpaceItemEnt moveItemFromTmp(final Path srcPath, final String workflowGroupItemId,
-        final Space.NameCollisionHandling collisionHandling) throws IOException {
-        var destPathParent = getAbsolutePath(workflowGroupItemId);
-        var destPath = moveItem(srcPath, destPathParent, collisionHandling);
-        return getSpaceItemEntFromPathAndUpdateCache(destPath);
-    }
-
-    /**
      * @return The items path after it was moved.
      */
     private Path moveItem(final Path srcPath, final Path destPathParent,
@@ -419,6 +402,37 @@ public final class LocalWorkspace implements Space {
           FileUtil.deleteRecursively(srcPath.toFile()); // Delete the remaining space item
           return destPath;
         }
+    }
+
+    /**
+     * Creates a directory into which a currently opened workflow can be saved.
+     *
+     * @param workflowGroupItemId enclosing workflow group
+     * @param workflowName name of the workflow to be saved
+     * @param collisionHandling collision handling if the workflow's name is already taken
+     * @return path to an empty, newly created directory
+     * @throws IOException if directory creation failed
+     */
+    public Path createWorkflowDir(final String workflowGroupItemId, final String workflowName,
+            final Space.NameCollisionHandling collisionHandling) throws IOException {
+        var destPathParent = getAbsolutePath(workflowGroupItemId);
+        Path destPath;
+        if (collisionHandling == Space.NameCollisionHandling.NOOP) { // Assume no name collisions
+            destPath = destPathParent.resolve(workflowName);
+        } else if (collisionHandling == Space.NameCollisionHandling.AUTORENAME) { // Auto-rename in case of collisions
+            final var uniqueName = generateUniqueSpaceItemName(destPathParent, workflowName, true);
+            destPath = destPathParent.resolve(uniqueName);
+        } else { // Overwrite in case of name collision
+            destPath = destPathParent.resolve(workflowName);
+            FileUtil.deleteRecursively(destPath.toFile()); // Delete the existing space item first
+        }
+
+        if (Files.exists(destPath)) {
+            throw new IOException(String.format("Attempting to overwrite <%s>, name collision handling went wrong.",
+                destPath));
+        }
+        Files.createDirectory(destPath);
+        return destPath;
     }
 
     private SpaceItemEnt getSpaceItemEntFromPathAndUpdateCache(final Path absolutePath) {
