@@ -113,7 +113,7 @@ public final class DefaultEventService implements EventService {
      * @return the singleton instance
      */
     public static DefaultEventService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultEventService.class);
+        return ServiceInstances.getDefaultServiceInstance(EventService.class);
     }
 
     DefaultEventService() {

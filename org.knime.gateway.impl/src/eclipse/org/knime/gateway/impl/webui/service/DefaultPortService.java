@@ -74,7 +74,7 @@ public class DefaultPortService implements PortService {
      * @return the singleton instance
      */
     public static DefaultPortService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultPortService.class);
+        return ServiceInstances.getDefaultServiceInstance(PortService.class);
     }
 
     DefaultPortService() {

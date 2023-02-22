@@ -88,7 +88,7 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  */
 public final class DefaultNodeService implements NodeService {
 
-    static final LRUMap<NodeFactoryKeyEnt, NativeNodeDescriptionEnt> m_nodeDescriptionCache = new LRUMap<>(100);
+    private final LRUMap<NodeFactoryKeyEnt, NativeNodeDescriptionEnt> m_nodeDescriptionCache = new LRUMap<>(100);
 
     /**
      * Returns the singleton instance for this service.
@@ -96,22 +96,19 @@ public final class DefaultNodeService implements NodeService {
      * @return the singleton instance
      */
     public static DefaultNodeService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultNodeService.class);
+        return ServiceInstances.getDefaultServiceInstance(NodeService.class);
     }
 
     DefaultNodeService() {
         // singleton
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
-        final String action) throws NodeNotFoundException, OperationNotAllowedException {
+    public synchronized void changeNodeStates(final String projectId, final NodeIDEnt workflowId,
+            final List<NodeIDEnt> nodeIds, final String action)
+            throws NodeNotFoundException, OperationNotAllowedException {
         try {
-            DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
-                nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
+            DefaultServiceUtil.changeNodeStates(projectId, workflowId, action, nodeIds.toArray(NodeIDEnt[]::new));
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         } catch (IllegalStateException e) {
@@ -119,11 +116,8 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+    public synchronized void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         try {
             var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
@@ -142,7 +136,7 @@ public final class DefaultNodeService implements NodeService {
     }
 
     private static void changeLoopState(final String action, final NativeNodeContainer nnc)
-        throws OperationNotAllowedException {
+            throws OperationNotAllowedException {
         WorkflowManager wfm = nnc.getParent();
         if (StringUtils.isBlank(action)) {
             // if there is no action (null or empty)
@@ -167,12 +161,9 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws NodeNotFoundException, InvalidRequestException {
+    public synchronized Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
+            throws NodeNotFoundException, InvalidRequestException {
         var snc = getNC(projectId, workflowId, nodeId, SingleNodeContainer.class);
         if (!NodeDialogManager.hasNodeDialog(snc)) {
             throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
@@ -180,12 +171,9 @@ public final class DefaultNodeService implements NodeService {
         return new NodeDialogEnt(snc);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws NodeNotFoundException, InvalidRequestException {
+    public synchronized Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
+            throws NodeNotFoundException, InvalidRequestException {
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
         if (!NodeViewManager.hasNodeView(nnc)) {
             throw new InvalidRequestException("The node " + nnc.getNameWithID() + " doesn't have a view");
@@ -214,13 +202,10 @@ public final class DefaultNodeService implements NodeService {
         return ncClass.cast(nc);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String extensionType, final String serviceType, final String request)
-        throws NodeNotFoundException, InvalidRequestException {
+    public synchronized String callNodeDataService(final String projectId, final NodeIDEnt workflowId,
+            final NodeIDEnt nodeId, final String extensionType, final String serviceType, final String request)
+            throws NodeNotFoundException, InvalidRequestException {
 
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
 
@@ -251,11 +236,8 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
+    public synchronized void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final String mode, final List<String> selection) {
         final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase());
         var nc = (NativeNodeContainer)DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
@@ -267,12 +249,9 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey) throws NodeNotFoundException,
-            ServiceExceptions.NodeDescriptionNotAvailableException {
+    public synchronized NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey)
+            throws NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
         if (!m_nodeDescriptionCache.containsKey(factoryKey)) {
             NodeFactory<NodeModel> fac;
             try {
@@ -297,7 +276,7 @@ public final class DefaultNodeService implements NodeService {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         m_nodeDescriptionCache.clear();
     }
 

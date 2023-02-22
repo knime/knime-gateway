@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -92,7 +93,8 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
         // default web-ui service implementations
         List<Class<? extends GatewayService>> serviceInterfaces =
             org.knime.gateway.api.webui.service.util.ListServices.listServiceInterfaces();
-        return serviceInterfaces.stream().collect(Collectors.toMap(i -> i, ServiceInstances::getDefaultService));
+        return serviceInterfaces.stream() //
+                .collect(Collectors.toMap(Function.identity(), ServiceInstances::getDefaultServiceSupplier));
     }
 
     private static Map<String, GatewayService>

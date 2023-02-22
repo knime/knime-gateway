@@ -91,7 +91,7 @@ public class NodeRecommendations {
 
     private final NodeRepository m_nodeRepo;
 
-    private boolean m_nodeRecommendationManagerIsInitialized = false;
+    private volatile boolean m_nodeRecommendationManagerIsInitialized = false;
 
     /**
      * Creates a new instance
@@ -115,13 +115,13 @@ public class NodeRecommendations {
      * @throws OperationNotAllowedException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo) throws OperationNotAllowedException {
+            final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
+            throws OperationNotAllowedException {
         if (!m_nodeRecommendationManagerIsInitialized) {
-            m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
+            // only enter the monitor if absolutely necessary
+            initializeNodeRecommendationManager(m_nodeRepo);
         }
-        if (!m_nodeRecommendationManagerIsInitialized) {
-            throw new OperationNotAllowedException("Node recommendation manager was not initialized properly");
-        }
+
         if (nodeId == null ^ portIdx == null) {
             throw new OperationNotAllowedException("<nodeId> and <portIdx> must either be both null or not null");
         }
@@ -139,23 +139,35 @@ public class NodeRecommendations {
     }
 
     /**
-     * Initializes the {@link NodeRecommendationManager} using the {@link NodeRepository} to build the predicates needed
+     * Initializes the {@link NodeRecommendationManager} using the {@link NodeRepository} to build the predicates
+     * needed
      *
      * @param nodeRepo The node repository
-     * @return Exit status of initialization
+     * @throws OperationNotAllowedException if the recommendation manager could not be initialized correctly
      */
-    private static boolean initializeNodeRecommendationManager(final NodeRepository nodeRepo) {
-        Predicate<NodeInfo> isSourceNode = nodeInfo -> {
+    private synchronized void initializeNodeRecommendationManager(final NodeRepository nodeRepo)
+            throws OperationNotAllowedException {
+        if (m_nodeRecommendationManagerIsInitialized) {
+            // we have to check again inside the monitor to avoid double-initialization
+            return;
+        }
+
+        final Predicate<NodeInfo> isSourceNode = nodeInfo -> {
             var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
                 nodeRepo::getNodeIncludeAdditionalNodes, true);
             return node != null && node.factory.getType() == NodeType.Source;
         };
-        Predicate<NodeInfo> existsInRepository = nodeInfo -> {
+
+        final Predicate<NodeInfo> existsInRepository = nodeInfo -> {
             var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
                 nodeRepo::getNodeIncludeAdditionalNodes, true);
             return node != null;
         };
-        return NodeRecommendationManager.getInstance().initialize(isSourceNode, existsInRepository);
+
+
+        if (!NodeRecommendationManager.getInstance().initialize(isSourceNode, existsInRepository)) {
+            throw new OperationNotAllowedException("Node recommendation manager was not initialized properly");
+        }
     }
 
     private static NativeNodeContainer getNativeNodeContainer(final String projectId, final NodeIDEnt workflowId,

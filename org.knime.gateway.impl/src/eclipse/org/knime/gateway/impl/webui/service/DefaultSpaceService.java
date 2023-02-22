@@ -82,7 +82,7 @@ public class DefaultSpaceService implements SpaceService {
      * @return the singleton instance
      */
     public static DefaultSpaceService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultSpaceService.class);
+        return ServiceInstances.getDefaultServiceInstance(SpaceService.class);
     }
 
     private final SpaceProviders m_spaceProviders =

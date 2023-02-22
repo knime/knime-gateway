@@ -91,30 +91,23 @@ public final class DefaultApplicationService implements ApplicationService {
      * @return the singleton instance
      */
     public static DefaultApplicationService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultApplicationService.class);
+        return ServiceInstances.getDefaultServiceInstance(ApplicationService.class);
     }
 
     DefaultApplicationService() {
         // singleton
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         m_appStateUpdater.setLastAppState(null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public AppStateEnt getState() {
+    public synchronized AppStateEnt getState() {
         var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_preferencesProvider,
             m_exampleProjects, m_spaceProviders, m_nodeFactoryProvider);
         m_appStateUpdater.setLastAppState(appState);
         return appState;
     }
-
 }

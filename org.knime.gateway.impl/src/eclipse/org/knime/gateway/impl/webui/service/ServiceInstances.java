@@ -48,16 +48,11 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static java.util.Collections.synchronizedMap;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.api.webui.service.EventService;
@@ -70,24 +65,27 @@ import org.knime.gateway.api.webui.service.WorkflowService;
 /**
  * Provides the default service implementations for gateway services and utility methods to
  * dispose the service instances.
+
+ * <p>All methods of this class are <i>thread-safe</i>.</p>
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
+ * @author Kai Franze, KNIME GmbH, Konstanz, Germany
+ * @author Leonard Wörteler, KNIME GmbH, Konstanz, Germany
  */
 public final class ServiceInstances {
 
     // TODO auto-generate?
-    private static final Map<Class<?>, Class<?>> INTERFACE_TO_IMPLEMENTATION_MAP = synchronizedMap(Map.of(//
-        WorkflowService.class, DefaultWorkflowService.class, //
-        NodeService.class, DefaultNodeService.class, //
-        PortService.class, DefaultPortService.class, //
-        EventService.class, DefaultEventService.class, //
-        ApplicationService.class, DefaultApplicationService.class, //
-        NodeRepositoryService.class, DefaultNodeRepositoryService.class, //
-        SpaceService.class, DefaultSpaceService.class));
+    private static final Map<Class<? extends GatewayService>, Supplier<GatewayService>> DEFAULT_IMPLEMENTATIONS =
+            Map.of( //
+                WorkflowService.class, DefaultWorkflowService::new, //
+                NodeService.class, DefaultNodeService::new, //
+                PortService.class, DefaultPortService::new, //
+                EventService.class, DefaultEventService::new, //
+                ApplicationService.class, DefaultApplicationService::new, //
+                NodeRepositoryService.class, DefaultNodeRepositoryService::new, //
+                SpaceService.class, DefaultSpaceService::new);
 
-    private static final Map<Class<? extends GatewayService>, LazyInitializer<? extends GatewayService>> SERVICE_INITIALIZERS =
-            synchronizedMap(new HashMap<>());
+    private static final Map<Class<? extends GatewayService>, GatewayService> SERVICE_IMPLEMENTATIONS = new HashMap<>();
 
     private ServiceInstances() {
         // Utility class
@@ -100,60 +98,45 @@ public final class ServiceInstances {
      * @return the default implementation for the provided service interface (supplied lazily)
      * @throws NoSuchElementException if no default service implementation has been found
      */
-    @SuppressWarnings("unchecked")
-    public static Supplier<GatewayService> getDefaultService(final Class<?> serviceInterface) {
-        if (!INTERFACE_TO_IMPLEMENTATION_MAP.containsKey(serviceInterface)) {
+    public static synchronized <S extends GatewayService> Supplier<S> getDefaultServiceSupplier(
+            final Class<S> serviceInterface) {
+        // early check, late instantiation
+        if (!DEFAULT_IMPLEMENTATIONS.containsKey(serviceInterface)) {
             throw new NoSuchElementException(
                 "No default service implementation found for " + serviceInterface.getSimpleName());
         }
-        Class<? extends GatewayService> defaultServiceClass =
-            (Class<? extends GatewayService>)INTERFACE_TO_IMPLEMENTATION_MAP.get(serviceInterface);
-        return () -> getDefaultServiceInstance(defaultServiceClass);
+        return () -> getDefaultServiceInstance(serviceInterface);
     }
 
+    /**
+     * Gets the lazily initialized singleton instance of the {@link GatewayService} represented by the given class.
+     *
+     * @param <S> the service's interface type
+     * @param <T> the service's default implementation type
+     * @param serviceInterface class object of the interface type
+     * @return lazily initialized singleton instance of the default service implementation
+     */
     @SuppressWarnings("unchecked")
-    static <S extends GatewayService> S getDefaultServiceInstance(final Class<S> defaultServiceClass) {
-        try {
-            return (S)SERVICE_INITIALIZERS.computeIfAbsent(defaultServiceClass, k -> { // NOSONAR
-                return new LazyInitializer<S>() {
-
-                    @Override
-                    protected S initialize() throws ConcurrentException {
-                        try {
-                            return defaultServiceClass.getDeclaredConstructor().newInstance();
-                        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                                | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                            throw new IllegalStateException(
-                                "A default service couldn't be initialized: " + defaultServiceClass.getName(), ex);
-                        }
-                    }
-                };
-            }).get();
-        } catch (ConcurrentException ex) {
-            throw new IllegalStateException(ex);
-        }
+    static synchronized <S extends GatewayService, T extends S> T getDefaultServiceInstance(
+            final Class<S> serviceInterface) {
+        return (T) SERVICE_IMPLEMENTATIONS.computeIfAbsent(serviceInterface,
+            k -> DEFAULT_IMPLEMENTATIONS.get(serviceInterface).get());
     }
 
     /**
      * @return {@code true} if some or all services have already been initialized; if so, services dependencies
      *         ({@link ServiceDependencies#setServiceDependency(Class, Object)}) shouldn't be set anymore.
      */
-    public static boolean areServicesInitialized() {
-        return !SERVICE_INITIALIZERS.isEmpty();
+    public static synchronized boolean areServicesInitialized() {
+        return !SERVICE_IMPLEMENTATIONS.isEmpty();
     }
 
     /**
      * Disposes all default service instances.
      */
-    public static void disposeAllServiceInstancesAndDependencies() {
-        SERVICE_INITIALIZERS.values().forEach(s -> {
-            try {
-                s.get().dispose();
-            } catch (ConcurrentException ex) {
-                throw new IllegalStateException(ex);
-            }
-        });
-        SERVICE_INITIALIZERS.clear();
+    public static synchronized void disposeAllServiceInstancesAndDependencies() {
+        SERVICE_IMPLEMENTATIONS.values().forEach(GatewayService::dispose);
+        SERVICE_IMPLEMENTATIONS.clear();
         ServiceDependencies.disposeAllServicesDependencies();
     }
 

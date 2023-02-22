@@ -84,7 +84,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      * @return the singleton instance
      */
     public static DefaultWorkflowService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultWorkflowService.class);
+        return ServiceInstances.getDefaultServiceInstance(WorkflowService.class);
     }
 
     DefaultWorkflowService() {

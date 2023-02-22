@@ -48,22 +48,22 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static java.util.Collections.synchronizedMap;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.knime.gateway.api.service.GatewayService;
 
 /**
- * Provides and manages specific object instances that are considered to be dependencies for the
- * implementation of {@link GatewayService}s.
+ * <p>Provides and manages specific object instances that are considered to be dependencies for the
+ * implementation of {@link GatewayService}s.</p>
+
+ * <p>All methods of this class are <i>thread-safe</i>.</p>
  *
  * @author Kai Franze, KNIME GmbH
  */
 public final class ServiceDependencies {
 
-    private static final Map<Class<?>, Object> DEPENDENCIES = synchronizedMap(new HashMap<>());
+    private static final Map<Class<?>, Object> DEPENDENCIES = new HashMap<>();
 
     private ServiceDependencies() {
         // Utility class
@@ -78,13 +78,14 @@ public final class ServiceDependencies {
      * @return an instance of the given class or {@code null} if it's not present and not required
      * @throws IllegalStateException if there is no implementation registered
      */
-    @SuppressWarnings("unchecked")
-    static <T> T getServiceDependency(final Class<T> key, final boolean isRequired) {
-        if (isRequired && !DEPENDENCIES.containsKey(key)) {
+    static synchronized <T> T getServiceDependency(final Class<T> key, final boolean isRequired) {
+        @SuppressWarnings("unchecked")
+        final var dependency = (T) DEPENDENCIES.get(key);
+        if (isRequired && dependency == null) {
             throw new IllegalStateException(
                 "No instance for class " + key.getName() + " given but required as a service dependency");
         }
-        return (T)DEPENDENCIES.get(key);
+        return dependency;
     }
 
     /**
@@ -94,7 +95,7 @@ public final class ServiceDependencies {
      * @param impl The implementation of `clazz` to be served as the dependency
      * @param <T> The concrete type of the dependency instance
      */
-    public static <T> void setServiceDependency(final Class<T> clazz, final T impl) {
+    public static synchronized <T> void setServiceDependency(final Class<T> clazz, final T impl) {
         if (ServiceInstances.areServicesInitialized()) {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore.");
@@ -108,7 +109,7 @@ public final class ServiceDependencies {
     /**
      * Disposes all default service dependencies.
      */
-    public static void disposeAllServicesDependencies() {
+    public static synchronized void disposeAllServicesDependencies() {
         DEPENDENCIES.clear();
     }
 

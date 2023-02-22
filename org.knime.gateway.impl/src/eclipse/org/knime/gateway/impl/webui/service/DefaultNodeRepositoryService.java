@@ -50,6 +50,8 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
@@ -70,6 +72,8 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
  */
 public final class DefaultNodeRepositoryService implements NodeRepositoryService {
 
+    private final ReentrantReadWriteLock m_lock = new ReentrantReadWriteLock();
+
     private NodeRepository m_nodeRepo;
 
     private NodeSearch m_nodeSearch;
@@ -87,7 +91,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * @return the singleton instance
      */
     public static DefaultNodeRepositoryService getInstance() {
-        return ServiceInstances.getDefaultServiceInstance(DefaultNodeRepositoryService.class);
+        return ServiceInstances.getDefaultServiceInstance(NodeRepositoryService.class);
     }
 
     DefaultNodeRepositoryService() {
@@ -99,38 +103,36 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * of the node search and node groups are deleted.
      */
     public void resetNodeRepository() {
-        m_nodeRepo = new NodeRepository(m_preferencesProvider.activeNodeCollection());
-        m_nodeSearch = new NodeSearch(m_nodeRepo);
-        m_nodeGroups = new NodeGroups(m_nodeRepo);
-        m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
+        final var writeLock = m_lock.writeLock();
+        try {
+            writeLock.lock();
+            m_nodeRepo = new NodeRepository(m_preferencesProvider.activeNodeCollection());
+            m_nodeSearch = new NodeSearch(m_nodeRepo);
+            m_nodeGroups = new NodeGroups(m_nodeRepo);
+            m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
-        final Integer tagsLimit, final Boolean fullTemplateInfo) {
-        return m_nodeGroups.getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);
+            final Integer tagsLimit, final Boolean fullTemplateInfo) {
+        return performReadAccess(() -> m_nodeGroups.getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit,
+            fullTemplateInfo));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo,
-        final Boolean additionalNodes) {
-        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo,
-            additionalNodes);
+            final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo,
+            final Boolean additionalNodes) {
+        return performReadAccess(() -> m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit,
+            fullTemplateInfo, additionalNodes));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds) {
-        return m_nodeRepo.getNodeTemplates(templateIds);
+        return performReadAccess(() -> m_nodeRepo.getNodeTemplates(templateIds));
     }
 
     /**
@@ -140,9 +142,25 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
-        throws OperationNotAllowedException {
-        return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
-            fullTemplateInfo);
+            final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
+            throws OperationNotAllowedException {
+        final var readLock = m_lock.readLock();
+        try {
+            readLock.lock();
+            return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
+                fullTemplateInfo);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    private <T> T performReadAccess(final Supplier<T> readAccess) {
+        final var readLock = m_lock.readLock();
+        try {
+            readLock.lock();
+            return readAccess.get();
+        } finally {
+            readLock.unlock();
+        }
     }
 }

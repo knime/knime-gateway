@@ -107,6 +107,8 @@ public final class NodeGroups {
 
     /**
      * Filters and groups nodes nodes from the node repository.
+     * <p>
+     * This method must be {@code synchronized} because node model creation is not thread-safe.
      *
      * @param numNodesPerTag the number of nodes per selected tag
      * @param tagsOffset the number of tags to be skipped (the tags have a fixed order)
@@ -115,7 +117,7 @@ public final class NodeGroups {
      *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
      * @return the node groups entity
      */
-    public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
+    public synchronized NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
         final Integer tagsLimit, final Boolean fullTemplateInfo) {
         initCategories();
         var nodesPerCategory = getNodesPerCategory();
@@ -131,7 +133,7 @@ public final class NodeGroups {
         return builder(NodeGroupsEntBuilder.class).setGroups(groups).setTotalNumGroups(nodesPerCategory.size()).build();
     }
 
-    private synchronized void initCategories() {
+    private void initCategories() {
         if (m_topLevelCats == null) {
             Map<String, CategoryExtension> cats = CategoryExtensionManager.getInstance().getCategoryExtensions();
             List<Pair<String, String>> topLevelCats = getSortedCategoriesAtLevel("/", cats.values());
@@ -143,7 +145,7 @@ public final class NodeGroups {
         }
     }
 
-    private synchronized Map<String, List<Node>> getNodesPerCategory() {
+    private Map<String, List<Node>> getNodesPerCategory() {
         if (m_nodesPerCategory == null) {
             m_nodesPerCategory = Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
         }
