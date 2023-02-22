@@ -55,13 +55,19 @@ import static org.hamcrest.Matchers.is;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.core.util.PathUtils;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
 /**
@@ -72,6 +78,7 @@ import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
+@SuppressWarnings("static-method")
 public final class LocalWorkspaceTests {
 
     /**
@@ -156,8 +163,8 @@ public final class LocalWorkspaceTests {
     }
 
     /**
-     * Tests that {@link LocalWorkspace#moveItems(List, String, String)} updates the {@link SpaceItemPathAndTypeCache}
-     * accordingly.
+     * Tests that {@link LocalWorkspace#moveItems(List, String, NameCollisionHandling)}
+     * updates the {@link SpaceItemPathAndTypeCache} accordingly.
      *
      * @throws IOException
      */
@@ -216,11 +223,85 @@ public final class LocalWorkspaceTests {
         assertThat(workspace.toKnimeUrl(items.get(2).getId()).toString(), is("knime://LOCAL/test.txt"));
     }
 
-    // TODO: (NXT-1503) Add test for {@link LocalWorkspace#importFile(...)}
+    /**
+     * Tests that {@link LocalWorkspace#importFile(Path, String, NameCollisionHandling, IProgressMonitor)}
+     * updates the {@link SpaceItemPathAndTypeCache} accordingly.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testImportFileUpdatesCache() throws IOException {
+        var tmpFolder = PathUtils.createTempDir("tmp");
+        var workspaceFolder = PathUtils.createTempDir("workspace");
+        var workspace = new LocalWorkspace(workspaceFolder);
 
-    // TODO: (NXT-1503) Add test for {@link LocalWorkspace#importWorkflowOrWorkflowGroup(...)}
+        var fileNameTxt = "test.txt";
+        var tmpTxtPath = createFile(tmpFolder, fileNameTxt);
+        workspace.importFile(tmpTxtPath, Space.ROOT_ITEM_ID, NameCollisionHandling.NOOP, null);
+        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(fileNameTxt));
+        assertItemIsOfType(workspace, workspaceFolder.resolve(fileNameTxt), TypeEnum.DATA);
 
-    // TODO: (NXT-1503) Add test for {@link LocalWorkspace#moveItemFromTmp(...)}
+        var fileNameCsv = "collisions.csv";
+        var tmpCsvPath = createFile(tmpFolder, fileNameCsv);
+        workspace.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.NOOP, null);
+        workspace.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.OVERWRITE, null);
+        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(fileNameTxt),
+            workspaceFolder.resolve(fileNameCsv));
+        assertItemIsOfType(workspace, workspaceFolder.resolve(fileNameCsv), TypeEnum.DATA);
+
+        workspace.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.AUTORENAME, null);
+        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(fileNameTxt), workspaceFolder.resolve(fileNameCsv),
+            workspaceFolder.resolve("collisions(1).csv"));
+        assertItemIsOfType(workspace, workspaceFolder.resolve("collisions(1).csv"), TypeEnum.DATA);
+    }
+
+    /**
+     * Tests that {@link LocalWorkspace#importWorkflowOrWorkflowGroup(Path, String, Consumer, NameCollisionHandling, IProgressMonitor)}
+     * updates the {@link SpaceItemPathAndTypeCache} accordingly for *.knwf imports.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testImportWorkflowUpdatesCache() throws IOException {
+        runTestImportWorkflowOrWorkflowGroupUpdatesCache("simple.knwf", "simple", TypeEnum.WORKFLOW);
+    }
+
+    /**
+     * Tests that {@link LocalWorkspace#importWorkflowOrWorkflowGroup(Path, String, Consumer, NameCollisionHandling, IProgressMonitor)}
+     * updates the {@link SpaceItemPathAndTypeCache} accordingly for *.knar imports.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testImportWorkflowGroupUpdatesCache() throws IOException {
+        runTestImportWorkflowOrWorkflowGroupUpdatesCache("group.knar", "group", TypeEnum.WORKFLOWGROUP);
+    }
+
+    private static void runTestImportWorkflowOrWorkflowGroupUpdatesCache(final String archiveName,
+        final String itemName, final TypeEnum itemType) throws IOException {
+        var workspaceFolder = PathUtils.createTempDir("workspace");
+        var workspace = new LocalWorkspace(workspaceFolder);
+        Consumer<Path> createMetaInfoFileFor = path -> {
+            // Do nothing
+        };
+
+        var archivePath = getFilePath(archiveName);
+        workspace.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
+            NameCollisionHandling.NOOP, null);
+        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(itemName));
+        assertItemIsOfType(workspace, workspaceFolder.resolve(itemName), itemType);
+
+        workspace.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
+            NameCollisionHandling.OVERWRITE, null);
+        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(itemName));
+        assertItemIsOfType(workspace, workspaceFolder.resolve(itemName), itemType);
+
+        workspace.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
+            NameCollisionHandling.AUTORENAME, null);
+        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(itemName),
+            workspaceFolder.resolve(itemName + "1"));
+        assertItemIsOfType(workspace, workspaceFolder.resolve(itemName + "1"), itemType);
+    }
 
     private static void deleteAndCheckMaps(final LocalWorkspace workspace, final List<Path> itemsToDelete,
         final List<Path> itemsToKeep) throws IOException {
@@ -237,8 +318,8 @@ public final class LocalWorkspaceTests {
             .findFirst().get().getId();
     }
 
-    private static Path createWorkflow(final LocalWorkspace workspace, final Path groupFolder, final String groupId, final String workflowName)
-        throws IOException {
+    private static Path createWorkflow(final LocalWorkspace workspace, final Path groupFolder, final String groupId,
+        final String workflowName) throws IOException {
         return groupFolder.resolve(workspace.createWorkflow(groupId, workflowName).getName());
     }
 
@@ -262,4 +343,23 @@ public final class LocalWorkspaceTests {
                 workspace.m_spaceItemPathAndTypeCache.containsKey(path));
         }
     }
+
+    private static void assertItemIsOfType(final LocalWorkspace workspace, final Path itemPath, final TypeEnum type) {
+        assertThat("item must be of the expected type",
+            workspace.m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(itemPath), equalTo(type));
+    }
+
+    private static Path getFilePath(final String fileName) {
+        try {
+            var baseDir = CoreUtil.resolveToFile("/files/test_exports", LocalWorkspaceTests.class);
+            return Paths.get(baseDir.getAbsolutePath(), getDirFromClass(LocalWorkspaceTests.class) + fileName);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex); // Should never happen
+        }
+    }
+
+    private static String getDirFromClass(final Class<?> testClass) {
+        return "/" + testClass.getCanonicalName() + "/";
+    }
+
 }
