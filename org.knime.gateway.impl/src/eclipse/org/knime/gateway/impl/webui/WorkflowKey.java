@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.Objects;
-
 import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
@@ -58,60 +56,20 @@ import org.knime.gateway.api.entity.NodeIDEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class WorkflowKey {
-
-    private final String m_projectId;
-
-    private final NodeIDEnt m_workfowId;
-
-    /**
-     * Creates a new key instance.
-     *
-     * @param projectId the workflow project id
-     * @param workflowId the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level
-     *            workflow
-     */
-    public WorkflowKey(final String projectId, final NodeIDEnt workflowId) {
-        m_projectId = projectId;
-        m_workfowId = workflowId;
-    }
+public record WorkflowKey(String projectId, NodeIDEnt workflowId) {
 
     /**
      * @return the workflow project id
      */
     public String getProjectId() {
-        return m_projectId;
+        return projectId;
     }
 
     /**
      * @return the node-id of the sub-workflow (component or metanode) or 'root' if it refers to the top-level workflow
      */
     public NodeIDEnt getWorkflowId() {
-        return m_workfowId;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (this.getClass() == o.getClass()) {
-            WorkflowKey k = (WorkflowKey)o;
-            return Objects.equals(m_projectId, k.m_projectId) && Objects.equals(m_workfowId, k.m_workfowId);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + m_projectId.hashCode();
-        result = prime * result + m_workfowId.hashCode();
-        return result;
+        return workflowId;
     }
 
 }

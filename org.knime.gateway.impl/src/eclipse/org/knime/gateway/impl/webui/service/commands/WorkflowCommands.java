@@ -169,33 +169,33 @@ public final class WorkflowCommands {
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
         final SpaceProviders spaceProviders) throws OperationNotAllowedException {
         WorkflowCommand command;
-        // TODO: Replace this by pattern matching once Java 17 is available
-        if (commandEnt instanceof TranslateCommandEnt) {
-            command = new Translate((TranslateCommandEnt)commandEnt);
-        } else if (commandEnt instanceof DeleteCommandEnt) {
-            command = new Delete((DeleteCommandEnt)commandEnt, workflowMiddleware);
-        } else if (commandEnt instanceof ConnectCommandEnt) {
-            command = new Connect((ConnectCommandEnt)commandEnt);
-        } else if (commandEnt instanceof AddNodeCommandEnt) {
-            command = new AddNode((AddNodeCommandEnt)commandEnt, nodeFactoryProvider, spaceProviders);
-        } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt) {
-            command = new UpdateComponentOrMetanodeName((UpdateComponentOrMetanodeNameCommandEnt)commandEnt);
-        } else if (commandEnt instanceof UpdateNodeLabelCommandEnt) {
-            command = new UpdateNodeLabel((UpdateNodeLabelCommandEnt)commandEnt);
-        } else if (commandEnt instanceof CollapseCommandEnt) {
-            command = new Collapse((CollapseCommandEnt)commandEnt, workflowMiddleware);
-        } else if (commandEnt instanceof ExpandCommandEnt) {
-            command = new Expand((ExpandCommandEnt)commandEnt, workflowMiddleware);
-        } else if (commandEnt instanceof AddPortCommandEnt) {
-          command = new AddPort((AddPortCommandEnt)commandEnt);
-        } else if (commandEnt instanceof RemovePortCommandEnt) {
-            command = new RemovePort((RemovePortCommandEnt)commandEnt);
-        } else if (commandEnt instanceof CopyCommandEnt) {
-            command = new Copy((CopyCommandEnt)commandEnt);
-        } else if (commandEnt instanceof CutCommandEnt) {
-            command = new Cut((CutCommandEnt)commandEnt, workflowMiddleware);
-        } else if (commandEnt instanceof PasteCommandEnt) {
-            command = new Paste((PasteCommandEnt)commandEnt);
+        // TODO: Replace by 'instanceof switch expressions' once they become available
+        if (commandEnt instanceof TranslateCommandEnt ce) {
+            command = new Translate(ce);
+        } else if (commandEnt instanceof DeleteCommandEnt ce) {
+            command = new Delete(ce, workflowMiddleware);
+        } else if (commandEnt instanceof ConnectCommandEnt ce) {
+            command = new Connect(ce);
+        } else if (commandEnt instanceof AddNodeCommandEnt ce) {
+            command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
+        } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt ce) {
+            command = new UpdateComponentOrMetanodeName(ce);
+        } else if (commandEnt instanceof UpdateNodeLabelCommandEnt ce) {
+           command = new UpdateNodeLabel(ce);
+        } else if (commandEnt instanceof CollapseCommandEnt ce) {
+           command = new Collapse(ce, workflowMiddleware);
+        } else if (commandEnt instanceof ExpandCommandEnt ce) {
+            command = new Expand(ce, workflowMiddleware);
+        } else if (commandEnt instanceof AddPortCommandEnt ce) {
+          command = new AddPort(ce);
+        } else if (commandEnt instanceof RemovePortCommandEnt ce) {
+            command = new RemovePort(ce);
+        } else if (commandEnt instanceof CopyCommandEnt ce) {
+            command = new Copy(ce);
+        } else if (commandEnt instanceof CutCommandEnt ce) {
+            command = new Cut(ce, workflowMiddleware);
+        } else if (commandEnt instanceof PasteCommandEnt ce) {
+            command = new Paste(ce);
         } else {
             if (m_workflowCommandForTesting != null) {
                 command = m_workflowCommandForTesting;
@@ -211,8 +211,8 @@ public final class WorkflowCommands {
         throws NodeNotFoundException, NotASubWorkflowException {
         if (command instanceof WithResult) {
             var hasResult = true;
-            if (command instanceof HigherOrderCommand) {
-                hasResult = ((HigherOrderCommand)command).preExecuteToDetermineWhetherProvidesResult(wfKey);
+            if (command instanceof HigherOrderCommand hoc) {
+                hasResult = hoc.preExecuteToDetermineWhetherProvidesResult(wfKey);
             }
             return hasResult;
         }

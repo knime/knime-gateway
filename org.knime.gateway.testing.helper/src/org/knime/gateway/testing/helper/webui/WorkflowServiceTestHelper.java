@@ -794,12 +794,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static NodeIDEnt getNewNodeId(final CommandResultEnt commandResultEnt) {
-        if (commandResultEnt instanceof CollapseResultEnt) {
-            var collapseResponseEnt = (CollapseResultEnt)commandResultEnt;
-            return collapseResponseEnt.getNewNodeId();
-        } else if (commandResultEnt instanceof ConvertContainerResultEnt) {
-            var convertResponseEnt = (ConvertContainerResultEnt)commandResultEnt;
-            return convertResponseEnt.getConvertedNodeId();
+        if (commandResultEnt instanceof CollapseResultEnt re) {
+            return re.getNewNodeId();
+        } else if (commandResultEnt instanceof ConvertContainerResultEnt re) {
+            return re.getConvertedNodeId();
         } else {
             throw new NoSuchElementException("Unexpected response entity");
         }
