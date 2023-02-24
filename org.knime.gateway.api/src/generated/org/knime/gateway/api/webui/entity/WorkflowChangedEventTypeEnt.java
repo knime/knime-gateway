@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -78,6 +82,16 @@ public interface WorkflowChangedEventTypeEnt extends GatewayEntity, EventTypeEnt
    **/
   public String getSnapshotId();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowChangedEventTypeEnt)other;
+      valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
+      valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
+      valueConsumer.accept("workflowId", Pair.create(getWorkflowId(), e.getWorkflowId()));
+      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
+  }
 
     /**
      * The builder for the entity.

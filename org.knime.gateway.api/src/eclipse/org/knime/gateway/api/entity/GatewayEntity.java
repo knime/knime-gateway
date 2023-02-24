@@ -45,6 +45,9 @@
  */
 package org.knime.gateway.api.entity;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.service.GatewayService;
 
 /**
@@ -62,5 +65,15 @@ public interface GatewayEntity {
      * @return a unique identifier for the type of the entity
      */
     String getTypeID();
+
+    /**
+     * Synchronously iterates all the property values of two gateway entities (this and another one provided as
+     * parameter). Including the properties of possible parent interface(s)).
+     *
+     * @param other the other gateway entity to iterate the property values
+     * @param valueConsumer called for each pair of property values; plus the name of the property
+     * @throws ClassCastException if the type of the other gateway entity is not a super type of this class
+     */
+    void forEachPropertyValue(GatewayEntity other, BiConsumer<String, Pair<Object, Object>> valueConsumer);
 
 }

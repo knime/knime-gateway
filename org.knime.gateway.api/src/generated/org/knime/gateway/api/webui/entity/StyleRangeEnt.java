@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -95,6 +99,18 @@ public interface StyleRangeEnt extends GatewayEntity {
    **/
   public String getColor();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (StyleRangeEnt)other;
+      valueConsumer.accept("start", Pair.create(getStart(), e.getStart()));
+      valueConsumer.accept("length", Pair.create(getLength(), e.getLength()));
+      valueConsumer.accept("bold", Pair.create(isBold(), e.isBold()));
+      valueConsumer.accept("italic", Pair.create(isItalic(), e.isItalic()));
+      valueConsumer.accept("fontSize", Pair.create(getFontSize(), e.getFontSize()));
+      valueConsumer.accept("color", Pair.create(getColor(), e.getColor()));
+  }
 
     /**
      * The builder for the entity.

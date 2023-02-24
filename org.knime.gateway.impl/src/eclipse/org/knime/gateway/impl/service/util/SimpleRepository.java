@@ -50,20 +50,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.javers.core.Javers;
-import org.javers.core.JaversBuilder;
-import org.javers.core.diff.Diff;
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.AnnotationIDEnt;
-import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.GatewayEntity;
-import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
  * Straightforward repository implementation that just keeps every single snapshot as is and sacrifices memory (and a
@@ -90,10 +85,6 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
 
     /* maps key to entity history (lru-cache of <snapshotID, entity>) */
     private final Map<K, LRUCache> m_historyPerEntity = new HashMap<>();
-
-    private final Javers m_javers =
-        JaversBuilder.javers().registerValue(NodeIDEnt.class).registerValue(ConnectionIDEnt.class)
-            .registerValue(AnnotationIDEnt.class).withNewObjectsSnapshot(false).build();
 
     private final Supplier<String> m_snapshotIdGenerator;
 
@@ -153,13 +144,11 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
             throw new IllegalArgumentException("No workflow found for snapshot with ID '" + snapshotID + "'");
         }
 
-        Diff diff = m_javers.compare(snapshot, entity);
-        if (diff.hasChanges()) {
+        if (!EntityDiff.compare(snapshot, entity, patchCreator)) {
             //try committing the current vision since there might be changes
             //compared to the latest version in the repository (not necessarily)
             String newSnapshotID = commitInternal(key, entity);
-            return Optional.of(m_javers.processChangeList(diff.getChanges(),
-                new PatchChangeProcessor<P>(patchCreator, newSnapshotID)));
+            return Optional.of(patchCreator.create(newSnapshotID));
         } else {
             return Optional.empty();
         }
@@ -190,13 +179,10 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
         //look for the most recent commit for the given key
         Pair<String, E> latestSnapshot = m_latestSnapshotPerEntity.get(key); //NOSONAR
         String snapshotID = null;
-        if (latestSnapshot != null) {
+        if (latestSnapshot != null && Objects.equals(latestSnapshot.getSecond(), entity)) {
             //only commit if there is a difference to the latest commit
-            Diff diff = m_javers.compare(latestSnapshot.getSecond(), entity);
-            if (!diff.hasChanges()) {
-                //if there are no changes, use the last snapshot id and don't commit
-                snapshotID = latestSnapshot.getFirst();
-            }
+            //if there are no changes, use the last snapshot id and don't commit
+            snapshotID = latestSnapshot.getFirst();
         }
 
         //commit if necessary

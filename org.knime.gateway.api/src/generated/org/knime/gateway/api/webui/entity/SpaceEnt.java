@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -89,6 +93,17 @@ public interface SpaceEnt extends GatewayEntity {
    **/
   public Boolean isPrivate();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (SpaceEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("owner", Pair.create(getOwner(), e.getOwner()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("_private", Pair.create(isPrivate(), e.isPrivate()));
+  }
 
     /**
      * The builder for the entity.

@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -108,6 +112,13 @@ public interface WorkflowCommandEnt extends GatewayEntity {
    **/
   public KindEnum getKind();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+  }
 
     /**
      * The builder for the entity.

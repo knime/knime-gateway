@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -71,6 +75,14 @@ public interface XYEnt extends GatewayEntity {
    **/
   public Integer getY();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (XYEnt)other;
+      valueConsumer.accept("x", Pair.create(getX(), e.getX()));
+      valueConsumer.accept("y", Pair.create(getY(), e.getY()));
+  }
 
     /**
      * The builder for the entity.

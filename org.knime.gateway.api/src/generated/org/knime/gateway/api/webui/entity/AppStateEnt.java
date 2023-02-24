@@ -48,6 +48,10 @@ import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -116,6 +120,21 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public Boolean isDevMode();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AppStateEnt)other;
+      valueConsumer.accept("openProjects", Pair.create(getOpenProjects(), e.getOpenProjects()));
+      valueConsumer.accept("exampleProjects", Pair.create(getExampleProjects(), e.getExampleProjects()));
+      valueConsumer.accept("availablePortTypes", Pair.create(getAvailablePortTypes(), e.getAvailablePortTypes()));
+      valueConsumer.accept("suggestedPortTypeIds", Pair.create(getSuggestedPortTypeIds(), e.getSuggestedPortTypeIds()));
+      valueConsumer.accept("hasNodeRecommendationsEnabled", Pair.create(hasNodeRecommendationsEnabled(), e.hasNodeRecommendationsEnabled()));
+      valueConsumer.accept("featureFlags", Pair.create(getFeatureFlags(), e.getFeatureFlags()));
+      valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
+      valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
+      valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
+  }
 
     /**
      * The builder for the entity.

@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -95,6 +99,14 @@ public interface LoopInfoEnt extends GatewayEntity {
    **/
   public StatusEnum getStatus();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (LoopInfoEnt)other;
+      valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
+      valueConsumer.accept("status", Pair.create(getStatus(), e.getStatus()));
+  }
 
     /**
      * The builder for the entity.

@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -93,6 +97,14 @@ public interface JobManagerEnt extends GatewayEntity {
    **/
   public CustomJobManagerEnt getCustom();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (JobManagerEnt)other;
+      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("custom", Pair.create(getCustom(), e.getCustom()));
+  }
 
     /**
      * The builder for the entity.

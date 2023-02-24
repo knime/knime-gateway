@@ -48,6 +48,10 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -86,6 +90,21 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
    **/
   public String getBorderColor();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowAnnotationEnt)other;
+      valueConsumer.accept("text", Pair.create(getText(), e.getText()));
+      valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
+      valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
+      valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
+      valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
+      valueConsumer.accept("bounds", Pair.create(getBounds(), e.getBounds()));
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("borderWidth", Pair.create(getBorderWidth(), e.getBorderWidth()));
+      valueConsumer.accept("borderColor", Pair.create(getBorderColor(), e.getBorderColor()));
+  }
 
     /**
      * The builder for the entity.

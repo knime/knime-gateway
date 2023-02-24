@@ -57,17 +57,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.javers.core.Javers;
-import org.javers.core.JaversBuilder;
-import org.javers.core.diff.Diff;
-import org.javers.core.diff.changetype.container.ElementValueChange;
 import org.junit.Test;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
-import org.knime.gateway.api.entity.ConnectionIDEnt;
+import org.knime.gateway.api.entity.GatewayEntity;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
@@ -192,14 +190,49 @@ public class PatchChangeProcessorTest {
        verify(patchCreator).replaced("/nodes/root:1/portGroups/groupName/inputRange/1", 4);
     }
 
-    private static PatchCreator<Object> createDiffAndPatchCreatorMock(final WorkflowEnt workflow1, final WorkflowEnt workflow2) {
-        Javers javers = JaversBuilder.javers().registerValue(NodeIDEnt.class).registerValue(ConnectionIDEnt.class)
-            .registerValue(AnnotationIDEnt.class).withNewObjectsSnapshot(false).build();
-        Diff diff = javers.compare(workflow1, workflow2);
+    /**
+     * Tests that a patch operation is created that adds a completely new list if an element is added to a list which
+     * was previously {@code null} - NXT-1490.
+     */
+    @Test
+    public void testPatchNewList() {
+        WorkflowEntBuilder workflowBuilder = builder(WorkflowEntBuilder.class)//
+            .setInfo(builder(WorkflowInfoEntBuilder.class)//
+                .setName("wf-name")//
+                .setContainerType(ContainerTypeEnum.PROJECT)//
+                .setContainerId(new NodeIDEnt(0))//
+                .build())
+            .setDirty(true) //
+            .setNodes(Map.of());
 
+        var workflow1 = workflowBuilder
+            .setComponentMetadata(builder(ComponentNodeDescriptionEntBuilder.class).setName("blub").build()).build();
+        var option = builder(NodeDialogOptionGroupEntBuilder.class).setSectionName("test").build();
+        var workflow2 = workflowBuilder
+            .setComponentMetadata(
+                builder(ComponentNodeDescriptionEntBuilder.class).setName("blub").setOptions(List.of(option)).build())
+            .build();
+
+        var patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
+        verify(patchCreator).added("/componentMetadata/options", List.of(option));
+    }
+
+    /**
+     * Tests that settings a value to {@code null} results in a respective 'removed'-patch.
+     */
+    @Test
+    public void testSetValueToNull() {
+        var builder = builder(XYEntBuilder.class);
+        var obj2 = builder.build();
+        var obj1 = builder.setX(10).build();
+        var patchCreator = createDiffAndPatchCreatorMock(obj1, obj2);
+        verify(patchCreator).removed("/x");
+    }
+
+    private static PatchCreator<Object> createDiffAndPatchCreatorMock(final GatewayEntity ent1,
+        final GatewayEntity ent2) {
         PatchCreator<Object> patchCreator = Mockito.mock(PatchCreator.class);
-        PatchChangeProcessor<Object> changeProcessor = new PatchChangeProcessor<>(patchCreator, "foo");
-        javers.processChangeList(diff.getChanges(), changeProcessor);
+        EntityDiff.compare(ent1, ent2, patchCreator);
         return patchCreator;
     }
 

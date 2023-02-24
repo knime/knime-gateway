@@ -47,6 +47,10 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -67,6 +71,16 @@ public interface TranslateCommandEnt extends GatewayEntity, PartBasedCommandEnt 
    **/
   public XYEnt getTranslation();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (TranslateCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
+      valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
+      valueConsumer.accept("translation", Pair.create(getTranslation(), e.getTranslation()));
+  }
 
     /**
      * The builder for the entity.

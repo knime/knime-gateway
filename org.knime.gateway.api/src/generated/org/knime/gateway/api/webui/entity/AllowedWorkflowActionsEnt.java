@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,17 @@ public interface AllowedWorkflowActionsEnt extends GatewayEntity, AllowedActions
    **/
   public Boolean isCanRedo();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AllowedWorkflowActionsEnt)other;
+      valueConsumer.accept("canExecute", Pair.create(isCanExecute(), e.isCanExecute()));
+      valueConsumer.accept("canCancel", Pair.create(isCanCancel(), e.isCanCancel()));
+      valueConsumer.accept("canReset", Pair.create(isCanReset(), e.isCanReset()));
+      valueConsumer.accept("canUndo", Pair.create(isCanUndo(), e.isCanUndo()));
+      valueConsumer.accept("canRedo", Pair.create(isCanRedo(), e.isCanRedo()));
+  }
 
     /**
      * The builder for the entity.

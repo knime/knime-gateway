@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,14 @@ public interface NodeGroupsEnt extends GatewayEntity {
    **/
   public Integer getTotalNumGroups();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodeGroupsEnt)other;
+      valueConsumer.accept("groups", Pair.create(getGroups(), e.getGroups()));
+      valueConsumer.accept("totalNumGroups", Pair.create(getTotalNumGroups(), e.getTotalNumGroups()));
+  }
 
     /**
      * The builder for the entity.

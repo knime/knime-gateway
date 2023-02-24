@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -78,6 +82,15 @@ public interface NodeDialogOptionGroupEnt extends GatewayEntity {
    **/
   public java.util.List<NodeDialogOptionDescriptionEnt> getFields();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodeDialogOptionGroupEnt)other;
+      valueConsumer.accept("sectionName", Pair.create(getSectionName(), e.getSectionName()));
+      valueConsumer.accept("sectionDescription", Pair.create(getSectionDescription(), e.getSectionDescription()));
+      valueConsumer.accept("fields", Pair.create(getFields(), e.getFields()));
+  }
 
     /**
      * The builder for the entity.

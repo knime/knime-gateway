@@ -53,6 +53,10 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -139,6 +143,24 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public Boolean isDirty();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowEnt)other;
+      valueConsumer.accept("info", Pair.create(getInfo(), e.getInfo()));
+      valueConsumer.accept("nodes", Pair.create(getNodes(), e.getNodes()));
+      valueConsumer.accept("nodeTemplates", Pair.create(getNodeTemplates(), e.getNodeTemplates()));
+      valueConsumer.accept("connections", Pair.create(getConnections(), e.getConnections()));
+      valueConsumer.accept("workflowAnnotations", Pair.create(getWorkflowAnnotations(), e.getWorkflowAnnotations()));
+      valueConsumer.accept("parents", Pair.create(getParents(), e.getParents()));
+      valueConsumer.accept("metaInPorts", Pair.create(getMetaInPorts(), e.getMetaInPorts()));
+      valueConsumer.accept("metaOutPorts", Pair.create(getMetaOutPorts(), e.getMetaOutPorts()));
+      valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
+      valueConsumer.accept("componentMetadata", Pair.create(getComponentMetadata(), e.getComponentMetadata()));
+      valueConsumer.accept("projectMetadata", Pair.create(getProjectMetadata(), e.getProjectMetadata()));
+      valueConsumer.accept("dirty", Pair.create(isDirty(), e.isDirty()));
+  }
 
     /**
      * The builder for the entity.

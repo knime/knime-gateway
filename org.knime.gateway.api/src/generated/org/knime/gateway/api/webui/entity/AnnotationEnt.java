@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -113,6 +117,17 @@ public interface AnnotationEnt extends GatewayEntity {
    **/
   public java.util.List<StyleRangeEnt> getStyleRanges();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AnnotationEnt)other;
+      valueConsumer.accept("text", Pair.create(getText(), e.getText()));
+      valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
+      valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
+      valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
+      valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
+  }
 
     /**
      * The builder for the entity.

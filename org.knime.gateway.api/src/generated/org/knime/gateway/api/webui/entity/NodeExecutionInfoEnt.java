@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -78,6 +82,15 @@ public interface NodeExecutionInfoEnt extends GatewayEntity {
    **/
   public String getIcon();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodeExecutionInfoEnt)other;
+      valueConsumer.accept("jobManager", Pair.create(getJobManager(), e.getJobManager()));
+      valueConsumer.accept("streamable", Pair.create(isStreamable(), e.isStreamable()));
+      valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
+  }
 
     /**
      * The builder for the entity.

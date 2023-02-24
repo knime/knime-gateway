@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -59,6 +63,12 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface EventEnt extends GatewayEntity {
 
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (EventEnt)other;
+  }
 
     /**
      * The builder for the entity.

@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -77,6 +81,15 @@ public interface AllowedActionsEnt extends GatewayEntity {
    **/
   public Boolean isCanReset();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AllowedActionsEnt)other;
+      valueConsumer.accept("canExecute", Pair.create(isCanExecute(), e.isCanExecute()));
+      valueConsumer.accept("canCancel", Pair.create(isCanCancel(), e.isCanCancel()));
+      valueConsumer.accept("canReset", Pair.create(isCanReset(), e.isCanReset()));
+  }
 
     /**
      * The builder for the entity.

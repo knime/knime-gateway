@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -141,6 +145,16 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
    **/
   public NodeFactoryKeyEnt getNodeFactory();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NativeNodeInvariantsEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
+      valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
+  }
 
     /**
      * The builder for the entity.

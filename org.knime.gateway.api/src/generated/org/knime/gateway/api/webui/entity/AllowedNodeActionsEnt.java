@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -142,6 +146,21 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
    **/
   public CanCollapseEnum getCanCollapse();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AllowedNodeActionsEnt)other;
+      valueConsumer.accept("canExecute", Pair.create(isCanExecute(), e.isCanExecute()));
+      valueConsumer.accept("canCancel", Pair.create(isCanCancel(), e.isCanCancel()));
+      valueConsumer.accept("canReset", Pair.create(isCanReset(), e.isCanReset()));
+      valueConsumer.accept("canOpenDialog", Pair.create(isCanOpenDialog(), e.isCanOpenDialog()));
+      valueConsumer.accept("canOpenLegacyFlowVariableDialog", Pair.create(isCanOpenLegacyFlowVariableDialog(), e.isCanOpenLegacyFlowVariableDialog()));
+      valueConsumer.accept("canOpenView", Pair.create(isCanOpenView(), e.isCanOpenView()));
+      valueConsumer.accept("canDelete", Pair.create(isCanDelete(), e.isCanDelete()));
+      valueConsumer.accept("canExpand", Pair.create(getCanExpand(), e.getCanExpand()));
+      valueConsumer.accept("canCollapse", Pair.create(getCanCollapse(), e.getCanCollapse()));
+  }
 
     /**
      * The builder for the entity.

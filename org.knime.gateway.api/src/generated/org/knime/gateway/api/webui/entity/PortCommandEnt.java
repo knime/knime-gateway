@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -99,6 +103,16 @@ public interface PortCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PortCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("side", Pair.create(getSide(), e.getSide()));
+      valueConsumer.accept("portGroup", Pair.create(getPortGroup(), e.getPortGroup()));
+      valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
+  }
 
     /**
      * The builder for the entity.

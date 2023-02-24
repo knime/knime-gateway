@@ -54,6 +54,10 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -98,6 +102,26 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public Boolean hasView();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NativeNodeEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
+      valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("annotation", Pair.create(getAnnotation(), e.getAnnotation()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
+      valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
+      valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
+      valueConsumer.accept("templateId", Pair.create(getTemplateId(), e.getTemplateId()));
+      valueConsumer.accept("state", Pair.create(getState(), e.getState()));
+      valueConsumer.accept("loopInfo", Pair.create(getLoopInfo(), e.getLoopInfo()));
+      valueConsumer.accept("portGroups", Pair.create(getPortGroups(), e.getPortGroups()));
+      valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
+  }
 
     /**
      * The builder for the entity.

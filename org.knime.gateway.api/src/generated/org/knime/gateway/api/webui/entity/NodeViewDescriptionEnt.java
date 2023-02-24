@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -71,6 +75,14 @@ public interface NodeViewDescriptionEnt extends GatewayEntity {
    **/
   public String getDescription();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodeViewDescriptionEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+  }
 
     /**
      * The builder for the entity.

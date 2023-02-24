@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,14 @@ public interface WorkflowSnapshotEnt extends GatewayEntity {
    **/
   public String getSnapshotId();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowSnapshotEnt)other;
+      valueConsumer.accept("workflow", Pair.create(getWorkflow(), e.getWorkflow()));
+      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
+  }
 
     /**
      * The builder for the entity.

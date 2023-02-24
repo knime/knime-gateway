@@ -47,6 +47,10 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -73,6 +77,14 @@ public interface WorkflowGroupContentEnt extends GatewayEntity {
    **/
   public java.util.List<SpaceItemEnt> getItems();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowGroupContentEnt)other;
+      valueConsumer.accept("path", Pair.create(getPath(), e.getPath()));
+      valueConsumer.accept("items", Pair.create(getItems(), e.getItems()));
+  }
 
     /**
      * The builder for the entity.

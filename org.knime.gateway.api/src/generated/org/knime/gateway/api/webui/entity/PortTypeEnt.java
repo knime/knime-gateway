@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -120,6 +124,18 @@ public interface PortTypeEnt extends GatewayEntity {
    **/
   public Boolean hasView();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PortTypeEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("color", Pair.create(getColor(), e.getColor()));
+      valueConsumer.accept("compatibleTypes", Pair.create(getCompatibleTypes(), e.getCompatibleTypes()));
+      valueConsumer.accept("hidden", Pair.create(isHidden(), e.isHidden()));
+      valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
+  }
 
     /**
      * The builder for the entity.

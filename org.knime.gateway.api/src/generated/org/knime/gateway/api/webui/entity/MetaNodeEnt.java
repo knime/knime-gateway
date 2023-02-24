@@ -52,6 +52,10 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -96,6 +100,24 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public String getLink();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (MetaNodeEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
+      valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("annotation", Pair.create(getAnnotation(), e.getAnnotation()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
+      valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
+      valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("state", Pair.create(getState(), e.getState()));
+      valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
+  }
 
     /**
      * The builder for the entity.

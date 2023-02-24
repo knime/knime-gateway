@@ -50,6 +50,10 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -64,6 +68,20 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNodeAndDescriptionEnt, NodeDescriptionEnt {
 
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (ComponentNodeDescriptionEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("options", Pair.create(getOptions(), e.getOptions()));
+      valueConsumer.accept("views", Pair.create(getViews(), e.getViews()));
+      valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
+      valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+  }
 
     /**
      * The builder for the entity.

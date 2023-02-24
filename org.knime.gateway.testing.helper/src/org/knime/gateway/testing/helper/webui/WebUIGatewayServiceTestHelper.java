@@ -125,7 +125,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-        //mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
         mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
         var objToString = new ObjectToString(mapper);

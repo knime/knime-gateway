@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import java.math.BigDecimal;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -131,6 +135,19 @@ public interface NodeStateEnt extends GatewayEntity {
    **/
   public java.util.List<String> getResolutions();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodeStateEnt)other;
+      valueConsumer.accept("executionState", Pair.create(getExecutionState(), e.getExecutionState()));
+      valueConsumer.accept("progress", Pair.create(getProgress(), e.getProgress()));
+      valueConsumer.accept("progressMessage", Pair.create(getProgressMessage(), e.getProgressMessage()));
+      valueConsumer.accept("error", Pair.create(getError(), e.getError()));
+      valueConsumer.accept("warning", Pair.create(getWarning(), e.getWarning()));
+      valueConsumer.accept("issue", Pair.create(getIssue(), e.getIssue()));
+      valueConsumer.accept("resolutions", Pair.create(getResolutions(), e.getResolutions()));
+  }
 
     /**
      * The builder for the entity.

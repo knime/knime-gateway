@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -114,6 +118,21 @@ public interface ConnectionEnt extends GatewayEntity {
    **/
   public AllowedConnectionActionsEnt getAllowedActions();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (ConnectionEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("destNode", Pair.create(getDestNode(), e.getDestNode()));
+      valueConsumer.accept("destPort", Pair.create(getDestPort(), e.getDestPort()));
+      valueConsumer.accept("sourceNode", Pair.create(getSourceNode(), e.getSourceNode()));
+      valueConsumer.accept("sourcePort", Pair.create(getSourcePort(), e.getSourcePort()));
+      valueConsumer.accept("flowVariableConnection", Pair.create(isFlowVariableConnection(), e.isFlowVariableConnection()));
+      valueConsumer.accept("streaming", Pair.create(isStreaming(), e.isStreaming()));
+      valueConsumer.accept("label", Pair.create(getLabel(), e.getLabel()));
+      valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
+  }
 
     /**
      * The builder for the entity.

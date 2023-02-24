@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -84,6 +88,16 @@ public interface DynamicPortGroupDescriptionEnt extends GatewayEntity {
    **/
   public java.util.List<NodePortTemplateEnt> getSupportedPortTypes();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (DynamicPortGroupDescriptionEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("identifier", Pair.create(getIdentifier(), e.getIdentifier()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("supportedPortTypes", Pair.create(getSupportedPortTypes(), e.getSupportedPortTypes()));
+  }
 
     /**
      * The builder for the entity.

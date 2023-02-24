@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -87,6 +91,16 @@ public interface CollapseCommandEnt extends GatewayEntity, PartBasedCommandEnt {
    **/
   public ContainerTypeEnum getContainerType();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (CollapseCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
+      valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
+      valueConsumer.accept("containerType", Pair.create(getContainerType(), e.getContainerType()));
+  }
 
     /**
      * The builder for the entity.

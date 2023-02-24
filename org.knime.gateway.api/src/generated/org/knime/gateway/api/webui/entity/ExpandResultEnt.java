@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,16 @@ public interface ExpandResultEnt extends GatewayEntity, CommandResultEnt {
    **/
   public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getExpandedAnnotationIds();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (ExpandResultEnt)other;
+      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("expandedNodeIds", Pair.create(getExpandedNodeIds(), e.getExpandedNodeIds()));
+      valueConsumer.accept("expandedAnnotationIds", Pair.create(getExpandedAnnotationIds(), e.getExpandedAnnotationIds()));
+  }
 
     /**
      * The builder for the entity.

@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -77,6 +81,15 @@ public interface UpdateInfoEnt extends GatewayEntity {
    **/
   public Boolean isIsUpdatePossible();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (UpdateInfoEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("shortName", Pair.create(getShortName(), e.getShortName()));
+      valueConsumer.accept("isUpdatePossible", Pair.create(isIsUpdatePossible(), e.isIsUpdatePossible()));
+  }
 
     /**
      * The builder for the entity.

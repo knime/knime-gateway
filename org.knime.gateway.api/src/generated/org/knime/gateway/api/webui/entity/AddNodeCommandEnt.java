@@ -49,6 +49,10 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -99,6 +103,19 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public Integer getSourcePortIdx();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AddNodeCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+      valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
+      valueConsumer.accept("url", Pair.create(getUrl(), e.getUrl()));
+      valueConsumer.accept("spaceItemReference", Pair.create(getSpaceItemReference(), e.getSpaceItemReference()));
+      valueConsumer.accept("sourceNodeId", Pair.create(getSourceNodeId(), e.getSourceNodeId()));
+      valueConsumer.accept("sourcePortIdx", Pair.create(getSourcePortIdx(), e.getSourcePortIdx()));
+  }
 
     /**
      * The builder for the entity.

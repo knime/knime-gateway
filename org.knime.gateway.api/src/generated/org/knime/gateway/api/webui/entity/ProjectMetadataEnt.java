@@ -47,6 +47,10 @@ package org.knime.gateway.api.webui.entity;
 import java.time.OffsetDateTime;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -91,6 +95,17 @@ public interface ProjectMetadataEnt extends GatewayEntity {
    **/
   public OffsetDateTime getLastEdit();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (ProjectMetadataEnt)other;
+      valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
+      valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
+      valueConsumer.accept("lastEdit", Pair.create(getLastEdit(), e.getLastEdit()));
+  }
 
     /**
      * The builder for the entity.

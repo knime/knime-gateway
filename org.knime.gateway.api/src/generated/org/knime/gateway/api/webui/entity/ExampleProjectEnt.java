@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -78,6 +82,15 @@ public interface ExampleProjectEnt extends GatewayEntity {
    **/
   public SpaceItemReferenceEnt getOrigin();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (ExampleProjectEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("svg", Pair.create(getSvg(), e.getSvg()));
+      valueConsumer.accept("origin", Pair.create(getOrigin(), e.getOrigin()));
+  }
 
     /**
      * The builder for the entity.

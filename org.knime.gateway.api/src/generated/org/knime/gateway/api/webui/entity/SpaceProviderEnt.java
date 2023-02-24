@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -66,6 +70,13 @@ public interface SpaceProviderEnt extends GatewayEntity {
    **/
   public java.util.List<SpaceEnt> getSpaces();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (SpaceProviderEnt)other;
+      valueConsumer.accept("spaces", Pair.create(getSpaces(), e.getSpaces()));
+  }
 
     /**
      * The builder for the entity.

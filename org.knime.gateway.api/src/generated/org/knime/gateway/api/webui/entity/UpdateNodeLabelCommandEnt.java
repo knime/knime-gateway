@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,15 @@ public interface UpdateNodeLabelCommandEnt extends GatewayEntity, WorkflowComman
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (UpdateNodeLabelCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("label", Pair.create(getLabel(), e.getLabel()));
+      valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
+  }
 
     /**
      * The builder for the entity.

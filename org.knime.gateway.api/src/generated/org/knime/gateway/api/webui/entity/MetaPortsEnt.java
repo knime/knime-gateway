@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,14 @@ public interface MetaPortsEnt extends GatewayEntity {
    **/
   public java.util.List<NodePortEnt> getPorts();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (MetaPortsEnt)other;
+      valueConsumer.accept("xPos", Pair.create(getXPos(), e.getXPos()));
+      valueConsumer.accept("ports", Pair.create(getPorts(), e.getPorts()));
+  }
 
     /**
      * The builder for the entity.

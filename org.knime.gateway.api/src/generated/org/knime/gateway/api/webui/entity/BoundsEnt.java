@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -83,6 +87,16 @@ public interface BoundsEnt extends GatewayEntity {
    **/
   public Integer getHeight();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (BoundsEnt)other;
+      valueConsumer.accept("x", Pair.create(getX(), e.getX()));
+      valueConsumer.accept("y", Pair.create(getY(), e.getY()));
+      valueConsumer.accept("width", Pair.create(getWidth(), e.getWidth()));
+      valueConsumer.accept("height", Pair.create(getHeight(), e.getHeight()));
+  }
 
     /**
      * The builder for the entity.

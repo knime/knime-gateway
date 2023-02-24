@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -77,6 +81,15 @@ public interface AllowedLoopActionsEnt extends GatewayEntity {
    **/
   public Boolean isCanStep();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AllowedLoopActionsEnt)other;
+      valueConsumer.accept("canResume", Pair.create(isCanResume(), e.isCanResume()));
+      valueConsumer.accept("canPause", Pair.create(isCanPause(), e.isCanPause()));
+      valueConsumer.accept("canStep", Pair.create(isCanStep(), e.isCanStep()));
+  }
 
     /**
      * The builder for the entity.

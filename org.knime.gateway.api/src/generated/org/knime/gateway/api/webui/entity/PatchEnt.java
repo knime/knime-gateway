@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -66,6 +70,13 @@ public interface PatchEnt extends GatewayEntity {
    **/
   public java.util.List<PatchOpEnt> getOps();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PatchEnt)other;
+      valueConsumer.accept("ops", Pair.create(getOps(), e.getOps()));
+  }
 
     /**
      * The builder for the entity.

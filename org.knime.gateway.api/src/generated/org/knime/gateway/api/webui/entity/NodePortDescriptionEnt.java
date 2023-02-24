@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,17 @@ public interface NodePortDescriptionEnt extends GatewayEntity, NodePortTemplateE
    **/
   public String getTypeName();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodePortDescriptionEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
+      valueConsumer.accept("optional", Pair.create(isOptional(), e.isOptional()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("typeName", Pair.create(getTypeName(), e.getTypeName()));
+  }
 
     /**
      * The builder for the entity.

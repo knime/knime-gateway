@@ -48,6 +48,10 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -86,6 +90,20 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
    **/
   public java.util.List<NodePortTemplateEnt> getOutPorts();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodeTemplateEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
+      valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("component", Pair.create(isComponent(), e.isComponent()));
+      valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
+      valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+  }
 
     /**
      * The builder for the entity.

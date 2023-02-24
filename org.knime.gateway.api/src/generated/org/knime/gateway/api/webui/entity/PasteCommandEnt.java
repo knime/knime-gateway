@@ -47,6 +47,10 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -73,6 +77,15 @@ public interface PasteCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public XYEnt getPosition();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PasteCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("content", Pair.create(getContent(), e.getContent()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+  }
 
     /**
      * The builder for the entity.

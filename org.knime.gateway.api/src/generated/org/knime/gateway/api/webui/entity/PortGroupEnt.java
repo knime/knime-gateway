@@ -45,6 +45,10 @@
 package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -89,6 +93,17 @@ public interface PortGroupEnt extends GatewayEntity {
    **/
   public java.util.List<String> getSupportedPortTypeIds();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PortGroupEnt)other;
+      valueConsumer.accept("inputRange", Pair.create(getInputRange(), e.getInputRange()));
+      valueConsumer.accept("outputRange", Pair.create(getOutputRange(), e.getOutputRange()));
+      valueConsumer.accept("canAddInPort", Pair.create(isCanAddInPort(), e.isCanAddInPort()));
+      valueConsumer.accept("canAddOutPort", Pair.create(isCanAddOutPort(), e.isCanAddOutPort()));
+      valueConsumer.accept("supportedPortTypeIds", Pair.create(getSupportedPortTypeIds(), e.getSupportedPortTypeIds()));
+  }
 
     /**
      * The builder for the entity.

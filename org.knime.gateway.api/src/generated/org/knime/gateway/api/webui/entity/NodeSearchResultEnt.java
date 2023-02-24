@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -78,6 +82,15 @@ public interface NodeSearchResultEnt extends GatewayEntity {
    **/
   public java.util.List<String> getTags();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodeSearchResultEnt)other;
+      valueConsumer.accept("nodes", Pair.create(getNodes(), e.getNodes()));
+      valueConsumer.accept("totalNumNodes", Pair.create(getTotalNumNodes(), e.getTotalNumNodes()));
+      valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
+  }
 
     /**
      * The builder for the entity.

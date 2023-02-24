@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -72,6 +76,15 @@ public interface PartBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PartBasedCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
+      valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
+  }
 
     /**
      * The builder for the entity.

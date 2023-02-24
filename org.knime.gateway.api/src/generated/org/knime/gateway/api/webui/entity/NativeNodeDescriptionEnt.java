@@ -51,6 +51,10 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -95,6 +99,22 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
    **/
   public java.util.List<LinkEnt> getLinks();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NativeNodeDescriptionEnt)other;
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("options", Pair.create(getOptions(), e.getOptions()));
+      valueConsumer.accept("views", Pair.create(getViews(), e.getViews()));
+      valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
+      valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("shortDescription", Pair.create(getShortDescription(), e.getShortDescription()));
+      valueConsumer.accept("dynamicInPortGroupDescriptions", Pair.create(getDynamicInPortGroupDescriptions(), e.getDynamicInPortGroupDescriptions()));
+      valueConsumer.accept("dynamicOutPortGroupDescriptions", Pair.create(getDynamicOutPortGroupDescriptions(), e.getDynamicOutPortGroupDescriptions()));
+      valueConsumer.accept("interactiveView", Pair.create(getInteractiveView(), e.getInteractiveView()));
+      valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
+  }
 
     /**
      * The builder for the entity.

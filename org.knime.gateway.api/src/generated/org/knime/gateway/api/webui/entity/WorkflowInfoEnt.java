@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -119,6 +123,18 @@ public interface WorkflowInfoEnt extends GatewayEntity {
    **/
   public JobManagerEnt getJobManager();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowInfoEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("containerId", Pair.create(getContainerId(), e.getContainerId()));
+      valueConsumer.accept("containerType", Pair.create(getContainerType(), e.getContainerType()));
+      valueConsumer.accept("linked", Pair.create(isLinked(), e.isLinked()));
+      valueConsumer.accept("onHub", Pair.create(isOnHub(), e.isOnHub()));
+      valueConsumer.accept("jobManager", Pair.create(getJobManager(), e.getJobManager()));
+  }
 
     /**
      * The builder for the entity.

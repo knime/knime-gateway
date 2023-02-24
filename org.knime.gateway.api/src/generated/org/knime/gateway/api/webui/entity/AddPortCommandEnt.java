@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -66,6 +70,17 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
    **/
   public String getPortTypeId();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AddPortCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("side", Pair.create(getSide(), e.getSide()));
+      valueConsumer.accept("portGroup", Pair.create(getPortGroup(), e.getPortGroup()));
+      valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
+      valueConsumer.accept("portTypeId", Pair.create(getPortTypeId(), e.getPortTypeId()));
+  }
 
     /**
      * The builder for the entity.

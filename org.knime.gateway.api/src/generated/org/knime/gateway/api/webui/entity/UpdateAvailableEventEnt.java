@@ -47,6 +47,10 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -73,6 +77,14 @@ public interface UpdateAvailableEventEnt extends GatewayEntity, EventEnt {
    **/
   public java.util.List<String> getBugfixes();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (UpdateAvailableEventEnt)other;
+      valueConsumer.accept("newReleases", Pair.create(getNewReleases(), e.getNewReleases()));
+      valueConsumer.accept("bugfixes", Pair.create(getBugfixes(), e.getBugfixes()));
+  }
 
     /**
      * The builder for the entity.

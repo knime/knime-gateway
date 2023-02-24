@@ -158,7 +158,6 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         final PatchEntCreator patchEntCreator, final WorkflowChangesTracker tracker) {
         return wfm -> {
             preEventCreation();
-            patchEntCreator.clear();
             WorkflowChangedEventEnt event = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey, patchEntCreator,
                 patchEntCreator.getLastSnapshotId(), true, tracker);
             if (event != null) {
@@ -254,11 +253,9 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         public WorkflowChangedEventEnt create(final String newSnapshotId) {
             m_lastSnapshotId = newSnapshotId;
             DefaultPatchEnt patch = new DefaultPatchEntBuilder().setOps(m_ops).build();
-            return builder(WorkflowChangedEventEntBuilder.class).setPatch(patch).setSnapshotId(newSnapshotId).build();
-        }
-
-        void clear() {
             m_ops.clear();
+            return builder(WorkflowChangedEventEntBuilder.class).setPatch(patch).setSnapshotId(newSnapshotId).build();
+
         }
 
         String getLastSnapshotId() {

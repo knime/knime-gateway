@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -60,6 +64,13 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface AppStateChangedEventTypeEnt extends GatewayEntity, EventTypeEnt {
 
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AppStateChangedEventTypeEnt)other;
+      valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
+  }
 
     /**
      * The builder for the entity.

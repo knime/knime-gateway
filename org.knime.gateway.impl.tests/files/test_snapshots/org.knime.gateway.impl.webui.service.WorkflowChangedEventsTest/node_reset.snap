@@ -1,12 +1,24 @@
 {
   "ops" : [ {
   "op" : "add",
+  "path" : "/nodes/root:12/state/resolutions",
+  "value" : [ ]
+}, {
+  "op" : "add",
   "path" : "/nodes/root:12/state/warning",
   "value" : "Component Input NODE_ID_PLACEHOLDER: Component does not have input data, execute upstream nodes first"
 }, {
   "op" : "add",
+  "path" : "/nodes/root:23/state/resolutions",
+  "value" : [ ]
+}, {
+  "op" : "add",
   "path" : "/nodes/root:23/state/warning",
   "value" : "Component Input NODE_ID_PLACEHOLDER: Component does not have input data, execute upstream nodes first"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:9/state/resolutions",
+  "value" : [ ]
 }, {
   "op" : "add",
   "path" : "/nodes/root:9/state/warning",

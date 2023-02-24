@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -84,6 +88,16 @@ public interface WorkflowProjectEnt extends GatewayEntity {
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (WorkflowProjectEnt)other;
+      valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
+      valueConsumer.accept("origin", Pair.create(getOrigin(), e.getOrigin()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("activeWorkflowId", Pair.create(getActiveWorkflowId(), e.getActiveWorkflowId()));
+  }
 
     /**
      * The builder for the entity.

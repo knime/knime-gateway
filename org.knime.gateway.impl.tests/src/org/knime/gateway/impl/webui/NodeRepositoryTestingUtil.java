@@ -50,8 +50,6 @@ package org.knime.gateway.impl.webui;
 
 import java.util.Set;
 
-import org.javers.common.collections.Sets;
-
 /**
  * Test helper for creating a new {@link NodeRepository}.
  *
@@ -65,7 +63,7 @@ public final class NodeRepositoryTestingUtil {
 
     /** The nodes that are included in the active collection for {@link #createNodeRepositoryWithCollection()} */
     public static final Set<String> COLLECTION_NODES =
-        Sets.asSet("org.knime.base.node.preproc.table.cropper.TableCropperNodeFactory",
+        Set.of("org.knime.base.node.preproc.table.cropper.TableCropperNodeFactory",
             "org.knime.base.node.preproc.table.cellextractor.CellExtractorNodeFactory",
             "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory",
             "org.knime.base.node.preproc.table.splitter.TableSplitterNodeFactory");

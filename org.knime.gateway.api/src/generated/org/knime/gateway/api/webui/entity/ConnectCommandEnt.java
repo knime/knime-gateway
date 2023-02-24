@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -84,6 +88,17 @@ public interface ConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public Integer getDestinationPortIdx();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (ConnectCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("sourceNodeId", Pair.create(getSourceNodeId(), e.getSourceNodeId()));
+      valueConsumer.accept("sourcePortIdx", Pair.create(getSourcePortIdx(), e.getSourcePortIdx()));
+      valueConsumer.accept("destinationNodeId", Pair.create(getDestinationNodeId(), e.getDestinationNodeId()));
+      valueConsumer.accept("destinationPortIdx", Pair.create(getDestinationPortIdx(), e.getDestinationPortIdx()));
+  }
 
     /**
      * The builder for the entity.

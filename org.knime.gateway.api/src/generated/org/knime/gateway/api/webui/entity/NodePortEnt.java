@@ -46,6 +46,10 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
@@ -102,6 +106,22 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
    **/
   public Boolean isCanRemove();
 
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (NodePortEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
+      valueConsumer.accept("optional", Pair.create(isOptional(), e.isOptional()));
+      valueConsumer.accept("info", Pair.create(getInfo(), e.getInfo()));
+      valueConsumer.accept("index", Pair.create(getIndex(), e.getIndex()));
+      valueConsumer.accept("connectedVia", Pair.create(getConnectedVia(), e.getConnectedVia()));
+      valueConsumer.accept("inactive", Pair.create(isInactive(), e.isInactive()));
+      valueConsumer.accept("portObjectVersion", Pair.create(getPortObjectVersion(), e.getPortObjectVersion()));
+      valueConsumer.accept("portGroupId", Pair.create(getPortGroupId(), e.getPortGroupId()));
+      valueConsumer.accept("canRemove", Pair.create(isCanRemove(), e.isCanRemove()));
+  }
 
     /**
      * The builder for the entity.
