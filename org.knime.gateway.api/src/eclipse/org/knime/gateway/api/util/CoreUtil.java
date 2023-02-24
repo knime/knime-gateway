@@ -437,7 +437,7 @@ public final class CoreUtil {
             return Optional.of(new Node((NodeFactory<NodeModel>)factory));
         } catch (Throwable e) { // NOSONAR
             NodeLogger.getLogger(CoreUtil.class)
-                .error("Could not create instance of node " + factory.getClass().getName() + ": " + e.getMessage());
+                .error("Could not create instance of node " + factory.getClass().getName() + ": " + e.getMessage(), e);
             return Optional.empty();
         }
     }
