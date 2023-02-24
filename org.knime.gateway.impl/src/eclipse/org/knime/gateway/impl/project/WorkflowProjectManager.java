@@ -47,12 +47,10 @@ package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -109,12 +107,8 @@ public final class WorkflowProjectManager {
      * All other opened projects are considered <b>not</b> active after this call.
      *
      * @param projectId the id to add
-     * @throws NoSuchElementException if there is no workflow open/loaded for the given project id
      */
     public void setWorkflowProjectActive(final String projectId) {
-        if (getCachedWorkflow(projectId).isEmpty()) {
-            throw new NoSuchElementException("No loaded workflow for id " + projectId);
-        }
         m_activeProjectId = projectId;
     }
 
