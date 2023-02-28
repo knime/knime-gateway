@@ -108,6 +108,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("devMode")
     public Boolean isDevMode();
     
+    @Override
+    @JsonProperty("fileExtensionToNodeTemplateId")
+    public java.util.Map<String, String> getFileExtensionToNodeTemplateId();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -156,6 +160,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("devMode")
         public AppStateEntMixInBuilder setDevMode(final Boolean devMode);
+        
+        @Override
+        @JsonProperty("fileExtensionToNodeTemplateId")
+        public AppStateEntMixInBuilder setFileExtensionToNodeTemplateId(final java.util.Map<String, String> fileExtensionToNodeTemplateId);
         
     }
 

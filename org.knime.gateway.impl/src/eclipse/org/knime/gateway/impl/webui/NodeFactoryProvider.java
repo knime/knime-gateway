@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui;
 
+import java.util.Map;
+
 import org.knime.core.node.NodeFactory;
 
 /**
@@ -64,5 +66,12 @@ public interface NodeFactoryProvider {
      * @return then node factory class or {@code null} if there is none
      */
     Class<? extends NodeFactory<?>> fromFileExtension(String filename);
+
+    /**
+     * Determines the node factories for all supported file extensions.
+     *
+     * @return a map of supported file extensions and their node factories
+     */
+    Map<String, String> getFileExtensionToNodeFactoryMap();
 
 }

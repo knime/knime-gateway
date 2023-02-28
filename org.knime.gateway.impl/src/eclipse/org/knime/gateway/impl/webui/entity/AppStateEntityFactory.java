@@ -89,6 +89,7 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
@@ -131,11 +132,13 @@ public final class AppStateEntityFactory {
      * @param preferenceProvider
      * @param exampleProjects if {@code null}, example projects will be taken from the previous app state
      * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
+     * @param nodeFactoryProvider used to determine the nodeFactory based on a fileExtension
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
-        final ExampleProjects exampleProjects, final SpaceProviders spaceProviders) {
+        final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
+        final NodeFactoryProvider nodeFactoryProvider) {
         List<ExampleProjectEnt> exampleProjectEnts =
             exampleProjects == null ? null : buildExampleProjects(exampleProjects);
         if (exampleProjectEnts == null && previousAppState != null) {
@@ -152,6 +155,7 @@ public final class AppStateEntityFactory {
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
+            .setFileExtensionToNodeTemplateId(nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
             .build();
 
     }

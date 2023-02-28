@@ -120,6 +120,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public Boolean isDevMode();
 
+  /**
+   * Get fileExtensionToNodeTemplateId
+   * @return fileExtensionToNodeTemplateId 
+   **/
+  public java.util.Map<String, String> getFileExtensionToNodeTemplateId();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -212,6 +218,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setDevMode(Boolean devMode);
+        
+        /**
+   		 * Set fileExtensionToNodeTemplateId
+         * 
+         * @param fileExtensionToNodeTemplateId the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setFileExtensionToNodeTemplateId(java.util.Map<String, String> fileExtensionToNodeTemplateId);
         
         
         /**

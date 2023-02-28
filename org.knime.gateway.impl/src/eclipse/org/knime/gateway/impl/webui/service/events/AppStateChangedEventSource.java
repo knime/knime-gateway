@@ -56,6 +56,7 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -81,13 +82,13 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
      */
     public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateUpdater appStateUpdater,
         final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
-        final SpaceProviders spaceProviders) {
+        final SpaceProviders spaceProviders, final NodeFactoryProvider nodeFactoryProvider ) {
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;
         m_callback = () -> {
             var lastAppState = appStateUpdater.getLastAppState().orElse(null);
             var appState = AppStateEntityFactory.buildAppStateEnt(lastAppState, workflowProjectManager,
-                preferenceProvider, null, spaceProviders);
+                preferenceProvider, null, spaceProviders, nodeFactoryProvider);
             appStateUpdater.setLastAppState(appState);
             sendEvent(buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(lastAppState, appState)));
         };

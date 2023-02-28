@@ -79,10 +79,56 @@ public record DefaultAppStateEnt(
     Boolean hasNodeCollectionActive,
     Boolean devMode) implements AppStateEnt {
 
-    /**
-     * Validation for required parameters not being {@code null}.
+  protected java.util.List<WorkflowProjectEnt> m_openProjects;
+  protected java.util.List<ExampleProjectEnt> m_exampleProjects;
+  protected java.util.Map<String, PortTypeEnt> m_availablePortTypes;
+  protected java.util.List<String> m_suggestedPortTypeIds;
+  protected Boolean m_hasNodeRecommendationsEnabled;
+  protected java.util.Map<String, Object> m_featureFlags;
+  protected Boolean m_scrollToZoomEnabled;
+  protected Boolean m_hasNodeCollectionActive;
+  protected Boolean m_devMode;
+  protected java.util.Map<String, String> m_fileExtensionToNodeTemplateId;
+  
+  protected DefaultAppStateEnt() {
+    //for sub-classes
+  }
+  
+  @Override
+  public String getTypeID() {
+    return "AppState";
+  }
+  
+  private DefaultAppStateEnt(DefaultAppStateEntBuilder builder) {
+    
+    m_openProjects = immutable(builder.m_openProjects);
+    m_exampleProjects = immutable(builder.m_exampleProjects);
+    m_availablePortTypes = immutable(builder.m_availablePortTypes);
+    m_suggestedPortTypeIds = immutable(builder.m_suggestedPortTypeIds);
+    m_hasNodeRecommendationsEnabled = immutable(builder.m_hasNodeRecommendationsEnabled);
+    m_featureFlags = immutable(builder.m_featureFlags);
+    m_scrollToZoomEnabled = immutable(builder.m_scrollToZoomEnabled);
+    m_hasNodeCollectionActive = immutable(builder.m_hasNodeCollectionActive);
+    m_devMode = immutable(builder.m_devMode);
+    m_fileExtensionToNodeTemplateId = immutable(builder.m_fileExtensionToNodeTemplateId);
+  }
+  
+   /**
+     * {@inheritDoc}
      */
-    public DefaultAppStateEnt {
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
+        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_exampleProjects, ent.m_exampleProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags) && Objects.equals(m_scrollToZoomEnabled, ent.m_scrollToZoomEnabled) && Objects.equals(m_hasNodeCollectionActive, ent.m_hasNodeCollectionActive) && Objects.equals(m_devMode, ent.m_devMode) && Objects.equals(m_fileExtensionToNodeTemplateId, ent.m_fileExtensionToNodeTemplateId);
     }
 
     @Override
@@ -90,10 +136,31 @@ public record DefaultAppStateEnt(
         return "AppState";
     }
   
-    @Override
-    public java.util.List<WorkflowProjectEnt> getOpenProjects() {
-        return openProjects;
-    }
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public int hashCode() {
+       return new HashCodeBuilder()
+               .append(m_openProjects)
+               .append(m_exampleProjects)
+               .append(m_availablePortTypes)
+               .append(m_suggestedPortTypeIds)
+               .append(m_hasNodeRecommendationsEnabled)
+               .append(m_featureFlags)
+               .append(m_scrollToZoomEnabled)
+               .append(m_hasNodeCollectionActive)
+               .append(m_devMode)
+               .append(m_fileExtensionToNodeTemplateId)
+               .toHashCode();
+   }
+  
+	
+	
+  @Override
+  public java.util.List<WorkflowProjectEnt> getOpenProjects() {
+        return m_openProjects;
+  }
     
     @Override
     public java.util.List<ExampleProjectEnt> getExampleProjects() {
@@ -135,6 +202,12 @@ public record DefaultAppStateEnt(
         return devMode;
     }
     
+    
+  @Override
+  public java.util.Map<String, String> getFileExtensionToNodeTemplateId() {
+        return m_fileExtensionToNodeTemplateId;
+  }
+    
     /**
      * A builder for {@link DefaultAppStateEnt}.
      */
@@ -157,6 +230,7 @@ public record DefaultAppStateEnt(
         private Boolean m_hasNodeCollectionActive;
 
         private Boolean m_devMode;
+        private java.util.Map<String, String> m_fileExtensionToNodeTemplateId;
 
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects) {
@@ -212,6 +286,12 @@ public record DefaultAppStateEnt(
              return this;
         }
 
+        @Override
+        public DefaultAppStateEntBuilder setFileExtensionToNodeTemplateId(java.util.Map<String, String> fileExtensionToNodeTemplateId) {
+             m_fileExtensionToNodeTemplateId = fileExtensionToNodeTemplateId;
+             return this;
+        }
+        
         @Override
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
