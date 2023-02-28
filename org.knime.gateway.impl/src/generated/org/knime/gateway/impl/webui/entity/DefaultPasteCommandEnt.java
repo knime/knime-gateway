@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
@@ -58,101 +54,70 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 /**
  * Paste workflow parts in workflow definition format into the active workflow.
  *
+ * @param kind
+ * @param content
+ * @param position
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPasteCommandEnt implements PasteCommandEnt {
+public record DefaultPasteCommandEnt(
+    KindEnum kind,
+    String content,
+    XYEnt position) implements PasteCommandEnt {
 
-  protected KindEnum m_kind;
-  protected String m_content;
-  protected XYEnt m_position;
-  
-  protected DefaultPasteCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "PasteCommand";
-  }
-  
-  private DefaultPasteCommandEnt(DefaultPasteCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_content == null) {
-        throw new IllegalArgumentException("content must not be null.");
-    }
-    m_content = immutable(builder.m_content);
-    m_position = immutable(builder.m_position);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultPasteCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param content
+     * @param position
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultPasteCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(content == null) {
+            throw new IllegalArgumentException("<content> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultPasteCommandEnt ent = (DefaultPasteCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_content, ent.m_content) && Objects.equals(m_position, ent.m_position);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "PasteCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_content)
-               .append(m_position)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public String getContent() {
-        return m_content;
-  }
+    @Override
+    public String getContent() {
+        return content;
+    }
     
-  @Override
-  public XYEnt getPosition() {
-        return m_position;
-  }
+    @Override
+    public XYEnt getPosition() {
+        return position;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultPasteCommandEnt}.
+     */
     public static class DefaultPasteCommandEntBuilder implements PasteCommandEntBuilder {
-    
-        public DefaultPasteCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private String m_content;
+
         private XYEnt m_position;
 
         @Override
         public DefaultPasteCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -161,7 +126,7 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
         @Override
         public DefaultPasteCommandEntBuilder setContent(String content) {
              if(content == null) {
-                 throw new IllegalArgumentException("content must not be null.");
+                 throw new IllegalArgumentException("<content> must not be null.");
              }
              m_content = content;
              return this;
@@ -173,10 +138,12 @@ public class DefaultPasteCommandEnt implements PasteCommandEnt {
              return this;
         }
 
-        
         @Override
         public DefaultPasteCommandEnt build() {
-            return new DefaultPasteCommandEnt(this);
+            return new DefaultPasteCommandEnt(
+                immutable(m_kind),
+                immutable(m_content),
+                immutable(m_position));
         }
     
     }

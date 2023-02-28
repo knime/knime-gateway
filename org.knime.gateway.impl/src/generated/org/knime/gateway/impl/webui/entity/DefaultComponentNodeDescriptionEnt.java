@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
@@ -61,143 +57,117 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 /**
  * Description of certain aspects of a component. This is static information for a component which remains the same even if component is not part of a workflow.
  *
+ * @param name
+ * @param type
+ * @param icon
+ * @param description
+ * @param options
+ * @param views
+ * @param inPorts
+ * @param outPorts
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultComponentNodeDescriptionEnt implements ComponentNodeDescriptionEnt {
+public record DefaultComponentNodeDescriptionEnt(
+    String name,
+    TypeEnum type,
+    String icon,
+    String description,
+    java.util.List<NodeDialogOptionGroupEnt> options,
+    java.util.List<NodeViewDescriptionEnt> views,
+    java.util.List<NodePortDescriptionEnt> inPorts,
+    java.util.List<NodePortDescriptionEnt> outPorts) implements ComponentNodeDescriptionEnt {
 
-  protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_icon;
-  protected String m_description;
-  protected java.util.List<NodeDialogOptionGroupEnt> m_options;
-  protected java.util.List<NodeViewDescriptionEnt> m_views;
-  protected java.util.List<NodePortDescriptionEnt> m_inPorts;
-  protected java.util.List<NodePortDescriptionEnt> m_outPorts;
-  
-  protected DefaultComponentNodeDescriptionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "ComponentNodeDescription";
-  }
-  
-  private DefaultComponentNodeDescriptionEnt(DefaultComponentNodeDescriptionEntBuilder builder) {
-    super();
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_type = immutable(builder.m_type);
-    m_icon = immutable(builder.m_icon);
-    m_description = immutable(builder.m_description);
-    m_options = immutable(builder.m_options);
-    m_views = immutable(builder.m_views);
-    m_inPorts = immutable(builder.m_inPorts);
-    m_outPorts = immutable(builder.m_outPorts);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultComponentNodeDescriptionEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param type
+     * @param icon
+     * @param description
+     * @param options
+     * @param views
+     * @param inPorts
+     * @param outPorts
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultComponentNodeDescriptionEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultComponentNodeDescriptionEnt ent = (DefaultComponentNodeDescriptionEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_description, ent.m_description) && Objects.equals(m_options, ent.m_options) && Objects.equals(m_views, ent.m_views) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "ComponentNodeDescription";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_type)
-               .append(m_icon)
-               .append(m_description)
-               .append(m_options)
-               .append(m_views)
-               .append(m_inPorts)
-               .append(m_outPorts)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
+    @Override
+    public TypeEnum getType() {
+        return type;
+    }
     
-  @Override
-  public String getIcon() {
-        return m_icon;
-  }
+    @Override
+    public String getIcon() {
+        return icon;
+    }
     
-  @Override
-  public String getDescription() {
-        return m_description;
-  }
+    @Override
+    public String getDescription() {
+        return description;
+    }
     
-  @Override
-  public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
-        return m_options;
-  }
+    @Override
+    public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
+        return options;
+    }
     
-  @Override
-  public java.util.List<NodeViewDescriptionEnt> getViews() {
-        return m_views;
-  }
+    @Override
+    public java.util.List<NodeViewDescriptionEnt> getViews() {
+        return views;
+    }
     
-  @Override
-  public java.util.List<NodePortDescriptionEnt> getInPorts() {
-        return m_inPorts;
-  }
+    @Override
+    public java.util.List<NodePortDescriptionEnt> getInPorts() {
+        return inPorts;
+    }
     
-  @Override
-  public java.util.List<NodePortDescriptionEnt> getOutPorts() {
-        return m_outPorts;
-  }
+    @Override
+    public java.util.List<NodePortDescriptionEnt> getOutPorts() {
+        return outPorts;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultComponentNodeDescriptionEnt}.
+     */
     public static class DefaultComponentNodeDescriptionEntBuilder implements ComponentNodeDescriptionEntBuilder {
-    
-        public DefaultComponentNodeDescriptionEntBuilder(){
-            super();
-        }
-    
+
         private String m_name;
+
         private TypeEnum m_type;
+
         private String m_icon;
+
         private String m_description;
+
         private java.util.List<NodeDialogOptionGroupEnt> m_options;
+
         private java.util.List<NodeViewDescriptionEnt> m_views;
+
         private java.util.List<NodePortDescriptionEnt> m_inPorts;
+
         private java.util.List<NodePortDescriptionEnt> m_outPorts;
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -245,10 +215,17 @@ public class DefaultComponentNodeDescriptionEnt implements ComponentNodeDescript
              return this;
         }
 
-        
         @Override
         public DefaultComponentNodeDescriptionEnt build() {
-            return new DefaultComponentNodeDescriptionEnt(this);
+            return new DefaultComponentNodeDescriptionEnt(
+                immutable(m_name),
+                immutable(m_type),
+                immutable(m_icon),
+                immutable(m_description),
+                immutable(m_options),
+                immutable(m_views),
+                immutable(m_inPorts),
+                immutable(m_outPorts));
         }
     
     }

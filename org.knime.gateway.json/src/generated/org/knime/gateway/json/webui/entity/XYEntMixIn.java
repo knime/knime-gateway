@@ -57,6 +57,7 @@ import org.knime.gateway.impl.webui.entity.DefaultXYEnt.DefaultXYEntBuilder;
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 
 @JsonDeserialize(builder=DefaultXYEntBuilder.class)

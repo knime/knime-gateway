@@ -59,6 +59,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Updates the name of a component or metanode
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface UpdateComponentOrMetanodeNameCommandEnt extends GatewayEntity, WorkflowCommandEnt {

@@ -46,108 +46,73 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 
 /**
  * Properties common to ComponentNode and ComponentNodeDescription. Only purpose is to avoid &#39;code&#39; duplication. Never directly returned or used in another schema.
  *
+ * @param name
+ * @param type
+ * @param icon
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultComponentNodeAndDescriptionEnt implements ComponentNodeAndDescriptionEnt {
+public record DefaultComponentNodeAndDescriptionEnt(
+    String name,
+    TypeEnum type,
+    String icon) implements ComponentNodeAndDescriptionEnt {
 
-  protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_icon;
-  
-  protected DefaultComponentNodeAndDescriptionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "ComponentNodeAndDescription";
-  }
-  
-  private DefaultComponentNodeAndDescriptionEnt(DefaultComponentNodeAndDescriptionEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_type = immutable(builder.m_type);
-    m_icon = immutable(builder.m_icon);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultComponentNodeAndDescriptionEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param type
+     * @param icon
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultComponentNodeAndDescriptionEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultComponentNodeAndDescriptionEnt ent = (DefaultComponentNodeAndDescriptionEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "ComponentNodeAndDescription";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_type)
-               .append(m_icon)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
+    @Override
+    public TypeEnum getType() {
+        return type;
+    }
     
-  @Override
-  public String getIcon() {
-        return m_icon;
-  }
+    @Override
+    public String getIcon() {
+        return icon;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultComponentNodeAndDescriptionEnt}.
+     */
     public static class DefaultComponentNodeAndDescriptionEntBuilder implements ComponentNodeAndDescriptionEntBuilder {
-    
-        public DefaultComponentNodeAndDescriptionEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private TypeEnum m_type;
+
         private String m_icon;
 
         @Override
         public DefaultComponentNodeAndDescriptionEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -165,10 +130,12 @@ public class DefaultComponentNodeAndDescriptionEnt implements ComponentNodeAndDe
              return this;
         }
 
-        
         @Override
         public DefaultComponentNodeAndDescriptionEnt build() {
-            return new DefaultComponentNodeAndDescriptionEnt(this);
+            return new DefaultComponentNodeAndDescriptionEnt(
+                immutable(m_name),
+                immutable(m_type),
+                immutable(m_icon));
         }
     
     }

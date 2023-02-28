@@ -46,141 +46,109 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 
 /**
  * Defines the style of a range (e.g. within a workflow annotation).
  *
+ * @param start
+ * @param length
+ * @param bold
+ * @param italic
+ * @param fontSize
+ * @param color
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultStyleRangeEnt implements StyleRangeEnt {
+public record DefaultStyleRangeEnt(
+    Integer start,
+    Integer length,
+    Boolean bold,
+    Boolean italic,
+    Integer fontSize,
+    String color) implements StyleRangeEnt {
 
-  protected Integer m_start;
-  protected Integer m_length;
-  protected Boolean m_bold;
-  protected Boolean m_italic;
-  protected Integer m_fontSize;
-  protected String m_color;
-  
-  protected DefaultStyleRangeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "StyleRange";
-  }
-  
-  private DefaultStyleRangeEnt(DefaultStyleRangeEntBuilder builder) {
-    
-    if(builder.m_start == null) {
-        throw new IllegalArgumentException("start must not be null.");
-    }
-    m_start = immutable(builder.m_start);
-    if(builder.m_length == null) {
-        throw new IllegalArgumentException("length must not be null.");
-    }
-    m_length = immutable(builder.m_length);
-    m_bold = immutable(builder.m_bold);
-    m_italic = immutable(builder.m_italic);
-    if(builder.m_fontSize == null) {
-        throw new IllegalArgumentException("fontSize must not be null.");
-    }
-    m_fontSize = immutable(builder.m_fontSize);
-    m_color = immutable(builder.m_color);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultStyleRangeEnt} including null checks for non-nullable parameters.
+     *
+     * @param start
+     * @param length
+     * @param bold
+     * @param italic
+     * @param fontSize
+     * @param color
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultStyleRangeEnt {
+        if(start == null) {
+            throw new IllegalArgumentException("<start> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(length == null) {
+            throw new IllegalArgumentException("<length> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(fontSize == null) {
+            throw new IllegalArgumentException("<fontSize> must not be null.");
         }
-        DefaultStyleRangeEnt ent = (DefaultStyleRangeEnt)o;
-        return Objects.equals(m_start, ent.m_start) && Objects.equals(m_length, ent.m_length) && Objects.equals(m_bold, ent.m_bold) && Objects.equals(m_italic, ent.m_italic) && Objects.equals(m_fontSize, ent.m_fontSize) && Objects.equals(m_color, ent.m_color);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "StyleRange";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_start)
-               .append(m_length)
-               .append(m_bold)
-               .append(m_italic)
-               .append(m_fontSize)
-               .append(m_color)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Integer getStart() {
-        return m_start;
-  }
+    @Override
+    public Integer getStart() {
+        return start;
+    }
     
-  @Override
-  public Integer getLength() {
-        return m_length;
-  }
+    @Override
+    public Integer getLength() {
+        return length;
+    }
     
-  @Override
-  public Boolean isBold() {
-        return m_bold;
-  }
+    @Override
+    public Boolean isBold() {
+        return bold;
+    }
     
-  @Override
-  public Boolean isItalic() {
-        return m_italic;
-  }
+    @Override
+    public Boolean isItalic() {
+        return italic;
+    }
     
-  @Override
-  public Integer getFontSize() {
-        return m_fontSize;
-  }
+    @Override
+    public Integer getFontSize() {
+        return fontSize;
+    }
     
-  @Override
-  public String getColor() {
-        return m_color;
-  }
+    @Override
+    public String getColor() {
+        return color;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultStyleRangeEnt}.
+     */
     public static class DefaultStyleRangeEntBuilder implements StyleRangeEntBuilder {
-    
-        public DefaultStyleRangeEntBuilder(){
-            
-        }
-    
+
         private Integer m_start;
+
         private Integer m_length;
+
         private Boolean m_bold;
+
         private Boolean m_italic;
+
         private Integer m_fontSize;
+
         private String m_color;
 
         @Override
         public DefaultStyleRangeEntBuilder setStart(Integer start) {
              if(start == null) {
-                 throw new IllegalArgumentException("start must not be null.");
+                 throw new IllegalArgumentException("<start> must not be null.");
              }
              m_start = start;
              return this;
@@ -189,7 +157,7 @@ public class DefaultStyleRangeEnt implements StyleRangeEnt {
         @Override
         public DefaultStyleRangeEntBuilder setLength(Integer length) {
              if(length == null) {
-                 throw new IllegalArgumentException("length must not be null.");
+                 throw new IllegalArgumentException("<length> must not be null.");
              }
              m_length = length;
              return this;
@@ -210,7 +178,7 @@ public class DefaultStyleRangeEnt implements StyleRangeEnt {
         @Override
         public DefaultStyleRangeEntBuilder setFontSize(Integer fontSize) {
              if(fontSize == null) {
-                 throw new IllegalArgumentException("fontSize must not be null.");
+                 throw new IllegalArgumentException("<fontSize> must not be null.");
              }
              m_fontSize = fontSize;
              return this;
@@ -222,10 +190,15 @@ public class DefaultStyleRangeEnt implements StyleRangeEnt {
              return this;
         }
 
-        
         @Override
         public DefaultStyleRangeEnt build() {
-            return new DefaultStyleRangeEnt(this);
+            return new DefaultStyleRangeEnt(
+                immutable(m_start),
+                immutable(m_length),
+                immutable(m_bold),
+                immutable(m_italic),
+                immutable(m_fontSize),
+                immutable(m_color));
         }
     
     }

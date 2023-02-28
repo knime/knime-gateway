@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.service.PortService;
  * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @JsonRpcService(value = "PortService")
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})

@@ -46,138 +46,106 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 
 /**
  * Decribes the type of a port.
  *
+ * @param name
+ * @param kind
+ * @param color
+ * @param compatibleTypes
+ * @param hidden
+ * @param hasView
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPortTypeEnt implements PortTypeEnt {
+public record DefaultPortTypeEnt(
+    String name,
+    KindEnum kind,
+    String color,
+    java.util.List<String> compatibleTypes,
+    Boolean hidden,
+    Boolean hasView) implements PortTypeEnt {
 
-  protected String m_name;
-  protected KindEnum m_kind;
-  protected String m_color;
-  protected java.util.List<String> m_compatibleTypes;
-  protected Boolean m_hidden;
-  protected Boolean m_hasView;
-  
-  protected DefaultPortTypeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "PortType";
-  }
-  
-  private DefaultPortTypeEnt(DefaultPortTypeEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    m_color = immutable(builder.m_color);
-    m_compatibleTypes = immutable(builder.m_compatibleTypes);
-    m_hidden = immutable(builder.m_hidden);
-    m_hasView = immutable(builder.m_hasView);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultPortTypeEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param kind
+     * @param color
+     * @param compatibleTypes
+     * @param hidden
+     * @param hasView
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultPortTypeEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultPortTypeEnt ent = (DefaultPortTypeEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_color, ent.m_color) && Objects.equals(m_compatibleTypes, ent.m_compatibleTypes) && Objects.equals(m_hidden, ent.m_hidden) && Objects.equals(m_hasView, ent.m_hasView);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "PortType";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_kind)
-               .append(m_color)
-               .append(m_compatibleTypes)
-               .append(m_hidden)
-               .append(m_hasView)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public String getColor() {
-        return m_color;
-  }
+    @Override
+    public String getColor() {
+        return color;
+    }
     
-  @Override
-  public java.util.List<String> getCompatibleTypes() {
-        return m_compatibleTypes;
-  }
+    @Override
+    public java.util.List<String> getCompatibleTypes() {
+        return compatibleTypes;
+    }
     
-  @Override
-  public Boolean isHidden() {
-        return m_hidden;
-  }
+    @Override
+    public Boolean isHidden() {
+        return hidden;
+    }
     
-  @Override
-  public Boolean hasView() {
-        return m_hasView;
-  }
+    @Override
+    public Boolean hasView() {
+        return hasView;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultPortTypeEnt}.
+     */
     public static class DefaultPortTypeEntBuilder implements PortTypeEntBuilder {
-    
-        public DefaultPortTypeEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private KindEnum m_kind;
+
         private String m_color;
+
         private java.util.List<String> m_compatibleTypes;
+
         private Boolean m_hidden;
+
         private Boolean m_hasView;
 
         @Override
         public DefaultPortTypeEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -186,7 +154,7 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
         @Override
         public DefaultPortTypeEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -216,10 +184,15 @@ public class DefaultPortTypeEnt implements PortTypeEnt {
              return this;
         }
 
-        
         @Override
         public DefaultPortTypeEnt build() {
-            return new DefaultPortTypeEnt(this);
+            return new DefaultPortTypeEnt(
+                immutable(m_name),
+                immutable(m_kind),
+                immutable(m_color),
+                immutable(m_compatibleTypes),
+                immutable(m_hidden),
+                immutable(m_hasView));
         }
     
     }

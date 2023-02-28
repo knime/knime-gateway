@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 
@@ -58,92 +54,60 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 /**
  * A list of items in a workflow group and more.
  *
+ * @param path
+ * @param items
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowGroupContentEnt implements WorkflowGroupContentEnt {
+public record DefaultWorkflowGroupContentEnt(
+    java.util.List<SpacePathSegmentEnt> path,
+    java.util.List<SpaceItemEnt> items) implements WorkflowGroupContentEnt {
 
-  protected java.util.List<SpacePathSegmentEnt> m_path;
-  protected java.util.List<SpaceItemEnt> m_items;
-  
-  protected DefaultWorkflowGroupContentEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowGroupContent";
-  }
-  
-  private DefaultWorkflowGroupContentEnt(DefaultWorkflowGroupContentEntBuilder builder) {
-    
-    if(builder.m_path == null) {
-        throw new IllegalArgumentException("path must not be null.");
-    }
-    m_path = immutable(builder.m_path);
-    if(builder.m_items == null) {
-        throw new IllegalArgumentException("items must not be null.");
-    }
-    m_items = immutable(builder.m_items);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowGroupContentEnt} including null checks for non-nullable parameters.
+     *
+     * @param path
+     * @param items
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowGroupContentEnt {
+        if(path == null) {
+            throw new IllegalArgumentException("<path> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(items == null) {
+            throw new IllegalArgumentException("<items> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultWorkflowGroupContentEnt ent = (DefaultWorkflowGroupContentEnt)o;
-        return Objects.equals(m_path, ent.m_path) && Objects.equals(m_items, ent.m_items);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "WorkflowGroupContent";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_path)
-               .append(m_items)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<SpacePathSegmentEnt> getPath() {
-        return m_path;
-  }
+    @Override
+    public java.util.List<SpacePathSegmentEnt> getPath() {
+        return path;
+    }
     
-  @Override
-  public java.util.List<SpaceItemEnt> getItems() {
-        return m_items;
-  }
+    @Override
+    public java.util.List<SpaceItemEnt> getItems() {
+        return items;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowGroupContentEnt}.
+     */
     public static class DefaultWorkflowGroupContentEntBuilder implements WorkflowGroupContentEntBuilder {
-    
-        public DefaultWorkflowGroupContentEntBuilder(){
-            
-        }
-    
+
         private java.util.List<SpacePathSegmentEnt> m_path = new java.util.ArrayList<>();
+
         private java.util.List<SpaceItemEnt> m_items = new java.util.ArrayList<>();
 
         @Override
         public DefaultWorkflowGroupContentEntBuilder setPath(java.util.List<SpacePathSegmentEnt> path) {
              if(path == null) {
-                 throw new IllegalArgumentException("path must not be null.");
+                 throw new IllegalArgumentException("<path> must not be null.");
              }
              m_path = path;
              return this;
@@ -152,16 +116,17 @@ public class DefaultWorkflowGroupContentEnt implements WorkflowGroupContentEnt {
         @Override
         public DefaultWorkflowGroupContentEntBuilder setItems(java.util.List<SpaceItemEnt> items) {
              if(items == null) {
-                 throw new IllegalArgumentException("items must not be null.");
+                 throw new IllegalArgumentException("<items> must not be null.");
              }
              m_items = items;
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowGroupContentEnt build() {
-            return new DefaultWorkflowGroupContentEnt(this);
+            return new DefaultWorkflowGroupContentEnt(
+                immutable(m_path),
+                immutable(m_items));
         }
     
     }

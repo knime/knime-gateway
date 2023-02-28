@@ -284,10 +284,10 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> Map.of(provider1.getId(), provider1, provider2.getId(), provider2));
 
         var spaceProvider = ss().getSpaceProvider("id1");
-        cr(spaceProvider, "space_provider1");
+        cr(spaceProvider, "space_provider1"); // TODO: Why is this different?
 
         spaceProvider = ss().getSpaceProvider("id2");
-        cr(spaceProvider, "space_provider2");
+        cr(spaceProvider, "space_provider2"); // TODO: Why is this different?
 
         assertThrows(InvalidRequestException.class, () -> ss().getSpaceProvider("non_existing_id"));
     }

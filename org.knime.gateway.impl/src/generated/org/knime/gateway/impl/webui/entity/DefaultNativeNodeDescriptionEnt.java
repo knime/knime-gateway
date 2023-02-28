@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
@@ -62,152 +58,128 @@ import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 /**
  * Description of certain aspects of a native node.
  *
+ * @param description
+ * @param options
+ * @param views
+ * @param inPorts
+ * @param outPorts
+ * @param shortDescription
+ * @param dynamicInPortGroupDescriptions
+ * @param dynamicOutPortGroupDescriptions
+ * @param interactiveView
+ * @param links
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNativeNodeDescriptionEnt implements NativeNodeDescriptionEnt {
+public record DefaultNativeNodeDescriptionEnt(
+    String description,
+    java.util.List<NodeDialogOptionGroupEnt> options,
+    java.util.List<NodeViewDescriptionEnt> views,
+    java.util.List<NodePortDescriptionEnt> inPorts,
+    java.util.List<NodePortDescriptionEnt> outPorts,
+    String shortDescription,
+    java.util.List<DynamicPortGroupDescriptionEnt> dynamicInPortGroupDescriptions,
+    java.util.List<DynamicPortGroupDescriptionEnt> dynamicOutPortGroupDescriptions,
+    NodeViewDescriptionEnt interactiveView,
+    java.util.List<LinkEnt> links) implements NativeNodeDescriptionEnt {
 
-  protected String m_description;
-  protected java.util.List<NodeDialogOptionGroupEnt> m_options;
-  protected java.util.List<NodeViewDescriptionEnt> m_views;
-  protected java.util.List<NodePortDescriptionEnt> m_inPorts;
-  protected java.util.List<NodePortDescriptionEnt> m_outPorts;
-  protected String m_shortDescription;
-  protected java.util.List<DynamicPortGroupDescriptionEnt> m_dynamicInPortGroupDescriptions;
-  protected java.util.List<DynamicPortGroupDescriptionEnt> m_dynamicOutPortGroupDescriptions;
-  protected NodeViewDescriptionEnt m_interactiveView;
-  protected java.util.List<LinkEnt> m_links;
-  
-  protected DefaultNativeNodeDescriptionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NativeNodeDescription";
-  }
-  
-  private DefaultNativeNodeDescriptionEnt(DefaultNativeNodeDescriptionEntBuilder builder) {
-    super();
-    m_description = immutable(builder.m_description);
-    m_options = immutable(builder.m_options);
-    m_views = immutable(builder.m_views);
-    m_inPorts = immutable(builder.m_inPorts);
-    m_outPorts = immutable(builder.m_outPorts);
-    m_shortDescription = immutable(builder.m_shortDescription);
-    m_dynamicInPortGroupDescriptions = immutable(builder.m_dynamicInPortGroupDescriptions);
-    m_dynamicOutPortGroupDescriptions = immutable(builder.m_dynamicOutPortGroupDescriptions);
-    m_interactiveView = immutable(builder.m_interactiveView);
-    m_links = immutable(builder.m_links);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNativeNodeDescriptionEnt} including null checks for non-nullable parameters.
+     *
+     * @param description
+     * @param options
+     * @param views
+     * @param inPorts
+     * @param outPorts
+     * @param shortDescription
+     * @param dynamicInPortGroupDescriptions
+     * @param dynamicOutPortGroupDescriptions
+     * @param interactiveView
+     * @param links
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNativeNodeDescriptionEnt ent = (DefaultNativeNodeDescriptionEnt)o;
-        return Objects.equals(m_description, ent.m_description) && Objects.equals(m_options, ent.m_options) && Objects.equals(m_views, ent.m_views) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_shortDescription, ent.m_shortDescription) && Objects.equals(m_dynamicInPortGroupDescriptions, ent.m_dynamicInPortGroupDescriptions) && Objects.equals(m_dynamicOutPortGroupDescriptions, ent.m_dynamicOutPortGroupDescriptions) && Objects.equals(m_interactiveView, ent.m_interactiveView) && Objects.equals(m_links, ent.m_links);
+    public DefaultNativeNodeDescriptionEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NativeNodeDescription";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_description)
-               .append(m_options)
-               .append(m_views)
-               .append(m_inPorts)
-               .append(m_outPorts)
-               .append(m_shortDescription)
-               .append(m_dynamicInPortGroupDescriptions)
-               .append(m_dynamicOutPortGroupDescriptions)
-               .append(m_interactiveView)
-               .append(m_links)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getDescription() {
-        return m_description;
-  }
+    @Override
+    public String getDescription() {
+        return description;
+    }
     
-  @Override
-  public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
-        return m_options;
-  }
+    @Override
+    public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
+        return options;
+    }
     
-  @Override
-  public java.util.List<NodeViewDescriptionEnt> getViews() {
-        return m_views;
-  }
+    @Override
+    public java.util.List<NodeViewDescriptionEnt> getViews() {
+        return views;
+    }
     
-  @Override
-  public java.util.List<NodePortDescriptionEnt> getInPorts() {
-        return m_inPorts;
-  }
+    @Override
+    public java.util.List<NodePortDescriptionEnt> getInPorts() {
+        return inPorts;
+    }
     
-  @Override
-  public java.util.List<NodePortDescriptionEnt> getOutPorts() {
-        return m_outPorts;
-  }
+    @Override
+    public java.util.List<NodePortDescriptionEnt> getOutPorts() {
+        return outPorts;
+    }
     
-  @Override
-  public String getShortDescription() {
-        return m_shortDescription;
-  }
+    @Override
+    public String getShortDescription() {
+        return shortDescription;
+    }
     
-  @Override
-  public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicInPortGroupDescriptions() {
-        return m_dynamicInPortGroupDescriptions;
-  }
+    @Override
+    public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicInPortGroupDescriptions() {
+        return dynamicInPortGroupDescriptions;
+    }
     
-  @Override
-  public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicOutPortGroupDescriptions() {
-        return m_dynamicOutPortGroupDescriptions;
-  }
+    @Override
+    public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicOutPortGroupDescriptions() {
+        return dynamicOutPortGroupDescriptions;
+    }
     
-  @Override
-  public NodeViewDescriptionEnt getInteractiveView() {
-        return m_interactiveView;
-  }
+    @Override
+    public NodeViewDescriptionEnt getInteractiveView() {
+        return interactiveView;
+    }
     
-  @Override
-  public java.util.List<LinkEnt> getLinks() {
-        return m_links;
-  }
+    @Override
+    public java.util.List<LinkEnt> getLinks() {
+        return links;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNativeNodeDescriptionEnt}.
+     */
     public static class DefaultNativeNodeDescriptionEntBuilder implements NativeNodeDescriptionEntBuilder {
-    
-        public DefaultNativeNodeDescriptionEntBuilder(){
-            super();
-        }
-    
+
         private String m_description;
+
         private java.util.List<NodeDialogOptionGroupEnt> m_options;
+
         private java.util.List<NodeViewDescriptionEnt> m_views;
+
         private java.util.List<NodePortDescriptionEnt> m_inPorts;
+
         private java.util.List<NodePortDescriptionEnt> m_outPorts;
+
         private String m_shortDescription;
+
         private java.util.List<DynamicPortGroupDescriptionEnt> m_dynamicInPortGroupDescriptions;
+
         private java.util.List<DynamicPortGroupDescriptionEnt> m_dynamicOutPortGroupDescriptions;
+
         private NodeViewDescriptionEnt m_interactiveView;
+
         private java.util.List<LinkEnt> m_links;
 
         @Override
@@ -270,10 +242,19 @@ public class DefaultNativeNodeDescriptionEnt implements NativeNodeDescriptionEnt
              return this;
         }
 
-        
         @Override
         public DefaultNativeNodeDescriptionEnt build() {
-            return new DefaultNativeNodeDescriptionEnt(this);
+            return new DefaultNativeNodeDescriptionEnt(
+                immutable(m_description),
+                immutable(m_options),
+                immutable(m_views),
+                immutable(m_inPorts),
+                immutable(m_outPorts),
+                immutable(m_shortDescription),
+                immutable(m_dynamicInPortGroupDescriptions),
+                immutable(m_dynamicOutPortGroupDescriptions),
+                immutable(m_interactiveView),
+                immutable(m_links));
         }
     
     }

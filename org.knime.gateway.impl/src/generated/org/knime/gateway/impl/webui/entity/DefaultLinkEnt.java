@@ -46,99 +46,63 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.LinkEnt;
 
 /**
  * Represents a single link including the URL and link text.
  *
+ * @param url
+ * @param text
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultLinkEnt implements LinkEnt {
+public record DefaultLinkEnt(
+    String url,
+    String text) implements LinkEnt {
 
-  protected String m_url;
-  protected String m_text;
-  
-  protected DefaultLinkEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "Link";
-  }
-  
-  private DefaultLinkEnt(DefaultLinkEntBuilder builder) {
-    
-    if(builder.m_url == null) {
-        throw new IllegalArgumentException("url must not be null.");
-    }
-    m_url = immutable(builder.m_url);
-    m_text = immutable(builder.m_text);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultLinkEnt} including null checks for non-nullable parameters.
+     *
+     * @param url
+     * @param text
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultLinkEnt {
+        if(url == null) {
+            throw new IllegalArgumentException("<url> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultLinkEnt ent = (DefaultLinkEnt)o;
-        return Objects.equals(m_url, ent.m_url) && Objects.equals(m_text, ent.m_text);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "Link";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_url)
-               .append(m_text)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getUrl() {
-        return m_url;
-  }
+    @Override
+    public String getUrl() {
+        return url;
+    }
     
-  @Override
-  public String getText() {
-        return m_text;
-  }
+    @Override
+    public String getText() {
+        return text;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultLinkEnt}.
+     */
     public static class DefaultLinkEntBuilder implements LinkEntBuilder {
-    
-        public DefaultLinkEntBuilder(){
-            
-        }
-    
+
         private String m_url;
+
         private String m_text;
 
         @Override
         public DefaultLinkEntBuilder setUrl(String url) {
              if(url == null) {
-                 throw new IllegalArgumentException("url must not be null.");
+                 throw new IllegalArgumentException("<url> must not be null.");
              }
              m_url = url;
              return this;
@@ -150,10 +114,11 @@ public class DefaultLinkEnt implements LinkEnt {
              return this;
         }
 
-        
         @Override
         public DefaultLinkEnt build() {
-            return new DefaultLinkEnt(this);
+            return new DefaultLinkEnt(
+                immutable(m_url),
+                immutable(m_text));
         }
     
     }

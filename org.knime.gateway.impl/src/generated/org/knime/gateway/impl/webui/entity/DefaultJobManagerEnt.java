@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
@@ -57,89 +53,57 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt;
 /**
  * The node/workflow&#39;s job manager, if a special one is defined. Otherwise not given.
  *
+ * @param type
+ * @param custom
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultJobManagerEnt implements JobManagerEnt {
+public record DefaultJobManagerEnt(
+    TypeEnum type,
+    CustomJobManagerEnt custom) implements JobManagerEnt {
 
-  protected TypeEnum m_type;
-  protected CustomJobManagerEnt m_custom;
-  
-  protected DefaultJobManagerEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "JobManager";
-  }
-  
-  private DefaultJobManagerEnt(DefaultJobManagerEntBuilder builder) {
-    
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
-    }
-    m_type = immutable(builder.m_type);
-    m_custom = immutable(builder.m_custom);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultJobManagerEnt} including null checks for non-nullable parameters.
+     *
+     * @param type
+     * @param custom
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultJobManagerEnt {
+        if(type == null) {
+            throw new IllegalArgumentException("<type> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultJobManagerEnt ent = (DefaultJobManagerEnt)o;
-        return Objects.equals(m_type, ent.m_type) && Objects.equals(m_custom, ent.m_custom);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "JobManager";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_type)
-               .append(m_custom)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
+    @Override
+    public TypeEnum getType() {
+        return type;
+    }
     
-  @Override
-  public CustomJobManagerEnt getCustom() {
-        return m_custom;
-  }
+    @Override
+    public CustomJobManagerEnt getCustom() {
+        return custom;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultJobManagerEnt}.
+     */
     public static class DefaultJobManagerEntBuilder implements JobManagerEntBuilder {
-    
-        public DefaultJobManagerEntBuilder(){
-            
-        }
-    
+
         private TypeEnum m_type;
+
         private CustomJobManagerEnt m_custom;
 
         @Override
         public DefaultJobManagerEntBuilder setType(TypeEnum type) {
              if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+                 throw new IllegalArgumentException("<type> must not be null.");
              }
              m_type = type;
              return this;
@@ -151,10 +115,11 @@ public class DefaultJobManagerEnt implements JobManagerEnt {
              return this;
         }
 
-        
         @Override
         public DefaultJobManagerEnt build() {
-            return new DefaultJobManagerEnt(this);
+            return new DefaultJobManagerEnt(
+                immutable(m_type),
+                immutable(m_custom));
         }
     
     }

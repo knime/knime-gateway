@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
@@ -64,194 +60,172 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 /**
  * The structure of a workflow.
  *
+ * @param info
+ * @param nodes
+ * @param nodeTemplates
+ * @param connections
+ * @param workflowAnnotations
+ * @param parents
+ * @param metaInPorts
+ * @param metaOutPorts
+ * @param allowedActions
+ * @param componentMetadata
+ * @param projectMetadata
+ * @param dirty
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowEnt implements WorkflowEnt {
+public record DefaultWorkflowEnt(
+    WorkflowInfoEnt info,
+    java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> nodes,
+    java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates,
+    java.util.Map<String, ConnectionEnt> connections,
+    java.util.List<WorkflowAnnotationEnt> workflowAnnotations,
+    java.util.List<WorkflowInfoEnt> parents,
+    MetaPortsEnt metaInPorts,
+    MetaPortsEnt metaOutPorts,
+    AllowedWorkflowActionsEnt allowedActions,
+    ComponentNodeDescriptionEnt componentMetadata,
+    ProjectMetadataEnt projectMetadata,
+    Boolean dirty) implements WorkflowEnt {
 
-  protected WorkflowInfoEnt m_info;
-  protected java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes;
-  protected java.util.Map<String, NativeNodeInvariantsEnt> m_nodeTemplates;
-  protected java.util.Map<String, ConnectionEnt> m_connections;
-  protected java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations;
-  protected java.util.List<WorkflowInfoEnt> m_parents;
-  protected MetaPortsEnt m_metaInPorts;
-  protected MetaPortsEnt m_metaOutPorts;
-  protected AllowedWorkflowActionsEnt m_allowedActions;
-  protected ComponentNodeDescriptionEnt m_componentMetadata;
-  protected ProjectMetadataEnt m_projectMetadata;
-  protected Boolean m_dirty;
-  
-  protected DefaultWorkflowEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "Workflow";
-  }
-  
-  private DefaultWorkflowEnt(DefaultWorkflowEntBuilder builder) {
-    
-    if(builder.m_info == null) {
-        throw new IllegalArgumentException("info must not be null.");
-    }
-    m_info = immutable(builder.m_info);
-    if(builder.m_nodes == null) {
-        throw new IllegalArgumentException("nodes must not be null.");
-    }
-    m_nodes = immutable(builder.m_nodes);
-    if(builder.m_nodeTemplates == null) {
-        throw new IllegalArgumentException("nodeTemplates must not be null.");
-    }
-    m_nodeTemplates = immutable(builder.m_nodeTemplates);
-    if(builder.m_connections == null) {
-        throw new IllegalArgumentException("connections must not be null.");
-    }
-    m_connections = immutable(builder.m_connections);
-    if(builder.m_workflowAnnotations == null) {
-        throw new IllegalArgumentException("workflowAnnotations must not be null.");
-    }
-    m_workflowAnnotations = immutable(builder.m_workflowAnnotations);
-    m_parents = immutable(builder.m_parents);
-    m_metaInPorts = immutable(builder.m_metaInPorts);
-    m_metaOutPorts = immutable(builder.m_metaOutPorts);
-    m_allowedActions = immutable(builder.m_allowedActions);
-    m_componentMetadata = immutable(builder.m_componentMetadata);
-    m_projectMetadata = immutable(builder.m_projectMetadata);
-    if(builder.m_dirty == null) {
-        throw new IllegalArgumentException("dirty must not be null.");
-    }
-    m_dirty = immutable(builder.m_dirty);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowEnt} including null checks for non-nullable parameters.
+     *
+     * @param info
+     * @param nodes
+     * @param nodeTemplates
+     * @param connections
+     * @param workflowAnnotations
+     * @param parents
+     * @param metaInPorts
+     * @param metaOutPorts
+     * @param allowedActions
+     * @param componentMetadata
+     * @param projectMetadata
+     * @param dirty
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowEnt {
+        if(info == null) {
+            throw new IllegalArgumentException("<info> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(nodes == null) {
+            throw new IllegalArgumentException("<nodes> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(nodeTemplates == null) {
+            throw new IllegalArgumentException("<nodeTemplates> must not be null.");
         }
-        DefaultWorkflowEnt ent = (DefaultWorkflowEnt)o;
-        return Objects.equals(m_info, ent.m_info) && Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_nodeTemplates, ent.m_nodeTemplates) && Objects.equals(m_connections, ent.m_connections) && Objects.equals(m_workflowAnnotations, ent.m_workflowAnnotations) && Objects.equals(m_parents, ent.m_parents) && Objects.equals(m_metaInPorts, ent.m_metaInPorts) && Objects.equals(m_metaOutPorts, ent.m_metaOutPorts) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_componentMetadata, ent.m_componentMetadata) && Objects.equals(m_projectMetadata, ent.m_projectMetadata) && Objects.equals(m_dirty, ent.m_dirty);
+        if(connections == null) {
+            throw new IllegalArgumentException("<connections> must not be null.");
+        }
+        if(workflowAnnotations == null) {
+            throw new IllegalArgumentException("<workflowAnnotations> must not be null.");
+        }
+        if(dirty == null) {
+            throw new IllegalArgumentException("<dirty> must not be null.");
+        }
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "Workflow";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_info)
-               .append(m_nodes)
-               .append(m_nodeTemplates)
-               .append(m_connections)
-               .append(m_workflowAnnotations)
-               .append(m_parents)
-               .append(m_metaInPorts)
-               .append(m_metaOutPorts)
-               .append(m_allowedActions)
-               .append(m_componentMetadata)
-               .append(m_projectMetadata)
-               .append(m_dirty)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public WorkflowInfoEnt getInfo() {
-        return m_info;
-  }
+    @Override
+    public WorkflowInfoEnt getInfo() {
+        return info;
+    }
     
-  @Override
-  public java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> getNodes() {
-        return m_nodes;
-  }
+    @Override
+    public java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> getNodes() {
+        return nodes;
+    }
     
-  @Override
-  public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates() {
-        return m_nodeTemplates;
-  }
+    @Override
+    public java.util.Map<String, NativeNodeInvariantsEnt> getNodeTemplates() {
+        return nodeTemplates;
+    }
     
-  @Override
-  public java.util.Map<String, ConnectionEnt> getConnections() {
-        return m_connections;
-  }
+    @Override
+    public java.util.Map<String, ConnectionEnt> getConnections() {
+        return connections;
+    }
     
-  @Override
-  public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations() {
-        return m_workflowAnnotations;
-  }
+    @Override
+    public java.util.List<WorkflowAnnotationEnt> getWorkflowAnnotations() {
+        return workflowAnnotations;
+    }
     
-  @Override
-  public java.util.List<WorkflowInfoEnt> getParents() {
-        return m_parents;
-  }
+    @Override
+    public java.util.List<WorkflowInfoEnt> getParents() {
+        return parents;
+    }
     
-  @Override
-  public MetaPortsEnt getMetaInPorts() {
-        return m_metaInPorts;
-  }
+    @Override
+    public MetaPortsEnt getMetaInPorts() {
+        return metaInPorts;
+    }
     
-  @Override
-  public MetaPortsEnt getMetaOutPorts() {
-        return m_metaOutPorts;
-  }
+    @Override
+    public MetaPortsEnt getMetaOutPorts() {
+        return metaOutPorts;
+    }
     
-  @Override
-  public AllowedWorkflowActionsEnt getAllowedActions() {
-        return m_allowedActions;
-  }
+    @Override
+    public AllowedWorkflowActionsEnt getAllowedActions() {
+        return allowedActions;
+    }
     
-  @Override
-  public ComponentNodeDescriptionEnt getComponentMetadata() {
-        return m_componentMetadata;
-  }
+    @Override
+    public ComponentNodeDescriptionEnt getComponentMetadata() {
+        return componentMetadata;
+    }
     
-  @Override
-  public ProjectMetadataEnt getProjectMetadata() {
-        return m_projectMetadata;
-  }
+    @Override
+    public ProjectMetadataEnt getProjectMetadata() {
+        return projectMetadata;
+    }
     
-  @Override
-  public Boolean isDirty() {
-        return m_dirty;
-  }
+    @Override
+    public Boolean isDirty() {
+        return dirty;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowEnt}.
+     */
     public static class DefaultWorkflowEntBuilder implements WorkflowEntBuilder {
-    
-        public DefaultWorkflowEntBuilder(){
-            
-        }
-    
+
         private WorkflowInfoEnt m_info;
+
         private java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> m_nodes = new java.util.HashMap<>();
+
         private java.util.Map<String, NativeNodeInvariantsEnt> m_nodeTemplates = new java.util.HashMap<>();
+
         private java.util.Map<String, ConnectionEnt> m_connections = new java.util.HashMap<>();
+
         private java.util.List<WorkflowAnnotationEnt> m_workflowAnnotations = new java.util.ArrayList<>();
+
         private java.util.List<WorkflowInfoEnt> m_parents;
+
         private MetaPortsEnt m_metaInPorts;
+
         private MetaPortsEnt m_metaOutPorts;
+
         private AllowedWorkflowActionsEnt m_allowedActions;
+
         private ComponentNodeDescriptionEnt m_componentMetadata;
+
         private ProjectMetadataEnt m_projectMetadata;
+
         private Boolean m_dirty;
 
         @Override
         public DefaultWorkflowEntBuilder setInfo(WorkflowInfoEnt info) {
              if(info == null) {
-                 throw new IllegalArgumentException("info must not be null.");
+                 throw new IllegalArgumentException("<info> must not be null.");
              }
              m_info = info;
              return this;
@@ -260,7 +234,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setNodes(java.util.Map<String, org.knime.gateway.api.webui.entity.NodeEnt> nodes) {
              if(nodes == null) {
-                 throw new IllegalArgumentException("nodes must not be null.");
+                 throw new IllegalArgumentException("<nodes> must not be null.");
              }
              m_nodes = nodes;
              return this;
@@ -269,7 +243,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setNodeTemplates(java.util.Map<String, NativeNodeInvariantsEnt> nodeTemplates) {
              if(nodeTemplates == null) {
-                 throw new IllegalArgumentException("nodeTemplates must not be null.");
+                 throw new IllegalArgumentException("<nodeTemplates> must not be null.");
              }
              m_nodeTemplates = nodeTemplates;
              return this;
@@ -278,7 +252,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setConnections(java.util.Map<String, ConnectionEnt> connections) {
              if(connections == null) {
-                 throw new IllegalArgumentException("connections must not be null.");
+                 throw new IllegalArgumentException("<connections> must not be null.");
              }
              m_connections = connections;
              return this;
@@ -287,7 +261,7 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setWorkflowAnnotations(java.util.List<WorkflowAnnotationEnt> workflowAnnotations) {
              if(workflowAnnotations == null) {
-                 throw new IllegalArgumentException("workflowAnnotations must not be null.");
+                 throw new IllegalArgumentException("<workflowAnnotations> must not be null.");
              }
              m_workflowAnnotations = workflowAnnotations;
              return this;
@@ -332,16 +306,27 @@ public class DefaultWorkflowEnt implements WorkflowEnt {
         @Override
         public DefaultWorkflowEntBuilder setDirty(Boolean dirty) {
              if(dirty == null) {
-                 throw new IllegalArgumentException("dirty must not be null.");
+                 throw new IllegalArgumentException("<dirty> must not be null.");
              }
              m_dirty = dirty;
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowEnt build() {
-            return new DefaultWorkflowEnt(this);
+            return new DefaultWorkflowEnt(
+                immutable(m_info),
+                immutable(m_nodes),
+                immutable(m_nodeTemplates),
+                immutable(m_connections),
+                immutable(m_workflowAnnotations),
+                immutable(m_parents),
+                immutable(m_metaInPorts),
+                immutable(m_metaOutPorts),
+                immutable(m_allowedActions),
+                immutable(m_componentMetadata),
+                immutable(m_projectMetadata),
+                immutable(m_dirty));
         }
     
     }

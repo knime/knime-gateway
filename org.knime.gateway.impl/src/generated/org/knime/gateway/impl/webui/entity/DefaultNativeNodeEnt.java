@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -65,212 +61,192 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 /**
  * Native node extension of a node.
  *
+ * @param id
+ * @param inPorts
+ * @param outPorts
+ * @param annotation
+ * @param position
+ * @param kind
+ * @param hasDialog
+ * @param allowedActions
+ * @param executionInfo
+ * @param templateId
+ * @param state
+ * @param loopInfo
+ * @param portGroups
+ * @param hasView
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNativeNodeEnt implements NativeNodeEnt {
+public record DefaultNativeNodeEnt(
+    org.knime.gateway.api.entity.NodeIDEnt id,
+    java.util.List<? extends NodePortEnt> inPorts,
+    java.util.List<? extends NodePortEnt> outPorts,
+    NodeAnnotationEnt annotation,
+    XYEnt position,
+    KindEnum kind,
+    Boolean hasDialog,
+    AllowedNodeActionsEnt allowedActions,
+    NodeExecutionInfoEnt executionInfo,
+    String templateId,
+    NodeStateEnt state,
+    LoopInfoEnt loopInfo,
+    java.util.Map<String, PortGroupEnt> portGroups,
+    Boolean hasView) implements NativeNodeEnt {
 
-  protected org.knime.gateway.api.entity.NodeIDEnt m_id;
-  protected java.util.List<? extends NodePortEnt> m_inPorts;
-  protected java.util.List<? extends NodePortEnt> m_outPorts;
-  protected NodeAnnotationEnt m_annotation;
-  protected XYEnt m_position;
-  protected KindEnum m_kind;
-  protected Boolean m_hasDialog;
-  protected AllowedNodeActionsEnt m_allowedActions;
-  protected NodeExecutionInfoEnt m_executionInfo;
-  protected String m_templateId;
-  protected NodeStateEnt m_state;
-  protected LoopInfoEnt m_loopInfo;
-  protected java.util.Map<String, PortGroupEnt> m_portGroups;
-  protected Boolean m_hasView;
-  
-  protected DefaultNativeNodeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NativeNode";
-  }
-  
-  private DefaultNativeNodeEnt(DefaultNativeNodeEntBuilder builder) {
-    super();
-    if(builder.m_id == null) {
-        throw new IllegalArgumentException("id must not be null.");
-    }
-    m_id = immutable(builder.m_id);
-    if(builder.m_inPorts == null) {
-        throw new IllegalArgumentException("inPorts must not be null.");
-    }
-    m_inPorts = immutable(builder.m_inPorts);
-    if(builder.m_outPorts == null) {
-        throw new IllegalArgumentException("outPorts must not be null.");
-    }
-    m_outPorts = immutable(builder.m_outPorts);
-    m_annotation = immutable(builder.m_annotation);
-    if(builder.m_position == null) {
-        throw new IllegalArgumentException("position must not be null.");
-    }
-    m_position = immutable(builder.m_position);
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    m_hasDialog = immutable(builder.m_hasDialog);
-    m_allowedActions = immutable(builder.m_allowedActions);
-    m_executionInfo = immutable(builder.m_executionInfo);
-    if(builder.m_templateId == null) {
-        throw new IllegalArgumentException("templateId must not be null.");
-    }
-    m_templateId = immutable(builder.m_templateId);
-    m_state = immutable(builder.m_state);
-    m_loopInfo = immutable(builder.m_loopInfo);
-    m_portGroups = immutable(builder.m_portGroups);
-    m_hasView = immutable(builder.m_hasView);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNativeNodeEnt} including null checks for non-nullable parameters.
+     *
+     * @param id
+     * @param inPorts
+     * @param outPorts
+     * @param annotation
+     * @param position
+     * @param kind
+     * @param hasDialog
+     * @param allowedActions
+     * @param executionInfo
+     * @param templateId
+     * @param state
+     * @param loopInfo
+     * @param portGroups
+     * @param hasView
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNativeNodeEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(inPorts == null) {
+            throw new IllegalArgumentException("<inPorts> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(outPorts == null) {
+            throw new IllegalArgumentException("<outPorts> must not be null.");
         }
-        DefaultNativeNodeEnt ent = (DefaultNativeNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_templateId, ent.m_templateId) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_loopInfo, ent.m_loopInfo) && Objects.equals(m_portGroups, ent.m_portGroups) && Objects.equals(m_hasView, ent.m_hasView);
+        if(position == null) {
+            throw new IllegalArgumentException("<position> must not be null.");
+        }
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(templateId == null) {
+            throw new IllegalArgumentException("<templateId> must not be null.");
+        }
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NativeNode";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_id)
-               .append(m_inPorts)
-               .append(m_outPorts)
-               .append(m_annotation)
-               .append(m_position)
-               .append(m_kind)
-               .append(m_hasDialog)
-               .append(m_allowedActions)
-               .append(m_executionInfo)
-               .append(m_templateId)
-               .append(m_state)
-               .append(m_loopInfo)
-               .append(m_portGroups)
-               .append(m_hasView)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getId() {
-        return m_id;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getId() {
+        return id;
+    }
     
-  @Override
-  public java.util.List<? extends NodePortEnt> getInPorts() {
-        return m_inPorts;
-  }
+    @Override
+    public java.util.List<? extends NodePortEnt> getInPorts() {
+        return inPorts;
+    }
     
-  @Override
-  public java.util.List<? extends NodePortEnt> getOutPorts() {
-        return m_outPorts;
-  }
+    @Override
+    public java.util.List<? extends NodePortEnt> getOutPorts() {
+        return outPorts;
+    }
     
-  @Override
-  public NodeAnnotationEnt getAnnotation() {
-        return m_annotation;
-  }
+    @Override
+    public NodeAnnotationEnt getAnnotation() {
+        return annotation;
+    }
     
-  @Override
-  public XYEnt getPosition() {
-        return m_position;
-  }
+    @Override
+    public XYEnt getPosition() {
+        return position;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public Boolean hasDialog() {
-        return m_hasDialog;
-  }
+    @Override
+    public Boolean hasDialog() {
+        return hasDialog;
+    }
     
-  @Override
-  public AllowedNodeActionsEnt getAllowedActions() {
-        return m_allowedActions;
-  }
+    @Override
+    public AllowedNodeActionsEnt getAllowedActions() {
+        return allowedActions;
+    }
     
-  @Override
-  public NodeExecutionInfoEnt getExecutionInfo() {
-        return m_executionInfo;
-  }
+    @Override
+    public NodeExecutionInfoEnt getExecutionInfo() {
+        return executionInfo;
+    }
     
-  @Override
-  public String getTemplateId() {
-        return m_templateId;
-  }
+    @Override
+    public String getTemplateId() {
+        return templateId;
+    }
     
-  @Override
-  public NodeStateEnt getState() {
-        return m_state;
-  }
+    @Override
+    public NodeStateEnt getState() {
+        return state;
+    }
     
-  @Override
-  public LoopInfoEnt getLoopInfo() {
-        return m_loopInfo;
-  }
+    @Override
+    public LoopInfoEnt getLoopInfo() {
+        return loopInfo;
+    }
     
-  @Override
-  public java.util.Map<String, PortGroupEnt> getPortGroups() {
-        return m_portGroups;
-  }
+    @Override
+    public java.util.Map<String, PortGroupEnt> getPortGroups() {
+        return portGroups;
+    }
     
-  @Override
-  public Boolean hasView() {
-        return m_hasView;
-  }
+    @Override
+    public Boolean hasView() {
+        return hasView;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNativeNodeEnt}.
+     */
     public static class DefaultNativeNodeEntBuilder implements NativeNodeEntBuilder {
-    
-        public DefaultNativeNodeEntBuilder(){
-            super();
-        }
-    
+
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
+
         private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
+
         private java.util.List<? extends NodePortEnt> m_outPorts = new java.util.ArrayList<>();
+
         private NodeAnnotationEnt m_annotation;
+
         private XYEnt m_position;
+
         private KindEnum m_kind;
+
         private Boolean m_hasDialog;
+
         private AllowedNodeActionsEnt m_allowedActions;
+
         private NodeExecutionInfoEnt m_executionInfo;
+
         private String m_templateId;
+
         private NodeStateEnt m_state;
+
         private LoopInfoEnt m_loopInfo;
+
         private java.util.Map<String, PortGroupEnt> m_portGroups;
+
         private Boolean m_hasView;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
              if(id == null) {
-                 throw new IllegalArgumentException("id must not be null.");
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
              return this;
@@ -279,7 +255,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts) {
              if(inPorts == null) {
-                 throw new IllegalArgumentException("inPorts must not be null.");
+                 throw new IllegalArgumentException("<inPorts> must not be null.");
              }
              m_inPorts = inPorts;
              return this;
@@ -288,7 +264,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts) {
              if(outPorts == null) {
-                 throw new IllegalArgumentException("outPorts must not be null.");
+                 throw new IllegalArgumentException("<outPorts> must not be null.");
              }
              m_outPorts = outPorts;
              return this;
@@ -303,7 +279,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setPosition(XYEnt position) {
              if(position == null) {
-                 throw new IllegalArgumentException("position must not be null.");
+                 throw new IllegalArgumentException("<position> must not be null.");
              }
              m_position = position;
              return this;
@@ -312,7 +288,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -339,7 +315,7 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
         @Override
         public DefaultNativeNodeEntBuilder setTemplateId(String templateId) {
              if(templateId == null) {
-                 throw new IllegalArgumentException("templateId must not be null.");
+                 throw new IllegalArgumentException("<templateId> must not be null.");
              }
              m_templateId = templateId;
              return this;
@@ -369,10 +345,23 @@ public class DefaultNativeNodeEnt implements NativeNodeEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNativeNodeEnt build() {
-            return new DefaultNativeNodeEnt(this);
+            return new DefaultNativeNodeEnt(
+                immutable(m_id),
+                immutable(m_inPorts),
+                immutable(m_outPorts),
+                immutable(m_annotation),
+                immutable(m_position),
+                immutable(m_kind),
+                immutable(m_hasDialog),
+                immutable(m_allowedActions),
+                immutable(m_executionInfo),
+                immutable(m_templateId),
+                immutable(m_state),
+                immutable(m_loopInfo),
+                immutable(m_portGroups),
+                immutable(m_hasView));
         }
     
     }

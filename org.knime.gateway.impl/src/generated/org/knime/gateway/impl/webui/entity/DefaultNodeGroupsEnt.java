@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
@@ -57,92 +53,60 @@ import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 /**
  * A list of node groups.
  *
+ * @param groups
+ * @param totalNumGroups
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeGroupsEnt implements NodeGroupsEnt {
+public record DefaultNodeGroupsEnt(
+    java.util.List<NodeGroupEnt> groups,
+    Integer totalNumGroups) implements NodeGroupsEnt {
 
-  protected java.util.List<NodeGroupEnt> m_groups;
-  protected Integer m_totalNumGroups;
-  
-  protected DefaultNodeGroupsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeGroups";
-  }
-  
-  private DefaultNodeGroupsEnt(DefaultNodeGroupsEntBuilder builder) {
-    
-    if(builder.m_groups == null) {
-        throw new IllegalArgumentException("groups must not be null.");
-    }
-    m_groups = immutable(builder.m_groups);
-    if(builder.m_totalNumGroups == null) {
-        throw new IllegalArgumentException("totalNumGroups must not be null.");
-    }
-    m_totalNumGroups = immutable(builder.m_totalNumGroups);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeGroupsEnt} including null checks for non-nullable parameters.
+     *
+     * @param groups
+     * @param totalNumGroups
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeGroupsEnt {
+        if(groups == null) {
+            throw new IllegalArgumentException("<groups> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(totalNumGroups == null) {
+            throw new IllegalArgumentException("<totalNumGroups> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeGroupsEnt ent = (DefaultNodeGroupsEnt)o;
-        return Objects.equals(m_groups, ent.m_groups) && Objects.equals(m_totalNumGroups, ent.m_totalNumGroups);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeGroups";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_groups)
-               .append(m_totalNumGroups)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<NodeGroupEnt> getGroups() {
-        return m_groups;
-  }
+    @Override
+    public java.util.List<NodeGroupEnt> getGroups() {
+        return groups;
+    }
     
-  @Override
-  public Integer getTotalNumGroups() {
-        return m_totalNumGroups;
-  }
+    @Override
+    public Integer getTotalNumGroups() {
+        return totalNumGroups;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeGroupsEnt}.
+     */
     public static class DefaultNodeGroupsEntBuilder implements NodeGroupsEntBuilder {
-    
-        public DefaultNodeGroupsEntBuilder(){
-            
-        }
-    
+
         private java.util.List<NodeGroupEnt> m_groups = new java.util.ArrayList<>();
+
         private Integer m_totalNumGroups;
 
         @Override
         public DefaultNodeGroupsEntBuilder setGroups(java.util.List<NodeGroupEnt> groups) {
              if(groups == null) {
-                 throw new IllegalArgumentException("groups must not be null.");
+                 throw new IllegalArgumentException("<groups> must not be null.");
              }
              m_groups = groups;
              return this;
@@ -151,16 +115,17 @@ public class DefaultNodeGroupsEnt implements NodeGroupsEnt {
         @Override
         public DefaultNodeGroupsEntBuilder setTotalNumGroups(Integer totalNumGroups) {
              if(totalNumGroups == null) {
-                 throw new IllegalArgumentException("totalNumGroups must not be null.");
+                 throw new IllegalArgumentException("<totalNumGroups> must not be null.");
              }
              m_totalNumGroups = totalNumGroups;
              return this;
         }
 
-        
         @Override
         public DefaultNodeGroupsEnt build() {
-            return new DefaultNodeGroupsEnt(this);
+            return new DefaultNodeGroupsEnt(
+                immutable(m_groups),
+                immutable(m_totalNumGroups));
         }
     
     }

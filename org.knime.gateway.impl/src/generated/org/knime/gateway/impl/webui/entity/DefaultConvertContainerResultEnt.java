@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
@@ -57,92 +53,61 @@ import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 /**
  * DefaultConvertContainerResultEnt
  *
+ * @param snapshotId
+ * @param kind
+ * @param convertedNodeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultConvertContainerResultEnt implements ConvertContainerResultEnt {
+public record DefaultConvertContainerResultEnt(
+    String snapshotId,
+    KindEnum kind,
+    org.knime.gateway.api.entity.NodeIDEnt convertedNodeId) implements ConvertContainerResultEnt {
 
-  protected String m_snapshotId;
-  protected KindEnum m_kind;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_convertedNodeId;
-  
-  protected DefaultConvertContainerResultEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "ConvertContainerResult";
-  }
-  
-  private DefaultConvertContainerResultEnt(DefaultConvertContainerResultEntBuilder builder) {
-    super();
-    m_snapshotId = immutable(builder.m_snapshotId);
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_convertedNodeId == null) {
-        throw new IllegalArgumentException("convertedNodeId must not be null.");
-    }
-    m_convertedNodeId = immutable(builder.m_convertedNodeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultConvertContainerResultEnt} including null checks for non-nullable parameters.
+     *
+     * @param snapshotId
+     * @param kind
+     * @param convertedNodeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultConvertContainerResultEnt {
+        if(convertedNodeId == null) {
+            throw new IllegalArgumentException("<convertedNodeId> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultConvertContainerResultEnt ent = (DefaultConvertContainerResultEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_convertedNodeId, ent.m_convertedNodeId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "ConvertContainerResult";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_snapshotId)
-               .append(m_kind)
-               .append(m_convertedNodeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getConvertedNodeId() {
-        return m_convertedNodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getConvertedNodeId() {
+        return convertedNodeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultConvertContainerResultEnt}.
+     */
     public static class DefaultConvertContainerResultEntBuilder implements ConvertContainerResultEntBuilder {
-    
-        public DefaultConvertContainerResultEntBuilder(){
-            super();
-        }
-    
+
         private String m_snapshotId;
+
         private KindEnum m_kind;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_convertedNodeId;
 
         @Override
@@ -160,16 +125,18 @@ public class DefaultConvertContainerResultEnt implements ConvertContainerResultE
         @Override
         public DefaultConvertContainerResultEntBuilder setConvertedNodeId(org.knime.gateway.api.entity.NodeIDEnt convertedNodeId) {
              if(convertedNodeId == null) {
-                 throw new IllegalArgumentException("convertedNodeId must not be null.");
+                 throw new IllegalArgumentException("<convertedNodeId> must not be null.");
              }
              m_convertedNodeId = convertedNodeId;
              return this;
         }
 
-        
         @Override
         public DefaultConvertContainerResultEnt build() {
-            return new DefaultConvertContainerResultEnt(this);
+            return new DefaultConvertContainerResultEnt(
+                immutable(m_snapshotId),
+                immutable(m_kind),
+                immutable(m_convertedNodeId));
         }
     
     }

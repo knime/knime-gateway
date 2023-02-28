@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
@@ -57,128 +53,99 @@ import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 /**
  * Set of allowed actions specific for a workflow.
  *
+ * @param canExecute
+ * @param canCancel
+ * @param canReset
+ * @param canUndo
+ * @param canRedo
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAllowedWorkflowActionsEnt implements AllowedWorkflowActionsEnt {
+public record DefaultAllowedWorkflowActionsEnt(
+    Boolean canExecute,
+    Boolean canCancel,
+    Boolean canReset,
+    Boolean canUndo,
+    Boolean canRedo) implements AllowedWorkflowActionsEnt {
 
-  protected Boolean m_canExecute;
-  protected Boolean m_canCancel;
-  protected Boolean m_canReset;
-  protected Boolean m_canUndo;
-  protected Boolean m_canRedo;
-  
-  protected DefaultAllowedWorkflowActionsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AllowedWorkflowActions";
-  }
-  
-  private DefaultAllowedWorkflowActionsEnt(DefaultAllowedWorkflowActionsEntBuilder builder) {
-    super();
-    if(builder.m_canExecute == null) {
-        throw new IllegalArgumentException("canExecute must not be null.");
-    }
-    m_canExecute = immutable(builder.m_canExecute);
-    if(builder.m_canCancel == null) {
-        throw new IllegalArgumentException("canCancel must not be null.");
-    }
-    m_canCancel = immutable(builder.m_canCancel);
-    if(builder.m_canReset == null) {
-        throw new IllegalArgumentException("canReset must not be null.");
-    }
-    m_canReset = immutable(builder.m_canReset);
-    if(builder.m_canUndo == null) {
-        throw new IllegalArgumentException("canUndo must not be null.");
-    }
-    m_canUndo = immutable(builder.m_canUndo);
-    if(builder.m_canRedo == null) {
-        throw new IllegalArgumentException("canRedo must not be null.");
-    }
-    m_canRedo = immutable(builder.m_canRedo);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAllowedWorkflowActionsEnt} including null checks for non-nullable parameters.
+     *
+     * @param canExecute
+     * @param canCancel
+     * @param canReset
+     * @param canUndo
+     * @param canRedo
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultAllowedWorkflowActionsEnt {
+        if(canExecute == null) {
+            throw new IllegalArgumentException("<canExecute> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(canCancel == null) {
+            throw new IllegalArgumentException("<canCancel> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(canReset == null) {
+            throw new IllegalArgumentException("<canReset> must not be null.");
         }
-        DefaultAllowedWorkflowActionsEnt ent = (DefaultAllowedWorkflowActionsEnt)o;
-        return Objects.equals(m_canExecute, ent.m_canExecute) && Objects.equals(m_canCancel, ent.m_canCancel) && Objects.equals(m_canReset, ent.m_canReset) && Objects.equals(m_canUndo, ent.m_canUndo) && Objects.equals(m_canRedo, ent.m_canRedo);
+        if(canUndo == null) {
+            throw new IllegalArgumentException("<canUndo> must not be null.");
+        }
+        if(canRedo == null) {
+            throw new IllegalArgumentException("<canRedo> must not be null.");
+        }
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AllowedWorkflowActions";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_canExecute)
-               .append(m_canCancel)
-               .append(m_canReset)
-               .append(m_canUndo)
-               .append(m_canRedo)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Boolean isCanExecute() {
-        return m_canExecute;
-  }
+    @Override
+    public Boolean isCanExecute() {
+        return canExecute;
+    }
     
-  @Override
-  public Boolean isCanCancel() {
-        return m_canCancel;
-  }
+    @Override
+    public Boolean isCanCancel() {
+        return canCancel;
+    }
     
-  @Override
-  public Boolean isCanReset() {
-        return m_canReset;
-  }
+    @Override
+    public Boolean isCanReset() {
+        return canReset;
+    }
     
-  @Override
-  public Boolean isCanUndo() {
-        return m_canUndo;
-  }
+    @Override
+    public Boolean isCanUndo() {
+        return canUndo;
+    }
     
-  @Override
-  public Boolean isCanRedo() {
-        return m_canRedo;
-  }
+    @Override
+    public Boolean isCanRedo() {
+        return canRedo;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAllowedWorkflowActionsEnt}.
+     */
     public static class DefaultAllowedWorkflowActionsEntBuilder implements AllowedWorkflowActionsEntBuilder {
-    
-        public DefaultAllowedWorkflowActionsEntBuilder(){
-            super();
-        }
-    
+
         private Boolean m_canExecute;
+
         private Boolean m_canCancel;
+
         private Boolean m_canReset;
+
         private Boolean m_canUndo;
+
         private Boolean m_canRedo;
 
         @Override
         public DefaultAllowedWorkflowActionsEntBuilder setCanExecute(Boolean canExecute) {
              if(canExecute == null) {
-                 throw new IllegalArgumentException("canExecute must not be null.");
+                 throw new IllegalArgumentException("<canExecute> must not be null.");
              }
              m_canExecute = canExecute;
              return this;
@@ -187,7 +154,7 @@ public class DefaultAllowedWorkflowActionsEnt implements AllowedWorkflowActionsE
         @Override
         public DefaultAllowedWorkflowActionsEntBuilder setCanCancel(Boolean canCancel) {
              if(canCancel == null) {
-                 throw new IllegalArgumentException("canCancel must not be null.");
+                 throw new IllegalArgumentException("<canCancel> must not be null.");
              }
              m_canCancel = canCancel;
              return this;
@@ -196,7 +163,7 @@ public class DefaultAllowedWorkflowActionsEnt implements AllowedWorkflowActionsE
         @Override
         public DefaultAllowedWorkflowActionsEntBuilder setCanReset(Boolean canReset) {
              if(canReset == null) {
-                 throw new IllegalArgumentException("canReset must not be null.");
+                 throw new IllegalArgumentException("<canReset> must not be null.");
              }
              m_canReset = canReset;
              return this;
@@ -205,7 +172,7 @@ public class DefaultAllowedWorkflowActionsEnt implements AllowedWorkflowActionsE
         @Override
         public DefaultAllowedWorkflowActionsEntBuilder setCanUndo(Boolean canUndo) {
              if(canUndo == null) {
-                 throw new IllegalArgumentException("canUndo must not be null.");
+                 throw new IllegalArgumentException("<canUndo> must not be null.");
              }
              m_canUndo = canUndo;
              return this;
@@ -214,16 +181,20 @@ public class DefaultAllowedWorkflowActionsEnt implements AllowedWorkflowActionsE
         @Override
         public DefaultAllowedWorkflowActionsEntBuilder setCanRedo(Boolean canRedo) {
              if(canRedo == null) {
-                 throw new IllegalArgumentException("canRedo must not be null.");
+                 throw new IllegalArgumentException("<canRedo> must not be null.");
              }
              m_canRedo = canRedo;
              return this;
         }
 
-        
         @Override
         public DefaultAllowedWorkflowActionsEnt build() {
-            return new DefaultAllowedWorkflowActionsEnt(this);
+            return new DefaultAllowedWorkflowActionsEnt(
+                immutable(m_canExecute),
+                immutable(m_canCancel),
+                immutable(m_canReset),
+                immutable(m_canUndo),
+                immutable(m_canRedo));
         }
     
     }

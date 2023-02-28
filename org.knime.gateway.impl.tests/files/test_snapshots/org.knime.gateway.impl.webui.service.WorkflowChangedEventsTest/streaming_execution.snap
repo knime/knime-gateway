@@ -65,6 +65,9 @@
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "remove",
+  "path" : "/nodes/root:3:0:3/state/resolutions"
+}, {
+  "op" : "remove",
   "path" : "/nodes/root:3:0:3/state/warning"
 }, {
   "op" : "replace",

@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 
@@ -58,122 +54,93 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 /**
  * The annotation to a node.
  *
+ * @param text
+ * @param backgroundColor
+ * @param textAlign
+ * @param defaultFontSize
+ * @param styleRanges
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeAnnotationEnt implements NodeAnnotationEnt {
+public record DefaultNodeAnnotationEnt(
+    String text,
+    String backgroundColor,
+    TextAlignEnum textAlign,
+    Integer defaultFontSize,
+    java.util.List<StyleRangeEnt> styleRanges) implements NodeAnnotationEnt {
 
-  protected String m_text;
-  protected String m_backgroundColor;
-  protected TextAlignEnum m_textAlign;
-  protected Integer m_defaultFontSize;
-  protected java.util.List<StyleRangeEnt> m_styleRanges;
-  
-  protected DefaultNodeAnnotationEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeAnnotation";
-  }
-  
-  private DefaultNodeAnnotationEnt(DefaultNodeAnnotationEntBuilder builder) {
-    super();
-    if(builder.m_text == null) {
-        throw new IllegalArgumentException("text must not be null.");
-    }
-    m_text = immutable(builder.m_text);
-    m_backgroundColor = immutable(builder.m_backgroundColor);
-    if(builder.m_textAlign == null) {
-        throw new IllegalArgumentException("textAlign must not be null.");
-    }
-    m_textAlign = immutable(builder.m_textAlign);
-    m_defaultFontSize = immutable(builder.m_defaultFontSize);
-    if(builder.m_styleRanges == null) {
-        throw new IllegalArgumentException("styleRanges must not be null.");
-    }
-    m_styleRanges = immutable(builder.m_styleRanges);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeAnnotationEnt} including null checks for non-nullable parameters.
+     *
+     * @param text
+     * @param backgroundColor
+     * @param textAlign
+     * @param defaultFontSize
+     * @param styleRanges
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeAnnotationEnt {
+        if(text == null) {
+            throw new IllegalArgumentException("<text> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(textAlign == null) {
+            throw new IllegalArgumentException("<textAlign> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(styleRanges == null) {
+            throw new IllegalArgumentException("<styleRanges> must not be null.");
         }
-        DefaultNodeAnnotationEnt ent = (DefaultNodeAnnotationEnt)o;
-        return Objects.equals(m_text, ent.m_text) && Objects.equals(m_backgroundColor, ent.m_backgroundColor) && Objects.equals(m_textAlign, ent.m_textAlign) && Objects.equals(m_defaultFontSize, ent.m_defaultFontSize) && Objects.equals(m_styleRanges, ent.m_styleRanges);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeAnnotation";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_text)
-               .append(m_backgroundColor)
-               .append(m_textAlign)
-               .append(m_defaultFontSize)
-               .append(m_styleRanges)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getText() {
-        return m_text;
-  }
+    @Override
+    public String getText() {
+        return text;
+    }
     
-  @Override
-  public String getBackgroundColor() {
-        return m_backgroundColor;
-  }
+    @Override
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
     
-  @Override
-  public TextAlignEnum getTextAlign() {
-        return m_textAlign;
-  }
+    @Override
+    public TextAlignEnum getTextAlign() {
+        return textAlign;
+    }
     
-  @Override
-  public Integer getDefaultFontSize() {
-        return m_defaultFontSize;
-  }
+    @Override
+    public Integer getDefaultFontSize() {
+        return defaultFontSize;
+    }
     
-  @Override
-  public java.util.List<StyleRangeEnt> getStyleRanges() {
-        return m_styleRanges;
-  }
+    @Override
+    public java.util.List<StyleRangeEnt> getStyleRanges() {
+        return styleRanges;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeAnnotationEnt}.
+     */
     public static class DefaultNodeAnnotationEntBuilder implements NodeAnnotationEntBuilder {
-    
-        public DefaultNodeAnnotationEntBuilder(){
-            super();
-        }
-    
+
         private String m_text;
+
         private String m_backgroundColor;
+
         private TextAlignEnum m_textAlign;
+
         private Integer m_defaultFontSize;
+
         private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
 
         @Override
         public DefaultNodeAnnotationEntBuilder setText(String text) {
              if(text == null) {
-                 throw new IllegalArgumentException("text must not be null.");
+                 throw new IllegalArgumentException("<text> must not be null.");
              }
              m_text = text;
              return this;
@@ -188,7 +155,7 @@ public class DefaultNodeAnnotationEnt implements NodeAnnotationEnt {
         @Override
         public DefaultNodeAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
              if(textAlign == null) {
-                 throw new IllegalArgumentException("textAlign must not be null.");
+                 throw new IllegalArgumentException("<textAlign> must not be null.");
              }
              m_textAlign = textAlign;
              return this;
@@ -203,16 +170,20 @@ public class DefaultNodeAnnotationEnt implements NodeAnnotationEnt {
         @Override
         public DefaultNodeAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
              if(styleRanges == null) {
-                 throw new IllegalArgumentException("styleRanges must not be null.");
+                 throw new IllegalArgumentException("<styleRanges> must not be null.");
              }
              m_styleRanges = styleRanges;
              return this;
         }
 
-        
         @Override
         public DefaultNodeAnnotationEnt build() {
-            return new DefaultNodeAnnotationEnt(this);
+            return new DefaultNodeAnnotationEnt(
+                immutable(m_text),
+                immutable(m_backgroundColor),
+                immutable(m_textAlign),
+                immutable(m_defaultFontSize),
+                immutable(m_styleRanges));
         }
     
     }

@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt;
@@ -59,149 +55,123 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 /**
  * Contains all the &#39;static&#39; properties of a node or component required to draw the node/component figure.
  *
+ * @param name
+ * @param type
+ * @param icon
+ * @param nodeFactory
+ * @param id
+ * @param component
+ * @param inPorts
+ * @param outPorts
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
+public record DefaultNodeTemplateEnt(
+    String name,
+    TypeEnum type,
+    String icon,
+    NodeFactoryKeyEnt nodeFactory,
+    String id,
+    Boolean component,
+    java.util.List<NodePortTemplateEnt> inPorts,
+    java.util.List<NodePortTemplateEnt> outPorts) implements NodeTemplateEnt {
 
-  protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_icon;
-  protected NodeFactoryKeyEnt m_nodeFactory;
-  protected String m_id;
-  protected Boolean m_component;
-  protected java.util.List<NodePortTemplateEnt> m_inPorts;
-  protected java.util.List<NodePortTemplateEnt> m_outPorts;
-  
-  protected DefaultNodeTemplateEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeTemplate";
-  }
-  
-  private DefaultNodeTemplateEnt(DefaultNodeTemplateEntBuilder builder) {
-    super();
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
-    }
-    m_type = immutable(builder.m_type);
-    m_icon = immutable(builder.m_icon);
-    m_nodeFactory = immutable(builder.m_nodeFactory);
-    if(builder.m_id == null) {
-        throw new IllegalArgumentException("id must not be null.");
-    }
-    m_id = immutable(builder.m_id);
-    m_component = immutable(builder.m_component);
-    m_inPorts = immutable(builder.m_inPorts);
-    m_outPorts = immutable(builder.m_outPorts);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeTemplateEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param type
+     * @param icon
+     * @param nodeFactory
+     * @param id
+     * @param component
+     * @param inPorts
+     * @param outPorts
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeTemplateEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(type == null) {
+            throw new IllegalArgumentException("<type> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
         }
-        DefaultNodeTemplateEnt ent = (DefaultNodeTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_nodeFactory, ent.m_nodeFactory) && Objects.equals(m_id, ent.m_id) && Objects.equals(m_component, ent.m_component) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeTemplate";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_type)
-               .append(m_icon)
-               .append(m_nodeFactory)
-               .append(m_id)
-               .append(m_component)
-               .append(m_inPorts)
-               .append(m_outPorts)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
+    @Override
+    public TypeEnum getType() {
+        return type;
+    }
     
-  @Override
-  public String getIcon() {
-        return m_icon;
-  }
+    @Override
+    public String getIcon() {
+        return icon;
+    }
     
-  @Override
-  public NodeFactoryKeyEnt getNodeFactory() {
-        return m_nodeFactory;
-  }
+    @Override
+    public NodeFactoryKeyEnt getNodeFactory() {
+        return nodeFactory;
+    }
     
-  @Override
-  public String getId() {
-        return m_id;
-  }
+    @Override
+    public String getId() {
+        return id;
+    }
     
-  @Override
-  public Boolean isComponent() {
-        return m_component;
-  }
+    @Override
+    public Boolean isComponent() {
+        return component;
+    }
     
-  @Override
-  public java.util.List<NodePortTemplateEnt> getInPorts() {
-        return m_inPorts;
-  }
+    @Override
+    public java.util.List<NodePortTemplateEnt> getInPorts() {
+        return inPorts;
+    }
     
-  @Override
-  public java.util.List<NodePortTemplateEnt> getOutPorts() {
-        return m_outPorts;
-  }
+    @Override
+    public java.util.List<NodePortTemplateEnt> getOutPorts() {
+        return outPorts;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeTemplateEnt}.
+     */
     public static class DefaultNodeTemplateEntBuilder implements NodeTemplateEntBuilder {
-    
-        public DefaultNodeTemplateEntBuilder(){
-            super();
-        }
-    
+
         private String m_name;
+
         private TypeEnum m_type;
+
         private String m_icon;
+
         private NodeFactoryKeyEnt m_nodeFactory;
+
         private String m_id;
+
         private Boolean m_component;
+
         private java.util.List<NodePortTemplateEnt> m_inPorts;
+
         private java.util.List<NodePortTemplateEnt> m_outPorts;
 
         @Override
         public DefaultNodeTemplateEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -210,7 +180,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         @Override
         public DefaultNodeTemplateEntBuilder setType(TypeEnum type) {
              if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+                 throw new IllegalArgumentException("<type> must not be null.");
              }
              m_type = type;
              return this;
@@ -231,7 +201,7 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
         @Override
         public DefaultNodeTemplateEntBuilder setId(String id) {
              if(id == null) {
-                 throw new IllegalArgumentException("id must not be null.");
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
              return this;
@@ -255,10 +225,17 @@ public class DefaultNodeTemplateEnt implements NodeTemplateEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNodeTemplateEnt build() {
-            return new DefaultNodeTemplateEnt(this);
+            return new DefaultNodeTemplateEnt(
+                immutable(m_name),
+                immutable(m_type),
+                immutable(m_icon),
+                immutable(m_nodeFactory),
+                immutable(m_id),
+                immutable(m_component),
+                immutable(m_inPorts),
+                immutable(m_outPorts));
         }
     
     }

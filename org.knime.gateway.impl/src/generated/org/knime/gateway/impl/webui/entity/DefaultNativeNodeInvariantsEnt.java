@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
@@ -57,110 +53,80 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 /**
  * Static properties of a native node which remain the same even if the node is not part of a workflow.
  *
+ * @param name
+ * @param type
+ * @param icon
+ * @param nodeFactory
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
+public record DefaultNativeNodeInvariantsEnt(
+    String name,
+    TypeEnum type,
+    String icon,
+    NodeFactoryKeyEnt nodeFactory) implements NativeNodeInvariantsEnt {
 
-  protected String m_name;
-  protected TypeEnum m_type;
-  protected String m_icon;
-  protected NodeFactoryKeyEnt m_nodeFactory;
-  
-  protected DefaultNativeNodeInvariantsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NativeNodeInvariants";
-  }
-  
-  private DefaultNativeNodeInvariantsEnt(DefaultNativeNodeInvariantsEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
-    }
-    m_type = immutable(builder.m_type);
-    m_icon = immutable(builder.m_icon);
-    m_nodeFactory = immutable(builder.m_nodeFactory);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNativeNodeInvariantsEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param type
+     * @param icon
+     * @param nodeFactory
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNativeNodeInvariantsEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(type == null) {
+            throw new IllegalArgumentException("<type> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNativeNodeInvariantsEnt ent = (DefaultNativeNodeInvariantsEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_nodeFactory, ent.m_nodeFactory);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NativeNodeInvariants";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_type)
-               .append(m_icon)
-               .append(m_nodeFactory)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
+    @Override
+    public TypeEnum getType() {
+        return type;
+    }
     
-  @Override
-  public String getIcon() {
-        return m_icon;
-  }
+    @Override
+    public String getIcon() {
+        return icon;
+    }
     
-  @Override
-  public NodeFactoryKeyEnt getNodeFactory() {
-        return m_nodeFactory;
-  }
+    @Override
+    public NodeFactoryKeyEnt getNodeFactory() {
+        return nodeFactory;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNativeNodeInvariantsEnt}.
+     */
     public static class DefaultNativeNodeInvariantsEntBuilder implements NativeNodeInvariantsEntBuilder {
-    
-        public DefaultNativeNodeInvariantsEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private TypeEnum m_type;
+
         private String m_icon;
+
         private NodeFactoryKeyEnt m_nodeFactory;
 
         @Override
         public DefaultNativeNodeInvariantsEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -169,7 +135,7 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
         @Override
         public DefaultNativeNodeInvariantsEntBuilder setType(TypeEnum type) {
              if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+                 throw new IllegalArgumentException("<type> must not be null.");
              }
              m_type = type;
              return this;
@@ -187,10 +153,13 @@ public class DefaultNativeNodeInvariantsEnt implements NativeNodeInvariantsEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNativeNodeInvariantsEnt build() {
-            return new DefaultNativeNodeInvariantsEnt(this);
+            return new DefaultNativeNodeInvariantsEnt(
+                immutable(m_name),
+                immutable(m_type),
+                immutable(m_icon),
+                immutable(m_nodeFactory));
         }
     
     }

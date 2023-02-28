@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -57,104 +53,73 @@ import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEn
 /**
  * Updates the name of a component or metanode
  *
+ * @param kind
+ * @param name
+ * @param nodeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultUpdateComponentOrMetanodeNameCommandEnt implements UpdateComponentOrMetanodeNameCommandEnt {
+public record DefaultUpdateComponentOrMetanodeNameCommandEnt(
+    KindEnum kind,
+    String name,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements UpdateComponentOrMetanodeNameCommandEnt {
 
-  protected KindEnum m_kind;
-  protected String m_name;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-  
-  protected DefaultUpdateComponentOrMetanodeNameCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "UpdateComponentOrMetanodeNameCommand";
-  }
-  
-  private DefaultUpdateComponentOrMetanodeNameCommandEnt(DefaultUpdateComponentOrMetanodeNameCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultUpdateComponentOrMetanodeNameCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param name
+     * @param nodeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultUpdateComponentOrMetanodeNameCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
-        DefaultUpdateComponentOrMetanodeNameCommandEnt ent = (DefaultUpdateComponentOrMetanodeNameCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_nodeId, ent.m_nodeId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "UpdateComponentOrMetanodeNameCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_name)
-               .append(m_nodeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultUpdateComponentOrMetanodeNameCommandEnt}.
+     */
     public static class DefaultUpdateComponentOrMetanodeNameCommandEntBuilder implements UpdateComponentOrMetanodeNameCommandEntBuilder {
-    
-        public DefaultUpdateComponentOrMetanodeNameCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private String m_name;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         @Override
         public DefaultUpdateComponentOrMetanodeNameCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -163,7 +128,7 @@ public class DefaultUpdateComponentOrMetanodeNameCommandEnt implements UpdateCom
         @Override
         public DefaultUpdateComponentOrMetanodeNameCommandEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -172,16 +137,18 @@ public class DefaultUpdateComponentOrMetanodeNameCommandEnt implements UpdateCom
         @Override
         public DefaultUpdateComponentOrMetanodeNameCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
              m_nodeId = nodeId;
              return this;
         }
 
-        
         @Override
         public DefaultUpdateComponentOrMetanodeNameCommandEnt build() {
-            return new DefaultUpdateComponentOrMetanodeNameCommandEnt(this);
+            return new DefaultUpdateComponentOrMetanodeNameCommandEnt(
+                immutable(m_kind),
+                immutable(m_name),
+                immutable(m_nodeId));
         }
     
     }

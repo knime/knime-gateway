@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 import org.knime.gateway.api.webui.entity.NodeGroupEnt;
@@ -57,92 +53,60 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 /**
  * A group of nodes.
  *
+ * @param tag
+ * @param nodes
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeGroupEnt implements NodeGroupEnt {
+public record DefaultNodeGroupEnt(
+    String tag,
+    java.util.List<NodeTemplateEnt> nodes) implements NodeGroupEnt {
 
-  protected String m_tag;
-  protected java.util.List<NodeTemplateEnt> m_nodes;
-  
-  protected DefaultNodeGroupEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeGroup";
-  }
-  
-  private DefaultNodeGroupEnt(DefaultNodeGroupEntBuilder builder) {
-    
-    if(builder.m_tag == null) {
-        throw new IllegalArgumentException("tag must not be null.");
-    }
-    m_tag = immutable(builder.m_tag);
-    if(builder.m_nodes == null) {
-        throw new IllegalArgumentException("nodes must not be null.");
-    }
-    m_nodes = immutable(builder.m_nodes);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeGroupEnt} including null checks for non-nullable parameters.
+     *
+     * @param tag
+     * @param nodes
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeGroupEnt {
+        if(tag == null) {
+            throw new IllegalArgumentException("<tag> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(nodes == null) {
+            throw new IllegalArgumentException("<nodes> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeGroupEnt ent = (DefaultNodeGroupEnt)o;
-        return Objects.equals(m_tag, ent.m_tag) && Objects.equals(m_nodes, ent.m_nodes);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeGroup";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_tag)
-               .append(m_nodes)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getTag() {
-        return m_tag;
-  }
+    @Override
+    public String getTag() {
+        return tag;
+    }
     
-  @Override
-  public java.util.List<NodeTemplateEnt> getNodes() {
-        return m_nodes;
-  }
+    @Override
+    public java.util.List<NodeTemplateEnt> getNodes() {
+        return nodes;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeGroupEnt}.
+     */
     public static class DefaultNodeGroupEntBuilder implements NodeGroupEntBuilder {
-    
-        public DefaultNodeGroupEntBuilder(){
-            
-        }
-    
+
         private String m_tag;
+
         private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
 
         @Override
         public DefaultNodeGroupEntBuilder setTag(String tag) {
              if(tag == null) {
-                 throw new IllegalArgumentException("tag must not be null.");
+                 throw new IllegalArgumentException("<tag> must not be null.");
              }
              m_tag = tag;
              return this;
@@ -151,16 +115,17 @@ public class DefaultNodeGroupEnt implements NodeGroupEnt {
         @Override
         public DefaultNodeGroupEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes) {
              if(nodes == null) {
-                 throw new IllegalArgumentException("nodes must not be null.");
+                 throw new IllegalArgumentException("<nodes> must not be null.");
              }
              m_nodes = nodes;
              return this;
         }
 
-        
         @Override
         public DefaultNodeGroupEnt build() {
-            return new DefaultNodeGroupEnt(this);
+            return new DefaultNodeGroupEnt(
+                immutable(m_tag),
+                immutable(m_nodes));
         }
     
     }

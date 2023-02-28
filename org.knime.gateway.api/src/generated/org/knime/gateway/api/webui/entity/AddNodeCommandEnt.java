@@ -62,6 +62,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Adds a new node to the workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {

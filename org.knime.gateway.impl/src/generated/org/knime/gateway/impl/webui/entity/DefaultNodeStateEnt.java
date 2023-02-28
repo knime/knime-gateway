@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.math.BigDecimal;
 
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
@@ -57,125 +53,98 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
 /**
  * Encapsulates properties around a node&#39;s execution state.
  *
+ * @param executionState
+ * @param progress
+ * @param progressMessage
+ * @param error
+ * @param warning
+ * @param issue
+ * @param resolutions
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeStateEnt implements NodeStateEnt {
+public record DefaultNodeStateEnt(
+    ExecutionStateEnum executionState,
+    BigDecimal progress,
+    String progressMessage,
+    String error,
+    String warning,
+    String issue,
+    java.util.List<String> resolutions) implements NodeStateEnt {
 
-  protected ExecutionStateEnum m_executionState;
-  protected BigDecimal m_progress;
-  protected String m_progressMessage;
-  protected String m_error;
-  protected String m_warning;
-  protected String m_issue;
-  protected java.util.List<String> m_resolutions;
-  
-  protected DefaultNodeStateEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeState";
-  }
-  
-  private DefaultNodeStateEnt(DefaultNodeStateEntBuilder builder) {
-    
-    m_executionState = immutable(builder.m_executionState);
-    m_progress = immutable(builder.m_progress);
-    m_progressMessage = immutable(builder.m_progressMessage);
-    m_error = immutable(builder.m_error);
-    m_warning = immutable(builder.m_warning);
-    m_issue = immutable(builder.m_issue);
-    m_resolutions = immutable(builder.m_resolutions);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeStateEnt} including null checks for non-nullable parameters.
+     *
+     * @param executionState
+     * @param progress
+     * @param progressMessage
+     * @param error
+     * @param warning
+     * @param issue
+     * @param resolutions
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeStateEnt ent = (DefaultNodeStateEnt)o;
-        return Objects.equals(m_executionState, ent.m_executionState) && Objects.equals(m_progress, ent.m_progress) && Objects.equals(m_progressMessage, ent.m_progressMessage) && Objects.equals(m_error, ent.m_error) && Objects.equals(m_warning, ent.m_warning) && Objects.equals(m_issue, ent.m_issue) && Objects.equals(m_resolutions, ent.m_resolutions);
+    public DefaultNodeStateEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeState";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_executionState)
-               .append(m_progress)
-               .append(m_progressMessage)
-               .append(m_error)
-               .append(m_warning)
-               .append(m_issue)
-               .append(m_resolutions)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public ExecutionStateEnum getExecutionState() {
-        return m_executionState;
-  }
+    @Override
+    public ExecutionStateEnum getExecutionState() {
+        return executionState;
+    }
     
-  @Override
-  public BigDecimal getProgress() {
-        return m_progress;
-  }
+    @Override
+    public BigDecimal getProgress() {
+        return progress;
+    }
     
-  @Override
-  public String getProgressMessage() {
-        return m_progressMessage;
-  }
+    @Override
+    public String getProgressMessage() {
+        return progressMessage;
+    }
     
-  @Override
-  public String getError() {
-        return m_error;
-  }
+    @Override
+    public String getError() {
+        return error;
+    }
     
-  @Override
-  public String getWarning() {
-        return m_warning;
-  }
+    @Override
+    public String getWarning() {
+        return warning;
+    }
     
-  @Override
-  public String getIssue() {
-        return m_issue;
-  }
+    @Override
+    public String getIssue() {
+        return issue;
+    }
     
-  @Override
-  public java.util.List<String> getResolutions() {
-        return m_resolutions;
-  }
+    @Override
+    public java.util.List<String> getResolutions() {
+        return resolutions;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeStateEnt}.
+     */
     public static class DefaultNodeStateEntBuilder implements NodeStateEntBuilder {
-    
-        public DefaultNodeStateEntBuilder(){
-            
-        }
-    
+
         private ExecutionStateEnum m_executionState;
+
         private BigDecimal m_progress;
+
         private String m_progressMessage;
+
         private String m_error;
+
         private String m_warning;
+
         private String m_issue;
+
         private java.util.List<String> m_resolutions;
 
         @Override
@@ -220,10 +189,16 @@ public class DefaultNodeStateEnt implements NodeStateEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNodeStateEnt build() {
-            return new DefaultNodeStateEnt(this);
+            return new DefaultNodeStateEnt(
+                immutable(m_executionState),
+                immutable(m_progress),
+                immutable(m_progressMessage),
+                immutable(m_error),
+                immutable(m_warning),
+                immutable(m_issue),
+                immutable(m_resolutions));
         }
     
     }

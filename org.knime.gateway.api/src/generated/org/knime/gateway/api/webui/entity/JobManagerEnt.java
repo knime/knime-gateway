@@ -59,6 +59,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * The node/workflow&#39;s job manager, if a special one is defined. Otherwise not given.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface JobManagerEnt extends GatewayEntity {

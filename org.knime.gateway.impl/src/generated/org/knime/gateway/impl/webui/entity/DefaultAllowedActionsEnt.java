@@ -46,114 +46,79 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
 
 /**
  * Mainly provides information on what actions are allowed on a node or an entire workflow.
  *
+ * @param canExecute
+ * @param canCancel
+ * @param canReset
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAllowedActionsEnt implements AllowedActionsEnt {
+public record DefaultAllowedActionsEnt(
+    Boolean canExecute,
+    Boolean canCancel,
+    Boolean canReset) implements AllowedActionsEnt {
 
-  protected Boolean m_canExecute;
-  protected Boolean m_canCancel;
-  protected Boolean m_canReset;
-  
-  protected DefaultAllowedActionsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AllowedActions";
-  }
-  
-  private DefaultAllowedActionsEnt(DefaultAllowedActionsEntBuilder builder) {
-    
-    if(builder.m_canExecute == null) {
-        throw new IllegalArgumentException("canExecute must not be null.");
-    }
-    m_canExecute = immutable(builder.m_canExecute);
-    if(builder.m_canCancel == null) {
-        throw new IllegalArgumentException("canCancel must not be null.");
-    }
-    m_canCancel = immutable(builder.m_canCancel);
-    if(builder.m_canReset == null) {
-        throw new IllegalArgumentException("canReset must not be null.");
-    }
-    m_canReset = immutable(builder.m_canReset);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAllowedActionsEnt} including null checks for non-nullable parameters.
+     *
+     * @param canExecute
+     * @param canCancel
+     * @param canReset
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultAllowedActionsEnt {
+        if(canExecute == null) {
+            throw new IllegalArgumentException("<canExecute> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(canCancel == null) {
+            throw new IllegalArgumentException("<canCancel> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(canReset == null) {
+            throw new IllegalArgumentException("<canReset> must not be null.");
         }
-        DefaultAllowedActionsEnt ent = (DefaultAllowedActionsEnt)o;
-        return Objects.equals(m_canExecute, ent.m_canExecute) && Objects.equals(m_canCancel, ent.m_canCancel) && Objects.equals(m_canReset, ent.m_canReset);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AllowedActions";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_canExecute)
-               .append(m_canCancel)
-               .append(m_canReset)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Boolean isCanExecute() {
-        return m_canExecute;
-  }
+    @Override
+    public Boolean isCanExecute() {
+        return canExecute;
+    }
     
-  @Override
-  public Boolean isCanCancel() {
-        return m_canCancel;
-  }
+    @Override
+    public Boolean isCanCancel() {
+        return canCancel;
+    }
     
-  @Override
-  public Boolean isCanReset() {
-        return m_canReset;
-  }
+    @Override
+    public Boolean isCanReset() {
+        return canReset;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAllowedActionsEnt}.
+     */
     public static class DefaultAllowedActionsEntBuilder implements AllowedActionsEntBuilder {
-    
-        public DefaultAllowedActionsEntBuilder(){
-            
-        }
-    
+
         private Boolean m_canExecute;
+
         private Boolean m_canCancel;
+
         private Boolean m_canReset;
 
         @Override
         public DefaultAllowedActionsEntBuilder setCanExecute(Boolean canExecute) {
              if(canExecute == null) {
-                 throw new IllegalArgumentException("canExecute must not be null.");
+                 throw new IllegalArgumentException("<canExecute> must not be null.");
              }
              m_canExecute = canExecute;
              return this;
@@ -162,7 +127,7 @@ public class DefaultAllowedActionsEnt implements AllowedActionsEnt {
         @Override
         public DefaultAllowedActionsEntBuilder setCanCancel(Boolean canCancel) {
              if(canCancel == null) {
-                 throw new IllegalArgumentException("canCancel must not be null.");
+                 throw new IllegalArgumentException("<canCancel> must not be null.");
              }
              m_canCancel = canCancel;
              return this;
@@ -171,16 +136,18 @@ public class DefaultAllowedActionsEnt implements AllowedActionsEnt {
         @Override
         public DefaultAllowedActionsEntBuilder setCanReset(Boolean canReset) {
              if(canReset == null) {
-                 throw new IllegalArgumentException("canReset must not be null.");
+                 throw new IllegalArgumentException("<canReset> must not be null.");
              }
              m_canReset = canReset;
              return this;
         }
 
-        
         @Override
         public DefaultAllowedActionsEnt build() {
-            return new DefaultAllowedActionsEnt(this);
+            return new DefaultAllowedActionsEnt(
+                immutable(m_canExecute),
+                immutable(m_canCancel),
+                immutable(m_canReset));
         }
     
     }

@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
@@ -59,107 +55,78 @@ import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 /**
  * Node description properties that are common to all kinds of nodes. This is static information in the sense that it does not depend on a concrete node instance in a workflow.
  *
+ * @param description
+ * @param options
+ * @param views
+ * @param inPorts
+ * @param outPorts
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeDescriptionEnt implements NodeDescriptionEnt {
+public record DefaultNodeDescriptionEnt(
+    String description,
+    java.util.List<NodeDialogOptionGroupEnt> options,
+    java.util.List<NodeViewDescriptionEnt> views,
+    java.util.List<NodePortDescriptionEnt> inPorts,
+    java.util.List<NodePortDescriptionEnt> outPorts) implements NodeDescriptionEnt {
 
-  protected String m_description;
-  protected java.util.List<NodeDialogOptionGroupEnt> m_options;
-  protected java.util.List<NodeViewDescriptionEnt> m_views;
-  protected java.util.List<NodePortDescriptionEnt> m_inPorts;
-  protected java.util.List<NodePortDescriptionEnt> m_outPorts;
-  
-  protected DefaultNodeDescriptionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeDescription";
-  }
-  
-  private DefaultNodeDescriptionEnt(DefaultNodeDescriptionEntBuilder builder) {
-    
-    m_description = immutable(builder.m_description);
-    m_options = immutable(builder.m_options);
-    m_views = immutable(builder.m_views);
-    m_inPorts = immutable(builder.m_inPorts);
-    m_outPorts = immutable(builder.m_outPorts);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeDescriptionEnt} including null checks for non-nullable parameters.
+     *
+     * @param description
+     * @param options
+     * @param views
+     * @param inPorts
+     * @param outPorts
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeDescriptionEnt ent = (DefaultNodeDescriptionEnt)o;
-        return Objects.equals(m_description, ent.m_description) && Objects.equals(m_options, ent.m_options) && Objects.equals(m_views, ent.m_views) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts);
+    public DefaultNodeDescriptionEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeDescription";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_description)
-               .append(m_options)
-               .append(m_views)
-               .append(m_inPorts)
-               .append(m_outPorts)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getDescription() {
-        return m_description;
-  }
+    @Override
+    public String getDescription() {
+        return description;
+    }
     
-  @Override
-  public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
-        return m_options;
-  }
+    @Override
+    public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
+        return options;
+    }
     
-  @Override
-  public java.util.List<NodeViewDescriptionEnt> getViews() {
-        return m_views;
-  }
+    @Override
+    public java.util.List<NodeViewDescriptionEnt> getViews() {
+        return views;
+    }
     
-  @Override
-  public java.util.List<NodePortDescriptionEnt> getInPorts() {
-        return m_inPorts;
-  }
+    @Override
+    public java.util.List<NodePortDescriptionEnt> getInPorts() {
+        return inPorts;
+    }
     
-  @Override
-  public java.util.List<NodePortDescriptionEnt> getOutPorts() {
-        return m_outPorts;
-  }
+    @Override
+    public java.util.List<NodePortDescriptionEnt> getOutPorts() {
+        return outPorts;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeDescriptionEnt}.
+     */
     public static class DefaultNodeDescriptionEntBuilder implements NodeDescriptionEntBuilder {
-    
-        public DefaultNodeDescriptionEntBuilder(){
-            
-        }
-    
+
         private String m_description;
+
         private java.util.List<NodeDialogOptionGroupEnt> m_options;
+
         private java.util.List<NodeViewDescriptionEnt> m_views;
+
         private java.util.List<NodePortDescriptionEnt> m_inPorts;
+
         private java.util.List<NodePortDescriptionEnt> m_outPorts;
 
         @Override
@@ -192,10 +159,14 @@ public class DefaultNodeDescriptionEnt implements NodeDescriptionEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNodeDescriptionEnt build() {
-            return new DefaultNodeDescriptionEnt(this);
+            return new DefaultNodeDescriptionEnt(
+                immutable(m_description),
+                immutable(m_options),
+                immutable(m_views),
+                immutable(m_inPorts),
+                immutable(m_outPorts));
         }
     
     }

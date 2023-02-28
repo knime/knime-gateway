@@ -59,6 +59,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Static properties of a native node which remain the same even if the node is not part of a workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NativeNodeInvariantsEnt extends GatewayEntity {

@@ -46,90 +46,54 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 
 /**
  * DefaultCommandResultEnt
  *
+ * @param snapshotId
+ * @param kind
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCommandResultEnt implements CommandResultEnt {
+public record DefaultCommandResultEnt(
+    String snapshotId,
+    KindEnum kind) implements CommandResultEnt {
 
-  protected String m_snapshotId;
-  protected KindEnum m_kind;
-  
-  protected DefaultCommandResultEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "CommandResult";
-  }
-  
-  private DefaultCommandResultEnt(DefaultCommandResultEntBuilder builder) {
-    
-    m_snapshotId = immutable(builder.m_snapshotId);
-    m_kind = immutable(builder.m_kind);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultCommandResultEnt} including null checks for non-nullable parameters.
+     *
+     * @param snapshotId
+     * @param kind
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultCommandResultEnt ent = (DefaultCommandResultEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind);
+    public DefaultCommandResultEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "CommandResult";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_snapshotId)
-               .append(m_kind)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultCommandResultEnt}.
+     */
     public static class DefaultCommandResultEntBuilder implements CommandResultEntBuilder {
-    
-        public DefaultCommandResultEntBuilder(){
-            
-        }
-    
+
         private String m_snapshotId;
+
         private KindEnum m_kind;
 
         @Override
@@ -144,10 +108,11 @@ public class DefaultCommandResultEnt implements CommandResultEnt {
              return this;
         }
 
-        
         @Override
         public DefaultCommandResultEnt build() {
-            return new DefaultCommandResultEnt(this);
+            return new DefaultCommandResultEnt(
+                immutable(m_snapshotId),
+                immutable(m_kind));
         }
     
     }

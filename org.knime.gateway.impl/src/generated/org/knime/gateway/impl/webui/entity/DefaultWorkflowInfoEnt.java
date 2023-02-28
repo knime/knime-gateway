@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
@@ -57,131 +53,103 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 /**
  * DefaultWorkflowInfoEnt
  *
+ * @param name
+ * @param containerId
+ * @param containerType
+ * @param linked
+ * @param onHub
+ * @param jobManager
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
+public record DefaultWorkflowInfoEnt(
+    String name,
+    org.knime.gateway.api.entity.NodeIDEnt containerId,
+    ContainerTypeEnum containerType,
+    Boolean linked,
+    Boolean onHub,
+    JobManagerEnt jobManager) implements WorkflowInfoEnt {
 
-  protected String m_name;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_containerId;
-  protected ContainerTypeEnum m_containerType;
-  protected Boolean m_linked;
-  protected Boolean m_onHub;
-  protected JobManagerEnt m_jobManager;
-  
-  protected DefaultWorkflowInfoEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowInfo";
-  }
-  
-  private DefaultWorkflowInfoEnt(DefaultWorkflowInfoEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_containerId == null) {
-        throw new IllegalArgumentException("containerId must not be null.");
-    }
-    m_containerId = immutable(builder.m_containerId);
-    if(builder.m_containerType == null) {
-        throw new IllegalArgumentException("containerType must not be null.");
-    }
-    m_containerType = immutable(builder.m_containerType);
-    m_linked = immutable(builder.m_linked);
-    m_onHub = immutable(builder.m_onHub);
-    m_jobManager = immutable(builder.m_jobManager);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowInfoEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param containerId
+     * @param containerType
+     * @param linked
+     * @param onHub
+     * @param jobManager
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowInfoEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(containerId == null) {
+            throw new IllegalArgumentException("<containerId> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(containerType == null) {
+            throw new IllegalArgumentException("<containerType> must not be null.");
         }
-        DefaultWorkflowInfoEnt ent = (DefaultWorkflowInfoEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_containerId, ent.m_containerId) && Objects.equals(m_containerType, ent.m_containerType) && Objects.equals(m_linked, ent.m_linked) && Objects.equals(m_onHub, ent.m_onHub) && Objects.equals(m_jobManager, ent.m_jobManager);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "WorkflowInfo";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_containerId)
-               .append(m_containerType)
-               .append(m_linked)
-               .append(m_onHub)
-               .append(m_jobManager)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getContainerId() {
-        return m_containerId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getContainerId() {
+        return containerId;
+    }
     
-  @Override
-  public ContainerTypeEnum getContainerType() {
-        return m_containerType;
-  }
+    @Override
+    public ContainerTypeEnum getContainerType() {
+        return containerType;
+    }
     
-  @Override
-  public Boolean isLinked() {
-        return m_linked;
-  }
+    @Override
+    public Boolean isLinked() {
+        return linked;
+    }
     
-  @Override
-  public Boolean isOnHub() {
-        return m_onHub;
-  }
+    @Override
+    public Boolean isOnHub() {
+        return onHub;
+    }
     
-  @Override
-  public JobManagerEnt getJobManager() {
-        return m_jobManager;
-  }
+    @Override
+    public JobManagerEnt getJobManager() {
+        return jobManager;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowInfoEnt}.
+     */
     public static class DefaultWorkflowInfoEntBuilder implements WorkflowInfoEntBuilder {
-    
-        public DefaultWorkflowInfoEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_containerId;
+
         private ContainerTypeEnum m_containerType;
+
         private Boolean m_linked;
+
         private Boolean m_onHub;
+
         private JobManagerEnt m_jobManager;
 
         @Override
         public DefaultWorkflowInfoEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -190,7 +158,7 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
         @Override
         public DefaultWorkflowInfoEntBuilder setContainerId(org.knime.gateway.api.entity.NodeIDEnt containerId) {
              if(containerId == null) {
-                 throw new IllegalArgumentException("containerId must not be null.");
+                 throw new IllegalArgumentException("<containerId> must not be null.");
              }
              m_containerId = containerId;
              return this;
@@ -199,7 +167,7 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
         @Override
         public DefaultWorkflowInfoEntBuilder setContainerType(ContainerTypeEnum containerType) {
              if(containerType == null) {
-                 throw new IllegalArgumentException("containerType must not be null.");
+                 throw new IllegalArgumentException("<containerType> must not be null.");
              }
              m_containerType = containerType;
              return this;
@@ -223,10 +191,15 @@ public class DefaultWorkflowInfoEnt implements WorkflowInfoEnt {
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowInfoEnt build() {
-            return new DefaultWorkflowInfoEnt(this);
+            return new DefaultWorkflowInfoEnt(
+                immutable(m_name),
+                immutable(m_containerId),
+                immutable(m_containerType),
+                immutable(m_linked),
+                immutable(m_onHub),
+                immutable(m_jobManager));
         }
     
     }

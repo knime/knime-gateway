@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
@@ -57,80 +53,48 @@ import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 /**
  * Loop info. Only present on loop end nodes.
  *
+ * @param allowedActions
+ * @param status
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultLoopInfoEnt implements LoopInfoEnt {
+public record DefaultLoopInfoEnt(
+    AllowedLoopActionsEnt allowedActions,
+    StatusEnum status) implements LoopInfoEnt {
 
-  protected AllowedLoopActionsEnt m_allowedActions;
-  protected StatusEnum m_status;
-  
-  protected DefaultLoopInfoEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "LoopInfo";
-  }
-  
-  private DefaultLoopInfoEnt(DefaultLoopInfoEntBuilder builder) {
-    
-    m_allowedActions = immutable(builder.m_allowedActions);
-    m_status = immutable(builder.m_status);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultLoopInfoEnt} including null checks for non-nullable parameters.
+     *
+     * @param allowedActions
+     * @param status
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultLoopInfoEnt ent = (DefaultLoopInfoEnt)o;
-        return Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_status, ent.m_status);
+    public DefaultLoopInfoEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "LoopInfo";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_allowedActions)
-               .append(m_status)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public AllowedLoopActionsEnt getAllowedActions() {
-        return m_allowedActions;
-  }
+    @Override
+    public AllowedLoopActionsEnt getAllowedActions() {
+        return allowedActions;
+    }
     
-  @Override
-  public StatusEnum getStatus() {
-        return m_status;
-  }
+    @Override
+    public StatusEnum getStatus() {
+        return status;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultLoopInfoEnt}.
+     */
     public static class DefaultLoopInfoEntBuilder implements LoopInfoEntBuilder {
-    
-        public DefaultLoopInfoEntBuilder(){
-            
-        }
-    
+
         private AllowedLoopActionsEnt m_allowedActions;
+
         private StatusEnum m_status;
 
         @Override
@@ -145,10 +109,11 @@ public class DefaultLoopInfoEnt implements LoopInfoEnt {
              return this;
         }
 
-        
         @Override
         public DefaultLoopInfoEnt build() {
-            return new DefaultLoopInfoEnt(this);
+            return new DefaultLoopInfoEnt(
+                immutable(m_allowedActions),
+                immutable(m_status));
         }
     
     }

@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
@@ -57,89 +53,58 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 /**
  * A group of node dialog options.
  *
+ * @param sectionName
+ * @param sectionDescription
+ * @param fields
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeDialogOptionGroupEnt implements NodeDialogOptionGroupEnt {
+public record DefaultNodeDialogOptionGroupEnt(
+    String sectionName,
+    String sectionDescription,
+    java.util.List<NodeDialogOptionDescriptionEnt> fields) implements NodeDialogOptionGroupEnt {
 
-  protected String m_sectionName;
-  protected String m_sectionDescription;
-  protected java.util.List<NodeDialogOptionDescriptionEnt> m_fields;
-  
-  protected DefaultNodeDialogOptionGroupEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeDialogOptionGroup";
-  }
-  
-  private DefaultNodeDialogOptionGroupEnt(DefaultNodeDialogOptionGroupEntBuilder builder) {
-    
-    m_sectionName = immutable(builder.m_sectionName);
-    m_sectionDescription = immutable(builder.m_sectionDescription);
-    m_fields = immutable(builder.m_fields);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeDialogOptionGroupEnt} including null checks for non-nullable parameters.
+     *
+     * @param sectionName
+     * @param sectionDescription
+     * @param fields
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeDialogOptionGroupEnt ent = (DefaultNodeDialogOptionGroupEnt)o;
-        return Objects.equals(m_sectionName, ent.m_sectionName) && Objects.equals(m_sectionDescription, ent.m_sectionDescription) && Objects.equals(m_fields, ent.m_fields);
+    public DefaultNodeDialogOptionGroupEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeDialogOptionGroup";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_sectionName)
-               .append(m_sectionDescription)
-               .append(m_fields)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSectionName() {
-        return m_sectionName;
-  }
+    @Override
+    public String getSectionName() {
+        return sectionName;
+    }
     
-  @Override
-  public String getSectionDescription() {
-        return m_sectionDescription;
-  }
+    @Override
+    public String getSectionDescription() {
+        return sectionDescription;
+    }
     
-  @Override
-  public java.util.List<NodeDialogOptionDescriptionEnt> getFields() {
-        return m_fields;
-  }
+    @Override
+    public java.util.List<NodeDialogOptionDescriptionEnt> getFields() {
+        return fields;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeDialogOptionGroupEnt}.
+     */
     public static class DefaultNodeDialogOptionGroupEntBuilder implements NodeDialogOptionGroupEntBuilder {
-    
-        public DefaultNodeDialogOptionGroupEntBuilder(){
-            
-        }
-    
+
         private String m_sectionName;
+
         private String m_sectionDescription;
+
         private java.util.List<NodeDialogOptionDescriptionEnt> m_fields;
 
         @Override
@@ -160,10 +125,12 @@ public class DefaultNodeDialogOptionGroupEnt implements NodeDialogOptionGroupEnt
              return this;
         }
 
-        
         @Override
         public DefaultNodeDialogOptionGroupEnt build() {
-            return new DefaultNodeDialogOptionGroupEnt(this);
+            return new DefaultNodeDialogOptionGroupEnt(
+                immutable(m_sectionName),
+                immutable(m_sectionDescription),
+                immutable(m_fields));
         }
     
     }

@@ -46,114 +46,79 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
 
 /**
  * Determines what loop actions are allowed on a loop end node.
  *
+ * @param canResume
+ * @param canPause
+ * @param canStep
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAllowedLoopActionsEnt implements AllowedLoopActionsEnt {
+public record DefaultAllowedLoopActionsEnt(
+    Boolean canResume,
+    Boolean canPause,
+    Boolean canStep) implements AllowedLoopActionsEnt {
 
-  protected Boolean m_canResume;
-  protected Boolean m_canPause;
-  protected Boolean m_canStep;
-  
-  protected DefaultAllowedLoopActionsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AllowedLoopActions";
-  }
-  
-  private DefaultAllowedLoopActionsEnt(DefaultAllowedLoopActionsEntBuilder builder) {
-    
-    if(builder.m_canResume == null) {
-        throw new IllegalArgumentException("canResume must not be null.");
-    }
-    m_canResume = immutable(builder.m_canResume);
-    if(builder.m_canPause == null) {
-        throw new IllegalArgumentException("canPause must not be null.");
-    }
-    m_canPause = immutable(builder.m_canPause);
-    if(builder.m_canStep == null) {
-        throw new IllegalArgumentException("canStep must not be null.");
-    }
-    m_canStep = immutable(builder.m_canStep);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAllowedLoopActionsEnt} including null checks for non-nullable parameters.
+     *
+     * @param canResume
+     * @param canPause
+     * @param canStep
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultAllowedLoopActionsEnt {
+        if(canResume == null) {
+            throw new IllegalArgumentException("<canResume> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(canPause == null) {
+            throw new IllegalArgumentException("<canPause> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(canStep == null) {
+            throw new IllegalArgumentException("<canStep> must not be null.");
         }
-        DefaultAllowedLoopActionsEnt ent = (DefaultAllowedLoopActionsEnt)o;
-        return Objects.equals(m_canResume, ent.m_canResume) && Objects.equals(m_canPause, ent.m_canPause) && Objects.equals(m_canStep, ent.m_canStep);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AllowedLoopActions";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_canResume)
-               .append(m_canPause)
-               .append(m_canStep)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Boolean isCanResume() {
-        return m_canResume;
-  }
+    @Override
+    public Boolean isCanResume() {
+        return canResume;
+    }
     
-  @Override
-  public Boolean isCanPause() {
-        return m_canPause;
-  }
+    @Override
+    public Boolean isCanPause() {
+        return canPause;
+    }
     
-  @Override
-  public Boolean isCanStep() {
-        return m_canStep;
-  }
+    @Override
+    public Boolean isCanStep() {
+        return canStep;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAllowedLoopActionsEnt}.
+     */
     public static class DefaultAllowedLoopActionsEntBuilder implements AllowedLoopActionsEntBuilder {
-    
-        public DefaultAllowedLoopActionsEntBuilder(){
-            
-        }
-    
+
         private Boolean m_canResume;
+
         private Boolean m_canPause;
+
         private Boolean m_canStep;
 
         @Override
         public DefaultAllowedLoopActionsEntBuilder setCanResume(Boolean canResume) {
              if(canResume == null) {
-                 throw new IllegalArgumentException("canResume must not be null.");
+                 throw new IllegalArgumentException("<canResume> must not be null.");
              }
              m_canResume = canResume;
              return this;
@@ -162,7 +127,7 @@ public class DefaultAllowedLoopActionsEnt implements AllowedLoopActionsEnt {
         @Override
         public DefaultAllowedLoopActionsEntBuilder setCanPause(Boolean canPause) {
              if(canPause == null) {
-                 throw new IllegalArgumentException("canPause must not be null.");
+                 throw new IllegalArgumentException("<canPause> must not be null.");
              }
              m_canPause = canPause;
              return this;
@@ -171,16 +136,18 @@ public class DefaultAllowedLoopActionsEnt implements AllowedLoopActionsEnt {
         @Override
         public DefaultAllowedLoopActionsEntBuilder setCanStep(Boolean canStep) {
              if(canStep == null) {
-                 throw new IllegalArgumentException("canStep must not be null.");
+                 throw new IllegalArgumentException("<canStep> must not be null.");
              }
              m_canStep = canStep;
              return this;
         }
 
-        
         @Override
         public DefaultAllowedLoopActionsEnt build() {
-            return new DefaultAllowedLoopActionsEnt(this);
+            return new DefaultAllowedLoopActionsEnt(
+                immutable(m_canResume),
+                immutable(m_canPause),
+                immutable(m_canStep));
         }
     
     }

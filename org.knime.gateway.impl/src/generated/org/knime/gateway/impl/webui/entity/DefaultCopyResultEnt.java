@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
 import org.knime.gateway.api.webui.entity.CopyResultEnt;
@@ -57,92 +53,61 @@ import org.knime.gateway.api.webui.entity.CopyResultEnt;
 /**
  * DefaultCopyResultEnt
  *
+ * @param snapshotId
+ * @param kind
+ * @param content
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCopyResultEnt implements CopyResultEnt {
+public record DefaultCopyResultEnt(
+    String snapshotId,
+    KindEnum kind,
+    String content) implements CopyResultEnt {
 
-  protected String m_snapshotId;
-  protected KindEnum m_kind;
-  protected String m_content;
-  
-  protected DefaultCopyResultEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "CopyResult";
-  }
-  
-  private DefaultCopyResultEnt(DefaultCopyResultEntBuilder builder) {
-    super();
-    m_snapshotId = immutable(builder.m_snapshotId);
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_content == null) {
-        throw new IllegalArgumentException("content must not be null.");
-    }
-    m_content = immutable(builder.m_content);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultCopyResultEnt} including null checks for non-nullable parameters.
+     *
+     * @param snapshotId
+     * @param kind
+     * @param content
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultCopyResultEnt {
+        if(content == null) {
+            throw new IllegalArgumentException("<content> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultCopyResultEnt ent = (DefaultCopyResultEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_content, ent.m_content);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "CopyResult";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_snapshotId)
-               .append(m_kind)
-               .append(m_content)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public String getContent() {
-        return m_content;
-  }
+    @Override
+    public String getContent() {
+        return content;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultCopyResultEnt}.
+     */
     public static class DefaultCopyResultEntBuilder implements CopyResultEntBuilder {
-    
-        public DefaultCopyResultEntBuilder(){
-            super();
-        }
-    
+
         private String m_snapshotId;
+
         private KindEnum m_kind;
+
         private String m_content;
 
         @Override
@@ -160,16 +125,18 @@ public class DefaultCopyResultEnt implements CopyResultEnt {
         @Override
         public DefaultCopyResultEntBuilder setContent(String content) {
              if(content == null) {
-                 throw new IllegalArgumentException("content must not be null.");
+                 throw new IllegalArgumentException("<content> must not be null.");
              }
              m_content = content;
              return this;
         }
 
-        
         @Override
         public DefaultCopyResultEnt build() {
-            return new DefaultCopyResultEnt(this);
+            return new DefaultCopyResultEnt(
+                immutable(m_snapshotId),
+                immutable(m_kind),
+                immutable(m_content));
         }
     
     }

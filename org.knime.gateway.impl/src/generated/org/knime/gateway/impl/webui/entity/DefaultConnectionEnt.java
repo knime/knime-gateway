@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
@@ -57,164 +53,139 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 /**
  * A single connection between two nodes.
  *
+ * @param id
+ * @param destNode
+ * @param destPort
+ * @param sourceNode
+ * @param sourcePort
+ * @param flowVariableConnection
+ * @param streaming
+ * @param label
+ * @param allowedActions
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultConnectionEnt implements ConnectionEnt {
+public record DefaultConnectionEnt(
+    org.knime.gateway.api.entity.ConnectionIDEnt id,
+    org.knime.gateway.api.entity.NodeIDEnt destNode,
+    Integer destPort,
+    org.knime.gateway.api.entity.NodeIDEnt sourceNode,
+    Integer sourcePort,
+    Boolean flowVariableConnection,
+    Boolean streaming,
+    String label,
+    AllowedConnectionActionsEnt allowedActions) implements ConnectionEnt {
 
-  protected org.knime.gateway.api.entity.ConnectionIDEnt m_id;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_destNode;
-  protected Integer m_destPort;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
-  protected Integer m_sourcePort;
-  protected Boolean m_flowVariableConnection;
-  protected Boolean m_streaming;
-  protected String m_label;
-  protected AllowedConnectionActionsEnt m_allowedActions;
-  
-  protected DefaultConnectionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "Connection";
-  }
-  
-  private DefaultConnectionEnt(DefaultConnectionEntBuilder builder) {
-    
-    if(builder.m_id == null) {
-        throw new IllegalArgumentException("id must not be null.");
-    }
-    m_id = immutable(builder.m_id);
-    if(builder.m_destNode == null) {
-        throw new IllegalArgumentException("destNode must not be null.");
-    }
-    m_destNode = immutable(builder.m_destNode);
-    if(builder.m_destPort == null) {
-        throw new IllegalArgumentException("destPort must not be null.");
-    }
-    m_destPort = immutable(builder.m_destPort);
-    if(builder.m_sourceNode == null) {
-        throw new IllegalArgumentException("sourceNode must not be null.");
-    }
-    m_sourceNode = immutable(builder.m_sourceNode);
-    if(builder.m_sourcePort == null) {
-        throw new IllegalArgumentException("sourcePort must not be null.");
-    }
-    m_sourcePort = immutable(builder.m_sourcePort);
-    m_flowVariableConnection = immutable(builder.m_flowVariableConnection);
-    m_streaming = immutable(builder.m_streaming);
-    m_label = immutable(builder.m_label);
-    m_allowedActions = immutable(builder.m_allowedActions);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultConnectionEnt} including null checks for non-nullable parameters.
+     *
+     * @param id
+     * @param destNode
+     * @param destPort
+     * @param sourceNode
+     * @param sourcePort
+     * @param flowVariableConnection
+     * @param streaming
+     * @param label
+     * @param allowedActions
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultConnectionEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(destNode == null) {
+            throw new IllegalArgumentException("<destNode> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(destPort == null) {
+            throw new IllegalArgumentException("<destPort> must not be null.");
         }
-        DefaultConnectionEnt ent = (DefaultConnectionEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_destNode, ent.m_destNode) && Objects.equals(m_destPort, ent.m_destPort) && Objects.equals(m_sourceNode, ent.m_sourceNode) && Objects.equals(m_sourcePort, ent.m_sourcePort) && Objects.equals(m_flowVariableConnection, ent.m_flowVariableConnection) && Objects.equals(m_streaming, ent.m_streaming) && Objects.equals(m_label, ent.m_label) && Objects.equals(m_allowedActions, ent.m_allowedActions);
+        if(sourceNode == null) {
+            throw new IllegalArgumentException("<sourceNode> must not be null.");
+        }
+        if(sourcePort == null) {
+            throw new IllegalArgumentException("<sourcePort> must not be null.");
+        }
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "Connection";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_id)
-               .append(m_destNode)
-               .append(m_destPort)
-               .append(m_sourceNode)
-               .append(m_sourcePort)
-               .append(m_flowVariableConnection)
-               .append(m_streaming)
-               .append(m_label)
-               .append(m_allowedActions)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public org.knime.gateway.api.entity.ConnectionIDEnt getId() {
-        return m_id;
-  }
+    @Override
+    public org.knime.gateway.api.entity.ConnectionIDEnt getId() {
+        return id;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getDestNode() {
-        return m_destNode;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getDestNode() {
+        return destNode;
+    }
     
-  @Override
-  public Integer getDestPort() {
-        return m_destPort;
-  }
+    @Override
+    public Integer getDestPort() {
+        return destPort;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getSourceNode() {
-        return m_sourceNode;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNode() {
+        return sourceNode;
+    }
     
-  @Override
-  public Integer getSourcePort() {
-        return m_sourcePort;
-  }
+    @Override
+    public Integer getSourcePort() {
+        return sourcePort;
+    }
     
-  @Override
-  public Boolean isFlowVariableConnection() {
-        return m_flowVariableConnection;
-  }
+    @Override
+    public Boolean isFlowVariableConnection() {
+        return flowVariableConnection;
+    }
     
-  @Override
-  public Boolean isStreaming() {
-        return m_streaming;
-  }
+    @Override
+    public Boolean isStreaming() {
+        return streaming;
+    }
     
-  @Override
-  public String getLabel() {
-        return m_label;
-  }
+    @Override
+    public String getLabel() {
+        return label;
+    }
     
-  @Override
-  public AllowedConnectionActionsEnt getAllowedActions() {
-        return m_allowedActions;
-  }
+    @Override
+    public AllowedConnectionActionsEnt getAllowedActions() {
+        return allowedActions;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultConnectionEnt}.
+     */
     public static class DefaultConnectionEntBuilder implements ConnectionEntBuilder {
-    
-        public DefaultConnectionEntBuilder(){
-            
-        }
-    
+
         private org.knime.gateway.api.entity.ConnectionIDEnt m_id;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_destNode;
+
         private Integer m_destPort;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_sourceNode;
+
         private Integer m_sourcePort;
+
         private Boolean m_flowVariableConnection;
+
         private Boolean m_streaming;
+
         private String m_label;
+
         private AllowedConnectionActionsEnt m_allowedActions;
 
         @Override
         public DefaultConnectionEntBuilder setId(org.knime.gateway.api.entity.ConnectionIDEnt id) {
              if(id == null) {
-                 throw new IllegalArgumentException("id must not be null.");
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
              return this;
@@ -223,7 +194,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         @Override
         public DefaultConnectionEntBuilder setDestNode(org.knime.gateway.api.entity.NodeIDEnt destNode) {
              if(destNode == null) {
-                 throw new IllegalArgumentException("destNode must not be null.");
+                 throw new IllegalArgumentException("<destNode> must not be null.");
              }
              m_destNode = destNode;
              return this;
@@ -232,7 +203,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         @Override
         public DefaultConnectionEntBuilder setDestPort(Integer destPort) {
              if(destPort == null) {
-                 throw new IllegalArgumentException("destPort must not be null.");
+                 throw new IllegalArgumentException("<destPort> must not be null.");
              }
              m_destPort = destPort;
              return this;
@@ -241,7 +212,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         @Override
         public DefaultConnectionEntBuilder setSourceNode(org.knime.gateway.api.entity.NodeIDEnt sourceNode) {
              if(sourceNode == null) {
-                 throw new IllegalArgumentException("sourceNode must not be null.");
+                 throw new IllegalArgumentException("<sourceNode> must not be null.");
              }
              m_sourceNode = sourceNode;
              return this;
@@ -250,7 +221,7 @@ public class DefaultConnectionEnt implements ConnectionEnt {
         @Override
         public DefaultConnectionEntBuilder setSourcePort(Integer sourcePort) {
              if(sourcePort == null) {
-                 throw new IllegalArgumentException("sourcePort must not be null.");
+                 throw new IllegalArgumentException("<sourcePort> must not be null.");
              }
              m_sourcePort = sourcePort;
              return this;
@@ -280,10 +251,18 @@ public class DefaultConnectionEnt implements ConnectionEnt {
              return this;
         }
 
-        
         @Override
         public DefaultConnectionEnt build() {
-            return new DefaultConnectionEnt(this);
+            return new DefaultConnectionEnt(
+                immutable(m_id),
+                immutable(m_destNode),
+                immutable(m_destPort),
+                immutable(m_sourceNode),
+                immutable(m_sourcePort),
+                immutable(m_flowVariableConnection),
+                immutable(m_streaming),
+                immutable(m_label),
+                immutable(m_allowedActions));
         }
     
     }

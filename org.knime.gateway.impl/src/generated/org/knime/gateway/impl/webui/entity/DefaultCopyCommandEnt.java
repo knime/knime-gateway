@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
@@ -57,104 +53,73 @@ import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 /**
  * Copy selected workflow parts and serialize to workflow definition format.  This command only returns the serialized workflow parts.
  *
+ * @param kind
+ * @param nodeIds
+ * @param annotationIds
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCopyCommandEnt implements CopyCommandEnt {
+public record DefaultCopyCommandEnt(
+    KindEnum kind,
+    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
+    java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) implements CopyCommandEnt {
 
-  protected KindEnum m_kind;
-  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
-  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
-  
-  protected DefaultCopyCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "CopyCommand";
-  }
-  
-  private DefaultCopyCommandEnt(DefaultCopyCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_nodeIds == null) {
-        throw new IllegalArgumentException("nodeIds must not be null.");
-    }
-    m_nodeIds = immutable(builder.m_nodeIds);
-    if(builder.m_annotationIds == null) {
-        throw new IllegalArgumentException("annotationIds must not be null.");
-    }
-    m_annotationIds = immutable(builder.m_annotationIds);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultCopyCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param nodeIds
+     * @param annotationIds
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultCopyCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(nodeIds == null) {
+            throw new IllegalArgumentException("<nodeIds> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(annotationIds == null) {
+            throw new IllegalArgumentException("<annotationIds> must not be null.");
         }
-        DefaultCopyCommandEnt ent = (DefaultCopyCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "CopyCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_nodeIds)
-               .append(m_annotationIds)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
-        return m_nodeIds;
-  }
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
+        return nodeIds;
+    }
     
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
-        return m_annotationIds;
-  }
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
+        return annotationIds;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultCopyCommandEnt}.
+     */
     public static class DefaultCopyCommandEntBuilder implements CopyCommandEntBuilder {
-    
-        public DefaultCopyCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
+
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
 
         @Override
         public DefaultCopyCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -163,7 +128,7 @@ public class DefaultCopyCommandEnt implements CopyCommandEnt {
         @Override
         public DefaultCopyCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
              if(nodeIds == null) {
-                 throw new IllegalArgumentException("nodeIds must not be null.");
+                 throw new IllegalArgumentException("<nodeIds> must not be null.");
              }
              m_nodeIds = nodeIds;
              return this;
@@ -172,16 +137,18 @@ public class DefaultCopyCommandEnt implements CopyCommandEnt {
         @Override
         public DefaultCopyCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
              if(annotationIds == null) {
-                 throw new IllegalArgumentException("annotationIds must not be null.");
+                 throw new IllegalArgumentException("<annotationIds> must not be null.");
              }
              m_annotationIds = annotationIds;
              return this;
         }
 
-        
         @Override
         public DefaultCopyCommandEnt build() {
-            return new DefaultCopyCommandEnt(this);
+            return new DefaultCopyCommandEnt(
+                immutable(m_kind),
+                immutable(m_nodeIds),
+                immutable(m_annotationIds));
         }
     
     }

@@ -237,6 +237,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
  * Helper to create entity-builder instances.
 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public class Interface2ImplMap {

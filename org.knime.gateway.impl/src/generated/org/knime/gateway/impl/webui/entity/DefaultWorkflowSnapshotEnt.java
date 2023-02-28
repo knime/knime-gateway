@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
@@ -57,92 +53,60 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 /**
  * A workflow with an additional snapshot id.
  *
+ * @param workflow
+ * @param snapshotId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowSnapshotEnt implements WorkflowSnapshotEnt {
+public record DefaultWorkflowSnapshotEnt(
+    WorkflowEnt workflow,
+    String snapshotId) implements WorkflowSnapshotEnt {
 
-  protected WorkflowEnt m_workflow;
-  protected String m_snapshotId;
-  
-  protected DefaultWorkflowSnapshotEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowSnapshot";
-  }
-  
-  private DefaultWorkflowSnapshotEnt(DefaultWorkflowSnapshotEntBuilder builder) {
-    
-    if(builder.m_workflow == null) {
-        throw new IllegalArgumentException("workflow must not be null.");
-    }
-    m_workflow = immutable(builder.m_workflow);
-    if(builder.m_snapshotId == null) {
-        throw new IllegalArgumentException("snapshotId must not be null.");
-    }
-    m_snapshotId = immutable(builder.m_snapshotId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowSnapshotEnt} including null checks for non-nullable parameters.
+     *
+     * @param workflow
+     * @param snapshotId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowSnapshotEnt {
+        if(workflow == null) {
+            throw new IllegalArgumentException("<workflow> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(snapshotId == null) {
+            throw new IllegalArgumentException("<snapshotId> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultWorkflowSnapshotEnt ent = (DefaultWorkflowSnapshotEnt)o;
-        return Objects.equals(m_workflow, ent.m_workflow) && Objects.equals(m_snapshotId, ent.m_snapshotId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "WorkflowSnapshot";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_workflow)
-               .append(m_snapshotId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public WorkflowEnt getWorkflow() {
-        return m_workflow;
-  }
+    @Override
+    public WorkflowEnt getWorkflow() {
+        return workflow;
+    }
     
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowSnapshotEnt}.
+     */
     public static class DefaultWorkflowSnapshotEntBuilder implements WorkflowSnapshotEntBuilder {
-    
-        public DefaultWorkflowSnapshotEntBuilder(){
-            
-        }
-    
+
         private WorkflowEnt m_workflow;
+
         private String m_snapshotId;
 
         @Override
         public DefaultWorkflowSnapshotEntBuilder setWorkflow(WorkflowEnt workflow) {
              if(workflow == null) {
-                 throw new IllegalArgumentException("workflow must not be null.");
+                 throw new IllegalArgumentException("<workflow> must not be null.");
              }
              m_workflow = workflow;
              return this;
@@ -151,16 +115,17 @@ public class DefaultWorkflowSnapshotEnt implements WorkflowSnapshotEnt {
         @Override
         public DefaultWorkflowSnapshotEntBuilder setSnapshotId(String snapshotId) {
              if(snapshotId == null) {
-                 throw new IllegalArgumentException("snapshotId must not be null.");
+                 throw new IllegalArgumentException("<snapshotId> must not be null.");
              }
              m_snapshotId = snapshotId;
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowSnapshotEnt build() {
-            return new DefaultWorkflowSnapshotEnt(this);
+            return new DefaultWorkflowSnapshotEnt(
+                immutable(m_workflow),
+                immutable(m_snapshotId));
         }
     
     }

@@ -66,6 +66,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * A node wrapping (referencing) a workflow (also referred to it as component or subnode) that almost behaves as a ordinary node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeAndDescriptionEnt {

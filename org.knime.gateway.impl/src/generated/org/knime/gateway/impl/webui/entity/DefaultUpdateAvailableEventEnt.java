@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
@@ -58,80 +54,48 @@ import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 /**
  * Event for changes to the update state indicating updates are available.
  *
+ * @param newReleases
+ * @param bugfixes
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultUpdateAvailableEventEnt implements UpdateAvailableEventEnt {
+public record DefaultUpdateAvailableEventEnt(
+    java.util.List<UpdateInfoEnt> newReleases,
+    java.util.List<String> bugfixes) implements UpdateAvailableEventEnt {
 
-  protected java.util.List<UpdateInfoEnt> m_newReleases;
-  protected java.util.List<String> m_bugfixes;
-  
-  protected DefaultUpdateAvailableEventEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "UpdateAvailableEvent";
-  }
-  
-  private DefaultUpdateAvailableEventEnt(DefaultUpdateAvailableEventEntBuilder builder) {
-    super();
-    m_newReleases = immutable(builder.m_newReleases);
-    m_bugfixes = immutable(builder.m_bugfixes);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultUpdateAvailableEventEnt} including null checks for non-nullable parameters.
+     *
+     * @param newReleases
+     * @param bugfixes
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultUpdateAvailableEventEnt ent = (DefaultUpdateAvailableEventEnt)o;
-        return Objects.equals(m_newReleases, ent.m_newReleases) && Objects.equals(m_bugfixes, ent.m_bugfixes);
+    public DefaultUpdateAvailableEventEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "UpdateAvailableEvent";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_newReleases)
-               .append(m_bugfixes)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<UpdateInfoEnt> getNewReleases() {
-        return m_newReleases;
-  }
+    @Override
+    public java.util.List<UpdateInfoEnt> getNewReleases() {
+        return newReleases;
+    }
     
-  @Override
-  public java.util.List<String> getBugfixes() {
-        return m_bugfixes;
-  }
+    @Override
+    public java.util.List<String> getBugfixes() {
+        return bugfixes;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultUpdateAvailableEventEnt}.
+     */
     public static class DefaultUpdateAvailableEventEntBuilder implements UpdateAvailableEventEntBuilder {
-    
-        public DefaultUpdateAvailableEventEntBuilder(){
-            super();
-        }
-    
+
         private java.util.List<UpdateInfoEnt> m_newReleases;
+
         private java.util.List<String> m_bugfixes;
 
         @Override
@@ -146,10 +110,11 @@ public class DefaultUpdateAvailableEventEnt implements UpdateAvailableEventEnt {
              return this;
         }
 
-        
         @Override
         public DefaultUpdateAvailableEventEnt build() {
-            return new DefaultUpdateAvailableEventEnt(this);
+            return new DefaultUpdateAvailableEventEnt(
+                immutable(m_newReleases),
+                immutable(m_bugfixes));
         }
     
     }

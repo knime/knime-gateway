@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt;
 
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
@@ -57,110 +53,81 @@ import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 /**
  * DefaultNodePortDescriptionEnt
  *
+ * @param name
+ * @param typeId
+ * @param optional
+ * @param description
+ * @param typeName
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
+public record DefaultNodePortDescriptionEnt(
+    String name,
+    String typeId,
+    Boolean optional,
+    String description,
+    String typeName) implements NodePortDescriptionEnt {
 
-  protected String m_name;
-  protected String m_typeId;
-  protected Boolean m_optional;
-  protected String m_description;
-  protected String m_typeName;
-  
-  protected DefaultNodePortDescriptionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodePortDescription";
-  }
-  
-  private DefaultNodePortDescriptionEnt(DefaultNodePortDescriptionEntBuilder builder) {
-    super();
-    m_name = immutable(builder.m_name);
-    if(builder.m_typeId == null) {
-        throw new IllegalArgumentException("typeId must not be null.");
-    }
-    m_typeId = immutable(builder.m_typeId);
-    m_optional = immutable(builder.m_optional);
-    m_description = immutable(builder.m_description);
-    m_typeName = immutable(builder.m_typeName);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodePortDescriptionEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param typeId
+     * @param optional
+     * @param description
+     * @param typeName
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodePortDescriptionEnt {
+        if(typeId == null) {
+            throw new IllegalArgumentException("<typeId> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodePortDescriptionEnt ent = (DefaultNodePortDescriptionEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_description, ent.m_description) && Objects.equals(m_typeName, ent.m_typeName);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodePortDescription";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_typeId)
-               .append(m_optional)
-               .append(m_description)
-               .append(m_typeName)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getTypeId() {
-        return m_typeId;
-  }
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
     
-  @Override
-  public Boolean isOptional() {
-        return m_optional;
-  }
+    @Override
+    public Boolean isOptional() {
+        return optional;
+    }
     
-  @Override
-  public String getDescription() {
-        return m_description;
-  }
+    @Override
+    public String getDescription() {
+        return description;
+    }
     
-  @Override
-  public String getTypeName() {
-        return m_typeName;
-  }
+    @Override
+    public String getTypeName() {
+        return typeName;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodePortDescriptionEnt}.
+     */
     public static class DefaultNodePortDescriptionEntBuilder implements NodePortDescriptionEntBuilder {
-    
-        public DefaultNodePortDescriptionEntBuilder(){
-            super();
-        }
-    
+
         private String m_name;
+
         private String m_typeId;
+
         private Boolean m_optional;
+
         private String m_description;
+
         private String m_typeName;
 
         @Override
@@ -172,7 +139,7 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
         @Override
         public DefaultNodePortDescriptionEntBuilder setTypeId(String typeId) {
              if(typeId == null) {
-                 throw new IllegalArgumentException("typeId must not be null.");
+                 throw new IllegalArgumentException("<typeId> must not be null.");
              }
              m_typeId = typeId;
              return this;
@@ -196,10 +163,14 @@ public class DefaultNodePortDescriptionEnt implements NodePortDescriptionEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNodePortDescriptionEnt build() {
-            return new DefaultNodePortDescriptionEnt(this);
+            return new DefaultNodePortDescriptionEnt(
+                immutable(m_name),
+                immutable(m_typeId),
+                immutable(m_optional),
+                immutable(m_description),
+                immutable(m_typeName));
         }
     
     }

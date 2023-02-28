@@ -65,6 +65,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * A node containing (referencing) a workflow (also referred to it as metanode)
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface MetaNodeEnt extends GatewayEntity, NodeEnt {

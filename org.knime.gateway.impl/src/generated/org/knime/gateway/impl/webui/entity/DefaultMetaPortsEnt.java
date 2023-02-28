@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
@@ -57,80 +53,48 @@ import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 /**
  * Describes the ports(-bar) leading into or leaving a metanode&#39;s workflow. Is not given if there aren&#39;t any metanode inputs/outputs or if it&#39;s not a metanode&#39;s workflow (but a component&#39;s workflow or the root).
  *
+ * @param xPos
+ * @param ports
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultMetaPortsEnt implements MetaPortsEnt {
+public record DefaultMetaPortsEnt(
+    Integer xPos,
+    java.util.List<NodePortEnt> ports) implements MetaPortsEnt {
 
-  protected Integer m_xPos;
-  protected java.util.List<NodePortEnt> m_ports;
-  
-  protected DefaultMetaPortsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "MetaPorts";
-  }
-  
-  private DefaultMetaPortsEnt(DefaultMetaPortsEntBuilder builder) {
-    
-    m_xPos = immutable(builder.m_xPos);
-    m_ports = immutable(builder.m_ports);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultMetaPortsEnt} including null checks for non-nullable parameters.
+     *
+     * @param xPos
+     * @param ports
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultMetaPortsEnt ent = (DefaultMetaPortsEnt)o;
-        return Objects.equals(m_xPos, ent.m_xPos) && Objects.equals(m_ports, ent.m_ports);
+    public DefaultMetaPortsEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "MetaPorts";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_xPos)
-               .append(m_ports)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Integer getXPos() {
-        return m_xPos;
-  }
+    @Override
+    public Integer getXPos() {
+        return xPos;
+    }
     
-  @Override
-  public java.util.List<NodePortEnt> getPorts() {
-        return m_ports;
-  }
+    @Override
+    public java.util.List<NodePortEnt> getPorts() {
+        return ports;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultMetaPortsEnt}.
+     */
     public static class DefaultMetaPortsEntBuilder implements MetaPortsEntBuilder {
-    
-        public DefaultMetaPortsEntBuilder(){
-            
-        }
-    
+
         private Integer m_xPos;
+
         private java.util.List<NodePortEnt> m_ports;
 
         @Override
@@ -145,10 +109,11 @@ public class DefaultMetaPortsEnt implements MetaPortsEnt {
              return this;
         }
 
-        
         @Override
         public DefaultMetaPortsEnt build() {
-            return new DefaultMetaPortsEnt(this);
+            return new DefaultMetaPortsEnt(
+                immutable(m_xPos),
+                immutable(m_ports));
         }
     
     }

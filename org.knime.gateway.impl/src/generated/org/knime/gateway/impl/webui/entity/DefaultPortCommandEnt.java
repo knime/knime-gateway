@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
@@ -57,113 +53,83 @@ import org.knime.gateway.api.webui.entity.PortCommandEnt;
 /**
  * Abstract schema for commands acting on ports (port operations).
  *
+ * @param kind
+ * @param side
+ * @param portGroup
+ * @param nodeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPortCommandEnt implements PortCommandEnt {
+public record DefaultPortCommandEnt(
+    KindEnum kind,
+    SideEnum side,
+    String portGroup,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements PortCommandEnt {
 
-  protected KindEnum m_kind;
-  protected SideEnum m_side;
-  protected String m_portGroup;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-  
-  protected DefaultPortCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "PortCommand";
-  }
-  
-  private DefaultPortCommandEnt(DefaultPortCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_side == null) {
-        throw new IllegalArgumentException("side must not be null.");
-    }
-    m_side = immutable(builder.m_side);
-    m_portGroup = immutable(builder.m_portGroup);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultPortCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param side
+     * @param portGroup
+     * @param nodeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultPortCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(side == null) {
+            throw new IllegalArgumentException("<side> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
-        DefaultPortCommandEnt ent = (DefaultPortCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_side, ent.m_side) && Objects.equals(m_portGroup, ent.m_portGroup) && Objects.equals(m_nodeId, ent.m_nodeId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "PortCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_side)
-               .append(m_portGroup)
-               .append(m_nodeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public SideEnum getSide() {
-        return m_side;
-  }
+    @Override
+    public SideEnum getSide() {
+        return side;
+    }
     
-  @Override
-  public String getPortGroup() {
-        return m_portGroup;
-  }
+    @Override
+    public String getPortGroup() {
+        return portGroup;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultPortCommandEnt}.
+     */
     public static class DefaultPortCommandEntBuilder implements PortCommandEntBuilder {
-    
-        public DefaultPortCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private SideEnum m_side;
+
         private String m_portGroup;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         @Override
         public DefaultPortCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -172,7 +138,7 @@ public class DefaultPortCommandEnt implements PortCommandEnt {
         @Override
         public DefaultPortCommandEntBuilder setSide(SideEnum side) {
              if(side == null) {
-                 throw new IllegalArgumentException("side must not be null.");
+                 throw new IllegalArgumentException("<side> must not be null.");
              }
              m_side = side;
              return this;
@@ -187,16 +153,19 @@ public class DefaultPortCommandEnt implements PortCommandEnt {
         @Override
         public DefaultPortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
              m_nodeId = nodeId;
              return this;
         }
 
-        
         @Override
         public DefaultPortCommandEnt build() {
-            return new DefaultPortCommandEnt(this);
+            return new DefaultPortCommandEnt(
+                immutable(m_kind),
+                immutable(m_side),
+                immutable(m_portGroup),
+                immutable(m_nodeId));
         }
     
     }

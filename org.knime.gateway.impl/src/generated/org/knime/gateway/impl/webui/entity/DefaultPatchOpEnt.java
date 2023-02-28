@@ -46,120 +46,86 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 
 /**
  * A JSONPatch document as defined by RFC 6902
  *
+ * @param op
+ * @param path
+ * @param value
+ * @param from
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPatchOpEnt implements PatchOpEnt {
+public record DefaultPatchOpEnt(
+    OpEnum op,
+    String path,
+    Object value,
+    String from) implements PatchOpEnt {
 
-  protected OpEnum m_op;
-  protected String m_path;
-  protected Object m_value;
-  protected String m_from;
-  
-  protected DefaultPatchOpEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "PatchOp";
-  }
-  
-  private DefaultPatchOpEnt(DefaultPatchOpEntBuilder builder) {
-    
-    if(builder.m_op == null) {
-        throw new IllegalArgumentException("op must not be null.");
-    }
-    m_op = immutable(builder.m_op);
-    if(builder.m_path == null) {
-        throw new IllegalArgumentException("path must not be null.");
-    }
-    m_path = immutable(builder.m_path);
-    m_value = immutable(builder.m_value);
-    m_from = immutable(builder.m_from);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultPatchOpEnt} including null checks for non-nullable parameters.
+     *
+     * @param op
+     * @param path
+     * @param value
+     * @param from
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultPatchOpEnt {
+        if(op == null) {
+            throw new IllegalArgumentException("<op> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(path == null) {
+            throw new IllegalArgumentException("<path> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultPatchOpEnt ent = (DefaultPatchOpEnt)o;
-        return Objects.equals(m_op, ent.m_op) && Objects.equals(m_path, ent.m_path) && Objects.equals(m_value, ent.m_value) && Objects.equals(m_from, ent.m_from);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "PatchOp";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_op)
-               .append(m_path)
-               .append(m_value)
-               .append(m_from)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public OpEnum getOp() {
-        return m_op;
-  }
+    @Override
+    public OpEnum getOp() {
+        return op;
+    }
     
-  @Override
-  public String getPath() {
-        return m_path;
-  }
+    @Override
+    public String getPath() {
+        return path;
+    }
     
-  @Override
-  public Object getValue() {
-        return m_value;
-  }
+    @Override
+    public Object getValue() {
+        return value;
+    }
     
-  @Override
-  public String getFrom() {
-        return m_from;
-  }
+    @Override
+    public String getFrom() {
+        return from;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultPatchOpEnt}.
+     */
     public static class DefaultPatchOpEntBuilder implements PatchOpEntBuilder {
-    
-        public DefaultPatchOpEntBuilder(){
-            
-        }
-    
+
         private OpEnum m_op;
+
         private String m_path;
+
         private Object m_value = null;
+
         private String m_from;
 
         @Override
         public DefaultPatchOpEntBuilder setOp(OpEnum op) {
              if(op == null) {
-                 throw new IllegalArgumentException("op must not be null.");
+                 throw new IllegalArgumentException("<op> must not be null.");
              }
              m_op = op;
              return this;
@@ -168,7 +134,7 @@ public class DefaultPatchOpEnt implements PatchOpEnt {
         @Override
         public DefaultPatchOpEntBuilder setPath(String path) {
              if(path == null) {
-                 throw new IllegalArgumentException("path must not be null.");
+                 throw new IllegalArgumentException("<path> must not be null.");
              }
              m_path = path;
              return this;
@@ -186,10 +152,13 @@ public class DefaultPatchOpEnt implements PatchOpEnt {
              return this;
         }
 
-        
         @Override
         public DefaultPatchOpEnt build() {
-            return new DefaultPatchOpEnt(this);
+            return new DefaultPatchOpEnt(
+                immutable(m_op),
+                immutable(m_path),
+                immutable(m_value),
+                immutable(m_from));
         }
     
     }

@@ -46,90 +46,54 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
  * DefaultXYEnt
  *
+ * @param x
+ * @param y
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultXYEnt implements XYEnt {
+public record DefaultXYEnt(
+    Integer x,
+    Integer y) implements XYEnt {
 
-  protected Integer m_x;
-  protected Integer m_y;
-  
-  protected DefaultXYEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "XY";
-  }
-  
-  private DefaultXYEnt(DefaultXYEntBuilder builder) {
-    
-    m_x = immutable(builder.m_x);
-    m_y = immutable(builder.m_y);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultXYEnt} including null checks for non-nullable parameters.
+     *
+     * @param x
+     * @param y
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultXYEnt ent = (DefaultXYEnt)o;
-        return Objects.equals(m_x, ent.m_x) && Objects.equals(m_y, ent.m_y);
+    public DefaultXYEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "XY";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_x)
-               .append(m_y)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Integer getX() {
-        return m_x;
-  }
+    @Override
+    public Integer getX() {
+        return x;
+    }
     
-  @Override
-  public Integer getY() {
-        return m_y;
-  }
+    @Override
+    public Integer getY() {
+        return y;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultXYEnt}.
+     */
     public static class DefaultXYEntBuilder implements XYEntBuilder {
-    
-        public DefaultXYEntBuilder(){
-            
-        }
-    
+
         private Integer m_x;
+
         private Integer m_y;
 
         @Override
@@ -144,10 +108,11 @@ public class DefaultXYEnt implements XYEnt {
              return this;
         }
 
-        
         @Override
         public DefaultXYEnt build() {
-            return new DefaultXYEnt(this);
+            return new DefaultXYEnt(
+                immutable(m_x),
+                immutable(m_y));
         }
     
     }

@@ -46,81 +46,44 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 
 /**
  * Event type (sub-types) are used to describe the type of events one wants to register for. An event type is parameterized by its properties (defined in sub-types).
  *
+ * @param typeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultEventTypeEnt implements EventTypeEnt {
+public record DefaultEventTypeEnt(
+    String typeId) implements EventTypeEnt {
 
-  protected String m_typeId;
-  
-  protected DefaultEventTypeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "EventType";
-  }
-  
-  private DefaultEventTypeEnt(DefaultEventTypeEntBuilder builder) {
-    
-    m_typeId = immutable(builder.m_typeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultEventTypeEnt} including null checks for non-nullable parameters.
+     *
+     * @param typeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultEventTypeEnt ent = (DefaultEventTypeEnt)o;
-        return Objects.equals(m_typeId, ent.m_typeId);
+    public DefaultEventTypeEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "EventType";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_typeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getTypeId() {
-        return m_typeId;
-  }
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultEventTypeEnt}.
+     */
     public static class DefaultEventTypeEntBuilder implements EventTypeEntBuilder {
-    
-        public DefaultEventTypeEntBuilder(){
-            
-        }
-    
+
         private String m_typeId;
 
         @Override
@@ -129,10 +92,10 @@ public class DefaultEventTypeEnt implements EventTypeEnt {
              return this;
         }
 
-        
         @Override
         public DefaultEventTypeEnt build() {
-            return new DefaultEventTypeEnt(this);
+            return new DefaultEventTypeEnt(
+                immutable(m_typeId));
         }
     
     }

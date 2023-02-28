@@ -46,114 +46,79 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 
 /**
  * A single item in a space (local workspace or hub space).
  *
+ * @param id
+ * @param name
+ * @param type
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpaceItemEnt implements SpaceItemEnt {
+public record DefaultSpaceItemEnt(
+    String id,
+    String name,
+    TypeEnum type) implements SpaceItemEnt {
 
-  protected String m_id;
-  protected String m_name;
-  protected TypeEnum m_type;
-  
-  protected DefaultSpaceItemEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "SpaceItem";
-  }
-  
-  private DefaultSpaceItemEnt(DefaultSpaceItemEntBuilder builder) {
-    
-    if(builder.m_id == null) {
-        throw new IllegalArgumentException("id must not be null.");
-    }
-    m_id = immutable(builder.m_id);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_type == null) {
-        throw new IllegalArgumentException("type must not be null.");
-    }
-    m_type = immutable(builder.m_type);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultSpaceItemEnt} including null checks for non-nullable parameters.
+     *
+     * @param id
+     * @param name
+     * @param type
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultSpaceItemEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(type == null) {
+            throw new IllegalArgumentException("<type> must not be null.");
         }
-        DefaultSpaceItemEnt ent = (DefaultSpaceItemEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_type, ent.m_type);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "SpaceItem";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_id)
-               .append(m_name)
-               .append(m_type)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getId() {
-        return m_id;
-  }
+    @Override
+    public String getId() {
+        return id;
+    }
     
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public TypeEnum getType() {
-        return m_type;
-  }
+    @Override
+    public TypeEnum getType() {
+        return type;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultSpaceItemEnt}.
+     */
     public static class DefaultSpaceItemEntBuilder implements SpaceItemEntBuilder {
-    
-        public DefaultSpaceItemEntBuilder(){
-            
-        }
-    
+
         private String m_id;
+
         private String m_name;
+
         private TypeEnum m_type;
 
         @Override
         public DefaultSpaceItemEntBuilder setId(String id) {
              if(id == null) {
-                 throw new IllegalArgumentException("id must not be null.");
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
              return this;
@@ -162,7 +127,7 @@ public class DefaultSpaceItemEnt implements SpaceItemEnt {
         @Override
         public DefaultSpaceItemEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -171,16 +136,18 @@ public class DefaultSpaceItemEnt implements SpaceItemEnt {
         @Override
         public DefaultSpaceItemEntBuilder setType(TypeEnum type) {
              if(type == null) {
-                 throw new IllegalArgumentException("type must not be null.");
+                 throw new IllegalArgumentException("<type> must not be null.");
              }
              m_type = type;
              return this;
         }
 
-        
         @Override
         public DefaultSpaceItemEnt build() {
-            return new DefaultSpaceItemEnt(this);
+            return new DefaultSpaceItemEnt(
+                immutable(m_id),
+                immutable(m_name),
+                immutable(m_type));
         }
     
     }

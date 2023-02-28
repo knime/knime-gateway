@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
@@ -57,113 +53,83 @@ import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 /**
  * Represents an entire workflow project.
  *
+ * @param projectId
+ * @param origin
+ * @param name
+ * @param activeWorkflowId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
+public record DefaultWorkflowProjectEnt(
+    String projectId,
+    SpaceItemReferenceEnt origin,
+    String name,
+    org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId) implements WorkflowProjectEnt {
 
-  protected String m_projectId;
-  protected SpaceItemReferenceEnt m_origin;
-  protected String m_name;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_activeWorkflowId;
-  
-  protected DefaultWorkflowProjectEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowProject";
-  }
-  
-  private DefaultWorkflowProjectEnt(DefaultWorkflowProjectEntBuilder builder) {
-    
-    if(builder.m_projectId == null) {
-        throw new IllegalArgumentException("projectId must not be null.");
-    }
-    m_projectId = immutable(builder.m_projectId);
-    if(builder.m_origin == null) {
-        throw new IllegalArgumentException("origin must not be null.");
-    }
-    m_origin = immutable(builder.m_origin);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_activeWorkflowId = immutable(builder.m_activeWorkflowId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowProjectEnt} including null checks for non-nullable parameters.
+     *
+     * @param projectId
+     * @param origin
+     * @param name
+     * @param activeWorkflowId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowProjectEnt {
+        if(projectId == null) {
+            throw new IllegalArgumentException("<projectId> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(origin == null) {
+            throw new IllegalArgumentException("<origin> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        DefaultWorkflowProjectEnt ent = (DefaultWorkflowProjectEnt)o;
-        return Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_origin, ent.m_origin) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_activeWorkflowId, ent.m_activeWorkflowId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "WorkflowProject";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_projectId)
-               .append(m_origin)
-               .append(m_name)
-               .append(m_activeWorkflowId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getProjectId() {
-        return m_projectId;
-  }
+    @Override
+    public String getProjectId() {
+        return projectId;
+    }
     
-  @Override
-  public SpaceItemReferenceEnt getOrigin() {
-        return m_origin;
-  }
+    @Override
+    public SpaceItemReferenceEnt getOrigin() {
+        return origin;
+    }
     
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId() {
-        return m_activeWorkflowId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId() {
+        return activeWorkflowId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowProjectEnt}.
+     */
     public static class DefaultWorkflowProjectEntBuilder implements WorkflowProjectEntBuilder {
-    
-        public DefaultWorkflowProjectEntBuilder(){
-            
-        }
-    
+
         private String m_projectId;
+
         private SpaceItemReferenceEnt m_origin;
+
         private String m_name;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_activeWorkflowId;
 
         @Override
         public DefaultWorkflowProjectEntBuilder setProjectId(String projectId) {
              if(projectId == null) {
-                 throw new IllegalArgumentException("projectId must not be null.");
+                 throw new IllegalArgumentException("<projectId> must not be null.");
              }
              m_projectId = projectId;
              return this;
@@ -172,7 +138,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         @Override
         public DefaultWorkflowProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin) {
              if(origin == null) {
-                 throw new IllegalArgumentException("origin must not be null.");
+                 throw new IllegalArgumentException("<origin> must not be null.");
              }
              m_origin = origin;
              return this;
@@ -181,7 +147,7 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
         @Override
         public DefaultWorkflowProjectEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -193,10 +159,13 @@ public class DefaultWorkflowProjectEnt implements WorkflowProjectEnt {
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowProjectEnt build() {
-            return new DefaultWorkflowProjectEnt(this);
+            return new DefaultWorkflowProjectEnt(
+                immutable(m_projectId),
+                immutable(m_origin),
+                immutable(m_name),
+                immutable(m_activeWorkflowId));
         }
     
     }

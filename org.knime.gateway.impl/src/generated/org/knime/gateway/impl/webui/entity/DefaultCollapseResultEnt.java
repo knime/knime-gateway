@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
@@ -57,92 +53,61 @@ import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 /**
  * DefaultCollapseResultEnt
  *
+ * @param snapshotId
+ * @param kind
+ * @param newNodeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCollapseResultEnt implements CollapseResultEnt {
+public record DefaultCollapseResultEnt(
+    String snapshotId,
+    KindEnum kind,
+    org.knime.gateway.api.entity.NodeIDEnt newNodeId) implements CollapseResultEnt {
 
-  protected String m_snapshotId;
-  protected KindEnum m_kind;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_newNodeId;
-  
-  protected DefaultCollapseResultEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "CollapseResult";
-  }
-  
-  private DefaultCollapseResultEnt(DefaultCollapseResultEntBuilder builder) {
-    super();
-    m_snapshotId = immutable(builder.m_snapshotId);
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_newNodeId == null) {
-        throw new IllegalArgumentException("newNodeId must not be null.");
-    }
-    m_newNodeId = immutable(builder.m_newNodeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultCollapseResultEnt} including null checks for non-nullable parameters.
+     *
+     * @param snapshotId
+     * @param kind
+     * @param newNodeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultCollapseResultEnt {
+        if(newNodeId == null) {
+            throw new IllegalArgumentException("<newNodeId> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultCollapseResultEnt ent = (DefaultCollapseResultEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_newNodeId, ent.m_newNodeId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "CollapseResult";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_snapshotId)
-               .append(m_kind)
-               .append(m_newNodeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId() {
-        return m_newNodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId() {
+        return newNodeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultCollapseResultEnt}.
+     */
     public static class DefaultCollapseResultEntBuilder implements CollapseResultEntBuilder {
-    
-        public DefaultCollapseResultEntBuilder(){
-            super();
-        }
-    
+
         private String m_snapshotId;
+
         private KindEnum m_kind;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_newNodeId;
 
         @Override
@@ -160,16 +125,18 @@ public class DefaultCollapseResultEnt implements CollapseResultEnt {
         @Override
         public DefaultCollapseResultEntBuilder setNewNodeId(org.knime.gateway.api.entity.NodeIDEnt newNodeId) {
              if(newNodeId == null) {
-                 throw new IllegalArgumentException("newNodeId must not be null.");
+                 throw new IllegalArgumentException("<newNodeId> must not be null.");
              }
              m_newNodeId = newNodeId;
              return this;
         }
 
-        
         @Override
         public DefaultCollapseResultEnt build() {
-            return new DefaultCollapseResultEnt(this);
+            return new DefaultCollapseResultEnt(
+                immutable(m_snapshotId),
+                immutable(m_kind),
+                immutable(m_newNodeId));
         }
     
     }

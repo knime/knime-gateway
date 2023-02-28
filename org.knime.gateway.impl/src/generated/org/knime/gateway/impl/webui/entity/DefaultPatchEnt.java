@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 
 import org.knime.gateway.api.webui.entity.PatchEnt;
@@ -57,71 +53,38 @@ import org.knime.gateway.api.webui.entity.PatchEnt;
 /**
  * A list of patch operations.
  *
+ * @param ops
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPatchEnt implements PatchEnt {
+public record DefaultPatchEnt(
+    java.util.List<PatchOpEnt> ops) implements PatchEnt {
 
-  protected java.util.List<PatchOpEnt> m_ops;
-  
-  protected DefaultPatchEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "Patch";
-  }
-  
-  private DefaultPatchEnt(DefaultPatchEntBuilder builder) {
-    
-    m_ops = immutable(builder.m_ops);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultPatchEnt} including null checks for non-nullable parameters.
+     *
+     * @param ops
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultPatchEnt ent = (DefaultPatchEnt)o;
-        return Objects.equals(m_ops, ent.m_ops);
+    public DefaultPatchEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "Patch";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_ops)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<PatchOpEnt> getOps() {
-        return m_ops;
-  }
+    @Override
+    public java.util.List<PatchOpEnt> getOps() {
+        return ops;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultPatchEnt}.
+     */
     public static class DefaultPatchEntBuilder implements PatchEntBuilder {
-    
-        public DefaultPatchEntBuilder(){
-            
-        }
-    
+
         private java.util.List<PatchOpEnt> m_ops;
 
         @Override
@@ -130,10 +93,10 @@ public class DefaultPatchEnt implements PatchEnt {
              return this;
         }
 
-        
         @Override
         public DefaultPatchEnt build() {
-            return new DefaultPatchEnt(this);
+            return new DefaultPatchEnt(
+                immutable(m_ops));
         }
     
     }

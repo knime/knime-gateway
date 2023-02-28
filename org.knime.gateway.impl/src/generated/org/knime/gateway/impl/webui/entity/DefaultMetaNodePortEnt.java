@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultNodePortEnt;
 
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
@@ -57,167 +53,144 @@ import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 /**
  * Extension of a node port with extra properties as required to characterise a metanode port.
  *
+ * @param name
+ * @param typeId
+ * @param optional
+ * @param info
+ * @param index
+ * @param connectedVia
+ * @param inactive
+ * @param portObjectVersion
+ * @param portGroupId
+ * @param canRemove
+ * @param nodeState
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
+public record DefaultMetaNodePortEnt(
+    String name,
+    String typeId,
+    Boolean optional,
+    String info,
+    Integer index,
+    java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia,
+    Boolean inactive,
+    Integer portObjectVersion,
+    String portGroupId,
+    Boolean canRemove,
+    NodeStateEnum nodeState) implements MetaNodePortEnt {
 
-  protected String m_name;
-  protected String m_typeId;
-  protected Boolean m_optional;
-  protected String m_info;
-  protected Integer m_index;
-  protected java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
-  protected Boolean m_inactive;
-  protected Integer m_portObjectVersion;
-  protected String m_portGroupId;
-  protected Boolean m_canRemove;
-  protected NodeStateEnum m_nodeState;
-  
-  protected DefaultMetaNodePortEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "MetaNodePort";
-  }
-  
-  private DefaultMetaNodePortEnt(DefaultMetaNodePortEntBuilder builder) {
-    super();
-    m_name = immutable(builder.m_name);
-    if(builder.m_typeId == null) {
-        throw new IllegalArgumentException("typeId must not be null.");
-    }
-    m_typeId = immutable(builder.m_typeId);
-    m_optional = immutable(builder.m_optional);
-    m_info = immutable(builder.m_info);
-    if(builder.m_index == null) {
-        throw new IllegalArgumentException("index must not be null.");
-    }
-    m_index = immutable(builder.m_index);
-    m_connectedVia = immutable(builder.m_connectedVia);
-    m_inactive = immutable(builder.m_inactive);
-    m_portObjectVersion = immutable(builder.m_portObjectVersion);
-    m_portGroupId = immutable(builder.m_portGroupId);
-    m_canRemove = immutable(builder.m_canRemove);
-    m_nodeState = immutable(builder.m_nodeState);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultMetaNodePortEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param typeId
+     * @param optional
+     * @param info
+     * @param index
+     * @param connectedVia
+     * @param inactive
+     * @param portObjectVersion
+     * @param portGroupId
+     * @param canRemove
+     * @param nodeState
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultMetaNodePortEnt {
+        if(typeId == null) {
+            throw new IllegalArgumentException("<typeId> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(index == null) {
+            throw new IllegalArgumentException("<index> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultMetaNodePortEnt ent = (DefaultMetaNodePortEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional) && Objects.equals(m_info, ent.m_info) && Objects.equals(m_index, ent.m_index) && Objects.equals(m_connectedVia, ent.m_connectedVia) && Objects.equals(m_inactive, ent.m_inactive) && Objects.equals(m_portObjectVersion, ent.m_portObjectVersion) && Objects.equals(m_portGroupId, ent.m_portGroupId) && Objects.equals(m_canRemove, ent.m_canRemove) && Objects.equals(m_nodeState, ent.m_nodeState);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "MetaNodePort";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_typeId)
-               .append(m_optional)
-               .append(m_info)
-               .append(m_index)
-               .append(m_connectedVia)
-               .append(m_inactive)
-               .append(m_portObjectVersion)
-               .append(m_portGroupId)
-               .append(m_canRemove)
-               .append(m_nodeState)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getTypeId() {
-        return m_typeId;
-  }
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
     
-  @Override
-  public Boolean isOptional() {
-        return m_optional;
-  }
+    @Override
+    public Boolean isOptional() {
+        return optional;
+    }
     
-  @Override
-  public String getInfo() {
-        return m_info;
-  }
+    @Override
+    public String getInfo() {
+        return info;
+    }
     
-  @Override
-  public Integer getIndex() {
-        return m_index;
-  }
+    @Override
+    public Integer getIndex() {
+        return index;
+    }
     
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia() {
-        return m_connectedVia;
-  }
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia() {
+        return connectedVia;
+    }
     
-  @Override
-  public Boolean isInactive() {
-        return m_inactive;
-  }
+    @Override
+    public Boolean isInactive() {
+        return inactive;
+    }
     
-  @Override
-  public Integer getPortObjectVersion() {
-        return m_portObjectVersion;
-  }
+    @Override
+    public Integer getPortObjectVersion() {
+        return portObjectVersion;
+    }
     
-  @Override
-  public String getPortGroupId() {
-        return m_portGroupId;
-  }
+    @Override
+    public String getPortGroupId() {
+        return portGroupId;
+    }
     
-  @Override
-  public Boolean isCanRemove() {
-        return m_canRemove;
-  }
+    @Override
+    public Boolean isCanRemove() {
+        return canRemove;
+    }
     
-  @Override
-  public NodeStateEnum getNodeState() {
-        return m_nodeState;
-  }
+    @Override
+    public NodeStateEnum getNodeState() {
+        return nodeState;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultMetaNodePortEnt}.
+     */
     public static class DefaultMetaNodePortEntBuilder implements MetaNodePortEntBuilder {
-    
-        public DefaultMetaNodePortEntBuilder(){
-            super();
-        }
-    
+
         private String m_name;
+
         private String m_typeId;
+
         private Boolean m_optional;
+
         private String m_info;
+
         private Integer m_index;
+
         private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
+
         private Boolean m_inactive;
+
         private Integer m_portObjectVersion;
+
         private String m_portGroupId;
+
         private Boolean m_canRemove;
+
         private NodeStateEnum m_nodeState;
 
         @Override
@@ -229,7 +202,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         @Override
         public DefaultMetaNodePortEntBuilder setTypeId(String typeId) {
              if(typeId == null) {
-                 throw new IllegalArgumentException("typeId must not be null.");
+                 throw new IllegalArgumentException("<typeId> must not be null.");
              }
              m_typeId = typeId;
              return this;
@@ -250,7 +223,7 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
         @Override
         public DefaultMetaNodePortEntBuilder setIndex(Integer index) {
              if(index == null) {
-                 throw new IllegalArgumentException("index must not be null.");
+                 throw new IllegalArgumentException("<index> must not be null.");
              }
              m_index = index;
              return this;
@@ -292,10 +265,20 @@ public class DefaultMetaNodePortEnt implements MetaNodePortEnt {
              return this;
         }
 
-        
         @Override
         public DefaultMetaNodePortEnt build() {
-            return new DefaultMetaNodePortEnt(this);
+            return new DefaultMetaNodePortEnt(
+                immutable(m_name),
+                immutable(m_typeId),
+                immutable(m_optional),
+                immutable(m_info),
+                immutable(m_index),
+                immutable(m_connectedVia),
+                immutable(m_inactive),
+                immutable(m_portObjectVersion),
+                immutable(m_portGroupId),
+                immutable(m_canRemove),
+                immutable(m_nodeState));
         }
     
     }

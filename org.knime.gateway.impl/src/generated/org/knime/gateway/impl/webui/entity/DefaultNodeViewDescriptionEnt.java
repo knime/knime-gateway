@@ -46,99 +46,63 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 
 /**
  * DefaultNodeViewDescriptionEnt
  *
+ * @param name
+ * @param description
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeViewDescriptionEnt implements NodeViewDescriptionEnt {
+public record DefaultNodeViewDescriptionEnt(
+    String name,
+    String description) implements NodeViewDescriptionEnt {
 
-  protected String m_name;
-  protected String m_description;
-  
-  protected DefaultNodeViewDescriptionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeViewDescription";
-  }
-  
-  private DefaultNodeViewDescriptionEnt(DefaultNodeViewDescriptionEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_description = immutable(builder.m_description);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeViewDescriptionEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param description
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeViewDescriptionEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeViewDescriptionEnt ent = (DefaultNodeViewDescriptionEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_description, ent.m_description);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeViewDescription";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_description)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getDescription() {
-        return m_description;
-  }
+    @Override
+    public String getDescription() {
+        return description;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeViewDescriptionEnt}.
+     */
     public static class DefaultNodeViewDescriptionEntBuilder implements NodeViewDescriptionEntBuilder {
-    
-        public DefaultNodeViewDescriptionEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private String m_description;
 
         @Override
         public DefaultNodeViewDescriptionEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -150,10 +114,11 @@ public class DefaultNodeViewDescriptionEnt implements NodeViewDescriptionEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNodeViewDescriptionEnt build() {
-            return new DefaultNodeViewDescriptionEnt(this);
+            return new DefaultNodeViewDescriptionEnt(
+                immutable(m_name),
+                immutable(m_description));
         }
     
     }

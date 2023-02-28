@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
@@ -57,71 +53,38 @@ import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 /**
  * Event type to register for &#x60;AppStateChangedEvent&#x60;s
  *
+ * @param typeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAppStateChangedEventTypeEnt implements AppStateChangedEventTypeEnt {
+public record DefaultAppStateChangedEventTypeEnt(
+    String typeId) implements AppStateChangedEventTypeEnt {
 
-  protected String m_typeId;
-  
-  protected DefaultAppStateChangedEventTypeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AppStateChangedEventType";
-  }
-  
-  private DefaultAppStateChangedEventTypeEnt(DefaultAppStateChangedEventTypeEntBuilder builder) {
-    super();
-    m_typeId = immutable(builder.m_typeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAppStateChangedEventTypeEnt} including null checks for non-nullable parameters.
+     *
+     * @param typeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultAppStateChangedEventTypeEnt ent = (DefaultAppStateChangedEventTypeEnt)o;
-        return Objects.equals(m_typeId, ent.m_typeId);
+    public DefaultAppStateChangedEventTypeEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AppStateChangedEventType";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_typeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getTypeId() {
-        return m_typeId;
-  }
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAppStateChangedEventTypeEnt}.
+     */
     public static class DefaultAppStateChangedEventTypeEntBuilder implements AppStateChangedEventTypeEntBuilder {
-    
-        public DefaultAppStateChangedEventTypeEntBuilder(){
-            super();
-        }
-    
+
         private String m_typeId;
 
         @Override
@@ -130,10 +93,10 @@ public class DefaultAppStateChangedEventTypeEnt implements AppStateChangedEventT
              return this;
         }
 
-        
         @Override
         public DefaultAppStateChangedEventTypeEnt build() {
-            return new DefaultAppStateChangedEventTypeEnt(this);
+            return new DefaultAppStateChangedEventTypeEnt(
+                immutable(m_typeId));
         }
     
     }

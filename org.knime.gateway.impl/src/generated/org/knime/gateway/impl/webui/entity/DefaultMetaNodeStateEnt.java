@@ -46,81 +46,44 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 
 /**
  * The state for a metanode.
  *
+ * @param executionState
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultMetaNodeStateEnt implements MetaNodeStateEnt {
+public record DefaultMetaNodeStateEnt(
+    ExecutionStateEnum executionState) implements MetaNodeStateEnt {
 
-  protected ExecutionStateEnum m_executionState;
-  
-  protected DefaultMetaNodeStateEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "MetaNodeState";
-  }
-  
-  private DefaultMetaNodeStateEnt(DefaultMetaNodeStateEntBuilder builder) {
-    
-    m_executionState = immutable(builder.m_executionState);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultMetaNodeStateEnt} including null checks for non-nullable parameters.
+     *
+     * @param executionState
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultMetaNodeStateEnt ent = (DefaultMetaNodeStateEnt)o;
-        return Objects.equals(m_executionState, ent.m_executionState);
+    public DefaultMetaNodeStateEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "MetaNodeState";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_executionState)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public ExecutionStateEnum getExecutionState() {
-        return m_executionState;
-  }
+    @Override
+    public ExecutionStateEnum getExecutionState() {
+        return executionState;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultMetaNodeStateEnt}.
+     */
     public static class DefaultMetaNodeStateEntBuilder implements MetaNodeStateEntBuilder {
-    
-        public DefaultMetaNodeStateEntBuilder(){
-            
-        }
-    
+
         private ExecutionStateEnum m_executionState;
 
         @Override
@@ -129,10 +92,10 @@ public class DefaultMetaNodeStateEnt implements MetaNodeStateEnt {
              return this;
         }
 
-        
         @Override
         public DefaultMetaNodeStateEnt build() {
-            return new DefaultMetaNodeStateEnt(this);
+            return new DefaultMetaNodeStateEnt(
+                immutable(m_executionState));
         }
     
     }

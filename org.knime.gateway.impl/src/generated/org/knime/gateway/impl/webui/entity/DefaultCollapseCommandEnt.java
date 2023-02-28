@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
@@ -57,116 +53,86 @@ import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 /**
  * Resets selected nodes and collapses selected nodes and annotations into a metanode or component.
  *
+ * @param kind
+ * @param nodeIds
+ * @param annotationIds
+ * @param containerType
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
+public record DefaultCollapseCommandEnt(
+    KindEnum kind,
+    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
+    java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds,
+    ContainerTypeEnum containerType) implements CollapseCommandEnt {
 
-  protected KindEnum m_kind;
-  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds;
-  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds;
-  protected ContainerTypeEnum m_containerType;
-  
-  protected DefaultCollapseCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "CollapseCommand";
-  }
-  
-  private DefaultCollapseCommandEnt(DefaultCollapseCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_nodeIds == null) {
-        throw new IllegalArgumentException("nodeIds must not be null.");
-    }
-    m_nodeIds = immutable(builder.m_nodeIds);
-    if(builder.m_annotationIds == null) {
-        throw new IllegalArgumentException("annotationIds must not be null.");
-    }
-    m_annotationIds = immutable(builder.m_annotationIds);
-    if(builder.m_containerType == null) {
-        throw new IllegalArgumentException("containerType must not be null.");
-    }
-    m_containerType = immutable(builder.m_containerType);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultCollapseCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param nodeIds
+     * @param annotationIds
+     * @param containerType
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultCollapseCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(nodeIds == null) {
+            throw new IllegalArgumentException("<nodeIds> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(annotationIds == null) {
+            throw new IllegalArgumentException("<annotationIds> must not be null.");
         }
-        DefaultCollapseCommandEnt ent = (DefaultCollapseCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeIds, ent.m_nodeIds) && Objects.equals(m_annotationIds, ent.m_annotationIds) && Objects.equals(m_containerType, ent.m_containerType);
+        if(containerType == null) {
+            throw new IllegalArgumentException("<containerType> must not be null.");
+        }
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "CollapseCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_nodeIds)
-               .append(m_annotationIds)
-               .append(m_containerType)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
-        return m_nodeIds;
-  }
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
+        return nodeIds;
+    }
     
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
-        return m_annotationIds;
-  }
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
+        return annotationIds;
+    }
     
-  @Override
-  public ContainerTypeEnum getContainerType() {
-        return m_containerType;
-  }
+    @Override
+    public ContainerTypeEnum getContainerType() {
+        return containerType;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultCollapseCommandEnt}.
+     */
     public static class DefaultCollapseCommandEntBuilder implements CollapseCommandEntBuilder {
-    
-        public DefaultCollapseCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
+
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
+
         private ContainerTypeEnum m_containerType;
 
         @Override
         public DefaultCollapseCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -175,7 +141,7 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
         @Override
         public DefaultCollapseCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
              if(nodeIds == null) {
-                 throw new IllegalArgumentException("nodeIds must not be null.");
+                 throw new IllegalArgumentException("<nodeIds> must not be null.");
              }
              m_nodeIds = nodeIds;
              return this;
@@ -184,7 +150,7 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
         @Override
         public DefaultCollapseCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
              if(annotationIds == null) {
-                 throw new IllegalArgumentException("annotationIds must not be null.");
+                 throw new IllegalArgumentException("<annotationIds> must not be null.");
              }
              m_annotationIds = annotationIds;
              return this;
@@ -193,16 +159,19 @@ public class DefaultCollapseCommandEnt implements CollapseCommandEnt {
         @Override
         public DefaultCollapseCommandEntBuilder setContainerType(ContainerTypeEnum containerType) {
              if(containerType == null) {
-                 throw new IllegalArgumentException("containerType must not be null.");
+                 throw new IllegalArgumentException("<containerType> must not be null.");
              }
              m_containerType = containerType;
              return this;
         }
 
-        
         @Override
         public DefaultCollapseCommandEnt build() {
-            return new DefaultCollapseCommandEnt(this);
+            return new DefaultCollapseCommandEnt(
+                immutable(m_kind),
+                immutable(m_nodeIds),
+                immutable(m_annotationIds),
+                immutable(m_containerType));
         }
     
     }

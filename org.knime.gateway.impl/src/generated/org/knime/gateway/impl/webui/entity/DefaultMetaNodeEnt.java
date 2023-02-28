@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
@@ -63,197 +59,175 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 /**
  * A node containing (referencing) a workflow (also referred to it as metanode)
  *
+ * @param id
+ * @param inPorts
+ * @param outPorts
+ * @param annotation
+ * @param position
+ * @param kind
+ * @param hasDialog
+ * @param allowedActions
+ * @param executionInfo
+ * @param name
+ * @param state
+ * @param link
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultMetaNodeEnt implements MetaNodeEnt {
+public record DefaultMetaNodeEnt(
+    org.knime.gateway.api.entity.NodeIDEnt id,
+    java.util.List<MetaNodePortEnt> inPorts,
+    java.util.List<MetaNodePortEnt> outPorts,
+    NodeAnnotationEnt annotation,
+    XYEnt position,
+    KindEnum kind,
+    Boolean hasDialog,
+    AllowedNodeActionsEnt allowedActions,
+    NodeExecutionInfoEnt executionInfo,
+    String name,
+    MetaNodeStateEnt state,
+    String link) implements MetaNodeEnt {
 
-  protected org.knime.gateway.api.entity.NodeIDEnt m_id;
-  protected java.util.List<MetaNodePortEnt> m_inPorts;
-  protected java.util.List<MetaNodePortEnt> m_outPorts;
-  protected NodeAnnotationEnt m_annotation;
-  protected XYEnt m_position;
-  protected KindEnum m_kind;
-  protected Boolean m_hasDialog;
-  protected AllowedNodeActionsEnt m_allowedActions;
-  protected NodeExecutionInfoEnt m_executionInfo;
-  protected String m_name;
-  protected MetaNodeStateEnt m_state;
-  protected String m_link;
-  
-  protected DefaultMetaNodeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "MetaNode";
-  }
-  
-  private DefaultMetaNodeEnt(DefaultMetaNodeEntBuilder builder) {
-    super();
-    if(builder.m_id == null) {
-        throw new IllegalArgumentException("id must not be null.");
-    }
-    m_id = immutable(builder.m_id);
-    if(builder.m_inPorts == null) {
-        throw new IllegalArgumentException("inPorts must not be null.");
-    }
-    m_inPorts = immutable(builder.m_inPorts);
-    if(builder.m_outPorts == null) {
-        throw new IllegalArgumentException("outPorts must not be null.");
-    }
-    m_outPorts = immutable(builder.m_outPorts);
-    m_annotation = immutable(builder.m_annotation);
-    if(builder.m_position == null) {
-        throw new IllegalArgumentException("position must not be null.");
-    }
-    m_position = immutable(builder.m_position);
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    m_hasDialog = immutable(builder.m_hasDialog);
-    m_allowedActions = immutable(builder.m_allowedActions);
-    m_executionInfo = immutable(builder.m_executionInfo);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_state == null) {
-        throw new IllegalArgumentException("state must not be null.");
-    }
-    m_state = immutable(builder.m_state);
-    m_link = immutable(builder.m_link);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultMetaNodeEnt} including null checks for non-nullable parameters.
+     *
+     * @param id
+     * @param inPorts
+     * @param outPorts
+     * @param annotation
+     * @param position
+     * @param kind
+     * @param hasDialog
+     * @param allowedActions
+     * @param executionInfo
+     * @param name
+     * @param state
+     * @param link
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultMetaNodeEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(inPorts == null) {
+            throw new IllegalArgumentException("<inPorts> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(outPorts == null) {
+            throw new IllegalArgumentException("<outPorts> must not be null.");
         }
-        DefaultMetaNodeEnt ent = (DefaultMetaNodeEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_inPorts, ent.m_inPorts) && Objects.equals(m_outPorts, ent.m_outPorts) && Objects.equals(m_annotation, ent.m_annotation) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_hasDialog, ent.m_hasDialog) && Objects.equals(m_allowedActions, ent.m_allowedActions) && Objects.equals(m_executionInfo, ent.m_executionInfo) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_state, ent.m_state) && Objects.equals(m_link, ent.m_link);
+        if(position == null) {
+            throw new IllegalArgumentException("<position> must not be null.");
+        }
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
+        }
+        if(state == null) {
+            throw new IllegalArgumentException("<state> must not be null.");
+        }
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "MetaNode";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_id)
-               .append(m_inPorts)
-               .append(m_outPorts)
-               .append(m_annotation)
-               .append(m_position)
-               .append(m_kind)
-               .append(m_hasDialog)
-               .append(m_allowedActions)
-               .append(m_executionInfo)
-               .append(m_name)
-               .append(m_state)
-               .append(m_link)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getId() {
-        return m_id;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getId() {
+        return id;
+    }
     
-  @Override
-  public java.util.List<MetaNodePortEnt> getInPorts() {
-        return m_inPorts;
-  }
+    @Override
+    public java.util.List<MetaNodePortEnt> getInPorts() {
+        return inPorts;
+    }
     
-  @Override
-  public java.util.List<MetaNodePortEnt> getOutPorts() {
-        return m_outPorts;
-  }
+    @Override
+    public java.util.List<MetaNodePortEnt> getOutPorts() {
+        return outPorts;
+    }
     
-  @Override
-  public NodeAnnotationEnt getAnnotation() {
-        return m_annotation;
-  }
+    @Override
+    public NodeAnnotationEnt getAnnotation() {
+        return annotation;
+    }
     
-  @Override
-  public XYEnt getPosition() {
-        return m_position;
-  }
+    @Override
+    public XYEnt getPosition() {
+        return position;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public Boolean hasDialog() {
-        return m_hasDialog;
-  }
+    @Override
+    public Boolean hasDialog() {
+        return hasDialog;
+    }
     
-  @Override
-  public AllowedNodeActionsEnt getAllowedActions() {
-        return m_allowedActions;
-  }
+    @Override
+    public AllowedNodeActionsEnt getAllowedActions() {
+        return allowedActions;
+    }
     
-  @Override
-  public NodeExecutionInfoEnt getExecutionInfo() {
-        return m_executionInfo;
-  }
+    @Override
+    public NodeExecutionInfoEnt getExecutionInfo() {
+        return executionInfo;
+    }
     
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public MetaNodeStateEnt getState() {
-        return m_state;
-  }
+    @Override
+    public MetaNodeStateEnt getState() {
+        return state;
+    }
     
-  @Override
-  public String getLink() {
-        return m_link;
-  }
+    @Override
+    public String getLink() {
+        return link;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultMetaNodeEnt}.
+     */
     public static class DefaultMetaNodeEntBuilder implements MetaNodeEntBuilder {
-    
-        public DefaultMetaNodeEntBuilder(){
-            super();
-        }
-    
+
         private org.knime.gateway.api.entity.NodeIDEnt m_id;
+
         private java.util.List<MetaNodePortEnt> m_inPorts = new java.util.ArrayList<>();
+
         private java.util.List<MetaNodePortEnt> m_outPorts = new java.util.ArrayList<>();
+
         private NodeAnnotationEnt m_annotation;
+
         private XYEnt m_position;
+
         private KindEnum m_kind;
+
         private Boolean m_hasDialog;
+
         private AllowedNodeActionsEnt m_allowedActions;
+
         private NodeExecutionInfoEnt m_executionInfo;
+
         private String m_name;
+
         private MetaNodeStateEnt m_state;
+
         private String m_link;
 
         @Override
         public DefaultMetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
              if(id == null) {
-                 throw new IllegalArgumentException("id must not be null.");
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
              return this;
@@ -262,7 +236,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         @Override
         public DefaultMetaNodeEntBuilder setInPorts(java.util.List<MetaNodePortEnt> inPorts) {
              if(inPorts == null) {
-                 throw new IllegalArgumentException("inPorts must not be null.");
+                 throw new IllegalArgumentException("<inPorts> must not be null.");
              }
              m_inPorts = inPorts;
              return this;
@@ -271,7 +245,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         @Override
         public DefaultMetaNodeEntBuilder setOutPorts(java.util.List<MetaNodePortEnt> outPorts) {
              if(outPorts == null) {
-                 throw new IllegalArgumentException("outPorts must not be null.");
+                 throw new IllegalArgumentException("<outPorts> must not be null.");
              }
              m_outPorts = outPorts;
              return this;
@@ -286,7 +260,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         @Override
         public DefaultMetaNodeEntBuilder setPosition(XYEnt position) {
              if(position == null) {
-                 throw new IllegalArgumentException("position must not be null.");
+                 throw new IllegalArgumentException("<position> must not be null.");
              }
              m_position = position;
              return this;
@@ -295,7 +269,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         @Override
         public DefaultMetaNodeEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -322,7 +296,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         @Override
         public DefaultMetaNodeEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -331,7 +305,7 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
         @Override
         public DefaultMetaNodeEntBuilder setState(MetaNodeStateEnt state) {
              if(state == null) {
-                 throw new IllegalArgumentException("state must not be null.");
+                 throw new IllegalArgumentException("<state> must not be null.");
              }
              m_state = state;
              return this;
@@ -343,10 +317,21 @@ public class DefaultMetaNodeEnt implements MetaNodeEnt {
              return this;
         }
 
-        
         @Override
         public DefaultMetaNodeEnt build() {
-            return new DefaultMetaNodeEnt(this);
+            return new DefaultMetaNodeEnt(
+                immutable(m_id),
+                immutable(m_inPorts),
+                immutable(m_outPorts),
+                immutable(m_annotation),
+                immutable(m_position),
+                immutable(m_kind),
+                immutable(m_hasDialog),
+                immutable(m_allowedActions),
+                immutable(m_executionInfo),
+                immutable(m_name),
+                immutable(m_state),
+                immutable(m_link));
         }
     
     }

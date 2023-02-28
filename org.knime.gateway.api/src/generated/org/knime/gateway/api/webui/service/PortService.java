@@ -52,6 +52,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
  * Operations on individual ports of a node in a workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface PortService extends GatewayService {

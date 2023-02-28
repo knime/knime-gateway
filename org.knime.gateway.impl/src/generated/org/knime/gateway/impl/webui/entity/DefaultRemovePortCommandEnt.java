@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
 
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
@@ -57,122 +53,93 @@ import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 /**
  * Remove a port from a node
  *
+ * @param kind
+ * @param side
+ * @param portGroup
+ * @param nodeId
+ * @param portIndex
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultRemovePortCommandEnt implements RemovePortCommandEnt {
+public record DefaultRemovePortCommandEnt(
+    KindEnum kind,
+    SideEnum side,
+    String portGroup,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId,
+    Integer portIndex) implements RemovePortCommandEnt {
 
-  protected KindEnum m_kind;
-  protected SideEnum m_side;
-  protected String m_portGroup;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-  protected Integer m_portIndex;
-  
-  protected DefaultRemovePortCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "RemovePortCommand";
-  }
-  
-  private DefaultRemovePortCommandEnt(DefaultRemovePortCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_side == null) {
-        throw new IllegalArgumentException("side must not be null.");
-    }
-    m_side = immutable(builder.m_side);
-    m_portGroup = immutable(builder.m_portGroup);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
-    m_portIndex = immutable(builder.m_portIndex);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultRemovePortCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param side
+     * @param portGroup
+     * @param nodeId
+     * @param portIndex
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultRemovePortCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(side == null) {
+            throw new IllegalArgumentException("<side> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
-        DefaultRemovePortCommandEnt ent = (DefaultRemovePortCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_side, ent.m_side) && Objects.equals(m_portGroup, ent.m_portGroup) && Objects.equals(m_nodeId, ent.m_nodeId) && Objects.equals(m_portIndex, ent.m_portIndex);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "RemovePortCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_side)
-               .append(m_portGroup)
-               .append(m_nodeId)
-               .append(m_portIndex)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public SideEnum getSide() {
-        return m_side;
-  }
+    @Override
+    public SideEnum getSide() {
+        return side;
+    }
     
-  @Override
-  public String getPortGroup() {
-        return m_portGroup;
-  }
+    @Override
+    public String getPortGroup() {
+        return portGroup;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
     
-  @Override
-  public Integer getPortIndex() {
-        return m_portIndex;
-  }
+    @Override
+    public Integer getPortIndex() {
+        return portIndex;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultRemovePortCommandEnt}.
+     */
     public static class DefaultRemovePortCommandEntBuilder implements RemovePortCommandEntBuilder {
-    
-        public DefaultRemovePortCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private SideEnum m_side;
+
         private String m_portGroup;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
+
         private Integer m_portIndex;
 
         @Override
         public DefaultRemovePortCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -181,7 +148,7 @@ public class DefaultRemovePortCommandEnt implements RemovePortCommandEnt {
         @Override
         public DefaultRemovePortCommandEntBuilder setSide(SideEnum side) {
              if(side == null) {
-                 throw new IllegalArgumentException("side must not be null.");
+                 throw new IllegalArgumentException("<side> must not be null.");
              }
              m_side = side;
              return this;
@@ -196,7 +163,7 @@ public class DefaultRemovePortCommandEnt implements RemovePortCommandEnt {
         @Override
         public DefaultRemovePortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
              m_nodeId = nodeId;
              return this;
@@ -208,10 +175,14 @@ public class DefaultRemovePortCommandEnt implements RemovePortCommandEnt {
              return this;
         }
 
-        
         @Override
         public DefaultRemovePortCommandEnt build() {
-            return new DefaultRemovePortCommandEnt(this);
+            return new DefaultRemovePortCommandEnt(
+                immutable(m_kind),
+                immutable(m_side),
+                immutable(m_portGroup),
+                immutable(m_nodeId),
+                immutable(m_portIndex));
         }
     
     }

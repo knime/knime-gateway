@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
@@ -57,107 +53,77 @@ import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 /**
  * Event type to register for SelectionEvents.
  *
+ * @param typeId
+ * @param projectId
+ * @param workflowId
+ * @param nodeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSelectionEventTypeEnt implements SelectionEventTypeEnt {
+public record DefaultSelectionEventTypeEnt(
+    String typeId,
+    String projectId,
+    org.knime.gateway.api.entity.NodeIDEnt workflowId,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements SelectionEventTypeEnt {
 
-  protected String m_typeId;
-  protected String m_projectId;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-  
-  protected DefaultSelectionEventTypeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "SelectionEventType";
-  }
-  
-  private DefaultSelectionEventTypeEnt(DefaultSelectionEventTypeEntBuilder builder) {
-    super();
-    m_typeId = immutable(builder.m_typeId);
-    if(builder.m_projectId == null) {
-        throw new IllegalArgumentException("projectId must not be null.");
-    }
-    m_projectId = immutable(builder.m_projectId);
-    if(builder.m_workflowId == null) {
-        throw new IllegalArgumentException("workflowId must not be null.");
-    }
-    m_workflowId = immutable(builder.m_workflowId);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultSelectionEventTypeEnt} including null checks for non-nullable parameters.
+     *
+     * @param typeId
+     * @param projectId
+     * @param workflowId
+     * @param nodeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultSelectionEventTypeEnt {
+        if(projectId == null) {
+            throw new IllegalArgumentException("<projectId> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(workflowId == null) {
+            throw new IllegalArgumentException("<workflowId> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
-        DefaultSelectionEventTypeEnt ent = (DefaultSelectionEventTypeEnt)o;
-        return Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_workflowId, ent.m_workflowId) && Objects.equals(m_nodeId, ent.m_nodeId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "SelectionEventType";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_typeId)
-               .append(m_projectId)
-               .append(m_workflowId)
-               .append(m_nodeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getTypeId() {
-        return m_typeId;
-  }
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
     
-  @Override
-  public String getProjectId() {
-        return m_projectId;
-  }
+    @Override
+    public String getProjectId() {
+        return projectId;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId() {
-        return m_workflowId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId() {
+        return workflowId;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultSelectionEventTypeEnt}.
+     */
     public static class DefaultSelectionEventTypeEntBuilder implements SelectionEventTypeEntBuilder {
-    
-        public DefaultSelectionEventTypeEntBuilder(){
-            super();
-        }
-    
+
         private String m_typeId;
+
         private String m_projectId;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         @Override
@@ -169,7 +135,7 @@ public class DefaultSelectionEventTypeEnt implements SelectionEventTypeEnt {
         @Override
         public DefaultSelectionEventTypeEntBuilder setProjectId(String projectId) {
              if(projectId == null) {
-                 throw new IllegalArgumentException("projectId must not be null.");
+                 throw new IllegalArgumentException("<projectId> must not be null.");
              }
              m_projectId = projectId;
              return this;
@@ -178,7 +144,7 @@ public class DefaultSelectionEventTypeEnt implements SelectionEventTypeEnt {
         @Override
         public DefaultSelectionEventTypeEntBuilder setWorkflowId(org.knime.gateway.api.entity.NodeIDEnt workflowId) {
              if(workflowId == null) {
-                 throw new IllegalArgumentException("workflowId must not be null.");
+                 throw new IllegalArgumentException("<workflowId> must not be null.");
              }
              m_workflowId = workflowId;
              return this;
@@ -187,16 +153,19 @@ public class DefaultSelectionEventTypeEnt implements SelectionEventTypeEnt {
         @Override
         public DefaultSelectionEventTypeEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
              m_nodeId = nodeId;
              return this;
         }
 
-        
         @Override
         public DefaultSelectionEventTypeEnt build() {
-            return new DefaultSelectionEventTypeEnt(this);
+            return new DefaultSelectionEventTypeEnt(
+                immutable(m_typeId),
+                immutable(m_projectId),
+                immutable(m_workflowId),
+                immutable(m_nodeId));
         }
     
     }

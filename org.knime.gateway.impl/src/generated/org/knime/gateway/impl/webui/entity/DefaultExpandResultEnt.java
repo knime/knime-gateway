@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
@@ -57,104 +53,74 @@ import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 /**
  * DefaultExpandResultEnt
  *
+ * @param snapshotId
+ * @param kind
+ * @param expandedNodeIds
+ * @param expandedAnnotationIds
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultExpandResultEnt implements ExpandResultEnt {
+public record DefaultExpandResultEnt(
+    String snapshotId,
+    KindEnum kind,
+    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> expandedNodeIds,
+    java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> expandedAnnotationIds) implements ExpandResultEnt {
 
-  protected String m_snapshotId;
-  protected KindEnum m_kind;
-  protected java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_expandedNodeIds;
-  protected java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_expandedAnnotationIds;
-  
-  protected DefaultExpandResultEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "ExpandResult";
-  }
-  
-  private DefaultExpandResultEnt(DefaultExpandResultEntBuilder builder) {
-    super();
-    m_snapshotId = immutable(builder.m_snapshotId);
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_expandedNodeIds == null) {
-        throw new IllegalArgumentException("expandedNodeIds must not be null.");
-    }
-    m_expandedNodeIds = immutable(builder.m_expandedNodeIds);
-    if(builder.m_expandedAnnotationIds == null) {
-        throw new IllegalArgumentException("expandedAnnotationIds must not be null.");
-    }
-    m_expandedAnnotationIds = immutable(builder.m_expandedAnnotationIds);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultExpandResultEnt} including null checks for non-nullable parameters.
+     *
+     * @param snapshotId
+     * @param kind
+     * @param expandedNodeIds
+     * @param expandedAnnotationIds
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultExpandResultEnt {
+        if(expandedNodeIds == null) {
+            throw new IllegalArgumentException("<expandedNodeIds> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(expandedAnnotationIds == null) {
+            throw new IllegalArgumentException("<expandedAnnotationIds> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultExpandResultEnt ent = (DefaultExpandResultEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_expandedNodeIds, ent.m_expandedNodeIds) && Objects.equals(m_expandedAnnotationIds, ent.m_expandedAnnotationIds);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "ExpandResult";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_snapshotId)
-               .append(m_kind)
-               .append(m_expandedNodeIds)
-               .append(m_expandedAnnotationIds)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getExpandedNodeIds() {
-        return m_expandedNodeIds;
-  }
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getExpandedNodeIds() {
+        return expandedNodeIds;
+    }
     
-  @Override
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getExpandedAnnotationIds() {
-        return m_expandedAnnotationIds;
-  }
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getExpandedAnnotationIds() {
+        return expandedAnnotationIds;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultExpandResultEnt}.
+     */
     public static class DefaultExpandResultEntBuilder implements ExpandResultEntBuilder {
-    
-        public DefaultExpandResultEntBuilder(){
-            super();
-        }
-    
+
         private String m_snapshotId;
+
         private KindEnum m_kind;
+
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_expandedNodeIds = new java.util.ArrayList<>();
+
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_expandedAnnotationIds = new java.util.ArrayList<>();
 
         @Override
@@ -172,7 +138,7 @@ public class DefaultExpandResultEnt implements ExpandResultEnt {
         @Override
         public DefaultExpandResultEntBuilder setExpandedNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> expandedNodeIds) {
              if(expandedNodeIds == null) {
-                 throw new IllegalArgumentException("expandedNodeIds must not be null.");
+                 throw new IllegalArgumentException("<expandedNodeIds> must not be null.");
              }
              m_expandedNodeIds = expandedNodeIds;
              return this;
@@ -181,16 +147,19 @@ public class DefaultExpandResultEnt implements ExpandResultEnt {
         @Override
         public DefaultExpandResultEntBuilder setExpandedAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> expandedAnnotationIds) {
              if(expandedAnnotationIds == null) {
-                 throw new IllegalArgumentException("expandedAnnotationIds must not be null.");
+                 throw new IllegalArgumentException("<expandedAnnotationIds> must not be null.");
              }
              m_expandedAnnotationIds = expandedAnnotationIds;
              return this;
         }
 
-        
         @Override
         public DefaultExpandResultEnt build() {
-            return new DefaultExpandResultEnt(this);
+            return new DefaultExpandResultEnt(
+                immutable(m_snapshotId),
+                immutable(m_kind),
+                immutable(m_expandedNodeIds),
+                immutable(m_expandedAnnotationIds));
         }
     
     }

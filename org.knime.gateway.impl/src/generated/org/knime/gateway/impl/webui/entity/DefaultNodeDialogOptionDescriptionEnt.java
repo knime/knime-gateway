@@ -46,111 +46,76 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 
 /**
  * Description of a single node dialog option.
  *
+ * @param name
+ * @param description
+ * @param optional
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeDialogOptionDescriptionEnt implements NodeDialogOptionDescriptionEnt {
+public record DefaultNodeDialogOptionDescriptionEnt(
+    String name,
+    String description,
+    Boolean optional) implements NodeDialogOptionDescriptionEnt {
 
-  protected String m_name;
-  protected String m_description;
-  protected Boolean m_optional;
-  
-  protected DefaultNodeDialogOptionDescriptionEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeDialogOptionDescription";
-  }
-  
-  private DefaultNodeDialogOptionDescriptionEnt(DefaultNodeDialogOptionDescriptionEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_description == null) {
-        throw new IllegalArgumentException("description must not be null.");
-    }
-    m_description = immutable(builder.m_description);
-    m_optional = immutable(builder.m_optional);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeDialogOptionDescriptionEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param description
+     * @param optional
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeDialogOptionDescriptionEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(description == null) {
+            throw new IllegalArgumentException("<description> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeDialogOptionDescriptionEnt ent = (DefaultNodeDialogOptionDescriptionEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_description, ent.m_description) && Objects.equals(m_optional, ent.m_optional);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeDialogOptionDescription";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_description)
-               .append(m_optional)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getDescription() {
-        return m_description;
-  }
+    @Override
+    public String getDescription() {
+        return description;
+    }
     
-  @Override
-  public Boolean isOptional() {
-        return m_optional;
-  }
+    @Override
+    public Boolean isOptional() {
+        return optional;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeDialogOptionDescriptionEnt}.
+     */
     public static class DefaultNodeDialogOptionDescriptionEntBuilder implements NodeDialogOptionDescriptionEntBuilder {
-    
-        public DefaultNodeDialogOptionDescriptionEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private String m_description;
+
         private Boolean m_optional;
 
         @Override
         public DefaultNodeDialogOptionDescriptionEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -159,7 +124,7 @@ public class DefaultNodeDialogOptionDescriptionEnt implements NodeDialogOptionDe
         @Override
         public DefaultNodeDialogOptionDescriptionEntBuilder setDescription(String description) {
              if(description == null) {
-                 throw new IllegalArgumentException("description must not be null.");
+                 throw new IllegalArgumentException("<description> must not be null.");
              }
              m_description = description;
              return this;
@@ -171,10 +136,12 @@ public class DefaultNodeDialogOptionDescriptionEnt implements NodeDialogOptionDe
              return this;
         }
 
-        
         @Override
         public DefaultNodeDialogOptionDescriptionEnt build() {
-            return new DefaultNodeDialogOptionDescriptionEnt(this);
+            return new DefaultNodeDialogOptionDescriptionEnt(
+                immutable(m_name),
+                immutable(m_description),
+                immutable(m_optional));
         }
     
     }

@@ -59,6 +59,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Copy selected workflow parts and serialize to workflow definition format.  This command only returns the serialized workflow parts.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface CopyCommandEnt extends GatewayEntity, PartBasedCommandEnt {

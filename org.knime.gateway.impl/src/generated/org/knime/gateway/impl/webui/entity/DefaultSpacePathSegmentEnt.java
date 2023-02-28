@@ -46,102 +46,66 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 
 /**
  * Holds the id and name of a space path segment.
  *
+ * @param id
+ * @param name
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpacePathSegmentEnt implements SpacePathSegmentEnt {
+public record DefaultSpacePathSegmentEnt(
+    String id,
+    String name) implements SpacePathSegmentEnt {
 
-  protected String m_id;
-  protected String m_name;
-  
-  protected DefaultSpacePathSegmentEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "SpacePathSegment";
-  }
-  
-  private DefaultSpacePathSegmentEnt(DefaultSpacePathSegmentEntBuilder builder) {
-    
-    if(builder.m_id == null) {
-        throw new IllegalArgumentException("id must not be null.");
-    }
-    m_id = immutable(builder.m_id);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultSpacePathSegmentEnt} including null checks for non-nullable parameters.
+     *
+     * @param id
+     * @param name
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultSpacePathSegmentEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultSpacePathSegmentEnt ent = (DefaultSpacePathSegmentEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_name, ent.m_name);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "SpacePathSegment";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_id)
-               .append(m_name)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getId() {
-        return m_id;
-  }
+    @Override
+    public String getId() {
+        return id;
+    }
     
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultSpacePathSegmentEnt}.
+     */
     public static class DefaultSpacePathSegmentEntBuilder implements SpacePathSegmentEntBuilder {
-    
-        public DefaultSpacePathSegmentEntBuilder(){
-            
-        }
-    
+
         private String m_id;
+
         private String m_name;
 
         @Override
         public DefaultSpacePathSegmentEntBuilder setId(String id) {
              if(id == null) {
-                 throw new IllegalArgumentException("id must not be null.");
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
              return this;
@@ -150,16 +114,17 @@ public class DefaultSpacePathSegmentEnt implements SpacePathSegmentEnt {
         @Override
         public DefaultSpacePathSegmentEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
         }
 
-        
         @Override
         public DefaultSpacePathSegmentEnt build() {
-            return new DefaultSpacePathSegmentEnt(this);
+            return new DefaultSpacePathSegmentEnt(
+                immutable(m_id),
+                immutable(m_name));
         }
     
     }

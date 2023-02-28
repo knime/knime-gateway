@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
@@ -57,92 +53,61 @@ import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 /**
  * DefaultAddPortResultEnt
  *
+ * @param snapshotId
+ * @param kind
+ * @param newPortIdx
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAddPortResultEnt implements AddPortResultEnt {
+public record DefaultAddPortResultEnt(
+    String snapshotId,
+    KindEnum kind,
+    Integer newPortIdx) implements AddPortResultEnt {
 
-  protected String m_snapshotId;
-  protected KindEnum m_kind;
-  protected Integer m_newPortIdx;
-  
-  protected DefaultAddPortResultEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AddPortResult";
-  }
-  
-  private DefaultAddPortResultEnt(DefaultAddPortResultEntBuilder builder) {
-    super();
-    m_snapshotId = immutable(builder.m_snapshotId);
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_newPortIdx == null) {
-        throw new IllegalArgumentException("newPortIdx must not be null.");
-    }
-    m_newPortIdx = immutable(builder.m_newPortIdx);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAddPortResultEnt} including null checks for non-nullable parameters.
+     *
+     * @param snapshotId
+     * @param kind
+     * @param newPortIdx
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultAddPortResultEnt {
+        if(newPortIdx == null) {
+            throw new IllegalArgumentException("<newPortIdx> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultAddPortResultEnt ent = (DefaultAddPortResultEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_newPortIdx, ent.m_newPortIdx);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AddPortResult";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_snapshotId)
-               .append(m_kind)
-               .append(m_newPortIdx)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public Integer getNewPortIdx() {
-        return m_newPortIdx;
-  }
+    @Override
+    public Integer getNewPortIdx() {
+        return newPortIdx;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAddPortResultEnt}.
+     */
     public static class DefaultAddPortResultEntBuilder implements AddPortResultEntBuilder {
-    
-        public DefaultAddPortResultEntBuilder(){
-            super();
-        }
-    
+
         private String m_snapshotId;
+
         private KindEnum m_kind;
+
         private Integer m_newPortIdx;
 
         @Override
@@ -160,16 +125,18 @@ public class DefaultAddPortResultEnt implements AddPortResultEnt {
         @Override
         public DefaultAddPortResultEntBuilder setNewPortIdx(Integer newPortIdx) {
              if(newPortIdx == null) {
-                 throw new IllegalArgumentException("newPortIdx must not be null.");
+                 throw new IllegalArgumentException("<newPortIdx> must not be null.");
              }
              m_newPortIdx = newPortIdx;
              return this;
         }
 
-        
         @Override
         public DefaultAddPortResultEnt build() {
-            return new DefaultAddPortResultEnt(this);
+            return new DefaultAddPortResultEnt(
+                immutable(m_snapshotId),
+                immutable(m_kind),
+                immutable(m_newPortIdx));
         }
     
     }

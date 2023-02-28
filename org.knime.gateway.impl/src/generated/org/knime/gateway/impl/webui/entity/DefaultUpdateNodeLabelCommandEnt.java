@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
@@ -57,104 +53,73 @@ import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 /**
  * Updates the label of a native node, component or metanode.
  *
+ * @param kind
+ * @param label
+ * @param nodeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultUpdateNodeLabelCommandEnt implements UpdateNodeLabelCommandEnt {
+public record DefaultUpdateNodeLabelCommandEnt(
+    KindEnum kind,
+    String label,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements UpdateNodeLabelCommandEnt {
 
-  protected KindEnum m_kind;
-  protected String m_label;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-  
-  protected DefaultUpdateNodeLabelCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "UpdateNodeLabelCommand";
-  }
-  
-  private DefaultUpdateNodeLabelCommandEnt(DefaultUpdateNodeLabelCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_label == null) {
-        throw new IllegalArgumentException("label must not be null.");
-    }
-    m_label = immutable(builder.m_label);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultUpdateNodeLabelCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param label
+     * @param nodeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultUpdateNodeLabelCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(label == null) {
+            throw new IllegalArgumentException("<label> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
-        DefaultUpdateNodeLabelCommandEnt ent = (DefaultUpdateNodeLabelCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_label, ent.m_label) && Objects.equals(m_nodeId, ent.m_nodeId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "UpdateNodeLabelCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_label)
-               .append(m_nodeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public String getLabel() {
-        return m_label;
-  }
+    @Override
+    public String getLabel() {
+        return label;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultUpdateNodeLabelCommandEnt}.
+     */
     public static class DefaultUpdateNodeLabelCommandEntBuilder implements UpdateNodeLabelCommandEntBuilder {
-    
-        public DefaultUpdateNodeLabelCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private String m_label;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         @Override
         public DefaultUpdateNodeLabelCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -163,7 +128,7 @@ public class DefaultUpdateNodeLabelCommandEnt implements UpdateNodeLabelCommandE
         @Override
         public DefaultUpdateNodeLabelCommandEntBuilder setLabel(String label) {
              if(label == null) {
-                 throw new IllegalArgumentException("label must not be null.");
+                 throw new IllegalArgumentException("<label> must not be null.");
              }
              m_label = label;
              return this;
@@ -172,16 +137,18 @@ public class DefaultUpdateNodeLabelCommandEnt implements UpdateNodeLabelCommandE
         @Override
         public DefaultUpdateNodeLabelCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
              m_nodeId = nodeId;
              return this;
         }
 
-        
         @Override
         public DefaultUpdateNodeLabelCommandEnt build() {
-            return new DefaultUpdateNodeLabelCommandEnt(this);
+            return new DefaultUpdateNodeLabelCommandEnt(
+                immutable(m_kind),
+                immutable(m_label),
+                immutable(m_nodeId));
         }
     
     }

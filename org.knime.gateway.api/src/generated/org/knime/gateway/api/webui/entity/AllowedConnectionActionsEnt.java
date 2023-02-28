@@ -58,6 +58,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Set of actions allowed on connections. This information is not available if no &#39;interaction info&#39; is supposed to be included in the response.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AllowedConnectionActionsEnt extends GatewayEntity {

@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -57,89 +53,56 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 /**
  * Provides one or more spaces.
  *
+ * @param spaces
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpaceProviderEnt implements SpaceProviderEnt {
+public record DefaultSpaceProviderEnt(
+    java.util.List<SpaceEnt> spaces) implements SpaceProviderEnt {
 
-  protected java.util.List<SpaceEnt> m_spaces;
-  
-  protected DefaultSpaceProviderEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "SpaceProvider";
-  }
-  
-  private DefaultSpaceProviderEnt(DefaultSpaceProviderEntBuilder builder) {
-    
-    if(builder.m_spaces == null) {
-        throw new IllegalArgumentException("spaces must not be null.");
-    }
-    m_spaces = immutable(builder.m_spaces);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultSpaceProviderEnt} including null checks for non-nullable parameters.
+     *
+     * @param spaces
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultSpaceProviderEnt {
+        if(spaces == null) {
+            throw new IllegalArgumentException("<spaces> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultSpaceProviderEnt ent = (DefaultSpaceProviderEnt)o;
-        return Objects.equals(m_spaces, ent.m_spaces);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "SpaceProvider";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_spaces)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<SpaceEnt> getSpaces() {
-        return m_spaces;
-  }
+    @Override
+    public java.util.List<SpaceEnt> getSpaces() {
+        return spaces;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultSpaceProviderEnt}.
+     */
     public static class DefaultSpaceProviderEntBuilder implements SpaceProviderEntBuilder {
-    
-        public DefaultSpaceProviderEntBuilder(){
-            
-        }
-    
+
         private java.util.List<SpaceEnt> m_spaces = new java.util.ArrayList<>();
 
         @Override
         public DefaultSpaceProviderEntBuilder setSpaces(java.util.List<SpaceEnt> spaces) {
              if(spaces == null) {
-                 throw new IllegalArgumentException("spaces must not be null.");
+                 throw new IllegalArgumentException("<spaces> must not be null.");
              }
              m_spaces = spaces;
              return this;
         }
 
-        
         @Override
         public DefaultSpaceProviderEnt build() {
-            return new DefaultSpaceProviderEnt(this);
+            return new DefaultSpaceProviderEnt(
+                immutable(m_spaces));
         }
     
     }

@@ -46,132 +46,99 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 
 /**
  * Represents a single space (local workspace, hub space, ...).
  *
+ * @param id
+ * @param name
+ * @param owner
+ * @param description
+ * @param _private
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpaceEnt implements SpaceEnt {
+public record DefaultSpaceEnt(
+    String id,
+    String name,
+    String owner,
+    String description,
+    Boolean _private) implements SpaceEnt {
 
-  protected String m_id;
-  protected String m_name;
-  protected String m_owner;
-  protected String m_description;
-  protected Boolean m__private;
-  
-  protected DefaultSpaceEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "Space";
-  }
-  
-  private DefaultSpaceEnt(DefaultSpaceEntBuilder builder) {
-    
-    if(builder.m_id == null) {
-        throw new IllegalArgumentException("id must not be null.");
-    }
-    m_id = immutable(builder.m_id);
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_owner == null) {
-        throw new IllegalArgumentException("owner must not be null.");
-    }
-    m_owner = immutable(builder.m_owner);
-    m_description = immutable(builder.m_description);
-    m__private = immutable(builder.m__private);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultSpaceEnt} including null checks for non-nullable parameters.
+     *
+     * @param id
+     * @param name
+     * @param owner
+     * @param description
+     * @param _private
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultSpaceEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(owner == null) {
+            throw new IllegalArgumentException("<owner> must not be null.");
         }
-        DefaultSpaceEnt ent = (DefaultSpaceEnt)o;
-        return Objects.equals(m_id, ent.m_id) && Objects.equals(m_name, ent.m_name) && Objects.equals(m_owner, ent.m_owner) && Objects.equals(m_description, ent.m_description) && Objects.equals(m__private, ent.m__private);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "Space";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_id)
-               .append(m_name)
-               .append(m_owner)
-               .append(m_description)
-               .append(m__private)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getId() {
-        return m_id;
-  }
+    @Override
+    public String getId() {
+        return id;
+    }
     
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getOwner() {
-        return m_owner;
-  }
+    @Override
+    public String getOwner() {
+        return owner;
+    }
     
-  @Override
-  public String getDescription() {
-        return m_description;
-  }
+    @Override
+    public String getDescription() {
+        return description;
+    }
     
-  @Override
-  public Boolean isPrivate() {
-        return m__private;
-  }
+    @Override
+    public Boolean isPrivate() {
+        return _private;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultSpaceEnt}.
+     */
     public static class DefaultSpaceEntBuilder implements SpaceEntBuilder {
-    
-        public DefaultSpaceEntBuilder(){
-            
-        }
-    
+
         private String m_id;
+
         private String m_name;
+
         private String m_owner;
+
         private String m_description;
+
         private Boolean m__private;
 
         @Override
         public DefaultSpaceEntBuilder setId(String id) {
              if(id == null) {
-                 throw new IllegalArgumentException("id must not be null.");
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
              return this;
@@ -180,7 +147,7 @@ public class DefaultSpaceEnt implements SpaceEnt {
         @Override
         public DefaultSpaceEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -189,7 +156,7 @@ public class DefaultSpaceEnt implements SpaceEnt {
         @Override
         public DefaultSpaceEntBuilder setOwner(String owner) {
              if(owner == null) {
-                 throw new IllegalArgumentException("owner must not be null.");
+                 throw new IllegalArgumentException("<owner> must not be null.");
              }
              m_owner = owner;
              return this;
@@ -207,10 +174,14 @@ public class DefaultSpaceEnt implements SpaceEnt {
              return this;
         }
 
-        
         @Override
         public DefaultSpaceEnt build() {
-            return new DefaultSpaceEnt(this);
+            return new DefaultSpaceEnt(
+                immutable(m_id),
+                immutable(m_name),
+                immutable(m_owner),
+                immutable(m_description),
+                immutable(m__private));
         }
     
     }

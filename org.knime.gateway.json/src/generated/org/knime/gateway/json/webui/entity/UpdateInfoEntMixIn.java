@@ -57,6 +57,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateInfoEnt.DefaultUpdateInf
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 
 @JsonDeserialize(builder=DefaultUpdateInfoEntBuilder.class)

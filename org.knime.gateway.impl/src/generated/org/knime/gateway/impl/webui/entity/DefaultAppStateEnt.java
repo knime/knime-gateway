@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
@@ -59,143 +55,118 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 /**
  * Represents the global application state.
  *
+ * @param openProjects
+ * @param exampleProjects
+ * @param availablePortTypes
+ * @param suggestedPortTypeIds
+ * @param hasNodeRecommendationsEnabled
+ * @param featureFlags
+ * @param scrollToZoomEnabled
+ * @param hasNodeCollectionActive
+ * @param devMode
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAppStateEnt implements AppStateEnt {
+public record DefaultAppStateEnt(
+    java.util.List<WorkflowProjectEnt> openProjects,
+    java.util.List<ExampleProjectEnt> exampleProjects,
+    java.util.Map<String, PortTypeEnt> availablePortTypes,
+    java.util.List<String> suggestedPortTypeIds,
+    Boolean hasNodeRecommendationsEnabled,
+    java.util.Map<String, Object> featureFlags,
+    Boolean scrollToZoomEnabled,
+    Boolean hasNodeCollectionActive,
+    Boolean devMode) implements AppStateEnt {
 
-  protected java.util.List<WorkflowProjectEnt> m_openProjects;
-  protected java.util.List<ExampleProjectEnt> m_exampleProjects;
-  protected java.util.Map<String, PortTypeEnt> m_availablePortTypes;
-  protected java.util.List<String> m_suggestedPortTypeIds;
-  protected Boolean m_hasNodeRecommendationsEnabled;
-  protected java.util.Map<String, Object> m_featureFlags;
-  protected Boolean m_scrollToZoomEnabled;
-  protected Boolean m_hasNodeCollectionActive;
-  protected Boolean m_devMode;
-  
-  protected DefaultAppStateEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AppState";
-  }
-  
-  private DefaultAppStateEnt(DefaultAppStateEntBuilder builder) {
-    
-    m_openProjects = immutable(builder.m_openProjects);
-    m_exampleProjects = immutable(builder.m_exampleProjects);
-    m_availablePortTypes = immutable(builder.m_availablePortTypes);
-    m_suggestedPortTypeIds = immutable(builder.m_suggestedPortTypeIds);
-    m_hasNodeRecommendationsEnabled = immutable(builder.m_hasNodeRecommendationsEnabled);
-    m_featureFlags = immutable(builder.m_featureFlags);
-    m_scrollToZoomEnabled = immutable(builder.m_scrollToZoomEnabled);
-    m_hasNodeCollectionActive = immutable(builder.m_hasNodeCollectionActive);
-    m_devMode = immutable(builder.m_devMode);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAppStateEnt} including null checks for non-nullable parameters.
+     *
+     * @param openProjects
+     * @param exampleProjects
+     * @param availablePortTypes
+     * @param suggestedPortTypeIds
+     * @param hasNodeRecommendationsEnabled
+     * @param featureFlags
+     * @param scrollToZoomEnabled
+     * @param hasNodeCollectionActive
+     * @param devMode
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultAppStateEnt ent = (DefaultAppStateEnt)o;
-        return Objects.equals(m_openProjects, ent.m_openProjects) && Objects.equals(m_exampleProjects, ent.m_exampleProjects) && Objects.equals(m_availablePortTypes, ent.m_availablePortTypes) && Objects.equals(m_suggestedPortTypeIds, ent.m_suggestedPortTypeIds) && Objects.equals(m_hasNodeRecommendationsEnabled, ent.m_hasNodeRecommendationsEnabled) && Objects.equals(m_featureFlags, ent.m_featureFlags) && Objects.equals(m_scrollToZoomEnabled, ent.m_scrollToZoomEnabled) && Objects.equals(m_hasNodeCollectionActive, ent.m_hasNodeCollectionActive) && Objects.equals(m_devMode, ent.m_devMode);
+    public DefaultAppStateEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AppState";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_openProjects)
-               .append(m_exampleProjects)
-               .append(m_availablePortTypes)
-               .append(m_suggestedPortTypeIds)
-               .append(m_hasNodeRecommendationsEnabled)
-               .append(m_featureFlags)
-               .append(m_scrollToZoomEnabled)
-               .append(m_hasNodeCollectionActive)
-               .append(m_devMode)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<WorkflowProjectEnt> getOpenProjects() {
-        return m_openProjects;
-  }
+    @Override
+    public java.util.List<WorkflowProjectEnt> getOpenProjects() {
+        return openProjects;
+    }
     
-  @Override
-  public java.util.List<ExampleProjectEnt> getExampleProjects() {
-        return m_exampleProjects;
-  }
+    @Override
+    public java.util.List<ExampleProjectEnt> getExampleProjects() {
+        return exampleProjects;
+    }
     
-  @Override
-  public java.util.Map<String, PortTypeEnt> getAvailablePortTypes() {
-        return m_availablePortTypes;
-  }
+    @Override
+    public java.util.Map<String, PortTypeEnt> getAvailablePortTypes() {
+        return availablePortTypes;
+    }
     
-  @Override
-  public java.util.List<String> getSuggestedPortTypeIds() {
-        return m_suggestedPortTypeIds;
-  }
+    @Override
+    public java.util.List<String> getSuggestedPortTypeIds() {
+        return suggestedPortTypeIds;
+    }
     
-  @Override
-  public Boolean hasNodeRecommendationsEnabled() {
-        return m_hasNodeRecommendationsEnabled;
-  }
+    @Override
+    public Boolean hasNodeRecommendationsEnabled() {
+        return hasNodeRecommendationsEnabled;
+    }
     
-  @Override
-  public java.util.Map<String, Object> getFeatureFlags() {
-        return m_featureFlags;
-  }
+    @Override
+    public java.util.Map<String, Object> getFeatureFlags() {
+        return featureFlags;
+    }
     
-  @Override
-  public Boolean isScrollToZoomEnabled() {
-        return m_scrollToZoomEnabled;
-  }
+    @Override
+    public Boolean isScrollToZoomEnabled() {
+        return scrollToZoomEnabled;
+    }
     
-  @Override
-  public Boolean hasNodeCollectionActive() {
-        return m_hasNodeCollectionActive;
-  }
+    @Override
+    public Boolean hasNodeCollectionActive() {
+        return hasNodeCollectionActive;
+    }
     
-  @Override
-  public Boolean isDevMode() {
-        return m_devMode;
-  }
+    @Override
+    public Boolean isDevMode() {
+        return devMode;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAppStateEnt}.
+     */
     public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
-    
-        public DefaultAppStateEntBuilder(){
-            
-        }
-    
+
         private java.util.List<WorkflowProjectEnt> m_openProjects;
+
         private java.util.List<ExampleProjectEnt> m_exampleProjects;
+
         private java.util.Map<String, PortTypeEnt> m_availablePortTypes;
+
         private java.util.List<String> m_suggestedPortTypeIds;
+
         private Boolean m_hasNodeRecommendationsEnabled;
+
         private java.util.Map<String, Object> m_featureFlags;
+
         private Boolean m_scrollToZoomEnabled;
+
         private Boolean m_hasNodeCollectionActive;
+
         private Boolean m_devMode;
 
         @Override
@@ -252,10 +223,18 @@ public class DefaultAppStateEnt implements AppStateEnt {
              return this;
         }
 
-        
         @Override
         public DefaultAppStateEnt build() {
-            return new DefaultAppStateEnt(this);
+            return new DefaultAppStateEnt(
+                immutable(m_openProjects),
+                immutable(m_exampleProjects),
+                immutable(m_availablePortTypes),
+                immutable(m_suggestedPortTypeIds),
+                immutable(m_hasNodeRecommendationsEnabled),
+                immutable(m_featureFlags),
+                immutable(m_scrollToZoomEnabled),
+                immutable(m_hasNodeCollectionActive),
+                immutable(m_devMode));
         }
     
     }

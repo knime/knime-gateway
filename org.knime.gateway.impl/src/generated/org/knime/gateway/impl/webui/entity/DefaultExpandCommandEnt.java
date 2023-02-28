@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
@@ -57,92 +53,60 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 /**
  * Resets nodes contained in the metanode or container and expands it.
  *
+ * @param kind
+ * @param nodeId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultExpandCommandEnt implements ExpandCommandEnt {
+public record DefaultExpandCommandEnt(
+    KindEnum kind,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements ExpandCommandEnt {
 
-  protected KindEnum m_kind;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-  
-  protected DefaultExpandCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "ExpandCommand";
-  }
-  
-  private DefaultExpandCommandEnt(DefaultExpandCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_nodeId == null) {
-        throw new IllegalArgumentException("nodeId must not be null.");
-    }
-    m_nodeId = immutable(builder.m_nodeId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultExpandCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param nodeId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultExpandCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultExpandCommandEnt ent = (DefaultExpandCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_nodeId, ent.m_nodeId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "ExpandCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_nodeId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return m_nodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultExpandCommandEnt}.
+     */
     public static class DefaultExpandCommandEntBuilder implements ExpandCommandEntBuilder {
-    
-        public DefaultExpandCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         @Override
         public DefaultExpandCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -151,16 +115,17 @@ public class DefaultExpandCommandEnt implements ExpandCommandEnt {
         @Override
         public DefaultExpandCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
-                 throw new IllegalArgumentException("nodeId must not be null.");
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
              m_nodeId = nodeId;
              return this;
         }
 
-        
         @Override
         public DefaultExpandCommandEnt build() {
-            return new DefaultExpandCommandEnt(this);
+            return new DefaultExpandCommandEnt(
+                immutable(m_kind),
+                immutable(m_nodeId));
         }
     
     }

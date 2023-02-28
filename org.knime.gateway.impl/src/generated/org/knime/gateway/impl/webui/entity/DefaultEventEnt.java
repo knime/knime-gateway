@@ -46,77 +46,41 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.EventEnt;
 
 /**
  * Parent object for events from the backend to the frontend.
  *
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultEventEnt implements EventEnt {
+public record DefaultEventEnt(
+    ) implements EventEnt {
 
-  
-  protected DefaultEventEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "Event";
-  }
-  
-  private DefaultEventEnt(DefaultEventEntBuilder builder) {
-    
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultEventEnt} including null checks for non-nullable parameters.
+     *
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        return true;
+    public DefaultEventEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "Event";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .toHashCode();
-   }
-  
-	
-	
-  
+    /**
+     * A builder for {@link DefaultEventEnt}.
+     */
     public static class DefaultEventEntBuilder implements EventEntBuilder {
-    
-        public DefaultEventEntBuilder(){
-            
-        }
-    
 
-        
         @Override
         public DefaultEventEnt build() {
-            return new DefaultEventEnt(this);
+            return new DefaultEventEnt(
+                );
         }
     
     }

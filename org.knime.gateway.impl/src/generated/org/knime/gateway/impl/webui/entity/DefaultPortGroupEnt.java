@@ -46,117 +46,84 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.PortGroupEnt;
 
 /**
  * Within natives nodes, ports belong to port groups.  Port groups in turn are used to describe whether and how many additional input or output ports of a certain type can be added to a node depending on the current state of the node.
  *
+ * @param inputRange
+ * @param outputRange
+ * @param canAddInPort
+ * @param canAddOutPort
+ * @param supportedPortTypeIds
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultPortGroupEnt implements PortGroupEnt {
+public record DefaultPortGroupEnt(
+    java.util.List<Integer> inputRange,
+    java.util.List<Integer> outputRange,
+    Boolean canAddInPort,
+    Boolean canAddOutPort,
+    java.util.List<String> supportedPortTypeIds) implements PortGroupEnt {
 
-  protected java.util.List<Integer> m_inputRange;
-  protected java.util.List<Integer> m_outputRange;
-  protected Boolean m_canAddInPort;
-  protected Boolean m_canAddOutPort;
-  protected java.util.List<String> m_supportedPortTypeIds;
-  
-  protected DefaultPortGroupEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "PortGroup";
-  }
-  
-  private DefaultPortGroupEnt(DefaultPortGroupEntBuilder builder) {
-    
-    m_inputRange = immutable(builder.m_inputRange);
-    m_outputRange = immutable(builder.m_outputRange);
-    m_canAddInPort = immutable(builder.m_canAddInPort);
-    m_canAddOutPort = immutable(builder.m_canAddOutPort);
-    m_supportedPortTypeIds = immutable(builder.m_supportedPortTypeIds);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultPortGroupEnt} including null checks for non-nullable parameters.
+     *
+     * @param inputRange
+     * @param outputRange
+     * @param canAddInPort
+     * @param canAddOutPort
+     * @param supportedPortTypeIds
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultPortGroupEnt ent = (DefaultPortGroupEnt)o;
-        return Objects.equals(m_inputRange, ent.m_inputRange) && Objects.equals(m_outputRange, ent.m_outputRange) && Objects.equals(m_canAddInPort, ent.m_canAddInPort) && Objects.equals(m_canAddOutPort, ent.m_canAddOutPort) && Objects.equals(m_supportedPortTypeIds, ent.m_supportedPortTypeIds);
+    public DefaultPortGroupEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "PortGroup";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_inputRange)
-               .append(m_outputRange)
-               .append(m_canAddInPort)
-               .append(m_canAddOutPort)
-               .append(m_supportedPortTypeIds)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<Integer> getInputRange() {
-        return m_inputRange;
-  }
+    @Override
+    public java.util.List<Integer> getInputRange() {
+        return inputRange;
+    }
     
-  @Override
-  public java.util.List<Integer> getOutputRange() {
-        return m_outputRange;
-  }
+    @Override
+    public java.util.List<Integer> getOutputRange() {
+        return outputRange;
+    }
     
-  @Override
-  public Boolean isCanAddInPort() {
-        return m_canAddInPort;
-  }
+    @Override
+    public Boolean isCanAddInPort() {
+        return canAddInPort;
+    }
     
-  @Override
-  public Boolean isCanAddOutPort() {
-        return m_canAddOutPort;
-  }
+    @Override
+    public Boolean isCanAddOutPort() {
+        return canAddOutPort;
+    }
     
-  @Override
-  public java.util.List<String> getSupportedPortTypeIds() {
-        return m_supportedPortTypeIds;
-  }
+    @Override
+    public java.util.List<String> getSupportedPortTypeIds() {
+        return supportedPortTypeIds;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultPortGroupEnt}.
+     */
     public static class DefaultPortGroupEntBuilder implements PortGroupEntBuilder {
-    
-        public DefaultPortGroupEntBuilder(){
-            
-        }
-    
+
         private java.util.List<Integer> m_inputRange;
+
         private java.util.List<Integer> m_outputRange;
+
         private Boolean m_canAddInPort;
+
         private Boolean m_canAddOutPort;
+
         private java.util.List<String> m_supportedPortTypeIds;
 
         @Override
@@ -189,10 +156,14 @@ public class DefaultPortGroupEnt implements PortGroupEnt {
              return this;
         }
 
-        
         @Override
         public DefaultPortGroupEnt build() {
-            return new DefaultPortGroupEnt(this);
+            return new DefaultPortGroupEnt(
+                immutable(m_inputRange),
+                immutable(m_outputRange),
+                immutable(m_canAddInPort),
+                immutable(m_canAddOutPort),
+                immutable(m_supportedPortTypeIds));
         }
     
     }

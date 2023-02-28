@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
@@ -57,104 +53,73 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 /**
  * Represents the result of a node/component search in the node repository.
  *
+ * @param nodes
+ * @param totalNumNodes
+ * @param tags
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeSearchResultEnt implements NodeSearchResultEnt {
+public record DefaultNodeSearchResultEnt(
+    java.util.List<NodeTemplateEnt> nodes,
+    Integer totalNumNodes,
+    java.util.List<String> tags) implements NodeSearchResultEnt {
 
-  protected java.util.List<NodeTemplateEnt> m_nodes;
-  protected Integer m_totalNumNodes;
-  protected java.util.List<String> m_tags;
-  
-  protected DefaultNodeSearchResultEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeSearchResult";
-  }
-  
-  private DefaultNodeSearchResultEnt(DefaultNodeSearchResultEntBuilder builder) {
-    
-    if(builder.m_nodes == null) {
-        throw new IllegalArgumentException("nodes must not be null.");
-    }
-    m_nodes = immutable(builder.m_nodes);
-    if(builder.m_totalNumNodes == null) {
-        throw new IllegalArgumentException("totalNumNodes must not be null.");
-    }
-    m_totalNumNodes = immutable(builder.m_totalNumNodes);
-    if(builder.m_tags == null) {
-        throw new IllegalArgumentException("tags must not be null.");
-    }
-    m_tags = immutable(builder.m_tags);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeSearchResultEnt} including null checks for non-nullable parameters.
+     *
+     * @param nodes
+     * @param totalNumNodes
+     * @param tags
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeSearchResultEnt {
+        if(nodes == null) {
+            throw new IllegalArgumentException("<nodes> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(totalNumNodes == null) {
+            throw new IllegalArgumentException("<totalNumNodes> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(tags == null) {
+            throw new IllegalArgumentException("<tags> must not be null.");
         }
-        DefaultNodeSearchResultEnt ent = (DefaultNodeSearchResultEnt)o;
-        return Objects.equals(m_nodes, ent.m_nodes) && Objects.equals(m_totalNumNodes, ent.m_totalNumNodes) && Objects.equals(m_tags, ent.m_tags);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeSearchResult";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_nodes)
-               .append(m_totalNumNodes)
-               .append(m_tags)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public java.util.List<NodeTemplateEnt> getNodes() {
-        return m_nodes;
-  }
+    @Override
+    public java.util.List<NodeTemplateEnt> getNodes() {
+        return nodes;
+    }
     
-  @Override
-  public Integer getTotalNumNodes() {
-        return m_totalNumNodes;
-  }
+    @Override
+    public Integer getTotalNumNodes() {
+        return totalNumNodes;
+    }
     
-  @Override
-  public java.util.List<String> getTags() {
-        return m_tags;
-  }
+    @Override
+    public java.util.List<String> getTags() {
+        return tags;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeSearchResultEnt}.
+     */
     public static class DefaultNodeSearchResultEntBuilder implements NodeSearchResultEntBuilder {
-    
-        public DefaultNodeSearchResultEntBuilder(){
-            
-        }
-    
+
         private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
+
         private Integer m_totalNumNodes;
+
         private java.util.List<String> m_tags = new java.util.ArrayList<>();
 
         @Override
         public DefaultNodeSearchResultEntBuilder setNodes(java.util.List<NodeTemplateEnt> nodes) {
              if(nodes == null) {
-                 throw new IllegalArgumentException("nodes must not be null.");
+                 throw new IllegalArgumentException("<nodes> must not be null.");
              }
              m_nodes = nodes;
              return this;
@@ -163,7 +128,7 @@ public class DefaultNodeSearchResultEnt implements NodeSearchResultEnt {
         @Override
         public DefaultNodeSearchResultEntBuilder setTotalNumNodes(Integer totalNumNodes) {
              if(totalNumNodes == null) {
-                 throw new IllegalArgumentException("totalNumNodes must not be null.");
+                 throw new IllegalArgumentException("<totalNumNodes> must not be null.");
              }
              m_totalNumNodes = totalNumNodes;
              return this;
@@ -172,16 +137,18 @@ public class DefaultNodeSearchResultEnt implements NodeSearchResultEnt {
         @Override
         public DefaultNodeSearchResultEntBuilder setTags(java.util.List<String> tags) {
              if(tags == null) {
-                 throw new IllegalArgumentException("tags must not be null.");
+                 throw new IllegalArgumentException("<tags> must not be null.");
              }
              m_tags = tags;
              return this;
         }
 
-        
         @Override
         public DefaultNodeSearchResultEnt build() {
-            return new DefaultNodeSearchResultEnt(this);
+            return new DefaultNodeSearchResultEnt(
+                immutable(m_nodes),
+                immutable(m_totalNumNodes),
+                immutable(m_tags));
         }
     
     }

@@ -46,108 +46,73 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 
 /**
  * Details about a custom job manager provided by a third party.
  *
+ * @param name
+ * @param icon
+ * @param workflowIcon
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultCustomJobManagerEnt implements CustomJobManagerEnt {
+public record DefaultCustomJobManagerEnt(
+    String name,
+    String icon,
+    String workflowIcon) implements CustomJobManagerEnt {
 
-  protected String m_name;
-  protected String m_icon;
-  protected String m_workflowIcon;
-  
-  protected DefaultCustomJobManagerEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "CustomJobManager";
-  }
-  
-  private DefaultCustomJobManagerEnt(DefaultCustomJobManagerEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    m_icon = immutable(builder.m_icon);
-    m_workflowIcon = immutable(builder.m_workflowIcon);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultCustomJobManagerEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param icon
+     * @param workflowIcon
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultCustomJobManagerEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultCustomJobManagerEnt ent = (DefaultCustomJobManagerEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_icon, ent.m_icon) && Objects.equals(m_workflowIcon, ent.m_workflowIcon);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "CustomJobManager";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_icon)
-               .append(m_workflowIcon)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getIcon() {
-        return m_icon;
-  }
+    @Override
+    public String getIcon() {
+        return icon;
+    }
     
-  @Override
-  public String getWorkflowIcon() {
-        return m_workflowIcon;
-  }
+    @Override
+    public String getWorkflowIcon() {
+        return workflowIcon;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultCustomJobManagerEnt}.
+     */
     public static class DefaultCustomJobManagerEntBuilder implements CustomJobManagerEntBuilder {
-    
-        public DefaultCustomJobManagerEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private String m_icon;
+
         private String m_workflowIcon;
 
         @Override
         public DefaultCustomJobManagerEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -165,10 +130,12 @@ public class DefaultCustomJobManagerEnt implements CustomJobManagerEnt {
              return this;
         }
 
-        
         @Override
         public DefaultCustomJobManagerEnt build() {
-            return new DefaultCustomJobManagerEnt(this);
+            return new DefaultCustomJobManagerEnt(
+                immutable(m_name),
+                immutable(m_icon),
+                immutable(m_workflowIcon));
         }
     
     }

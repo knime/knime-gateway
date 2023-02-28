@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
@@ -57,107 +53,77 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 /**
  * Event type to register for &#39;WorkflowChangedEvent&#39;s.
  *
+ * @param typeId
+ * @param projectId
+ * @param workflowId
+ * @param snapshotId
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowChangedEventTypeEnt implements WorkflowChangedEventTypeEnt {
+public record DefaultWorkflowChangedEventTypeEnt(
+    String typeId,
+    String projectId,
+    org.knime.gateway.api.entity.NodeIDEnt workflowId,
+    String snapshotId) implements WorkflowChangedEventTypeEnt {
 
-  protected String m_typeId;
-  protected String m_projectId;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
-  protected String m_snapshotId;
-  
-  protected DefaultWorkflowChangedEventTypeEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowChangedEventType";
-  }
-  
-  private DefaultWorkflowChangedEventTypeEnt(DefaultWorkflowChangedEventTypeEntBuilder builder) {
-    super();
-    m_typeId = immutable(builder.m_typeId);
-    if(builder.m_projectId == null) {
-        throw new IllegalArgumentException("projectId must not be null.");
-    }
-    m_projectId = immutable(builder.m_projectId);
-    if(builder.m_workflowId == null) {
-        throw new IllegalArgumentException("workflowId must not be null.");
-    }
-    m_workflowId = immutable(builder.m_workflowId);
-    if(builder.m_snapshotId == null) {
-        throw new IllegalArgumentException("snapshotId must not be null.");
-    }
-    m_snapshotId = immutable(builder.m_snapshotId);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowChangedEventTypeEnt} including null checks for non-nullable parameters.
+     *
+     * @param typeId
+     * @param projectId
+     * @param workflowId
+     * @param snapshotId
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowChangedEventTypeEnt {
+        if(projectId == null) {
+            throw new IllegalArgumentException("<projectId> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(workflowId == null) {
+            throw new IllegalArgumentException("<workflowId> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(snapshotId == null) {
+            throw new IllegalArgumentException("<snapshotId> must not be null.");
         }
-        DefaultWorkflowChangedEventTypeEnt ent = (DefaultWorkflowChangedEventTypeEnt)o;
-        return Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_projectId, ent.m_projectId) && Objects.equals(m_workflowId, ent.m_workflowId) && Objects.equals(m_snapshotId, ent.m_snapshotId);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "WorkflowChangedEventType";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_typeId)
-               .append(m_projectId)
-               .append(m_workflowId)
-               .append(m_snapshotId)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getTypeId() {
-        return m_typeId;
-  }
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
     
-  @Override
-  public String getProjectId() {
-        return m_projectId;
-  }
+    @Override
+    public String getProjectId() {
+        return projectId;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId() {
-        return m_workflowId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId() {
+        return workflowId;
+    }
     
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowChangedEventTypeEnt}.
+     */
     public static class DefaultWorkflowChangedEventTypeEntBuilder implements WorkflowChangedEventTypeEntBuilder {
-    
-        public DefaultWorkflowChangedEventTypeEntBuilder(){
-            super();
-        }
-    
+
         private String m_typeId;
+
         private String m_projectId;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
+
         private String m_snapshotId;
 
         @Override
@@ -169,7 +135,7 @@ public class DefaultWorkflowChangedEventTypeEnt implements WorkflowChangedEventT
         @Override
         public DefaultWorkflowChangedEventTypeEntBuilder setProjectId(String projectId) {
              if(projectId == null) {
-                 throw new IllegalArgumentException("projectId must not be null.");
+                 throw new IllegalArgumentException("<projectId> must not be null.");
              }
              m_projectId = projectId;
              return this;
@@ -178,7 +144,7 @@ public class DefaultWorkflowChangedEventTypeEnt implements WorkflowChangedEventT
         @Override
         public DefaultWorkflowChangedEventTypeEntBuilder setWorkflowId(org.knime.gateway.api.entity.NodeIDEnt workflowId) {
              if(workflowId == null) {
-                 throw new IllegalArgumentException("workflowId must not be null.");
+                 throw new IllegalArgumentException("<workflowId> must not be null.");
              }
              m_workflowId = workflowId;
              return this;
@@ -187,16 +153,19 @@ public class DefaultWorkflowChangedEventTypeEnt implements WorkflowChangedEventT
         @Override
         public DefaultWorkflowChangedEventTypeEntBuilder setSnapshotId(String snapshotId) {
              if(snapshotId == null) {
-                 throw new IllegalArgumentException("snapshotId must not be null.");
+                 throw new IllegalArgumentException("<snapshotId> must not be null.");
              }
              m_snapshotId = snapshotId;
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowChangedEventTypeEnt build() {
-            return new DefaultWorkflowChangedEventTypeEnt(this);
+            return new DefaultWorkflowChangedEventTypeEnt(
+                immutable(m_typeId),
+                immutable(m_projectId),
+                immutable(m_workflowId),
+                immutable(m_snapshotId));
         }
     
     }

@@ -46,123 +46,89 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 /**
  * Describes from where a workflow project originates.
  *
+ * @param providerId
+ * @param spaceId
+ * @param itemId
+ * @param ancestorItemIds
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultSpaceItemReferenceEnt implements SpaceItemReferenceEnt {
+public record DefaultSpaceItemReferenceEnt(
+    String providerId,
+    String spaceId,
+    String itemId,
+    java.util.List<String> ancestorItemIds) implements SpaceItemReferenceEnt {
 
-  protected String m_providerId;
-  protected String m_spaceId;
-  protected String m_itemId;
-  protected java.util.List<String> m_ancestorItemIds;
-  
-  protected DefaultSpaceItemReferenceEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "SpaceItemReference";
-  }
-  
-  private DefaultSpaceItemReferenceEnt(DefaultSpaceItemReferenceEntBuilder builder) {
-    
-    if(builder.m_providerId == null) {
-        throw new IllegalArgumentException("providerId must not be null.");
-    }
-    m_providerId = immutable(builder.m_providerId);
-    if(builder.m_spaceId == null) {
-        throw new IllegalArgumentException("spaceId must not be null.");
-    }
-    m_spaceId = immutable(builder.m_spaceId);
-    if(builder.m_itemId == null) {
-        throw new IllegalArgumentException("itemId must not be null.");
-    }
-    m_itemId = immutable(builder.m_itemId);
-    m_ancestorItemIds = immutable(builder.m_ancestorItemIds);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultSpaceItemReferenceEnt} including null checks for non-nullable parameters.
+     *
+     * @param providerId
+     * @param spaceId
+     * @param itemId
+     * @param ancestorItemIds
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultSpaceItemReferenceEnt {
+        if(providerId == null) {
+            throw new IllegalArgumentException("<providerId> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(spaceId == null) {
+            throw new IllegalArgumentException("<spaceId> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(itemId == null) {
+            throw new IllegalArgumentException("<itemId> must not be null.");
         }
-        DefaultSpaceItemReferenceEnt ent = (DefaultSpaceItemReferenceEnt)o;
-        return Objects.equals(m_providerId, ent.m_providerId) && Objects.equals(m_spaceId, ent.m_spaceId) && Objects.equals(m_itemId, ent.m_itemId) && Objects.equals(m_ancestorItemIds, ent.m_ancestorItemIds);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "SpaceItemReference";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_providerId)
-               .append(m_spaceId)
-               .append(m_itemId)
-               .append(m_ancestorItemIds)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getProviderId() {
-        return m_providerId;
-  }
+    @Override
+    public String getProviderId() {
+        return providerId;
+    }
     
-  @Override
-  public String getSpaceId() {
-        return m_spaceId;
-  }
+    @Override
+    public String getSpaceId() {
+        return spaceId;
+    }
     
-  @Override
-  public String getItemId() {
-        return m_itemId;
-  }
+    @Override
+    public String getItemId() {
+        return itemId;
+    }
     
-  @Override
-  public java.util.List<String> getAncestorItemIds() {
-        return m_ancestorItemIds;
-  }
+    @Override
+    public java.util.List<String> getAncestorItemIds() {
+        return ancestorItemIds;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultSpaceItemReferenceEnt}.
+     */
     public static class DefaultSpaceItemReferenceEntBuilder implements SpaceItemReferenceEntBuilder {
-    
-        public DefaultSpaceItemReferenceEntBuilder(){
-            
-        }
-    
+
         private String m_providerId;
+
         private String m_spaceId;
+
         private String m_itemId;
+
         private java.util.List<String> m_ancestorItemIds;
 
         @Override
         public DefaultSpaceItemReferenceEntBuilder setProviderId(String providerId) {
              if(providerId == null) {
-                 throw new IllegalArgumentException("providerId must not be null.");
+                 throw new IllegalArgumentException("<providerId> must not be null.");
              }
              m_providerId = providerId;
              return this;
@@ -171,7 +137,7 @@ public class DefaultSpaceItemReferenceEnt implements SpaceItemReferenceEnt {
         @Override
         public DefaultSpaceItemReferenceEntBuilder setSpaceId(String spaceId) {
              if(spaceId == null) {
-                 throw new IllegalArgumentException("spaceId must not be null.");
+                 throw new IllegalArgumentException("<spaceId> must not be null.");
              }
              m_spaceId = spaceId;
              return this;
@@ -180,7 +146,7 @@ public class DefaultSpaceItemReferenceEnt implements SpaceItemReferenceEnt {
         @Override
         public DefaultSpaceItemReferenceEntBuilder setItemId(String itemId) {
              if(itemId == null) {
-                 throw new IllegalArgumentException("itemId must not be null.");
+                 throw new IllegalArgumentException("<itemId> must not be null.");
              }
              m_itemId = itemId;
              return this;
@@ -192,10 +158,13 @@ public class DefaultSpaceItemReferenceEnt implements SpaceItemReferenceEnt {
              return this;
         }
 
-        
         @Override
         public DefaultSpaceItemReferenceEnt build() {
-            return new DefaultSpaceItemReferenceEnt(this);
+            return new DefaultSpaceItemReferenceEnt(
+                immutable(m_providerId),
+                immutable(m_spaceId),
+                immutable(m_itemId),
+                immutable(m_ancestorItemIds));
         }
     
     }

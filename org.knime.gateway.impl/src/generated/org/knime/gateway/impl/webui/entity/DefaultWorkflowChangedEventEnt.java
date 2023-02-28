@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
@@ -58,92 +54,60 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 /**
  * Event for all kind of workflow changes.
  *
+ * @param snapshotId
+ * @param patch
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowChangedEventEnt implements WorkflowChangedEventEnt {
+public record DefaultWorkflowChangedEventEnt(
+    String snapshotId,
+    PatchEnt patch) implements WorkflowChangedEventEnt {
 
-  protected String m_snapshotId;
-  protected PatchEnt m_patch;
-  
-  protected DefaultWorkflowChangedEventEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowChangedEvent";
-  }
-  
-  private DefaultWorkflowChangedEventEnt(DefaultWorkflowChangedEventEntBuilder builder) {
-    super();
-    if(builder.m_snapshotId == null) {
-        throw new IllegalArgumentException("snapshotId must not be null.");
-    }
-    m_snapshotId = immutable(builder.m_snapshotId);
-    if(builder.m_patch == null) {
-        throw new IllegalArgumentException("patch must not be null.");
-    }
-    m_patch = immutable(builder.m_patch);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowChangedEventEnt} including null checks for non-nullable parameters.
+     *
+     * @param snapshotId
+     * @param patch
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowChangedEventEnt {
+        if(snapshotId == null) {
+            throw new IllegalArgumentException("<snapshotId> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(patch == null) {
+            throw new IllegalArgumentException("<patch> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultWorkflowChangedEventEnt ent = (DefaultWorkflowChangedEventEnt)o;
-        return Objects.equals(m_snapshotId, ent.m_snapshotId) && Objects.equals(m_patch, ent.m_patch);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "WorkflowChangedEvent";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_snapshotId)
-               .append(m_patch)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getSnapshotId() {
-        return m_snapshotId;
-  }
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
     
-  @Override
-  public PatchEnt getPatch() {
-        return m_patch;
-  }
+    @Override
+    public PatchEnt getPatch() {
+        return patch;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowChangedEventEnt}.
+     */
     public static class DefaultWorkflowChangedEventEntBuilder implements WorkflowChangedEventEntBuilder {
-    
-        public DefaultWorkflowChangedEventEntBuilder(){
-            super();
-        }
-    
+
         private String m_snapshotId;
+
         private PatchEnt m_patch;
 
         @Override
         public DefaultWorkflowChangedEventEntBuilder setSnapshotId(String snapshotId) {
              if(snapshotId == null) {
-                 throw new IllegalArgumentException("snapshotId must not be null.");
+                 throw new IllegalArgumentException("<snapshotId> must not be null.");
              }
              m_snapshotId = snapshotId;
              return this;
@@ -152,16 +116,17 @@ public class DefaultWorkflowChangedEventEnt implements WorkflowChangedEventEnt {
         @Override
         public DefaultWorkflowChangedEventEntBuilder setPatch(PatchEnt patch) {
              if(patch == null) {
-                 throw new IllegalArgumentException("patch must not be null.");
+                 throw new IllegalArgumentException("<patch> must not be null.");
              }
              m_patch = patch;
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowChangedEventEnt build() {
-            return new DefaultWorkflowChangedEventEnt(this);
+            return new DefaultWorkflowChangedEventEnt(
+                immutable(m_snapshotId),
+                immutable(m_patch));
         }
     
     }

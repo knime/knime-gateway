@@ -46,108 +46,74 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 
 /**
  * DefaultBoundsEnt
  *
+ * @param x
+ * @param y
+ * @param width
+ * @param height
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultBoundsEnt implements BoundsEnt {
+public record DefaultBoundsEnt(
+    Integer x,
+    Integer y,
+    Integer width,
+    Integer height) implements BoundsEnt {
 
-  protected Integer m_x;
-  protected Integer m_y;
-  protected Integer m_width;
-  protected Integer m_height;
-  
-  protected DefaultBoundsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "Bounds";
-  }
-  
-  private DefaultBoundsEnt(DefaultBoundsEntBuilder builder) {
-    
-    m_x = immutable(builder.m_x);
-    m_y = immutable(builder.m_y);
-    m_width = immutable(builder.m_width);
-    m_height = immutable(builder.m_height);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultBoundsEnt} including null checks for non-nullable parameters.
+     *
+     * @param x
+     * @param y
+     * @param width
+     * @param height
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultBoundsEnt ent = (DefaultBoundsEnt)o;
-        return Objects.equals(m_x, ent.m_x) && Objects.equals(m_y, ent.m_y) && Objects.equals(m_width, ent.m_width) && Objects.equals(m_height, ent.m_height);
+    public DefaultBoundsEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "Bounds";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_x)
-               .append(m_y)
-               .append(m_width)
-               .append(m_height)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Integer getX() {
-        return m_x;
-  }
+    @Override
+    public Integer getX() {
+        return x;
+    }
     
-  @Override
-  public Integer getY() {
-        return m_y;
-  }
+    @Override
+    public Integer getY() {
+        return y;
+    }
     
-  @Override
-  public Integer getWidth() {
-        return m_width;
-  }
+    @Override
+    public Integer getWidth() {
+        return width;
+    }
     
-  @Override
-  public Integer getHeight() {
-        return m_height;
-  }
+    @Override
+    public Integer getHeight() {
+        return height;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultBoundsEnt}.
+     */
     public static class DefaultBoundsEntBuilder implements BoundsEntBuilder {
-    
-        public DefaultBoundsEntBuilder(){
-            
-        }
-    
+
         private Integer m_x;
+
         private Integer m_y;
+
         private Integer m_width;
+
         private Integer m_height;
 
         @Override
@@ -174,10 +140,13 @@ public class DefaultBoundsEnt implements BoundsEnt {
              return this;
         }
 
-        
         @Override
         public DefaultBoundsEnt build() {
-            return new DefaultBoundsEnt(this);
+            return new DefaultBoundsEnt(
+                immutable(m_x),
+                immutable(m_y),
+                immutable(m_width),
+                immutable(m_height));
         }
     
     }

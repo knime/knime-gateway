@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
@@ -57,89 +53,58 @@ import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 /**
  * Represents an example project.
  *
+ * @param name
+ * @param svg
+ * @param origin
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultExampleProjectEnt implements ExampleProjectEnt {
+public record DefaultExampleProjectEnt(
+    String name,
+    String svg,
+    SpaceItemReferenceEnt origin) implements ExampleProjectEnt {
 
-  protected String m_name;
-  protected String m_svg;
-  protected SpaceItemReferenceEnt m_origin;
-  
-  protected DefaultExampleProjectEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "ExampleProject";
-  }
-  
-  private DefaultExampleProjectEnt(DefaultExampleProjectEntBuilder builder) {
-    
-    m_name = immutable(builder.m_name);
-    m_svg = immutable(builder.m_svg);
-    m_origin = immutable(builder.m_origin);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultExampleProjectEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param svg
+     * @param origin
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultExampleProjectEnt ent = (DefaultExampleProjectEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_svg, ent.m_svg) && Objects.equals(m_origin, ent.m_origin);
+    public DefaultExampleProjectEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "ExampleProject";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_svg)
-               .append(m_origin)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getSvg() {
-        return m_svg;
-  }
+    @Override
+    public String getSvg() {
+        return svg;
+    }
     
-  @Override
-  public SpaceItemReferenceEnt getOrigin() {
-        return m_origin;
-  }
+    @Override
+    public SpaceItemReferenceEnt getOrigin() {
+        return origin;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultExampleProjectEnt}.
+     */
     public static class DefaultExampleProjectEntBuilder implements ExampleProjectEntBuilder {
-    
-        public DefaultExampleProjectEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private String m_svg;
+
         private SpaceItemReferenceEnt m_origin;
 
         @Override
@@ -160,10 +125,12 @@ public class DefaultExampleProjectEnt implements ExampleProjectEnt {
              return this;
         }
 
-        
         @Override
         public DefaultExampleProjectEnt build() {
-            return new DefaultExampleProjectEnt(this);
+            return new DefaultExampleProjectEnt(
+                immutable(m_name),
+                immutable(m_svg),
+                immutable(m_origin));
         }
     
     }

@@ -46,99 +46,63 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 /**
  * Object to identify and load a node factory.
  *
+ * @param className
+ * @param settings
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodeFactoryKeyEnt implements NodeFactoryKeyEnt {
+public record DefaultNodeFactoryKeyEnt(
+    String className,
+    String settings) implements NodeFactoryKeyEnt {
 
-  protected String m_className;
-  protected String m_settings;
-  
-  protected DefaultNodeFactoryKeyEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodeFactoryKey";
-  }
-  
-  private DefaultNodeFactoryKeyEnt(DefaultNodeFactoryKeyEntBuilder builder) {
-    
-    if(builder.m_className == null) {
-        throw new IllegalArgumentException("className must not be null.");
-    }
-    m_className = immutable(builder.m_className);
-    m_settings = immutable(builder.m_settings);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodeFactoryKeyEnt} including null checks for non-nullable parameters.
+     *
+     * @param className
+     * @param settings
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodeFactoryKeyEnt {
+        if(className == null) {
+            throw new IllegalArgumentException("<className> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodeFactoryKeyEnt ent = (DefaultNodeFactoryKeyEnt)o;
-        return Objects.equals(m_className, ent.m_className) && Objects.equals(m_settings, ent.m_settings);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodeFactoryKey";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_className)
-               .append(m_settings)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getClassName() {
-        return m_className;
-  }
+    @Override
+    public String getClassName() {
+        return className;
+    }
     
-  @Override
-  public String getSettings() {
-        return m_settings;
-  }
+    @Override
+    public String getSettings() {
+        return settings;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodeFactoryKeyEnt}.
+     */
     public static class DefaultNodeFactoryKeyEntBuilder implements NodeFactoryKeyEntBuilder {
-    
-        public DefaultNodeFactoryKeyEntBuilder(){
-            
-        }
-    
+
         private String m_className;
+
         private String m_settings;
 
         @Override
         public DefaultNodeFactoryKeyEntBuilder setClassName(String className) {
              if(className == null) {
-                 throw new IllegalArgumentException("className must not be null.");
+                 throw new IllegalArgumentException("<className> must not be null.");
              }
              m_className = className;
              return this;
@@ -150,10 +114,11 @@ public class DefaultNodeFactoryKeyEnt implements NodeFactoryKeyEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNodeFactoryKeyEnt build() {
-            return new DefaultNodeFactoryKeyEnt(this);
+            return new DefaultNodeFactoryKeyEnt(
+                immutable(m_className),
+                immutable(m_settings));
         }
     
     }

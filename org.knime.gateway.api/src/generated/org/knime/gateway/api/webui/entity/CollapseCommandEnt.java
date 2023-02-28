@@ -59,6 +59,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Resets selected nodes and collapses selected nodes and annotations into a metanode or component.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface CollapseCommandEnt extends GatewayEntity, PartBasedCommandEnt {

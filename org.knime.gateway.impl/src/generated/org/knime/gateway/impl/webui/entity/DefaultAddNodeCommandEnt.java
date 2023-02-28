@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -60,137 +56,110 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 /**
  * Adds a new node to the workflow.
  *
+ * @param kind
+ * @param position
+ * @param nodeFactory
+ * @param url
+ * @param spaceItemReference
+ * @param sourceNodeId
+ * @param sourcePortIdx
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
+public record DefaultAddNodeCommandEnt(
+    KindEnum kind,
+    XYEnt position,
+    NodeFactoryKeyEnt nodeFactory,
+    String url,
+    SpaceItemReferenceEnt spaceItemReference,
+    org.knime.gateway.api.entity.NodeIDEnt sourceNodeId,
+    Integer sourcePortIdx) implements AddNodeCommandEnt {
 
-  protected KindEnum m_kind;
-  protected XYEnt m_position;
-  protected NodeFactoryKeyEnt m_nodeFactory;
-  protected String m_url;
-  protected SpaceItemReferenceEnt m_spaceItemReference;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
-  protected Integer m_sourcePortIdx;
-  
-  protected DefaultAddNodeCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AddNodeCommand";
-  }
-  
-  private DefaultAddNodeCommandEnt(DefaultAddNodeCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_position == null) {
-        throw new IllegalArgumentException("position must not be null.");
-    }
-    m_position = immutable(builder.m_position);
-    m_nodeFactory = immutable(builder.m_nodeFactory);
-    m_url = immutable(builder.m_url);
-    m_spaceItemReference = immutable(builder.m_spaceItemReference);
-    m_sourceNodeId = immutable(builder.m_sourceNodeId);
-    m_sourcePortIdx = immutable(builder.m_sourcePortIdx);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAddNodeCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param position
+     * @param nodeFactory
+     * @param url
+     * @param spaceItemReference
+     * @param sourceNodeId
+     * @param sourcePortIdx
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultAddNodeCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(position == null) {
+            throw new IllegalArgumentException("<position> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultAddNodeCommandEnt ent = (DefaultAddNodeCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_position, ent.m_position) && Objects.equals(m_nodeFactory, ent.m_nodeFactory) && Objects.equals(m_url, ent.m_url) && Objects.equals(m_spaceItemReference, ent.m_spaceItemReference) && Objects.equals(m_sourceNodeId, ent.m_sourceNodeId) && Objects.equals(m_sourcePortIdx, ent.m_sourcePortIdx);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AddNodeCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_position)
-               .append(m_nodeFactory)
-               .append(m_url)
-               .append(m_spaceItemReference)
-               .append(m_sourceNodeId)
-               .append(m_sourcePortIdx)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public XYEnt getPosition() {
-        return m_position;
-  }
+    @Override
+    public XYEnt getPosition() {
+        return position;
+    }
     
-  @Override
-  public NodeFactoryKeyEnt getNodeFactory() {
-        return m_nodeFactory;
-  }
+    @Override
+    public NodeFactoryKeyEnt getNodeFactory() {
+        return nodeFactory;
+    }
     
-  @Override
-  public String getUrl() {
-        return m_url;
-  }
+    @Override
+    public String getUrl() {
+        return url;
+    }
     
-  @Override
-  public SpaceItemReferenceEnt getSpaceItemReference() {
-        return m_spaceItemReference;
-  }
+    @Override
+    public SpaceItemReferenceEnt getSpaceItemReference() {
+        return spaceItemReference;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
-        return m_sourceNodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
+        return sourceNodeId;
+    }
     
-  @Override
-  public Integer getSourcePortIdx() {
-        return m_sourcePortIdx;
-  }
+    @Override
+    public Integer getSourcePortIdx() {
+        return sourcePortIdx;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAddNodeCommandEnt}.
+     */
     public static class DefaultAddNodeCommandEntBuilder implements AddNodeCommandEntBuilder {
-    
-        public DefaultAddNodeCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private XYEnt m_position;
+
         private NodeFactoryKeyEnt m_nodeFactory;
+
         private String m_url;
+
         private SpaceItemReferenceEnt m_spaceItemReference;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
+
         private Integer m_sourcePortIdx;
 
         @Override
         public DefaultAddNodeCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -199,7 +168,7 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
         @Override
         public DefaultAddNodeCommandEntBuilder setPosition(XYEnt position) {
              if(position == null) {
-                 throw new IllegalArgumentException("position must not be null.");
+                 throw new IllegalArgumentException("<position> must not be null.");
              }
              m_position = position;
              return this;
@@ -235,10 +204,16 @@ public class DefaultAddNodeCommandEnt implements AddNodeCommandEnt {
              return this;
         }
 
-        
         @Override
         public DefaultAddNodeCommandEnt build() {
-            return new DefaultAddNodeCommandEnt(this);
+            return new DefaultAddNodeCommandEnt(
+                immutable(m_kind),
+                immutable(m_position),
+                immutable(m_nodeFactory),
+                immutable(m_url),
+                immutable(m_spaceItemReference),
+                immutable(m_sourceNodeId),
+                immutable(m_sourcePortIdx));
         }
     
     }

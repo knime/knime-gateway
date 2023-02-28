@@ -46,81 +46,44 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 
 /**
  * Set of actions allowed on connections. This information is not available if no &#39;interaction info&#39; is supposed to be included in the response.
  *
+ * @param canDelete
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAllowedConnectionActionsEnt implements AllowedConnectionActionsEnt {
+public record DefaultAllowedConnectionActionsEnt(
+    Boolean canDelete) implements AllowedConnectionActionsEnt {
 
-  protected Boolean m_canDelete;
-  
-  protected DefaultAllowedConnectionActionsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AllowedConnectionActions";
-  }
-  
-  private DefaultAllowedConnectionActionsEnt(DefaultAllowedConnectionActionsEntBuilder builder) {
-    
-    m_canDelete = immutable(builder.m_canDelete);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAllowedConnectionActionsEnt} including null checks for non-nullable parameters.
+     *
+     * @param canDelete
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultAllowedConnectionActionsEnt ent = (DefaultAllowedConnectionActionsEnt)o;
-        return Objects.equals(m_canDelete, ent.m_canDelete);
+    public DefaultAllowedConnectionActionsEnt {
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AllowedConnectionActions";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_canDelete)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Boolean isCanDelete() {
-        return m_canDelete;
-  }
+    @Override
+    public Boolean isCanDelete() {
+        return canDelete;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAllowedConnectionActionsEnt}.
+     */
     public static class DefaultAllowedConnectionActionsEntBuilder implements AllowedConnectionActionsEntBuilder {
-    
-        public DefaultAllowedConnectionActionsEntBuilder(){
-            
-        }
-    
+
         private Boolean m_canDelete;
 
         @Override
@@ -129,10 +92,10 @@ public class DefaultAllowedConnectionActionsEnt implements AllowedConnectionActi
              return this;
         }
 
-        
         @Override
         public DefaultAllowedConnectionActionsEnt build() {
-            return new DefaultAllowedConnectionActionsEnt(this);
+            return new DefaultAllowedConnectionActionsEnt(
+                immutable(m_canDelete));
         }
     
     }

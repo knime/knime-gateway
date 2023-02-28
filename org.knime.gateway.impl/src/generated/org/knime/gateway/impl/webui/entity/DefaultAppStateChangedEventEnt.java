@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
@@ -58,89 +54,56 @@ import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 /**
  * Event for changes to the application state
  *
+ * @param appState
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAppStateChangedEventEnt implements AppStateChangedEventEnt {
+public record DefaultAppStateChangedEventEnt(
+    AppStateEnt appState) implements AppStateChangedEventEnt {
 
-  protected AppStateEnt m_appState;
-  
-  protected DefaultAppStateChangedEventEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AppStateChangedEvent";
-  }
-  
-  private DefaultAppStateChangedEventEnt(DefaultAppStateChangedEventEntBuilder builder) {
-    super();
-    if(builder.m_appState == null) {
-        throw new IllegalArgumentException("appState must not be null.");
-    }
-    m_appState = immutable(builder.m_appState);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAppStateChangedEventEnt} including null checks for non-nullable parameters.
+     *
+     * @param appState
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultAppStateChangedEventEnt {
+        if(appState == null) {
+            throw new IllegalArgumentException("<appState> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultAppStateChangedEventEnt ent = (DefaultAppStateChangedEventEnt)o;
-        return Objects.equals(m_appState, ent.m_appState);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AppStateChangedEvent";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_appState)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public AppStateEnt getAppState() {
-        return m_appState;
-  }
+    @Override
+    public AppStateEnt getAppState() {
+        return appState;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAppStateChangedEventEnt}.
+     */
     public static class DefaultAppStateChangedEventEntBuilder implements AppStateChangedEventEntBuilder {
-    
-        public DefaultAppStateChangedEventEntBuilder(){
-            super();
-        }
-    
+
         private AppStateEnt m_appState;
 
         @Override
         public DefaultAppStateChangedEventEntBuilder setAppState(AppStateEnt appState) {
              if(appState == null) {
-                 throw new IllegalArgumentException("appState must not be null.");
+                 throw new IllegalArgumentException("<appState> must not be null.");
              }
              m_appState = appState;
              return this;
         }
 
-        
         @Override
         public DefaultAppStateChangedEventEnt build() {
-            return new DefaultAppStateChangedEventEnt(this);
+            return new DefaultAppStateChangedEventEnt(
+                immutable(m_appState));
         }
     
     }

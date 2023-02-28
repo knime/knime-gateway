@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.service.WorkflowService;
  * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @JsonRpcService(value = "WorkflowService")
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})

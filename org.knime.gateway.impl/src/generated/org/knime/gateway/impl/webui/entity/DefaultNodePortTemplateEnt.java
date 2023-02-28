@@ -46,102 +46,67 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 
 /**
  * Properties that have NodePort and NodePortDescription in common. Or, put differently, the properties required to render a node port in the node repository (i.e. without port information specific to a node-instance).
  *
+ * @param name
+ * @param typeId
+ * @param optional
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
+public record DefaultNodePortTemplateEnt(
+    String name,
+    String typeId,
+    Boolean optional) implements NodePortTemplateEnt {
 
-  protected String m_name;
-  protected String m_typeId;
-  protected Boolean m_optional;
-  
-  protected DefaultNodePortTemplateEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "NodePortTemplate";
-  }
-  
-  private DefaultNodePortTemplateEnt(DefaultNodePortTemplateEntBuilder builder) {
-    
-    m_name = immutable(builder.m_name);
-    if(builder.m_typeId == null) {
-        throw new IllegalArgumentException("typeId must not be null.");
-    }
-    m_typeId = immutable(builder.m_typeId);
-    m_optional = immutable(builder.m_optional);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultNodePortTemplateEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param typeId
+     * @param optional
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultNodePortTemplateEnt {
+        if(typeId == null) {
+            throw new IllegalArgumentException("<typeId> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultNodePortTemplateEnt ent = (DefaultNodePortTemplateEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_typeId, ent.m_typeId) && Objects.equals(m_optional, ent.m_optional);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "NodePortTemplate";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_typeId)
-               .append(m_optional)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getTypeId() {
-        return m_typeId;
-  }
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
     
-  @Override
-  public Boolean isOptional() {
-        return m_optional;
-  }
+    @Override
+    public Boolean isOptional() {
+        return optional;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultNodePortTemplateEnt}.
+     */
     public static class DefaultNodePortTemplateEntBuilder implements NodePortTemplateEntBuilder {
-    
-        public DefaultNodePortTemplateEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private String m_typeId;
+
         private Boolean m_optional;
 
         @Override
@@ -153,7 +118,7 @@ public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
         @Override
         public DefaultNodePortTemplateEntBuilder setTypeId(String typeId) {
              if(typeId == null) {
-                 throw new IllegalArgumentException("typeId must not be null.");
+                 throw new IllegalArgumentException("<typeId> must not be null.");
              }
              m_typeId = typeId;
              return this;
@@ -165,10 +130,12 @@ public class DefaultNodePortTemplateEnt implements NodePortTemplateEnt {
              return this;
         }
 
-        
         @Override
         public DefaultNodePortTemplateEnt build() {
-            return new DefaultNodePortTemplateEnt(this);
+            return new DefaultNodePortTemplateEnt(
+                immutable(m_name),
+                immutable(m_typeId),
+                immutable(m_optional));
         }
     
     }

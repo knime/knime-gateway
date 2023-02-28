@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
@@ -57,158 +53,133 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 /**
  * Set of actions allowed specific to nodes.
  *
+ * @param canExecute
+ * @param canCancel
+ * @param canReset
+ * @param canOpenDialog
+ * @param canOpenLegacyFlowVariableDialog
+ * @param canOpenView
+ * @param canDelete
+ * @param canExpand
+ * @param canCollapse
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
+public record DefaultAllowedNodeActionsEnt(
+    Boolean canExecute,
+    Boolean canCancel,
+    Boolean canReset,
+    Boolean canOpenDialog,
+    Boolean canOpenLegacyFlowVariableDialog,
+    Boolean canOpenView,
+    Boolean canDelete,
+    CanExpandEnum canExpand,
+    CanCollapseEnum canCollapse) implements AllowedNodeActionsEnt {
 
-  protected Boolean m_canExecute;
-  protected Boolean m_canCancel;
-  protected Boolean m_canReset;
-  protected Boolean m_canOpenDialog;
-  protected Boolean m_canOpenLegacyFlowVariableDialog;
-  protected Boolean m_canOpenView;
-  protected Boolean m_canDelete;
-  protected CanExpandEnum m_canExpand;
-  protected CanCollapseEnum m_canCollapse;
-  
-  protected DefaultAllowedNodeActionsEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "AllowedNodeActions";
-  }
-  
-  private DefaultAllowedNodeActionsEnt(DefaultAllowedNodeActionsEntBuilder builder) {
-    super();
-    if(builder.m_canExecute == null) {
-        throw new IllegalArgumentException("canExecute must not be null.");
-    }
-    m_canExecute = immutable(builder.m_canExecute);
-    if(builder.m_canCancel == null) {
-        throw new IllegalArgumentException("canCancel must not be null.");
-    }
-    m_canCancel = immutable(builder.m_canCancel);
-    if(builder.m_canReset == null) {
-        throw new IllegalArgumentException("canReset must not be null.");
-    }
-    m_canReset = immutable(builder.m_canReset);
-    m_canOpenDialog = immutable(builder.m_canOpenDialog);
-    m_canOpenLegacyFlowVariableDialog = immutable(builder.m_canOpenLegacyFlowVariableDialog);
-    m_canOpenView = immutable(builder.m_canOpenView);
-    m_canDelete = immutable(builder.m_canDelete);
-    m_canExpand = immutable(builder.m_canExpand);
-    m_canCollapse = immutable(builder.m_canCollapse);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultAllowedNodeActionsEnt} including null checks for non-nullable parameters.
+     *
+     * @param canExecute
+     * @param canCancel
+     * @param canReset
+     * @param canOpenDialog
+     * @param canOpenLegacyFlowVariableDialog
+     * @param canOpenView
+     * @param canDelete
+     * @param canExpand
+     * @param canCollapse
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultAllowedNodeActionsEnt {
+        if(canExecute == null) {
+            throw new IllegalArgumentException("<canExecute> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(canCancel == null) {
+            throw new IllegalArgumentException("<canCancel> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(canReset == null) {
+            throw new IllegalArgumentException("<canReset> must not be null.");
         }
-        DefaultAllowedNodeActionsEnt ent = (DefaultAllowedNodeActionsEnt)o;
-        return Objects.equals(m_canExecute, ent.m_canExecute) && Objects.equals(m_canCancel, ent.m_canCancel) && Objects.equals(m_canReset, ent.m_canReset) && Objects.equals(m_canOpenDialog, ent.m_canOpenDialog) && Objects.equals(m_canOpenLegacyFlowVariableDialog, ent.m_canOpenLegacyFlowVariableDialog) && Objects.equals(m_canOpenView, ent.m_canOpenView) && Objects.equals(m_canDelete, ent.m_canDelete) && Objects.equals(m_canExpand, ent.m_canExpand) && Objects.equals(m_canCollapse, ent.m_canCollapse);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "AllowedNodeActions";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_canExecute)
-               .append(m_canCancel)
-               .append(m_canReset)
-               .append(m_canOpenDialog)
-               .append(m_canOpenLegacyFlowVariableDialog)
-               .append(m_canOpenView)
-               .append(m_canDelete)
-               .append(m_canExpand)
-               .append(m_canCollapse)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public Boolean isCanExecute() {
-        return m_canExecute;
-  }
+    @Override
+    public Boolean isCanExecute() {
+        return canExecute;
+    }
     
-  @Override
-  public Boolean isCanCancel() {
-        return m_canCancel;
-  }
+    @Override
+    public Boolean isCanCancel() {
+        return canCancel;
+    }
     
-  @Override
-  public Boolean isCanReset() {
-        return m_canReset;
-  }
+    @Override
+    public Boolean isCanReset() {
+        return canReset;
+    }
     
-  @Override
-  public Boolean isCanOpenDialog() {
-        return m_canOpenDialog;
-  }
+    @Override
+    public Boolean isCanOpenDialog() {
+        return canOpenDialog;
+    }
     
-  @Override
-  public Boolean isCanOpenLegacyFlowVariableDialog() {
-        return m_canOpenLegacyFlowVariableDialog;
-  }
+    @Override
+    public Boolean isCanOpenLegacyFlowVariableDialog() {
+        return canOpenLegacyFlowVariableDialog;
+    }
     
-  @Override
-  public Boolean isCanOpenView() {
-        return m_canOpenView;
-  }
+    @Override
+    public Boolean isCanOpenView() {
+        return canOpenView;
+    }
     
-  @Override
-  public Boolean isCanDelete() {
-        return m_canDelete;
-  }
+    @Override
+    public Boolean isCanDelete() {
+        return canDelete;
+    }
     
-  @Override
-  public CanExpandEnum getCanExpand() {
-        return m_canExpand;
-  }
+    @Override
+    public CanExpandEnum getCanExpand() {
+        return canExpand;
+    }
     
-  @Override
-  public CanCollapseEnum getCanCollapse() {
-        return m_canCollapse;
-  }
+    @Override
+    public CanCollapseEnum getCanCollapse() {
+        return canCollapse;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultAllowedNodeActionsEnt}.
+     */
     public static class DefaultAllowedNodeActionsEntBuilder implements AllowedNodeActionsEntBuilder {
-    
-        public DefaultAllowedNodeActionsEntBuilder(){
-            super();
-        }
-    
+
         private Boolean m_canExecute;
+
         private Boolean m_canCancel;
+
         private Boolean m_canReset;
+
         private Boolean m_canOpenDialog;
+
         private Boolean m_canOpenLegacyFlowVariableDialog;
+
         private Boolean m_canOpenView;
+
         private Boolean m_canDelete;
+
         private CanExpandEnum m_canExpand;
+
         private CanCollapseEnum m_canCollapse;
 
         @Override
         public DefaultAllowedNodeActionsEntBuilder setCanExecute(Boolean canExecute) {
              if(canExecute == null) {
-                 throw new IllegalArgumentException("canExecute must not be null.");
+                 throw new IllegalArgumentException("<canExecute> must not be null.");
              }
              m_canExecute = canExecute;
              return this;
@@ -217,7 +188,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         @Override
         public DefaultAllowedNodeActionsEntBuilder setCanCancel(Boolean canCancel) {
              if(canCancel == null) {
-                 throw new IllegalArgumentException("canCancel must not be null.");
+                 throw new IllegalArgumentException("<canCancel> must not be null.");
              }
              m_canCancel = canCancel;
              return this;
@@ -226,7 +197,7 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
         @Override
         public DefaultAllowedNodeActionsEntBuilder setCanReset(Boolean canReset) {
              if(canReset == null) {
-                 throw new IllegalArgumentException("canReset must not be null.");
+                 throw new IllegalArgumentException("<canReset> must not be null.");
              }
              m_canReset = canReset;
              return this;
@@ -268,10 +239,18 @@ public class DefaultAllowedNodeActionsEnt implements AllowedNodeActionsEnt {
              return this;
         }
 
-        
         @Override
         public DefaultAllowedNodeActionsEnt build() {
-            return new DefaultAllowedNodeActionsEnt(this);
+            return new DefaultAllowedNodeActionsEnt(
+                immutable(m_canExecute),
+                immutable(m_canCancel),
+                immutable(m_canReset),
+                immutable(m_canOpenDialog),
+                immutable(m_canOpenLegacyFlowVariableDialog),
+                immutable(m_canOpenView),
+                immutable(m_canDelete),
+                immutable(m_canExpand),
+                immutable(m_canCollapse));
         }
     
     }

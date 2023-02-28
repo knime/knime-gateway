@@ -46,99 +46,62 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 /**
  * A command that is executed to change a workflow.
  *
+ * @param kind
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultWorkflowCommandEnt implements WorkflowCommandEnt {
+public record DefaultWorkflowCommandEnt(
+    KindEnum kind) implements WorkflowCommandEnt {
 
-  protected KindEnum m_kind;
-  
-  protected DefaultWorkflowCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "WorkflowCommand";
-  }
-  
-  private DefaultWorkflowCommandEnt(DefaultWorkflowCommandEntBuilder builder) {
-    
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultWorkflowCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultWorkflowCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultWorkflowCommandEnt ent = (DefaultWorkflowCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "WorkflowCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultWorkflowCommandEnt}.
+     */
     public static class DefaultWorkflowCommandEntBuilder implements WorkflowCommandEntBuilder {
-    
-        public DefaultWorkflowCommandEntBuilder(){
-            
-        }
-    
+
         private KindEnum m_kind;
 
         @Override
         public DefaultWorkflowCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
         }
 
-        
         @Override
         public DefaultWorkflowCommandEnt build() {
-            return new DefaultWorkflowCommandEnt(this);
+            return new DefaultWorkflowCommandEnt(
+                immutable(m_kind));
         }
     
     }

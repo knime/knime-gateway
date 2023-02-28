@@ -46,10 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
@@ -57,128 +53,99 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 /**
  * Connects two nodes (and by doing that possibly replacing another connection).
  *
+ * @param kind
+ * @param sourceNodeId
+ * @param sourcePortIdx
+ * @param destinationNodeId
+ * @param destinationPortIdx
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultConnectCommandEnt implements ConnectCommandEnt {
+public record DefaultConnectCommandEnt(
+    KindEnum kind,
+    org.knime.gateway.api.entity.NodeIDEnt sourceNodeId,
+    Integer sourcePortIdx,
+    org.knime.gateway.api.entity.NodeIDEnt destinationNodeId,
+    Integer destinationPortIdx) implements ConnectCommandEnt {
 
-  protected KindEnum m_kind;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
-  protected Integer m_sourcePortIdx;
-  protected org.knime.gateway.api.entity.NodeIDEnt m_destinationNodeId;
-  protected Integer m_destinationPortIdx;
-  
-  protected DefaultConnectCommandEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "ConnectCommand";
-  }
-  
-  private DefaultConnectCommandEnt(DefaultConnectCommandEntBuilder builder) {
-    super();
-    if(builder.m_kind == null) {
-        throw new IllegalArgumentException("kind must not be null.");
-    }
-    m_kind = immutable(builder.m_kind);
-    if(builder.m_sourceNodeId == null) {
-        throw new IllegalArgumentException("sourceNodeId must not be null.");
-    }
-    m_sourceNodeId = immutable(builder.m_sourceNodeId);
-    if(builder.m_sourcePortIdx == null) {
-        throw new IllegalArgumentException("sourcePortIdx must not be null.");
-    }
-    m_sourcePortIdx = immutable(builder.m_sourcePortIdx);
-    if(builder.m_destinationNodeId == null) {
-        throw new IllegalArgumentException("destinationNodeId must not be null.");
-    }
-    m_destinationNodeId = immutable(builder.m_destinationNodeId);
-    if(builder.m_destinationPortIdx == null) {
-        throw new IllegalArgumentException("destinationPortIdx must not be null.");
-    }
-    m_destinationPortIdx = immutable(builder.m_destinationPortIdx);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultConnectCommandEnt} including null checks for non-nullable parameters.
+     *
+     * @param kind
+     * @param sourceNodeId
+     * @param sourcePortIdx
+     * @param destinationNodeId
+     * @param destinationPortIdx
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultConnectCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(sourceNodeId == null) {
+            throw new IllegalArgumentException("<sourceNodeId> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
+        if(sourcePortIdx == null) {
+            throw new IllegalArgumentException("<sourcePortIdx> must not be null.");
         }
-        DefaultConnectCommandEnt ent = (DefaultConnectCommandEnt)o;
-        return Objects.equals(m_kind, ent.m_kind) && Objects.equals(m_sourceNodeId, ent.m_sourceNodeId) && Objects.equals(m_sourcePortIdx, ent.m_sourcePortIdx) && Objects.equals(m_destinationNodeId, ent.m_destinationNodeId) && Objects.equals(m_destinationPortIdx, ent.m_destinationPortIdx);
+        if(destinationNodeId == null) {
+            throw new IllegalArgumentException("<destinationNodeId> must not be null.");
+        }
+        if(destinationPortIdx == null) {
+            throw new IllegalArgumentException("<destinationPortIdx> must not be null.");
+        }
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "ConnectCommand";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_kind)
-               .append(m_sourceNodeId)
-               .append(m_sourcePortIdx)
-               .append(m_destinationNodeId)
-               .append(m_destinationPortIdx)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public KindEnum getKind() {
-        return m_kind;
-  }
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
-        return m_sourceNodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
+        return sourceNodeId;
+    }
     
-  @Override
-  public Integer getSourcePortIdx() {
-        return m_sourcePortIdx;
-  }
+    @Override
+    public Integer getSourcePortIdx() {
+        return sourcePortIdx;
+    }
     
-  @Override
-  public org.knime.gateway.api.entity.NodeIDEnt getDestinationNodeId() {
-        return m_destinationNodeId;
-  }
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getDestinationNodeId() {
+        return destinationNodeId;
+    }
     
-  @Override
-  public Integer getDestinationPortIdx() {
-        return m_destinationPortIdx;
-  }
+    @Override
+    public Integer getDestinationPortIdx() {
+        return destinationPortIdx;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultConnectCommandEnt}.
+     */
     public static class DefaultConnectCommandEntBuilder implements ConnectCommandEntBuilder {
-    
-        public DefaultConnectCommandEntBuilder(){
-            super();
-        }
-    
+
         private KindEnum m_kind;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
+
         private Integer m_sourcePortIdx;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_destinationNodeId;
+
         private Integer m_destinationPortIdx;
 
         @Override
         public DefaultConnectCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
-                 throw new IllegalArgumentException("kind must not be null.");
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
              return this;
@@ -187,7 +154,7 @@ public class DefaultConnectCommandEnt implements ConnectCommandEnt {
         @Override
         public DefaultConnectCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId) {
              if(sourceNodeId == null) {
-                 throw new IllegalArgumentException("sourceNodeId must not be null.");
+                 throw new IllegalArgumentException("<sourceNodeId> must not be null.");
              }
              m_sourceNodeId = sourceNodeId;
              return this;
@@ -196,7 +163,7 @@ public class DefaultConnectCommandEnt implements ConnectCommandEnt {
         @Override
         public DefaultConnectCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx) {
              if(sourcePortIdx == null) {
-                 throw new IllegalArgumentException("sourcePortIdx must not be null.");
+                 throw new IllegalArgumentException("<sourcePortIdx> must not be null.");
              }
              m_sourcePortIdx = sourcePortIdx;
              return this;
@@ -205,7 +172,7 @@ public class DefaultConnectCommandEnt implements ConnectCommandEnt {
         @Override
         public DefaultConnectCommandEntBuilder setDestinationNodeId(org.knime.gateway.api.entity.NodeIDEnt destinationNodeId) {
              if(destinationNodeId == null) {
-                 throw new IllegalArgumentException("destinationNodeId must not be null.");
+                 throw new IllegalArgumentException("<destinationNodeId> must not be null.");
              }
              m_destinationNodeId = destinationNodeId;
              return this;
@@ -214,16 +181,20 @@ public class DefaultConnectCommandEnt implements ConnectCommandEnt {
         @Override
         public DefaultConnectCommandEntBuilder setDestinationPortIdx(Integer destinationPortIdx) {
              if(destinationPortIdx == null) {
-                 throw new IllegalArgumentException("destinationPortIdx must not be null.");
+                 throw new IllegalArgumentException("<destinationPortIdx> must not be null.");
              }
              m_destinationPortIdx = destinationPortIdx;
              return this;
         }
 
-        
         @Override
         public DefaultConnectCommandEnt build() {
-            return new DefaultConnectCommandEnt(this);
+            return new DefaultConnectCommandEnt(
+                immutable(m_kind),
+                immutable(m_sourceNodeId),
+                immutable(m_sourcePortIdx),
+                immutable(m_destinationNodeId),
+                immutable(m_destinationPortIdx));
         }
     
     }

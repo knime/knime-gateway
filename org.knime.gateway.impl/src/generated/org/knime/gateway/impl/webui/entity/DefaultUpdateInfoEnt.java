@@ -46,111 +46,76 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 
 /**
  * Information about an available update, derived from &#x60;UpdateInfo&#x60; core class.
  *
+ * @param name
+ * @param shortName
+ * @param isUpdatePossible
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public class DefaultUpdateInfoEnt implements UpdateInfoEnt {
+public record DefaultUpdateInfoEnt(
+    String name,
+    String shortName,
+    Boolean isUpdatePossible) implements UpdateInfoEnt {
 
-  protected String m_name;
-  protected String m_shortName;
-  protected Boolean m_isUpdatePossible;
-  
-  protected DefaultUpdateInfoEnt() {
-    //for sub-classes
-  }
-  
-  @Override
-  public String getTypeID() {
-    return "UpdateInfo";
-  }
-  
-  private DefaultUpdateInfoEnt(DefaultUpdateInfoEntBuilder builder) {
-    
-    if(builder.m_name == null) {
-        throw new IllegalArgumentException("name must not be null.");
-    }
-    m_name = immutable(builder.m_name);
-    if(builder.m_shortName == null) {
-        throw new IllegalArgumentException("shortName must not be null.");
-    }
-    m_shortName = immutable(builder.m_shortName);
-    m_isUpdatePossible = immutable(builder.m_isUpdatePossible);
-  }
-  
-   /**
-     * {@inheritDoc}
+    /**
+     * Canonical constructor for {@link DefaultUpdateInfoEnt} including null checks for non-nullable parameters.
+     *
+     * @param name
+     * @param shortName
+     * @param isUpdatePossible
      */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    public DefaultUpdateInfoEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (o == null) {
-            return false;
+        if(shortName == null) {
+            throw new IllegalArgumentException("<shortName> must not be null.");
         }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-        DefaultUpdateInfoEnt ent = (DefaultUpdateInfoEnt)o;
-        return Objects.equals(m_name, ent.m_name) && Objects.equals(m_shortName, ent.m_shortName) && Objects.equals(m_isUpdatePossible, ent.m_isUpdatePossible);
     }
 
-
+    @Override
+    public String getTypeID() {
+        return "UpdateInfo";
+    }
   
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public int hashCode() {
-       return new HashCodeBuilder()
-               .append(m_name)
-               .append(m_shortName)
-               .append(m_isUpdatePossible)
-               .toHashCode();
-   }
-  
-	
-	
-  @Override
-  public String getName() {
-        return m_name;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
     
-  @Override
-  public String getShortName() {
-        return m_shortName;
-  }
+    @Override
+    public String getShortName() {
+        return shortName;
+    }
     
-  @Override
-  public Boolean isIsUpdatePossible() {
-        return m_isUpdatePossible;
-  }
+    @Override
+    public Boolean isIsUpdatePossible() {
+        return isUpdatePossible;
+    }
     
-  
+    /**
+     * A builder for {@link DefaultUpdateInfoEnt}.
+     */
     public static class DefaultUpdateInfoEntBuilder implements UpdateInfoEntBuilder {
-    
-        public DefaultUpdateInfoEntBuilder(){
-            
-        }
-    
+
         private String m_name;
+
         private String m_shortName;
+
         private Boolean m_isUpdatePossible;
 
         @Override
         public DefaultUpdateInfoEntBuilder setName(String name) {
              if(name == null) {
-                 throw new IllegalArgumentException("name must not be null.");
+                 throw new IllegalArgumentException("<name> must not be null.");
              }
              m_name = name;
              return this;
@@ -159,7 +124,7 @@ public class DefaultUpdateInfoEnt implements UpdateInfoEnt {
         @Override
         public DefaultUpdateInfoEntBuilder setShortName(String shortName) {
              if(shortName == null) {
-                 throw new IllegalArgumentException("shortName must not be null.");
+                 throw new IllegalArgumentException("<shortName> must not be null.");
              }
              m_shortName = shortName;
              return this;
@@ -171,10 +136,12 @@ public class DefaultUpdateInfoEnt implements UpdateInfoEnt {
              return this;
         }
 
-        
         @Override
         public DefaultUpdateInfoEnt build() {
-            return new DefaultUpdateInfoEnt(this);
+            return new DefaultUpdateInfoEnt(
+                immutable(m_name),
+                immutable(m_shortName),
+                immutable(m_isUpdatePossible));
         }
     
     }
