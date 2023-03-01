@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder;
@@ -68,6 +69,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEnt
  */
 
 @JsonDeserialize(builder=DefaultWorkflowEntBuilder.class)
+@JsonSerialize(as=WorkflowEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface WorkflowEntMixIn extends WorkflowEnt {
 

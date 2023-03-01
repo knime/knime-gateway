@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionInfoEnt.DefaultNodeExecutionInfoEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeExecutionInfoEnt.DefaultNo
  */
 
 @JsonDeserialize(builder=DefaultNodeExecutionInfoEntBuilder.class)
+@JsonSerialize(as=NodeExecutionInfoEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeExecutionInfoEntMixIn extends NodeExecutionInfoEnt {
 

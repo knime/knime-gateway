@@ -51,6 +51,7 @@ import org.knime.gateway.api.webui.entity.LinkEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder;
@@ -62,6 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt.DefaultProj
  */
 
 @JsonDeserialize(builder=DefaultProjectMetadataEntBuilder.class)
+@JsonSerialize(as=ProjectMetadataEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ProjectMetadataEntMixIn extends ProjectMetadataEnt {
 

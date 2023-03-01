@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeGroupsEnt.DefaultNodeGroupsEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeGroupsEnt.DefaultNodeGroup
  */
 
 @JsonDeserialize(builder=DefaultNodeGroupsEntBuilder.class)
+@JsonSerialize(as=NodeGroupsEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeGroupsEntMixIn extends NodeGroupsEnt {
 

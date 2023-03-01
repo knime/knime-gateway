@@ -51,6 +51,7 @@ import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
@@ -62,6 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTra
  */
 
 @JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
+@JsonSerialize(as=TranslateCommandEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
 

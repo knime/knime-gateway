@@ -50,6 +50,7 @@ import org.knime.gateway.json.webui.entity.NodePortEntMixIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt.DefaultMetaNod
  */
 
 @JsonDeserialize(builder=DefaultMetaNodePortEntBuilder.class)
+@JsonSerialize(as=MetaNodePortEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
 

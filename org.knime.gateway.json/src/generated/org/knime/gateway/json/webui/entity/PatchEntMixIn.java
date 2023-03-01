@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilde
  */
 
 @JsonDeserialize(builder=DefaultPatchEntBuilder.class)
+@JsonSerialize(as=PatchEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface PatchEntMixIn extends PatchEnt {
 

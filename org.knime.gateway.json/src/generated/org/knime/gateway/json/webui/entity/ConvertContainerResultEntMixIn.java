@@ -50,6 +50,7 @@ import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt.DefaultConvertContainerResultEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt.Defa
  */
 
 @JsonDeserialize(builder=DefaultConvertContainerResultEntBuilder.class)
+@JsonSerialize(as=ConvertContainerResultEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ConvertContainerResultEntMixIn extends ConvertContainerResultEnt {
 

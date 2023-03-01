@@ -57,6 +57,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
@@ -86,6 +87,7 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
   @Type(value = DefaultMetaNodeEnt.class, name = "metanode")
 })
 @JsonDeserialize(builder=DefaultNodeEntBuilder.class)
+@JsonSerialize(as=NodeEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeEntMixIn extends NodeEnt {
 

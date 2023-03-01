@@ -52,6 +52,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
@@ -84,6 +85,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
   @Type(value = DefaultAppStateChangedEventTypeEnt.class, name = "AppStateChangedEventType")
 })
 @JsonDeserialize(builder=DefaultEventTypeEntBuilder.class)
+@JsonSerialize(as=EventTypeEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface EventTypeEntMixIn extends EventTypeEnt {
 

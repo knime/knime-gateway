@@ -1,13 +1,11 @@
 {
   "spaces" : [ {
-    "_private" : true,
     "description" : "description2",
     "id" : "id2",
     "name" : "name2",
     "owner" : "owner2",
     "private" : true
   }, {
-    "_private" : false,
     "description" : "description3",
     "id" : "id3",
     "name" : "name3",

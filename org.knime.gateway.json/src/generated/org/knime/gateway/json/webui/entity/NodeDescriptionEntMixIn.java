@@ -52,6 +52,7 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNodeDescriptionEntBuilder;
@@ -63,6 +64,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNode
  */
 
 @JsonDeserialize(builder=DefaultNodeDescriptionEntBuilder.class)
+@JsonSerialize(as=NodeDescriptionEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeDescriptionEntMixIn extends NodeDescriptionEnt {
 

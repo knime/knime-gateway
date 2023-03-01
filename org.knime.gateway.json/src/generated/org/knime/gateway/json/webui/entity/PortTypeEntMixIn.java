@@ -49,6 +49,7 @@ package org.knime.gateway.json.webui.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEntBuilder;
@@ -60,6 +61,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEnt
  */
 
 @JsonDeserialize(builder=DefaultPortTypeEntBuilder.class)
+@JsonSerialize(as=PortTypeEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface PortTypeEntMixIn extends PortTypeEnt {
 

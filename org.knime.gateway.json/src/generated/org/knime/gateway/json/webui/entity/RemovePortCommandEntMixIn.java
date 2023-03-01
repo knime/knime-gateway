@@ -50,6 +50,7 @@ import org.knime.gateway.json.webui.entity.PortCommandEntMixIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt.DefaultRe
  */
 
 @JsonDeserialize(builder=DefaultRemovePortCommandEntBuilder.class)
+@JsonSerialize(as=RemovePortCommandEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface RemovePortCommandEntMixIn extends RemovePortCommandEnt {
 

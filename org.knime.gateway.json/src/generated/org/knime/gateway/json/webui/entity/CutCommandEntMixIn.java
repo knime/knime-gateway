@@ -50,6 +50,7 @@ import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt.DefaultCutCommandEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt.DefaultCutComman
  */
 
 @JsonDeserialize(builder=DefaultCutCommandEntBuilder.class)
+@JsonSerialize(as=CutCommandEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface CutCommandEntMixIn extends CutCommandEnt {
 

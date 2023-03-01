@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt.DefaultAnnotationEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt.DefaultAnnotatio
  */
 
 @JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
+@JsonSerialize(as=AnnotationEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface AnnotationEntMixIn extends AnnotationEnt {
 

@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.DefaultNativeNodeInvariantsEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.Defaul
  */
 
 @JsonDeserialize(builder=DefaultNativeNodeInvariantsEntBuilder.class)
+@JsonSerialize(as=NativeNodeInvariantsEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
 

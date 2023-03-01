@@ -50,6 +50,7 @@ import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt.DefaultS
  */
 
 @JsonDeserialize(builder=DefaultSelectionEventTypeEntBuilder.class)
+@JsonSerialize(as=SelectionEventTypeEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
 

@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt.DefaultConnectionEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt.DefaultConnectio
  */
 
 @JsonDeserialize(builder=DefaultConnectionEntBuilder.class)
+@JsonSerialize(as=ConnectionEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ConnectionEntMixIn extends ConnectionEnt {
 

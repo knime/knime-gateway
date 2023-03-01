@@ -51,6 +51,7 @@ import org.knime.gateway.json.webui.entity.EventEntMixIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventEnt.DefaultUpdateAvailableEventEntBuilder;
@@ -62,6 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventEnt.Defaul
  */
 
 @JsonDeserialize(builder=DefaultUpdateAvailableEventEntBuilder.class)
+@JsonSerialize(as=UpdateAvailableEventEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface UpdateAvailableEventEntMixIn extends UpdateAvailableEventEnt {
 

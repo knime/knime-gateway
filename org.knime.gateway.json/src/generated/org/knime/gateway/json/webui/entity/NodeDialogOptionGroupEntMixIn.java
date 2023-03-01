@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionGroupEnt.DefaultNodeDialogOptionGroupEntBuilder;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionGroupEnt.Defau
  */
 
 @JsonDeserialize(builder=DefaultNodeDialogOptionGroupEntBuilder.class)
+@JsonSerialize(as=NodeDialogOptionGroupEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeDialogOptionGroupEntMixIn extends NodeDialogOptionGroupEnt {
 

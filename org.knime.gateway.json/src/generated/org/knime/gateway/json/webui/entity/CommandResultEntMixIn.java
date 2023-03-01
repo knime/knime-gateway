@@ -52,6 +52,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
@@ -93,6 +94,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
   @Type(value = DefaultAddPortResultEnt.class, name = "addPortResult")
 })
 @JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
+@JsonSerialize(as=CommandResultEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface CommandResultEntMixIn extends CommandResultEnt {
 
