@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
  * @param translation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultTranslateCommandEnt(
@@ -70,12 +69,7 @@ public record DefaultTranslateCommandEnt(
     XYEnt translation) implements TranslateCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultTranslateCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param nodeIds
-     * @param annotationIds
-     * @param translation
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultTranslateCommandEnt {
         if(kind == null) {

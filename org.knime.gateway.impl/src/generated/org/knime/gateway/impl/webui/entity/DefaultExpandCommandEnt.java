@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
  * @param nodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultExpandCommandEnt(
@@ -65,10 +64,7 @@ public record DefaultExpandCommandEnt(
     org.knime.gateway.api.entity.NodeIDEnt nodeId) implements ExpandCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultExpandCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param nodeId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultExpandCommandEnt {
         if(kind == null) {

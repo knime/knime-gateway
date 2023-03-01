@@ -57,16 +57,13 @@ import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
  * @param appState
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAppStateChangedEventEnt(
     AppStateEnt appState) implements AppStateChangedEventEnt {
 
     /**
-     * Canonical constructor for {@link DefaultAppStateChangedEventEnt} including null checks for non-nullable parameters.
-     *
-     * @param appState
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultAppStateChangedEventEnt {
         if(appState == null) {

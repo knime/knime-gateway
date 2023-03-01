@@ -58,7 +58,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Details about a custom job manager provided by a third party.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface CustomJobManagerEnt extends GatewayEntity {

@@ -56,7 +56,6 @@ import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
  * @param name
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpacePathSegmentEnt(
@@ -64,10 +63,7 @@ public record DefaultSpacePathSegmentEnt(
     String name) implements SpacePathSegmentEnt {
 
     /**
-     * Canonical constructor for {@link DefaultSpacePathSegmentEnt} including null checks for non-nullable parameters.
-     *
-     * @param id
-     * @param name
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultSpacePathSegmentEnt {
         if(id == null) {

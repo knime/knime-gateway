@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.CutCommandEnt;
  * @param annotationIds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultCutCommandEnt(
@@ -67,11 +66,7 @@ public record DefaultCutCommandEnt(
     java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) implements CutCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultCutCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param nodeIds
-     * @param annotationIds
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultCutCommandEnt {
         if(kind == null) {

@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
  * @param supportedPortTypes
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultDynamicPortGroupDescriptionEnt(
@@ -69,12 +68,7 @@ public record DefaultDynamicPortGroupDescriptionEnt(
     java.util.List<NodePortTemplateEnt> supportedPortTypes) implements DynamicPortGroupDescriptionEnt {
 
     /**
-     * Canonical constructor for {@link DefaultDynamicPortGroupDescriptionEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param identifier
-     * @param description
-     * @param supportedPortTypes
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultDynamicPortGroupDescriptionEnt {
         if(name == null) {

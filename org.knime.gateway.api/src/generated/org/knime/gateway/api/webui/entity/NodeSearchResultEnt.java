@@ -59,7 +59,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Represents the result of a node/component search in the node repository.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodeSearchResultEnt extends GatewayEntity {

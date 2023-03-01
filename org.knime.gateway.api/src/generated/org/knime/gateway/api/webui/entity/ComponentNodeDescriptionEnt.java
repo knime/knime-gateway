@@ -63,7 +63,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Description of certain aspects of a component. This is static information for a component which remains the same even if component is not part of a workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNodeAndDescriptionEnt, NodeDescriptionEnt {

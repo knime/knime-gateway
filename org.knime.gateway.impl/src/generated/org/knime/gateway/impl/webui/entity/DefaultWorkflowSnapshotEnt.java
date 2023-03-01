@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
  * @param snapshotId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultWorkflowSnapshotEnt(
@@ -65,10 +64,7 @@ public record DefaultWorkflowSnapshotEnt(
     String snapshotId) implements WorkflowSnapshotEnt {
 
     /**
-     * Canonical constructor for {@link DefaultWorkflowSnapshotEnt} including null checks for non-nullable parameters.
-     *
-     * @param workflow
-     * @param snapshotId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultWorkflowSnapshotEnt {
         if(workflow == null) {

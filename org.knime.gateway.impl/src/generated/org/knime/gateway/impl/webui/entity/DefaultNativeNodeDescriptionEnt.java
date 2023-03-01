@@ -70,7 +70,6 @@ import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
  * @param links
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNativeNodeDescriptionEnt(
@@ -86,18 +85,7 @@ public record DefaultNativeNodeDescriptionEnt(
     java.util.List<LinkEnt> links) implements NativeNodeDescriptionEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNativeNodeDescriptionEnt} including null checks for non-nullable parameters.
-     *
-     * @param description
-     * @param options
-     * @param views
-     * @param inPorts
-     * @param outPorts
-     * @param shortDescription
-     * @param dynamicInPortGroupDescriptions
-     * @param dynamicOutPortGroupDescriptions
-     * @param interactiveView
-     * @param links
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNativeNodeDescriptionEnt {
     }

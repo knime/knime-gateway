@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.LoopInfoEnt;
  * @param status
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultLoopInfoEnt(
@@ -65,10 +64,7 @@ public record DefaultLoopInfoEnt(
     StatusEnum status) implements LoopInfoEnt {
 
     /**
-     * Canonical constructor for {@link DefaultLoopInfoEnt} including null checks for non-nullable parameters.
-     *
-     * @param allowedActions
-     * @param status
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultLoopInfoEnt {
     }

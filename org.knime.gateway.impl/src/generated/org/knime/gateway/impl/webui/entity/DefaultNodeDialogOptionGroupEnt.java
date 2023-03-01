@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
  * @param fields
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeDialogOptionGroupEnt(
@@ -67,11 +66,7 @@ public record DefaultNodeDialogOptionGroupEnt(
     java.util.List<NodeDialogOptionDescriptionEnt> fields) implements NodeDialogOptionGroupEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodeDialogOptionGroupEnt} including null checks for non-nullable parameters.
-     *
-     * @param sectionName
-     * @param sectionDescription
-     * @param fields
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodeDialogOptionGroupEnt {
     }

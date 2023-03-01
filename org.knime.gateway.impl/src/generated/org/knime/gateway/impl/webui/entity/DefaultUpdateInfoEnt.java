@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
  * @param isUpdatePossible
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultUpdateInfoEnt(
@@ -66,11 +65,7 @@ public record DefaultUpdateInfoEnt(
     Boolean isUpdatePossible) implements UpdateInfoEnt {
 
     /**
-     * Canonical constructor for {@link DefaultUpdateInfoEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param shortName
-     * @param isUpdatePossible
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultUpdateInfoEnt {
         if(name == null) {

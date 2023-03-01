@@ -54,15 +54,13 @@ import org.knime.gateway.api.webui.entity.EventEnt;
  *
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultEventEnt(
     ) implements EventEnt {
 
     /**
-     * Canonical constructor for {@link DefaultEventEnt} including null checks for non-nullable parameters.
-     *
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultEventEnt {
     }

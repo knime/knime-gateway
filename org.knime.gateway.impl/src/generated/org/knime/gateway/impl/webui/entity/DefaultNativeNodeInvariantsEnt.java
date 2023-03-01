@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
  * @param nodeFactory
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNativeNodeInvariantsEnt(
@@ -69,12 +68,7 @@ public record DefaultNativeNodeInvariantsEnt(
     NodeFactoryKeyEnt nodeFactory) implements NativeNodeInvariantsEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNativeNodeInvariantsEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param type
-     * @param icon
-     * @param nodeFactory
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNativeNodeInvariantsEnt {
         if(name == null) {

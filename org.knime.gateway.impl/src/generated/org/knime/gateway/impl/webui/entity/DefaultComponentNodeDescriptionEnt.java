@@ -67,7 +67,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
  * @param outPorts
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentNodeDescriptionEnt(
@@ -81,16 +80,7 @@ public record DefaultComponentNodeDescriptionEnt(
     java.util.List<NodePortDescriptionEnt> outPorts) implements ComponentNodeDescriptionEnt {
 
     /**
-     * Canonical constructor for {@link DefaultComponentNodeDescriptionEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param type
-     * @param icon
-     * @param description
-     * @param options
-     * @param views
-     * @param inPorts
-     * @param outPorts
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultComponentNodeDescriptionEnt {
         if(name == null) {

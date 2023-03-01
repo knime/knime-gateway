@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
  * @param ancestorItemIds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpaceItemReferenceEnt(
@@ -68,12 +67,7 @@ public record DefaultSpaceItemReferenceEnt(
     java.util.List<String> ancestorItemIds) implements SpaceItemReferenceEnt {
 
     /**
-     * Canonical constructor for {@link DefaultSpaceItemReferenceEnt} including null checks for non-nullable parameters.
-     *
-     * @param providerId
-     * @param spaceId
-     * @param itemId
-     * @param ancestorItemIds
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultSpaceItemReferenceEnt {
         if(providerId == null) {

@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
  * @param icon
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentNodeAndDescriptionEnt(
@@ -66,11 +65,7 @@ public record DefaultComponentNodeAndDescriptionEnt(
     String icon) implements ComponentNodeAndDescriptionEnt {
 
     /**
-     * Canonical constructor for {@link DefaultComponentNodeAndDescriptionEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param type
-     * @param icon
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultComponentNodeAndDescriptionEnt {
         if(name == null) {

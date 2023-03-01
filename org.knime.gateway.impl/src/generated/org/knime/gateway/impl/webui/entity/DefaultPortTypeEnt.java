@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
  * @param hasView
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultPortTypeEnt(
@@ -72,14 +71,7 @@ public record DefaultPortTypeEnt(
     Boolean hasView) implements PortTypeEnt {
 
     /**
-     * Canonical constructor for {@link DefaultPortTypeEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param kind
-     * @param color
-     * @param compatibleTypes
-     * @param hidden
-     * @param hasView
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultPortTypeEnt {
         if(name == null) {

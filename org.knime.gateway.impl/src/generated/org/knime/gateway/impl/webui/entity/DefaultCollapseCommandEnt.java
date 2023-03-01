@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
  * @param containerType
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultCollapseCommandEnt(
@@ -69,12 +68,7 @@ public record DefaultCollapseCommandEnt(
     ContainerTypeEnum containerType) implements CollapseCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultCollapseCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param nodeIds
-     * @param annotationIds
-     * @param containerType
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultCollapseCommandEnt {
         if(kind == null) {

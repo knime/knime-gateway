@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
  * @param position
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultPasteCommandEnt(
@@ -68,11 +67,7 @@ public record DefaultPasteCommandEnt(
     XYEnt position) implements PasteCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultPasteCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param content
-     * @param position
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultPasteCommandEnt {
         if(kind == null) {

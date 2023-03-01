@@ -64,7 +64,6 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
  * @param allowedActions
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultConnectionEnt(
@@ -79,17 +78,7 @@ public record DefaultConnectionEnt(
     AllowedConnectionActionsEnt allowedActions) implements ConnectionEnt {
 
     /**
-     * Canonical constructor for {@link DefaultConnectionEnt} including null checks for non-nullable parameters.
-     *
-     * @param id
-     * @param destNode
-     * @param destPort
-     * @param sourceNode
-     * @param sourcePort
-     * @param flowVariableConnection
-     * @param streaming
-     * @param label
-     * @param allowedActions
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultConnectionEnt {
         if(id == null) {

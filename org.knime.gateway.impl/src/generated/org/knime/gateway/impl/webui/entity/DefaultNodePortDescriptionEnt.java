@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
  * @param typeName
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodePortDescriptionEnt(
@@ -71,13 +70,7 @@ public record DefaultNodePortDescriptionEnt(
     String typeName) implements NodePortDescriptionEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodePortDescriptionEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param typeId
-     * @param optional
-     * @param description
-     * @param typeName
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodePortDescriptionEnt {
         if(typeId == null) {

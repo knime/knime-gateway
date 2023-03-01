@@ -146,7 +146,6 @@ import java.util.List;
  * Lists all gateway entities of package <code>com.knime.gateway.jsonrpc.entity</code>.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public class ListEntities {

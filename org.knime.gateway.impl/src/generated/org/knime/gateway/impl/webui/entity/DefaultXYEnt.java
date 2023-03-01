@@ -56,7 +56,6 @@ import org.knime.gateway.api.webui.entity.XYEnt;
  * @param y
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultXYEnt(
@@ -64,10 +63,7 @@ public record DefaultXYEnt(
     Integer y) implements XYEnt {
 
     /**
-     * Canonical constructor for {@link DefaultXYEnt} including null checks for non-nullable parameters.
-     *
-     * @param x
-     * @param y
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultXYEnt {
     }

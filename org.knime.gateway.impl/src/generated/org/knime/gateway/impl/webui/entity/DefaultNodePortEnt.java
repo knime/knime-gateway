@@ -65,7 +65,6 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
  * @param canRemove
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodePortEnt(
@@ -81,18 +80,7 @@ public record DefaultNodePortEnt(
     Boolean canRemove) implements NodePortEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodePortEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param typeId
-     * @param optional
-     * @param info
-     * @param index
-     * @param connectedVia
-     * @param inactive
-     * @param portObjectVersion
-     * @param portGroupId
-     * @param canRemove
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodePortEnt {
         if(typeId == null) {

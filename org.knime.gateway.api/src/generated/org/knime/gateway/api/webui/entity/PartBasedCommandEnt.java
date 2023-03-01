@@ -59,7 +59,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * A command that is based on a number of selected workflow parts (nodes or workflow annotations)
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface PartBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {

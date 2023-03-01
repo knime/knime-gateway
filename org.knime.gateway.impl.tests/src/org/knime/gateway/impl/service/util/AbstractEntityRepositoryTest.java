@@ -111,7 +111,7 @@ public abstract class AbstractEntityRepositoryTest {
         nodes.put("node_to_be_changed", nodeBuilder.build());
         wfBuilder.setNodes(nodes);
 
-        WorkflowEnt wfEntity = wfBuilder.build(); // This is set once
+        WorkflowEnt wfEntity = wfBuilder.build();
         String commitRes = repo.commit(create(wfID, new NodeIDEnt(3)), wfEntity);
 
         //modify workflow entity
@@ -121,7 +121,7 @@ public abstract class AbstractEntityRepositoryTest {
         nodes.put("node_to_be_changed", nodeBuilder.build());
         wfBuilder.setNodes(nodes);
 
-        WorkflowEnt newWfEntity = wfBuilder.build(); // This also changes `wfEntity`, why?
+        WorkflowEnt newWfEntity = wfBuilder.build();
         WorkflowChangedEventEnt event =
             repo.getChangesAndCommit(commitRes, newWfEntity, new PatchEntCreator(null)).orElse(null);
         assertThat(event.getPatch().getOps().size(), is(3));

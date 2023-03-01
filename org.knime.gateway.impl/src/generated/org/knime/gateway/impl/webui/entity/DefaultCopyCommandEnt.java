@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.CopyCommandEnt;
  * @param annotationIds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultCopyCommandEnt(
@@ -67,11 +66,7 @@ public record DefaultCopyCommandEnt(
     java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) implements CopyCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultCopyCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param nodeIds
-     * @param annotationIds
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultCopyCommandEnt {
         if(kind == null) {

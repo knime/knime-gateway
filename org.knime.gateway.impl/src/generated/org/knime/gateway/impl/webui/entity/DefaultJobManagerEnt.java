@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt;
  * @param custom
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultJobManagerEnt(
@@ -65,10 +64,7 @@ public record DefaultJobManagerEnt(
     CustomJobManagerEnt custom) implements JobManagerEnt {
 
     /**
-     * Canonical constructor for {@link DefaultJobManagerEnt} including null checks for non-nullable parameters.
-     *
-     * @param type
-     * @param custom
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultJobManagerEnt {
         if(type == null) {

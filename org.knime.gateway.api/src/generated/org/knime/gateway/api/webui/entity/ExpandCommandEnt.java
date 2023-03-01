@@ -59,7 +59,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Resets nodes contained in the metanode or container and expands it.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ExpandCommandEnt extends GatewayEntity, WorkflowCommandEnt {

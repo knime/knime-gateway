@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
  * @param connectionIds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultDeleteCommandEnt(
@@ -69,12 +68,7 @@ public record DefaultDeleteCommandEnt(
     java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectionIds) implements DeleteCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultDeleteCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param nodeIds
-     * @param annotationIds
-     * @param connectionIds
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultDeleteCommandEnt {
         if(kind == null) {

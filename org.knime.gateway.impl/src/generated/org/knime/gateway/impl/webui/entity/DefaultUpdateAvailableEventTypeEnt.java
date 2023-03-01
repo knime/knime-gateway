@@ -56,16 +56,13 @@ import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
  * @param typeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultUpdateAvailableEventTypeEnt(
     String typeId) implements UpdateAvailableEventTypeEnt {
 
     /**
-     * Canonical constructor for {@link DefaultUpdateAvailableEventTypeEnt} including null checks for non-nullable parameters.
-     *
-     * @param typeId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultUpdateAvailableEventTypeEnt {
     }

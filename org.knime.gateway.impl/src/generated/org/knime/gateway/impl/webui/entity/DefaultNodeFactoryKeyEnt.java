@@ -56,7 +56,6 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
  * @param settings
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeFactoryKeyEnt(
@@ -64,10 +63,7 @@ public record DefaultNodeFactoryKeyEnt(
     String settings) implements NodeFactoryKeyEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodeFactoryKeyEnt} including null checks for non-nullable parameters.
-     *
-     * @param className
-     * @param settings
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodeFactoryKeyEnt {
         if(className == null) {

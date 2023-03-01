@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.AllowedActionsEnt;
  * @param canReset
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAllowedActionsEnt(
@@ -66,11 +65,7 @@ public record DefaultAllowedActionsEnt(
     Boolean canReset) implements AllowedActionsEnt {
 
     /**
-     * Canonical constructor for {@link DefaultAllowedActionsEnt} including null checks for non-nullable parameters.
-     *
-     * @param canExecute
-     * @param canCancel
-     * @param canReset
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultAllowedActionsEnt {
         if(canExecute == null) {

@@ -77,7 +77,6 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param hasView
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNativeNodeEnt(
@@ -97,22 +96,7 @@ public record DefaultNativeNodeEnt(
     Boolean hasView) implements NativeNodeEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNativeNodeEnt} including null checks for non-nullable parameters.
-     *
-     * @param id
-     * @param inPorts
-     * @param outPorts
-     * @param annotation
-     * @param position
-     * @param kind
-     * @param hasDialog
-     * @param allowedActions
-     * @param executionInfo
-     * @param templateId
-     * @param state
-     * @param loopInfo
-     * @param portGroups
-     * @param hasView
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNativeNodeEnt {
         if(id == null) {

@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
  * @param canStep
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAllowedLoopActionsEnt(
@@ -66,11 +65,7 @@ public record DefaultAllowedLoopActionsEnt(
     Boolean canStep) implements AllowedLoopActionsEnt {
 
     /**
-     * Canonical constructor for {@link DefaultAllowedLoopActionsEnt} including null checks for non-nullable parameters.
-     *
-     * @param canResume
-     * @param canPause
-     * @param canStep
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultAllowedLoopActionsEnt {
         if(canResume == null) {

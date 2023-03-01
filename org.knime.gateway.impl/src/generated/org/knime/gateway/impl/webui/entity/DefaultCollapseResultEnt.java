@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.CollapseResultEnt;
  * @param newNodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultCollapseResultEnt(
@@ -67,11 +66,7 @@ public record DefaultCollapseResultEnt(
     org.knime.gateway.api.entity.NodeIDEnt newNodeId) implements CollapseResultEnt {
 
     /**
-     * Canonical constructor for {@link DefaultCollapseResultEnt} including null checks for non-nullable parameters.
-     *
-     * @param snapshotId
-     * @param kind
-     * @param newNodeId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultCollapseResultEnt {
         if(newNodeId == null) {

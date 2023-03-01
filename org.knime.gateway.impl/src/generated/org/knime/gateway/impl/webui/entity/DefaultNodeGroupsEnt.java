@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
  * @param totalNumGroups
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeGroupsEnt(
@@ -65,10 +64,7 @@ public record DefaultNodeGroupsEnt(
     Integer totalNumGroups) implements NodeGroupsEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodeGroupsEnt} including null checks for non-nullable parameters.
-     *
-     * @param groups
-     * @param totalNumGroups
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodeGroupsEnt {
         if(groups == null) {

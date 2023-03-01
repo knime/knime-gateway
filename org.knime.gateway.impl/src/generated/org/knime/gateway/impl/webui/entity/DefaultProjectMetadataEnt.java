@@ -61,7 +61,6 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
  * @param lastEdit
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultProjectMetadataEnt(
@@ -72,13 +71,7 @@ public record DefaultProjectMetadataEnt(
     OffsetDateTime lastEdit) implements ProjectMetadataEnt {
 
     /**
-     * Canonical constructor for {@link DefaultProjectMetadataEnt} including null checks for non-nullable parameters.
-     *
-     * @param title
-     * @param description
-     * @param tags
-     * @param links
-     * @param lastEdit
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultProjectMetadataEnt {
     }

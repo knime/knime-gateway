@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt;
  * @param nodes
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeGroupEnt(
@@ -65,10 +64,7 @@ public record DefaultNodeGroupEnt(
     java.util.List<NodeTemplateEnt> nodes) implements NodeGroupEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodeGroupEnt} including null checks for non-nullable parameters.
-     *
-     * @param tag
-     * @param nodes
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodeGroupEnt {
         if(tag == null) {

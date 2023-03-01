@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
  * @param items
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultWorkflowGroupContentEnt(
@@ -66,10 +65,7 @@ public record DefaultWorkflowGroupContentEnt(
     java.util.List<SpaceItemEnt> items) implements WorkflowGroupContentEnt {
 
     /**
-     * Canonical constructor for {@link DefaultWorkflowGroupContentEnt} including null checks for non-nullable parameters.
-     *
-     * @param path
-     * @param items
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultWorkflowGroupContentEnt {
         if(path == null) {

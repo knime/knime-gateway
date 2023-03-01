@@ -62,7 +62,6 @@ import java.util.List;
  * Lists all gateway services of package <code>com.knime.gateway.service</code>.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public class ListServices {

@@ -66,7 +66,6 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param devMode
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAppStateEnt(
@@ -81,17 +80,7 @@ public record DefaultAppStateEnt(
     Boolean devMode) implements AppStateEnt {
 
     /**
-     * Canonical constructor for {@link DefaultAppStateEnt} including null checks for non-nullable parameters.
-     *
-     * @param openProjects
-     * @param exampleProjects
-     * @param availablePortTypes
-     * @param suggestedPortTypeIds
-     * @param hasNodeRecommendationsEnabled
-     * @param featureFlags
-     * @param scrollToZoomEnabled
-     * @param hasNodeCollectionActive
-     * @param devMode
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultAppStateEnt {
     }

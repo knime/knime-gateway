@@ -61,7 +61,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Contains all the &#39;static&#39; properties of a node or component required to draw the node/component figure.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt {

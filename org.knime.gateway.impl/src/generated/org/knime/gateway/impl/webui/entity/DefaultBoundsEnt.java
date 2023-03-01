@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.BoundsEnt;
  * @param height
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultBoundsEnt(
@@ -68,12 +67,7 @@ public record DefaultBoundsEnt(
     Integer height) implements BoundsEnt {
 
     /**
-     * Canonical constructor for {@link DefaultBoundsEnt} including null checks for non-nullable parameters.
-     *
-     * @param x
-     * @param y
-     * @param width
-     * @param height
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultBoundsEnt {
     }

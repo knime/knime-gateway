@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
  * @param optional
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeDialogOptionDescriptionEnt(
@@ -66,11 +65,7 @@ public record DefaultNodeDialogOptionDescriptionEnt(
     Boolean optional) implements NodeDialogOptionDescriptionEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodeDialogOptionDescriptionEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param description
-     * @param optional
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodeDialogOptionDescriptionEnt {
         if(name == null) {

@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt;
  * @param color
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultStyleRangeEnt(
@@ -72,14 +71,7 @@ public record DefaultStyleRangeEnt(
     String color) implements StyleRangeEnt {
 
     /**
-     * Canonical constructor for {@link DefaultStyleRangeEnt} including null checks for non-nullable parameters.
-     *
-     * @param start
-     * @param length
-     * @param bold
-     * @param italic
-     * @param fontSize
-     * @param color
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultStyleRangeEnt {
         if(start == null) {

@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.SpaceEnt;
  * @param _private
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpaceEnt(
@@ -70,13 +69,7 @@ public record DefaultSpaceEnt(
     Boolean _private) implements SpaceEnt {
 
     /**
-     * Canonical constructor for {@link DefaultSpaceEnt} including null checks for non-nullable parameters.
-     *
-     * @param id
-     * @param name
-     * @param owner
-     * @param description
-     * @param _private
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultSpaceEnt {
         if(id == null) {

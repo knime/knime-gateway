@@ -74,7 +74,6 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
  * @param dirty
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultWorkflowEnt(
@@ -92,20 +91,7 @@ public record DefaultWorkflowEnt(
     Boolean dirty) implements WorkflowEnt {
 
     /**
-     * Canonical constructor for {@link DefaultWorkflowEnt} including null checks for non-nullable parameters.
-     *
-     * @param info
-     * @param nodes
-     * @param nodeTemplates
-     * @param connections
-     * @param workflowAnnotations
-     * @param parents
-     * @param metaInPorts
-     * @param metaOutPorts
-     * @param allowedActions
-     * @param componentMetadata
-     * @param projectMetadata
-     * @param dirty
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultWorkflowEnt {
         if(info == null) {

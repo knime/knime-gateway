@@ -58,7 +58,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * A single item in a space (local workspace or hub space).
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface SpaceItemEnt extends GatewayEntity {

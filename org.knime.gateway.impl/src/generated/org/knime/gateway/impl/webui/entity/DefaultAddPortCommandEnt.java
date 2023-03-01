@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
  * @param portTypeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAddPortCommandEnt(
@@ -71,13 +70,7 @@ public record DefaultAddPortCommandEnt(
     String portTypeId) implements AddPortCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultAddPortCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param side
-     * @param portGroup
-     * @param nodeId
-     * @param portTypeId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultAddPortCommandEnt {
         if(kind == null) {

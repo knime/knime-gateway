@@ -53,7 +53,6 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * Operations and infos on the general application.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ApplicationService extends GatewayService {

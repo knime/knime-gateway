@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
  * @param convertedNodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultConvertContainerResultEnt(
@@ -67,11 +66,7 @@ public record DefaultConvertContainerResultEnt(
     org.knime.gateway.api.entity.NodeIDEnt convertedNodeId) implements ConvertContainerResultEnt {
 
     /**
-     * Canonical constructor for {@link DefaultConvertContainerResultEnt} including null checks for non-nullable parameters.
-     *
-     * @param snapshotId
-     * @param kind
-     * @param convertedNodeId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultConvertContainerResultEnt {
         if(convertedNodeId == null) {

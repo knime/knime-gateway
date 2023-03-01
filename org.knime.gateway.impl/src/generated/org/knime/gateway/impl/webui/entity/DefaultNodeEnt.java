@@ -68,7 +68,6 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
  * @param executionInfo
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeEnt(
@@ -83,17 +82,7 @@ public record DefaultNodeEnt(
     NodeExecutionInfoEnt executionInfo) implements NodeEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodeEnt} including null checks for non-nullable parameters.
-     *
-     * @param id
-     * @param inPorts
-     * @param outPorts
-     * @param annotation
-     * @param position
-     * @param kind
-     * @param hasDialog
-     * @param allowedActions
-     * @param executionInfo
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodeEnt {
         if(id == null) {

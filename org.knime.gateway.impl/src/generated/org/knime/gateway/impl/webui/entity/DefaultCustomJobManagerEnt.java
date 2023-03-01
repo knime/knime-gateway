@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
  * @param workflowIcon
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultCustomJobManagerEnt(
@@ -66,11 +65,7 @@ public record DefaultCustomJobManagerEnt(
     String workflowIcon) implements CustomJobManagerEnt {
 
     /**
-     * Canonical constructor for {@link DefaultCustomJobManagerEnt} including null checks for non-nullable parameters.
-     *
-     * @param name
-     * @param icon
-     * @param workflowIcon
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultCustomJobManagerEnt {
         if(name == null) {

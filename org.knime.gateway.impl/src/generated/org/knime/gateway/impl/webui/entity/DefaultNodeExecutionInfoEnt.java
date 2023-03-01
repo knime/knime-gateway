@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
  * @param icon
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeExecutionInfoEnt(
@@ -67,11 +66,7 @@ public record DefaultNodeExecutionInfoEnt(
     String icon) implements NodeExecutionInfoEnt {
 
     /**
-     * Canonical constructor for {@link DefaultNodeExecutionInfoEnt} including null checks for non-nullable parameters.
-     *
-     * @param jobManager
-     * @param streamable
-     * @param icon
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultNodeExecutionInfoEnt {
     }

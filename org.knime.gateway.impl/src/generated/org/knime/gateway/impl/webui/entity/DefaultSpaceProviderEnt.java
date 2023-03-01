@@ -56,16 +56,13 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
  * @param spaces
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpaceProviderEnt(
     java.util.List<SpaceEnt> spaces) implements SpaceProviderEnt {
 
     /**
-     * Canonical constructor for {@link DefaultSpaceProviderEnt} including null checks for non-nullable parameters.
-     *
-     * @param spaces
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultSpaceProviderEnt {
         if(spaces == null) {

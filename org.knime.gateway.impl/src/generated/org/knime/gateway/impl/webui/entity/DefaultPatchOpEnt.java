@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt;
  * @param from
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultPatchOpEnt(
@@ -68,12 +67,7 @@ public record DefaultPatchOpEnt(
     String from) implements PatchOpEnt {
 
     /**
-     * Canonical constructor for {@link DefaultPatchOpEnt} including null checks for non-nullable parameters.
-     *
-     * @param op
-     * @param path
-     * @param value
-     * @param from
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultPatchOpEnt {
         if(op == null) {

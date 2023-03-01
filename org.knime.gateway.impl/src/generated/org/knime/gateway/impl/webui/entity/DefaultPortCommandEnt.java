@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.PortCommandEnt;
  * @param nodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultPortCommandEnt(
@@ -69,12 +68,7 @@ public record DefaultPortCommandEnt(
     org.knime.gateway.api.entity.NodeIDEnt nodeId) implements PortCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultPortCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param side
-     * @param portGroup
-     * @param nodeId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultPortCommandEnt {
         if(kind == null) {

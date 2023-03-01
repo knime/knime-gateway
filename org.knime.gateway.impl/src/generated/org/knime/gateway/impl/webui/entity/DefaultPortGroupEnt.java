@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt;
  * @param supportedPortTypeIds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultPortGroupEnt(
@@ -70,13 +69,7 @@ public record DefaultPortGroupEnt(
     java.util.List<String> supportedPortTypeIds) implements PortGroupEnt {
 
     /**
-     * Canonical constructor for {@link DefaultPortGroupEnt} including null checks for non-nullable parameters.
-     *
-     * @param inputRange
-     * @param outputRange
-     * @param canAddInPort
-     * @param canAddOutPort
-     * @param supportedPortTypeIds
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultPortGroupEnt {
     }

@@ -66,7 +66,6 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
  * @param borderColor
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultWorkflowAnnotationEnt(
@@ -81,17 +80,7 @@ public record DefaultWorkflowAnnotationEnt(
     String borderColor) implements WorkflowAnnotationEnt {
 
     /**
-     * Canonical constructor for {@link DefaultWorkflowAnnotationEnt} including null checks for non-nullable parameters.
-     *
-     * @param text
-     * @param backgroundColor
-     * @param textAlign
-     * @param defaultFontSize
-     * @param styleRanges
-     * @param bounds
-     * @param id
-     * @param borderWidth
-     * @param borderColor
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultWorkflowAnnotationEnt {
         if(text == null) {

@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.MetaPortsEnt;
  * @param ports
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultMetaPortsEnt(
@@ -65,10 +64,7 @@ public record DefaultMetaPortsEnt(
     java.util.List<NodePortEnt> ports) implements MetaPortsEnt {
 
     /**
-     * Canonical constructor for {@link DefaultMetaPortsEnt} including null checks for non-nullable parameters.
-     *
-     * @param xPos
-     * @param ports
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultMetaPortsEnt {
     }

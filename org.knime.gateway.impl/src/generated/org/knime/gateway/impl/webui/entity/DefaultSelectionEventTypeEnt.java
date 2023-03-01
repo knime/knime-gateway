@@ -59,7 +59,6 @@ import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
  * @param nodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSelectionEventTypeEnt(
@@ -69,12 +68,7 @@ public record DefaultSelectionEventTypeEnt(
     org.knime.gateway.api.entity.NodeIDEnt nodeId) implements SelectionEventTypeEnt {
 
     /**
-     * Canonical constructor for {@link DefaultSelectionEventTypeEnt} including null checks for non-nullable parameters.
-     *
-     * @param typeId
-     * @param projectId
-     * @param workflowId
-     * @param nodeId
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultSelectionEventTypeEnt {
         if(projectId == null) {

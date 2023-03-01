@@ -65,7 +65,6 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
  * @param sourcePortIdx
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAddNodeCommandEnt(
@@ -78,15 +77,7 @@ public record DefaultAddNodeCommandEnt(
     Integer sourcePortIdx) implements AddNodeCommandEnt {
 
     /**
-     * Canonical constructor for {@link DefaultAddNodeCommandEnt} including null checks for non-nullable parameters.
-     *
-     * @param kind
-     * @param position
-     * @param nodeFactory
-     * @param url
-     * @param spaceItemReference
-     * @param sourceNodeId
-     * @param sourcePortIdx
+     * Validation for required parameters not being {@code null}.
      */
     public DefaultAddNodeCommandEnt {
         if(kind == null) {
