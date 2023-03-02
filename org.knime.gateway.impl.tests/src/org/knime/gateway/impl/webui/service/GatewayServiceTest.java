@@ -62,6 +62,7 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -107,6 +108,7 @@ public abstract class GatewayServiceTest {
         ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders());
+        ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, createNodeFactoryProvider());
         var exampleProjects = createExampleProjects();
         if (exampleProjects != null) {
             ServiceDependencies.setServiceDependency(ExampleProjects.class, exampleProjects);
@@ -118,6 +120,13 @@ public abstract class GatewayServiceTest {
      */
     protected SpaceProviders createSpaceProviders() {
         return mock(SpaceProviders.class);
+    }
+
+    /**
+     * @return the {@link NodeFactoryProvider} service dependency
+     */
+    protected NodeFactoryProvider createNodeFactoryProvider() {
+        return mock(NodeFactoryProvider.class);
     }
 
     /**
