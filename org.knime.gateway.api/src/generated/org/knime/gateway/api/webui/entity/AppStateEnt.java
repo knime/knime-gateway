@@ -140,6 +140,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
+      valueConsumer.accept("fileExtensionToNodeTemplateId", Pair.create(getFileExtensionToNodeTemplateId(), e.getFileExtensionToNodeTemplateId()));
   }
 
     /**
