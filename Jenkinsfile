@@ -17,11 +17,18 @@ properties([
 ])
 
 try {
-    knimetools.defaultTychoBuild('org.knime.update.gateway')
+    parallel (
+        'Tycho Build': {
+                knimetools.defaultTychoBuild('org.knime.update.gateway')
+        },
+        'Integrated Workflowtests': {
+                workflowTests.runIntegratedWorkflowTests(profile: 'test')
+         },
+     )
 
     stage('Sonarqube analysis') {
         env.lastStage = env.STAGE_NAME
-        workflowTests.runSonar([])
+        workflowTests.runSonar()
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'
