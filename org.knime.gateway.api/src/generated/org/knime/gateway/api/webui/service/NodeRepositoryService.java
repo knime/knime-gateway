@@ -101,13 +101,15 @@ public interface NodeRepositoryService extends GatewayService {
      * @param q The term to search for.
      * @param tags A list of tags. Only nodes/components having any/all tags will be included in the search result.
      * @param allTagsMatch If true, only the nodes/components that have all of the given tags are included in the search result. Otherwise nodes/components that have at least one of the given tags are included.
-     * @param nodesOffset Number of nodes/components to be skipped in the search result (for pagination).
-     * @param nodesLimit The maximum number of nodes/components in the search result (mainly for pagination).
+     * @param offset Number of nodes/components to be skipped in the search result (for pagination).
+     * @param limit The maximum number of nodes/components in the search result (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
-     * @param additionalNodes If true, only the nodes that are not part of the active collection are returned. If false, only the nodes that are part of the collection are returned. The default is false.
+     * @param nodePartition If &#39;IN_COLLECTION&#39; then only nodes that are part of the collection are returned. If &#39;NOT_IN_COLLECTION&#39;  then only nodes that are not part of the active collection are returned. If &#39;ALL&#39; then all nodes (ignoring  collections) are returned. Defaults to &#39;ALL&#39;.
+     * @param portTypeId The port type ID of the port type all returned nodes (and components) have to be compatible with.
      *
      * @return the result
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean additionalNodes) ;
+    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String nodePartition, String portTypeId)  throws ServiceExceptions.InvalidRequestException;
         
 }

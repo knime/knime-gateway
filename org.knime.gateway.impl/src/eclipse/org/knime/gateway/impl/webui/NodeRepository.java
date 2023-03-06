@@ -52,6 +52,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +65,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -72,13 +74,18 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSetFactory;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
+import org.knime.core.node.context.ports.ConfigurablePortGroup;
+import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.extension.CategoryExtension;
 import org.knime.core.node.extension.CategoryExtensionManager;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.extension.NodeFactoryExtension;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.extension.NodeSetFactoryExtension;
+import org.knime.core.node.port.PortType;
 import org.knime.core.ui.util.FuzzySearchable;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService;
@@ -360,10 +367,36 @@ public final class NodeRepository {
     }
 
     /**
+     * Checks for compatible port types, considering existing ports and ports that can be added on.
+     *
+     * @return True if there exists a compatible port type, false otherwise.
+     */
+    static boolean isCompatibleWithSourcePortType(final NodeFactory<? extends NodeModel> factory,
+        final PortType sourcePortType) {
+        var node = CoreUtil.createNode(factory);
+        if (node.isEmpty()) {
+            return false;
+        }
+        var streamOfPresentPortTypes = IntStream.range(0, node.get().getNrInPorts()).mapToObj(node.get()::getInputType);
+        var streamOfSupportedPortTypes = CoreUtil.getCopyOfCreationConfig(factory)//
+            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig)//
+            .map(portsConfig -> portsConfig.getPortGroupNames().stream()//
+                .filter(portsConfig::isInteractive)//
+                .map(portsConfig::getGroup)//
+                .filter(PortGroupConfiguration::definesInputPorts)//
+                .filter(ConfigurablePortGroup.class::isInstance)//
+                .map(ConfigurablePortGroup.class::cast)//
+                .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())))
+            .orElse(Stream.of());
+        return Stream.concat(streamOfPresentPortTypes, streamOfSupportedPortTypes)
+            .anyMatch(pt -> CoreUtil.arePortTypesCompatible(sourcePortType, pt));
+    }
+
+    /**
      * Helper data structure which represents a node (or component) in the node repository.
      */
     @SuppressWarnings("java:S116")
-    static class Node {
+    static final class Node {
 
         private final LazyInitializer<FuzzySearchable> m_fuzzySearchableInitializer =
             new LazyInitializer<FuzzySearchable>() {
@@ -416,6 +449,10 @@ public final class NodeRepository {
             } catch (ConcurrentException ex) {
                 throw new IllegalStateException(ex);
             }
+        }
+
+        boolean isCompatibleWith(final PortType portType) {
+            return isCompatibleWithSourcePortType(factory, portType);
         }
     }
 

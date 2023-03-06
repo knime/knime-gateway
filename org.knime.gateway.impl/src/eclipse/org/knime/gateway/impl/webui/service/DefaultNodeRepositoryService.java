@@ -56,6 +56,7 @@ import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
@@ -118,11 +119,11 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * {@inheritDoc}
      */
     @Override
-    public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo,
-        final Boolean additionalNodes) {
+    public NodeSearchResultEnt searchNodes(final String q, final List<String> tags,
+        final Boolean allTagsMatch, final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo,
+        final String nodePartition, final String portTypeId) throws InvalidRequestException {
         return m_nodeSearch.searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo,
-            additionalNodes);
+            nodePartition, portTypeId);
     }
 
     /**

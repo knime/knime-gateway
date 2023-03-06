@@ -109,8 +109,12 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      */
     @Override
     @JsonRpcMethod(value = "searchNodes")
-    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer nodesOffset, Integer nodesLimit, Boolean fullTemplateInfo, Boolean additionalNodes)  {
-        return m_service.get().searchNodes(q, tags, allTagsMatch, nodesOffset, nodesLimit, fullTemplateInfo, additionalNodes);    
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String nodePartition, String portTypeId)  throws ServiceExceptions.InvalidRequestException {
+        return m_service.get().searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, nodePartition, portTypeId);    
     }
 
 }

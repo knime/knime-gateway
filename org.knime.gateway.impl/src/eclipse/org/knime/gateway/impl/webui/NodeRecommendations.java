@@ -48,22 +48,14 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeInfo;
-import org.knime.core.node.NodeModel;
-import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
-import org.knime.core.node.context.ports.ConfigurablePortGroup;
-import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.ui.util.NodeTemplateId;
@@ -71,7 +63,6 @@ import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendation;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
@@ -192,37 +183,11 @@ public class NodeRecommendations {
                 m_nodeRepo::getNode, true))//
             .filter(Objects::nonNull)// `NodeTemplateId.callWithNodeTemplateIdVariants(...)` could return null
             .map(n -> n.factory)//
-            .filter(f -> sourcePortType == null || isCompatibleWithSourcePortType(f, sourcePortType))//
+            .filter(f -> sourcePortType == null || NodeRepository.isCompatibleWithSourcePortType(f, sourcePortType))//
             .limit(limit)// Limit the number of results after filtering by port type compatibility
             .map(f -> fullInfo ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(f)
                 : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(f))//
             .filter(Objects::nonNull)// `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
             .collect(Collectors.toList());
-    }
-
-    /**
-     * Checks for compatible port types, considering existing ports and ports that can be added on.
-     *
-     * @return True if there exists a compatible port type, false otherwise.
-     */
-    private static boolean isCompatibleWithSourcePortType(final NodeFactory<? extends NodeModel> factory,
-        final PortType sourcePortType) {
-        var node = CoreUtil.createNode(factory);
-        if (node.isEmpty()) {
-            return false;
-        }
-        var streamOfPresentPortTypes = IntStream.range(0, node.get().getNrInPorts()).mapToObj(node.get()::getInputType);
-        var streamOfSupportedPortTypes = CoreUtil.getCopyOfCreationConfig(factory)//
-            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig)//
-            .map(portsConfig -> portsConfig.getPortGroupNames().stream()//
-                .filter(portsConfig::isInteractive)//
-                .map(portsConfig::getGroup)//
-                .filter(PortGroupConfiguration::definesInputPorts)//
-                .filter(ConfigurablePortGroup.class::isInstance)//
-                .map(ConfigurablePortGroup.class::cast)//
-                .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())))
-            .orElse(Stream.of());
-        return Stream.concat(streamOfPresentPortTypes, streamOfSupportedPortTypes)
-            .anyMatch(pt -> CoreUtil.arePortTypesCompatible(sourcePortType, pt));
     }
 }
