@@ -144,17 +144,12 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
             final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
             throws OperationNotAllowedException {
-        final var readLock = m_lock.readLock();
-        try {
-            readLock.lock();
-            return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
-                fullTemplateInfo);
-        } finally {
-            readLock.unlock();
-        }
+        return performReadAccess(() -> m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId,
+            portIdx, nodesLimit, fullTemplateInfo));
     }
 
-    private <T> T performReadAccess(final Supplier<T> readAccess) {
+
+    private <T, E extends Throwable> T performReadAccess(final ThrowingSupplier<T, E> readAccess) throws E {
         final var readLock = m_lock.readLock();
         try {
             readLock.lock();
@@ -162,5 +157,9 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         } finally {
             readLock.unlock();
         }
+    }
+
+    private interface ThrowingSupplier<T, E extends Throwable> {
+        T get() throws E;
     }
 }
