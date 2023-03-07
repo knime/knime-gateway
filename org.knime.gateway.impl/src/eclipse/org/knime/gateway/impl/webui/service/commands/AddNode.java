@@ -134,11 +134,11 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             factoryKeyEnt = getNodeFactoryKeyFromUrl(m_commandEnt.getUrl());
         }
 
-        if (m_commandEnt.getSpaceItemReference() != null && m_nodeFactoryProvider != null
+        if (factoryKeyEnt == null && m_commandEnt.getSpaceItemReference() != null && m_nodeFactoryProvider != null
             && m_spaceProviders != null) {
             url = getUrlFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
-            if (factoryKeyEnt == null) {
-                factoryKeyEnt = getFactoryKeyEntFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
+            if (url != null) {
+                factoryKeyEnt = getNodeFactoryKeyFromUrl(url.toString());
             }
         }
 
@@ -218,25 +218,10 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         final var itemId = spaceItemId.getItemId();
         try {
             var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
-            var url = space.toKnimeUrl(itemId).toURL();
-            return url;
+            return space.toKnimeUrl(itemId).toURL();
         } catch (MalformedURLException ex) {
             return null;
         }
-    }
-
-    private NodeFactoryKeyEnt getFactoryKeyEntFromSpaceItemReference(final SpaceItemReferenceEnt spaceItemId) {
-        final var spaceProviderId = spaceItemId.getProviderId();
-        final var spaceId = spaceItemId.getSpaceId();
-        final var itemId = spaceItemId.getItemId();
-        var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
-        var itemName = space.getItemName(itemId);
-        var factory = m_nodeFactoryProvider.fromFileExtension(itemName);
-        if (factory != null) {
-            var factoryKeyEnt = builder(NodeFactoryKeyEntBuilder.class).setClassName(factory.getName()).build();
-            return factoryKeyEnt;
-        }
-        return null;
     }
 
     /**
