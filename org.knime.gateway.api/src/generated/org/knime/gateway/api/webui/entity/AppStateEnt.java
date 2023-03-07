@@ -121,7 +121,7 @@ public interface AppStateEnt extends GatewayEntity {
   public Boolean isDevMode();
 
   /**
-   * Get fileExtensionToNodeTemplateId
+   * Mapping from file extension (e.g. \&quot;csv\&quot;) to the template ID of a node that can process such files
    * @return fileExtensionToNodeTemplateId 
    **/
   public java.util.Map<String, String> getFileExtensionToNodeTemplateId();
@@ -221,7 +221,7 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setDevMode(Boolean devMode);
         
         /**
-   		 * Set fileExtensionToNodeTemplateId
+         * Mapping from file extension (e.g. \&quot;csv\&quot;) to the template ID of a node that can process such files
          * 
          * @param fileExtensionToNodeTemplateId the property value,  
          * @return this entity builder for chaining

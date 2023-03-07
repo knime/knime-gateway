@@ -77,7 +77,7 @@ public interface UpdateInfoEnt extends GatewayEntity {
 
   /**
    * Whether a direct update is possible or not.
-   * @return isUpdatePossible 
+   * @return isUpdatePossible , never <code>null</code>
    **/
   public Boolean isIsUpdatePossible();
 
@@ -115,7 +115,7 @@ public interface UpdateInfoEnt extends GatewayEntity {
         /**
          * Whether a direct update is possible or not.
          * 
-         * @param isUpdatePossible the property value,  
+         * @param isUpdatePossible the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         UpdateInfoEntBuilder setIsUpdatePossible(Boolean isUpdatePossible);
