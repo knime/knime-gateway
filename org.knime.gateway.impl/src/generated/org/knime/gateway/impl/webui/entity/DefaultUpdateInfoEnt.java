@@ -74,6 +74,9 @@ public record DefaultUpdateInfoEnt(
         if(shortName == null) {
             throw new IllegalArgumentException("<shortName> must not be null.");
         }
+        if(isUpdatePossible == null) {
+            throw new IllegalArgumentException("<isUpdatePossible> must not be null.");
+        }
     }
 
     @Override
@@ -127,6 +130,9 @@ public record DefaultUpdateInfoEnt(
 
         @Override
         public DefaultUpdateInfoEntBuilder setIsUpdatePossible(Boolean isUpdatePossible) {
+             if(isUpdatePossible == null) {
+                 throw new IllegalArgumentException("<isUpdatePossible> must not be null.");
+             }
              m_isUpdatePossible = isUpdatePossible;
              return this;
         }
