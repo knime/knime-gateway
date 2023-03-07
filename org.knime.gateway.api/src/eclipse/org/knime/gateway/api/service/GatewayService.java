@@ -56,6 +56,9 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * have the workflow/job id as the very first parameter. It will be extracted by the server that mediates the
  * communication to the executor.
  *
+ * Another note: Methods of a class implementing a specific {@link GatewayService} are supposed to be thread-safe, so
+ * bear that in mind when working on them.
+ *
  * @author Martin Horn, University of Konstanz
  */
 public interface GatewayService {

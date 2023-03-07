@@ -202,7 +202,7 @@ public final class DefaultEventService implements EventService {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         removeAllEventListeners();
     }
 
