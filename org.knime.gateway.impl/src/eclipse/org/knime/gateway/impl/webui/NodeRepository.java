@@ -367,32 +367,6 @@ public final class NodeRepository {
     }
 
     /**
-     * Checks for compatible port types, considering existing ports and ports that can be added on.
-     *
-     * @return True if there exists a compatible port type, false otherwise.
-     */
-    static boolean isCompatibleWithSourcePortType(final NodeFactory<? extends NodeModel> factory,
-        final PortType sourcePortType) {
-        var node = CoreUtil.createNode(factory);
-        if (node.isEmpty()) {
-            return false;
-        }
-        var streamOfPresentPortTypes = IntStream.range(0, node.get().getNrInPorts()).mapToObj(node.get()::getInputType);
-        var streamOfSupportedPortTypes = CoreUtil.getCopyOfCreationConfig(factory)//
-            .flatMap(ModifiableNodeCreationConfiguration::getPortConfig)//
-            .map(portsConfig -> portsConfig.getPortGroupNames().stream()//
-                .filter(portsConfig::isInteractive)//
-                .map(portsConfig::getGroup)//
-                .filter(PortGroupConfiguration::definesInputPorts)//
-                .filter(ConfigurablePortGroup.class::isInstance)//
-                .map(ConfigurablePortGroup.class::cast)//
-                .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())))
-            .orElse(Stream.of());
-        return Stream.concat(streamOfPresentPortTypes, streamOfSupportedPortTypes)
-            .anyMatch(pt -> CoreUtil.arePortTypesCompatible(sourcePortType, pt));
-    }
-
-    /**
      * Helper data structure which represents a node (or component) in the node repository.
      */
     @SuppressWarnings("java:S116")
@@ -438,7 +412,7 @@ public final class NodeRepository {
          */
         int weight;
 
-        private Node(final NodeFactory<? extends NodeModel> f) {
+        Node(final NodeFactory<? extends NodeModel> f) {
             this.factory = f;
             this.name = f.getNodeName();
         }
@@ -451,8 +425,29 @@ public final class NodeRepository {
             }
         }
 
+        /**
+         * Checks for compatible port types, considering existing ports and ports that can be added on.
+         *
+         * @return True if there exists a compatible port type, false otherwise.
+         */
         boolean isCompatibleWith(final PortType portType) {
-            return isCompatibleWithSourcePortType(factory, portType);
+            var node = CoreUtil.createNode(factory);
+            if (node.isEmpty()) {
+                return false;
+            }
+            var streamOfPresentPortTypes = IntStream.range(0, node.get().getNrInPorts()).mapToObj(node.get()::getInputType);
+            var streamOfSupportedPortTypes = CoreUtil.getCopyOfCreationConfig(factory)//
+                .flatMap(ModifiableNodeCreationConfiguration::getPortConfig)//
+                .map(portsConfig -> portsConfig.getPortGroupNames().stream()//
+                    .filter(portsConfig::isInteractive)//
+                    .map(portsConfig::getGroup)//
+                    .filter(PortGroupConfiguration::definesInputPorts)//
+                    .filter(ConfigurablePortGroup.class::isInstance)//
+                    .map(ConfigurablePortGroup.class::cast)//
+                    .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())))
+                .orElse(Stream.of());
+            return Stream.concat(streamOfPresentPortTypes, streamOfSupportedPortTypes)
+                .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
     }
 

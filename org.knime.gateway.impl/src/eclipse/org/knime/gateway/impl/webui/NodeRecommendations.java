@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
  * Logic to retrieve node recommendations, we might need the {@link NodeRepository} for it.
@@ -183,7 +184,7 @@ public class NodeRecommendations {
                 m_nodeRepo::getNode, true))//
             .filter(Objects::nonNull)// `NodeTemplateId.callWithNodeTemplateIdVariants(...)` could return null
             .map(n -> n.factory)//
-            .filter(f -> sourcePortType == null || NodeRepository.isCompatibleWithSourcePortType(f, sourcePortType))//
+            .filter(f -> sourcePortType == null || new Node(f).isCompatibleWith(sourcePortType))//
             .limit(limit)// Limit the number of results after filtering by port type compatibility
             .map(f -> fullInfo ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(f)
                 : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(f))//

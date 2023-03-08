@@ -113,8 +113,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String nodePartition, String portTypeId)  throws ServiceExceptions.InvalidRequestException {
-        return m_service.get().searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, nodePartition, portTypeId);    
+    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String nodesPartition, String portTypeId)  throws ServiceExceptions.InvalidRequestException {
+        return m_service.get().searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, nodesPartition, portTypeId);    
     }
 
 }

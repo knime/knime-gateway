@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleBiFunction;
@@ -110,7 +109,7 @@ public class NodeSearch {
     /**
      * Which subset of nodes to search in
      */
-    static enum NodePartition { // Package scope for testing
+    enum NodePartition { // Package scope for testing
             IN_COLLECTION, NOT_IN_COLLECTION, ALL
     }
 
@@ -139,11 +138,11 @@ public class NodeSearch {
      * @param allTagsMatch if <code>true</code>, only the nodes/components that have all of the given tags are included
      *            in the search result. Otherwise nodes/components that have at least one of the given tags are
      *            included.
-     * @param nodesOffset the number of nodes to skip (in the list of found nodes, which have a fixed order) - for
+     * @param offset the number of nodes to skip (in the list of found nodes, which have a fixed order) - for
      *            pagination
-     * @param nodesLimit the maximum number of nodes to include in the search result (mainly for pagination)
+     * @param limit the maximum number of nodes to include in the search result (mainly for pagination)
      * @param fullTemplateInfo Whether to include the full node template information or not.
-     * @param nodePartition If 'IN_COLLECTION' then only nodes that are part of the collection are returned. If
+     * @param nodesPartition If 'IN_COLLECTION' then only nodes that are part of the collection are returned. If
      *            'NOT_IN_COLLECTION' then only nodes that are not part of the active collection are returned. If 'ALL'
      *            then all nodes (ignoring collections) are returned. Defaults to 'ALL'.
      *
@@ -151,9 +150,9 @@ public class NodeSearch {
      * @throws InvalidRequestException
      */
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer nodesOffset, final Integer nodesLimit, final Boolean fullTemplateInfo, final String nodePartition,
+        final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String nodesPartition,
         final String portTypeId) throws InvalidRequestException {
-        var partition = verifyNodePartition(nodePartition);
+        var partition = verifyNodePartition(nodesPartition);
         var portType = verifyPortTypeId(portTypeId);
         List<String> tagList = tags == null ? Collections.emptyList() : tags;
 
@@ -179,9 +178,9 @@ public class NodeSearch {
         }
 
         final var searchQuery = new SearchQuery(q, tagList, Boolean.TRUE.equals(allTagsMatch), partition, portType);
-        final var normalization = Normalizer.DEFAULT_NORMALIZATION.compose(fn);
+        final var normalizer = Normalizer.DEFAULT_NORMALIZATION.compose(fn);
         final var foundNodes =
-            m_foundNodesCache.computeIfAbsent(searchQuery, query -> searchNodes(allNodes, query, normalization));
+            m_foundNodesCache.computeIfAbsent(searchQuery, query -> searchNodes(allNodes, query, normalizer));
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
@@ -189,8 +188,8 @@ public class NodeSearch {
                 ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
                 : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
             .filter(Objects::nonNull)//
-            .skip(nodesOffset == null ? 0 : nodesOffset)//
-            .limit(nodesLimit == null ? Long.MAX_VALUE : nodesLimit)//
+            .skip(offset == null ? 0 : offset)//
+            .limit(limit == null ? Long.MAX_VALUE : limit)//
             .collect(Collectors.toList());
 
         // collect all tags from the templates and sort according to their frequency
@@ -209,12 +208,12 @@ public class NodeSearch {
     }
 
     private static List<Node> searchNodes(final Collection<Node> nodes, final SearchQuery searchQuery,
-        final Normalizer normalization) {
-        final var searchTerm = searchQuery.getSearchTerm(normalization);
+        final Normalizer normalizer) {
         final var tags = searchQuery.tags();
         final var allTagsMatch = searchQuery.allTagsMatch();
         final Predicate<Node> tagFilter = n -> filterByTags(n, tags, allTagsMatch);
-        if (searchTerm.isEmpty()) {
+        final var normalizedSearchTerm = normalizer.normalizeSearchTerm(searchQuery.searchTerm());
+        if (normalizedSearchTerm == null) {
             // Case 1: no filter, no ranking
             if (tags == null || tags.isEmpty()) {
                 return Collections.unmodifiableList(new ArrayList<>(nodes));
@@ -226,12 +225,11 @@ public class NodeSearch {
                         .thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))//
                 .collect(Collectors.toList());
         }
-        final var term = searchTerm.get();
         // Case 3: filter by tags, rank by similarity to search term
         return nodes.stream().filter(tagFilter)//
             .map(n -> new FoundNode(n, //
-                StringUtils.containsIgnoreCase(n.name, term), //
-                SCORING_FN.applyAsDouble(n.getFuzzySearchable(), term)))//
+                StringUtils.containsIgnoreCase(n.name, normalizedSearchTerm), //
+                SCORING_FN.applyAsDouble(n.getFuzzySearchable(), normalizedSearchTerm)))//
             .filter(n -> n.m_substringMatch || n.m_score >= SIMILARITY_THRESHOLD)//
             .sorted(//
                 // 1) exact substring matches (only based on names)
@@ -324,31 +322,26 @@ public class NodeSearch {
             CheckUtils.checkNotNull(before);
             return s -> apply(before.apply(s));
         }
+
+        /**
+         * @param searchTerm The original search term
+         *
+         * @return The normalized search term, can be {@code null}.
+         */
+        default String normalizeSearchTerm(final String searchTerm) {
+            final String normalizedForm = searchTerm == null ? searchTerm : apply(searchTerm);
+            if (StringUtils.isEmpty(normalizedForm)) {
+                return null;
+            }
+            return normalizedForm;
+        }
     }
 
     /**
-     * Simple search query record providing getter methods, {@code equals(...)} and {@code hashCode()} implementations
+     * Simple search query record for bookkeeping
      */
-    private static record SearchQuery(String searchTerm, List<String> tags, boolean allTagsMatch,
+    private static record SearchQuery(String searchTerm, List<String> tags, boolean allTagsMatch, // NOSONAR: Parameters not used is fine
         NodePartition nodePartition, PortType portType) {
-
-        private static String normalize(final String searchTerm, final Normalizer normalization) {
-            if (searchTerm == null || normalization == null) {
-                return searchTerm;
-            }
-            return normalization.apply(searchTerm);
-        }
-
-        /**
-         * @return non-null and non-blank search term, or {@link Optional#empty()}
-         */
-        Optional<String> getSearchTerm(final Normalizer normalization) {
-            var normalizedForm = normalize(searchTerm, normalization);
-            if (StringUtils.isEmpty(normalizedForm)) {
-                return Optional.empty();
-            }
-            return Optional.of(normalizedForm);
-        }
     }
 
     /**

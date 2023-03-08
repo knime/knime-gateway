@@ -263,8 +263,8 @@ public class NodeSearchTest {
         var res3 = m_search.searchNodes(IMAGE_PORT_TYPE_ID, null, null, null, null, null, null, null);
         assertThat("There should be less image port compatible nodes than all nodes", res1.getTotalNumNodes(),
             is(greaterThan(res3.getTotalNumNodes())));
-        assertThat("There should exist some nodes that are table port compatible but not image port compatible",
-            CollectionUtils.intersection(res2.getNodes(), res3.getNodes()), is(not(empty())));
+        assertThat("The set of image port compatible nodes must differ from the set of table port compatible nodes",
+            CollectionUtils.isEqualCollection(res2.getNodes(), res3.getNodes()), is(false));
     }
 
     private static List<String> getNodeFactoryNames(final List<NodeTemplateEnt> nodes) {
