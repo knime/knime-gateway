@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.knime.gateway.api" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.1.0"/>
+                <message_argument value="5.0.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/GatewayEntity.java" type="org.knime.gateway.api.entity.GatewayEntity">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.entity.GatewayEntity"/>
+                <message_argument value="forEachPropertyValue(GatewayEntity, BiConsumer&lt;String,Pair&lt;Object,Object&gt;&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="forEachPropertyValue(GatewayEntity, BiConsumer&lt;String,Pair&lt;Object,Object&gt;&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt"/>
+                <message_argument value="getFileExtensionToNodeTemplateId()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getFileExtensionToNodeTemplateId()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt$AppStateEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
+                <message_argument value="setFileExtensionToNodeTemplateId(Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setFileExtensionToNodeTemplateId(Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/NodeRepositoryService.java" type="org.knime.gateway.api.webui.service.NodeRepositoryService">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeRepositoryService"/>
+                <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeRepositoryService"/>
+                <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
