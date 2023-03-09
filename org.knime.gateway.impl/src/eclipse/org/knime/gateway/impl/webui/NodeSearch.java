@@ -245,7 +245,7 @@ public class NodeSearch {
     }
 
     private static boolean filterByTags(final Node n, final List<String> tags, final boolean allTagsMatch) {
-        if (tags.isEmpty()) {
+        if (tags == null || tags.isEmpty()) {
             return true;
         }
         if (allTagsMatch) {

@@ -412,7 +412,7 @@ public final class NodeRepository {
          */
         int weight;
 
-        Node(final NodeFactory<? extends NodeModel> f) {
+        private Node(final NodeFactory<? extends NodeModel> f) {
             this.factory = f;
             this.name = f.getNodeName();
         }
