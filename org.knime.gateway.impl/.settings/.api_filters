@@ -68,9 +68,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddNodeCommandEnt.java">
-        <filter id="0"/>
-    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddNodeCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt">
         <filter id="337768515">
             <message_arguments>
@@ -82,9 +79,6 @@
                 <message_argument value="DefaultAddNodeCommandEnt(WorkflowCommandEnt.KindEnum, XYEnt, NodeFactoryKeyEnt, String, SpaceItemReferenceEnt, NodeIDEnt, Integer)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddNodeResultEnt.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddNodeResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt">
         <filter id="337768515">
@@ -169,9 +163,6 @@
                 <message_argument value="DefaultAllowedNodeActionsEnt(Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, AllowedNodeActionsEnt.CanExpandEnum, AllowedNodeActionsEnt.CanCollapseEnum)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAllowedWorkflowActionsEnt.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAllowedWorkflowActionsEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAllowedWorkflowActionsEnt">
         <filter id="337768515">
@@ -360,6 +351,9 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultCopyCommandEnt.java">
+        <filter id="0"/>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultCopyCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt">
         <filter id="337768515">
             <message_arguments>
@@ -371,9 +365,6 @@
                 <message_argument value="DefaultCopyCommandEnt(WorkflowCommandEnt.KindEnum, List&lt;NodeIDEnt&gt;, List&lt;AnnotationIDEnt&gt;)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultCopyResultEnt.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultCopyResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt">
         <filter id="337768515">
@@ -530,9 +521,6 @@
                 <message_argument value="DefaultLoopInfoEnt(AllowedLoopActionsEnt, LoopInfoEnt.StatusEnum)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultMetaNodeEnt.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultMetaNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt">
         <filter id="337768515">
@@ -786,9 +774,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultNodeTemplateEnt.java">
-        <filter id="0"/>
-    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultNodeTemplateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt">
         <filter id="337768515">
             <message_arguments>
@@ -824,9 +809,6 @@
                 <message_argument value="DefaultPartBasedCommandEnt(WorkflowCommandEnt.KindEnum, List&lt;NodeIDEnt&gt;, List&lt;AnnotationIDEnt&gt;)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultPasteCommandEnt.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultPasteCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt">
         <filter id="337768515">
@@ -875,9 +857,6 @@
                 <message_argument value="DefaultPatchOpEnt(PatchOpEnt.OpEnum, String, Object, String)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultPortCommandEnt.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultPortCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt">
         <filter id="337768515">
