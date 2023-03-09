@@ -86,8 +86,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public CommandResultEnt executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommandEnt") WorkflowCommandEnt workflowCommandEnt)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
-        return m_service.get().executeWorkflowCommand(projectId, workflowId, workflowCommandEnt);    
+    public CommandResultEnt executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommand") WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
+        return m_service.get().executeWorkflowCommand(projectId, workflowId, workflowCommand);    
     }
 
 	/**

@@ -91,8 +91,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      */
     @Override
     @JsonRpcMethod(value = "getNodeTemplates")
-    public java.util.Map<String, NodeTemplateEnt> getNodeTemplates(@JsonRpcParam(value="requestBody") java.util.List<String> requestBody)  {
-        return m_service.get().getNodeTemplates(requestBody);    
+    public java.util.Map<String, NodeTemplateEnt> getNodeTemplates(@JsonRpcParam(value="nodeTemplateIds") java.util.List<String> nodeTemplateIds)  {
+        return m_service.get().getNodeTemplates(nodeTemplateIds);    
     }
 
 	/**

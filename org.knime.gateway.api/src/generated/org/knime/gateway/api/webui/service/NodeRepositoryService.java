@@ -77,11 +77,11 @@ public interface NodeRepositoryService extends GatewayService {
     /**
      * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).
      *
-     * @param requestBody A list of template ids to request the node templates for.
+     * @param nodeTemplateIds A list of template ids to request the node templates for.
      *
      * @return the result
      */
-    java.util.Map<String, NodeTemplateEnt> getNodeTemplates(java.util.List<String> requestBody) ;
+    java.util.Map<String, NodeTemplateEnt> getNodeTemplates(java.util.List<String> nodeTemplateIds) ;
         
     /**
      * Returns a pre-defined set of groups (defined by tags) and nodes per group (the most frequently used ones in that group).

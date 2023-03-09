@@ -66,13 +66,13 @@ public interface NodeService extends GatewayService {
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param extensionType The node ui-extension-type, i.e. dialog or view.
      * @param serviceType 
-     * @param body 
+     * @param dataServiceRequest 
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    String callNodeDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType, String serviceType, String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    String callNodeDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType, String serviceType, String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Changes state of a loop. The provided node-id must reference a loop-end node.
@@ -105,13 +105,13 @@ public interface NodeService extends GatewayService {
     /**
      * Obtain the description of a given node.
      *
-     * @param nodeFactoryKeyEnt The key identifying the node.
+     * @param nodeFactoryKey The key identifying the node.
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.NodeDescriptionNotAvailableException A description for a given node could not be determined.
      */
-    NativeNodeDescriptionEnt getNodeDescription(NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException;
+    NativeNodeDescriptionEnt getNodeDescription(NodeFactoryKeyEnt nodeFactoryKey)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException;
         
     /**
      * Returns all the information on a node dialog required to render it.
@@ -146,10 +146,10 @@ public interface NodeService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param mode Whether to add, remove or replace the data point selection.
-     * @param requestBody A list of strings that are translated to the row keys affected by the data point selection modification.
+     * @param selections A list of strings that are translated to the row keys affected by the data point selection modification.
      *
      * 
      */
-    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, java.util.List<String> requestBody) ;
+    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, java.util.List<String> selections) ;
         
 }

@@ -60,20 +60,20 @@ public interface EventService extends GatewayService {
     /**
      * Adds a new event listener for a certain type of event.
      *
-     * @param eventTypeEnt 
+     * @param eventType 
      *
      * 
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    void addEventListener(EventTypeEnt eventTypeEnt)  throws ServiceExceptions.InvalidRequestException;
+    void addEventListener(EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException;
         
     /**
      * Unregisters event listeners.
      *
-     * @param eventTypeEnt 
+     * @param eventType 
      *
      * 
      */
-    void removeEventListener(EventTypeEnt eventTypeEnt) ;
+    void removeEventListener(EventTypeEnt eventType) ;
         
 }

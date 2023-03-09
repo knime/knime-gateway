@@ -83,8 +83,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public String callNodeDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="body") String body)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.get().callNodeDataService(projectId, workflowId, nodeId, extensionType, serviceType, body);    
+    public String callNodeDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="dataServiceRequest") String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().callNodeDataService(projectId, workflowId, nodeId, extensionType, serviceType, dataServiceRequest);    
     }
 
 	/**
@@ -128,8 +128,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
         @JsonRpcError(exception = ServiceExceptions.NodeDescriptionNotAvailableException.class, code = -32600,
             data = "NodeDescriptionNotAvailableException" /*per convention the data property contains the exception name*/)
     })
-    public NativeNodeDescriptionEnt getNodeDescription(@JsonRpcParam(value="nodeFactoryKeyEnt") NodeFactoryKeyEnt nodeFactoryKeyEnt)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
-        return m_service.get().getNodeDescription(nodeFactoryKeyEnt);    
+    public NativeNodeDescriptionEnt getNodeDescription(@JsonRpcParam(value="nodeFactoryKey") NodeFactoryKeyEnt nodeFactoryKey)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
+        return m_service.get().getNodeDescription(nodeFactoryKey);    
     }
 
 	/**
@@ -167,8 +167,8 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      */
     @Override
     @JsonRpcMethod(value = "updateDataPointSelection")
-    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, @JsonRpcParam(value="requestBody") java.util.List<String> requestBody)  {
-        m_service.get().updateDataPointSelection(projectId, workflowId, nodeId, mode, requestBody);    
+    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, @JsonRpcParam(value="selections") java.util.List<String> selections)  {
+        m_service.get().updateDataPointSelection(projectId, workflowId, nodeId, mode, selections);    
     }
 
 }

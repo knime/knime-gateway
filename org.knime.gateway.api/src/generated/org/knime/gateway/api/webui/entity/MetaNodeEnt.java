@@ -84,13 +84,13 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
 
   /**
    * The list of inputs.
-   * @return inPorts 
+   * @return inPorts , never <code>null</code>
    **/
   public java.util.List<MetaNodePortEnt> getInPorts();
 
   /**
    * The list of outputs.
-   * @return outPorts 
+   * @return outPorts , never <code>null</code>
    **/
   public java.util.List<MetaNodePortEnt> getOutPorts();
 
