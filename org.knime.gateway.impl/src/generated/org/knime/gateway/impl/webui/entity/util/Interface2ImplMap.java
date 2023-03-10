@@ -184,6 +184,8 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntB
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
@@ -463,6 +465,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();
+        }        
+        if(clazz == ReplaceNodeCommandEntBuilder.class) {
+            return (B)new DefaultReplaceNodeCommandEnt.DefaultReplaceNodeCommandEntBuilder();
         }        
         if(clazz == SelectionEventTypeEntBuilder.class) {
             return (B)new DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder();

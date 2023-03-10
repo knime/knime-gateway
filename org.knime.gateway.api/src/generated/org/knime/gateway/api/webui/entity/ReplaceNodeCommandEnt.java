@@ -44,6 +44,9 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
 
@@ -55,79 +58,47 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * Replace a node with a new one.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    REPLACE_NODE("replace_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    UPDATE_NODE_LABEL("update_node_label"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy"),
-    
-    CUT("cut"),
-    
-    PASTE("paste"),
-    
-    TRANSFORM_WORKFLOW_ANNOTATION("transform_workflow_annotation");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface ReplaceNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * Get position
+   * @return position , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public XYEnt getPosition();
+
+  /**
+   * Get nodeFactory
+   * @return nodeFactory , never <code>null</code>
+   **/
+  public NodeFactoryKeyEnt getNodeFactory();
+
+  /**
+   * the id of the node to be replaced
+   * @return nodeId , never <code>null</code>
+   **/
+  public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (WorkflowCommandEnt)other;
+      var e = (ReplaceNodeCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+      valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
+      valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface ReplaceNodeCommandEntBuilder extends GatewayEntityBuilder<ReplaceNodeCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -135,7 +106,31 @@ public interface WorkflowCommandEnt extends GatewayEntity {
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        ReplaceNodeCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ReplaceNodeCommandEntBuilder setPosition(XYEnt position);
+        
+        /**
+   		 * Set nodeFactory
+         * 
+         * @param nodeFactory the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ReplaceNodeCommandEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
+        
+        /**
+         * the id of the node to be replaced
+         * 
+         * @param nodeId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ReplaceNodeCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         
         /**
@@ -145,7 +140,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        ReplaceNodeCommandEnt build();
     
     }
 

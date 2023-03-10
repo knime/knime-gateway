@@ -114,6 +114,7 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -232,6 +233,7 @@ public class ListEntities {
         res.add(PortTypeEnt.class);
         res.add(ProjectMetadataEnt.class);
         res.add(RemovePortCommandEnt.class);
+        res.add(ReplaceNodeCommandEnt.class);
         res.add(SelectionEventTypeEnt.class);
         res.add(SpaceEnt.class);
         res.add(SpaceItemEnt.class);
@@ -335,6 +337,7 @@ public class ListEntities {
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
+        res.add(ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder.class);
         res.add(SelectionEventTypeEnt.SelectionEventTypeEntBuilder.class);
         res.add(SpaceEnt.SpaceEntBuilder.class);
         res.add(SpaceItemEnt.SpaceItemEntBuilder.class);
