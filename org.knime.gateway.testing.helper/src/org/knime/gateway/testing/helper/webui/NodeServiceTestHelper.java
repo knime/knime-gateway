@@ -65,7 +65,7 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
-import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
@@ -432,7 +432,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(jsonNode.get("result").get("data"), notNullValue());
 
         // data
-        var jsonRpcRequest = JsonRpcDataService.jsonRpcRequest("getData", "Universe_0_0", "Universe_0_1", "2");
+        var jsonRpcRequest = RpcDataService.jsonRpcRequest("getData", "Universe_0_0", "Universe_0_1", "2");
         var data = ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("points"), notNullValue());

@@ -51,7 +51,7 @@ package org.knime.gateway.impl.node.port;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.knime.core.webui.data.rpc.json.JsonRpcDataService.jsonRpcRequest;
+import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -82,11 +82,9 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
 import org.knime.core.util.Pair;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
-import org.knime.core.webui.data.text.TextInitialDataService;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -123,7 +121,7 @@ public class TablePortViewFactoryTest {
     public void testTablePortViewInitialData() throws IOException {
         var bdt = createTable(2);
         var portView = createPortView(bdt);
-        var initialData = ((TextInitialDataService)portView.getFirst().createInitialDataService().get()).getInitialData();
+        var initialData = ((InitialDataService)portView.getFirst().createInitialDataService().get()).getInitialData();
         assertThat(initialData, containsString("{\"result\":{"));
         assertThat(initialData, containsString("\"table\":{"));
         assertThat(initialData, containsString("\"settings\":{"));
@@ -147,15 +145,15 @@ public class TablePortViewFactoryTest {
     }
 
     /**
-     * Checks the {@link DataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
+     * Checks the {@link RpcDataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
      * @throws IOException
      */
     @Test
     public void testTablePortViewData() throws IOException {
         var bdt = createTable(10);
         var portView = createPortView(bdt);
-        var jsonRpcResponse = ((JsonRpcDataService)portView.getFirst().createDataService().get())
-            .handleRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false"));
+        var jsonRpcResponse = portView.getFirst().createRpcDataService().get()
+            .handleRpcRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false"));
         assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
 
         portView.getSecond().dispose();

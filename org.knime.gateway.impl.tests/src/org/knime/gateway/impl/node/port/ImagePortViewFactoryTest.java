@@ -65,7 +65,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SingleNodeContainer;
-import org.knime.core.webui.data.json.JsonInitialDataService;
+import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
@@ -110,7 +110,7 @@ public class ImagePortViewFactoryTest {
             var pageId = page.getPageIdForReusablePage().orElse(null);
             assertThat(pageId, is("ImagePortView"));
 
-            var initialData = ((JsonInitialDataService)portView.createInitialDataService().get()).getInitialData();
+            var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
             var imageId = snc.getID().toString() + ":" + System.identityHashCode(portObject) + ".png";
             assertThat(initialData, is("{\"result\":\"ImagePortView/img/" + imageId + "\"}"));
             assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.size(), is(1));

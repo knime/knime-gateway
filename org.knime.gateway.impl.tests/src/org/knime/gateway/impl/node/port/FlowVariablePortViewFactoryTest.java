@@ -65,7 +65,6 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.json.JsonInitialDataService;
 import org.knime.core.webui.node.port.PortView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -119,7 +118,7 @@ public class FlowVariablePortViewFactoryTest {
             NodeContext.removeLastContext();
         }
 
-        var initialData = ((JsonInitialDataService)portView.createInitialDataService().get()).getInitialData();
+        var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
         var jsonNode = MAPPER.readTree(initialData);
         var res = jsonNode.get("result");
         assertThat(res.size(), is(3)); // 3 because it also includes the global 'knime.workspace' variable

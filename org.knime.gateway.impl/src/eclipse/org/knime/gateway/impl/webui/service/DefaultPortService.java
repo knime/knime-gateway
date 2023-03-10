@@ -139,9 +139,9 @@ public class DefaultPortService implements PortService {
 
         var portViewManager = PortViewManager.getInstance();
         if ("initial_data".equals(serviceType)) {
-            return portViewManager.callTextInitialDataService(NodePortWrapper.of(nc, portIdx));
+            return portViewManager.callInitialDataService(NodePortWrapper.of(nc, portIdx));
         } else if ("data".equals(serviceType)) {
-            return portViewManager.callTextDataService(NodePortWrapper.of(nc, portIdx), body);
+            return portViewManager.callRpcDataService(NodePortWrapper.of(nc, portIdx), body);
         } else {
             throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
         }

@@ -55,7 +55,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
-import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -160,7 +160,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // data
         var jsonRpcRequest =
-            JsonRpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null, "false", "true", "false");
+            RpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null, "false", "true", "false");
         var data = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("rows"), notNullValue());
