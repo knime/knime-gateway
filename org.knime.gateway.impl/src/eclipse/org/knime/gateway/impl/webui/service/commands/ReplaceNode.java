@@ -52,10 +52,13 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.List;
 
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Workflow command to replace a node.
@@ -64,20 +67,28 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 final class ReplaceNode extends CommandSequence {
 
-    ReplaceNode(final ReplaceNodeCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
-        super(getCommands(commandEnt, workflowMiddleware));
+    ReplaceNode(final ReplaceNodeCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware,
+        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders) {
+        super(getCommands(commandEnt, workflowMiddleware, nodeFactoryProvider, spaceProviders));
     }
 
     private static List<WorkflowCommand> getCommands(final ReplaceNodeCommandEnt commandEnt,
-        final WorkflowMiddleware workflowMiddleware) {
-        // Delete, Create
+        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
+        final SpaceProviders spaceProviders) {
+        //var node = CoreUtil.getNodeContainer(commandEnt.getNodeId());
+        // Delete
+        var deleteNodeCommandEnt = builder(DeleteCommandEnt.DeleteCommandEntBuilder.class)//
+            .setKind(WorkflowCommandEnt.KindEnum.DELETE)//
+            .setNodeIds(List.of(commandEnt.getNodeId()))//
+            .build();
 
-        var deleteCommandEnt = builder(DeleteCommandEnt.DeleteCommandEntBuilder.class)//
-                .setKind(WorkflowCommandEnt.KindEnum.DELETE)//
-                .setNodeIds(List.of(commandEnt.getNodeId()))//
-                .build();
+        // Create
+        var addNodeCommandEnt = builder(AddNodeCommandEnt.AddNodeCommandEntBuilder.class)//
+            .setKind(WorkflowCommandEnt.KindEnum.ADD_NODE)//
+            .setNodeFactory(commandEnt.getNodeFactory()).setPosition(commandEnt.getPosition()).build();
 
-        return List.of(new Delete(deleteCommandEnt, workflowMiddleware));
+        return List.of(new Delete(deleteNodeCommandEnt, workflowMiddleware),
+            new AddNode(addNodeCommandEnt, nodeFactoryProvider, spaceProviders));
     }
 
 }
