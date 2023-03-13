@@ -49,8 +49,13 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowCopyContent;
+import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -63,9 +68,17 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  *
  * @author Juan Baquero
  */
-final class ReplaceNode extends AbstractWorkflowCommand  {
+final class ReplaceNode extends AbstractWorkflowCommand {
 
     private NodeID m_addedNode;
+
+    private NodeID m_deletedNode;
+
+    private WorkflowPersistor m_previousState;
+
+    private Set<ConnectionContainer> m_outgoingConnections;
+
+    private Set<ConnectionContainer> m_incomingConnections;
 
     ReplaceNodeCommandEnt m_commandEnt;
 
@@ -77,35 +90,38 @@ final class ReplaceNode extends AbstractWorkflowCommand  {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
+        m_deletedNode = m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
+        var previousNode = WorkflowCopyContent.builder().setNodeIDs(m_deletedNode).build();
+        m_previousState = wfm.copy(true, previousNode);
 
-        var nodeId = m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
-        var outgoingConnections = wfm.getOutgoingConnectionsFor(nodeId);
-        var incomingConnections = wfm.getIncomingConnectionsFor(nodeId);
+        m_incomingConnections = wfm.getIncomingConnectionsFor(m_deletedNode);
+        m_outgoingConnections = wfm.getOutgoingConnectionsFor(m_deletedNode);
 
-        wfm.removeNode(nodeId);
+        wfm.removeNode(m_deletedNode);
 
         var nodeFactory = m_commandEnt.getNodeFactory();
         var nodePosition = m_commandEnt.getPosition();
         try {
-            m_addedNode = DefaultServiceUtil.createAndAddNode(nodeFactory.getClassName(), nodeFactory.getSettings(), nodePosition.getX(), nodePosition.getY(), wfm, false);
+            m_addedNode = DefaultServiceUtil.createAndAddNode(nodeFactory.getClassName(), nodeFactory.getSettings(),
+                nodePosition.getX(), nodePosition.getY(), wfm, false);
         } catch (IOException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
 
-        for (var inConnection: incomingConnections) {
+        for (var inConnection : m_incomingConnections) {
             var sourceNode = inConnection.getSource();
             var sourcePort = inConnection.getSourcePort();
             var destPort = inConnection.getDestPort();
-            if(wfm.canAddConnection(sourceNode, sourcePort, m_addedNode, destPort)) {
+            if (wfm.canAddConnection(sourceNode, sourcePort, m_addedNode, destPort)) {
                 Connect.addNewConnection(wfm, sourceNode, sourcePort, m_addedNode, destPort);
             }
         }
 
-        for (var outConnection: outgoingConnections) {
+        for (var outConnection : m_outgoingConnections) {
             var sourcePort = outConnection.getSourcePort();
             var destNode = outConnection.getDest();
             var destPort = outConnection.getDestPort();
-            if(wfm.canAddConnection(m_addedNode, sourcePort, destNode, destPort)) {
+            if (wfm.canAddConnection(m_addedNode, sourcePort, destNode, destPort)) {
                 Connect.addNewConnection(wfm, m_addedNode, sourcePort, destNode, destPort);
             }
         }
@@ -118,8 +134,12 @@ final class ReplaceNode extends AbstractWorkflowCommand  {
      */
     @Override
     public void undo() throws OperationNotAllowedException {
-
-
+        var wfm = getWorkflowManager();
+        wfm.removeNode(m_addedNode);
+        m_addedNode = null;
+        wfm.paste(m_previousState);
+        Stream.concat(m_incomingConnections.stream(), m_outgoingConnections.stream())
+            .forEach(c -> wfm.addConnection(c.getSource(), c.getSourcePort(), c.getDest(), c.getDestPort()));
     }
 
 }
