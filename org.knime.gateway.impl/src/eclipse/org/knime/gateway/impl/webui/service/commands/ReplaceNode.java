@@ -48,14 +48,12 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import java.io.IOException;
 
-import java.util.List;
-
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -65,30 +63,63 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  *
  * @author Juan Baquero
  */
-final class ReplaceNode extends CommandSequence {
+final class ReplaceNode extends AbstractWorkflowCommand  {
+
+    private NodeID m_addedNode;
+
+    ReplaceNodeCommandEnt m_commandEnt;
 
     ReplaceNode(final ReplaceNodeCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware,
         final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders) {
-        super(getCommands(commandEnt, workflowMiddleware, nodeFactoryProvider, spaceProviders));
+        m_commandEnt = commandEnt;
     }
 
-    private static List<WorkflowCommand> getCommands(final ReplaceNodeCommandEnt commandEnt,
-        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProviders spaceProviders) {
-        //var node = CoreUtil.getNodeContainer(commandEnt.getNodeId());
-        // Delete
-        var deleteNodeCommandEnt = builder(DeleteCommandEnt.DeleteCommandEntBuilder.class)//
-            .setKind(WorkflowCommandEnt.KindEnum.DELETE)//
-            .setNodeIds(List.of(commandEnt.getNodeId()))//
-            .build();
+    @Override
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        var wfm = getWorkflowManager();
 
-        // Create
-        var addNodeCommandEnt = builder(AddNodeCommandEnt.AddNodeCommandEntBuilder.class)//
-            .setKind(WorkflowCommandEnt.KindEnum.ADD_NODE)//
-            .setNodeFactory(commandEnt.getNodeFactory()).setPosition(commandEnt.getPosition()).build();
+        var nodeId = m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
+        var outgoingConnections = wfm.getOutgoingConnectionsFor(nodeId);
+        var incomingConnections = wfm.getIncomingConnectionsFor(nodeId);
 
-        return List.of(new Delete(deleteNodeCommandEnt, workflowMiddleware),
-            new AddNode(addNodeCommandEnt, nodeFactoryProvider, spaceProviders));
+        wfm.removeNode(nodeId);
+
+        var nodeFactory = m_commandEnt.getNodeFactory();
+        var nodePosition = m_commandEnt.getPosition();
+        try {
+            m_addedNode = DefaultServiceUtil.createAndAddNode(nodeFactory.getClassName(), nodeFactory.getSettings(), nodePosition.getX(), nodePosition.getY(), wfm, false);
+        } catch (IOException e) {
+            throw new OperationNotAllowedException(e.getMessage(), e);
+        }
+
+        for (var inConnection: incomingConnections) {
+            var sourceNode = inConnection.getSource();
+            var sourcePort = inConnection.getSourcePort();
+            var destPort = inConnection.getDestPort();
+            if(wfm.canAddConnection(sourceNode, sourcePort, m_addedNode, destPort)) {
+                Connect.addNewConnection(wfm, sourceNode, sourcePort, m_addedNode, destPort);
+            }
+        }
+
+        for (var outConnection: outgoingConnections) {
+            var sourcePort = outConnection.getSourcePort();
+            var destNode = outConnection.getDest();
+            var destPort = outConnection.getDestPort();
+            if(wfm.canAddConnection(m_addedNode, sourcePort, destNode, destPort)) {
+                Connect.addNewConnection(wfm, m_addedNode, sourcePort, destNode, destPort);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void undo() throws OperationNotAllowedException {
+
+
     }
 
 }
