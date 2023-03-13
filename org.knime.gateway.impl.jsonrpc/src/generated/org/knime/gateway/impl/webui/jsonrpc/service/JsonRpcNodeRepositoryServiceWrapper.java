@@ -82,7 +82,7 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, Integer nodesLimit, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException {
+    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="nodesLimit") Integer nodesLimit, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException {
         return m_service.get().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit, fullTemplateInfo);    
     }
 
@@ -100,7 +100,7 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
      */
     @Override
     @JsonRpcMethod(value = "getNodesGroupedByTags")
-    public NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo)  {
+    public NodeGroupsEnt getNodesGroupedByTags(@JsonRpcParam(value="numNodesPerTag") Integer numNodesPerTag, @JsonRpcParam(value="tagsOffset") Integer tagsOffset, @JsonRpcParam(value="tagsLimit") Integer tagsLimit, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  {
         return m_service.get().getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);    
     }
 
@@ -113,7 +113,7 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String nodesPartition, String portTypeId)  throws ServiceExceptions.InvalidRequestException {
+    public NodeSearchResultEnt searchNodes(@JsonRpcParam(value="q") String q, @JsonRpcParam(value="tags") java.util.List<String> tags, @JsonRpcParam(value="allTagsMatch") Boolean allTagsMatch, @JsonRpcParam(value="offset") Integer offset, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo, @JsonRpcParam(value="nodesPartition") String nodesPartition, @JsonRpcParam(value="portTypeId") String portTypeId)  throws ServiceExceptions.InvalidRequestException {
         return m_service.get().searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, nodesPartition, portTypeId);    
     }
 
