@@ -1466,7 +1466,8 @@ public final class WorkflowEntityFactory {
         var hasCompositeView =
             nc instanceof SubNodeContainer && WizardPageUtil.isWizardPage(nc.getParent(), nc.getID());
         var hasLegacyJSNodeView = nc instanceof NativeNodeContainer && nc.getInteractiveWebViews().size() > 0;
-        if (hasNodeView || hasCompositeView || hasLegacyJSNodeView) {
+        var hasSwingNodeView = nc.getNrNodeViews() > 0;
+        if (hasNodeView || hasCompositeView || hasLegacyJSNodeView || hasSwingNodeView) {
             return nc.getNodeContainerState().isExecuted();
         }
         return null; // NOSONAR
