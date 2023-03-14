@@ -57,6 +57,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -125,6 +126,26 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         assertThat(appStateEnt.getFeatureFlags().get(featureFlagKey), is(true));
 
         System.clearProperty(featureFlagKey);
+    }
+
+    /**
+     * Test to close projects.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCloseProjects() throws Exception {
+        String workflowProjectId = "the_workflow_project_id";
+        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+        WorkflowProjectManager.getInstance().openAndCacheWorkflow(workflowProjectId);
+        WorkflowProjectManager.getInstance().setWorkflowProjectActive(workflowProjectId);
+
+        final var projectIds = new ArrayList<String>();
+        projectIds.add(workflowProjectId);
+
+        var appService = DefaultApplicationService.getInstance();
+        appService.closeProjects(projectIds, true);
+        assertThat(WorkflowProjectManager.getInstance().isActiveWorkflowProject(workflowProjectId), is(false));
     }
 
     @Override

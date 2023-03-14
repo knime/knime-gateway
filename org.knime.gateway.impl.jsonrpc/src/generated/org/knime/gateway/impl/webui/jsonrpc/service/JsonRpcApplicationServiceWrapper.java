@@ -75,6 +75,15 @@ public class JsonRpcApplicationServiceWrapper implements ApplicationService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "closeProjects")
+    public void closeProjects(@JsonRpcParam(value="projectIds") java.util.List<String> projectIds, @JsonRpcParam(value="force") Boolean force)  {
+        m_service.get().closeProjects(projectIds, force);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getState")
     public AppStateEnt getState()  {
         return m_service.get().getState();    

@@ -47,7 +47,6 @@ package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -59,7 +58,9 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.util.CoreUtil;
 
 /**
  * Manages workflow projects that are eventually used by the service implementations.
@@ -215,5 +216,42 @@ public final class WorkflowProjectManager {
      */
     private void cacheWorkflow(final String workflowProjectID, final WorkflowManager wfm) {
         m_chachedWorkflowsMap.put(workflowProjectID, wfm);
+    }
+
+
+    /**
+     * Closes workflow projects based on their projectIds.
+     *
+     * @param projectIds the projectIds of the workflows to close
+     * @return whether closing was successful for all workflows
+     */
+    public static boolean closeWorkflowProjects(final Set<String> projectIds) {
+        var success = true;
+        for (var projectId : projectIds) {
+            success &= closeWorkflowProject(projectId);
+        }
+        return success;
+    }
+
+    /**
+     * Closes workflow project (without saving the changes) based on its projectId.
+     *
+     * @param projectId the projectId of the workflow to close
+     * @return whether closing was successful or not
+     */
+    public static boolean closeWorkflowProject(final String projectId) {
+        var wpm = WorkflowProjectManager.getInstance();
+        var wfm = wpm.getCachedWorkflow(projectId).orElse(null);
+        try {
+            if (wfm != null) {
+                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
+            }
+            wpm.removeWorkflowProject(projectId);
+            return true;
+        } catch (InterruptedException e) { // NOSONAR
+            NodeLogger.getLogger(WorkflowProjectManager.class)
+                .warn("Problem while waiting for the workflow '" + projectId + "' to be cancelled", e);
+            return false;
+        }
     }
 }

@@ -48,6 +48,9 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -115,6 +118,17 @@ public final class DefaultApplicationService implements ApplicationService {
             m_exampleProjects, m_spaceProviders, m_nodeFactoryProvider);
         m_appStateUpdater.setLastAppState(appState);
         return appState;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void closeProjects(final List<String> projectIds, final Boolean force) {
+        if (force) {
+            m_workflowProjectManager.closeWorkflowProjects(projectIds.stream().collect(Collectors.toSet()));
+            m_appStateUpdater.updateAppState();
+        }
     }
 
 }

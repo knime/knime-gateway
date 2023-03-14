@@ -58,6 +58,16 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 public interface ApplicationService extends GatewayService {
 
     /**
+     * Closes workflows (without saving the changes for now).
+     *
+     * @param projectIds the projectIds of the workflows to close
+     * @param force whether to present a user prompt to save or not
+     *
+     * 
+     */
+    void closeProjects(java.util.List<String> projectIds, Boolean force) ;
+        
+    /**
      * Provides information on the global application state, such as opened workflows etc.
      *
      *
