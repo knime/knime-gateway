@@ -181,7 +181,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AddNodeCommandEnt ce) {
             command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
         } else if (commandEnt instanceof ReplaceNodeCommandEnt ce) {
-            command = new ReplaceNode(ce, workflowMiddleware, nodeFactoryProvider, spaceProviders);
+            command = new ReplaceNode(ce);
         } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt ce) {
             command = new UpdateComponentOrMetanodeName(ce);
         } else if (commandEnt instanceof UpdateNodeLabelCommandEnt ce) {

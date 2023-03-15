@@ -44,24 +44,20 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 11, 2021 (hornm): created
+ *   Mar 11, 2023 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.io.IOException;
-import java.util.Set;
-import java.util.stream.Stream;
+import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToNodeID;
 
-import org.knime.core.node.workflow.ConnectionContainer;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.WorkflowCopyContent;
-import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.action.ReplaceNodeResult;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.NodeFactoryProvider;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Workflow command to replace a node.
@@ -70,62 +66,30 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  */
 final class ReplaceNode extends AbstractWorkflowCommand {
 
-    private NodeID m_addedNode;
-
     private NodeID m_deletedNode;
 
-    private WorkflowPersistor m_previousState;
-
-    private Set<ConnectionContainer> m_outgoingConnections;
-
-    private Set<ConnectionContainer> m_incomingConnections;
+    private ReplaceNodeResult m_result;
 
     ReplaceNodeCommandEnt m_commandEnt;
 
-    ReplaceNode(final ReplaceNodeCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware,
-        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders) {
+    ReplaceNode(final ReplaceNodeCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        m_deletedNode = m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
-        var previousNode = WorkflowCopyContent.builder().setNodeIDs(m_deletedNode).build();
-        m_previousState = wfm.copy(true, previousNode);
+        m_deletedNode = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getNodeId());
 
-        m_incomingConnections = wfm.getIncomingConnectionsFor(m_deletedNode);
-        m_outgoingConnections = wfm.getOutgoingConnectionsFor(m_deletedNode);
-
-        wfm.removeNode(m_deletedNode);
-
-        var nodeFactory = m_commandEnt.getNodeFactory();
-        var nodePosition = m_commandEnt.getPosition();
+        var nodeFactoryEnt = m_commandEnt.getNodeFactory();
         try {
-            m_addedNode = DefaultServiceUtil.createAndAddNode(nodeFactory.getClassName(), nodeFactory.getSettings(),
-                nodePosition.getX(), nodePosition.getY(), wfm, false);
-        } catch (IOException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
+            var nodeFactory = DefaultServiceUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
+            m_result = wfm.replaceNode(m_deletedNode, null, nodeFactory);
+        } catch (NoSuchElementException ex) {
+            throw new OperationNotAllowedException(ex.getMessage(), ex);
+        } catch (IOException ex) {
+            throw new OperationNotAllowedException(ex.getMessage(), ex);
         }
-
-        for (var inConnection : m_incomingConnections) {
-            var sourceNode = inConnection.getSource();
-            var sourcePort = inConnection.getSourcePort();
-            var destPort = inConnection.getDestPort();
-            if (wfm.canAddConnection(sourceNode, sourcePort, m_addedNode, destPort)) {
-                Connect.addNewConnection(wfm, sourceNode, sourcePort, m_addedNode, destPort);
-            }
-        }
-
-        for (var outConnection : m_outgoingConnections) {
-            var sourcePort = outConnection.getSourcePort();
-            var destNode = outConnection.getDest();
-            var destPort = outConnection.getDestPort();
-            if (wfm.canAddConnection(m_addedNode, sourcePort, destNode, destPort)) {
-                Connect.addNewConnection(wfm, m_addedNode, sourcePort, destNode, destPort);
-            }
-        }
-
         return true;
     }
 
@@ -133,13 +97,16 @@ final class ReplaceNode extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
+    public boolean canUndo() {
+        return m_result.canUndo();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void undo() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-        wfm.removeNode(m_addedNode);
-        m_addedNode = null;
-        wfm.paste(m_previousState);
-        Stream.concat(m_incomingConnections.stream(), m_outgoingConnections.stream())
-            .forEach(c -> wfm.addConnection(c.getSource(), c.getSourcePort(), c.getDest(), c.getDestPort()));
+        m_result.undo();
     }
 
 }
