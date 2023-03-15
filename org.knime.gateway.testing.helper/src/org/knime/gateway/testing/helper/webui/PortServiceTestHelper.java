@@ -81,7 +81,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param workflowLoader
      * @param workflowExecutor
      */
-    protected PortServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+    public PortServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(NodeServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }

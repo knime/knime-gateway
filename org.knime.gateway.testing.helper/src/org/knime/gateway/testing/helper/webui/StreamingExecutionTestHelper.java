@@ -77,7 +77,7 @@ public class StreamingExecutionTestHelper extends WebUIGatewayServiceTestHelper 
      * @param workflowLoader
      * @param workflowExecutor
      */
-    protected StreamingExecutionTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+    public StreamingExecutionTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(StreamingExecutionTestHelper.class, entityResultChecker, serviceProvider, workflowLoader,
             workflowExecutor);

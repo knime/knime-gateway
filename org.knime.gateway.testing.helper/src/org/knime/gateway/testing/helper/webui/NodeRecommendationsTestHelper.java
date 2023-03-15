@@ -86,7 +86,7 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
      * @param workflowLoader
      * @param workflowExecutor
      */
-    protected NodeRecommendationsTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+    public NodeRecommendationsTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(NodeServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }

@@ -104,7 +104,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param workflowLoader
      * @param workflowExecutor
      */
-    protected NodeServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+    public NodeServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(NodeServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }

@@ -187,7 +187,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param workflowLoader
      * @param workflowExecutor
      */
-    protected WorkflowServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+    public WorkflowServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(WorkflowServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
@@ -2212,6 +2212,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.eq("knime://LOCAL/test.csv")))
             .thenReturn(nodeFactoryClass);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
 
         var addNodeCommand = builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//

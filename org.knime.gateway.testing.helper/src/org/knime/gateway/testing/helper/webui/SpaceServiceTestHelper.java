@@ -108,7 +108,7 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 @SuppressWarnings("javadoc")
 public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
-    protected SpaceServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+    public SpaceServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(SpaceServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }

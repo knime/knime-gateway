@@ -35,7 +35,7 @@ public interface GatewayTestRunner {
      * @param serviceProvider
      * @param workflowLoader provides the workflows to run the test
      * @param workflowExecutor executes workflows if desired during the test run
-     * @throws Exception
+     * @throws Throwable
      */
     void runGatewayTest(final ResultChecker entityResultChecker, ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) throws Exception; //NOSONAR

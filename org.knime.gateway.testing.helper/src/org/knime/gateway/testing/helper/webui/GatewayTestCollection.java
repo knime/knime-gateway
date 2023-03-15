@@ -17,8 +17,19 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.knime.core.util.Pair;
+import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.ServiceProvider;
+import org.knime.gateway.testing.helper.WorkflowExecutor;
+import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
  * Gives programmatic access to all gateway test (helpers) that test the web-ui API services. Provided in that way such
@@ -28,188 +39,53 @@ import java.util.Map;
  */
 public final class GatewayTestCollection {
 
+    private static final List<Class<?>> CONTRIBUTING_CLASSES = List.of( //
+        NodeRecommendationsTestHelper.class, //
+        NodeServiceTestHelper.class, //
+        PortServiceTestHelper.class, //
+        SpaceServiceTestHelper.class, //
+        StreamingExecutionTestHelper.class, //
+        WorkflowServiceTestHelper.class //
+    );
+
     private GatewayTestCollection() {
-        //utility class
+        // utility class
     }
 
     /**
      * Collects and initializes all available gateway tests.
      *
-     * TODO could be automatically collected by annotating the respective classes and/or methods
+     * Any non-static, public method declared by the 'contributing classes' is considered a test.
      *
      * @return map from the individual test names to a function that allows one to run the test
      */
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
-        Map<String, GatewayTestRunner> res = new HashMap<>();
-        res.put("testGetWorkflow",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetWorkflow());
-        res.put("testNodeExecutionStates",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testNodeExecutionStates());
-        res.put("testGetAllowedActionsInfo",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetAllowedActionsInfo());
-        res.put("testGetComponentProjectWorkflow",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testGetComponentProjectWorkflow());
-        res.put("testWorkflowAndComponentMetadata",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testWorkflowAndComponentMetadata());
-        res.put("testExecuteTranslateCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteTranslateCommand());
-        res.put("testExecuteDeleteCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteDeleteCommand());
-        res.put("testExecuteConnectCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteConnectCommand());
 
-        res.put("testExecuteUpdateComponentOrMetanodeNameCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteUpdateComponentOrMetanodeNameCommand());
-        res.put("testExecuteUpdateNodeLabelCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteUpdateNodeLabelCommand());
+        return CONTRIBUTING_CLASSES.stream().flatMap(helper -> Arrays.stream(helper.getDeclaredMethods())) //
+            .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers())) //
+            .map(method -> {
+                var declaringClass = method.getDeclaringClass();
+                return Pair.create(declaringClass.getSimpleName() + "::" + method.getName(),
+                    createGatewayTestRunner(declaringClass, method));
+            }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+    }
 
-        res.put("testExecuteAddNodeCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddNodeCommand());
-        res.put("testExecuteAddAndConnectCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddAndConnectCommand());
-        res.put("testExecuteAddAndConnectCommandDynamicNode",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddAndConnectCommandDynamicNode());
-        res.put("testExecuteAddAndConnectCommandFlowVariables",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddAndConnectCommandFlowVariables());
-        res.put("testExecuteAddAndConnectCommandAutoGuessSourcePorts",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteAddAndConnectCommandAutoGuessSourcePorts());
-
-        res.put("testCanRemovePortFromNative",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanRemovePortFromNative());
-        res.put("testCanRemovePortFromContainer",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanRemovePortFromContainer());
-        res.put("testCanAddPortToNative",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanAddPortToNative());
-        res.put("testCanAddPortToNativeIsInteractive",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCanAddPortToNativeIsInteractive());
-        res.put("testAddPortToMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testAddPortToMetanode());
-        res.put("testAddPortToComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testAddPortToComponent());
-        res.put("testRemovePortFromMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testRemovePortFromMetanode());
-        res.put("testRemovePortFromComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testRemovePortFromComponent());
-        res.put("testAddPortToNative",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testAddPortToNativeNode());
-        res.put("testRemovePortFromNativeNode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testRemovePortFromNative());
-
-        res.put("testCollapseConfiguredToMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseConfiguredToMetanode());
-        res.put("testCollapseConfiguredToComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseConfiguredToComponent());
-        res.put("testCollapseExecutingToMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseExecutingToMetanode());
-        res.put("testCollapseExecutingToComponent",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseExecutingToComponent());
-        res.put("testCollapseResettableToMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResettableToMetanode());
-        res.put("testCollapseResettableToComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResettableToComponent());
-        res.put("testCollapseResultMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResultMetanode());
-        res.put("testCollapseResultComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseResultComponent());
-        res.put("testCollapseNothingIntoMetanode",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testCollapseNothingIntoMetanode());
-
-        res.put("testExpandConfiguredMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandConfiguredMetanode());
-        res.put("testExpandConfiguredComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandConfiguredComponent());
-        res.put("testExpandExecutingMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandExecutingMetanode());
-        res.put("testExpandExecutingComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandExecutingComponent());
-        res.put("testExpandResettableMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResettableMetanode());
-        res.put("testExpandResettableComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResettableComponent());
-        res.put("testExpandResultMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResultMetanode());
-        res.put("testExpandResultComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandResultComponent());
-        res.put("testExecuteCommandsWithinComponent",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCommandsWithinComponent());
-        res.put("testExecuteCommandsWithinMetanode",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCommandsWithinMetanode());
-        res.put("testExpandLockedMetanode",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandLockedMetanode());
-        res.put("testExpandLockedComponent",
-                (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExpandLockedComponent());
-        res.put("testExecuteCopyCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCopyCommand());
-        res.put("testExecuteCutCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecuteCutCommand());
-        res.put("testExecutePasteCommand",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testExecutePasteCommand());
-        res.put("testAddNodeCommandFromURI",
-            (rc, sp, wl, we) -> new WorkflowServiceTestHelper(rc, sp, wl, we).testAddNodeCommandFromURI());
-
-        res.put("testChangeNodeState",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeState());
-        res.put("testChangeNodeStateOfComponentProject",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeStateOfComponentProject());
-        res.put("testChangeNodeStateAllNodes",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeNodeStateAllNodes());
-        res.put("testChangeLoopExecutionState",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionState());
-        res.put("testChangeLoopExecutionStateInSubWorkflow",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testChangeLoopExecutionStateInSubWorkflow());
-        res.put("testGetNodeDescription",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testGetNodeDescription());
-        res.put("testGetNodeDialog",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testGetNodeDialog());
-        res.put("testGetNodeView",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testGetNodeView());
-        res.put("testCallNodeDataService",
-            (rc, sp, wl, we) -> new NodeServiceTestHelper(rc, sp, wl, we).testCallNodeDataService());
-
-        res.put("testGetPortView", (rc, sp, wl, we) -> new PortServiceTestHelper(rc, sp, wl, we).testGetPortView());
-        res.put("testCallPortDataService",
-            (rc, sp, wl, we) -> new PortServiceTestHelper(rc, sp, wl, we).testCallPortDataService());
-
-        res.put("testJobManagerProperty",
-            (rc, sp, wl, we) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testJobManagerProperty());
-        res.put("testStreamedWorkflow",
-            (rc, sp, wl, we) -> new StreamingExecutionTestHelper(rc, sp, wl, we).testStreamedWorkflow());
-
-        res.put("testExecuteAndUndoDeleteCommandPatches",
-            (rc, sp, wl, we) -> new EventServiceTestHelper(rc, sp, wl, we).testExecuteAndUndoDeleteCommandPatches());
-
-        res.put("testNodeRecommendations",
-            (rc, sp, wl, we) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendations());
-        res.put("testNodeRecommendationsForSourceNodes", (rc, sp, wl,
-            we) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendationsForSourceNodes());
-        res.put("testNodeRecommendationsThrowingExceptions", (rc, sp, wl,
-            we) -> new NodeRecommendationsTestHelper(rc, sp, wl, we).testNodeRecommendationsThrowingExceptions());
-
-        res.put("testListWorkflowGroupForLocalWorkspace",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testListWorkflowGroupForLocalWorkspace());
-        res.put("testGetSpaceProvider",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testGetSpaceProvider());
-        res.put("testCreateWorkflowForLocalWorkspace",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testCreateWorkflowForLocalWorkspace());
-        res.put("testDeleteItemForLocalWorkspace",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testDeleteItemForLocalWorkspace());
-        res.put("testRenameSpaceItem",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameSpaceItem());
-        res.put("testRenameSpaceItemLocal",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameSpaceItemLocal());
-        res.put("testRenameToExistingLocal",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameToExistingLocal());
-        res.put("testRenameRootLocal",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testRenameRootLocal());
-        res.put("testCreateWorkflowGroupForLocalWorkspace",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testCreateWorkflowGroupForLocalWorkspace());
-        res.put("testMoveItemsLocal",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testMoveItemsLocal());
-        res.put("testMoveItemsWithOpenWorkflowLocal",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testMoveItemsWithOpenWorkflowLocal());
-        res.put("testMoveItemsWithNameCollisionsLocal",
-            (rc, sp, wl, we) -> new SpaceServiceTestHelper(rc, sp, wl, we).testMoveItemsWithNameCollisionsLocal());
-
-        return res;
+    private static GatewayTestRunner createGatewayTestRunner(final Class<?> declaringClass, final Method method) {
+        return (rc, sp, wl, we) -> { // NOSONAR
+            var obj = declaringClass.getConstructor(ResultChecker.class, ServiceProvider.class, WorkflowLoader.class,
+                WorkflowExecutor.class).newInstance(rc, sp, wl, we);
+            try {
+                method.invoke(obj);
+            } catch (InvocationTargetException ex) {
+                var cause = ex.getCause();
+                if (cause instanceof Exception e) {
+                    throw e;
+                } else if (cause instanceof Error e) {
+                    throw e;
+                } else {
+                    throw ex;
+                }
+            }
+        };
     }
 }
