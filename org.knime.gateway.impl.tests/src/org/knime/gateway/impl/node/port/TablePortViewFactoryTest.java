@@ -78,10 +78,10 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
-import org.knime.core.util.Pair;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
@@ -98,80 +98,89 @@ public class TablePortViewFactoryTest {
 
     /**
      * Asserts that the correct page is returned by the {@link PortView} created by the {@link TablePortViewFactory}.
+     *
      * @throws IOException
      */
     @Test
     public void testTablePortViewPage() throws IOException {
         var bdt = createTable(2);
-        var portViewAndDispose = createPortView(bdt);
-        var portView = portViewAndDispose.getFirst();
-        var page = portView.getPage();
-        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_LIB"));
-        var pageId = page.getPageIdForReusablePage().orElse(null);
-        assertThat(pageId, is("tableview"));
-
-        portViewAndDispose.getSecond().dispose();
+        var nc = createNodeWithPortView(bdt);
+        NodeContext.pushContext(nc);
+        try {
+            var portView = new TablePortViewFactory().createPortView(bdt);
+            var page = portView.getPage();
+            assertThat(page.getContentType().toString(), is("VUE_COMPONENT_LIB"));
+            var pageId = page.getPageIdForReusablePage().orElse(null);
+            assertThat(pageId, is("tableview"));
+        } finally {
+            NodeContext.removeLastContext();
+            WorkflowManagerUtil.disposeWorkflow(nc.getParent());
+        }
     }
 
     /**
      * Checks the {@link InitialDataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
+     *
      * @throws IOException
      */
     @Test
     public void testTablePortViewInitialData() throws IOException {
         var bdt = createTable(2);
-        var portView = createPortView(bdt);
-        var initialData = ((InitialDataService)portView.getFirst().createInitialDataService().get()).getInitialData();
-        assertThat(initialData, containsString("{\"result\":{"));
-        assertThat(initialData, containsString("\"table\":{"));
-        assertThat(initialData, containsString("\"settings\":{"));
-        var initialDataTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
-        var settings = initialDataTree.get("result").get("settings");
-        assertThat(settings.get("showTitle").asBoolean(), is(false));
-        assertThat(settings.get("publishSelection").asBoolean(), is(false));
-        assertThat(settings.get("subscribeToSelection").asBoolean(), is(false));
-        assertThat(settings.get("enablePagination").asBoolean(), is(false));
-        assertThat(settings.get("compactMode").asBoolean(), is(true));
-        assertThat(settings.get("showRowKeys").asBoolean(), is(true));
-        assertThat(settings.get("showColumnDataType").asBoolean(), is(true));
-        assertThat(settings.get("showRowIndices").asBoolean(), is(true));
-        assertThat(settings.get("enableGlobalSearch").asBoolean(), is(true));
-        assertThat(settings.get("enableColumnSearch").asBoolean(), is(true));
-        assertThat(settings.get("enableSortingByHeader").asBoolean(), is(true));
-        assertThat(settings.get("enableRendererSelection").asBoolean(), is(true));
-        assertThat(settings.get("skipRemainingColumns").asBoolean(), is(true));
-
-        portView.getSecond().dispose();
+        var nc = createNodeWithPortView(bdt);
+        NodeContext.pushContext(nc);
+        try {
+            var initialData =
+                new TablePortViewFactory().createPortView(bdt).createInitialDataService().get().getInitialData();
+            assertThat(initialData, containsString("{\"result\":{"));
+            assertThat(initialData, containsString("\"table\":{"));
+            assertThat(initialData, containsString("\"settings\":{"));
+            var initialDataTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
+            var settings = initialDataTree.get("result").get("settings");
+            assertThat(settings.get("showTitle").asBoolean(), is(false));
+            assertThat(settings.get("publishSelection").asBoolean(), is(false));
+            assertThat(settings.get("subscribeToSelection").asBoolean(), is(false));
+            assertThat(settings.get("enablePagination").asBoolean(), is(false));
+            assertThat(settings.get("compactMode").asBoolean(), is(true));
+            assertThat(settings.get("showRowKeys").asBoolean(), is(true));
+            assertThat(settings.get("showColumnDataType").asBoolean(), is(true));
+            assertThat(settings.get("showRowIndices").asBoolean(), is(true));
+            assertThat(settings.get("enableGlobalSearch").asBoolean(), is(true));
+            assertThat(settings.get("enableColumnSearch").asBoolean(), is(true));
+            assertThat(settings.get("enableSortingByHeader").asBoolean(), is(true));
+            assertThat(settings.get("enableRendererSelection").asBoolean(), is(true));
+            assertThat(settings.get("skipRemainingColumns").asBoolean(), is(true));
+        } finally {
+            NodeContext.removeLastContext();
+            WorkflowManagerUtil.disposeWorkflow(nc.getParent());
+        }
     }
 
     /**
      * Checks the {@link RpcDataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
+     *
      * @throws IOException
      */
     @Test
     public void testTablePortViewData() throws IOException {
         var bdt = createTable(10);
-        var portView = createPortView(bdt);
-        var jsonRpcResponse = portView.getFirst().createRpcDataService().get()
-            .handleRpcRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false"));
-        assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
-
-        portView.getSecond().dispose();
+        var nc = createNodeWithPortView(bdt);
+        NodeContext.pushContext(nc);
+        try {
+            var jsonRpcResponse = new TablePortViewFactory().createPortView(bdt).createRpcDataService().get()
+                .handleRpcRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false"));
+            assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
+        } finally {
+            NodeContext.removeLastContext();
+            WorkflowManagerUtil.disposeWorkflow(nc.getParent());
+        }
     }
 
     /*
-     * returns the port view and a runnable to dispose port-view related stuff
+     * returns the node with the port view
      */
-    private static Pair<PortView, Dispose> createPortView(final BufferedDataTable table) throws IOException {
+    private static NodeContainer createNodeWithPortView(final BufferedDataTable table) throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory());
-        NodeContext.pushContext(nc);
-        try {
-            return Pair.create(new TablePortViewFactory().createPortView(table),
-                () -> WorkflowManagerUtil.disposeWorkflow(wfm));
-        } finally {
-            NodeContext.removeLastContext();
-        }
+        return WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory());
     }
 
     @FunctionalInterface
