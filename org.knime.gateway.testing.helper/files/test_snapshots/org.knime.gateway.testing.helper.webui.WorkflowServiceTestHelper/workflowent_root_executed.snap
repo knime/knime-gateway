@@ -533,6 +533,7 @@
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
+        "canOpenView" : true,
         "canReset" : true
       },
       "annotation" : {
@@ -1453,6 +1454,7 @@
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
+        "canOpenView" : true,
         "canReset" : true
       },
       "annotation" : {
@@ -1796,6 +1798,7 @@
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
+        "canOpenView" : true,
         "canReset" : true
       },
       "id" : "root:4",
@@ -1840,6 +1843,7 @@
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
+        "canOpenView" : false,
         "canReset" : false
       },
       "annotation" : {
@@ -1959,6 +1963,7 @@
         "canDelete" : true,
         "canExecute" : false,
         "canOpenDialog" : true,
+        "canOpenView" : true,
         "canReset" : true
       },
       "id" : "root:8",

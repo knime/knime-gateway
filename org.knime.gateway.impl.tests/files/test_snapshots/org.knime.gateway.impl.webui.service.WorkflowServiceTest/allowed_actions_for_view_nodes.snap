@@ -80,6 +80,7 @@
     "canDelete" : true,
     "canExecute" : true,
     "canOpenDialog" : true,
+    "canOpenView" : false,
     "canReset" : false
   },
   "root:7" : {
