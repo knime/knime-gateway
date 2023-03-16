@@ -47,7 +47,6 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -56,7 +55,6 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
  * Replace a node with a new one.
  *
  * @param kind
- * @param position
  * @param nodeFactory
  * @param nodeId
  *
@@ -65,7 +63,6 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultReplaceNodeCommandEnt(
     KindEnum kind,
-    XYEnt position,
     NodeFactoryKeyEnt nodeFactory,
     org.knime.gateway.api.entity.NodeIDEnt nodeId) implements ReplaceNodeCommandEnt {
 
@@ -75,9 +72,6 @@ public record DefaultReplaceNodeCommandEnt(
     public DefaultReplaceNodeCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
-        }
-        if(position == null) {
-            throw new IllegalArgumentException("<position> must not be null.");
         }
         if(nodeFactory == null) {
             throw new IllegalArgumentException("<nodeFactory> must not be null.");
@@ -98,11 +92,6 @@ public record DefaultReplaceNodeCommandEnt(
     }
     
     @Override
-    public XYEnt getPosition() {
-        return position;
-    }
-    
-    @Override
     public NodeFactoryKeyEnt getNodeFactory() {
         return nodeFactory;
     }
@@ -119,8 +108,6 @@ public record DefaultReplaceNodeCommandEnt(
 
         private KindEnum m_kind;
 
-        private XYEnt m_position;
-
         private NodeFactoryKeyEnt m_nodeFactory;
 
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
@@ -131,15 +118,6 @@ public record DefaultReplaceNodeCommandEnt(
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
              m_kind = kind;
-             return this;
-        }
-
-        @Override
-        public DefaultReplaceNodeCommandEntBuilder setPosition(XYEnt position) {
-             if(position == null) {
-                 throw new IllegalArgumentException("<position> must not be null.");
-             }
-             m_position = position;
              return this;
         }
 
@@ -165,7 +143,6 @@ public record DefaultReplaceNodeCommandEnt(
         public DefaultReplaceNodeCommandEnt build() {
             return new DefaultReplaceNodeCommandEnt(
                 immutable(m_kind),
-                immutable(m_position),
                 immutable(m_nodeFactory),
                 immutable(m_nodeId));
         }

@@ -128,6 +128,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
@@ -137,6 +138,8 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
@@ -2170,6 +2173,42 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setContent(clipboardContent)//
             .setPosition(position != null ? builder(XYEntBuilder.class).setX(position.get(0)).setY(position.get(1)).build() : null)
             .build();
+    }
+
+    /**
+     * Test Replace Node command
+     *
+     * @throws Exception
+     */
+    public void testExecuteReplaceNodeCommand() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
+        var command = buildReplaceNodeCommand(
+            builder(NodeFactoryKeyEntBuilder.class).setClassName(rowFilterFactory).setSettings(null).build(),
+            new NodeIDEnt(1));
+        var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        Map<String, ConnectionEnt> connections = workflow.getConnections();
+        var nodes = workflow.getNodes();
+        var node1Pos = nodes.get("root:1").getPosition();
+        // execute command
+        var result = ws().executeWorkflowCommand(wfId, getRootID(), command);
+
+        nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
+        var newNode = nodes.values().stream()
+            .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(rowFilterFactory))
+            .findFirst().orElseThrow();
+        assertThat("new node is the same x position as old node", newNode.getPosition().getX(), is(node1Pos.getX()));
+        assertThat("new node is the same y position as old node", newNode.getPosition().getY(), is(node1Pos.getY()));
+
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat("connection still exists", connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+    }
+
+    private static ReplaceNodeCommandEnt buildReplaceNodeCommand(final NodeFactoryKeyEnt nodeFactory,
+        final NodeIDEnt nodeId) {
+        return builder(ReplaceNodeCommandEntBuilder.class)//
+            .setKind(KindEnum.REPLACE_NODE)//
+            .setNodeFactory(nodeFactory).setNodeId(nodeId).build();
     }
 
     /**

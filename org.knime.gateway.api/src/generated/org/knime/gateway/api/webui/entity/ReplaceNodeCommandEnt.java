@@ -46,7 +46,6 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
 
@@ -67,12 +66,6 @@ public interface ReplaceNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt
 
 
   /**
-   * Get position
-   * @return position , never <code>null</code>
-   **/
-  public XYEnt getPosition();
-
-  /**
    * Get nodeFactory
    * @return nodeFactory , never <code>null</code>
    **/
@@ -90,7 +83,6 @@ public interface ReplaceNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ReplaceNodeCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
   }
@@ -107,14 +99,6 @@ public interface ReplaceNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @return this entity builder for chaining
          */
         ReplaceNodeCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set position
-         * 
-         * @param position the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ReplaceNodeCommandEntBuilder setPosition(XYEnt position);
         
         /**
    		 * Set nodeFactory

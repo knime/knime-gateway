@@ -45,7 +45,6 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
@@ -77,10 +76,6 @@ public interface ReplaceNodeCommandEntMixIn extends ReplaceNodeCommandEnt {
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
     @JsonProperty("nodeFactory")
     public NodeFactoryKeyEnt getNodeFactory();
     
@@ -104,10 +99,6 @@ public interface ReplaceNodeCommandEntMixIn extends ReplaceNodeCommandEnt {
         @Override
         @JsonProperty("kind")
         public ReplaceNodeCommandEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("position")
-        public ReplaceNodeCommandEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
         @JsonProperty("nodeFactory")

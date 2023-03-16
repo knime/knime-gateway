@@ -53,7 +53,6 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToNod
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.action.ReplaceNodeResult;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -66,11 +65,9 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  */
 final class ReplaceNode extends AbstractWorkflowCommand {
 
-    private NodeID m_deletedNode;
-
     private ReplaceNodeResult m_result;
 
-    ReplaceNodeCommandEnt m_commandEnt;
+    private final ReplaceNodeCommandEnt m_commandEnt;
 
     ReplaceNode(final ReplaceNodeCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -79,13 +76,14 @@ final class ReplaceNode extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        m_deletedNode = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getNodeId());
-
         var nodeFactoryEnt = m_commandEnt.getNodeFactory();
+        var deletedNode = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getNodeId());
         try {
             var nodeFactory = DefaultServiceUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
-            m_result = wfm.replaceNode(m_deletedNode, null, nodeFactory);
+            m_result = wfm.replaceNode(deletedNode, null, nodeFactory);
         } catch (NoSuchElementException ex) {
+            throw new OperationNotAllowedException(ex.getMessage(), ex);
+        } catch (IllegalStateException ex) {
             throw new OperationNotAllowedException(ex.getMessage(), ex);
         } catch (IOException ex) {
             throw new OperationNotAllowedException(ex.getMessage(), ex);
@@ -107,6 +105,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         m_result.undo();
+        m_result = null;
     }
 
 }
