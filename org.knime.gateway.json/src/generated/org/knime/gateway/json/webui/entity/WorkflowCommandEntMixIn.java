@@ -71,6 +71,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameC
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 
 /**
@@ -112,6 +113,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultCutCommandEnt.class, name = "cut")
 ,
   @Type(value = DefaultPasteCommandEnt.class, name = "paste")
+,
+  @Type(value = DefaultTransformWorkflowAnnotationCommandEnt.class, name = "transform_workflow_annotation")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -166,6 +169,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultCutCommandEnt.class, name = "cut")
 ,
   @Type(value = DefaultPasteCommandEnt.class, name = "paste")
+,
+  @Type(value = DefaultTransformWorkflowAnnotationCommandEnt.class, name = "transform_workflow_annotation")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

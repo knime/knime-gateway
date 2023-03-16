@@ -1,0 +1,19 @@
+{
+  "ops" : [ {
+  "op" : "replace",
+  "path" : "/workflowAnnotations/0/bounds/height",
+  "value" : 13
+}, {
+  "op" : "replace",
+  "path" : "/workflowAnnotations/0/bounds/width",
+  "value" : 12
+}, {
+  "op" : "replace",
+  "path" : "/workflowAnnotations/0/bounds/x",
+  "value" : 10
+}, {
+  "op" : "replace",
+  "path" : "/workflowAnnotations/0/bounds/y",
+  "value" : 11
+} ]
+}

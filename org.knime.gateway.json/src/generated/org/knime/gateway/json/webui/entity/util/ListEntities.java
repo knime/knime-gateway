@@ -121,6 +121,7 @@ import org.knime.gateway.json.webui.entity.SpaceItemReferenceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpacePathSegmentEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceProviderEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
+import org.knime.gateway.json.webui.entity.TransformWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.TranslateCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateAvailableEventEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateAvailableEventTypeEntMixIn;
@@ -237,6 +238,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEntMixIn.class);
         res.add(SpaceProviderEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
+        res.add(TransformWorkflowAnnotationCommandEntMixIn.class);
         res.add(TranslateCommandEntMixIn.class);
         res.add(UpdateAvailableEventEntMixIn.class);
         res.add(UpdateAvailableEventTypeEntMixIn.class);
@@ -339,6 +341,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEntMixIn.SpacePathSegmentEntMixInBuilder.class);
         res.add(SpaceProviderEntMixIn.SpaceProviderEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
+        res.add(TransformWorkflowAnnotationCommandEntMixIn.TransformWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(TranslateCommandEntMixIn.TranslateCommandEntMixInBuilder.class);
         res.add(UpdateAvailableEventEntMixIn.UpdateAvailableEventEntMixInBuilder.class);
         res.add(UpdateAvailableEventTypeEntMixIn.UpdateAvailableEventTypeEntMixInBuilder.class);

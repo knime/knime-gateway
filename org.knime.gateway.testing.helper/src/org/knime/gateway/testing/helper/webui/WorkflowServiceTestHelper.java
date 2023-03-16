@@ -105,6 +105,7 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
@@ -137,6 +138,8 @@ import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
+import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -2224,6 +2227,49 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
         assertThat(((NativeNodeEnt)nodes.get(res.getNewNodeId().toString())).getTemplateId(),
             is("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory"));
+    }
+
+    /**
+     * Tests {@link TransformWorkflowAnnotationCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testTransformWorkflowAnnotationCommand() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var annotationEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
+        var boundsEnt = annotationEnt.getBounds();
+        assertThat(boundsEnt.getX(), is(20));
+        assertThat(boundsEnt.getY(), is(20));
+        assertThat(boundsEnt.getWidth(), is(250));
+        assertThat(boundsEnt.getHeight(), is(140));
+
+        var newBounds = builder(BoundsEntBuilder.class).setX(4).setY(5).setWidth(10).setHeight(15).build();
+        var command = builder(TransformWorkflowAnnotationCommandEntBuilder.class)
+            .setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION).setId(annotationEnt.getId()).setBounds(newBounds).build();
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+
+        annotationEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
+        boundsEnt = annotationEnt.getBounds();
+        assertThat(boundsEnt.getX(), is(4));
+        assertThat(boundsEnt.getY(), is(5));
+        assertThat(boundsEnt.getWidth(), is(10));
+        assertThat(boundsEnt.getHeight(), is(15));
+
+        ws().undoWorkflowCommand(wfId, getRootID());
+
+        annotationEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
+        boundsEnt = annotationEnt.getBounds();
+        assertThat(boundsEnt.getX(), is(20));
+        assertThat(boundsEnt.getY(), is(20));
+        assertThat(boundsEnt.getWidth(), is(250));
+        assertThat(boundsEnt.getHeight(), is(140));
+
+        // test invalid annotation id
+        var command2 =
+            builder(TransformWorkflowAnnotationCommandEntBuilder.class).setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)
+                .setId(new AnnotationIDEnt("root_9999")).setBounds(newBounds).build();
+        assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
     }
 
 }

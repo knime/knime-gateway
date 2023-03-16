@@ -198,6 +198,8 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt.UpdateAvailableEventEntBuilder;
@@ -482,6 +484,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
+        }        
+        if(clazz == TransformWorkflowAnnotationCommandEntBuilder.class) {
+            return (B)new DefaultTransformWorkflowAnnotationCommandEnt.DefaultTransformWorkflowAnnotationCommandEntBuilder();
         }        
         if(clazz == TranslateCommandEntBuilder.class) {
             return (B)new DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder();

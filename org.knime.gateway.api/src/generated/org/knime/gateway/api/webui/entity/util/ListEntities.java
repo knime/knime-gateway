@@ -121,6 +121,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
@@ -238,6 +239,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEnt.class);
         res.add(SpaceProviderEnt.class);
         res.add(StyleRangeEnt.class);
+        res.add(TransformWorkflowAnnotationCommandEnt.class);
         res.add(TranslateCommandEnt.class);
         res.add(UpdateAvailableEventEnt.class);
         res.add(UpdateAvailableEventTypeEnt.class);
@@ -340,6 +342,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEnt.SpacePathSegmentEntBuilder.class);
         res.add(SpaceProviderEnt.SpaceProviderEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
+        res.add(TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder.class);
         res.add(TranslateCommandEnt.TranslateCommandEntBuilder.class);
         res.add(UpdateAvailableEventEnt.UpdateAvailableEventEntBuilder.class);
         res.add(UpdateAvailableEventTypeEnt.UpdateAvailableEventTypeEntBuilder.class);

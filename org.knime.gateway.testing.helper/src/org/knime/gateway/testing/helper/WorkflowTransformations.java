@@ -128,10 +128,10 @@ public final class WorkflowTransformations {
     }
 
     private static List<WorkflowTransformation> createTransformationsForGeneral() {
-        return asList(newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"),
-            newTransformation(w -> w.resetAndConfigureNode(w.getID().createChild(1)), "node_reset"),
+        return asList(newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"), //
+            newTransformation(w -> w.resetAndConfigureNode(w.getID().createChild(1)), "node_reset"), //
             newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(26), 1)),
-                "connection_removed"),
+                "connection_removed"), //
             newTransformation(w -> w.removeNode(w.getID().createChild(18)), "node_removed"), newTransformation(w -> {
                 try {
                     NodeID id = w.createAndAddNode(NodeFactoryExtensionManager.getInstance()
@@ -141,33 +141,40 @@ public final class WorkflowTransformations {
                 } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException ex) {
                     throw new IllegalStateException(ex);
                 }
-            }, "node_added"),
+            }, "node_added"), //
             newTransformation(w -> w.addConnection(w.getID().createChild(25), 3, w.getID().createChild(26), 1),
-                "connection_added"),
-            newTransformation(w -> w.addWorkflowAnnotation(new AnnotationData(), -1), "workflow_annotation_added"),
+                "connection_added"), //
+            newTransformation(w -> w.addWorkflowAnnotation(new AnnotationData(), -1), "workflow_annotation_added"), //
             newTransformation(w -> w.removeAnnotation(w.getWorkflowAnnotations().iterator().next().getID()),
-                "workflow_annotation_removed"),
+                "workflow_annotation_removed"), //
             newTransformation(w -> {
                 var newAnno = new AnnotationData();
                 w.getWorkflowAnnotations().iterator().next().copyFrom(newAnno, false);
-            }, "workflow_annotation_changed"), newTransformation(w -> {
+            }, "workflow_annotation_changed"), //
+            newTransformation(w -> {
+                w.getWorkflowAnnotations().iterator().next().setDimension(10, 11, 12, 13);
+            }, "workflow_annotation_moved_and_resized"), //
+            newTransformation(w -> {
                 var newAnno = new AnnotationData();
                 newAnno.setText("new anno text");
                 w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
-            }, "node_annotation_added"), newTransformation(w -> {
+            }, "node_annotation_added"), //
+            newTransformation(w -> {
                 var newAnno = new AnnotationData();
                 newAnno.setText("yet another text");
                 w.getNodeContainer(w.getID().createChild(1)).getNodeAnnotation().copyFrom(newAnno, false);
-            }, "node_annotation_changed"), newTransformation(w -> {
+            }, "node_annotation_changed"), //
+            newTransformation(w -> {
                 NativeNodeContainer oldNC = (NativeNodeContainer)w.getNodeContainer(w.getID().createChild(186));
                 ModifiableNodeCreationConfiguration creationConfig = oldNC.getNode().getCopyOfCreationConfig().get();
                 creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);
                 creationConfig.getPortConfig().get().getExtendablePorts().get("input").addPort(BufferedDataTable.TYPE);
                 w.replaceNode(oldNC.getID(), creationConfig);
-            }, "ports_added"),
+            }, "ports_added"), //
             newTransformation(w -> ((WorkflowManager)w.getNodeContainer(w.getID().createChild(6))).setName("New Name"),
-                "metanode_renamed"),
-            newTransformation(w -> ((SubNodeContainer)w.getNodeContainer(w.getID().createChild(23))).setName("New Name"),
+                "metanode_renamed"), //
+            newTransformation(
+                w -> ((SubNodeContainer)w.getNodeContainer(w.getID().createChild(23))).setName("New Name"),
                 "component_renamed"));
     }
 
