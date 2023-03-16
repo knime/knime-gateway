@@ -2179,7 +2179,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
             .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
             .getClass();
-        Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.eq("file:/file.csv")))
+        Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.endsWith("file.csv")))
             .thenReturn(nodeFactoryClass);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -2209,7 +2209,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
             .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
             .getClass();
-        Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.eq("knime://LOCAL/test.csv")))
+        Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.endsWith("test.csv")))
             .thenReturn(nodeFactoryClass);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);

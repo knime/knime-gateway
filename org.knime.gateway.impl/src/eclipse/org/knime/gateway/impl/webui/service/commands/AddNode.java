@@ -130,16 +130,12 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var positionEnt = m_commandEnt.getPosition();
         var factoryKeyEnt = m_commandEnt.getNodeFactory();
         var url = parseURL(m_commandEnt.getUrl());
-        if (factoryKeyEnt == null && url != null && m_nodeFactoryProvider != null) {
-            factoryKeyEnt = getNodeFactoryKeyFromUrl(m_commandEnt.getUrl());
+        if (url == null && m_commandEnt.getSpaceItemReference() != null && m_spaceProviders != null) {
+            url = getUrlFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
         }
 
-        if (factoryKeyEnt == null && m_commandEnt.getSpaceItemReference() != null && m_nodeFactoryProvider != null
-            && m_spaceProviders != null) {
-            url = getUrlFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
-            if (url != null) {
-                factoryKeyEnt = getNodeFactoryKeyFromUrl(url.toString());
-            }
+        if (factoryKeyEnt == null && url != null && m_nodeFactoryProvider != null) {
+            factoryKeyEnt = getNodeFactoryKeyFromUrl(url.getPath());
         }
 
         if (factoryKeyEnt == null) {
