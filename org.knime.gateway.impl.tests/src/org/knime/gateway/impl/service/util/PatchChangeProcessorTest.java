@@ -64,6 +64,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
@@ -138,7 +139,8 @@ public class PatchChangeProcessorTest {
             .setDirty(false);
 
         var workflowAnnoBuilder = builder(WorkflowAnnotationEntBuilder.class).setTextAlign(TextAlignEnum.CENTER)
-            .setBounds(builder(BoundsEntBuilder.class).build()).setId(new AnnotationIDEnt("root:1_1"))
+            .setBounds(builder(BoundsEntBuilder.class).setX(0).setY(0).setWidth(0).setHeight(0).build())
+            .setId(new AnnotationIDEnt("root:1_1"))
             .setBorderColor("test").setStyleRanges(Collections.emptyList()).setBorderWidth(0);
         var anno1 = workflowAnnoBuilder.setText("anno1").build();
         var anno2 = workflowAnnoBuilder.setText("anno2").build();
@@ -222,11 +224,11 @@ public class PatchChangeProcessorTest {
      */
     @Test
     public void testSetValueToNull() {
-        var builder = builder(XYEntBuilder.class);
+        var builder = builder(LinkEntBuilder.class).setUrl("url");
         var obj2 = builder.build();
-        var obj1 = builder.setX(10).build();
+        var obj1 = builder.setText("text").build();
         var patchCreator = createDiffAndPatchCreatorMock(obj1, obj2);
-        verify(patchCreator).removed("/x");
+        verify(patchCreator).removed("/text");
     }
 
     private static PatchCreator<Object> createDiffAndPatchCreatorMock(final GatewayEntity ent1,

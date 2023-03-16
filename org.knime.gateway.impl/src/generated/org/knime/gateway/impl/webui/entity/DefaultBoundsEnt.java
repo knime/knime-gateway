@@ -70,6 +70,18 @@ public record DefaultBoundsEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultBoundsEnt {
+        if(x == null) {
+            throw new IllegalArgumentException("<x> must not be null.");
+        }
+        if(y == null) {
+            throw new IllegalArgumentException("<y> must not be null.");
+        }
+        if(width == null) {
+            throw new IllegalArgumentException("<width> must not be null.");
+        }
+        if(height == null) {
+            throw new IllegalArgumentException("<height> must not be null.");
+        }
     }
 
     @Override
@@ -112,24 +124,36 @@ public record DefaultBoundsEnt(
 
         @Override
         public DefaultBoundsEntBuilder setX(Integer x) {
+             if(x == null) {
+                 throw new IllegalArgumentException("<x> must not be null.");
+             }
              m_x = x;
              return this;
         }
 
         @Override
         public DefaultBoundsEntBuilder setY(Integer y) {
+             if(y == null) {
+                 throw new IllegalArgumentException("<y> must not be null.");
+             }
              m_y = y;
              return this;
         }
 
         @Override
         public DefaultBoundsEntBuilder setWidth(Integer width) {
+             if(width == null) {
+                 throw new IllegalArgumentException("<width> must not be null.");
+             }
              m_width = width;
              return this;
         }
 
         @Override
         public DefaultBoundsEntBuilder setHeight(Integer height) {
+             if(height == null) {
+                 throw new IllegalArgumentException("<height> must not be null.");
+             }
              m_height = height;
              return this;
         }

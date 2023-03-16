@@ -65,13 +65,13 @@ public interface XYEnt extends GatewayEntity {
 
   /**
    * Get x
-   * @return x 
+   * @return x , never <code>null</code>
    **/
   public Integer getX();
 
   /**
    * Get y
-   * @return y 
+   * @return y , never <code>null</code>
    **/
   public Integer getY();
 
@@ -92,7 +92,7 @@ public interface XYEnt extends GatewayEntity {
         /**
    		 * Set x
          * 
-         * @param x the property value,  
+         * @param x the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         XYEntBuilder setX(Integer x);
@@ -100,7 +100,7 @@ public interface XYEnt extends GatewayEntity {
         /**
    		 * Set y
          * 
-         * @param y the property value,  
+         * @param y the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         XYEntBuilder setY(Integer y);

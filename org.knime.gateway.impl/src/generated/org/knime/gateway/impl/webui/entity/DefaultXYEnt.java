@@ -66,6 +66,12 @@ public record DefaultXYEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultXYEnt {
+        if(x == null) {
+            throw new IllegalArgumentException("<x> must not be null.");
+        }
+        if(y == null) {
+            throw new IllegalArgumentException("<y> must not be null.");
+        }
     }
 
     @Override
@@ -94,12 +100,18 @@ public record DefaultXYEnt(
 
         @Override
         public DefaultXYEntBuilder setX(Integer x) {
+             if(x == null) {
+                 throw new IllegalArgumentException("<x> must not be null.");
+             }
              m_x = x;
              return this;
         }
 
         @Override
         public DefaultXYEntBuilder setY(Integer y) {
+             if(y == null) {
+                 throw new IllegalArgumentException("<y> must not be null.");
+             }
              m_y = y;
              return this;
         }
