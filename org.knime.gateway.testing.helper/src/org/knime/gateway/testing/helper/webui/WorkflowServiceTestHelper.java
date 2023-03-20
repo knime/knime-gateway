@@ -2187,19 +2187,29 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             builder(NodeFactoryKeyEntBuilder.class).setClassName(rowFilterFactory).setSettings(null).build(),
             new NodeIDEnt(1));
         var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
-        Map<String, ConnectionEnt> connections = workflow.getConnections();
         var nodes = workflow.getNodes();
         var node1Pos = nodes.get("root:1").getPosition();
         // execute command
-        var result = ws().executeWorkflowCommand(wfId, getRootID(), command);
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
 
         nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
-        var newNode = nodes.values().stream()
-            .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(rowFilterFactory))
-            .findFirst().orElseThrow();
+        var newNode = nodes.get("root:1");
+        assertThat(((NativeNodeEnt)newNode).getTemplateId(),
+            is("org.knime.base.node.preproc.filter.row.RowFilterNodeFactory"));
         assertThat("new node is the same x position as old node", newNode.getPosition().getX(), is(node1Pos.getX()));
         assertThat("new node is the same y position as old node", newNode.getPosition().getY(), is(node1Pos.getY()));
 
+        var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat("connection still exists", connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+        nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
+        var node = nodes.get("root:1");
+        assertThat(((NativeNodeEnt)node).getTemplateId(),
+            is("org.knime.base.node.util.sampledata.SampleDataNodeFactory"));
+        assertThat(node.getPosition().getX(), is(node1Pos.getX()));
+        assertThat(node.getPosition().getY(), is(node1Pos.getY()));
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         assertThat("connection still exists", connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
     }
