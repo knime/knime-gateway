@@ -81,11 +81,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         try {
             var nodeFactory = DefaultServiceUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
             m_result = wfm.replaceNode(deletedNode, null, nodeFactory);
-        } catch (NoSuchElementException ex) {
-            throw new OperationNotAllowedException(ex.getMessage(), ex);
-        } catch (IllegalStateException ex) {
-            throw new OperationNotAllowedException(ex.getMessage(), ex);
-        } catch (IOException ex) {
+        } catch (NoSuchElementException | IllegalStateException | IOException ex) {
             throw new OperationNotAllowedException(ex.getMessage(), ex);
         }
         return true;
