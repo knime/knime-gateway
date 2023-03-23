@@ -50,6 +50,8 @@ package org.knime.gateway.impl.webui;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -141,12 +143,12 @@ public class NodeRecommendations {
                 nodeRepo::getNodeIncludeAdditionalNodes, true);
             return node != null && node.factory.getType() == NodeType.Source;
         };
-        Predicate<NodeInfo> existsInRepository = nodeInfo -> {
+        Function<NodeInfo, Optional<String>> getNameFromRepository = nodeInfo -> {
             var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
                 nodeRepo::getNodeIncludeAdditionalNodes, true);
-            return node != null;
+            return node == null ? Optional.empty() : Optional.of(node.name);
         };
-        return NodeRecommendationManager.getInstance().initialize(isSourceNode, existsInRepository);
+        return NodeRecommendationManager.getInstance().initialize(isSourceNode, getNameFromRepository);
     }
 
     private static NativeNodeContainer getNativeNodeContainer(final String projectId, final NodeIDEnt workflowId,
