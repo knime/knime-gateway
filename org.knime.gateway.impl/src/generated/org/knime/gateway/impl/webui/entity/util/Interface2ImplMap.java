@@ -84,6 +84,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentN
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.ComposedEventEnt.ComposedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComposedEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
@@ -182,6 +184,8 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt;
+import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
@@ -323,6 +327,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ComponentNodeEntBuilder.class) {
             return (B)new DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder();
+        }        
+        if(clazz == ComposedEventEntBuilder.class) {
+            return (B)new DefaultComposedEventEnt.DefaultComposedEventEntBuilder();
         }        
         if(clazz == ConnectCommandEntBuilder.class) {
             return (B)new DefaultConnectCommandEnt.DefaultConnectCommandEntBuilder();
@@ -470,6 +477,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == PortTypeEntBuilder.class) {
             return (B)new DefaultPortTypeEnt.DefaultPortTypeEntBuilder();
+        }        
+        if(clazz == ProjectDirtyStateEventEntBuilder.class) {
+            return (B)new DefaultProjectDirtyStateEventEnt.DefaultProjectDirtyStateEventEntBuilder();
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();

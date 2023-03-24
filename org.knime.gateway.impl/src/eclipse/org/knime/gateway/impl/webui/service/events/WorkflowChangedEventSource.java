@@ -57,17 +57,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.EntityBuilderManager;
+import org.knime.gateway.api.webui.entity.ComposedEventEnt;
+import org.knime.gateway.api.webui.entity.ComposedEventEnt.ComposedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
+import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.service.util.PatchCreator;
@@ -87,7 +93,7 @@ import org.knime.gateway.impl.webui.service.DefaultEventService;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz
  */
-public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEventTypeEnt, WorkflowChangedEventEnt> {
+public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEventTypeEnt, ComposedEventEnt> {
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
@@ -95,13 +101,18 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private final Map<WorkflowKey, WorkflowChangesTracker> m_trackers = new HashMap<>();
 
+    private final WorkflowProjectManager m_workflowProjectManager;
+
     /**
      * @param eventConsumer
      * @param workflowMiddleware
+     * @param workflowProjectManager
      */
-    public WorkflowChangedEventSource(final EventConsumer eventConsumer, final WorkflowMiddleware workflowMiddleware) {
+    public WorkflowChangedEventSource(final EventConsumer eventConsumer, final WorkflowMiddleware workflowMiddleware,
+        final WorkflowProjectManager workflowProjectManager) {
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
+        m_workflowProjectManager = workflowProjectManager;
     }
 
     /**
@@ -109,7 +120,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      */
     @Override
     protected String getName() {
-        return "WorkflowChangedEvent";
+        return "WorkflowChangedEvent:ProjectDirtyStateEvent";
     }
 
     /**
@@ -117,7 +128,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      */
     @SuppressWarnings("resource")
     @Override
-    public Optional<WorkflowChangedEventEnt>
+    public Optional<ComposedEventEnt>
         addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType) {
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         var workflowChangesListener = m_workflowMiddleware.getWorkflowChangesListener(workflowKey);
@@ -151,17 +162,27 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             return callback;
         });
 
-        return Optional.ofNullable(workflowChangedEvent);
+        var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
+                .setProjectIdToIsDirty(m_workflowProjectManager.getProjectIdsToDirtyMap()).build();
+
+        return Optional.ofNullable(EntityBuilderManager.builder(ComposedEventEntBuilder.class)
+            .setEvents(Stream.of(workflowChangedEvent, projectDirtyStateEvent).toList()).build());
     }
 
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator, final WorkflowChangesTracker tracker) {
         return wfm -> {
             preEventCreation();
-            WorkflowChangedEventEnt event = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey, patchEntCreator,
+            WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey, patchEntCreator,
                 patchEntCreator.getLastSnapshotId(), true, tracker);
-            if (event != null) {
-                sendEvent(event);
+            var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
+                .setProjectIdToIsDirty(m_workflowProjectManager.getProjectIdsToDirtyMap()).build();
+
+
+            if (workflowChangedEvent != null) {
+                var composedEvent = EntityBuilderManager.builder(ComposedEventEntBuilder.class)
+                    .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build();
+                sendEvent(composedEvent);
             }
         };
     }

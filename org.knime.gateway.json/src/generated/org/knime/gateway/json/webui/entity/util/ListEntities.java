@@ -64,6 +64,7 @@ import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
+import org.knime.gateway.json.webui.entity.ComposedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.ConvertContainerResultEntMixIn;
@@ -113,6 +114,7 @@ import org.knime.gateway.json.webui.entity.PatchOpEntMixIn;
 import org.knime.gateway.json.webui.entity.PortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.PortGroupEntMixIn;
 import org.knime.gateway.json.webui.entity.PortTypeEntMixIn;
+import org.knime.gateway.json.webui.entity.ProjectDirtyStateEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationsCommandEntMixIn;
@@ -186,6 +188,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEntMixIn.class);
         res.add(ComponentNodeDescriptionEntMixIn.class);
         res.add(ComponentNodeEntMixIn.class);
+        res.add(ComposedEventEntMixIn.class);
         res.add(ConnectCommandEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
         res.add(ConvertContainerResultEntMixIn.class);
@@ -235,6 +238,7 @@ public class ListEntities {
         res.add(PortCommandEntMixIn.class);
         res.add(PortGroupEntMixIn.class);
         res.add(PortTypeEntMixIn.class);
+        res.add(ProjectDirtyStateEventEntMixIn.class);
         res.add(ProjectMetadataEntMixIn.class);
         res.add(RemovePortCommandEntMixIn.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.class);
@@ -294,6 +298,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEntMixIn.ComponentNodeAndDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeDescriptionEntMixIn.ComponentNodeDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeEntMixIn.ComponentNodeEntMixInBuilder.class);
+        res.add(ComposedEventEntMixIn.ComposedEventEntMixInBuilder.class);
         res.add(ConnectCommandEntMixIn.ConnectCommandEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
         res.add(ConvertContainerResultEntMixIn.ConvertContainerResultEntMixInBuilder.class);
@@ -343,6 +348,7 @@ public class ListEntities {
         res.add(PortCommandEntMixIn.PortCommandEntMixInBuilder.class);
         res.add(PortGroupEntMixIn.PortGroupEntMixInBuilder.class);
         res.add(PortTypeEntMixIn.PortTypeEntMixInBuilder.class);
+        res.add(ProjectDirtyStateEventEntMixIn.ProjectDirtyStateEventEntMixInBuilder.class);
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
         res.add(RemovePortCommandEntMixIn.RemovePortCommandEntMixInBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.ReorderWorkflowAnnotationsCommandEntMixInBuilder.class);

@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.ComposedEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
@@ -113,6 +114,7 @@ import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
@@ -187,6 +189,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEnt.class);
         res.add(ComponentNodeDescriptionEnt.class);
         res.add(ComponentNodeEnt.class);
+        res.add(ComposedEventEnt.class);
         res.add(ConnectCommandEnt.class);
         res.add(ConnectionEnt.class);
         res.add(ConvertContainerResultEnt.class);
@@ -236,6 +239,7 @@ public class ListEntities {
         res.add(PortCommandEnt.class);
         res.add(PortGroupEnt.class);
         res.add(PortTypeEnt.class);
+        res.add(ProjectDirtyStateEventEnt.class);
         res.add(ProjectMetadataEnt.class);
         res.add(RemovePortCommandEnt.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.class);
@@ -295,6 +299,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder.class);
         res.add(ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder.class);
         res.add(ComponentNodeEnt.ComponentNodeEntBuilder.class);
+        res.add(ComposedEventEnt.ComposedEventEntBuilder.class);
         res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
         res.add(ConvertContainerResultEnt.ConvertContainerResultEntBuilder.class);
@@ -344,6 +349,7 @@ public class ListEntities {
         res.add(PortCommandEnt.PortCommandEntBuilder.class);
         res.add(PortGroupEnt.PortGroupEntBuilder.class);
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
+        res.add(ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder.class);

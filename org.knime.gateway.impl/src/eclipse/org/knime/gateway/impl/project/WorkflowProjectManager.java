@@ -47,7 +47,6 @@ package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,10 +55,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
 
 /**
  * Manages workflow projects that are eventually used by the service implementations.
@@ -205,6 +206,22 @@ public final class WorkflowProjectManager {
      */
     public Optional<WorkflowManager> getCachedWorkflow(final String workflowProjectID) {
         return Optional.ofNullable(m_chachedWorkflowsMap.get(workflowProjectID));
+    }
+
+    /**
+     * Determines whether the open projects are dirty ore not.
+     *
+     * @return map from project ids to the dirty flag of the workflows
+     */
+    public Map<String, Boolean> getProjectIdsToDirtyMap() {
+        return getWorkflowProjectsIds().stream().map(projectId -> {
+            var cachedWorkflow = getCachedWorkflow(projectId);
+            if (cachedWorkflow.isEmpty()) {
+                return Pair.create(projectId, Boolean.FALSE);
+            }
+            var isDirty = cachedWorkflow.get().isDirty();
+            return Pair.create(projectId, isDirty);
+        }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 
     /**
