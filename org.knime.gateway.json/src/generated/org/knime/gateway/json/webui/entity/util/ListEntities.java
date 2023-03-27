@@ -78,6 +78,7 @@ import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.ExampleProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.ExpandCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ExpandResultEntMixIn;
+import org.knime.gateway.json.webui.entity.InsertNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.JobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
 import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
@@ -197,6 +198,7 @@ public class ListEntities {
         res.add(ExampleProjectEntMixIn.class);
         res.add(ExpandCommandEntMixIn.class);
         res.add(ExpandResultEntMixIn.class);
+        res.add(InsertNodeCommandEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
         res.add(LinkEntMixIn.class);
         res.add(LoopInfoEntMixIn.class);
@@ -302,6 +304,7 @@ public class ListEntities {
         res.add(ExampleProjectEntMixIn.ExampleProjectEntMixInBuilder.class);
         res.add(ExpandCommandEntMixIn.ExpandCommandEntMixInBuilder.class);
         res.add(ExpandResultEntMixIn.ExpandResultEntMixInBuilder.class);
+        res.add(InsertNodeCommandEntMixIn.InsertNodeCommandEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
         res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);

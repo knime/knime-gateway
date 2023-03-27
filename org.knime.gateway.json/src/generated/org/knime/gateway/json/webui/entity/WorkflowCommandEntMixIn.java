@@ -62,6 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
@@ -99,6 +100,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultReplaceNodeCommandEnt.class, name = "replace_node")
+,
+  @Type(value = DefaultInsertNodeCommandEnt.class, name = "insert_node")
 ,
   @Type(value = DefaultUpdateComponentOrMetanodeNameCommandEnt.class, name = "update_component_or_metanode_name")
 ,
@@ -159,6 +162,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultReplaceNodeCommandEnt.class, name = "replace_node")
+,
+  @Type(value = DefaultInsertNodeCommandEnt.class, name = "insert_node")
 ,
   @Type(value = DefaultUpdateComponentOrMetanodeNameCommandEnt.class, name = "update_component_or_metanode_name")
 ,
