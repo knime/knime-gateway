@@ -225,7 +225,7 @@ public final class WorkflowProjectManager {
      * @param projectIds the projectIds of the workflows to close
      * @return whether closing was successful for all workflows
      */
-    public static boolean closeWorkflowProjects(final Set<String> projectIds) {
+    public boolean closeWorkflowProjects(final Set<String> projectIds) {
         var success = true;
         for (var projectId : projectIds) {
             success &= closeWorkflowProject(projectId);
@@ -239,7 +239,8 @@ public final class WorkflowProjectManager {
      * @param projectId the projectId of the workflow to close
      * @return whether closing was successful or not
      */
-    public static boolean closeWorkflowProject(final String projectId) {
+    @SuppressWarnings("static-method")
+    public boolean closeWorkflowProject(final String projectId) {
         var wpm = WorkflowProjectManager.getInstance();
         var wfm = wpm.getCachedWorkflow(projectId).orElse(null);
         try {
