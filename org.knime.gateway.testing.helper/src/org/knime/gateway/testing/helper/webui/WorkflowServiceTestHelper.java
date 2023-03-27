@@ -124,6 +124,8 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
+import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -2238,6 +2240,85 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return builder(ReplaceNodeCommandEntBuilder.class)//
             .setKind(KindEnum.REPLACE_NODE)//
             .setNodeFactory(nodeFactory).setNodeId(nodeId).build();
+    }
+
+    /**
+     * Test Insert Node command with existing Node
+     *
+     * @throws Exception
+     */
+    public void testExecuteInsertNodeCommand() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
+        var command = buildInsertNodeCommand(new ConnectionIDEnt(new NodeIDEnt(2), 1),
+            builder(XYEntBuilder.class).setX(0).setY(0).build(), null, new NodeIDEnt(183));
+
+        var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var nodes = workflow.getNodes();
+        var node1Pos = nodes.get("root:1").getPosition();
+        // execute command
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+
+        var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        var ingoingConnection = connections.get("root:183_1");
+        assertThat("connection between src and node exists", ingoingConnection.getSourceNode().toString(), is("root:1"));
+
+        var outgoingConnection = connections.get("root:2_1");
+        assertThat("connection between node and dest exists", outgoingConnection.getSourceNode().toString(),
+            is("root:183"));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        var connection = connections.get("root:2_1");
+        assertThat("source should be original", connection.getSourceNode().toString(), is("root:1"));
+    }
+
+    /**
+     * Test Insert Node command with node from repository
+     *
+     * @throws Exception
+     */
+    public void testExecuteInsertNodeCommandRepository() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var columnAppenderFactory = "org.knime.base.node.preproc.columnappend.ColumnAppenderNodeFactory";
+        var command = buildInsertNodeCommand(new ConnectionIDEnt(new NodeIDEnt(2), 1),
+            builder(XYEntBuilder.class).setX(0).setY(0).build(),
+            builder(NodeFactoryKeyEntBuilder.class).setClassName(columnAppenderFactory).setSettings(null).build(),
+            null);
+
+        // execute command
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+
+        var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var nodes = workflow.getNodes();
+        var newNode = nodes.entrySet().stream()
+            .filter(entry -> entry.getValue() instanceof NativeNodeEnt && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
+            .findFirst().get().getValue();
+        var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        var ingoingConnection = connections.get(newNode.getId().toString() + "_1");
+        assertThat(
+            "connection between src and node exists", ingoingConnection.getSourceNode().toString(), is("root:1"));
+
+        var outgoingConnection = connections.get("root:2_1");
+        assertThat("connection between node and dest exists", outgoingConnection.getSourceNode().toString(),
+            is(newNode.getId().toString()));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        var connection = connections.get("root:2_1");
+        assertThat("source should be original", connection.getSourceNode().toString(), is("root:1"));
+    }
+
+    private static InsertNodeCommandEnt buildInsertNodeCommand(final ConnectionIDEnt connection, final XYEnt position,
+        final NodeFactoryKeyEnt nodeFactory, final NodeIDEnt nodeId) {
+        return builder(InsertNodeCommandEntBuilder.class)//
+            .setKind(KindEnum.REPLACE_NODE)//
+            .setConnectionId(connection).setPosition(position).setNodeId(nodeId).setNodeFactory(nodeFactory)
+            .setNodeId(nodeId).build();
     }
 
     /**
