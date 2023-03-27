@@ -224,11 +224,15 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
      * Get matching ports for a given pair of source node and destination node. As of today, the FE only calls this
      * function when it also provides a source port index to connect from. The case where no source port index is
      * provided (a.k.a. auto-connecting two existing nodes present in the workflow) is not used yet.
+     * @param sourceNodeId source node
+     * @param destNodeId destination node
+     * @param sourcePortIdx optional source port, if <code>null</code> it will be automatically determined
+     * @param wfm workflow manager
      *
      * @return The patching pairs of ports
      * @throws OperationNotAllowedException Is thrown when no matching ports where found
      */
-    private static Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId,
+    public static Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId,
         final Integer sourcePortIdx, final WorkflowManager wfm) throws OperationNotAllowedException {
         if (sourcePortIdx != null) { // Currently in use by the FE, supports dynamic nodes and flow variables
             var destPortIdx = getDestPortIdxFromSourcePortIdx(sourceNodeId, sourcePortIdx, destNodeId, wfm);
