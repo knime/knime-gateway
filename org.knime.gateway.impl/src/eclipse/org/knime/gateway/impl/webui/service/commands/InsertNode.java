@@ -44,25 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 29, 2022 (Kai Franze, KNIME GmbH): created
+ *   Mar 27, 2023 (Juan Baquero, KNIME GmbH): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.io.IOException;
 import java.util.Set;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.NodeRepository;
 
 /**
- * Workflow command to insert a node on t workflow parts into the active workflow
+ * Workflow command to insert a node on top of an active connection
  *
  * @author Juan Baquero, KNIME GmbH
  */
 public class InsertNode extends AbstractWorkflowCommand {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeRepository.class);
 
     private final InsertNodeCommandEnt m_commandEnt;
 
@@ -84,7 +88,8 @@ public class InsertNode extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        var connectionID = DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
+        var connectionID =
+            DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
 
         // Save original source and destination
         var connectionContainer = wfm.getConnection(connectionID);
@@ -114,21 +119,30 @@ public class InsertNode extends AbstractWorkflowCommand {
         }
 
         // Reconnect
-        var incomingPortMapping = AddNode.getMatchingPorts(m_srcNode, m_insertedNode, m_srcPort, wfm);
-        var outgoingPortMapping = AddNode.getMatchingPorts(m_insertedNode, m_destNode, null, wfm);
+        try {
+            var incomingPortMapping = AddNode.getMatchingPorts(m_srcNode, m_insertedNode, m_srcPort, wfm);
+            incomingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
+                addConnection(m_srcNode, entrySrcPort, m_insertedNode, entryDestPort, wfm);
+            });
+        } catch (Exception ex) {
+            LOGGER.warn("Could not find a suitable destination port for incomming connection.");
+        }
 
-        incomingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
-            addConnection(m_srcNode, entrySrcPort, m_insertedNode, entryDestPort, wfm);
-        });
-        outgoingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
-            addConnection(m_insertedNode, entrySrcPort, m_destNode, m_destPort, wfm);
-        });
+        try {
+            var outgoingPortMapping = AddNode.getMatchingPorts(m_insertedNode, m_destNode, null, wfm);
+            outgoingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
+                addConnection(m_insertedNode, entrySrcPort, m_destNode, m_destPort, wfm);
+            });
+        } catch (Exception ex) {
+            LOGGER.warn("Could not find a suitable destination port for outgoing connection.");
+        }
 
         return true;
     }
 
-    private static void addConnection(final NodeID src, final int srcPort, final NodeID dest, final int destPort, final WorkflowManager wfm) {
-        if(wfm.canAddConnection(src, srcPort, dest, destPort)) {
+    private static void addConnection(final NodeID src, final int srcPort, final NodeID dest, final int destPort,
+        final WorkflowManager wfm) {
+        if (wfm.canAddConnection(src, srcPort, dest, destPort)) {
             wfm.addConnection(src, srcPort, dest, destPort);
         }
     }
