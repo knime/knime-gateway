@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -132,7 +133,7 @@ public final class AppStateEntityFactory {
      * @param preferenceProvider
      * @param exampleProjects if {@code null}, example projects will be taken from the previous app state
      * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
-     * @param nodeFactoryProvider used to determine the nodeFactory based on a fileExtension
+     * @param nodeFactoryProvider used to determine the nodeFactory based on a fileExtension; can be {@code null}
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
@@ -155,7 +156,8 @@ public final class AppStateEntityFactory {
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
-            .setFileExtensionToNodeTemplateId(nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
+            .setFileExtensionToNodeTemplateId(nodeFactoryProvider == null ? Collections.emptyMap()
+                : nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
             .build();
 
     }
