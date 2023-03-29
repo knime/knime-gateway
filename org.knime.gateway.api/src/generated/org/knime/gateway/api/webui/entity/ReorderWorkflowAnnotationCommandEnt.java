@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 
 import java.util.function.BiConsumer;
@@ -57,34 +56,59 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Changes the size (width and height) and position (x, y) of a workflow annotation.
+ * Alters the z-order of a workflow annotation.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowAnnotationCommandEnt {
+public interface ReorderWorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowAnnotationCommandEnt {
+
+  /**
+   * The specific reorder action to perform, can be one of four: &#39;bring_forward&#39; brings the selected  annotation forward by one relative-to-other-annotations position; &#39;bring_to_front&#39; moves the  selected annotation in front of all other annotations; &#39;send_backward&#39; sends the selected  annotation backward by one relative-to-other-annotations position; &#39;send_to_back&#39; sends the  selected annotation back of all other annotations.
+   */
+  public enum ActionEnum {
+    BRING_FORWARD("bring_forward"),
+    
+    BRING_TO_FRONT("bring_to_front"),
+    
+    SEND_BACKWARD("send_backward"),
+    
+    SEND_TO_BACK("send_to_back");
+
+    private String value;
+
+    ActionEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * Get bounds
-   * @return bounds , never <code>null</code>
+   * The specific reorder action to perform, can be one of four: &#39;bring_forward&#39; brings the selected  annotation forward by one relative-to-other-annotations position; &#39;bring_to_front&#39; moves the  selected annotation in front of all other annotations; &#39;send_backward&#39; sends the selected  annotation backward by one relative-to-other-annotations position; &#39;send_to_back&#39; sends the  selected annotation back of all other annotations.
+   * @return action , never <code>null</code>
    **/
-  public BoundsEnt getBounds();
+  public ActionEnum getAction();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (TransformWorkflowAnnotationCommandEnt)other;
+      var e = (ReorderWorkflowAnnotationCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("annotationId", Pair.create(getAnnotationId(), e.getAnnotationId()));
-      valueConsumer.accept("bounds", Pair.create(getBounds(), e.getBounds()));
+      valueConsumer.accept("action", Pair.create(getAction(), e.getAction()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface TransformWorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<TransformWorkflowAnnotationCommandEnt> {
+    public interface ReorderWorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<ReorderWorkflowAnnotationCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -92,7 +116,7 @@ public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, Wo
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TransformWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
+        ReorderWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
         
         /**
          * the id of the annotation to transform
@@ -100,15 +124,15 @@ public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, Wo
          * @param annotationId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TransformWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
+        ReorderWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
         
         /**
-   		 * Set bounds
+         * The specific reorder action to perform, can be one of four: &#39;bring_forward&#39; brings the selected  annotation forward by one relative-to-other-annotations position; &#39;bring_to_front&#39; moves the  selected annotation in front of all other annotations; &#39;send_backward&#39; sends the selected  annotation backward by one relative-to-other-annotations position; &#39;send_to_back&#39; sends the  selected annotation back of all other annotations.
          * 
-         * @param bounds the property value, NOT <code>null</code>! 
+         * @param action the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TransformWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds);
+        ReorderWorkflowAnnotationCommandEntBuilder setAction(ActionEnum action);
         
         
         /**
@@ -118,7 +142,7 @@ public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, Wo
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        TransformWorkflowAnnotationCommandEnt build();
+        ReorderWorkflowAnnotationCommandEnt build();
     
     }
 

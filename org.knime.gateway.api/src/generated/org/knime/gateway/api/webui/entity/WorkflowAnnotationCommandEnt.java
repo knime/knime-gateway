@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -57,34 +56,33 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Changes the size (width and height) and position (x, y) of a workflow annotation.
+ * A command that does something to a specific workflow annotation.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowAnnotationCommandEnt {
+public interface WorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * Get bounds
-   * @return bounds , never <code>null</code>
+   * the id of the annotation to transform
+   * @return annotationId , never <code>null</code>
    **/
-  public BoundsEnt getBounds();
+  public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (TransformWorkflowAnnotationCommandEnt)other;
+      var e = (WorkflowAnnotationCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("annotationId", Pair.create(getAnnotationId(), e.getAnnotationId()));
-      valueConsumer.accept("bounds", Pair.create(getBounds(), e.getBounds()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface TransformWorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<TransformWorkflowAnnotationCommandEnt> {
+    public interface WorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<WorkflowAnnotationCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -92,7 +90,7 @@ public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, Wo
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TransformWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
+        WorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
         
         /**
          * the id of the annotation to transform
@@ -100,15 +98,7 @@ public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, Wo
          * @param annotationId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TransformWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
-        
-        /**
-   		 * Set bounds
-         * 
-         * @param bounds the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        TransformWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds);
+        WorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
         
         
         /**
@@ -118,7 +108,7 @@ public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, Wo
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        TransformWorkflowAnnotationCommandEnt build();
+        WorkflowAnnotationCommandEnt build();
     
     }
 

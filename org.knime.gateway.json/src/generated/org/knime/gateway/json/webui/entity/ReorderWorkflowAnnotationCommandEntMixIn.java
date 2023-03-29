@@ -42,113 +42,73 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
+
+import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 
 
-import java.util.function.BiConsumer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationCommandEnt.DefaultReorderWorkflowAnnotationCommandEntBuilder;
 
 /**
- * A command that is executed to change a workflow.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
 
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    REPLACE_NODE("replace_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    UPDATE_NODE_LABEL("update_node_label"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy"),
-    
-    CUT("cut"),
-    
-    PASTE("paste"),
-    
-    TRANSFORM_WORKFLOW_ANNOTATION("transform_workflow_annotation"),
-    
-    REORDER_WORKFLOW_ANNOTATION("reorder_workflow_annotation");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
+@JsonDeserialize(builder=DefaultReorderWorkflowAnnotationCommandEntBuilder.class)
+@JsonSerialize(as=ReorderWorkflowAnnotationCommandEnt.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface ReorderWorkflowAnnotationCommandEntMixIn extends ReorderWorkflowAnnotationCommandEnt {
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
+    @JsonIgnore
+    public String getTypeID();
 
-  }
-
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (WorkflowCommandEnt)other;
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-  }
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("annotationId")
+    public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
+    
+    @Override
+    @JsonProperty("action")
+    public ActionEnum getAction();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
 
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowCommandEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface ReorderWorkflowAnnotationCommandEntMixInBuilder extends ReorderWorkflowAnnotationCommandEntBuilder {
     
+        @Override
+        public ReorderWorkflowAnnotationCommandEntMixIn build();
+    
+        @Override
+        @JsonProperty("kind")
+        public ReorderWorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("annotationId")
+        public ReorderWorkflowAnnotationCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
+        
+        @Override
+        @JsonProperty("action")
+        public ReorderWorkflowAnnotationCommandEntMixInBuilder setAction(final ActionEnum action);
+        
     }
 
+
 }
+

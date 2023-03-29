@@ -114,6 +114,7 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
@@ -129,6 +130,7 @@ import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
@@ -233,6 +235,7 @@ public class ListEntities {
         res.add(PortTypeEnt.class);
         res.add(ProjectMetadataEnt.class);
         res.add(RemovePortCommandEnt.class);
+        res.add(ReorderWorkflowAnnotationCommandEnt.class);
         res.add(ReplaceNodeCommandEnt.class);
         res.add(SelectionEventTypeEnt.class);
         res.add(SpaceEnt.class);
@@ -248,6 +251,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEnt.class);
         res.add(UpdateInfoEnt.class);
         res.add(UpdateNodeLabelCommandEnt.class);
+        res.add(WorkflowAnnotationCommandEnt.class);
         res.add(WorkflowAnnotationEnt.class);
         res.add(WorkflowChangedEventEnt.class);
         res.add(WorkflowChangedEventTypeEnt.class);
@@ -337,6 +341,7 @@ public class ListEntities {
         res.add(PortTypeEnt.PortTypeEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
+        res.add(ReorderWorkflowAnnotationCommandEnt.ReorderWorkflowAnnotationCommandEntBuilder.class);
         res.add(ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder.class);
         res.add(SelectionEventTypeEnt.SelectionEventTypeEntBuilder.class);
         res.add(SpaceEnt.SpaceEntBuilder.class);
@@ -352,6 +357,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder.class);
         res.add(UpdateInfoEnt.UpdateInfoEntBuilder.class);
         res.add(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class);
+        res.add(WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);
         res.add(WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder.class);
         res.add(WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder.class);

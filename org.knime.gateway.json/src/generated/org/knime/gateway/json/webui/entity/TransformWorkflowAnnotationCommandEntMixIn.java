@@ -45,7 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -76,8 +76,8 @@ public interface TransformWorkflowAnnotationCommandEntMixIn extends TransformWor
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("id")
-    public org.knime.gateway.api.entity.AnnotationIDEnt getId();
+    @JsonProperty("annotationId")
+    public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
     
     @Override
     @JsonProperty("bounds")
@@ -101,8 +101,8 @@ public interface TransformWorkflowAnnotationCommandEntMixIn extends TransformWor
         public TransformWorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("id")
-        public TransformWorkflowAnnotationCommandEntMixInBuilder setId(final org.knime.gateway.api.entity.AnnotationIDEnt id);
+        @JsonProperty("annotationId")
+        public TransformWorkflowAnnotationCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
         
         @Override
         @JsonProperty("bounds")

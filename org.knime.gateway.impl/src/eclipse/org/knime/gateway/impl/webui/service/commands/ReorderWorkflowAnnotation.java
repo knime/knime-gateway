@@ -44,29 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 16, 2023 (hornm): created
+ *   Mar 28, 2023 (kai): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
+import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
- * Changes the size and position of a workflow annotation.
+ * Moves workflow annotations through the workflow's z-plane.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
+public class ReorderWorkflowAnnotation extends AbstractWorkflowCommand {
 
-    private final TransformWorkflowAnnotationCommandEnt m_commandEnt;
+    private final ReorderWorkflowAnnotationCommandEnt m_commandEnt;
 
-    private WorkflowAnnotationID m_annotationId;
+    private WorkflowAnnotation m_annotation;
 
-    private int[] m_previousBounds;
+    private Integer m_previousIndex;
 
-    TransformWorkflowAnnotation(final TransformWorkflowAnnotationCommandEnt commandEnt) {
+    ReorderWorkflowAnnotation(final ReorderWorkflowAnnotationCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
@@ -75,19 +75,17 @@ class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
      */
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-        m_annotationId =
-            DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_commandEnt.getAnnotationId());
-        var annotation = wfm.getWorkflowAnnotations(m_annotationId)[0];
-        if (annotation == null) {
-            throw new OperationNotAllowedException(
-                "No workflow annotation found for id " + m_commandEnt.getAnnotationId());
-        }
-        m_previousBounds =
-            new int[]{annotation.getX(), annotation.getY(), annotation.getWidth(), annotation.getHeight()};
-        var bounds = m_commandEnt.getBounds();
-        annotation.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-        return true;
+        final var wfm = getWorkflowManager();
+        final var annotationId = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_commandEnt.getAnnotationId());
+        m_annotation = wfm.getWorkflowAnnotations(annotationId)[0];
+        m_previousIndex = wfm.getZOrderForAnnotation(m_annotation);
+        final var action = m_commandEnt.getAction();
+        return switch (action) {
+            case BRING_FORWARD -> wfm.bringAnnotationForward(m_annotation);
+            case BRING_TO_FRONT -> wfm.bringAnnotationToFront(m_annotation);
+            case SEND_BACKWARD -> wfm.sendAnnotationBackward(m_annotation);
+            case SEND_TO_BACK -> wfm.sendAnnotationToBack(m_annotation);
+        };
     }
 
     /**
@@ -95,9 +93,11 @@ class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
      */
     @Override
     public void undo() throws OperationNotAllowedException {
-        var annotation = getWorkflowManager().getWorkflowAnnotations(m_annotationId)[0];
-        annotation.setDimension(m_previousBounds[0], m_previousBounds[1], m_previousBounds[2], m_previousBounds[3]);
-        m_previousBounds = null;
-        m_annotationId = null;
+        final var wfm = getWorkflowManager();
+        final var index = wfm.getZOrderForAnnotation(m_annotation);
+        wfm.setAnnotationZOrdering(m_annotation, index, m_previousIndex);
+        m_annotation = null;
+        m_previousIndex = null;
     }
+
 }

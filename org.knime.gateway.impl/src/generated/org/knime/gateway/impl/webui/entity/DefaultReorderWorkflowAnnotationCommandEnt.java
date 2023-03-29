@@ -46,44 +46,43 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 
-import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
 
 /**
- * Changes the size (width and height) and position (x, y) of a workflow annotation.
+ * Alters the z-order of a workflow annotation.
  *
  * @param kind
  * @param annotationId
- * @param bounds
+ * @param action
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultTransformWorkflowAnnotationCommandEnt(
+public record DefaultReorderWorkflowAnnotationCommandEnt(
     KindEnum kind,
     org.knime.gateway.api.entity.AnnotationIDEnt annotationId,
-    BoundsEnt bounds) implements TransformWorkflowAnnotationCommandEnt {
+    ActionEnum action) implements ReorderWorkflowAnnotationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultTransformWorkflowAnnotationCommandEnt {
+    public DefaultReorderWorkflowAnnotationCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
         if(annotationId == null) {
             throw new IllegalArgumentException("<annotationId> must not be null.");
         }
-        if(bounds == null) {
-            throw new IllegalArgumentException("<bounds> must not be null.");
+        if(action == null) {
+            throw new IllegalArgumentException("<action> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "TransformWorkflowAnnotationCommand";
+        return "ReorderWorkflowAnnotationCommand";
     }
   
     @Override
@@ -97,23 +96,23 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
     }
     
     @Override
-    public BoundsEnt getBounds() {
-        return bounds;
+    public ActionEnum getAction() {
+        return action;
     }
     
     /**
-     * A builder for {@link DefaultTransformWorkflowAnnotationCommandEnt}.
+     * A builder for {@link DefaultReorderWorkflowAnnotationCommandEnt}.
      */
-    public static class DefaultTransformWorkflowAnnotationCommandEntBuilder implements TransformWorkflowAnnotationCommandEntBuilder {
+    public static class DefaultReorderWorkflowAnnotationCommandEntBuilder implements ReorderWorkflowAnnotationCommandEntBuilder {
 
         private KindEnum m_kind;
 
         private org.knime.gateway.api.entity.AnnotationIDEnt m_annotationId;
 
-        private BoundsEnt m_bounds;
+        private ActionEnum m_action;
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultReorderWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
@@ -122,7 +121,7 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
+        public DefaultReorderWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
              if(annotationId == null) {
                  throw new IllegalArgumentException("<annotationId> must not be null.");
              }
@@ -131,20 +130,20 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds) {
-             if(bounds == null) {
-                 throw new IllegalArgumentException("<bounds> must not be null.");
+        public DefaultReorderWorkflowAnnotationCommandEntBuilder setAction(ActionEnum action) {
+             if(action == null) {
+                 throw new IllegalArgumentException("<action> must not be null.");
              }
-             m_bounds = bounds;
+             m_action = action;
              return this;
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEnt build() {
-            return new DefaultTransformWorkflowAnnotationCommandEnt(
+        public DefaultReorderWorkflowAnnotationCommandEnt build() {
+            return new DefaultReorderWorkflowAnnotationCommandEnt(
                 immutable(m_kind),
                 immutable(m_annotationId),
-                immutable(m_bounds));
+                immutable(m_action));
         }
     
     }

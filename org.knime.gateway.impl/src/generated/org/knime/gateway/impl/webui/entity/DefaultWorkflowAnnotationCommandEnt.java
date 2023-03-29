@@ -46,44 +46,38 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 
 /**
- * Changes the size (width and height) and position (x, y) of a workflow annotation.
+ * A command that does something to a specific workflow annotation.
  *
  * @param kind
  * @param annotationId
- * @param bounds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultTransformWorkflowAnnotationCommandEnt(
+public record DefaultWorkflowAnnotationCommandEnt(
     KindEnum kind,
-    org.knime.gateway.api.entity.AnnotationIDEnt annotationId,
-    BoundsEnt bounds) implements TransformWorkflowAnnotationCommandEnt {
+    org.knime.gateway.api.entity.AnnotationIDEnt annotationId) implements WorkflowAnnotationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultTransformWorkflowAnnotationCommandEnt {
+    public DefaultWorkflowAnnotationCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
         if(annotationId == null) {
             throw new IllegalArgumentException("<annotationId> must not be null.");
         }
-        if(bounds == null) {
-            throw new IllegalArgumentException("<bounds> must not be null.");
-        }
     }
 
     @Override
     public String getTypeID() {
-        return "TransformWorkflowAnnotationCommand";
+        return "WorkflowAnnotationCommand";
     }
   
     @Override
@@ -96,24 +90,17 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
         return annotationId;
     }
     
-    @Override
-    public BoundsEnt getBounds() {
-        return bounds;
-    }
-    
     /**
-     * A builder for {@link DefaultTransformWorkflowAnnotationCommandEnt}.
+     * A builder for {@link DefaultWorkflowAnnotationCommandEnt}.
      */
-    public static class DefaultTransformWorkflowAnnotationCommandEntBuilder implements TransformWorkflowAnnotationCommandEntBuilder {
+    public static class DefaultWorkflowAnnotationCommandEntBuilder implements WorkflowAnnotationCommandEntBuilder {
 
         private KindEnum m_kind;
 
         private org.knime.gateway.api.entity.AnnotationIDEnt m_annotationId;
 
-        private BoundsEnt m_bounds;
-
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
@@ -122,7 +109,7 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
+        public DefaultWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
              if(annotationId == null) {
                  throw new IllegalArgumentException("<annotationId> must not be null.");
              }
@@ -131,20 +118,10 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds) {
-             if(bounds == null) {
-                 throw new IllegalArgumentException("<bounds> must not be null.");
-             }
-             m_bounds = bounds;
-             return this;
-        }
-
-        @Override
-        public DefaultTransformWorkflowAnnotationCommandEnt build() {
-            return new DefaultTransformWorkflowAnnotationCommandEnt(
+        public DefaultWorkflowAnnotationCommandEnt build() {
+            return new DefaultWorkflowAnnotationCommandEnt(
                 immutable(m_kind),
-                immutable(m_annotationId),
-                immutable(m_bounds));
+                immutable(m_annotationId));
         }
     
     }

@@ -114,6 +114,7 @@ import org.knime.gateway.json.webui.entity.PortGroupEntMixIn;
 import org.knime.gateway.json.webui.entity.PortTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReplaceNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceEntMixIn;
@@ -129,6 +130,7 @@ import org.knime.gateway.json.webui.entity.UpdateAvailableEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateNodeLabelCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventTypeEntMixIn;
@@ -232,6 +234,7 @@ public class ListEntities {
         res.add(PortTypeEntMixIn.class);
         res.add(ProjectMetadataEntMixIn.class);
         res.add(RemovePortCommandEntMixIn.class);
+        res.add(ReorderWorkflowAnnotationCommandEntMixIn.class);
         res.add(ReplaceNodeCommandEntMixIn.class);
         res.add(SelectionEventTypeEntMixIn.class);
         res.add(SpaceEntMixIn.class);
@@ -247,6 +250,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
         res.add(UpdateInfoEntMixIn.class);
         res.add(UpdateNodeLabelCommandEntMixIn.class);
+        res.add(WorkflowAnnotationCommandEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
         res.add(WorkflowChangedEventEntMixIn.class);
         res.add(WorkflowChangedEventTypeEntMixIn.class);
@@ -336,6 +340,7 @@ public class ListEntities {
         res.add(PortTypeEntMixIn.PortTypeEntMixInBuilder.class);
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
         res.add(RemovePortCommandEntMixIn.RemovePortCommandEntMixInBuilder.class);
+        res.add(ReorderWorkflowAnnotationCommandEntMixIn.ReorderWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(ReplaceNodeCommandEntMixIn.ReplaceNodeCommandEntMixInBuilder.class);
         res.add(SelectionEventTypeEntMixIn.SelectionEventTypeEntMixInBuilder.class);
         res.add(SpaceEntMixIn.SpaceEntMixInBuilder.class);
@@ -351,6 +356,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);
         res.add(UpdateInfoEntMixIn.UpdateInfoEntMixInBuilder.class);
         res.add(UpdateNodeLabelCommandEntMixIn.UpdateNodeLabelCommandEntMixInBuilder.class);
+        res.add(WorkflowAnnotationCommandEntMixIn.WorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);
         res.add(WorkflowChangedEventEntMixIn.WorkflowChangedEventEntMixInBuilder.class);
         res.add(WorkflowChangedEventTypeEntMixIn.WorkflowChangedEventTypeEntMixInBuilder.class);

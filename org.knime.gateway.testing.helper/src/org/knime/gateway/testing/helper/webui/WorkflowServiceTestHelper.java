@@ -138,6 +138,8 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt.ActionEnum;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt.ReorderWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
@@ -242,7 +244,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.TRUE).getWorkflow();
         cr(workflow, "component_in_component_project_l1");
 
-        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5,0,7), Boolean.TRUE).getWorkflow();
+        workflow = ws().getWorkflow(wfId, new NodeIDEnt(5, 0, 7), Boolean.TRUE).getWorkflow();
         cr(workflow, "component_in_component_project_l2");
     }
 
@@ -588,7 +590,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertExpanded(wfId, getRootID(), commandEnt, responseEnt);
     }
 
-    private void testExpandExecuting(final int container, final int successor) throws Exception{
+    private void testExpandExecuting(final int container, final int successor) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var containerEnt = new NodeIDEnt(container);
         executeAndWaitUntilExecuting(wfId, successor);
@@ -617,8 +619,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 .anyMatch(actions -> actions.getCanExpand() == AllowedNodeActionsEnt.CanExpandEnum.TRUE));
 
         var commandEnt = buildExpandCommandEnt(nodeToExpandEnt);
-        ExpandResultEnt commandResponseEnt =
-            (ExpandResultEnt)ws().executeWorkflowCommand(projectId, wfId, commandEnt);
+        ExpandResultEnt commandResponseEnt = (ExpandResultEnt)ws().executeWorkflowCommand(projectId, wfId, commandEnt);
         assertExpanded(projectId, wfId, commandEnt, commandResponseEnt);
 
         ws().undoWorkflowCommand(projectId, wfId);
@@ -656,8 +657,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             getAllowedActionsOfNodes(nodesToCollapseEnts, rootWfEnt).stream()
                 .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE));
 
-        var commandEnt =
-            buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
+        var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
         var exceptionMessage = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)).getMessage();
         assertThat(exceptionMessage, containsString("Cannot move executed nodes"));
@@ -768,11 +768,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var nodesToCollapseInts = List.of(5, 3);
         var annotsToCollapseInts = List.of(0, 1);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
-        var annotsToCollapseEnts = annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
+        var annotsToCollapseEnts =
+            annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
 
         WorkflowEnt unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        Set<String> annotationContents = unchangedWfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(
-                Collectors.toSet());
+        Set<String> annotationContents =
+            unchangedWfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(Collectors.toSet());
 
         assertTrue("Expect selected nodes to have allowed action for collapse set to true",
             getAllowedActionsOfNodes(nodesToCollapseEnts, unchangedWfEnt).stream()
@@ -810,13 +811,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertCollapsed(final String wfId, final CollapseCommandEnt commandEnt,
-            final CommandResultEnt commandResultEnt, final Set<String> annotationContents) throws Exception {
+        final CommandResultEnt commandResultEnt, final Set<String> annotationContents) throws Exception {
         var newNode = getNewNodeId(commandResultEnt);
         var nodesToCollapseEnts = commandEnt.getNodeIds();
-        var nodesToCollapseInts = nodesToCollapseEnts.stream()
-                .map(NodeIDEnt::getNodeIDs)
-                .map(idArr -> idArr[idArr.length-1])
-                .collect(Collectors.toList());
+        var nodesToCollapseInts = nodesToCollapseEnts.stream().map(NodeIDEnt::getNodeIDs)
+            .map(idArr -> idArr[idArr.length - 1]).collect(Collectors.toList());
         var annotsToCollapseEnts = commandEnt.getAnnotationIds();
 
         WorkflowEnt parentWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
@@ -838,7 +837,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             annotationContents);
     }
 
-    private static NodeIDEnt getParentIdEnt(final CollapseCommandEnt.ContainerTypeEnum containerType, final NodeIDEnt parentEnt) {
+    private static NodeIDEnt getParentIdEnt(final CollapseCommandEnt.ContainerTypeEnum containerType,
+        final NodeIDEnt parentEnt) {
         if (containerType == CollapseCommandEnt.ContainerTypeEnum.COMPONENT) {
             return parentEnt.appendNodeID(0);
         } else {
@@ -846,10 +846,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
     }
 
-
     private void testCollapseResettable(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
-        var nodesToCollapseInts = List.of(7,6);
+        var nodesToCollapseInts = List.of(7, 6);
         var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
 
         WorkflowEnt wfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
@@ -1129,8 +1128,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         });
     }
 
-    private static ConnectCommandEnt buildConnectCommandEnt(final NodeIDEnt source, final Integer sourcePort, final NodeIDEnt dest,
-        final Integer destPort) {
+    private static ConnectCommandEnt buildConnectCommandEnt(final NodeIDEnt source, final Integer sourcePort,
+        final NodeIDEnt dest, final Integer destPort) {
         return builder(ConnectCommandEntBuilder.class).setKind(KindEnum.CONNECT).setSourceNodeId(source)
             .setSourcePortIdx(sourcePort).setDestinationNodeId(dest).setDestinationPortIdx(destPort).build();
     }
@@ -1152,7 +1151,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 12, 13, null, null));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 12, 13, result);
-
 
         // undo
         // NOTE: for some reason the undo (i.e. delete node) seems to be carried out asynchronously by the
@@ -1211,7 +1209,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws Exception
      */
-    public void testExecuteAddAndConnectCommand()throws Exception {
+    public void testExecuteAddAndConnectCommand() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
 
@@ -1337,7 +1335,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws Exception
      */
-    public void testExecuteAddAndConnectCommandFlowVariables()throws Exception {
+    public void testExecuteAddAndConnectCommandFlowVariables() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         var tableColToVariableFactory =
             "org.knime.base.node.flowvariable.tablecoltovariable4.TableColumnToVariable4NodeFactory";
@@ -1395,7 +1393,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .build();
     }
 
-    private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y, final CommandResultEnt result) {
+    private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y,
+        final CommandResultEnt result) {
         assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
         var nodeEnt = wf.getWorkflow().getNodes().values().stream()
             .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(nodeFactory))
@@ -1520,7 +1519,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
     }
 
-    private static UpdateNodeLabelCommandEnt buildUpdateNodeLabelCommandEnt(final NodeIDEnt nodeId, final String label) {
+    private static UpdateNodeLabelCommandEnt buildUpdateNodeLabelCommandEnt(final NodeIDEnt nodeId,
+        final String label) {
         return builder(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class)//
             .setKind(KindEnum.UPDATE_NODE_LABEL)//
             .setNodeId(nodeId)//
@@ -1530,10 +1530,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * When a node has its default {@link NodeAnnotationData}, the {@link NodeAnnotationEnt} will be set to
-     * {@code null}, see {@link WorkflowEntityFactory#buildNodeAnnotationEnt}. Setting the node label to something else and
-     * undoing this operation will yield to a non-empty {@link NodeAnnotationEnt}, since the {@link NodeAnnotationData}
-     * is no longer considered the default. Instead, the node annotation text will be set to the empty string, see
-     * {@link WorkflowEntityFactory#buildNodeAnnotationEnt}
+     * {@code null}, see {@link WorkflowEntityFactory#buildNodeAnnotationEnt}. Setting the node label to something else
+     * and undoing this operation will yield to a non-empty {@link NodeAnnotationEnt}, since the
+     * {@link NodeAnnotationData} is no longer considered the default. Instead, the node annotation text will be set to
+     * the empty string, see {@link WorkflowEntityFactory#buildNodeAnnotationEnt}
      */
     private static String getLabelFromNodeInWorkflow(final WorkflowEnt wf, final NodeIDEnt nodeId) {
         var annotation = wf.getNodes().get(nodeId.toString()).getAnnotation();
@@ -1621,8 +1621,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             portRemovalAllowed(metanode, workflow, 1) //
         );
         assertThat( //
-                "Expect: Can remove unconnected output port", //
-                portRemovalAllowed(metanode, workflow, 0, false) //
+            "Expect: Can remove unconnected output port", //
+            portRemovalAllowed(metanode, workflow, 0, false) //
         );
         // components have a fixed flow variable port, metanodes do not
         var flowVarPortOffset = 1;
@@ -1635,8 +1635,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             portRemovalAllowed(component, workflow, 1 + flowVarPortOffset) //
         );
         assertThat( //
-                "Expect: Can remove unconnected output port", //
-                portRemovalAllowed(component, workflow, 1 + flowVarPortOffset, false) //
+            "Expect: Can remove unconnected output port", //
+            portRemovalAllowed(component, workflow, 1 + flowVarPortOffset, false) //
         );
     }
 
@@ -1742,7 +1742,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
         var canAddInputPort = portGroup.isCanAddInPort() != null ? portGroup.isCanAddInPort() : Boolean.FALSE;
         var canAddOutputPort = portGroup.isCanAddOutPort() != null ? portGroup.isCanAddOutPort() : Boolean.FALSE;
-        var supportsType = portGroup.getSupportedPortTypeIds().stream().filter(ent -> ent.equals(targetPortTypeId)).count() > 0;
+        var supportsType =
+            portGroup.getSupportedPortTypeIds().stream().filter(ent -> ent.equals(targetPortTypeId)).count() > 0;
         return (canAddInputPort || canAddOutputPort) && supportsType;
     }
 
@@ -1825,15 +1826,16 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertEquals("Expect port names to not have changed", originalNames, currentNames);
     }
 
-    private void assertPortAdded(final NodeIDEnt node, final boolean isInPort, final String projectId, final NodeIDEnt wfId,
-        final WorkflowEnt originalWfEnt, final CommandResultEnt commandResult) throws Exception {
+    private void assertPortAdded(final NodeIDEnt node, final boolean isInPort, final String projectId,
+        final NodeIDEnt wfId, final WorkflowEnt originalWfEnt, final CommandResultEnt commandResult) throws Exception {
         var originalNumInPorts = getPortList(originalWfEnt, isInPort, node).size();
         var newWorkflowEnt = ws().getWorkflow(projectId, wfId, Boolean.TRUE).getWorkflow();
         var newPortList = getPortList(newWorkflowEnt, isInPort, node);
         var newNumPorts = newPortList.size();
         assertThat("Expect number of ports to have increased by one", newNumPorts == originalNumInPorts + 1);
         assertThat("Command result is not an `AddPortResultEnt`", commandResult, instanceOf(AddPortResultEnt.class));
-        assertThat("New port index returned is wrong", ((AddPortResultEnt)commandResult).getNewPortIdx(), is(newNumPorts - 1));
+        assertThat("New port index returned is wrong", ((AddPortResultEnt)commandResult).getNewPortIdx(),
+            is(newNumPorts - 1));
     }
 
     private void assertPortRemoved(final NodeIDEnt node, final boolean isInPort, final String wfId,
@@ -1867,8 +1869,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
 
-        var deleteFixedFlowVarPort =
-            buildDeletePortCommandEnt(componentWithPorts, PortCommandEnt.SideEnum.INPUT, 0);
+        var deleteFixedFlowVarPort = buildDeletePortCommandEnt(componentWithPorts, PortCommandEnt.SideEnum.INPUT, 0);
         assertThrows("Expect exception on removing port with index 0 from component (fixed flow variable port)",
             OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), deleteFixedFlowVarPort));
@@ -2015,8 +2016,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testExecuteCommandsWithinComponentAndMetanode(ContainerTypeEnum.COMPONENT);
     }
 
-    private void testExecuteCommandsWithinComponentAndMetanode(final ContainerTypeEnum containerType)
-        throws Exception {
+    private void testExecuteCommandsWithinComponentAndMetanode(final ContainerTypeEnum containerType) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
 
         // collapse metanode and component into a component/metanode and add ports to metanode and component
@@ -2055,7 +2055,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteCopyCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var command = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
+        var command = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)),
+            asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
         // execute command
         var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
         assertCopyResultValid(commandResult);
@@ -2086,18 +2087,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteCutCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var command = buildCutCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
+        var command = buildCutCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)),
+            asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
         var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
         var annKeysBefore = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
         // execute command
         var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
-        var nodeKeysAfterExecution = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+        var nodeKeysAfterExecution =
+            ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
         var annKeysAfterExecution = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
         assertCopyResultValid(commandResult);
-        assertThat("We should have less nodes in the workflow after cutting", nodeKeysAfterExecution.size() < nodeKeysBefore.size());
-        assertThat("We should have less annotations in the workflow after cutting", annKeysAfterExecution.size() < annKeysBefore.size());
-        assertThat("We should not have more nodes in the workflow after cutting", nodeKeysBefore.containsAll(nodeKeysAfterExecution));
-        assertThat("We should not have more annotations in the workflow after cutting", annKeysBefore.containsAll(annKeysAfterExecution));
+        assertThat("We should have less nodes in the workflow after cutting",
+            nodeKeysAfterExecution.size() < nodeKeysBefore.size());
+        assertThat("We should have less annotations in the workflow after cutting",
+            annKeysAfterExecution.size() < annKeysBefore.size());
+        assertThat("We should not have more nodes in the workflow after cutting",
+            nodeKeysBefore.containsAll(nodeKeysAfterExecution));
+        assertThat("We should not have more annotations in the workflow after cutting",
+            annKeysBefore.containsAll(annKeysAfterExecution));
         // undo command
         ws().undoWorkflowCommand(wfId, getRootID());
         var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
@@ -2122,7 +2129,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static Set<String> getAnnotationsKeysFromWorkflow(final WorkflowSnapshotEnt workflow) {
-        return workflow.getWorkflow().getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toSet());
+        return workflow.getWorkflow().getWorkflowAnnotations().stream().map(a -> a.getId().toString())
+            .collect(Collectors.toSet());
     }
 
     /**
@@ -2132,11 +2140,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecutePasteCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var copyCommand = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)), asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
-        var clipboardContent = ((CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), copyCommand)).getContent();
+        var copyCommand = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)),
+            asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
+        var clipboardContent =
+            ((CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), copyCommand)).getContent();
         // test paste commands
-        var pasteCommands = List.of(buildPasteCommand(clipboardContent, null), buildPasteCommand(clipboardContent, List.of(16, 32)));
-        for (var pasteCommand: pasteCommands) {
+        var pasteCommands =
+            List.of(buildPasteCommand(clipboardContent, null), buildPasteCommand(clipboardContent, List.of(16, 32)));
+        for (var pasteCommand : pasteCommands) {
             var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
             var annKeysBefore = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
             // execute command
@@ -2146,12 +2157,18 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             var pasteResult = (PasteResultEnt)commandResult;
             assertThat(pasteResult.getNodeIds(), hasSize(2));
             assertThat(pasteResult.getAnnotationIds(), hasSize(2));
-            var nodeKeysAfterExecution = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            var annKeysAfterExecution = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-            assertThat("We should have more nodes in the workflow after pasting", nodeKeysAfterExecution.size() > nodeKeysBefore.size());
-            assertThat("We shouldn't have lost any nodes while pasting", nodeKeysAfterExecution.containsAll(nodeKeysBefore));
-            assertThat("We should have more annotations in the workflow after pasting", annKeysAfterExecution.size() > annKeysBefore.size());
-            assertThat("We shouldn't have lost any annotations while pasting", annKeysAfterExecution.containsAll(annKeysBefore));
+            var nodeKeysAfterExecution =
+                ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
+            var annKeysAfterExecution =
+                getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
+            assertThat("We should have more nodes in the workflow after pasting",
+                nodeKeysAfterExecution.size() > nodeKeysBefore.size());
+            assertThat("We shouldn't have lost any nodes while pasting",
+                nodeKeysAfterExecution.containsAll(nodeKeysBefore));
+            assertThat("We should have more annotations in the workflow after pasting",
+                annKeysAfterExecution.size() > annKeysBefore.size());
+            assertThat("We shouldn't have lost any annotations while pasting",
+                annKeysAfterExecution.containsAll(annKeysBefore));
             // undo command
             ws().undoWorkflowCommand(wfId, getRootID());
             var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
@@ -2163,7 +2180,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             var nodeKeysAfterRedo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
             var annKeysAfterRedo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
             assertEquals("We should have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
-            assertEquals("We should have the same annotations as after execution", annKeysAfterExecution, annKeysAfterRedo);
+            assertEquals("We should have the same annotations as after execution", annKeysAfterExecution,
+                annKeysAfterRedo);
         }
     }
 
@@ -2171,7 +2189,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return builder(PasteCommandEntBuilder.class)//
             .setKind(KindEnum.PASTE)//
             .setContent(clipboardContent)//
-            .setPosition(position != null ? builder(XYEntBuilder.class).setX(position.get(0)).setY(position.get(1)).build() : null)
+            .setPosition(position != null
+                ? builder(XYEntBuilder.class).setX(position.get(0)).setY(position.get(1)).build() : null)
             .build();
     }
 
@@ -2293,8 +2312,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(boundsEnt.getHeight(), is(140));
 
         var newBounds = builder(BoundsEntBuilder.class).setX(4).setY(5).setWidth(10).setHeight(15).build();
-        var command = builder(TransformWorkflowAnnotationCommandEntBuilder.class)
-            .setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION).setId(annotationEnt.getId()).setBounds(newBounds).build();
+        var command =
+            builder(TransformWorkflowAnnotationCommandEntBuilder.class).setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)
+                .setAnnotationId(annotationEnt.getId()).setBounds(newBounds).build();
         ws().executeWorkflowCommand(wfId, getRootID(), command);
 
         annotationEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
@@ -2316,9 +2336,53 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // test invalid annotation id
         var command2 =
             builder(TransformWorkflowAnnotationCommandEntBuilder.class).setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)
-                .setId(new AnnotationIDEnt("root_9999")).setBounds(newBounds).build();
+                .setAnnotationId(new AnnotationIDEnt("root_9999")).setBounds(newBounds).build();
         assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
+    }
+
+    /**
+     * Tests {@link ReorderWorkflowAnnotationCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testReorderWorkflowAnnotationCommand() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var annotationEnts = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
+        var annotationCount = annotationEnts.size();
+        if (annotationCount < 2) {
+            throw new Exception("Could not perform test since there are less than 2 workflow annotations present");
+        }
+        // Bring bottom annotation forward
+        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
+        // Bring bottom annotation to front
+        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.BRING_TO_FRONT, 0, annotationCount - 1);
+        // Send top annotation backward
+        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
+            annotationCount - 2);
+        // Send top annotation to back
+        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
+    }
+
+    private void assertReorderWorkflowAnnotationCommand(final String projectId, final ActionEnum action,
+        final int initialIndex, final int finalIndex) throws Exception {
+        var annotationEnt =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(initialIndex);
+        var command = builder(ReorderWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.REORDER_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(annotationEnt.getId())//
+            .setAction(action)//
+            .build();
+
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var annotationEntAfterCommandExecution =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(finalIndex);
+        assertThat(annotationEnt, is(annotationEntAfterCommandExecution));
+
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var annotationEntAfterUndoCommand =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(initialIndex);
+        assertThat(annotationEnt, is(annotationEntAfterUndoCommand));
     }
 
 }
