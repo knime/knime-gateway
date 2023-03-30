@@ -98,8 +98,7 @@ public class ReorderWorkflowAnnotation extends AbstractWorkflowCommand {
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
         final var annotation = getWorkflowAnnotationOrThrowException(wfm, m_annotationId);
-        final var index = wfm.getZOrderForAnnotation(annotation);
-        wfm.setAnnotationZOrdering(annotation, index, m_previousIndex);
+        wfm.setAnnotationZOrdering(annotation, m_previousIndex);
         m_annotationId = null;
         m_previousIndex = null;
     }
