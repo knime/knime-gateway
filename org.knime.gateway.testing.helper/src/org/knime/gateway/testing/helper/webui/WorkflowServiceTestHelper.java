@@ -138,6 +138,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt.ActionEnum;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt.ReorderWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -2353,6 +2354,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         if (annotationCount < 2) {
             throw new Exception("Could not perform test since there are less than 2 workflow annotations present");
         }
+
         // Bring bottom annotation forward
         assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
         // Bring bottom annotation to front
@@ -2362,6 +2364,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             annotationCount - 2);
         // Send top annotation to back
         assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
+
+        // Invalid annotation ID
+        var command = builder(ReorderWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.REORDER_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(new AnnotationIDEnt("root_123456789"))//
+            .setAction(ActionEnum.BRING_FORWARD)//
+            .build();
+        assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), command));
     }
 
     private void assertReorderWorkflowAnnotationCommand(final String projectId, final ActionEnum action,

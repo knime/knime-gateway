@@ -48,7 +48,9 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowAnnotation;
+import static org.knime.gateway.impl.webui.service.commands.TransformWorkflowAnnotation.getWorkflowAnnotationOrThrowException;
+
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -62,7 +64,7 @@ public class ReorderWorkflowAnnotation extends AbstractWorkflowCommand {
 
     private final ReorderWorkflowAnnotationCommandEnt m_commandEnt;
 
-    private WorkflowAnnotation m_annotation;
+    private WorkflowAnnotationID m_annotationId;
 
     private Integer m_previousIndex;
 
@@ -76,15 +78,16 @@ public class ReorderWorkflowAnnotation extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        final var annotationId = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_commandEnt.getAnnotationId());
-        m_annotation = wfm.getWorkflowAnnotations(annotationId)[0];
-        m_previousIndex = wfm.getZOrderForAnnotation(m_annotation);
+        m_annotationId =
+            DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_commandEnt.getAnnotationId());
+        final var annotation = getWorkflowAnnotationOrThrowException(getWorkflowManager(), m_annotationId);
+        m_previousIndex = wfm.getZOrderForAnnotation(annotation);
         final var action = m_commandEnt.getAction();
         return switch (action) {
-            case BRING_FORWARD -> wfm.bringAnnotationForward(m_annotation);
-            case BRING_TO_FRONT -> wfm.bringAnnotationToFront(m_annotation);
-            case SEND_BACKWARD -> wfm.sendAnnotationBackward(m_annotation);
-            case SEND_TO_BACK -> wfm.sendAnnotationToBack(m_annotation);
+            case BRING_FORWARD -> wfm.bringAnnotationForward(annotation);
+            case BRING_TO_FRONT -> wfm.bringAnnotationToFront(annotation);
+            case SEND_BACKWARD -> wfm.sendAnnotationBackward(annotation);
+            case SEND_TO_BACK -> wfm.sendAnnotationToBack(annotation);
         };
     }
 
@@ -94,9 +97,10 @@ public class ReorderWorkflowAnnotation extends AbstractWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        final var index = wfm.getZOrderForAnnotation(m_annotation);
-        wfm.setAnnotationZOrdering(m_annotation, index, m_previousIndex);
-        m_annotation = null;
+        final var annotation = getWorkflowAnnotationOrThrowException(wfm, m_annotationId);
+        final var index = wfm.getZOrderForAnnotation(annotation);
+        wfm.setAnnotationZOrdering(annotation, index, m_previousIndex);
+        m_annotationId = null;
         m_previousIndex = null;
     }
 
