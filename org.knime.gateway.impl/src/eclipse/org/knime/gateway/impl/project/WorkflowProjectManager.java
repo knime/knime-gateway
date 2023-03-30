@@ -225,34 +225,22 @@ public final class WorkflowProjectManager {
      * @param projectIds the projectIds of the workflows to close
      * @return whether closing was successful for all workflows
      */
-    public boolean closeWorkflowProjects(final Set<String> projectIds) {
+    public boolean closeWorkflowProjects(final String ...projectIds) {
         var success = true;
         for (var projectId : projectIds) {
-            success &= closeWorkflowProject(projectId);
+            var wfm = getCachedWorkflow(projectId).orElse(null);
+            try {
+                if (wfm != null) {
+                    CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
+                }
+                removeWorkflowProject(projectId);
+                success &= true;
+            } catch (InterruptedException e) { // NOSONAR
+                NodeLogger.getLogger(WorkflowProjectManager.class)
+                    .warn("Problem while waiting for the workflow '" + projectId + "' to be cancelled", e);
+                success &= false;
+            }
         }
         return success;
-    }
-
-    /**
-     * Closes workflow project (without saving the changes) based on its projectId.
-     *
-     * @param projectId the projectId of the workflow to close
-     * @return whether closing was successful or not
-     */
-    @SuppressWarnings("static-method")
-    public boolean closeWorkflowProject(final String projectId) {
-        var wpm = WorkflowProjectManager.getInstance();
-        var wfm = wpm.getCachedWorkflow(projectId).orElse(null);
-        try {
-            if (wfm != null) {
-                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-            }
-            wpm.removeWorkflowProject(projectId);
-            return true;
-        } catch (InterruptedException e) { // NOSONAR
-            NodeLogger.getLogger(WorkflowProjectManager.class)
-                .warn("Problem while waiting for the workflow '" + projectId + "' to be cancelled", e);
-            return false;
-        }
     }
 }

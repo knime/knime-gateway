@@ -124,10 +124,12 @@ public final class DefaultApplicationService implements ApplicationService {
      * {@inheritDoc}
      */
     @Override
-    public void closeProjects(final List<String> projectIds, final Boolean force) {
-        if (force) {
-            m_workflowProjectManager.closeWorkflowProjects(projectIds.stream().collect(Collectors.toSet()));
+    public void closeProjects(final List<String> projectIds, final Boolean force) throws UnsupportedOperationException {
+        if (Boolean.TRUE.equals(force)) {
+            m_workflowProjectManager.closeWorkflowProjects(projectIds.stream().collect(Collectors.toSet()).toArray(String[]::new));
             m_appStateUpdater.updateAppState();
+        } else {
+            throw new UnsupportedOperationException("Closing projects without discarding the changes is not supported right now");
         }
     }
 
