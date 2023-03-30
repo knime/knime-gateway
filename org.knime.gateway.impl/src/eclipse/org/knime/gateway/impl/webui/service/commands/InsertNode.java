@@ -48,10 +48,13 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getMatchingPorts;
+
 import java.io.IOException;
 import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
@@ -64,7 +67,7 @@ import org.knime.gateway.impl.webui.NodeRepository;
  *
  * @author Juan Baquero, KNIME GmbH
  */
-public class InsertNode extends AbstractWorkflowCommand {
+final class InsertNode extends AbstractWorkflowCommand {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeRepository.class);
 
@@ -80,6 +83,8 @@ public class InsertNode extends AbstractWorkflowCommand {
 
     private NodeID m_insertedNode;
 
+    private ConnectionID m_connection;
+
     InsertNode(final InsertNodeCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
 
@@ -88,39 +93,46 @@ public class InsertNode extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        var connectionID =
+        m_connection =
             DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
 
         // Save original source and destination
-        var connectionContainer = wfm.getConnection(connectionID);
+        var connectionContainer = wfm.getConnection(m_connection);
         m_destNode = connectionContainer.getDest();
         m_destPort = connectionContainer.getDestPort();
         m_srcNode = connectionContainer.getSource();
         m_srcPort = connectionContainer.getSourcePort();
 
         // Remove Connection
-        wfm.removeConnection(connectionContainer);
+        try {
+            wfm.removeConnection(connectionContainer);
+        } catch (Exception ex) {
+            throw new OperationNotAllowedException("Could not remove connection");
+        }
 
         // Move previous node / Create new node
         var position = m_commandEnt.getPosition();
         var nodeEnt = m_commandEnt.getNodeId();
+        var nodeFactoryEnt = m_commandEnt.getNodeFactory();
         if (nodeEnt != null) { // Move node
             m_insertedNode = DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), nodeEnt);
             Translate.performTranslation(wfm, Set.of(wfm.getNodeContainer(m_insertedNode)), Set.of(),
                 new int[]{position.getX(), position.getY()});
-        } else { // New node
-            var nodeFactoryEnt = m_commandEnt.getNodeFactory();
+        } else if (nodeFactoryEnt != null) { // New node
             try {
                 m_insertedNode = DefaultServiceUtil.createAndAddNode(nodeFactoryEnt.getClassName(),
                     nodeFactoryEnt.getSettings(), position.getX(), position.getY(), wfm, true);
             } catch (IOException ex) {
                 throw new OperationNotAllowedException(ex.getMessage());
             }
+        } else {
+            throw new OperationNotAllowedException(
+                "Both nodeId and nodeFactoryId are not defined. Provide one of them.");
         }
 
         // Reconnect
         try {
-            var incomingPortMapping = AddNode.getMatchingPorts(m_srcNode, m_insertedNode, m_srcPort, wfm);
+            var incomingPortMapping = getMatchingPorts(m_srcNode, m_insertedNode, m_srcPort, wfm);
             incomingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
                 addConnection(m_srcNode, entrySrcPort, m_insertedNode, entryDestPort, wfm);
             });
@@ -129,7 +141,7 @@ public class InsertNode extends AbstractWorkflowCommand {
         }
 
         try {
-            var outgoingPortMapping = AddNode.getMatchingPorts(m_insertedNode, m_destNode, null, wfm);
+            var outgoingPortMapping = getMatchingPorts(m_insertedNode, m_destNode, null, wfm);
             outgoingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
                 addConnection(m_insertedNode, entrySrcPort, m_destNode, m_destPort, wfm);
             });
@@ -148,10 +160,27 @@ public class InsertNode extends AbstractWorkflowCommand {
     }
 
     @Override
+    public boolean canUndo() {
+        var wfm = getWorkflowManager();
+        return wfm.canRemoveNode(m_insertedNode) && wfm.canAddConnection(m_srcNode, m_srcPort, m_destNode, m_destPort);
+    }
+
+    @Override
+    public boolean canRedo() {
+        var wfm = getWorkflowManager();
+        return wfm.canRemoveConnection(wfm.getConnection(m_connection));
+    }
+
+    @Override
     public void undo() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         wfm.removeNode(m_insertedNode);
         wfm.addConnection(m_srcNode, m_srcPort, m_destNode, m_destPort);
+        m_insertedNode = null;
+        m_srcNode = null;
+        m_srcPort = 0;
+        m_destNode = null;
+        m_destPort = 0;
     }
 
 }
