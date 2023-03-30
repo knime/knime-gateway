@@ -47,7 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 

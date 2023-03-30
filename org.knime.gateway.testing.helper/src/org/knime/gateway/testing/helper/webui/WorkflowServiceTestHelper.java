@@ -138,9 +138,8 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt.ActionEnum;
-import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt.ReorderWorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
@@ -2343,11 +2342,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link ReorderWorkflowAnnotationCommandEnt}.
+     * Tests {@link ReorderWorkflowAnnotationCommandEnt} with a single annotation selected.
      *
      * @throws Exception
      */
-    public void testReorderWorkflowAnnotationCommand() throws Exception {
+    public void testReorderWorkflowAnnotationCommandWithSingleAnnotation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var annotationEnts = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
         var annotationCount = annotationEnts.size();
@@ -2366,9 +2365,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
 
         // Invalid annotation ID
-        var command = builder(ReorderWorkflowAnnotationCommandEntBuilder.class)//
-            .setKind(KindEnum.REORDER_WORKFLOW_ANNOTATION)//
-            .setAnnotationId(new AnnotationIDEnt("root_123456789"))//
+        var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//
+            .setKind(KindEnum.REORDER_WORKFLOW_ANNOTATIONS)//
+            .setAnnotationIds(List.of(new AnnotationIDEnt("root_123456789")))//
             .setAction(ActionEnum.BRING_FORWARD)//
             .build();
         assertThrows(OperationNotAllowedException.class,
@@ -2379,9 +2378,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final int initialIndex, final int finalIndex) throws Exception {
         var annotationEnt =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(initialIndex);
-        var command = builder(ReorderWorkflowAnnotationCommandEntBuilder.class)//
-            .setKind(KindEnum.REORDER_WORKFLOW_ANNOTATION)//
-            .setAnnotationId(annotationEnt.getId())//
+        var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//
+            .setKind(KindEnum.REORDER_WORKFLOW_ANNOTATIONS)//
+            .setAnnotationIds(List.of(annotationEnt.getId()))//
             .setAction(action)//
             .build();
 
@@ -2396,4 +2395,16 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(annotationEnt, is(annotationEntAfterUndoCommand));
     }
 
+    /**
+     * Tests {@link ReorderWorkflowAnnotationCommandEnt} with a multiple annotation selected.
+     *
+     * @throws Exception
+     */
+    public void testReorderWorkflowAnnotationCommandWithMultipleAnnotations() throws Exception {
+        // TODO: Similar to the other ones, but with multiple annotations
+
+        // TODO: Also consider the case where you first execute multiple commands and then undo them step by step
+
+        // TODO: Also consider a case where executing a command doesn't change anything, hence so undo is possible
+    }
 }

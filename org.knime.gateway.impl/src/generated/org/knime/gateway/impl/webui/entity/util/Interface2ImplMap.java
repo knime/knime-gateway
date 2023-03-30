@@ -184,8 +184,8 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntB
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
-import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt.ReorderWorkflowAnnotationCommandEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
@@ -216,8 +216,6 @@ import org.knime.gateway.api.webui.entity.UpdateInfoEnt.UpdateInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateInfoEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
@@ -470,8 +468,8 @@ public class Interface2ImplMap {
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();
         }        
-        if(clazz == ReorderWorkflowAnnotationCommandEntBuilder.class) {
-            return (B)new DefaultReorderWorkflowAnnotationCommandEnt.DefaultReorderWorkflowAnnotationCommandEntBuilder();
+        if(clazz == ReorderWorkflowAnnotationsCommandEntBuilder.class) {
+            return (B)new DefaultReorderWorkflowAnnotationsCommandEnt.DefaultReorderWorkflowAnnotationsCommandEntBuilder();
         }        
         if(clazz == ReplaceNodeCommandEntBuilder.class) {
             return (B)new DefaultReplaceNodeCommandEnt.DefaultReplaceNodeCommandEntBuilder();
@@ -517,9 +515,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == UpdateNodeLabelCommandEntBuilder.class) {
             return (B)new DefaultUpdateNodeLabelCommandEnt.DefaultUpdateNodeLabelCommandEntBuilder();
-        }        
-        if(clazz == WorkflowAnnotationCommandEntBuilder.class) {
-            return (B)new DefaultWorkflowAnnotationCommandEnt.DefaultWorkflowAnnotationCommandEntBuilder();
         }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();

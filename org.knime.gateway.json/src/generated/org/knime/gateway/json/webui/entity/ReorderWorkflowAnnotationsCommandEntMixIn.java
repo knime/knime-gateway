@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationCommandEnt.DefaultReorderWorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt.DefaultReorderWorkflowAnnotationsCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,10 +61,10 @@ import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationComma
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultReorderWorkflowAnnotationCommandEntBuilder.class)
-@JsonSerialize(as=ReorderWorkflowAnnotationCommandEnt.class)
+@JsonDeserialize(builder=DefaultReorderWorkflowAnnotationsCommandEntBuilder.class)
+@JsonSerialize(as=ReorderWorkflowAnnotationsCommandEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ReorderWorkflowAnnotationCommandEntMixIn extends ReorderWorkflowAnnotationCommandEnt {
+public interface ReorderWorkflowAnnotationsCommandEntMixIn extends ReorderWorkflowAnnotationsCommandEnt {
 
     @Override
     @JsonIgnore
@@ -75,8 +75,8 @@ public interface ReorderWorkflowAnnotationCommandEntMixIn extends ReorderWorkflo
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("annotationId")
-    public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
+    @JsonProperty("annotationIds")
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
     
     @Override
     @JsonProperty("action")
@@ -90,22 +90,22 @@ public interface ReorderWorkflowAnnotationCommandEntMixIn extends ReorderWorkflo
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ReorderWorkflowAnnotationCommandEntMixInBuilder extends ReorderWorkflowAnnotationCommandEntBuilder {
+    public static interface ReorderWorkflowAnnotationsCommandEntMixInBuilder extends ReorderWorkflowAnnotationsCommandEntBuilder {
     
         @Override
-        public ReorderWorkflowAnnotationCommandEntMixIn build();
+        public ReorderWorkflowAnnotationsCommandEntMixIn build();
     
         @Override
         @JsonProperty("kind")
-        public ReorderWorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
+        public ReorderWorkflowAnnotationsCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("annotationId")
-        public ReorderWorkflowAnnotationCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
+        @JsonProperty("annotationIds")
+        public ReorderWorkflowAnnotationsCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
         @Override
         @JsonProperty("action")
-        public ReorderWorkflowAnnotationCommandEntMixInBuilder setAction(final ActionEnum action);
+        public ReorderWorkflowAnnotationsCommandEntMixInBuilder setAction(final ActionEnum action);
         
     }
 

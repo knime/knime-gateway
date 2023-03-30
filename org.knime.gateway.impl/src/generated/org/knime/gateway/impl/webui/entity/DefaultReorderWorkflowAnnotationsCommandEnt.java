@@ -46,34 +46,34 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 
 /**
- * Alters the z-order of a workflow annotation.
+ * Alters the z-order of a list of workflow annotations.
  *
  * @param kind
- * @param annotationId
+ * @param annotationIds
  * @param action
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultReorderWorkflowAnnotationCommandEnt(
+public record DefaultReorderWorkflowAnnotationsCommandEnt(
     KindEnum kind,
-    org.knime.gateway.api.entity.AnnotationIDEnt annotationId,
-    ActionEnum action) implements ReorderWorkflowAnnotationCommandEnt {
+    java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds,
+    ActionEnum action) implements ReorderWorkflowAnnotationsCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultReorderWorkflowAnnotationCommandEnt {
+    public DefaultReorderWorkflowAnnotationsCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if(annotationId == null) {
-            throw new IllegalArgumentException("<annotationId> must not be null.");
+        if(annotationIds == null) {
+            throw new IllegalArgumentException("<annotationIds> must not be null.");
         }
         if(action == null) {
             throw new IllegalArgumentException("<action> must not be null.");
@@ -82,7 +82,7 @@ public record DefaultReorderWorkflowAnnotationCommandEnt(
 
     @Override
     public String getTypeID() {
-        return "ReorderWorkflowAnnotationCommand";
+        return "ReorderWorkflowAnnotationsCommand";
     }
   
     @Override
@@ -91,8 +91,8 @@ public record DefaultReorderWorkflowAnnotationCommandEnt(
     }
     
     @Override
-    public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId() {
-        return annotationId;
+    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
+        return annotationIds;
     }
     
     @Override
@@ -101,18 +101,18 @@ public record DefaultReorderWorkflowAnnotationCommandEnt(
     }
     
     /**
-     * A builder for {@link DefaultReorderWorkflowAnnotationCommandEnt}.
+     * A builder for {@link DefaultReorderWorkflowAnnotationsCommandEnt}.
      */
-    public static class DefaultReorderWorkflowAnnotationCommandEntBuilder implements ReorderWorkflowAnnotationCommandEntBuilder {
+    public static class DefaultReorderWorkflowAnnotationsCommandEntBuilder implements ReorderWorkflowAnnotationsCommandEntBuilder {
 
         private KindEnum m_kind;
 
-        private org.knime.gateway.api.entity.AnnotationIDEnt m_annotationId;
+        private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
 
         private ActionEnum m_action;
 
         @Override
-        public DefaultReorderWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultReorderWorkflowAnnotationsCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
@@ -121,16 +121,16 @@ public record DefaultReorderWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultReorderWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
-             if(annotationId == null) {
-                 throw new IllegalArgumentException("<annotationId> must not be null.");
+        public DefaultReorderWorkflowAnnotationsCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
+             if(annotationIds == null) {
+                 throw new IllegalArgumentException("<annotationIds> must not be null.");
              }
-             m_annotationId = annotationId;
+             m_annotationIds = annotationIds;
              return this;
         }
 
         @Override
-        public DefaultReorderWorkflowAnnotationCommandEntBuilder setAction(ActionEnum action) {
+        public DefaultReorderWorkflowAnnotationsCommandEntBuilder setAction(ActionEnum action) {
              if(action == null) {
                  throw new IllegalArgumentException("<action> must not be null.");
              }
@@ -139,10 +139,10 @@ public record DefaultReorderWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultReorderWorkflowAnnotationCommandEnt build() {
-            return new DefaultReorderWorkflowAnnotationCommandEnt(
+        public DefaultReorderWorkflowAnnotationsCommandEnt build() {
+            return new DefaultReorderWorkflowAnnotationsCommandEnt(
                 immutable(m_kind),
-                immutable(m_annotationId),
+                immutable(m_annotationIds),
                 immutable(m_action));
         }
     
