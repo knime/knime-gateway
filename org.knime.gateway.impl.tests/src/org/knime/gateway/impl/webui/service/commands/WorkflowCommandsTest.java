@@ -320,8 +320,9 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
                 .build());
 
         semaphore.acquire();
-        assertThat(((WorkflowChangedEventEnt)((ComposedEventEnt)event).getEvents().get(0)).getPatch().getOps().stream()
-            .map(op -> op.getPath()).collect(Collectors.toList()), Matchers.hasItem("/allowedActions/canUndo"));
+        assertThat(((WorkflowChangedEventEnt)((ComposedEventEnt)event.get()).getEvents().get(0)).getPatch().getOps()
+            .stream().map(op -> op.getPath()).collect(Collectors.toList()),
+            Matchers.hasItem("/allowedActions/canUndo"));
     }
 
     private static void disposeWorkflowProject(final WorkflowProject wp) {

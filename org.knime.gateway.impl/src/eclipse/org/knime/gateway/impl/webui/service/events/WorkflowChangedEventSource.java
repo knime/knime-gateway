@@ -57,7 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -162,11 +161,15 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             return callback;
         });
 
-        var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
+        if (workflowChangedEvent == null) {
+            return Optional.empty();
+        } else {
+            var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
                 .setProjectIdToIsDirty(m_workflowProjectManager.getProjectIdsToDirtyMap()).build();
 
-        return Optional.ofNullable(EntityBuilderManager.builder(ComposedEventEntBuilder.class)
-            .setEvents(Stream.of(workflowChangedEvent, projectDirtyStateEvent).toList()).build());
+            return Optional.of(EntityBuilderManager.builder(ComposedEventEntBuilder.class)
+                .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build());
+        }
     }
 
     private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
