@@ -56,7 +56,9 @@ import java.util.Set;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -84,6 +86,8 @@ final class InsertNode extends AbstractWorkflowCommand {
     private NodeID m_insertedNode;
 
     private ConnectionID m_connection;
+
+    private WorkflowPersistor m_copy;
 
     InsertNode(final InsertNodeCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -116,8 +120,13 @@ final class InsertNode extends AbstractWorkflowCommand {
         var nodeFactoryEnt = m_commandEnt.getNodeFactory();
         if (nodeEnt != null) { // Move node
             m_insertedNode = DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), nodeEnt);
-            Translate.performTranslation(wfm, Set.of(wfm.getNodeContainer(m_insertedNode)), Set.of(),
-                new int[]{position.getX(), position.getY()});
+            WorkflowCopyContent content = WorkflowCopyContent.builder().setNodeIDs(m_insertedNode).build();
+            m_copy = wfm.copy(true, content);
+
+            var nodeContainer = wfm.getNodeContainer(m_insertedNode);
+            var oldPosition = nodeContainer.getUIInformation().getBounds();
+            Translate.performTranslation(wfm, Set.of(nodeContainer), Set.of(),
+                new int[]{position.getX() - oldPosition[0], position.getY() - oldPosition[1]});
         } else if (nodeFactoryEnt != null) { // New node
             try {
                 m_insertedNode = DefaultServiceUtil.createAndAddNode(nodeFactoryEnt.getClassName(),
@@ -175,6 +184,9 @@ final class InsertNode extends AbstractWorkflowCommand {
     public void undo() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         wfm.removeNode(m_insertedNode);
+        if (m_copy != null) {
+            wfm.paste(m_copy);
+        }
         wfm.addConnection(m_srcNode, m_srcPort, m_destNode, m_destPort);
         m_insertedNode = null;
         m_srcNode = null;
