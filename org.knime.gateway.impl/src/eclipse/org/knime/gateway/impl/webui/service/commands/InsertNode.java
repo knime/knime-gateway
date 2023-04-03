@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getMatchingPorts;
-
 import java.io.IOException;
 import java.util.Set;
 
@@ -63,6 +61,7 @@ import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.NodeRepository;
+import org.knime.gateway.impl.webui.service.commands.util.MatchingPortsUtil;
 
 /**
  * Workflow command to insert a node on top of an active connection
@@ -141,20 +140,20 @@ final class InsertNode extends AbstractWorkflowCommand {
 
         // Reconnect
         try {
-            var incomingPortMapping = getMatchingPorts(m_srcNode, m_insertedNode, m_srcPort, wfm);
+            var incomingPortMapping = MatchingPortsUtil.getMatchingPorts(m_srcNode, m_insertedNode, m_srcPort, wfm);
             incomingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
                 addConnection(m_srcNode, entrySrcPort, m_insertedNode, entryDestPort, wfm);
             });
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             LOGGER.warn("Could not find a suitable destination port for incomming connection.");
         }
 
         try {
-            var outgoingPortMapping = getMatchingPorts(m_insertedNode, m_destNode, null, wfm);
+            var outgoingPortMapping = MatchingPortsUtil.getMatchingPorts(m_insertedNode, m_destNode, null, wfm);
             outgoingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
                 addConnection(m_insertedNode, entrySrcPort, m_destNode, m_destPort, wfm);
             });
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             LOGGER.warn("Could not find a suitable destination port for outgoing connection.");
         }
 

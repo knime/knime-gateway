@@ -49,7 +49,6 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getMatchingPorts;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -78,6 +77,7 @@ import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
+import org.knime.gateway.impl.webui.service.commands.util.MatchingPortsUtil;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -140,7 +140,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             if (m_commandEnt.getSourceNodeId() != null) {
                 var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm.getProjectWFM().getID());
                 var destNodeId = m_addedNode;
-                var matchingPorts = getMatchingPorts(sourceNodeId, destNodeId, m_commandEnt.getSourcePortIdx(), wfm);
+                var matchingPorts =
+                    MatchingPortsUtil.getMatchingPorts(sourceNodeId, destNodeId, m_commandEnt.getSourcePortIdx(), wfm);
                 for (var entry : matchingPorts.entrySet()) {
                     Integer sourcePortIdx = entry.getKey();
                     Integer destPortIdx = entry.getValue();
