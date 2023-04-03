@@ -176,18 +176,21 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         final PatchEntCreator patchEntCreator, final WorkflowChangesTracker tracker) {
         return wfm -> {
             preEventCreation();
-            WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey, patchEntCreator,
-                patchEntCreator.getLastSnapshotId(), true, tracker);
-            var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setProjectIdToIsDirty(m_workflowProjectManager.getProjectIdsToDirtyMap()).build();
-
-
+            WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey,
+                patchEntCreator, patchEntCreator.getLastSnapshotId(), true, tracker);
             if (workflowChangedEvent != null) {
-                var composedEvent = EntityBuilderManager.builder(ComposedEventEntBuilder.class)
-                    .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build();
+                var composedEvent = createComposedEvent(wfKey, wfm, workflowChangedEvent);
                 sendEvent(composedEvent);
             }
         };
+    }
+
+    private static ComposedEventEnt createComposedEvent(final WorkflowKey wfKey, final WorkflowManager wfm,
+        final WorkflowChangedEventEnt workflowChangedEvent) {
+        var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
+            .setProjectIdToIsDirty(Map.of(wfKey.getProjectId(), wfm.isDirty())).build();
+        return EntityBuilderManager.builder(ComposedEventEntBuilder.class)
+            .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build();
     }
 
     /**
