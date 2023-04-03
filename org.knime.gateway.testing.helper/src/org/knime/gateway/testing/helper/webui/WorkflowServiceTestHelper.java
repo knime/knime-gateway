@@ -2316,7 +2316,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private static InsertNodeCommandEnt buildInsertNodeCommand(final ConnectionIDEnt connection, final XYEnt position,
         final NodeFactoryKeyEnt nodeFactory, final NodeIDEnt nodeId) {
         return builder(InsertNodeCommandEntBuilder.class)//
-            .setKind(KindEnum.REPLACE_NODE)//
+            .setKind(KindEnum.INSERT_NODE)//
             .setConnectionId(connection).setPosition(position).setNodeId(nodeId).setNodeFactory(nodeFactory)
             .setNodeId(nodeId).build();
     }
