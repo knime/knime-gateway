@@ -48,13 +48,12 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import static org.knime.gateway.impl.webui.service.commands.TransformWorkflowAnnotation.getWorkflowAnnotationOrThrowException;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -70,12 +69,19 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
+class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
 
     private final ReorderWorkflowAnnotationsCommandEnt m_commandEnt;
 
+    /**
+     * To enable undo, we need to keep track of the z-positions of all the annotations involved.
+     */
     private Map<WorkflowAnnotationID, Integer> m_annotationIdToPreviousIndex;
 
+    /**
+     * Shifting a list of annotations to the left requires a different iteration order than shifting it to the right. To
+     * enable undo, we need to keep the order of iteration for execution, so we can reverse it when undoing it.
+     */
     private Comparator<WorkflowAnnotation> m_comparator;
 
     ReorderWorkflowAnnotations(final ReorderWorkflowAnnotationsCommandEnt commandEnt) {
@@ -92,10 +98,11 @@ public class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         final var annotationIds = m_commandEnt.getAnnotationIds().stream()//
             .map(id -> DefaultServiceUtil.entityToAnnotationID(projectId, id))//
             .collect(Collectors.toList());
-        final var annotations = getAnnotions(wfm, annotationIds);
+        final var annotations = getAnnotions(projectId, annotationIds);
         final var action = m_commandEnt.getAction();
+
         m_annotationIdToPreviousIndex = getAnnotationIdToPreviousIndexMap(wfm, annotations);
-        m_comparator = getComparator(m_commandEnt.getAction(), m_annotationIdToPreviousIndex);
+        m_comparator = computeIterationOrder(action, m_annotationIdToPreviousIndex);
 
         // Define the function applied to every annotation
         final Function<WorkflowAnnotation, Boolean> function = annotation -> switch (action) {
@@ -114,8 +121,9 @@ public class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
+        final var projectId = getWorkflowKey().getProjectId();
         final var annotationIds = m_annotationIdToPreviousIndex.keySet().stream().toList();
-        final var annotations = getAnnotions(wfm, annotationIds);
+        final var annotations = getAnnotions(projectId, annotationIds);
 
         // Define the function applied to every annotation
         final Function<WorkflowAnnotation, Boolean> function = annotation -> {
@@ -129,36 +137,33 @@ public class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         m_comparator = null;
     }
 
-    private static List<WorkflowAnnotation> getAnnotions(final WorkflowManager wfm,
+    private static List<WorkflowAnnotation> getAnnotions(final String projectId,
         final List<WorkflowAnnotationID> annotationIds) throws OperationNotAllowedException {
         final List<WorkflowAnnotation> annotations = new ArrayList<>();
         for (final var annotationId : annotationIds) {
-            final var annotation = getWorkflowAnnotationOrThrowException(wfm, annotationId);
+            final var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, annotationId);
             annotations.add(annotation);
         }
         return annotations;
     }
 
-    /**
-     * To enable undo, we need to keep track of the z-positions of all the annotations involved.
-     */
     private static Map<WorkflowAnnotationID, Integer> getAnnotationIdToPreviousIndexMap(final WorkflowManager wfm,
         final List<WorkflowAnnotation> annotations) {
         return annotations.stream().collect(Collectors.toMap(WorkflowAnnotation::getID, wfm::getZOrderForAnnotation));
     }
 
-    /**
-     * Defines the iteration order for the workflow annotations, depends on the action to perform.
-     */
-    private static Comparator<WorkflowAnnotation> getComparator(final ActionEnum action,
+    private static Comparator<WorkflowAnnotation> computeIterationOrder(final ActionEnum action,
         final Map<WorkflowAnnotationID, Integer> annotationIdToPreviousIndex) {
+        // Calculate the operator once
+        final IntBinaryOperator operator = (left, right) -> switch (action) {
+            case BRING_FORWARD, BRING_TO_FRONT -> right - left; // Iterate left to right
+            case SEND_BACKWARD, SEND_TO_BACK -> left - right; // Iterate from right to left
+        };
+        // Apply the calculated operator in the comparator returned
         return (left, right) -> {
             final var leftIndex = annotationIdToPreviousIndex.get(left.getID());
             final var rightIndex = annotationIdToPreviousIndex.get(right.getID());
-            return switch (action) {
-                case BRING_FORWARD, BRING_TO_FRONT -> rightIndex - leftIndex; // Iterate left to right
-                case SEND_BACKWARD, SEND_TO_BACK -> leftIndex - rightIndex; // Iterate from right to left
-            };
+            return operator.applyAsInt(leftIndex, rightIndex);
         };
     }
 

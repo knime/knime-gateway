@@ -48,10 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -78,9 +75,9 @@ class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
      */
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        m_annotationId =
-            DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_commandEnt.getAnnotationId());
-        var annotation = getWorkflowAnnotationOrThrowException(getWorkflowManager(), m_annotationId);
+        var projectId = getWorkflowKey().getProjectId();
+        m_annotationId = DefaultServiceUtil.entityToAnnotationID(projectId, m_commandEnt.getAnnotationId());
+        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, m_annotationId);
         m_previousBounds =
             new int[]{annotation.getX(), annotation.getY(), annotation.getWidth(), annotation.getHeight()};
         var bounds = m_commandEnt.getBounds();
@@ -93,27 +90,10 @@ class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
      */
     @Override
     public void undo() throws OperationNotAllowedException {
-        var annotation = getWorkflowAnnotationOrThrowException(getWorkflowManager(), m_annotationId);
+        var projectId = getWorkflowKey().getProjectId();
+        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, m_annotationId);
         annotation.setDimension(m_previousBounds[0], m_previousBounds[1], m_previousBounds[2], m_previousBounds[3]);
         m_previousBounds = null;
         m_annotationId = null;
-    }
-
-    /**
-     * Gets the workflow annotation or throws an exception.
-     *
-     * @param wfm The workflow manager
-     * @param annotationId the workflow annotation ID to get a workflow annotation for
-     * @return The {@link WorkflowAnnation} requested
-     * @throws OperationNotAllowedException If no such workflow annotation was found
-     */
-    static WorkflowAnnotation getWorkflowAnnotationOrThrowException(final WorkflowManager wfm,
-        final WorkflowAnnotationID annotationId) throws OperationNotAllowedException {
-        var workflowAnnotation = wfm.getWorkflowAnnotations(annotationId)[0];
-        if (workflowAnnotation == null) {
-            throw new OperationNotAllowedException(
-                "No workflow annotation found for id " + (new AnnotationIDEnt(annotationId)));
-        }
-        return workflowAnnotation;
     }
 }

@@ -140,6 +140,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
+import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -2423,11 +2424,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link ReorderWorkflowAnnotationCommandEnt} with a single annotation selected.
+     * Tests {@link ReorderWorkflowAnnotationsCommandEnt} with a single annotation selected.
      *
      * @throws Exception
      */
-    public void testReorderWorkflowAnnotationCommandWithSingleAnnotation() throws Exception {
+    public void testReorderWorkflowAnnotationsCommandWithSingleAnnotation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var annotationEnts = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
         var annotationCount = annotationEnts.size();
@@ -2436,14 +2437,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
 
         // Bring bottom annotation forward
-        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
         // Bring bottom annotation to front
-        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.BRING_TO_FRONT, 0, annotationCount - 1);
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_TO_FRONT, 0, annotationCount - 1);
         // Send top annotation backward
-        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
             annotationCount - 2);
         // Send top annotation to back
-        assertReorderWorkflowAnnotationCommand(projectId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
 
         // Invalid annotation ID
         var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//
@@ -2455,7 +2456,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> ws().executeWorkflowCommand(projectId, getRootID(), command));
     }
 
-    private void assertReorderWorkflowAnnotationCommand(final String projectId, final ActionEnum action,
+    private void assertReorderWorkflowAnnotationsCommand(final String projectId, final ActionEnum action,
         final int initialIndex, final int finalIndex) throws Exception {
         var annotationEnt =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(initialIndex);
@@ -2481,11 +2482,57 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws Exception
      */
-    public void testReorderWorkflowAnnotationCommandWithMultipleAnnotations() throws Exception {
-        // TODO: Similar to the other ones, but with multiple annotations
+    public void testReorderWorkflowAnnotationsCommandWithMultipleAnnotations() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var annotationEnts = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
+        var annotationCount = annotationEnts.size();
+        if (annotationCount < 5) {
+            throw new Exception("Could not perform test since there are less than 5 workflow annotations present");
+        }
 
-        // TODO: Also consider the case where you first execute multiple commands and then undo them step by step
+        // Bring two bottom annotations forward twice
+        assertReorderWorkflowAnnotationsCommandSequence(projectId, ActionEnum.BRING_FORWARD, Pair.create(0, 2),
+            Pair.create(2, 4));
+        // Send two top annotations backward twice
+        assertReorderWorkflowAnnotationsCommandSequence(projectId, ActionEnum.SEND_BACKWARD,
+            Pair.create(annotationCount - 1, annotationCount - 3),
+            Pair.create(annotationCount - 3, annotationCount - 5));
+        // Bring two bottom annotations to front twice
+        assertReorderWorkflowAnnotationsCommandSequence(projectId, ActionEnum.BRING_TO_FRONT, Pair.create(0, 2),
+            Pair.create(annotationCount - 2, annotationCount - 1));
+        // Send two top annotations to back twice
+        assertReorderWorkflowAnnotationsCommandSequence(projectId, ActionEnum.SEND_TO_BACK,
+            Pair.create(annotationCount - 1, annotationCount - 3), Pair.create(1, 0));
+    }
 
-        // TODO: Also consider a case where executing a command doesn't change anything, hence so undo is possible
+    private void assertReorderWorkflowAnnotationsCommandSequence(final String projectId, final ActionEnum action,
+        final Pair<Integer, Integer> initialIndices, final Pair<Integer, Integer> finalIndices) throws Exception {
+        var annotationEnt1 = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations()
+            .get(initialIndices.getFirst());
+        var annotationEnt2 = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations()
+            .get(initialIndices.getSecond());
+        var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//
+            .setKind(KindEnum.REORDER_WORKFLOW_ANNOTATIONS)//
+            .setAnnotationIds(List.of(annotationEnt1.getId(), annotationEnt2.getId()))//
+            .setAction(action)//
+            .build();
+
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var annotationEnt1AfterCommandExecution = ws().getWorkflow(projectId, getRootID(), false).getWorkflow()
+            .getWorkflowAnnotations().get(finalIndices.getFirst());
+        var annotationEnt2AfterCommandExecution = ws().getWorkflow(projectId, getRootID(), false).getWorkflow()
+            .getWorkflowAnnotations().get(finalIndices.getSecond());
+        assertThat(annotationEnt1, is(annotationEnt1AfterCommandExecution));
+        assertThat(annotationEnt2, is(annotationEnt2AfterCommandExecution));
+
+        ws().undoWorkflowCommand(projectId, getRootID());
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var annotationEnt1AfterUndoCommand = ws().getWorkflow(projectId, getRootID(), false).getWorkflow()
+            .getWorkflowAnnotations().get(initialIndices.getFirst());
+        var annotationEnt2AfterUndoCommand = ws().getWorkflow(projectId, getRootID(), false).getWorkflow()
+            .getWorkflowAnnotations().get(initialIndices.getSecond());
+        assertThat(annotationEnt1, is(annotationEnt1AfterUndoCommand));
+        assertThat(annotationEnt2, is(annotationEnt2AfterUndoCommand));
     }
 }
