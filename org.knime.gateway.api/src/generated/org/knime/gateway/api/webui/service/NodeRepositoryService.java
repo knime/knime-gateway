@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 public interface NodeRepositoryService extends GatewayService {
 
     /**
-     * Given a node in a workflow, it recommends a certain number of likely successor nodes the user might want to add next to its workflow.
+     * Given a node and a port, it recommends a certain number of compatible successor nodes the user might want to add next to its workflow. If queried with no node and no port, it recommends the  most relevant source nodes, that naturally have no predecessor.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
@@ -84,7 +84,7 @@ public interface NodeRepositoryService extends GatewayService {
     java.util.Map<String, NodeTemplateEnt> getNodeTemplates(java.util.List<String> nodeTemplateIds) ;
         
     /**
-     * Returns a pre-defined set of groups (defined by tags) and nodes per group (the most frequently used ones in that group).
+     * Returns a pre-defined set of groups (defined by tags) and nodes per group (the most frequently used  ones in that group).
      *
      * @param numNodesPerTag The number of nodes per tag/group to be returned.
      * @param tagsOffset The number of tags to be skipped (for pagination).
