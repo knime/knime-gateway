@@ -75,7 +75,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
+class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
 
     private final CopyCommandEnt m_commandEnt;
 

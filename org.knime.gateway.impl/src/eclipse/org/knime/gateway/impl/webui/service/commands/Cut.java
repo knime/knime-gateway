@@ -68,7 +68,7 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class Cut extends CommandSequence {
+class Cut extends CommandSequence {
 
     Cut(final CutCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
         super(getCommands(commandEnt, workflowMiddleware));

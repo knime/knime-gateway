@@ -65,7 +65,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResult {
+class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResult {
 
     private int m_newPortIdx;
 

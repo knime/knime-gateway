@@ -81,7 +81,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class Paste extends AbstractWorkflowCommand implements WithResult {
+class Paste extends AbstractWorkflowCommand implements WithResult {
 
     private static final int OFFSET = 120;
 

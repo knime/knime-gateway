@@ -58,7 +58,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  * @author Kai Franze, KNIME GmbH
  * @param <T> The port command entity the command implementation is expecting
  */
-public abstract class AbstractPortCommand<T extends PortCommandEnt> extends AbstractWorkflowCommand {
+abstract class AbstractPortCommand<T extends PortCommandEnt> extends AbstractWorkflowCommand {
 
     private final T m_portCommandEnt;
 

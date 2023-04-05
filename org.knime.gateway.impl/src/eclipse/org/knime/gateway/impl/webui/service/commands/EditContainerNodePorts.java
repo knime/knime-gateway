@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
-public final class EditContainerNodePorts implements EditPorts {
+final class EditContainerNodePorts implements EditPorts {
 
     private final WorkflowManager m_wfm;
 

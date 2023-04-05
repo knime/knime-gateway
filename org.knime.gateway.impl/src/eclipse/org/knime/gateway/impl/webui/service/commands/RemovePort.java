@@ -56,7 +56,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class RemovePort extends AbstractPortCommand<RemovePortCommandEnt> {
+class RemovePort extends AbstractPortCommand<RemovePortCommandEnt> {
 
     RemovePort(final RemovePortCommandEnt removePortCommandEnt) {
         super(removePortCommandEnt);

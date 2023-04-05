@@ -60,7 +60,7 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class UpdateNodeLabel extends AbstractWorkflowCommand {
+class UpdateNodeLabel extends AbstractWorkflowCommand {
 
     /* The default background color for node annotations, equal to #FFFFFF */
     private static final int DEFAULT_BG_COLOR = 16777215;
