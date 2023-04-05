@@ -60,11 +60,11 @@ import org.junit.Test;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -86,13 +86,12 @@ public class FlowVariablePortViewFactoryTest {
      */
     @Test
     public void testFlowVariablePortViewPage() {
-        var snc = mockSingleNodeContainer();
         PortView portView;
-        NodeContext.pushContext(snc);
+        PortContext.pushContext(mockNodeOutPort());
         try {
             portView = new FlowVariablePortViewFactory().createPortView(FlowVariablePortObject.INSTANCE);
         } finally {
-            NodeContext.removeLastContext();
+            PortContext.removeLastContext();
         }
         var page = portView.getPage();
         assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
@@ -108,14 +107,12 @@ public class FlowVariablePortViewFactoryTest {
      */
     @Test
     public void testFlowVariablePortViewInitialData() throws JsonMappingException, JsonProcessingException {
-        var snc = mockSingleNodeContainer();
-
         PortView portView;
-        NodeContext.pushContext(snc);
+        PortContext.pushContext(mockNodeOutPort());
         try {
             portView = new FlowVariablePortViewFactory().createPortView(FlowVariablePortObject.INSTANCE);
         } finally {
-            NodeContext.removeLastContext();
+            PortContext.removeLastContext();
         }
 
         var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
@@ -131,13 +128,13 @@ public class FlowVariablePortViewFactoryTest {
         assertThat(res.get(1).get("value").textValue(), is("NaN"));
     }
 
-    private static SingleNodeContainer mockSingleNodeContainer() {
+    private static NodeOutPort mockNodeOutPort() {
         NodeOutPort port = mock(NodeOutPort.class);
         SingleNodeContainer snc = mock(SingleNodeContainer.class);
         when(snc.getOutPort(0)).thenReturn(port);
         when(port.getFlowObjectStack()).thenReturn(createTestFlowObjectStack());
         when(port.getConnectedNodeContainer()).thenReturn(snc);
-        return snc;
+        return port;
     }
 
     private static FlowObjectStack createTestFlowObjectStack() {

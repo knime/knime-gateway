@@ -51,9 +51,10 @@ package org.knime.gateway.impl.node.port;
 import java.util.Optional;
 
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.view.table.TableViewUtil;
@@ -69,9 +70,9 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
     @Override
     public PortView createPortView(final BufferedDataTable table) {
-        var tableId = TableViewUtil.toTableId(NodeContext.getContext().getNodeContainer().getID()) + "_"
-            + table.getBufferedTableId();
-        TableViewUtil.registerRendererRegistryCleanup(tableId);
+        var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
+        var tableId = TableViewUtil.toTableId(nc.getID()) + "_" + table.getBufferedTableId();
+        TableViewUtil.registerRendererRegistryCleanup(tableId, nc);
 
         return new PortView() { // NOSONAR
 

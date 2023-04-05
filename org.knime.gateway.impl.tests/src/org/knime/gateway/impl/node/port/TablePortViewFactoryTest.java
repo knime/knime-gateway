@@ -52,6 +52,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -78,13 +80,14 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
+import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -104,8 +107,8 @@ public class TablePortViewFactoryTest {
     @Test
     public void testTablePortViewPage() throws IOException {
         var bdt = createTable(2);
-        var nc = createNodeWithPortView(bdt);
-        NodeContext.pushContext(nc);
+        var port = createNodeOutPort(bdt);
+        PortContext.pushContext(port.get());
         try {
             var portView = new TablePortViewFactory().createPortView(bdt);
             var page = portView.getPage();
@@ -113,8 +116,8 @@ public class TablePortViewFactoryTest {
             var pageId = page.getPageIdForReusablePage().orElse(null);
             assertThat(pageId, is("tableview"));
         } finally {
-            NodeContext.removeLastContext();
-            WorkflowManagerUtil.disposeWorkflow(nc.getParent());
+            PortContext.removeLastContext();
+            port.dispose();
         }
     }
 
@@ -126,8 +129,8 @@ public class TablePortViewFactoryTest {
     @Test
     public void testTablePortViewInitialData() throws IOException {
         var bdt = createTable(2);
-        var nc = createNodeWithPortView(bdt);
-        NodeContext.pushContext(nc);
+        var port = createNodeOutPort(bdt);
+        PortContext.pushContext(port.get());
         try {
             var initialData =
                 new TablePortViewFactory().createPortView(bdt).createInitialDataService().get().getInitialData();
@@ -150,8 +153,8 @@ public class TablePortViewFactoryTest {
             assertThat(settings.get("enableRendererSelection").asBoolean(), is(true));
             assertThat(settings.get("skipRemainingColumns").asBoolean(), is(true));
         } finally {
-            NodeContext.removeLastContext();
-            WorkflowManagerUtil.disposeWorkflow(nc.getParent());
+            PortContext.removeLastContext();
+            port.dispose();
         }
     }
 
@@ -163,28 +166,47 @@ public class TablePortViewFactoryTest {
     @Test
     public void testTablePortViewData() throws IOException {
         var bdt = createTable(10);
-        var nc = createNodeWithPortView(bdt);
-        NodeContext.pushContext(nc);
+        var port = createNodeOutPort(bdt);
+        PortContext.pushContext(port.get());
         try {
             var jsonRpcResponse = new TablePortViewFactory().createPortView(bdt).createRpcDataService().get()
                 .handleRpcRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false"));
             assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
         } finally {
-            NodeContext.removeLastContext();
-            WorkflowManagerUtil.disposeWorkflow(nc.getParent());
+            PortContext.removeLastContext();
+            port.dispose();
         }
+    }
+
+    private static Disposable<NodeOutPort> createNodeOutPort(final BufferedDataTable bdt) throws IOException {
+        var nc = createNodeWithPortView(bdt);
+        var port = mock(NodeOutPort.class);
+        when(port.getPortObject()).thenReturn(bdt);
+        when(port.getConnectedNodeContainer()).thenReturn(nc);
+        return new Disposable<NodeOutPort>() {
+            @Override
+            public NodeOutPort get() {
+                return port;
+            }
+
+            @Override
+            public void dispose() {
+                WorkflowManagerUtil.disposeWorkflow(nc.getParent());
+            }
+        };
     }
 
     /*
      * returns the node with the port view
      */
-    private static NodeContainer createNodeWithPortView(final BufferedDataTable table) throws IOException {
+    private static NativeNodeContainer createNodeWithPortView(final BufferedDataTable table) throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         return WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory());
     }
 
-    @FunctionalInterface
-    private static interface Dispose {
+    private static interface Disposable<T> {
+        T get();
+
         void dispose();
     }
 

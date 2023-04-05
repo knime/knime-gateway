@@ -54,9 +54,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.page.Page;
@@ -73,8 +74,8 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
      */
     @Override
     public PortView createPortView(final FlowVariablePortObject portObject) {
-        var nc = NodeContext.getContext().getNodeContainer();
-        var fos = nc.getOutPort(0).getFlowObjectStack();
+        var port = (NodeOutPort)PortContext.getContext().getNodePort();
+        var fos = port.getFlowObjectStack();
         List<FlowVariable> variables;
         if (fos != null) {
             variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
