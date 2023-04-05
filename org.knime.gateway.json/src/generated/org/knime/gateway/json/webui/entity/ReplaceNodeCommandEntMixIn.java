@@ -76,12 +76,16 @@ public interface ReplaceNodeCommandEntMixIn extends ReplaceNodeCommandEnt {
     public KindEnum getKind();
     
     @Override
+    @JsonProperty("targetNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getTargetNodeId();
+    
+    @Override
     @JsonProperty("nodeFactory")
     public NodeFactoryKeyEnt getNodeFactory();
     
     @Override
-    @JsonProperty("nodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
+    @JsonProperty("replacementNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getReplacementNodeId();
     
 
     /**
@@ -101,12 +105,16 @@ public interface ReplaceNodeCommandEntMixIn extends ReplaceNodeCommandEnt {
         public ReplaceNodeCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
+        @JsonProperty("targetNodeId")
+        public ReplaceNodeCommandEntMixInBuilder setTargetNodeId(final org.knime.gateway.api.entity.NodeIDEnt targetNodeId);
+        
+        @Override
         @JsonProperty("nodeFactory")
         public ReplaceNodeCommandEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
         
         @Override
-        @JsonProperty("nodeId")
-        public ReplaceNodeCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        @JsonProperty("replacementNodeId")
+        public ReplaceNodeCommandEntMixInBuilder setReplacementNodeId(final org.knime.gateway.api.entity.NodeIDEnt replacementNodeId);
         
     }
 
