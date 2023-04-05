@@ -52,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
@@ -102,29 +103,13 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // get flow variable port view 0
         var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0);
-        var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
-        assertThat(portViewJsonNode.get("projectId").textValue(), containsString("general_web_ui"));
-        assertThat(portViewJsonNode.get("workflowId").textValue(), is("root"));
-        assertThat(portViewJsonNode.get("nodeId").textValue(), is("root:1"));
-        assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
-        assertThat(portViewJsonNode.get("initialData").textValue(), notNullValue());
-        var resourceInfo = portViewJsonNode.get("resourceInfo");
-        assertThat(resourceInfo.get("id").textValue(), is("FlowVariablePortView"));
-        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_REFERENCE"));
+        assertPortView(portView, "root:1", "FlowVariablePortView", "VUE_COMPONENT_REFERENCE");
 
         executeWorkflow(wfId);
 
         // get table port view 1
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1);
-        portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
-        assertThat(portViewJsonNode.get("projectId").textValue(), containsString("general_web_ui"));
-        assertThat(portViewJsonNode.get("workflowId").textValue(), is("root"));
-        assertThat(portViewJsonNode.get("nodeId").textValue(), is("root:1"));
-        assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
-        assertThat(portViewJsonNode.get("initialData"), notNullValue());
-        resourceInfo = portViewJsonNode.get("resourceInfo");
-        assertThat(resourceInfo.get("id").textValue(), is("tableview"));
-        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
+        assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
 
         // get data for an inactive port
         message =
@@ -134,7 +119,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // get data for a metanode port
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0);
-        portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
+        var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
         assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("tableview"));
 
         // get data for a metanode port that is not executed
@@ -142,6 +127,37 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
             assertThrows(InvalidRequestException.class, () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 2))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
+    }
+
+    /**
+     * Tests {@link PortService#getPortView(String, NodeIDEnt, NodeIDEnt, Integer)} for component- and metanode-ports.
+     *
+     * @throws Exception
+     */
+    public void testGetPortViewForComponentAndMetanode() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        executeWorkflow(wfId);
+
+        // get port view for a component
+        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(23), 1);
+        assertPortView(portView, "root:23", "tableview", "VUE_COMPONENT_LIB");
+
+        // get port view for a metanode
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0);
+        assertPortView(portView, "root:6", "tableview", "VUE_COMPONENT_LIB");
+    }
+
+    private static void assertPortView(final Object portView, final String nodeId, final String expectedResourceId,
+        final String expectedResourceType) {
+        var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
+        assertThat(portViewJsonNode.get("projectId").textValue(), containsString("general_web_ui"));
+        assertThat(portViewJsonNode.get("workflowId").textValue(), is("root"));
+        assertThat(portViewJsonNode.get("nodeId").textValue(), is(nodeId));
+        assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
+        assertThat(portViewJsonNode.get("initialData").textValue(), startsWith("{\"result\":"));
+        var resourceInfo = portViewJsonNode.get("resourceInfo");
+        assertThat(resourceInfo.get("id").textValue(), is(expectedResourceId));
+        assertThat(resourceInfo.get("type").textValue(), is(expectedResourceType));
     }
 
     /**
