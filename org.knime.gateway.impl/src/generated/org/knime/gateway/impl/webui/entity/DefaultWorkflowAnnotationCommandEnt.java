@@ -51,7 +51,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 
 /**
- * A command that does something to a specific workflow annotation.
+ * Abstract schema for commands manipulating individual workflow annotations
  *
  * @param kind
  * @param annotationId

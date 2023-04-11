@@ -45,7 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -62,14 +62,8 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
+public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowAnnotationCommandEnt {
 
-
-  /**
-   * the id of the annotation to transform
-   * @return annotationId , never <code>null</code>
-   **/
-  public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
 
   /**
    * Get bounds
@@ -101,7 +95,7 @@ public interface TransformWorkflowAnnotationCommandEnt extends GatewayEntity, Wo
         TransformWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
         
         /**
-         * the id of the annotation to transform
+         * The ID of the annotation to manipulate
          * 
          * @param annotationId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

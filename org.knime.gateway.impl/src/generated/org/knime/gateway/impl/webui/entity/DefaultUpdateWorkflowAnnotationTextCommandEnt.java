@@ -46,44 +46,43 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 
-import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
 
 /**
- * Changes the size (width and height) and position (x, y) of a workflow annotation.
+ * Updates the text of a workflow annotation
  *
  * @param kind
  * @param annotationId
- * @param bounds
+ * @param formattedText
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultTransformWorkflowAnnotationCommandEnt(
+public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
     KindEnum kind,
     org.knime.gateway.api.entity.AnnotationIDEnt annotationId,
-    BoundsEnt bounds) implements TransformWorkflowAnnotationCommandEnt {
+    String formattedText) implements UpdateWorkflowAnnotationTextCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultTransformWorkflowAnnotationCommandEnt {
+    public DefaultUpdateWorkflowAnnotationTextCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
         if(annotationId == null) {
             throw new IllegalArgumentException("<annotationId> must not be null.");
         }
-        if(bounds == null) {
-            throw new IllegalArgumentException("<bounds> must not be null.");
+        if(formattedText == null) {
+            throw new IllegalArgumentException("<formattedText> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "TransformWorkflowAnnotationCommand";
+        return "UpdateWorkflowAnnotationTextCommand";
     }
   
     @Override
@@ -97,23 +96,23 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
     }
     
     @Override
-    public BoundsEnt getBounds() {
-        return bounds;
+    public String getFormattedText() {
+        return formattedText;
     }
     
     /**
-     * A builder for {@link DefaultTransformWorkflowAnnotationCommandEnt}.
+     * A builder for {@link DefaultUpdateWorkflowAnnotationTextCommandEnt}.
      */
-    public static class DefaultTransformWorkflowAnnotationCommandEntBuilder implements TransformWorkflowAnnotationCommandEntBuilder {
+    public static class DefaultUpdateWorkflowAnnotationTextCommandEntBuilder implements UpdateWorkflowAnnotationTextCommandEntBuilder {
 
         private KindEnum m_kind;
 
         private org.knime.gateway.api.entity.AnnotationIDEnt m_annotationId;
 
-        private BoundsEnt m_bounds;
+        private String m_formattedText;
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
@@ -122,7 +121,7 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
+        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
              if(annotationId == null) {
                  throw new IllegalArgumentException("<annotationId> must not be null.");
              }
@@ -131,20 +130,20 @@ public record DefaultTransformWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds) {
-             if(bounds == null) {
-                 throw new IllegalArgumentException("<bounds> must not be null.");
+        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setFormattedText(String formattedText) {
+             if(formattedText == null) {
+                 throw new IllegalArgumentException("<formattedText> must not be null.");
              }
-             m_bounds = bounds;
+             m_formattedText = formattedText;
              return this;
         }
 
         @Override
-        public DefaultTransformWorkflowAnnotationCommandEnt build() {
-            return new DefaultTransformWorkflowAnnotationCommandEnt(
+        public DefaultUpdateWorkflowAnnotationTextCommandEnt build() {
+            return new DefaultUpdateWorkflowAnnotationTextCommandEnt(
                 immutable(m_kind),
                 immutable(m_annotationId),
-                immutable(m_bounds));
+                immutable(m_formattedText));
         }
     
     }

@@ -90,6 +90,12 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
    **/
   public String getBorderColor();
 
+  /**
+   * The formatted text, only present if the annotation was updated with the Modern UI.
+   * @return formattedText 
+   **/
+  public String getFormattedText();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -104,6 +110,7 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("borderWidth", Pair.create(getBorderWidth(), e.getBorderWidth()));
       valueConsumer.accept("borderColor", Pair.create(getBorderColor(), e.getBorderColor()));
+      valueConsumer.accept("formattedText", Pair.create(getFormattedText(), e.getFormattedText()));
   }
 
     /**
@@ -182,6 +189,14 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setBorderColor(String borderColor);
+        
+        /**
+         * The formatted text, only present if the annotation was updated with the Modern UI.
+         * 
+         * @param formattedText the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationEntBuilder setFormattedText(String formattedText);
         
         
         /**

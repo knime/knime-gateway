@@ -75,6 +75,7 @@ import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -206,6 +207,8 @@ public final class WorkflowCommands {
             command = new Paste(ce);
         } else if (commandEnt instanceof TransformWorkflowAnnotationCommandEnt ce) {
             command = new TransformWorkflowAnnotation(ce);
+        } else if (commandEnt instanceof UpdateWorkflowAnnotationTextCommandEnt ce) {
+            command = new UpdateWorkflowAnnotationText(ce);
         } else if (commandEnt instanceof ReorderWorkflowAnnotationsCommandEnt ce) {
             command = new ReorderWorkflowAnnotations(ce);
         } else {

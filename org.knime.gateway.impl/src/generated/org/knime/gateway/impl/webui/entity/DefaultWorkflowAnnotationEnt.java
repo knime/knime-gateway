@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
  * @param id
  * @param borderWidth
  * @param borderColor
+ * @param formattedText
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -77,7 +78,8 @@ public record DefaultWorkflowAnnotationEnt(
     BoundsEnt bounds,
     org.knime.gateway.api.entity.AnnotationIDEnt id,
     Integer borderWidth,
-    String borderColor) implements WorkflowAnnotationEnt {
+    String borderColor,
+    String formattedText) implements WorkflowAnnotationEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -156,6 +158,11 @@ public record DefaultWorkflowAnnotationEnt(
         return borderColor;
     }
     
+    @Override
+    public String getFormattedText() {
+        return formattedText;
+    }
+    
     /**
      * A builder for {@link DefaultWorkflowAnnotationEnt}.
      */
@@ -178,6 +185,8 @@ public record DefaultWorkflowAnnotationEnt(
         private Integer m_borderWidth;
 
         private String m_borderColor;
+
+        private String m_formattedText;
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setText(String text) {
@@ -255,6 +264,12 @@ public record DefaultWorkflowAnnotationEnt(
         }
 
         @Override
+        public DefaultWorkflowAnnotationEntBuilder setFormattedText(String formattedText) {
+             m_formattedText = formattedText;
+             return this;
+        }
+
+        @Override
         public DefaultWorkflowAnnotationEnt build() {
             return new DefaultWorkflowAnnotationEnt(
                 immutable(m_text),
@@ -265,7 +280,8 @@ public record DefaultWorkflowAnnotationEnt(
                 immutable(m_bounds),
                 immutable(m_id),
                 immutable(m_borderWidth),
-                immutable(m_borderColor));
+                immutable(m_borderColor),
+                immutable(m_formattedText));
         }
     
     }

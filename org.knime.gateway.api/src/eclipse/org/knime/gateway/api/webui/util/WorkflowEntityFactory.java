@@ -1098,20 +1098,11 @@ public final class WorkflowEntityFactory {
                 .setWidth(wa.getWidth())//
                 .setHeight(wa.getHeight())//
                 .build();
-        TextAlignEnum textAlign;
-        switch (wa.getAlignment()) {
-            case LEFT:
-                textAlign = TextAlignEnum.LEFT;
-                break;
-            case CENTER:
-                textAlign = TextAlignEnum.CENTER;
-                break;
-            case RIGHT:
-            default:
-                textAlign = TextAlignEnum.RIGHT;
-                break;
-        }
-
+        var textAlign = switch (wa.getAlignment()) {
+            case LEFT -> TextAlignEnum.LEFT;
+            case CENTER -> TextAlignEnum.CENTER;
+            case RIGHT -> TextAlignEnum.RIGHT;
+        };
         List<StyleRangeEnt> styleRanges =
             Arrays.stream(wa.getStyleRanges()).map(this::buildStyleRangeEnt).collect(Collectors.toList());
         return builder(WorkflowAnnotationEntBuilder.class)
@@ -1124,6 +1115,7 @@ public final class WorkflowEntityFactory {
                 .setText(wa.getText())//
                 .setStyleRanges(styleRanges)//
                 .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? wa.getDefaultFontSize() : null)//
+                .setFormattedText(wa.getContent())//
                 .build();
     }
 

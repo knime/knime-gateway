@@ -73,9 +73,11 @@ import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationTextCommandEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -122,6 +124,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultPasteCommandEnt.class, name = "paste")
 ,
   @Type(value = DefaultTransformWorkflowAnnotationCommandEnt.class, name = "transform_workflow_annotation")
+,
+  @Type(value = DefaultUpdateWorkflowAnnotationTextCommandEnt.class, name = "update_workflow_annotation_text")
 ,
   @Type(value = DefaultReorderWorkflowAnnotationsCommandEnt.class, name = "reorder_workflow_annotations")
 })
@@ -184,6 +188,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultPasteCommandEnt.class, name = "paste")
 ,
   @Type(value = DefaultTransformWorkflowAnnotationCommandEnt.class, name = "transform_workflow_annotation")
+,
+  @Type(value = DefaultUpdateWorkflowAnnotationTextCommandEnt.class, name = "update_workflow_annotation_text")
 ,
   @Type(value = DefaultReorderWorkflowAnnotationsCommandEnt.class, name = "reorder_workflow_annotations")
 })

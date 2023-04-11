@@ -45,7 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

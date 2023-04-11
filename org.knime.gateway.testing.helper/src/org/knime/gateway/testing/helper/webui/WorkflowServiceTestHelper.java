@@ -53,6 +53,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -153,6 +154,8 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEn
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt.UpdateWorkflowAnnotationTextCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -2534,5 +2537,61 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .getWorkflowAnnotations().get(initialIndices.getSecond());
         assertThat(annotationEnt1, is(annotationEnt1AfterUndoCommand));
         assertThat(annotationEnt2, is(annotationEnt2AfterUndoCommand));
+    }
+
+    /**
+     * Tests {@link UpdateWorkflowAnnotationTextCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testUpdateWorkflowAnnotationText() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var annotationIdx = 4; // Using that specific annotation for the test
+        var annotationEnt =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
+        var previousText = annotationEnt.getText();
+        var previousStyleRanges = annotationEnt.getStyleRanges();
+        var formattedText =
+            """
+            <p>this is a text with <strong>bold</strong>,<em>italic</em> <strong><em>bolditalic</em></strong>, <u>underline</u></p>
+            <ul>
+                <li><p><u>list item</u></p></li>
+                <li><p><u>list item</u></p></li>
+            </ul>
+            <p></p>
+            <p style="text-align: right">and right aligned text</p><p style="text-align: right"></p>
+            """;
+
+        // Formatted text field not present before command execution
+        assertThat(annotationEnt.getFormattedText(), nullValue());
+
+        var command = builder(UpdateWorkflowAnnotationTextCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION_TEXT)//
+            .setAnnotationId(annotationEnt.getId())//
+            .setFormattedText(formattedText)//
+            .build();
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var annotationEntAfterExecution =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
+
+        // Formatted text field was updated
+        assertThat(annotationEntAfterExecution.getFormattedText(), is(formattedText));
+        // Regular text field was updated as well
+        assertThat(annotationEntAfterExecution.getText(), containsString("this is a text with bold"));
+        assertThat(annotationEntAfterExecution.getText(), containsString("and right aligned text"));
+        // Style ranges are gone
+        assertThat(annotationEntAfterExecution.getStyleRanges(), empty());
+
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var annotationEntAfterUndo =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
+
+        // Formatted text field is gone
+        assertThat(annotationEntAfterUndo.getFormattedText(), nullValue());
+        // Regular text field was reset
+        assertThat(annotationEntAfterUndo.getText(), is(previousText));
+        // Style ranges are back
+        assertThat(annotationEntAfterUndo.getStyleRanges().size(), is(18));
+        assertThat(annotationEntAfterUndo.getStyleRanges(), is(previousStyleRanges));
     }
 }

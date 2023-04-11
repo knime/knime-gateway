@@ -108,6 +108,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     @JsonProperty("borderColor")
     public String getBorderColor();
     
+    @Override
+    @JsonProperty("formattedText")
+    public String getFormattedText();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -156,6 +160,10 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
         @Override
         @JsonProperty("borderColor")
         public WorkflowAnnotationEntMixInBuilder setBorderColor(final String borderColor);
+        
+        @Override
+        @JsonProperty("formattedText")
+        public WorkflowAnnotationEntMixInBuilder setFormattedText(final String formattedText);
         
     }
 

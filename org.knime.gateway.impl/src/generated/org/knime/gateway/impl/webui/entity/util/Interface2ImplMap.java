@@ -218,6 +218,10 @@ import org.knime.gateway.api.webui.entity.UpdateInfoEnt.UpdateInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateInfoEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt.UpdateWorkflowAnnotationTextCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationTextCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
@@ -520,6 +524,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == UpdateNodeLabelCommandEntBuilder.class) {
             return (B)new DefaultUpdateNodeLabelCommandEnt.DefaultUpdateNodeLabelCommandEntBuilder();
+        }        
+        if(clazz == UpdateWorkflowAnnotationTextCommandEntBuilder.class) {
+            return (B)new DefaultUpdateWorkflowAnnotationTextCommandEnt.DefaultUpdateWorkflowAnnotationTextCommandEntBuilder();
+        }        
+        if(clazz == WorkflowAnnotationCommandEntBuilder.class) {
+            return (B)new DefaultWorkflowAnnotationCommandEnt.DefaultWorkflowAnnotationCommandEntBuilder();
         }        
         if(clazz == WorkflowAnnotationEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationEnt.DefaultWorkflowAnnotationEntBuilder();

@@ -42,74 +42,73 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationTextCommandEnt.DefaultUpdateWorkflowAnnotationTextCommandEntBuilder;
 
 /**
- * Abstract schema for commands manipulating individual workflow annotations
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
+@JsonDeserialize(builder=DefaultUpdateWorkflowAnnotationTextCommandEntBuilder.class)
+@JsonSerialize(as=UpdateWorkflowAnnotationTextCommandEnt.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface UpdateWorkflowAnnotationTextCommandEntMixIn extends UpdateWorkflowAnnotationTextCommandEnt {
 
-  /**
-   * The ID of the annotation to manipulate
-   * @return annotationId , never <code>null</code>
-   **/
-  public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (WorkflowAnnotationCommandEnt)other;
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("annotationId", Pair.create(getAnnotationId(), e.getAnnotationId()));
-  }
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("annotationId")
+    public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
+    
+    @Override
+    @JsonProperty("formattedText")
+    public String getFormattedText();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface WorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<WorkflowAnnotationCommandEnt> {
 
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-         * The ID of the annotation to manipulate
-         * 
-         * @param annotationId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowAnnotationCommandEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface UpdateWorkflowAnnotationTextCommandEntMixInBuilder extends UpdateWorkflowAnnotationTextCommandEntBuilder {
     
+        @Override
+        public UpdateWorkflowAnnotationTextCommandEntMixIn build();
+    
+        @Override
+        @JsonProperty("kind")
+        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("annotationId")
+        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
+        
+        @Override
+        @JsonProperty("formattedText")
+        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setFormattedText(final String formattedText);
+        
     }
 
+
 }
+
