@@ -179,7 +179,7 @@ public class TablePortViewFactoryTest {
     }
 
     private static Disposable<NodeOutPort> createNodeOutPort(final BufferedDataTable bdt) throws IOException {
-        var nc = createNodeWithPortView(bdt);
+        var nc = createNodeWithPortView();
         var port = mock(NodeOutPort.class);
         when(port.getPortObject()).thenReturn(bdt);
         when(port.getConnectedNodeContainer()).thenReturn(nc);
@@ -199,7 +199,7 @@ public class TablePortViewFactoryTest {
     /*
      * returns the node with the port view
      */
-    private static NativeNodeContainer createNodeWithPortView(final BufferedDataTable table) throws IOException {
+    private static NativeNodeContainer createNodeWithPortView() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         return WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory());
     }
