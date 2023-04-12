@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
  *
  * @param text
  * @param backgroundColor
+ * @param contentType
  * @param textAlign
  * @param defaultFontSize
  * @param styleRanges
@@ -65,6 +66,7 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
 public record DefaultAnnotationEnt(
     String text,
     String backgroundColor,
+    ContentTypeEnum contentType,
     TextAlignEnum textAlign,
     Integer defaultFontSize,
     java.util.List<StyleRangeEnt> styleRanges) implements AnnotationEnt {
@@ -76,11 +78,8 @@ public record DefaultAnnotationEnt(
         if(text == null) {
             throw new IllegalArgumentException("<text> must not be null.");
         }
-        if(textAlign == null) {
-            throw new IllegalArgumentException("<textAlign> must not be null.");
-        }
-        if(styleRanges == null) {
-            throw new IllegalArgumentException("<styleRanges> must not be null.");
+        if(contentType == null) {
+            throw new IllegalArgumentException("<contentType> must not be null.");
         }
     }
 
@@ -97,6 +96,11 @@ public record DefaultAnnotationEnt(
     @Override
     public String getBackgroundColor() {
         return backgroundColor;
+    }
+    
+    @Override
+    public ContentTypeEnum getContentType() {
+        return contentType;
     }
     
     @Override
@@ -123,11 +127,13 @@ public record DefaultAnnotationEnt(
 
         private String m_backgroundColor;
 
+        private ContentTypeEnum m_contentType;
+
         private TextAlignEnum m_textAlign;
 
         private Integer m_defaultFontSize;
 
-        private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
+        private java.util.List<StyleRangeEnt> m_styleRanges;
 
         @Override
         public DefaultAnnotationEntBuilder setText(String text) {
@@ -145,10 +151,16 @@ public record DefaultAnnotationEnt(
         }
 
         @Override
-        public DefaultAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
-             if(textAlign == null) {
-                 throw new IllegalArgumentException("<textAlign> must not be null.");
+        public DefaultAnnotationEntBuilder setContentType(ContentTypeEnum contentType) {
+             if(contentType == null) {
+                 throw new IllegalArgumentException("<contentType> must not be null.");
              }
+             m_contentType = contentType;
+             return this;
+        }
+
+        @Override
+        public DefaultAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
              m_textAlign = textAlign;
              return this;
         }
@@ -161,9 +173,6 @@ public record DefaultAnnotationEnt(
 
         @Override
         public DefaultAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
-             if(styleRanges == null) {
-                 throw new IllegalArgumentException("<styleRanges> must not be null.");
-             }
              m_styleRanges = styleRanges;
              return this;
         }
@@ -173,6 +182,7 @@ public record DefaultAnnotationEnt(
             return new DefaultAnnotationEnt(
                 immutable(m_text),
                 immutable(m_backgroundColor),
+                immutable(m_contentType),
                 immutable(m_textAlign),
                 immutable(m_defaultFontSize),
                 immutable(m_styleRanges));

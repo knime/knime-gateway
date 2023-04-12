@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.xml.xpath.XPathExpressionException;
@@ -71,7 +72,9 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
 import org.knime.core.node.wizard.page.WizardPageUtil;
 import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
+import org.knime.core.node.workflow.AnnotationData.ContentType;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
+import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
@@ -120,6 +123,7 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder;
+import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
@@ -758,30 +762,39 @@ public final class WorkflowEntityFactory {
         if (na.getData().isDefault()) {
             return null;
         }
-        TextAlignEnum textAlign;
-        switch (na.getAlignment()) {
-            case LEFT:
-                textAlign = TextAlignEnum.LEFT;
-                break;
-            case CENTER:
-                textAlign = TextAlignEnum.CENTER;
-                break;
-            case RIGHT:
-            default:
-                textAlign = TextAlignEnum.RIGHT;
-                break;
-        }
+        var contentType = getContentType(na.getContentType());
+        var textAlignSupplier = getTextAlignSupplier(na.getAlignment());
+        var styleRangesSupplier = getStyleRangesSupplier(na.getStyleRanges());
+        var bgColor = na.getBgColor();
+        return builder(NodeAnnotationEntBuilder.class)//
+            .setText(na.getText())//
+            .setContentType(contentType)//
+            .setTextAlign(contentType == ContentTypeEnum.TEXTPLAIN ? textAlignSupplier.get() : null)//
+            .setStyleRanges(contentType == ContentTypeEnum.TEXTPLAIN ? styleRangesSupplier.get() : null)//
+            .setBackgroundColor(bgColor == DEFAULT_NODE_ANNOTATION_BG_COLOR ? null : hexStringColor(bgColor))//
+            .setDefaultFontSize(na.getDefaultFontSize() > 0 ? na.getDefaultFontSize() : null)//
+            .build();
+    }
 
-        List<StyleRangeEnt> styleRanges =
-            Arrays.stream(na.getStyleRanges()).map(this::buildStyleRangeEnt).collect(Collectors.toList());
-        return builder(NodeAnnotationEntBuilder.class)
-                .setTextAlign(textAlign)//
-                .setBackgroundColor(na.getBgColor() == DEFAULT_NODE_ANNOTATION_BG_COLOR ? null : hexStringColor(na
-                    .getBgColor()))//
-                .setText(na.getText())//
-                .setStyleRanges(styleRanges)//
-                .setDefaultFontSize(na.getDefaultFontSize() > 0 ? na.getDefaultFontSize() : null)//
-                .build();
+    private ContentTypeEnum getContentType(final ContentType contentType) {
+        return switch (contentType) {
+            case TEXT_PLAIN -> ContentTypeEnum.TEXTPLAIN;
+            case TEXT_HTML -> ContentTypeEnum.TEXTHTML;
+        };
+    }
+
+    private Supplier<TextAlignEnum> getTextAlignSupplier(final TextAlignment alignment) {
+        return () -> switch (alignment) {
+            case LEFT -> TextAlignEnum.LEFT;
+            case CENTER -> TextAlignEnum.CENTER;
+            case RIGHT -> TextAlignEnum.RIGHT;
+        };
+    }
+
+    private Supplier<List<StyleRangeEnt>> getStyleRangesSupplier(final StyleRange[] styleRanges) {
+        return () -> Arrays.stream(styleRanges)//
+            .map(this::buildStyleRangeEnt)//
+            .collect(Collectors.toList());
     }
 
     private NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
@@ -1050,25 +1063,22 @@ public final class WorkflowEntityFactory {
                 NodeLogger.getLogger(WorkflowEntityFactory.class).error("Workflow metadata could not be read", ex);
                 return null;
             }
-            return builder(ProjectMetadataEntBuilder.class)
-                    .setDescription(metadata.getDescription().orElse(null))
-                    .setLastEdit(wfm.getAuthorInformation().getLastEditDate()
-                        // the Date class doesn't support time zones. We just assume UTC here to create an OffsetDateTime
-                        .map(date -> date.toInstant().atOffset(ZoneOffset.UTC)).orElse(null))
-                    .setLinks(metadata.getLinks().map(this::buildLinkEnts).orElse(null))
-                    .setTags(metadata.getTags().orElse(null))
-                    .setTitle(metadata.getTitle().orElse(null)).build();
+            return builder(ProjectMetadataEntBuilder.class).setDescription(metadata.getDescription().orElse(null))
+                .setLastEdit(wfm.getAuthorInformation().getLastEditDate()
+                    // the Date class doesn't support time zones. We just assume UTC here to create an OffsetDateTime
+                    .map(date -> date.toInstant().atOffset(ZoneOffset.UTC)).orElse(null))
+                .setLinks(metadata.getLinks().map(this::buildLinkEnts).orElse(null))
+                .setTags(metadata.getTags().orElse(null)).setTitle(metadata.getTitle().orElse(null)).build();
         } else {
             return null;
         }
     }
 
     private StyleRangeEnt buildStyleRangeEnt(final StyleRange sr) {
-        StyleRangeEntBuilder builder = builder(StyleRangeEntBuilder.class)
-                .setFontSize(sr.getFontSize())//
-                .setColor(hexStringColor(sr.getFgColor()))//
-                .setLength(sr.getLength())//
-                .setStart(sr.getStart());
+        StyleRangeEntBuilder builder = builder(StyleRangeEntBuilder.class).setFontSize(sr.getFontSize())//
+            .setColor(hexStringColor(sr.getFgColor()))//
+            .setLength(sr.getLength())//
+            .setStart(sr.getStart());
         if ((sr.getFontStyle() & StyleRange.BOLD) != 0) {
             builder.setBold(Boolean.TRUE);
         }
@@ -1078,45 +1088,38 @@ public final class WorkflowEntityFactory {
         return builder.build();
     }
 
-    private List<NodeDialogOptionGroupEnt> buildUngroupedDialogOptionGroupEnt(final List<NodeDialogOptionDescriptionEnt> ungroupedOptionEnts) {
+    private List<NodeDialogOptionGroupEnt>
+        buildUngroupedDialogOptionGroupEnt(final List<NodeDialogOptionDescriptionEnt> ungroupedOptionEnts) {
         if (Objects.isNull(ungroupedOptionEnts) || ungroupedOptionEnts.isEmpty()) {
-            return null;  // NOSONAR: returning null is useful here
+            return null; // NOSONAR: returning null is useful here
         }
-        return Collections.singletonList(
-                builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
-                        .setSectionName(null) //
-                        .setSectionDescription(null) //
-                        .setFields(ungroupedOptionEnts) //
-                        .build()
-        );
+        return Collections.singletonList(builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
+            .setSectionName(null) //
+            .setSectionDescription(null) //
+            .setFields(ungroupedOptionEnts) //
+            .build());
     }
 
     private WorkflowAnnotationEnt buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
-        BoundsEnt bounds = builder(BoundsEntBuilder.class)
-                .setX(wa.getX())//
-                .setY(wa.getY())//
-                .setWidth(wa.getWidth())//
-                .setHeight(wa.getHeight())//
-                .build();
-        var textAlign = switch (wa.getAlignment()) {
-            case LEFT -> TextAlignEnum.LEFT;
-            case CENTER -> TextAlignEnum.CENTER;
-            case RIGHT -> TextAlignEnum.RIGHT;
-        };
-        List<StyleRangeEnt> styleRanges =
-            Arrays.stream(wa.getStyleRanges()).map(this::buildStyleRangeEnt).collect(Collectors.toList());
-        return builder(WorkflowAnnotationEntBuilder.class)
-                .setId(new AnnotationIDEnt(wa.getID()))//
-                .setTextAlign(textAlign)//
-                .setBackgroundColor(hexStringColor(wa.getBgColor()))//
-                .setBorderColor(hexStringColor(wa.getBorderColor()))//
-                .setBorderWidth(wa.getBorderSize())//
-                .setBounds(bounds)//
-                .setText(wa.getText())//
-                .setStyleRanges(styleRanges)//
-                .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? wa.getDefaultFontSize() : null)//
-                .setFormattedText(wa.getContent())//
-                .build();
+        BoundsEnt bounds = builder(BoundsEntBuilder.class).setX(wa.getX())//
+            .setY(wa.getY())//
+            .setWidth(wa.getWidth())//
+            .setHeight(wa.getHeight())//
+            .build();
+        var contentType = getContentType(wa.getContentType());
+        var textAlignSupplier = getTextAlignSupplier(wa.getAlignment());
+        var styleRangesSupplier = getStyleRangesSupplier(wa.getStyleRanges());
+        return builder(WorkflowAnnotationEntBuilder.class).setId(new AnnotationIDEnt(wa.getID()))//
+            .setText(wa.getText())//
+            .setContentType(contentType)//
+            .setTextAlign(contentType == ContentTypeEnum.TEXTPLAIN ? textAlignSupplier.get() : null)//
+            .setStyleRanges(contentType == ContentTypeEnum.TEXTPLAIN ? styleRangesSupplier.get() : null)//
+            .setBackgroundColor(hexStringColor(wa.getBgColor()))//
+            .setBorderColor(hexStringColor(wa.getBorderColor()))//
+            .setBorderWidth(wa.getBorderSize())//
+            .setBounds(bounds)//
+            .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? wa.getDefaultFontSize() : null)//
+            .build();
     }
 
     private WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm, final WorkflowBuildContext buildContext) {

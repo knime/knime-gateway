@@ -61,6 +61,7 @@ import org.junit.Test;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.GatewayEntity;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
@@ -138,13 +139,16 @@ public class PatchChangeProcessorTest {
                 .build())//
             .setDirty(false);
 
-        var workflowAnnoBuilder = builder(WorkflowAnnotationEntBuilder.class).setTextAlign(TextAlignEnum.CENTER)
-            .setBounds(builder(BoundsEntBuilder.class).setX(0).setY(0).setWidth(0).setHeight(0).build())
-            .setId(new AnnotationIDEnt("root:1_1"))
-            .setBorderColor("test").setStyleRanges(Collections.emptyList()).setBorderWidth(0);
-        var anno1 = workflowAnnoBuilder.setText("anno1").build();
-        var anno2 = workflowAnnoBuilder.setText("anno2").build();
-        var anno3 = workflowAnnoBuilder.setText("anno3").build();
+        var workflowAnnoBuilder = builder(WorkflowAnnotationEntBuilder.class)//
+            .setTextAlign(TextAlignEnum.CENTER)//
+            .setBounds(builder(BoundsEntBuilder.class).setX(0).setY(0).setWidth(0).setHeight(0).build())//
+            .setId(new AnnotationIDEnt("root:1_1"))//
+            .setBorderColor("test")//
+            .setStyleRanges(Collections.emptyList())//
+            .setBorderWidth(0);
+        var anno1 = workflowAnnoBuilder.setText("anno1").setContentType(ContentTypeEnum.TEXTPLAIN).build();
+        var anno2 = workflowAnnoBuilder.setText("anno2").setContentType(ContentTypeEnum.TEXTPLAIN).build();
+        var anno3 = workflowAnnoBuilder.setText("anno3").setContentType(ContentTypeEnum.TEXTPLAIN).build();
 
         WorkflowEnt workflow1 = workflowBuilder.setWorkflowAnnotations(List.of(anno1, anno2, anno3)).build();
         // remove all wf annotations

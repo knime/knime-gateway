@@ -121,6 +121,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "styleRanges" : [ ],
         "text" : "",
         "textAlign" : "center"

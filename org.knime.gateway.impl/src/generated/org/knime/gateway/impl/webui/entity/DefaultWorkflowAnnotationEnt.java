@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
  *
  * @param text
  * @param backgroundColor
+ * @param contentType
  * @param textAlign
  * @param defaultFontSize
  * @param styleRanges
@@ -64,7 +65,6 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
  * @param id
  * @param borderWidth
  * @param borderColor
- * @param formattedText
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -72,14 +72,14 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 public record DefaultWorkflowAnnotationEnt(
     String text,
     String backgroundColor,
+    ContentTypeEnum contentType,
     TextAlignEnum textAlign,
     Integer defaultFontSize,
     java.util.List<StyleRangeEnt> styleRanges,
     BoundsEnt bounds,
     org.knime.gateway.api.entity.AnnotationIDEnt id,
     Integer borderWidth,
-    String borderColor,
-    String formattedText) implements WorkflowAnnotationEnt {
+    String borderColor) implements WorkflowAnnotationEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -88,11 +88,8 @@ public record DefaultWorkflowAnnotationEnt(
         if(text == null) {
             throw new IllegalArgumentException("<text> must not be null.");
         }
-        if(textAlign == null) {
-            throw new IllegalArgumentException("<textAlign> must not be null.");
-        }
-        if(styleRanges == null) {
-            throw new IllegalArgumentException("<styleRanges> must not be null.");
+        if(contentType == null) {
+            throw new IllegalArgumentException("<contentType> must not be null.");
         }
         if(bounds == null) {
             throw new IllegalArgumentException("<bounds> must not be null.");
@@ -121,6 +118,11 @@ public record DefaultWorkflowAnnotationEnt(
     @Override
     public String getBackgroundColor() {
         return backgroundColor;
+    }
+    
+    @Override
+    public ContentTypeEnum getContentType() {
+        return contentType;
     }
     
     @Override
@@ -158,11 +160,6 @@ public record DefaultWorkflowAnnotationEnt(
         return borderColor;
     }
     
-    @Override
-    public String getFormattedText() {
-        return formattedText;
-    }
-    
     /**
      * A builder for {@link DefaultWorkflowAnnotationEnt}.
      */
@@ -172,11 +169,13 @@ public record DefaultWorkflowAnnotationEnt(
 
         private String m_backgroundColor;
 
+        private ContentTypeEnum m_contentType;
+
         private TextAlignEnum m_textAlign;
 
         private Integer m_defaultFontSize;
 
-        private java.util.List<StyleRangeEnt> m_styleRanges = new java.util.ArrayList<>();
+        private java.util.List<StyleRangeEnt> m_styleRanges;
 
         private BoundsEnt m_bounds;
 
@@ -185,8 +184,6 @@ public record DefaultWorkflowAnnotationEnt(
         private Integer m_borderWidth;
 
         private String m_borderColor;
-
-        private String m_formattedText;
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setText(String text) {
@@ -204,10 +201,16 @@ public record DefaultWorkflowAnnotationEnt(
         }
 
         @Override
-        public DefaultWorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
-             if(textAlign == null) {
-                 throw new IllegalArgumentException("<textAlign> must not be null.");
+        public DefaultWorkflowAnnotationEntBuilder setContentType(ContentTypeEnum contentType) {
+             if(contentType == null) {
+                 throw new IllegalArgumentException("<contentType> must not be null.");
              }
+             m_contentType = contentType;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
              m_textAlign = textAlign;
              return this;
         }
@@ -220,9 +223,6 @@ public record DefaultWorkflowAnnotationEnt(
 
         @Override
         public DefaultWorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
-             if(styleRanges == null) {
-                 throw new IllegalArgumentException("<styleRanges> must not be null.");
-             }
              m_styleRanges = styleRanges;
              return this;
         }
@@ -264,24 +264,18 @@ public record DefaultWorkflowAnnotationEnt(
         }
 
         @Override
-        public DefaultWorkflowAnnotationEntBuilder setFormattedText(String formattedText) {
-             m_formattedText = formattedText;
-             return this;
-        }
-
-        @Override
         public DefaultWorkflowAnnotationEnt build() {
             return new DefaultWorkflowAnnotationEnt(
                 immutable(m_text),
                 immutable(m_backgroundColor),
+                immutable(m_contentType),
                 immutable(m_textAlign),
                 immutable(m_defaultFontSize),
                 immutable(m_styleRanges),
                 immutable(m_bounds),
                 immutable(m_id),
                 immutable(m_borderWidth),
-                immutable(m_borderColor),
-                immutable(m_formattedText));
+                immutable(m_borderColor));
         }
     
     }

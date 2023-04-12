@@ -64,6 +64,27 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface AnnotationEnt extends GatewayEntity {
 
   /**
+   * The content type of the annotation.
+   */
+  public enum ContentTypeEnum {
+    TEXTPLAIN("textplain"),
+    
+    TEXTHTML("texthtml");
+
+    private String value;
+
+    ContentTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+  /**
    * Gets or Sets textAlign
    */
   public enum TextAlignEnum {
@@ -100,8 +121,14 @@ public interface AnnotationEnt extends GatewayEntity {
   public String getBackgroundColor();
 
   /**
+   * The content type of the annotation.
+   * @return contentType , never <code>null</code>
+   **/
+  public ContentTypeEnum getContentType();
+
+  /**
    * Get textAlign
-   * @return textAlign , never <code>null</code>
+   * @return textAlign 
    **/
   public TextAlignEnum getTextAlign();
 
@@ -113,7 +140,7 @@ public interface AnnotationEnt extends GatewayEntity {
 
   /**
    * Defines ranges of different styles within the annotation.
-   * @return styleRanges , never <code>null</code>
+   * @return styleRanges 
    **/
   public java.util.List<StyleRangeEnt> getStyleRanges();
 
@@ -124,6 +151,7 @@ public interface AnnotationEnt extends GatewayEntity {
       var e = (AnnotationEnt)other;
       valueConsumer.accept("text", Pair.create(getText(), e.getText()));
       valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
+      valueConsumer.accept("contentType", Pair.create(getContentType(), e.getContentType()));
       valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
       valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
       valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
@@ -151,9 +179,17 @@ public interface AnnotationEnt extends GatewayEntity {
         AnnotationEntBuilder setBackgroundColor(String backgroundColor);
         
         /**
+         * The content type of the annotation.
+         * 
+         * @param contentType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AnnotationEntBuilder setContentType(ContentTypeEnum contentType);
+        
+        /**
    		 * Set textAlign
          * 
-         * @param textAlign the property value, NOT <code>null</code>! 
+         * @param textAlign the property value,  
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
@@ -169,7 +205,7 @@ public interface AnnotationEnt extends GatewayEntity {
         /**
          * Defines ranges of different styles within the annotation.
          * 
-         * @param styleRanges the property value, NOT <code>null</code>! 
+         * @param styleRanges the property value,  
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);

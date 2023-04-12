@@ -72,6 +72,7 @@ public interface NodeAnnotationEnt extends GatewayEntity, AnnotationEnt {
       var e = (NodeAnnotationEnt)other;
       valueConsumer.accept("text", Pair.create(getText(), e.getText()));
       valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
+      valueConsumer.accept("contentType", Pair.create(getContentType(), e.getContentType()));
       valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
       valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
       valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
@@ -99,9 +100,17 @@ public interface NodeAnnotationEnt extends GatewayEntity, AnnotationEnt {
         NodeAnnotationEntBuilder setBackgroundColor(String backgroundColor);
         
         /**
+         * The content type of the annotation.
+         * 
+         * @param contentType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeAnnotationEntBuilder setContentType(ContentTypeEnum contentType);
+        
+        /**
    		 * Set textAlign
          * 
-         * @param textAlign the property value, NOT <code>null</code>! 
+         * @param textAlign the property value,  
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
@@ -117,7 +126,7 @@ public interface NodeAnnotationEnt extends GatewayEntity, AnnotationEnt {
         /**
          * Defines ranges of different styles within the annotation.
          * 
-         * @param styleRanges the property value, NOT <code>null</code>! 
+         * @param styleRanges the property value,  
          * @return this entity builder for chaining
          */
         NodeAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);

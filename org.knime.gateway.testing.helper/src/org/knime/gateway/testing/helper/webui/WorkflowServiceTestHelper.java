@@ -53,7 +53,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -106,6 +105,7 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
@@ -2551,6 +2551,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
         var previousText = annotationEnt.getText();
         var previousStyleRanges = annotationEnt.getStyleRanges();
+        var previousTextAlignment = annotationEnt.getTextAlign();
         var formattedText =
             """
             <p>this is a text with <strong>bold</strong>,<em>italic</em> <strong><em>bolditalic</em></strong>, <u>underline</u></p>
@@ -2562,36 +2563,39 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             <p style="text-align: right">and right aligned text</p><p style="text-align: right"></p>
             """;
 
-        // Formatted text field not present before command execution
-        assertThat(annotationEnt.getFormattedText(), nullValue());
+        // Content type is plain text prior to execution
+        assertThat(annotationEnt.getContentType(), is(ContentTypeEnum.TEXTPLAIN));
 
         var command = builder(UpdateWorkflowAnnotationTextCommandEntBuilder.class)//
             .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION_TEXT)//
             .setAnnotationId(annotationEnt.getId())//
-            .setFormattedText(formattedText)//
+            .setText(formattedText)//
             .build();
         ws().executeWorkflowCommand(projectId, getRootID(), command);
         var annotationEntAfterExecution =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
 
-        // Formatted text field was updated
-        assertThat(annotationEntAfterExecution.getFormattedText(), is(formattedText));
-        // Regular text field was updated as well
-        assertThat(annotationEntAfterExecution.getText(), containsString("this is a text with bold"));
-        assertThat(annotationEntAfterExecution.getText(), containsString("and right aligned text"));
+        // Text field was updated
+        assertThat(annotationEntAfterExecution.getText(), is(formattedText));
+        // Content type is HTML text
+        assertThat(annotationEntAfterExecution.getContentType(), is(ContentTypeEnum.TEXTHTML));
         // Style ranges are gone
-        assertThat(annotationEntAfterExecution.getStyleRanges(), empty());
+        assertThat(annotationEntAfterExecution.getStyleRanges(), nullValue());
+        // Text alignment is gone
+        assertThat(annotationEntAfterExecution.getTextAlign(), nullValue());
 
         ws().undoWorkflowCommand(projectId, getRootID());
         var annotationEntAfterUndo =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
 
-        // Formatted text field is gone
-        assertThat(annotationEntAfterUndo.getFormattedText(), nullValue());
         // Regular text field was reset
         assertThat(annotationEntAfterUndo.getText(), is(previousText));
+        // Content type is plain text again
+        assertThat(annotationEnt.getContentType(), is(ContentTypeEnum.TEXTPLAIN));
         // Style ranges are back
         assertThat(annotationEntAfterUndo.getStyleRanges().size(), is(18));
         assertThat(annotationEntAfterUndo.getStyleRanges(), is(previousStyleRanges));
+        // Text alignment is back
+        assertThat(annotationEntAfterUndo.getTextAlign(), is(previousTextAlignment));
     }
 }

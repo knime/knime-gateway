@@ -90,12 +90,6 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
    **/
   public String getBorderColor();
 
-  /**
-   * The formatted text, only present if the annotation was updated with the Modern UI.
-   * @return formattedText 
-   **/
-  public String getFormattedText();
-
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -103,6 +97,7 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
       var e = (WorkflowAnnotationEnt)other;
       valueConsumer.accept("text", Pair.create(getText(), e.getText()));
       valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
+      valueConsumer.accept("contentType", Pair.create(getContentType(), e.getContentType()));
       valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
       valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
       valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
@@ -110,7 +105,6 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("borderWidth", Pair.create(getBorderWidth(), e.getBorderWidth()));
       valueConsumer.accept("borderColor", Pair.create(getBorderColor(), e.getBorderColor()));
-      valueConsumer.accept("formattedText", Pair.create(getFormattedText(), e.getFormattedText()));
   }
 
     /**
@@ -135,9 +129,17 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
         WorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor);
         
         /**
+         * The content type of the annotation.
+         * 
+         * @param contentType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationEntBuilder setContentType(ContentTypeEnum contentType);
+        
+        /**
    		 * Set textAlign
          * 
-         * @param textAlign the property value, NOT <code>null</code>! 
+         * @param textAlign the property value,  
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
@@ -153,7 +155,7 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
         /**
          * Defines ranges of different styles within the annotation.
          * 
-         * @param styleRanges the property value, NOT <code>null</code>! 
+         * @param styleRanges the property value,  
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);
@@ -189,14 +191,6 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setBorderColor(String borderColor);
-        
-        /**
-         * The formatted text, only present if the annotation was updated with the Modern UI.
-         * 
-         * @param formattedText the property value,  
-         * @return this entity builder for chaining
-         */
-        WorkflowAnnotationEntBuilder setFormattedText(String formattedText);
         
         
         /**

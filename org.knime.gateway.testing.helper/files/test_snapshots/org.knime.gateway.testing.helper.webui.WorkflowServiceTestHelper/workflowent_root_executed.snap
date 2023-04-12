@@ -537,6 +537,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "a node created\nvia a node set factory",
@@ -647,6 +648,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "styleRanges" : [ ],
         "text" : "",
         "textAlign" : "center"
@@ -703,6 +705,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "Node 13",
@@ -762,6 +765,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "inactive branch",
@@ -916,6 +920,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 13,
         "styleRanges" : [ ],
         "text" : "Missing",
@@ -960,6 +965,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "checking flow\nvariables (string)",
@@ -1018,6 +1024,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 13,
         "styleRanges" : [ ],
         "text" : "🤷🏻‍♂️ 🤨",
@@ -1063,6 +1070,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 13,
         "styleRanges" : [ ],
         "text" : "Component",
@@ -1140,6 +1148,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "styleRanges" : [ ],
         "text" : "",
         "textAlign" : "center"
@@ -1188,6 +1197,7 @@
       },
       "annotation" : {
         "backgroundColor" : "#F57900",
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "Node annotation with\nbackground color",
@@ -1247,6 +1257,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "node annotation",
@@ -1306,6 +1317,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "check for simple port spec\n(distance measure)",
@@ -1378,6 +1390,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "optional\nin-ports",
@@ -1458,6 +1471,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "Check a \n'generic'\nport type spec",
@@ -1525,6 +1539,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "with JS view inside\n(i.e. with composite view)",
@@ -1651,6 +1666,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "test of another\nport object spec",
@@ -1717,6 +1733,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "dynamic\nports",
@@ -1847,6 +1864,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "a non-executing node",
@@ -2020,6 +2038,7 @@
         "canReset" : true
       },
       "annotation" : {
+        "contentType" : "textplain",
         "styleRanges" : [ ],
         "text" : "",
         "textAlign" : "center"
@@ -2080,6 +2099,7 @@
       "x" : 20,
       "y" : 20
     },
+    "contentType" : "textplain",
     "defaultFontSize" : 11,
     "id" : "root_0",
     "styleRanges" : [ ],
@@ -2095,6 +2115,7 @@
       "x" : 880,
       "y" : 20
     },
+    "contentType" : "textplain",
     "defaultFontSize" : 11,
     "id" : "root_1",
     "styleRanges" : [ ],
@@ -2110,6 +2131,7 @@
       "x" : 80,
       "y" : 880
     },
+    "contentType" : "textplain",
     "id" : "root_2",
     "styleRanges" : [ ],
     "text" : "",
@@ -2124,6 +2146,7 @@
       "x" : 340,
       "y" : 880
     },
+    "contentType" : "textplain",
     "defaultFontSize" : 11,
     "id" : "root_3",
     "styleRanges" : [ {
@@ -2144,6 +2167,7 @@
       "x" : 1120,
       "y" : 700
     },
+    "contentType" : "textplain",
     "defaultFontSize" : 11,
     "id" : "root_4",
     "styleRanges" : [ {
@@ -2261,6 +2285,7 @@
       "x" : 1220,
       "y" : 380
     },
+    "contentType" : "textplain",
     "defaultFontSize" : 13,
     "id" : "root_5",
     "styleRanges" : [ {
@@ -2281,6 +2306,7 @@
       "x" : 1360,
       "y" : 400
     },
+    "contentType" : "textplain",
     "defaultFontSize" : 13,
     "id" : "root_6",
     "styleRanges" : [ {

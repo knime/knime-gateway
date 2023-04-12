@@ -55,7 +55,7 @@ import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt
  *
  * @param kind
  * @param annotationId
- * @param formattedText
+ * @param text
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,7 +63,7 @@ import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt
 public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
     KindEnum kind,
     org.knime.gateway.api.entity.AnnotationIDEnt annotationId,
-    String formattedText) implements UpdateWorkflowAnnotationTextCommandEnt {
+    String text) implements UpdateWorkflowAnnotationTextCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -75,8 +75,8 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
         if(annotationId == null) {
             throw new IllegalArgumentException("<annotationId> must not be null.");
         }
-        if(formattedText == null) {
-            throw new IllegalArgumentException("<formattedText> must not be null.");
+        if(text == null) {
+            throw new IllegalArgumentException("<text> must not be null.");
         }
     }
 
@@ -96,8 +96,8 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
     }
     
     @Override
-    public String getFormattedText() {
-        return formattedText;
+    public String getText() {
+        return text;
     }
     
     /**
@@ -109,7 +109,7 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
 
         private org.knime.gateway.api.entity.AnnotationIDEnt m_annotationId;
 
-        private String m_formattedText;
+        private String m_text;
 
         @Override
         public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setKind(KindEnum kind) {
@@ -130,11 +130,11 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
         }
 
         @Override
-        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setFormattedText(String formattedText) {
-             if(formattedText == null) {
-                 throw new IllegalArgumentException("<formattedText> must not be null.");
+        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setText(String text) {
+             if(text == null) {
+                 throw new IllegalArgumentException("<text> must not be null.");
              }
-             m_formattedText = formattedText;
+             m_text = text;
              return this;
         }
 
@@ -143,7 +143,7 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
             return new DefaultUpdateWorkflowAnnotationTextCommandEnt(
                 immutable(m_kind),
                 immutable(m_annotationId),
-                immutable(m_formattedText));
+                immutable(m_text));
         }
     
     }

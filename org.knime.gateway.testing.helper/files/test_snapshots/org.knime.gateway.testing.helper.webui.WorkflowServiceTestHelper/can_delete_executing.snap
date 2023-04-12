@@ -84,6 +84,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "idle",
@@ -139,6 +140,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "configured/executing",
@@ -196,6 +198,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "queued",
@@ -252,6 +255,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "configured/executed",
@@ -312,6 +316,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ {
           "color" : "#000000",
@@ -365,6 +370,7 @@
         "canReset" : false
       },
       "annotation" : {
+        "contentType" : "textplain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
         "text" : "queued",

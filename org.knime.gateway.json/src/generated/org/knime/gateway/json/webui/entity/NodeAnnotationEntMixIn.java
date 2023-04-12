@@ -80,6 +80,10 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
     public String getBackgroundColor();
     
     @Override
+    @JsonProperty("contentType")
+    public ContentTypeEnum getContentType();
+    
+    @Override
     @JsonProperty("textAlign")
     public TextAlignEnum getTextAlign();
     
@@ -111,6 +115,10 @@ public interface NodeAnnotationEntMixIn extends NodeAnnotationEnt {
         @Override
         @JsonProperty("backgroundColor")
         public NodeAnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
+        
+        @Override
+        @JsonProperty("contentType")
+        public NodeAnnotationEntMixInBuilder setContentType(final ContentTypeEnum contentType);
         
         @Override
         @JsonProperty("textAlign")

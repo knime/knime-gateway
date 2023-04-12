@@ -79,8 +79,8 @@ public interface UpdateWorkflowAnnotationTextCommandEntMixIn extends UpdateWorkf
     public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
     
     @Override
-    @JsonProperty("formattedText")
-    public String getFormattedText();
+    @JsonProperty("text")
+    public String getText();
     
 
     /**
@@ -104,8 +104,8 @@ public interface UpdateWorkflowAnnotationTextCommandEntMixIn extends UpdateWorkf
         public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
         
         @Override
-        @JsonProperty("formattedText")
-        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setFormattedText(final String formattedText);
+        @JsonProperty("text")
+        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setText(final String text);
         
     }
 

@@ -66,9 +66,9 @@ public interface UpdateWorkflowAnnotationTextCommandEnt extends GatewayEntity, W
 
   /**
    * The new formatted text to update the annotation with
-   * @return formattedText , never <code>null</code>
+   * @return text , never <code>null</code>
    **/
-  public String getFormattedText();
+  public String getText();
 
 
   @Override
@@ -77,7 +77,7 @@ public interface UpdateWorkflowAnnotationTextCommandEnt extends GatewayEntity, W
       var e = (UpdateWorkflowAnnotationTextCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("annotationId", Pair.create(getAnnotationId(), e.getAnnotationId()));
-      valueConsumer.accept("formattedText", Pair.create(getFormattedText(), e.getFormattedText()));
+      valueConsumer.accept("text", Pair.create(getText(), e.getText()));
   }
 
     /**
@@ -104,10 +104,10 @@ public interface UpdateWorkflowAnnotationTextCommandEnt extends GatewayEntity, W
         /**
          * The new formatted text to update the annotation with
          * 
-         * @param formattedText the property value, NOT <code>null</code>! 
+         * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        UpdateWorkflowAnnotationTextCommandEntBuilder setFormattedText(String formattedText);
+        UpdateWorkflowAnnotationTextCommandEntBuilder setText(String text);
         
         
         /**

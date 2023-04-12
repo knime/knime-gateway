@@ -4,6 +4,7 @@
   "path" : "/nodes/root:1/annotation",
   "value" : {
     "backgroundColor" : "#000000",
+    "contentType" : "textplain",
     "styleRanges" : [ ],
     "text" : "new anno text",
     "textAlign" : "left"
