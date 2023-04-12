@@ -54,9 +54,9 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import org.knime.core.node.workflow.action.ReplaceNodeResult;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Workflow command to replace a node.
@@ -79,7 +79,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         var nodeFactoryEnt = m_commandEnt.getNodeFactory();
         var deletedNode = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getNodeId());
         try {
-            var nodeFactory = DefaultServiceUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
+            var nodeFactory = CoreUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
             m_result = wfm.replaceNode(deletedNode, null, nodeFactory);
         } catch (NoSuchElementException | IllegalStateException | IOException ex) {
             throw new OperationNotAllowedException(ex.getMessage(), ex);

@@ -276,10 +276,7 @@ public final class DefaultNodeService implements NodeService {
         if (!m_nodeDescriptionCache.containsKey(factoryKey)) {
             NodeFactory<NodeModel> fac;
             try {
-                fac = DefaultServiceUtil.getNodeFactory(
-                        factoryKey.getClassName(),
-                        factoryKey.getSettings()
-                );
+                fac = CoreUtil.getNodeFactory(factoryKey.getClassName(), factoryKey.getSettings());
             } catch (NoSuchElementException | IOException e) { // NOSONAR: exceptions are handled
                 var message = "Could not read node description";
                 NodeLogger.getLogger(this.getClass()).error(message + ": " + e.getMessage());

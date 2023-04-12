@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.NodeCreationType;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
@@ -74,7 +75,6 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBui
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.service.commands.util.MatchingPortsUtil;
@@ -128,7 +128,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
         var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
         try {
-            m_addedNode = DefaultServiceUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
+            m_addedNode = CoreUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
                 url, targetPosition[0], targetPosition[1] - WorkflowEntityFactory.NODE_Y_POS_CORRECTION, wfm, false);
             var nc = wfm.getNodeContainer(m_addedNode);
             trackNodeCreation(nc, m_commandEnt);

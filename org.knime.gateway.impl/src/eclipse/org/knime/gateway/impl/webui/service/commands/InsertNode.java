@@ -57,6 +57,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -128,7 +129,7 @@ final class InsertNode extends AbstractWorkflowCommand {
                 new int[]{position.getX() - oldPosition[0], position.getY() - oldPosition[1]});
         } else if (nodeFactoryEnt != null) { // New node
             try {
-                m_insertedNode = DefaultServiceUtil.createAndAddNode(nodeFactoryEnt.getClassName(),
+                m_insertedNode = CoreUtil.createAndAddNode(nodeFactoryEnt.getClassName(),
                     nodeFactoryEnt.getSettings(), position.getX(), position.getY(), wfm, true);
             } catch (IOException ex) {
                 throw new OperationNotAllowedException(ex.getMessage());
