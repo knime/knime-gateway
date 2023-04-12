@@ -51,7 +51,7 @@ import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
 
 /**
- * DefaultProjectDirtyStateEventEnt
+ * Event for changes to the dirtyState of a project/workflow.
  *
  * @param projectIdToIsDirty
  *

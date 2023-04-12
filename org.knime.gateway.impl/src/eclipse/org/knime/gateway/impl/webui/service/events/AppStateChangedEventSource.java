@@ -53,8 +53,8 @@ import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.api.webui.entity.ComposedEventEnt;
-import org.knime.gateway.api.webui.entity.ComposedEventEnt.ComposedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.CompositeEventEnt;
+import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventSource;
@@ -71,7 +71,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
-public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, ComposedEventEnt> {
+public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, CompositeEventEnt> {
 
     private final Runnable m_callback;
 
@@ -99,13 +99,13 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
                 .setProjectIdToIsDirty(workflowProjectManager.getProjectIdsToDirtyMap()).build();
 
-            sendEvent(EntityBuilderManager.builder(ComposedEventEntBuilder.class)
+            sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class)
                 .setEvents(List.of(appStateEvent, projectDirtyStateEvent)).build());
         };
     }
 
     @Override
-    public Optional<ComposedEventEnt>
+    public Optional<CompositeEventEnt>
         addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
         m_appStateUpdater.addAppStateChangedListener(m_callback);
         return Optional.empty();

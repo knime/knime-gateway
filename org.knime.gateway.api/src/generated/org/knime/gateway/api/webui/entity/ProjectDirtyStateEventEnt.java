@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * ProjectDirtyStateEventEnt
+ * Event for changes to the dirtyState of a project/workflow.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

@@ -64,7 +64,7 @@ import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
-import org.knime.gateway.json.webui.entity.ComposedEventEntMixIn;
+import org.knime.gateway.json.webui.entity.CompositeEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.ConvertContainerResultEntMixIn;
@@ -188,7 +188,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEntMixIn.class);
         res.add(ComponentNodeDescriptionEntMixIn.class);
         res.add(ComponentNodeEntMixIn.class);
-        res.add(ComposedEventEntMixIn.class);
+        res.add(CompositeEventEntMixIn.class);
         res.add(ConnectCommandEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
         res.add(ConvertContainerResultEntMixIn.class);
@@ -298,7 +298,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEntMixIn.ComponentNodeAndDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeDescriptionEntMixIn.ComponentNodeDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeEntMixIn.ComponentNodeEntMixInBuilder.class);
-        res.add(ComposedEventEntMixIn.ComposedEventEntMixInBuilder.class);
+        res.add(CompositeEventEntMixIn.CompositeEventEntMixInBuilder.class);
         res.add(ConnectCommandEntMixIn.ConnectCommandEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
         res.add(ConvertContainerResultEntMixIn.ConvertContainerResultEntMixInBuilder.class);

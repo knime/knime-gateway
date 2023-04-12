@@ -89,7 +89,7 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBui
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.CollapseCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.entity.ComposedEventEnt;
+import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CopyResultEnt;
@@ -320,7 +320,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
                 .build());
 
         semaphore.acquire();
-        assertThat(((WorkflowChangedEventEnt)((ComposedEventEnt)event.get()).getEvents().get(0)).getPatch().getOps()
+        assertThat(((WorkflowChangedEventEnt)((CompositeEventEnt)event.get()).getEvents().get(0)).getPatch().getOps()
             .stream().map(op -> op.getPath()).collect(Collectors.toList()),
             Matchers.hasItem("/allowedActions/canUndo"));
     }
@@ -537,7 +537,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         Stack<CommandResultEnt> results = new Stack<>();
         Stack<WorkflowChangedEventEnt> events = new Stack<>();
         ServiceDependencies.setServiceDependency(EventConsumer.class,
-            (n, e) -> events.push((WorkflowChangedEventEnt)((ComposedEventEnt)e).getEvents().get(0)));
+            (n, e) -> events.push((WorkflowChangedEventEnt)((CompositeEventEnt)e).getEvents().get(0)));
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
 

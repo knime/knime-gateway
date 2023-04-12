@@ -74,7 +74,7 @@ import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.webui.entity.ComposedEventEnt;
+import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.service.util.EventConsumer;
@@ -204,7 +204,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
 
         @Override
         public void accept(final String t, final Object u) {
-            m_events.add((WorkflowChangedEventEnt)((ComposedEventEnt)u).getEvents().get(0));
+            m_events.add((WorkflowChangedEventEnt)((CompositeEventEnt)u).getEvents().get(0));
             m_lock.lock();
             m_lock.unlock();
         }

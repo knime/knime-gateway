@@ -42,58 +42,65 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.EventEnt;
-import org.knime.gateway.json.webui.entity.EventEntMixIn;
+
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.ComposedEventEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComposedEventEnt.DefaultComposedEventEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * Event that can consist of multiple generic events.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface CompositeEventEnt extends GatewayEntity, EventEnt {
 
-@JsonDeserialize(builder=DefaultComposedEventEntBuilder.class)
-@JsonSerialize(as=ComposedEventEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComposedEventEntMixIn extends ComposedEventEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+  /**
+   * Get events
+   * @return events 
+   **/
+  public java.util.List<EventEnt> getEvents();
 
-    @Override
-    @JsonProperty("events")
-    public java.util.List<EventEnt> getEvents();
-    
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (CompositeEventEnt)other;
+      valueConsumer.accept("events", Pair.create(getEvents(), e.getEvents()));
+  }
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
+    public interface CompositeEventEntBuilder extends GatewayEntityBuilder<CompositeEventEnt> {
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComposedEventEntMixInBuilder extends ComposedEventEntBuilder {
-    
-        @Override
-        public ComposedEventEntMixIn build();
-    
-        @Override
-        @JsonProperty("events")
-        public ComposedEventEntMixInBuilder setEvents(final java.util.List<EventEnt> events);
+        /**
+   		 * Set events
+         * 
+         * @param events the property value,  
+         * @return this entity builder for chaining
+         */
+        CompositeEventEntBuilder setEvents(java.util.List<EventEnt> events);
         
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        CompositeEventEnt build();
+    
     }
 
-
 }
-

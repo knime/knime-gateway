@@ -42,64 +42,60 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.EventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 
 /**
- * ComposedEventEnt
- * 
+ * Event that can consist of multiple generic events.
+ *
+ * @param events
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComposedEventEnt extends GatewayEntity, EventEnt {
-
-
-  /**
-   * Get events
-   * @return events 
-   **/
-  public java.util.List<EventEnt> getEvents();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ComposedEventEnt)other;
-      valueConsumer.accept("events", Pair.create(getEvents(), e.getEvents()));
-  }
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultCompositeEventEnt(
+    java.util.List<EventEnt> events) implements CompositeEventEnt {
 
     /**
-     * The builder for the entity.
+     * Validation for required parameters not being {@code null}.
      */
-    public interface ComposedEventEntBuilder extends GatewayEntityBuilder<ComposedEventEnt> {
+    public DefaultCompositeEventEnt {
+    }
 
-        /**
-   		 * Set events
-         * 
-         * @param events the property value,  
-         * @return this entity builder for chaining
-         */
-        ComposedEventEntBuilder setEvents(java.util.List<EventEnt> events);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+    @Override
+    public String getTypeID() {
+        return "CompositeEvent";
+    }
+  
+    @Override
+    public java.util.List<EventEnt> getEvents() {
+        return events;
+    }
+    
+    /**
+     * A builder for {@link DefaultCompositeEventEnt}.
+     */
+    public static class DefaultCompositeEventEntBuilder implements CompositeEventEntBuilder {
+
+        private java.util.List<EventEnt> m_events;
+
         @Override
-        ComposedEventEnt build();
+        public DefaultCompositeEventEntBuilder setEvents(java.util.List<EventEnt> events) {
+             m_events = events;
+             return this;
+        }
+
+        @Override
+        public DefaultCompositeEventEnt build() {
+            return new DefaultCompositeEventEnt(
+                immutable(m_events));
+        }
     
     }
 

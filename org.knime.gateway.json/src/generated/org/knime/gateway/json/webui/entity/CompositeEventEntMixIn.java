@@ -42,74 +42,58 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.api.webui.entity.EventEnt;
+import org.knime.gateway.json.webui.entity.EventEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.CompositeEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt.DefaultCompositeEventEntBuilder;
 
 /**
- * Abstract schema for commands manipulating individual workflow annotations
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
+@JsonDeserialize(builder=DefaultCompositeEventEntBuilder.class)
+@JsonSerialize(as=CompositeEventEnt.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface CompositeEventEntMixIn extends CompositeEventEnt {
 
-  /**
-   * The ID of the annotation to manipulate
-   * @return annotationId , never <code>null</code>
-   **/
-  public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (WorkflowAnnotationCommandEnt)other;
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("annotationId", Pair.create(getAnnotationId(), e.getAnnotationId()));
-  }
+    @Override
+    @JsonProperty("events")
+    public java.util.List<EventEnt> getEvents();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface WorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<WorkflowAnnotationCommandEnt> {
 
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-         * The ID of the annotation to manipulate
-         * 
-         * @param annotationId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        WorkflowAnnotationCommandEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface CompositeEventEntMixInBuilder extends CompositeEventEntBuilder {
     
+        @Override
+        public CompositeEventEntMixIn build();
+    
+        @Override
+        @JsonProperty("events")
+        public CompositeEventEntMixInBuilder setEvents(final java.util.List<EventEnt> events);
+        
     }
 
+
 }
+

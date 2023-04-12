@@ -84,8 +84,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentN
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
-import org.knime.gateway.api.webui.entity.ComposedEventEnt.ComposedEventEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultComposedEventEnt;
+import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
@@ -328,8 +328,8 @@ public class Interface2ImplMap {
         if(clazz == ComponentNodeEntBuilder.class) {
             return (B)new DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder();
         }        
-        if(clazz == ComposedEventEntBuilder.class) {
-            return (B)new DefaultComposedEventEnt.DefaultComposedEventEntBuilder();
+        if(clazz == CompositeEventEntBuilder.class) {
+            return (B)new DefaultCompositeEventEnt.DefaultCompositeEventEntBuilder();
         }        
         if(clazz == ConnectCommandEntBuilder.class) {
             return (B)new DefaultConnectCommandEnt.DefaultConnectCommandEntBuilder();
