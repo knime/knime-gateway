@@ -146,9 +146,9 @@ public class PatchChangeProcessorTest {
             .setBorderColor("test")//
             .setStyleRanges(Collections.emptyList())//
             .setBorderWidth(0);
-        var anno1 = workflowAnnoBuilder.setText("anno1").setContentType(ContentTypeEnum.TEXTPLAIN).build();
-        var anno2 = workflowAnnoBuilder.setText("anno2").setContentType(ContentTypeEnum.TEXTPLAIN).build();
-        var anno3 = workflowAnnoBuilder.setText("anno3").setContentType(ContentTypeEnum.TEXTPLAIN).build();
+        var anno1 = workflowAnnoBuilder.setText("anno1").setContentType(ContentTypeEnum.PLAIN).build();
+        var anno2 = workflowAnnoBuilder.setText("anno2").setContentType(ContentTypeEnum.PLAIN).build();
+        var anno3 = workflowAnnoBuilder.setText("anno3").setContentType(ContentTypeEnum.PLAIN).build();
 
         WorkflowEnt workflow1 = workflowBuilder.setWorkflowAnnotations(List.of(anno1, anno2, anno3)).build();
         // remove all wf annotations

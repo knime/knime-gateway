@@ -769,8 +769,8 @@ public final class WorkflowEntityFactory {
         return builder(NodeAnnotationEntBuilder.class)//
             .setText(na.getText())//
             .setContentType(contentType)//
-            .setTextAlign(contentType == ContentTypeEnum.TEXTPLAIN ? textAlignSupplier.get() : null)//
-            .setStyleRanges(contentType == ContentTypeEnum.TEXTPLAIN ? styleRangesSupplier.get() : null)//
+            .setTextAlign(contentType == ContentTypeEnum.PLAIN ? textAlignSupplier.get() : null)//
+            .setStyleRanges(contentType == ContentTypeEnum.PLAIN ? styleRangesSupplier.get() : null)//
             .setBackgroundColor(bgColor == DEFAULT_NODE_ANNOTATION_BG_COLOR ? null : hexStringColor(bgColor))//
             .setDefaultFontSize(na.getDefaultFontSize() > 0 ? na.getDefaultFontSize() : null)//
             .build();
@@ -778,8 +778,8 @@ public final class WorkflowEntityFactory {
 
     private ContentTypeEnum getContentType(final ContentType contentType) {
         return switch (contentType) {
-            case TEXT_PLAIN -> ContentTypeEnum.TEXTPLAIN;
-            case TEXT_HTML -> ContentTypeEnum.TEXTHTML;
+            case TEXT_PLAIN -> ContentTypeEnum.PLAIN;
+            case TEXT_HTML -> ContentTypeEnum.HTML;
         };
     }
 
@@ -1112,8 +1112,8 @@ public final class WorkflowEntityFactory {
         return builder(WorkflowAnnotationEntBuilder.class).setId(new AnnotationIDEnt(wa.getID()))//
             .setText(wa.getText())//
             .setContentType(contentType)//
-            .setTextAlign(contentType == ContentTypeEnum.TEXTPLAIN ? textAlignSupplier.get() : null)//
-            .setStyleRanges(contentType == ContentTypeEnum.TEXTPLAIN ? styleRangesSupplier.get() : null)//
+            .setTextAlign(contentType == ContentTypeEnum.PLAIN ? textAlignSupplier.get() : null)//
+            .setStyleRanges(contentType == ContentTypeEnum.PLAIN ? styleRangesSupplier.get() : null)//
             .setBackgroundColor(hexStringColor(wa.getBgColor()))//
             .setBorderColor(hexStringColor(wa.getBorderColor()))//
             .setBorderWidth(wa.getBorderSize())//

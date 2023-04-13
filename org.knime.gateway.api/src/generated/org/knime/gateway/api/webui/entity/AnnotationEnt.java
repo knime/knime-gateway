@@ -67,9 +67,9 @@ public interface AnnotationEnt extends GatewayEntity {
    * The content type of the annotation.
    */
   public enum ContentTypeEnum {
-    TEXTPLAIN("textplain"),
+    PLAIN("text/plain"),
     
-    TEXTHTML("texthtml");
+    HTML("text/html");
 
     private String value;
 

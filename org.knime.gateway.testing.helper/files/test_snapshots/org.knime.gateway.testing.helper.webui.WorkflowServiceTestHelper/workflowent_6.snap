@@ -164,7 +164,7 @@
       "x" : 233,
       "y" : 293
     },
-    "contentType" : "textplain",
+    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root:6_0",
     "styleRanges" : [ {
@@ -191,7 +191,7 @@
       "x" : 840,
       "y" : 200
     },
-    "contentType" : "textplain",
+    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root:6_1",
     "styleRanges" : [ ],

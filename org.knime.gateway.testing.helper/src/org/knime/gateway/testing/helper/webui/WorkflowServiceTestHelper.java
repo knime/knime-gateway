@@ -2563,8 +2563,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             <p style="text-align: right">and right aligned text</p><p style="text-align: right"></p>
             """;
 
-        // Content type is plain text prior to execution
-        assertThat(annotationEnt.getContentType(), is(ContentTypeEnum.TEXTPLAIN));
+        assertThat("Content type isn't plain text prior to execution", annotationEnt.getContentType(),
+            is(ContentTypeEnum.PLAIN));
 
         var command = builder(UpdateWorkflowAnnotationTextCommandEntBuilder.class)//
             .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION_TEXT)//
@@ -2575,27 +2575,21 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotationEntAfterExecution =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
 
-        // Text field was updated
-        assertThat(annotationEntAfterExecution.getText(), is(formattedText));
-        // Content type is HTML text
-        assertThat(annotationEntAfterExecution.getContentType(), is(ContentTypeEnum.TEXTHTML));
-        // Style ranges are gone
-        assertThat(annotationEntAfterExecution.getStyleRanges(), nullValue());
-        // Text alignment is gone
-        assertThat(annotationEntAfterExecution.getTextAlign(), nullValue());
+        assertThat("Text field wasn't updated", annotationEntAfterExecution.getText(), is(formattedText));
+        assertThat("Content type isn't HTML text", annotationEntAfterExecution.getContentType(),
+            is(ContentTypeEnum.HTML));
+        assertThat("Style ranges aren't gone", annotationEntAfterExecution.getStyleRanges(), nullValue());
+        assertThat("Text alignment isn't gone", annotationEntAfterExecution.getTextAlign(), nullValue());
 
         ws().undoWorkflowCommand(projectId, getRootID());
         var annotationEntAfterUndo =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
 
-        // Regular text field was reset
-        assertThat(annotationEntAfterUndo.getText(), is(previousText));
-        // Content type is plain text again
-        assertThat(annotationEnt.getContentType(), is(ContentTypeEnum.TEXTPLAIN));
-        // Style ranges are back
-        assertThat(annotationEntAfterUndo.getStyleRanges().size(), is(18));
-        assertThat(annotationEntAfterUndo.getStyleRanges(), is(previousStyleRanges));
-        // Text alignment is back
-        assertThat(annotationEntAfterUndo.getTextAlign(), is(previousTextAlignment));
+        assertThat("Regular text field wasn't reset", annotationEntAfterUndo.getText(), is(previousText));
+        assertThat("Content type isn't plain text again", annotationEnt.getContentType(), is(ContentTypeEnum.PLAIN));
+        assertThat("Not exactly 18 style ranges are back", annotationEntAfterUndo.getStyleRanges().size(), is(18));
+        assertThat("Not the same style ranges were brought back", annotationEntAfterUndo.getStyleRanges(),
+            is(previousStyleRanges));
+        assertThat("Text alignment isn't back", annotationEntAfterUndo.getTextAlign(), is(previousTextAlignment));
     }
 }
