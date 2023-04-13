@@ -153,19 +153,8 @@ public final class WorkflowMiddleware {
         var workflowState = getWorkflowState(wfKey);
         var workflowEntity =
             EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
-        if (workflowEntity == null) {
-            // no workflow change -> check most recent commit
-            Pair<String, WorkflowEnt> last = m_entityRepo.getLastCommit(wfKey).orElse(null);
-            if (last != null) {
-                return buildWorkflowSnapshotEnt(last.getSecond(), last.getFirst());
-            }
 
-            // no commit, yet
-            workflowEntity =
-                EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
-        }
-
-        // commit the new workflow entity and return the snapshot
+        // try to commit the workflow entity and return the (existing or new) snapshot
         return buildWorkflowSnapshotEnt(workflowEntity, m_entityRepo.commit(wfKey, workflowEntity));
     }
 
