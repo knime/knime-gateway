@@ -89,6 +89,8 @@ public final class WorkflowBuildContext {
 
     private final boolean m_canRedo;
 
+    private final boolean m_canSave;
+
     private Map<NodeID, String[]> m_inPortGroupsAndIndices;
 
     private Map<NodeID, String[]> m_outPortGroupsAndIndices;
@@ -105,6 +107,7 @@ public final class WorkflowBuildContext {
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
+        m_canSave = builder.m_canSave;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -133,6 +136,10 @@ public final class WorkflowBuildContext {
 
     boolean canRedo() {
         return m_canRedo;
+    }
+
+    boolean canSave() {
+        return m_canSave;
     }
 
     /**
@@ -206,11 +213,14 @@ public final class WorkflowBuildContext {
      */
     public static final class WorkflowBuildContextBuilder {
 
+
         private boolean m_includeInteractionInfo = false;
 
         private boolean m_canUndo = false;
 
         private boolean m_canRedo = false;
+
+        public boolean m_canSave = true;
 
         private Supplier<DependentNodeProperties> m_depNodeProps;
 
@@ -237,6 +247,17 @@ public final class WorkflowBuildContext {
          */
         public WorkflowBuildContextBuilder canRedo(final boolean canRedo) {
             m_canRedo = canRedo;
+            return this;
+        }
+
+        /**
+         * Sets the 'canSave' property.
+         *
+         * @param canSave whether the current workflow can be saved to its original location
+         * @return this builder instance
+         */
+        public WorkflowBuildContextBuilder canSave(final boolean canSave) {
+            m_canSave = canSave;
             return this;
         }
 

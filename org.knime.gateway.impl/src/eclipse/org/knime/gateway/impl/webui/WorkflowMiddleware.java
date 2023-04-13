@@ -151,8 +151,11 @@ public final class WorkflowMiddleware {
     public WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowKey wfKey,
         final Supplier<WorkflowBuildContextBuilder> buildContextSupplier) {
         var workflowState = getWorkflowState(wfKey);
+        var ctx = workflowState.m_wfm.getProjectWFM().getContextV2();
+        var buildContextBuilder = buildContextSupplier.get() //
+                .canSave(!ctx.getTempSourceLocation().filter(uri -> "file".equals(uri.getScheme())).isPresent());
         var workflowEntity =
-            EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
+            EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextBuilder);
 
         // try to commit the workflow entity and return the (existing or new) snapshot
         return buildWorkflowSnapshotEnt(workflowEntity, m_entityRepo.commit(wfKey, workflowEntity));
@@ -161,7 +164,7 @@ public final class WorkflowMiddleware {
     private static WorkflowEnt buildWorkflowEntIfWorkflowHasChanged(final WorkflowManager wfm,
         final WorkflowBuildContextBuilder buildContextBuilder, final WorkflowChangesTracker tracker) {
         try (WorkflowLock lock = wfm.lock()) {
-            var workflowChanged = tracker.invoke(t -> {
+            boolean workflowChanged = tracker.invoke(t -> {
                 if (t.hasOccurredAtLeastOne(WorkflowChange.ANY)) {
                     t.reset();
                     return true;
@@ -233,15 +236,17 @@ public final class WorkflowMiddleware {
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchCreator<WorkflowChangedEventEnt> patchEntCreator, final String snapshotId,
         final boolean includeInteractionInfo, final WorkflowChangesTracker changes) {
+        final var workflowState = getWorkflowState(wfKey);
+        var ctx = workflowState.m_wfm.getProjectWFM().getContextV2();
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
+            .canSave(!ctx.getTempSourceLocation().filter(uri -> "file".equals(uri.getScheme())).isPresent())//
             .includeInteractionInfo(includeInteractionInfo);
-        WorkflowState ws = getWorkflowState(wfKey);
         if (includeInteractionInfo) {
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
                 .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
-        WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
+        final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(workflowState.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {
             // no change
             return null;

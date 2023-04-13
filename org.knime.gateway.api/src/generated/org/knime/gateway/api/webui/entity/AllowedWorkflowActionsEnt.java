@@ -76,6 +76,12 @@ public interface AllowedWorkflowActionsEnt extends GatewayEntity, AllowedActions
    **/
   public Boolean isCanRedo();
 
+  /**
+   * Whether the surrounding workflow/component/metanode can be saved back to its original location.
+   * @return canSave , never <code>null</code>
+   **/
+  public Boolean isCanSave();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -86,6 +92,7 @@ public interface AllowedWorkflowActionsEnt extends GatewayEntity, AllowedActions
       valueConsumer.accept("canReset", Pair.create(isCanReset(), e.isCanReset()));
       valueConsumer.accept("canUndo", Pair.create(isCanUndo(), e.isCanUndo()));
       valueConsumer.accept("canRedo", Pair.create(isCanRedo(), e.isCanRedo()));
+      valueConsumer.accept("canSave", Pair.create(isCanSave(), e.isCanSave()));
   }
 
     /**
@@ -132,6 +139,14 @@ public interface AllowedWorkflowActionsEnt extends GatewayEntity, AllowedActions
          * @return this entity builder for chaining
          */
         AllowedWorkflowActionsEntBuilder setCanRedo(Boolean canRedo);
+        
+        /**
+         * Whether the surrounding workflow/component/metanode can be saved back to its original location.
+         * 
+         * @param canSave the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AllowedWorkflowActionsEntBuilder setCanSave(Boolean canSave);
         
         
         /**

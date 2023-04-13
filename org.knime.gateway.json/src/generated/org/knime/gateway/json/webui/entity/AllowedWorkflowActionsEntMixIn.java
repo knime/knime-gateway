@@ -90,6 +90,10 @@ public interface AllowedWorkflowActionsEntMixIn extends AllowedWorkflowActionsEn
     @JsonProperty("canRedo")
     public Boolean isCanRedo();
     
+    @Override
+    @JsonProperty("canSave")
+    public Boolean isCanSave();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -122,6 +126,10 @@ public interface AllowedWorkflowActionsEntMixIn extends AllowedWorkflowActionsEn
         @Override
         @JsonProperty("canRedo")
         public AllowedWorkflowActionsEntMixInBuilder setCanRedo(final Boolean canRedo);
+        
+        @Override
+        @JsonProperty("canSave")
+        public AllowedWorkflowActionsEntMixInBuilder setCanSave(final Boolean canSave);
         
     }
 

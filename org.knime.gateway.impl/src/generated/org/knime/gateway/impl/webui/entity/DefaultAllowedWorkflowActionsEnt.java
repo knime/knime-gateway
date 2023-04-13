@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
  * @param canReset
  * @param canUndo
  * @param canRedo
+ * @param canSave
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -67,7 +68,8 @@ public record DefaultAllowedWorkflowActionsEnt(
     Boolean canCancel,
     Boolean canReset,
     Boolean canUndo,
-    Boolean canRedo) implements AllowedWorkflowActionsEnt {
+    Boolean canRedo,
+    Boolean canSave) implements AllowedWorkflowActionsEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -87,6 +89,9 @@ public record DefaultAllowedWorkflowActionsEnt(
         }
         if(canRedo == null) {
             throw new IllegalArgumentException("<canRedo> must not be null.");
+        }
+        if(canSave == null) {
+            throw new IllegalArgumentException("<canSave> must not be null.");
         }
     }
 
@@ -120,6 +125,11 @@ public record DefaultAllowedWorkflowActionsEnt(
         return canRedo;
     }
     
+    @Override
+    public Boolean isCanSave() {
+        return canSave;
+    }
+    
     /**
      * A builder for {@link DefaultAllowedWorkflowActionsEnt}.
      */
@@ -134,6 +144,8 @@ public record DefaultAllowedWorkflowActionsEnt(
         private Boolean m_canUndo;
 
         private Boolean m_canRedo;
+
+        private Boolean m_canSave;
 
         @Override
         public DefaultAllowedWorkflowActionsEntBuilder setCanExecute(Boolean canExecute) {
@@ -181,13 +193,23 @@ public record DefaultAllowedWorkflowActionsEnt(
         }
 
         @Override
+        public DefaultAllowedWorkflowActionsEntBuilder setCanSave(Boolean canSave) {
+             if(canSave == null) {
+                 throw new IllegalArgumentException("<canSave> must not be null.");
+             }
+             m_canSave = canSave;
+             return this;
+        }
+
+        @Override
         public DefaultAllowedWorkflowActionsEnt build() {
             return new DefaultAllowedWorkflowActionsEnt(
                 immutable(m_canExecute),
                 immutable(m_canCancel),
                 immutable(m_canReset),
                 immutable(m_canUndo),
-                immutable(m_canRedo));
+                immutable(m_canRedo),
+                immutable(m_canSave));
         }
     
     }

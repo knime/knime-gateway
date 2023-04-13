@@ -105,6 +105,32 @@ public interface WorkflowProject {
      * Identifies space and item from which this workflow project has been opened.
      */
     public static interface Origin {
+
+        static Origin create(final String providerId, final String spaceId, final String itemId,
+                final String relativePath) {
+            return new Origin() {
+                @Override
+                public String getSpaceId() {
+                    return spaceId;
+                }
+
+                @Override
+                public String getProviderId() {
+                    return providerId;
+                }
+
+                @Override
+                public String getItemId() {
+                    return itemId;
+                }
+
+                @Override
+                public Optional<String> getRelativePath() {
+                    return Optional.ofNullable(relativePath);
+                }
+            };
+        }
+
         /**
          * @return The ID of the space provider containing the workflow project
          */

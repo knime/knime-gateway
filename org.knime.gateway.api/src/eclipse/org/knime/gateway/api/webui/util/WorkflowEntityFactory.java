@@ -455,7 +455,9 @@ public final class WorkflowEntityFactory {
             .setCanExecute(wfm.canExecuteAll())//
             .setCanCancel(wfm.canCancelAll())//
             .setCanUndo(buildContext.canUndo())//
-            .setCanRedo(buildContext.canRedo()).build();
+            .setCanRedo(buildContext.canRedo())//
+            .setCanSave(buildContext.canSave())//
+            .build();
     }
 
     private void buildAndAddNodeEnt(final NodeIDEnt id, final NodeContainer nc, final Map<String, NodeEnt> nodes,
