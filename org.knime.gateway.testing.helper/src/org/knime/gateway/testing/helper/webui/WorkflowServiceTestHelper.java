@@ -1399,21 +1399,33 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .build();
     }
 
-    private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y,
-        final CommandResultEnt result) {
-        assertThat(wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
+    /**
+     * Check for the existence of a node with the given nodeFactory in the given x and y coordinates, throws exception
+     * if nothing is found
+     *
+     * @throws Exception
+     */
+    private static NodeEnt checkForNode(final String message, final WorkflowSnapshotEnt wf, final String nodeFactory,
+        final int x, final int y) {
+        assertThat(message, wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
         var nodeEnt = wf.getWorkflow().getNodes().values().stream()
             .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(nodeFactory))
             .findFirst().orElseThrow();
-        assertThat(nodeEnt.getPosition().getX(), is(x));
-        assertThat(nodeEnt.getPosition().getY(), is(y));
+        assertThat(message, nodeEnt.getPosition().getX(), is(x));
+        assertThat(message, nodeEnt.getPosition().getY(), is(y));
+        return nodeEnt;
+    }
+
+    private static void checkForNode(final WorkflowSnapshotEnt wf, final String nodeFactory, final int x, final int y,
+        final CommandResultEnt result) {
+        var nodeEnt = checkForNode("", wf, nodeFactory, x, y);
         var newNodeId = ((AddNodeResultEnt)result).getNewNodeId();
         assertThat(newNodeId, equalTo(nodeEnt.getId()));
     }
 
-    private static void checkForConnection(final WorkflowSnapshotEnt wf, final NodeIDEnt sourceNodeId,
-        final Integer sourcePortIdx, final CommandResultEnt result, final boolean isPresent) {
-        var destNodeId = ((AddNodeResultEnt)result).getNewNodeId();
+    private static void checkForConnection(final String message, final WorkflowSnapshotEnt wf,
+        final NodeIDEnt sourceNodeId, final Integer sourcePortIdx, final NodeIDEnt destNodeId,
+        final boolean isPresent) {
         var connections = wf.getWorkflow().getConnections();
         var numConnections = connections.values().stream()//
             .filter(c -> c.getSourceNode().equals(sourceNodeId))//
@@ -1421,6 +1433,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .filter(c -> c.getDestNode().equals(destNodeId))//
             .count();
         assertThat(numConnections, is(isPresent ? 1L : 0L));
+    }
+
+    private static void checkForConnection(final WorkflowSnapshotEnt wf, final NodeIDEnt sourceNodeId,
+        final Integer sourcePortIdx, final CommandResultEnt result, final boolean isPresent) {
+        var destNodeId = ((AddNodeResultEnt)result).getNewNodeId();
+        checkForConnection("", wf, sourceNodeId, sourcePortIdx, destNodeId, isPresent);
     }
 
     /**
@@ -2201,49 +2219,81 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Test Replace Node command
+     * Test Replace Node command with a node from repository
      *
      * @throws Exception
      */
-    public void testExecuteReplaceNodeCommand() throws Exception {
+    public void testExecuteReplaceNodeCommandFromRepo() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
-        var command = buildReplaceNodeCommand(
-            builder(NodeFactoryKeyEntBuilder.class).setClassName(rowFilterFactory).setSettings(null).build(),
-            new NodeIDEnt(1));
+        var command = buildReplaceNodeCommand(new NodeIDEnt(1),
+            builder(NodeFactoryKeyEntBuilder.class).setClassName(rowFilterFactory).setSettings(null).build(), null);
         var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
         var nodes = workflow.getNodes();
-        var node1Pos = nodes.get("root:1").getPosition();
+        var targetNode = nodes.get("root:1").getPosition();
         // execute command
         ws().executeWorkflowCommand(wfId, getRootID(), command);
 
-        nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
-        var newNode = nodes.get("root:1");
-        assertThat(((NativeNodeEnt)newNode).getTemplateId(),
-            is("org.knime.base.node.preproc.filter.row.RowFilterNodeFactory"));
-        assertThat("new node is the same x position as old node", newNode.getPosition().getX(), is(node1Pos.getX()));
-        assertThat("new node is the same y position as old node", newNode.getPosition().getY(), is(node1Pos.getY()));
-
+        checkForNode("Create new node in the location of the target node", ws().getWorkflow(wfId, getRootID(), false),
+            rowFilterFactory, targetNode.getX(), targetNode.getY());
         var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         assertThat("connection still exists", connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
-        nodes = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
-        var node = nodes.get("root:1");
-        assertThat(((NativeNodeEnt)node).getTemplateId(),
-            is("org.knime.base.node.util.sampledata.SampleDataNodeFactory"));
-        assertThat(node.getPosition().getX(), is(node1Pos.getX()));
-        assertThat(node.getPosition().getY(), is(node1Pos.getY()));
+        checkForNode("Should restore old node", ws().getWorkflow(wfId, getRootID(), false),
+            "org.knime.base.node.util.sampledata.SampleDataNodeFactory", targetNode.getX(), targetNode.getY());
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         assertThat("connection still exists", connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
     }
 
-    private static ReplaceNodeCommandEnt buildReplaceNodeCommand(final NodeFactoryKeyEnt nodeFactory,
-        final NodeIDEnt nodeId) {
+    /**
+     * Test Replace Node command with an existing node
+     *
+     * @throws Exception
+     */
+    public void testExecuteReplaceNodeCommandFromExistingNode() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        // delete Existing connection on Component
+        var deleteCommand =
+            createDeleteCommandEnt(asList(), asList(new ConnectionIDEnt(new NodeIDEnt(23), 1)), asList());
+        ws().executeWorkflowCommand(wfId, getRootID(), deleteCommand);
+
+        var command = buildReplaceNodeCommand(new NodeIDEnt(2), null, new NodeIDEnt(23));
+        var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var nodes = workflow.getNodes();
+        var targetNode = nodes.get("root:2").getPosition();
+        var connections = workflow.getConnections();
+        // execute command
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+
+        workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var replacementNodePos = workflow.getNodes().get("root:23").getPosition();
+        assertThat("Move Metanode to the x location of target node", replacementNodePos.getX(), is(targetNode.getX()));
+        assertThat("Move Metanode to the y location of target node", replacementNodePos.getY(), is(targetNode.getY()));
+        connections = workflow.getConnections();
+        assertThat("Metanode is reconnected", connections.get("root:23_1").getSourceNode().toString(), is("root:1"));
+        assertThat("Metanode is reconnected", connections.get("root:6_0").getSourceNode().toString(), is("root:23"));
+        assertThat("Metanode is reconnected", connections.get("root:11_1").getSourceNode().toString(), is("root:23"));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+        var columnFilterFactory = "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory";
+        checkForNode("Should restore old target node", ws().getWorkflow(wfId, getRootID(), false),
+            columnFilterFactory, targetNode.getX(), targetNode.getY());
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat("Should restore all connections", connections.get("root:2_1").getSourceNode().toString(), is("root:1"));
+        assertThat("Should restore all connections", connections.get("root:6_0").getSourceNode().toString(), is("root:2"));
+        assertThat("Should restore all connections", connections.get("root:11_1").getSourceNode().toString(), is("root:2"));
+    }
+
+    private static ReplaceNodeCommandEnt buildReplaceNodeCommand(final NodeIDEnt targetNodeId,
+        final NodeFactoryKeyEnt nodeFactory, final NodeIDEnt replacementNodeId) {
         return builder(ReplaceNodeCommandEntBuilder.class)//
             .setKind(KindEnum.REPLACE_NODE)//
-            .setNodeFactory(nodeFactory).setNodeId(nodeId).build();
+            .setTargetNodeId(targetNodeId)//
+            .setReplacementNodeId(replacementNodeId)//
+            .setNodeFactory(nodeFactory).build();
     }
 
     /**
