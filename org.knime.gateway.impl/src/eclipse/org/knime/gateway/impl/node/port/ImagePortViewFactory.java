@@ -58,9 +58,10 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.knime.core.data.image.ImageValue;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.image.ImagePortObject;
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.page.Page;
@@ -88,8 +89,9 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
         var imgValue = (ImageValue) portObject.toDataCell();
         // we append the object-hash to the imageId to make sure the FE re-renderes
         // the image whenever it changes (and not take it from the browser cache)
-        var imageId = NodeContext.getContext().getNodeContainer().getID().toString() + ":"
-            + System.identityHashCode(portObject) + "." + imgValue.getImageExtension();
+        var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
+        var imageId =
+            nc.getID().toString() + ":" + System.identityHashCode(portObject) + "." + imgValue.getImageExtension();
         return new PortView() {
 
             @Override

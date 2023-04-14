@@ -50,6 +50,8 @@ package org.knime.gateway.impl.node.port;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -59,13 +61,17 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.data.image.png.PNGImageContent;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.port.image.ImagePortObjectSpec;
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
@@ -79,49 +85,56 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 public class ImagePortViewFactoryTest {
 
+    private WorkflowManager m_wfm;
+
+    @SuppressWarnings("javadoc")
+    @Before
+    public void createWorkflow()
+        throws IllegalArgumentException, InvalidDefClipboardContentVersionException, ObfuscatorException, IOException {
+        m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var content = SystemClipboardFormat.deserialize(WORKFLOW_SNIPPET);
+        m_wfm.paste(content);
+    }
+
+    @SuppressWarnings("javadoc")
+    @After
+    public void disposeWorkflow() {
+        WorkflowManagerUtil.disposeWorkflow(m_wfm);
+    }
+
     /**
      * Tests the page and initial-data-service of the {@link PortView} returned by the {@link ImagePortViewFactory}.
      *
-     * @throws InvalidDefClipboardContentVersionException
      * @throws IOException
-     * @throws ObfuscatorException
-     * @throws IllegalArgumentException
      */
     @Test
-    public void testImagePortViewPageAndInitialDataService()
-        throws InvalidDefClipboardContentVersionException, IOException, IllegalArgumentException, ObfuscatorException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var content = SystemClipboardFormat.deserialize(WORKFLOW_SNIPPET);
-        wfm.paste(content);
+    public void testImagePortViewPageAndInitialDataService() throws IOException {
+        var snc = (SingleNodeContainer)m_wfm.getNodeContainer(m_wfm.getID().createChild(5));
+        var port = mock(NodeOutPort.class);
+        when(port.getConnectedNodeContainer()).thenReturn(snc);
+        PortContext.pushContext(port);
+        PortView portView;
+        byte[] pngImageData = createPngImageData();
+        var portObject = createImagePortObject(pngImageData);
         try {
-            // NodeContext.pushContext(null);
-            var snc = (SingleNodeContainer)wfm.getNodeContainer(wfm.getID().createChild(5));
-            NodeContext.pushContext(snc);
-            PortView portView;
-            byte[] pngImageData = createPngImageData();
-            var portObject = createImagePortObject(pngImageData);
-            try {
-                portView = new ImagePortViewFactory().createPortView(portObject);
-            } finally {
-                NodeContext.removeLastContext();
-            }
-            var page = portView.getPage();
-            assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
-            var pageId = page.getPageIdForReusablePage().orElse(null);
-            assertThat(pageId, is("ImagePortView"));
-
-            var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
-            var imageId = snc.getID().toString() + ":" + System.identityHashCode(portObject) + ".png";
-            assertThat(initialData, is("{\"result\":\"ImagePortView/img/" + imageId + "\"}"));
-            assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.size(), is(1));
-            assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.get(imageId), is(pngImageData));
-
-            var imgResource = page.getResource("img/" + imageId).get();
-            assertThat(IOUtils.toByteArray(imgResource.getInputStream()), is(pngImageData));
-            assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.isEmpty(), is(true));
+            portView = new ImagePortViewFactory().createPortView(portObject);
         } finally {
-            WorkflowManagerUtil.disposeWorkflow(wfm);
+            PortContext.removeLastContext();
         }
+        var page = portView.getPage();
+        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
+        var pageId = page.getPageIdForReusablePage().orElse(null);
+        assertThat(pageId, is("ImagePortView"));
+
+        var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
+        var imageId = snc.getID().toString() + ":" + System.identityHashCode(portObject) + ".png";
+        assertThat(initialData, is("{\"result\":\"ImagePortView/img/" + imageId + "\"}"));
+        assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.size(), is(1));
+        assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.get(imageId), is(pngImageData));
+
+        var imgResource = page.getResource("img/" + imageId).get();
+        assertThat(IOUtils.toByteArray(imgResource.getInputStream()), is(pngImageData));
+        assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.isEmpty(), is(true));
     }
 
     private static ImagePortObject createImagePortObject(final byte[] pngImageData) {
