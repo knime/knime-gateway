@@ -50,13 +50,11 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
@@ -65,7 +63,6 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.NodeCreationType;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
@@ -77,7 +74,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
-import org.knime.gateway.impl.webui.service.commands.util.MatchingPortsUtil;
+import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -126,37 +123,15 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             throw new OperationNotAllowedException("No node factory class given");
         }
 
-        var targetPosition = new int[]{positionEnt.getX(), positionEnt.getY()};
-        try {
-            m_addedNode = CoreUtil.createAndAddNode(factoryKeyEnt.getClassName(), factoryKeyEnt.getSettings(),
-                url, targetPosition[0], targetPosition[1] - WorkflowEntityFactory.NODE_Y_POS_CORRECTION, wfm, false);
-            var nc = wfm.getNodeContainer(m_addedNode);
-            trackNodeCreation(nc, m_commandEnt);
-        } catch (IOException | NoSuchElementException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
-        // Optionally connect node
-        try {
-            if (m_commandEnt.getSourceNodeId() != null) {
-                var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm.getProjectWFM().getID());
-                var destNodeId = m_addedNode;
-                var matchingPorts =
-                    MatchingPortsUtil.getMatchingPorts(sourceNodeId, destNodeId, m_commandEnt.getSourcePortIdx(), wfm);
-                for (var entry : matchingPorts.entrySet()) {
-                    Integer sourcePortIdx = entry.getKey();
-                    Integer destPortIdx = entry.getValue();
-                    Connect.addNewConnection(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
-                    // TODO as soon as we extended the quick insertion feature with search,
-                    // we need to track connection creations here, too! (but only for the nodes added via the search!)
-                    // NodeTimer.GLOBAL_TIMER.addConnectionCreation(wfm.getNodeContainer(sourceNodeId),
-                    //    wfm.getNodeContainer(destNodeId));
-
-                }
-            }
-        } catch (OperationNotAllowedException e) {
-            undo(); // No side effect if exception is thrown
-            throw e;
-        }
+        m_addedNode = new NodeCreator(wfm, factoryKeyEnt, positionEnt) //
+            .withUrl(url) //
+            .trackCreation() //
+            .isNodeAddedViaQuickNodeInsertion(isNodeAddedViaQuickNodeInsertion(m_commandEnt)) //
+            .withNodeYPosCorrection(-WorkflowEntityFactory.NODE_Y_POS_CORRECTION) //
+            .connect(connector -> connector.connectFrom(m_commandEnt.getSourceNodeId(), m_commandEnt.getSourcePortIdx())
+                .trackCreation()) //
+            .failOnConnectionAttempt() //
+            .create();
         return true; // Workflow changed if no exceptions were thrown
     }
 

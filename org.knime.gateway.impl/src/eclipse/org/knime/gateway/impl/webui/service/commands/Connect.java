@@ -50,11 +50,9 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeTimer;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 
 /**
  * Workflow command to connect two nodes.
@@ -92,24 +90,13 @@ final class Connect extends AbstractWorkflowCommand {
             // it's the very same connection -> no change
             return false;
         }
-        m_newConnection = addNewConnection(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
-        NodeTimer.GLOBAL_TIMER.addConnectionCreation(wfm.getNodeContainer(sourceNodeId),
-            wfm.getNodeContainer(destNodeId));
-        return true;
-    }
 
-    /**
-     * Add a new connection to the workflow
-     *
-     * @return The new connection
-     */
-    static ConnectionContainer addNewConnection(final WorkflowManager wfm, final NodeID sourceNodeId,
-        final Integer sourcePortIdx, final NodeID destNodeId, final Integer destPortIdx)
-        throws OperationNotAllowedException {
-        if (!wfm.canAddConnection(sourceNodeId, sourcePortIdx, destNodeId, destPortIdx)) {
-            throw new OperationNotAllowedException("Connection can't be added");
+        m_newConnection =
+            NodeConnector.connect(getWorkflowManager(), sourceNodeId, sourcePortIdx, destNodeId, destPortIdx, true);
+        if (m_newConnection == null) {
+            throw new OperationNotAllowedException("Connection couldn't be created");
         }
-        return wfm.addConnection(sourceNodeId, sourcePortIdx, destNodeId, destPortIdx);
+        return true;
     }
 
     @Override

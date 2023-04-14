@@ -57,6 +57,7 @@ import org.knime.core.node.workflow.action.ReplaceNodeResult;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
 
 /**
  * Workflow command to replace a node.
@@ -81,6 +82,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         try {
             var nodeFactory = CoreUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
             m_result = wfm.replaceNode(deletedNode, null, nodeFactory);
+            NodeCreator.trackNodeCreation(wfm.getNodeContainer(deletedNode), false);
         } catch (NoSuchElementException | IllegalStateException | IOException ex) {
             throw new OperationNotAllowedException(ex.getMessage(), ex);
         }

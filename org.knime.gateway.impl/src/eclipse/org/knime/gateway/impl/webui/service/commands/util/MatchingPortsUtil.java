@@ -69,14 +69,13 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
  * Utility methods to identify matching port pairs for nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class MatchingPortsUtil {
+final class MatchingPortsUtil {
 
     private MatchingPortsUtil() {
         // utility
@@ -92,11 +91,11 @@ public final class MatchingPortsUtil {
      * @param sourcePortIdx optional source port, if <code>null</code> it will be automatically determined
      * @param wfm workflow manager
      *
-     * @return The patching pairs of ports
-     * @throws OperationNotAllowedException Is thrown when no matching ports where found
+     * @return The patching pairs of ports; the destination port index can be {@code -1} if the port index couldn't be
+     *         determined
      */
-    public static Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId,
-        final Integer sourcePortIdx, final WorkflowManager wfm) throws OperationNotAllowedException {
+    static Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId,
+        final Integer sourcePortIdx, final WorkflowManager wfm) {
         if (sourcePortIdx != null) { // Currently in use by the FE, supports dynamic nodes and flow variables
             var destPortIdx = getDestPortIdxFromSourcePortIdx(sourceNodeId, sourcePortIdx, destNodeId, wfm);
             return Map.of(sourcePortIdx, destPortIdx);
@@ -111,10 +110,10 @@ public final class MatchingPortsUtil {
      * Get the destination port that best matches a given source port. In case of dynamic nodes, this port might first
      * be added. This is a side effect.
      *
-     * @return Port index of best matching destination port
+     * @return Port index of best matching destination port or {@code -1} if there is none
      */
     private static Integer getDestPortIdxFromSourcePortIdx(final NodeID sourceNodeId, final Integer sourcePortIdx,
-        final NodeID destNodeId, final WorkflowManager wfm) throws OperationNotAllowedException {
+        final NodeID destNodeId, final WorkflowManager wfm) {
         var sourceNode = wfm.getNodeContainer(sourceNodeId);
         var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
         var destNode = wfm.getNodeContainer(destNodeId);
@@ -131,13 +130,13 @@ public final class MatchingPortsUtil {
         // Second try to create a matching port for dynamic nodes
         try {
             return createAndGetDestPortIdx(sourcePortType, destNodeId, wfm).orElseThrow();
-        } catch (IllegalArgumentException | NoSuchElementException e) {
+        } catch (IllegalArgumentException | NoSuchElementException e) { // NOSONAR
 
             // Third, consider the default flow variable port if compatible
             if (CoreUtil.arePortTypesCompatible(sourcePortType, FlowVariablePortObject.TYPE)) {
                 return 0;
             }
-            throw new OperationNotAllowedException("Destination port index could not be inferred", e);
+            return -1;
         }
     }
 

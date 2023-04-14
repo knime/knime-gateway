@@ -1117,7 +1117,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var command3 = buildConnectCommandEnt(new NodeIDEnt(27), 0, new NodeIDEnt(1), 0);
         exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
-        assertThat(exception.getMessage(), containsString("Connection can't be added"));
+        assertThat(exception.getMessage(), containsString("Connection couldn't be created"));
 
         // add a connection within a sub-workflow (e.g. within a component)
         var component23Id = new NodeIDEnt(23);
@@ -1245,7 +1245,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // try to connect to an incompatible port
         var ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2)));
-        assertThat(ex.getMessage(), is("Destination port index could not be inferred"));
+        assertThat(ex.getMessage(), is("Node couldn't be created because a connection couldn't be added."));
 
         // redo adding the row filter
         ws().redoWorkflowCommand(wfId, getRootID());

@@ -48,21 +48,18 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.io.IOException;
 import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.NodeRepository;
-import org.knime.gateway.impl.webui.service.commands.util.MatchingPortsUtil;
+import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
+import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
 
 /**
  * Workflow command to insert a node on top of an active connection
@@ -71,7 +68,7 @@ import org.knime.gateway.impl.webui.service.commands.util.MatchingPortsUtil;
  */
 final class InsertNode extends AbstractWorkflowCommand {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeRepository.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(InsertNode.class);
 
     private final InsertNodeCommandEnt m_commandEnt;
 
@@ -127,45 +124,20 @@ final class InsertNode extends AbstractWorkflowCommand {
             var oldPosition = nodeContainer.getUIInformation().getBounds();
             Translate.performTranslation(wfm, Set.of(nodeContainer), Set.of(),
                 new int[]{position.getX() - oldPosition[0], position.getY() - oldPosition[1]});
+            new NodeConnector(wfm, m_insertedNode).connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode)
+                .trackCreation().connect();
         } else if (nodeFactoryEnt != null) { // New node
-            try {
-                m_insertedNode = CoreUtil.createAndAddNode(nodeFactoryEnt.getClassName(),
-                    nodeFactoryEnt.getSettings(), position.getX(), position.getY(), wfm, true);
-            } catch (IOException ex) {
-                throw new OperationNotAllowedException(ex.getMessage());
-            }
+            m_insertedNode = new NodeCreator(wfm, nodeFactoryEnt, position) //
+                .centerNode() //
+                .trackCreation() //
+                .connect(connector -> connector.connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode).trackCreation()) //
+                .create();
         } else {
             throw new OperationNotAllowedException(
                 "Both nodeId and nodeFactoryId are not defined. Provide one of them.");
         }
 
-        // Reconnect
-        try {
-            var incomingPortMapping = MatchingPortsUtil.getMatchingPorts(m_srcNode, m_insertedNode, m_srcPort, wfm);
-            incomingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
-                addConnection(m_srcNode, entrySrcPort, m_insertedNode, entryDestPort, wfm);
-            });
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.warn("Could not find a suitable destination port for incomming connection.");
-        }
-
-        try {
-            var outgoingPortMapping = MatchingPortsUtil.getMatchingPorts(m_insertedNode, m_destNode, null, wfm);
-            outgoingPortMapping.forEach((entrySrcPort, entryDestPort) -> {
-                addConnection(m_insertedNode, entrySrcPort, m_destNode, m_destPort, wfm);
-            });
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.warn("Could not find a suitable destination port for outgoing connection.");
-        }
-
         return true;
-    }
-
-    private static void addConnection(final NodeID src, final int srcPort, final NodeID dest, final int destPort,
-        final WorkflowManager wfm) {
-        if (wfm.canAddConnection(src, srcPort, dest, destPort)) {
-            wfm.addConnection(src, srcPort, dest, destPort);
-        }
     }
 
     @Override
