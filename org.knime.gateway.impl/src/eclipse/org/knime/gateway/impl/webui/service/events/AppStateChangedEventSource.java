@@ -51,8 +51,10 @@ import java.util.Optional;
 
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
+import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt.AppStateChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
@@ -77,6 +79,8 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
     private final AppStateUpdater m_appStateUpdater;
 
+    private final WorkflowProjectManager m_workflowProjectManager;
+
     /**
      * @param eventConsumer consumes the emitted events
      * @param appStateUpdater
@@ -89,6 +93,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         final SpaceProviders spaceProviders, final NodeFactoryProvider nodeFactoryProvider ) {
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;
+        m_workflowProjectManager = workflowProjectManager;
         m_callback = () -> {
             var lastAppState = appStateUpdater.getLastAppState().orElse(null);
             var appState = AppStateEntityFactory.buildAppStateEnt(lastAppState, workflowProjectManager,
@@ -97,7 +102,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
             var appStateEvent = buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(lastAppState, appState));
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setDirtyProjectsMap(workflowProjectManager.getProjectIdsToDirtyMap()).setShouldReplace(true).build();
+                .setDirtyProjectsMap(workflowProjectManager.getDirtyProjectsMap()).setShouldReplace(true).build();
 
             sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class)
                 .setEvents(List.of(appStateEvent, projectDirtyStateEvent)).build());
@@ -108,7 +113,19 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     public Optional<CompositeEventEnt>
         addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
         m_appStateUpdater.addAppStateChangedListener(m_callback);
-        return Optional.empty();
+
+        if (m_workflowProjectManager.getDirtyProjectsMap().size() > 0) {
+            var appStateEvent = EntityBuilderManager.builder(AppStateChangedEventEntBuilder.class)
+                .setAppState(EntityBuilderManager.builder(AppStateEntBuilder.class).build()).build();
+            var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
+                .setDirtyProjectsMap(m_workflowProjectManager.getDirtyProjectsMap()).setShouldReplace(true).build();
+            var compositeEvent = EntityBuilderManager.builder(CompositeEventEntBuilder.class)
+                .setEvents(List.of(appStateEvent, projectDirtyStateEvent)).build();
+
+            return Optional.of(compositeEvent);
+        } else {
+            return Optional.empty();
+        }
     }
 
     private static AppStateChangedEventEnt buildEventEnt(final AppStateEnt newAppStateEnt) {

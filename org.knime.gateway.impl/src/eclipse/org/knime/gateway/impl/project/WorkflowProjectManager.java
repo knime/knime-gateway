@@ -213,7 +213,7 @@ public final class WorkflowProjectManager {
      *
      * @return map from project ids to the dirty flag of the workflows
      */
-    public Map<String, Boolean> getProjectIdsToDirtyMap() {
+    public Map<String, Boolean> getDirtyProjectsMap() {
         return getWorkflowProjectsIds().stream().map(projectId -> {
             var cachedWorkflow = getCachedWorkflow(projectId);
             if (cachedWorkflow.isEmpty()) {

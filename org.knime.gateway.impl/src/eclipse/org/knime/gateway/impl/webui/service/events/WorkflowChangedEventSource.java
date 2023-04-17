@@ -165,7 +165,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             return Optional.empty();
         } else {
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setDirtyProjectsMap(m_workflowProjectManager.getProjectIdsToDirtyMap()).build();
+                .setDirtyProjectsMap(m_workflowProjectManager.getDirtyProjectsMap()).build();
 
             return Optional.of(EntityBuilderManager.builder(CompositeEventEntBuilder.class)
                 .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build());
