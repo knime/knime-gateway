@@ -63,6 +63,8 @@ public interface PortService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param portIdx The port index to be used.
+     * @param viewIdx The index of the specific port view to obtain
+     * @param isSpec TODO
      * @param serviceType 
      * @param dataServiceRequest 
      *
@@ -70,7 +72,7 @@ public interface PortService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    String callPortDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, String serviceType, String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    String callPortDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx, Boolean isSpec, String serviceType, String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Returns all the information on a port view required to render it.
@@ -79,11 +81,13 @@ public interface PortService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param portIdx The port index to be used.
+     * @param viewIdx The index of the specific port view to obtain
+     * @param isSpec TODO
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    Object getPortView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    Object getPortView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx, Boolean isSpec)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
 }

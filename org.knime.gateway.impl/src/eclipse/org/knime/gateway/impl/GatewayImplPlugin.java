@@ -48,12 +48,15 @@
  */
 package org.knime.gateway.impl;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.image.ImagePortObject;
+import org.knime.core.webui.node.port.PortViewGroup;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
 import org.knime.gateway.impl.node.port.ImagePortViewFactory;
+import org.knime.gateway.impl.node.port.TableSpecViewFactory;
 import org.knime.gateway.impl.node.port.TablePortViewFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -69,9 +72,21 @@ public class GatewayImplPlugin implements BundleActivator {
     public void start(final BundleContext context) throws Exception {
         // Temporary solution to register port views with port types/objects.
         // To be removed once it's part of the PortObject/PortType API.
-        PortViewManager.registerPortViewFactory(BufferedDataTable.TYPE, new TablePortViewFactory());
-        PortViewManager.registerPortViewFactory(FlowVariablePortObject.TYPE, new FlowVariablePortViewFactory());
-        PortViewManager.registerPortViewFactory(ImagePortObject.TYPE, new ImagePortViewFactory());
+        PortViewManager.registerPortViews(BufferedDataTable.TYPE,
+            PortViewGroup.<BufferedDataTable, DataTableSpec> builder() //
+                .setSpecViewLabel("Table specification") //
+                .setSpecViewFactory(new TableSpecViewFactory()) //
+                .setViewLabel("Table view") //
+                .setViewFactory(new TablePortViewFactory()) //
+                .build());
+
+        PortViewManager.registerPortViews(FlowVariablePortObject.TYPE, //
+            PortViewGroup.of(new FlowVariablePortViewFactory()) //
+        );
+
+        PortViewManager.registerPortViews(ImagePortObject.TYPE, //
+            PortViewGroup.of(new ImagePortViewFactory()) //
+        );
     }
 
     @Override

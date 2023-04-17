@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,69 +40,66 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jul 19, 2022 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.node.port;
+package org.knime.gateway.json.webui.entity;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortObjectViewFactory;
-import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.page.Page;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.PortViewMetaEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewMetaEnt.DefaultPortViewMetaEntBuilder;
 
 /**
- * Factory for a port view of a {@link FlowVariablePortObject}.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FlowVariablePortViewFactory implements PortObjectViewFactory<FlowVariablePortObject> {
+
+@JsonDeserialize(builder=DefaultPortViewMetaEntBuilder.class)
+@JsonSerialize(as=PortViewMetaEnt.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface PortViewMetaEntMixIn extends PortViewMetaEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("label")
+    public String getLabel();
+    
+    @Override
+    @JsonProperty("state")
+    public StateEnum getState();
+    
 
     /**
-     * {@inheritDoc}
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    @Override
-    public PortView createPortView(final FlowVariablePortObject portObject) {
-        var port = (NodeOutPort)PortContext.getContext().getNodePort();
-        var fos = port.getFlowObjectStack();
-        List<FlowVariable> variables;
-        if (fos != null) {
-            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
-                .collect(Collectors.toList());
-        } else {
-            variables = Collections.emptyList();
-        }
-        return new PortView() {
 
-            @Override
-            public Optional<InitialDataService<List<FlowVariable>>> createInitialDataService() {
-                return Optional.of(InitialDataService.builder(() -> variables).build());
-            }
-
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                return Optional.empty();
-            }
-
-            @Override
-            public Page getPage() {
-                return Page.builder(FlowVariablePortViewFactory.class, "not-used", "vue_component_reference") //
-                    // this is the name of the component used and already present in the frontend
-                    .markAsReusable("FlowVariablePortView")//
-                    .build();
-            }
-
-        };
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface PortViewMetaEntMixInBuilder extends PortViewMetaEntBuilder {
+    
+        @Override
+        public PortViewMetaEntMixIn build();
+    
+        @Override
+        @JsonProperty("label")
+        public PortViewMetaEntMixInBuilder setLabel(final String label);
+        
+        @Override
+        @JsonProperty("state")
+        public PortViewMetaEntMixInBuilder setState(final StateEnum state);
+        
     }
 
+
 }
+

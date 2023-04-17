@@ -50,11 +50,14 @@ package org.knime.gateway.api.webui.util;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
@@ -94,14 +97,26 @@ public final class PortTypeEntityFactory {
                 .map(CoreUtil::getPortTypeId)//
                 .collect(Collectors.toList());
         }
+        var viewLabels = unzip(PortViewManager.getPortViewLabels(ptype));
         return builder(PortTypeEntBuilder.class)//
             .setName(ptype.getName())//
             .setKind(kind)//
             .setColor(EntityFactory.Workflow.hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
             .setHidden(ptype.isHidden() ? Boolean.TRUE : null)//
-            .setHasView(hasPortView(ptype, includeInteractionInfo))//
+            .setPortSpecViews(includeInteractionInfo ? viewLabels.getLeft() : null)
+            .setPortViews(includeInteractionInfo ? viewLabels.getRight() : null)
             .build();
+    }
+
+    private <V> Pair<List<V>, List<V>> unzip(List<Pair<V, V>> pairs) {
+        List<V> l1 = new ArrayList<>();
+        List<V> l2 = new ArrayList<>();
+        pairs.forEach(pair -> {
+            l1.add(pair.getLeft());
+            l2.add(pair.getRight());
+        });
+        return ImmutablePair.of(l1, l2);
     }
 
     private PortTypeEnt.KindEnum getPortTypeKind(final PortType ptype) {
@@ -114,10 +129,6 @@ public final class PortTypeEntityFactory {
         } else {
             return PortTypeEnt.KindEnum.OTHER;
         }
-    }
-
-    private Boolean hasPortView(final PortType portType, final boolean includeInteractionInfo) {
-        return includeInteractionInfo && PortViewManager.hasPortView(portType) ? Boolean.TRUE : null;
     }
 
     private boolean portTypesAreDifferentButCompatible(final PortType p1, final PortType p2) {

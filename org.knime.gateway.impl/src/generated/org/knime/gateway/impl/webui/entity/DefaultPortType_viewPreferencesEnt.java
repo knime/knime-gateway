@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,69 +40,77 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jul 19, 2022 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.node.port;
+package org.knime.gateway.impl.webui.entity;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortObjectViewFactory;
-import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.page.Page;
+
+import org.knime.gateway.api.webui.entity.PortType_viewPreferencesEnt;
 
 /**
- * Factory for a port view of a {@link FlowVariablePortObject}.
+ * Mapping of node state to view to show when node enters that state. Properties correspond to node states. Values are indices into &#x60;availableViews&#x60;.
+ *
+ * @param configured
+ * @param executed
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FlowVariablePortViewFactory implements PortObjectViewFactory<FlowVariablePortObject> {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultPortType_viewPreferencesEnt(
+    Integer configured,
+    Integer executed) implements PortType_viewPreferencesEnt {
 
     /**
-     * {@inheritDoc}
+     * Validation for required parameters not being {@code null}.
      */
+    public DefaultPortType_viewPreferencesEnt {
+    }
+
     @Override
-    public PortView createPortView(final FlowVariablePortObject portObject) {
-        var port = (NodeOutPort)PortContext.getContext().getNodePort();
-        var fos = port.getFlowObjectStack();
-        List<FlowVariable> variables;
-        if (fos != null) {
-            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
-                .collect(Collectors.toList());
-        } else {
-            variables = Collections.emptyList();
+    public String getTypeID() {
+        return "PortType_viewPreferences";
+    }
+  
+    @Override
+    public Integer getConfigured() {
+        return configured;
+    }
+    
+    @Override
+    public Integer getExecuted() {
+        return executed;
+    }
+    
+    /**
+     * A builder for {@link DefaultPortType_viewPreferencesEnt}.
+     */
+    public static class DefaultPortType_viewPreferencesEntBuilder implements PortType_viewPreferencesEntBuilder {
+
+        private Integer m_configured;
+
+        private Integer m_executed;
+
+        @Override
+        public DefaultPortType_viewPreferencesEntBuilder setConfigured(Integer configured) {
+             m_configured = configured;
+             return this;
         }
-        return new PortView() {
 
-            @Override
-            public Optional<InitialDataService<List<FlowVariable>>> createInitialDataService() {
-                return Optional.of(InitialDataService.builder(() -> variables).build());
-            }
+        @Override
+        public DefaultPortType_viewPreferencesEntBuilder setExecuted(Integer executed) {
+             m_executed = executed;
+             return this;
+        }
 
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                return Optional.empty();
-            }
-
-            @Override
-            public Page getPage() {
-                return Page.builder(FlowVariablePortViewFactory.class, "not-used", "vue_component_reference") //
-                    // this is the name of the component used and already present in the frontend
-                    .markAsReusable("FlowVariablePortView")//
-                    .build();
-            }
-
-        };
+        @Override
+        public DefaultPortType_viewPreferencesEnt build() {
+            return new DefaultPortType_viewPreferencesEnt(
+                immutable(m_configured),
+                immutable(m_executed));
+        }
+    
     }
 
 }

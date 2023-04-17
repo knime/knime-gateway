@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,69 +40,81 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jul 19, 2022 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.node.port;
+package org.knime.gateway.api.webui.entity;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortObjectViewFactory;
-import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.page.Page;
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Factory for a port view of a {@link FlowVariablePortObject}.
- *
+ * Mapping of node state to view to show when node enters that state. Properties correspond to node states. Values are indices into &#x60;availableViews&#x60;.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FlowVariablePortViewFactory implements PortObjectViewFactory<FlowVariablePortObject> {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface PortType_viewPreferencesEnt extends GatewayEntity {
+
+
+  /**
+   * Get configured
+   * @return configured 
+   **/
+  public Integer getConfigured();
+
+  /**
+   * Get executed
+   * @return executed 
+   **/
+  public Integer getExecuted();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PortType_viewPreferencesEnt)other;
+      valueConsumer.accept("configured", Pair.create(getConfigured(), e.getConfigured()));
+      valueConsumer.accept("executed", Pair.create(getExecuted(), e.getExecuted()));
+  }
 
     /**
-     * {@inheritDoc}
+     * The builder for the entity.
      */
-    @Override
-    public PortView createPortView(final FlowVariablePortObject portObject) {
-        var port = (NodeOutPort)PortContext.getContext().getNodePort();
-        var fos = port.getFlowObjectStack();
-        List<FlowVariable> variables;
-        if (fos != null) {
-            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
-                .collect(Collectors.toList());
-        } else {
-            variables = Collections.emptyList();
-        }
-        return new PortView() {
+    public interface PortType_viewPreferencesEntBuilder extends GatewayEntityBuilder<PortType_viewPreferencesEnt> {
 
-            @Override
-            public Optional<InitialDataService<List<FlowVariable>>> createInitialDataService() {
-                return Optional.of(InitialDataService.builder(() -> variables).build());
-            }
-
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                return Optional.empty();
-            }
-
-            @Override
-            public Page getPage() {
-                return Page.builder(FlowVariablePortViewFactory.class, "not-used", "vue_component_reference") //
-                    // this is the name of the component used and already present in the frontend
-                    .markAsReusable("FlowVariablePortView")//
-                    .build();
-            }
-
-        };
+        /**
+   		 * Set configured
+         * 
+         * @param configured the property value,  
+         * @return this entity builder for chaining
+         */
+        PortType_viewPreferencesEntBuilder setConfigured(Integer configured);
+        
+        /**
+   		 * Set executed
+         * 
+         * @param executed the property value,  
+         * @return this entity builder for chaining
+         */
+        PortType_viewPreferencesEntBuilder setExecuted(Integer executed);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        PortType_viewPreferencesEnt build();
+    
     }
 
 }

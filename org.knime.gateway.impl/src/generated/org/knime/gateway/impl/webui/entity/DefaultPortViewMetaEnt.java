@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,69 +40,89 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jul 19, 2022 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.node.port;
+package org.knime.gateway.impl.webui.entity;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortObjectViewFactory;
-import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.page.Page;
+
+import org.knime.gateway.api.webui.entity.PortViewMetaEnt;
 
 /**
- * Factory for a port view of a {@link FlowVariablePortObject}.
+ * Identifies a port view
+ *
+ * @param label
+ * @param state
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FlowVariablePortViewFactory implements PortObjectViewFactory<FlowVariablePortObject> {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultPortViewMetaEnt(
+    String label,
+    StateEnum state) implements PortViewMetaEnt {
 
     /**
-     * {@inheritDoc}
+     * Validation for required parameters not being {@code null}.
      */
-    @Override
-    public PortView createPortView(final FlowVariablePortObject portObject) {
-        var port = (NodeOutPort)PortContext.getContext().getNodePort();
-        var fos = port.getFlowObjectStack();
-        List<FlowVariable> variables;
-        if (fos != null) {
-            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
-                .collect(Collectors.toList());
-        } else {
-            variables = Collections.emptyList();
+    public DefaultPortViewMetaEnt {
+        if(label == null) {
+            throw new IllegalArgumentException("<label> must not be null.");
         }
-        return new PortView() {
+        if(state == null) {
+            throw new IllegalArgumentException("<state> must not be null.");
+        }
+    }
 
-            @Override
-            public Optional<InitialDataService<List<FlowVariable>>> createInitialDataService() {
-                return Optional.of(InitialDataService.builder(() -> variables).build());
-            }
+    @Override
+    public String getTypeID() {
+        return "PortViewMeta";
+    }
+  
+    @Override
+    public String getLabel() {
+        return label;
+    }
+    
+    @Override
+    public StateEnum getState() {
+        return state;
+    }
+    
+    /**
+     * A builder for {@link DefaultPortViewMetaEnt}.
+     */
+    public static class DefaultPortViewMetaEntBuilder implements PortViewMetaEntBuilder {
 
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                return Optional.empty();
-            }
+        private String m_label;
 
-            @Override
-            public Page getPage() {
-                return Page.builder(FlowVariablePortViewFactory.class, "not-used", "vue_component_reference") //
-                    // this is the name of the component used and already present in the frontend
-                    .markAsReusable("FlowVariablePortView")//
-                    .build();
-            }
+        private StateEnum m_state;
 
-        };
+        @Override
+        public DefaultPortViewMetaEntBuilder setLabel(String label) {
+             if(label == null) {
+                 throw new IllegalArgumentException("<label> must not be null.");
+             }
+             m_label = label;
+             return this;
+        }
+
+        @Override
+        public DefaultPortViewMetaEntBuilder setState(StateEnum state) {
+             if(state == null) {
+                 throw new IllegalArgumentException("<state> must not be null.");
+             }
+             m_state = state;
+             return this;
+        }
+
+        @Override
+        public DefaultPortViewMetaEnt build() {
+            return new DefaultPortViewMetaEnt(
+                immutable(m_label),
+                immutable(m_state));
+        }
+    
     }
 
 }

@@ -81,8 +81,8 @@ public class JsonRpcPortServiceWrapper implements PortService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public String callPortDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="dataServiceRequest") String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.get().callPortDataService(projectId, workflowId, nodeId, portIdx, serviceType, dataServiceRequest);    
+    public String callPortDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="viewIdx") Integer viewIdx, @JsonRpcParam(value="isSpec") Boolean isSpec, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="dataServiceRequest") String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().callPortDataService(projectId, workflowId, nodeId, portIdx, viewIdx, isSpec, serviceType, dataServiceRequest);    
     }
 
 	/**
@@ -96,8 +96,8 @@ public class JsonRpcPortServiceWrapper implements PortService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public Object getPortView(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.get().getPortView(projectId, workflowId, nodeId, portIdx);    
+    public Object getPortView(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="viewIdx") Integer viewIdx, @JsonRpcParam(value="isSpec") Boolean isSpec)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().getPortView(projectId, workflowId, nodeId, portIdx, viewIdx, isSpec);    
     }
 
 }

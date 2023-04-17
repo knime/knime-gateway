@@ -63,8 +63,8 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.port.PortContext;
+import org.knime.core.webui.node.port.PortObjectViewFactory;
 import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -72,7 +72,7 @@ import org.knime.core.webui.page.Page;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class ImagePortViewFactory implements PortViewFactory<ImagePortObject> {
+public final class ImagePortViewFactory implements PortObjectViewFactory<ImagePortObject> {
 
     /*
      * This map is sort of a 'very short term cache'. It keeps image data for a certain image id. The image-id is returned

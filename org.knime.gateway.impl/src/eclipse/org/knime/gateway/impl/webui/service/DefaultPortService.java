@@ -48,8 +48,11 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.function.Function;
+
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.NodePortWrapper;
@@ -85,8 +88,8 @@ public class DefaultPortService implements PortService {
      * {@inheritDoc}
      */
     @Override
-    public Object getPortView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Integer portIdx) throws NodeNotFoundException, InvalidRequestException {
+    public Object getPortView(String projectId, NodeIDEnt workflowId, NodeIDEnt nodeId, Integer portIdx,
+        Integer viewIdx, Boolean isSpec) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
             nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
@@ -94,17 +97,19 @@ public class DefaultPortService implements PortService {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
 
+        Function<NodeContainerState, Boolean> executionStateValid =
+            (state) -> isSpec ? state.isConfigured() : state.isExecuted();
         if (nc instanceof SingleNodeContainer) {
-            if (portIdx != 0 && !nc.getNodeContainerState().isExecuted()) {
+            var state = nc.getNodeContainerState();
+            if (portIdx != 0 && !executionStateValid.apply(state)) {
                 throw new InvalidRequestException(String.format(
-                    "No port view available because the respective node %s is not executed and there is no data.",
-                    nc.getNameWithID()));
+                    "No port view available at index %d for current state of node %s.", portIdx, nc.getNameWithID()));
             }
         } else {
-            if (!((WorkflowManager)nc).getOutPort(portIdx).getNodeContainerState().isExecuted()) {
-                throw new InvalidRequestException(
-                    String.format("No port view available at port index %d for node %s because there is no data.",
-                        portIdx, nc.getNameWithID()));
+            var state = ((WorkflowManager)nc).getOutPort(portIdx).getNodeContainerState();
+            if (!executionStateValid.apply(state)) {
+                throw new InvalidRequestException(String.format(
+                    "No port view available at index %d for current state of node %s.", portIdx, nc.getNameWithID()));
             }
         }
 
@@ -115,8 +120,8 @@ public class DefaultPortService implements PortService {
                     nc.getNameWithID()));
         }
 
-        if (PortViewManager.hasPortView(outPort.getPortType())) {
-            return new PortViewEnt(nc, portIdx);
+        if (PortViewManager.hasPortView(outPort.getPortType(), viewIdx, isSpec)) {
+            return new PortViewEnt(nc, portIdx, viewIdx, isSpec);
         } else {
             throw new InvalidRequestException(
                 String.format("Port at index %d for node %s doesn't provide a view", portIdx, nc.getNameWithID()));
@@ -128,7 +133,7 @@ public class DefaultPortService implements PortService {
      */
     @Override
     public String callPortDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Integer portIdx, final String serviceType, final String body)
+        final Integer portIdx, final Integer viewIdx, final Boolean isSpec, final String serviceType, final String body)
         throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
@@ -139,9 +144,9 @@ public class DefaultPortService implements PortService {
 
         var portViewManager = PortViewManager.getInstance();
         if ("initial_data".equals(serviceType)) {
-            return portViewManager.callInitialDataService(NodePortWrapper.of(nc, portIdx));
+            return portViewManager.callInitialDataService(NodePortWrapper.of(nc, portIdx, viewIdx, isSpec));
         } else if ("data".equals(serviceType)) {
-            return portViewManager.callRpcDataService(NodePortWrapper.of(nc, portIdx), body);
+            return portViewManager.callRpcDataService(NodePortWrapper.of(nc, portIdx, viewIdx, isSpec), body);
         } else {
             throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
         }

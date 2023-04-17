@@ -42,68 +42,68 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Jul 19, 2022 (hornm): created
  */
 package org.knime.gateway.impl.node.port;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortObjectViewFactory;
+import org.knime.core.webui.node.port.PortObjectSpecViewFactory;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.page.Page;
 
 /**
- * Factory for a port view of a {@link FlowVariablePortObject}.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * Provides information on the table spec.
+ * 
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public final class FlowVariablePortViewFactory implements PortObjectViewFactory<FlowVariablePortObject> {
-
-    /**
-     * {@inheritDoc}
-     */
+@SuppressWarnings("restriction")
+public class TableSpecViewFactory implements PortObjectSpecViewFactory<DataTableSpec> {
     @Override
-    public PortView createPortView(final FlowVariablePortObject portObject) {
-        var port = (NodeOutPort)PortContext.getContext().getNodePort();
-        var fos = port.getFlowObjectStack();
-        List<FlowVariable> variables;
-        if (fos != null) {
-            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
-                .collect(Collectors.toList());
-        } else {
-            variables = Collections.emptyList();
-        }
-        return new PortView() {
+    public PortView createPortView(final DataTableSpec portObjectSpec) {
 
+        var nCols = portObjectSpec.getNumColumns();
+        var colSpecs = IntStream.range(0, nCols) //
+            .mapToObj(portObjectSpec::getColumnSpec) //
+            .map(this::extractProperties) //
+            .toList();
+
+        return new PortView() {
             @Override
-            public Optional<InitialDataService<List<FlowVariable>>> createInitialDataService() {
-                return Optional.of(InitialDataService.builder(() -> variables).build());
+            public Page getPage() {
+                return Page.builder(TableSpecViewFactory.class, "not-used", "vue_component_reference") //
+                    .markAsReusable("TableSpecView") //
+                    .build();
+            }
+
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            @Override
+            public Optional<InitialDataService> createInitialDataService() {
+                return Optional.of(InitialDataService.builder(() -> colSpecs).build());
             }
 
             @Override
             public Optional<RpcDataService> createRpcDataService() {
                 return Optional.empty();
             }
-
-            @Override
-            public Page getPage() {
-                return Page.builder(FlowVariablePortViewFactory.class, "not-used", "vue_component_reference") //
-                    // this is the name of the component used and already present in the frontend
-                    .markAsReusable("FlowVariablePortView")//
-                    .build();
-            }
-
         };
     }
 
+    private ColSpec extractProperties(final DataColumnSpec originalColSpec) {
+        return new ColSpec(originalColSpec.getName(), originalColSpec.getType().getName());
+    }
+
+    /**
+     * Record to assemble subset of ColSpec attributes
+     * 
+     * @param name
+     * @param dataType
+     */
+    record ColSpec(String name, String dataType) {
+
+    }
 }

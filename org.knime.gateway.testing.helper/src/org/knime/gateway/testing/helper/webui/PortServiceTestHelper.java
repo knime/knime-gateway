@@ -97,34 +97,41 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // get table port view for a non-executed node
         var message =
-            assertThrows(InvalidRequestException.class, () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1))
+            assertThrows(InvalidRequestException.class,
+                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
 
         // get flow variable port view 0
-        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0);
+        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 0, false);
         assertPortView(portView, "root:1", "FlowVariablePortView", "VUE_COMPONENT_REFERENCE");
+
+        // check table spec view
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0, true);
+        assertPortView(portView, "root:1", "TableSpecView", "VUE_COMPONENT_REFERENCE");
 
         executeWorkflow(wfId);
 
         // get table port view 1
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1);
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false);
         assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
 
         // get data for an inactive port
         message =
-            assertThrows(InvalidRequestException.class, () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(14), 1))
+            assertThrows(InvalidRequestException.class,
+                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(14), 1, 0, false))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
 
         // get data for a metanode port
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0);
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 0, false);
         var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
         assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("tableview"));
 
         // get data for a metanode port that is not executed
         message =
-            assertThrows(InvalidRequestException.class, () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 2))
+            assertThrows(InvalidRequestException.class,
+                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 2, 0, false))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
     }
@@ -139,11 +146,11 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeWorkflow(wfId);
 
         // get port view for a component
-        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(23), 1);
+        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(23), 1, 0, false);
         assertPortView(portView, "root:23", "tableview", "VUE_COMPONENT_LIB");
 
         // get port view for a metanode
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0);
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 0, false);
         assertPortView(portView, "root:6", "tableview", "VUE_COMPONENT_LIB");
     }
 
@@ -170,14 +177,15 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeWorkflow(wfId);
 
         // initialData
-        var initialData = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "initial_data", "");
+        var initialData =
+            ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false, "initial_data", "");
         var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
         assertThat(jsonNode.get("result").get("table"), notNullValue());
 
         // data
         var jsonRpcRequest =
             RpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null, "false", "true", "false");
-        var data = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, "data", jsonRpcRequest);
+        var data = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false, "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("rows"), notNullValue());
         assertThat(jsonNode.get("id").intValue(), is(1));

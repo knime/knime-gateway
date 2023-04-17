@@ -57,7 +57,8 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
  * @param color
  * @param compatibleTypes
  * @param hidden
- * @param hasView
+ * @param portViews
+ * @param portSpecViews
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -68,7 +69,8 @@ public record DefaultPortTypeEnt(
     String color,
     java.util.List<String> compatibleTypes,
     Boolean hidden,
-    Boolean hasView) implements PortTypeEnt {
+    java.util.List<String> portViews,
+    java.util.List<String> portSpecViews) implements PortTypeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -113,8 +115,13 @@ public record DefaultPortTypeEnt(
     }
     
     @Override
-    public Boolean hasView() {
-        return hasView;
+    public java.util.List<String> getPortViews() {
+        return portViews;
+    }
+    
+    @Override
+    public java.util.List<String> getPortSpecViews() {
+        return portSpecViews;
     }
     
     /**
@@ -132,7 +139,9 @@ public record DefaultPortTypeEnt(
 
         private Boolean m_hidden;
 
-        private Boolean m_hasView;
+        private java.util.List<String> m_portViews;
+
+        private java.util.List<String> m_portSpecViews;
 
         @Override
         public DefaultPortTypeEntBuilder setName(String name) {
@@ -171,8 +180,14 @@ public record DefaultPortTypeEnt(
         }
 
         @Override
-        public DefaultPortTypeEntBuilder setHasView(Boolean hasView) {
-             m_hasView = hasView;
+        public DefaultPortTypeEntBuilder setPortViews(java.util.List<String> portViews) {
+             m_portViews = portViews;
+             return this;
+        }
+
+        @Override
+        public DefaultPortTypeEntBuilder setPortSpecViews(java.util.List<String> portSpecViews) {
+             m_portSpecViews = portSpecViews;
              return this;
         }
 
@@ -184,7 +199,8 @@ public record DefaultPortTypeEnt(
                 immutable(m_color),
                 immutable(m_compatibleTypes),
                 immutable(m_hidden),
-                immutable(m_hasView));
+                immutable(m_portViews),
+                immutable(m_portSpecViews));
         }
     
     }

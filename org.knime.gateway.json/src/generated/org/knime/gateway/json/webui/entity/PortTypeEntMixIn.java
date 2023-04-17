@@ -90,8 +90,12 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
     public Boolean isHidden();
     
     @Override
-    @JsonProperty("hasView")
-    public Boolean hasView();
+    @JsonProperty("portViews")
+    public java.util.List<String> getPortViews();
+    
+    @Override
+    @JsonProperty("portSpecViews")
+    public java.util.List<String> getPortSpecViews();
     
 
     /**
@@ -127,8 +131,12 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
         public PortTypeEntMixInBuilder setHidden(final Boolean hidden);
         
         @Override
-        @JsonProperty("hasView")
-        public PortTypeEntMixInBuilder setHasView(final Boolean hasView);
+        @JsonProperty("portViews")
+        public PortTypeEntMixInBuilder setPortViews(final java.util.List<String> portViews);
+        
+        @Override
+        @JsonProperty("portSpecViews")
+        public PortTypeEntMixInBuilder setPortSpecViews(final java.util.List<String> portSpecViews);
         
     }
 

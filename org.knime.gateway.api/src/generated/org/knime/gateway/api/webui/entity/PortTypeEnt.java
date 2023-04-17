@@ -119,10 +119,16 @@ public interface PortTypeEnt extends GatewayEntity {
   public Boolean isHidden();
 
   /**
-   * Indicates whether this port type has a view. Property is only available if true and if interaction info is to be included. 
-   * @return hasView 
+   * Display labels of port views that display data. Related to the table specification view at the same index in &#x60;portSpecViews&#x60;.
+   * @return portViews 
    **/
-  public Boolean hasView();
+  public java.util.List<String> getPortViews();
+
+  /**
+   * Display labels of port views that display table specifications. Related to the data view in at the  same index in &#x60;portViews&#x60;. May contain &#x60;null&#x60;-entries if no specification view is available for  some data view.
+   * @return portSpecViews 
+   **/
+  public java.util.List<String> getPortSpecViews();
 
 
   @Override
@@ -134,7 +140,8 @@ public interface PortTypeEnt extends GatewayEntity {
       valueConsumer.accept("color", Pair.create(getColor(), e.getColor()));
       valueConsumer.accept("compatibleTypes", Pair.create(getCompatibleTypes(), e.getCompatibleTypes()));
       valueConsumer.accept("hidden", Pair.create(isHidden(), e.isHidden()));
-      valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
+      valueConsumer.accept("portViews", Pair.create(getPortViews(), e.getPortViews()));
+      valueConsumer.accept("portSpecViews", Pair.create(getPortSpecViews(), e.getPortSpecViews()));
   }
 
     /**
@@ -183,12 +190,20 @@ public interface PortTypeEnt extends GatewayEntity {
         PortTypeEntBuilder setHidden(Boolean hidden);
         
         /**
-         * Indicates whether this port type has a view. Property is only available if true and if interaction info is to be included. 
+         * Display labels of port views that display data. Related to the table specification view at the same index in &#x60;portSpecViews&#x60;.
          * 
-         * @param hasView the property value,  
+         * @param portViews the property value,  
          * @return this entity builder for chaining
          */
-        PortTypeEntBuilder setHasView(Boolean hasView);
+        PortTypeEntBuilder setPortViews(java.util.List<String> portViews);
+        
+        /**
+         * Display labels of port views that display table specifications. Related to the data view in at the  same index in &#x60;portViews&#x60;. May contain &#x60;null&#x60;-entries if no specification view is available for  some data view.
+         * 
+         * @param portSpecViews the property value,  
+         * @return this entity builder for chaining
+         */
+        PortTypeEntBuilder setPortSpecViews(java.util.List<String> portSpecViews);
         
         
         /**
