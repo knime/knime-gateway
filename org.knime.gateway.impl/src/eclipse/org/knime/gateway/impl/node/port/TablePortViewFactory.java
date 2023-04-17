@@ -55,7 +55,7 @@ import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortObjectViewFactory;
+import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
@@ -66,7 +66,7 @@ import org.knime.core.webui.page.Page;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class TablePortViewFactory implements PortObjectViewFactory<BufferedDataTable> {
+public final class TablePortViewFactory implements PortViewFactory<BufferedDataTable> {
 
     @Override
     public PortView createPortView(final BufferedDataTable table) {

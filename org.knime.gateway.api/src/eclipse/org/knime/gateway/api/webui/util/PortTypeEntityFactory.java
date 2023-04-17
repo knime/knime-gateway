@@ -110,6 +110,9 @@ public final class PortTypeEntityFactory {
     }
 
     private <V> Pair<List<V>, List<V>> unzip(List<Pair<V, V>> pairs) {
+        if (pairs.isEmpty()) {
+            return ImmutablePair.nullPair();
+        }
         List<V> l1 = new ArrayList<>();
         List<V> l2 = new ArrayList<>();
         pairs.forEach(pair -> {

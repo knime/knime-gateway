@@ -52,7 +52,7 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.port.PortObjectSpecViewFactory;
+import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.page.Page;
 
@@ -62,7 +62,7 @@ import org.knime.core.webui.page.Page;
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("restriction")
-public class TableSpecViewFactory implements PortObjectSpecViewFactory<DataTableSpec> {
+public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> {
     @Override
     public PortView createPortView(final DataTableSpec portObjectSpec) {
 
@@ -103,7 +103,6 @@ public class TableSpecViewFactory implements PortObjectSpecViewFactory<DataTable
      * @param name
      * @param dataType
      */
-    record ColSpec(String name, String dataType) {
-
+    record ColSpec(String name, String dataType) { // NOSONAR: record
     }
 }

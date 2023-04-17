@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.NodeContainer;
@@ -88,8 +88,9 @@ public class DefaultPortService implements PortService {
      * {@inheritDoc}
      */
     @Override
-    public Object getPortView(String projectId, NodeIDEnt workflowId, NodeIDEnt nodeId, Integer portIdx,
-        Integer viewIdx, Boolean isSpec) throws NodeNotFoundException, InvalidRequestException {
+    public Object getPortView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Integer portIdx, final Integer viewIdx, final Boolean isSpec)
+        throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
             nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
@@ -97,17 +98,17 @@ public class DefaultPortService implements PortService {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
 
-        Function<NodeContainerState, Boolean> executionStateValid =
-            (state) -> isSpec ? state.isConfigured() : state.isExecuted();
+        Predicate<NodeContainerState> executionStateValid =
+            state -> Boolean.TRUE.equals(isSpec) ? state.isConfigured() : state.isExecuted();
         if (nc instanceof SingleNodeContainer) {
             var state = nc.getNodeContainerState();
-            if (portIdx != 0 && !executionStateValid.apply(state)) {
+            if (portIdx != 0 && !executionStateValid.test(state)) {
                 throw new InvalidRequestException(String.format(
                     "No port view available at index %d for current state of node %s.", portIdx, nc.getNameWithID()));
             }
         } else {
             var state = ((WorkflowManager)nc).getOutPort(portIdx).getNodeContainerState();
-            if (!executionStateValid.apply(state)) {
+            if (!executionStateValid.test(state)) {
                 throw new InvalidRequestException(String.format(
                     "No port view available at index %d for current state of node %s.", portIdx, nc.getNameWithID()));
             }
@@ -124,7 +125,13 @@ public class DefaultPortService implements PortService {
             return new PortViewEnt(nc, portIdx, viewIdx, isSpec);
         } else {
             throw new InvalidRequestException(
-                String.format("Port at index %d for node %s doesn't provide a view", portIdx, nc.getNameWithID()));
+                String.format("Port %d for node %s doesn't provide a %s view at index %d",
+                        portIdx,
+                        nc.getNameWithID(),
+                        Boolean.TRUE.equals(isSpec) ? "port object spec" : "port object",
+                        viewIdx
+                )
+            );
         }
     }
 

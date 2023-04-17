@@ -10,11 +10,15 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.data.def.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.LongCell;
+import org.knime.core.data.def.StringCell;
 
-@SuppressWarnings({"javadoc", "restriction", "rawtypes"})
+@SuppressWarnings({"restriction"})
 public class TableSpecViewFactoryTest {
 
     private static final DataColumnSpec[] COLSPECS = { //
@@ -43,7 +47,7 @@ public class TableSpecViewFactoryTest {
         var jsonNode = new ObjectMapper().readTree(initialData);
         var res = jsonNode.get("result");
         assertThat(res.size(), is(COLSPECS.length));
-        for (int i = 0; i < COLSPECS.length; i++) {
+        for (var i = 0; i < COLSPECS.length; i++) {
             assertThat(res.get(i).get("name").textValue(), is(COLSPECS[i].getName()));
             assertThat(res.get(i).get("dataType").textValue(), is(COLSPECS[i].getType().getName()));
         }

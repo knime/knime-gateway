@@ -58,7 +58,7 @@ import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortObjectViewFactory;
+import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.page.Page;
 
@@ -67,7 +67,7 @@ import org.knime.core.webui.page.Page;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FlowVariablePortViewFactory implements PortObjectViewFactory<FlowVariablePortObject> {
+public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVariablePortObject> {
 
     /**
      * {@inheritDoc}

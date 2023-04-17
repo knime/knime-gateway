@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl;
 
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.image.ImagePortObject;
@@ -56,8 +55,8 @@ import org.knime.core.webui.node.port.PortViewGroup;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
 import org.knime.gateway.impl.node.port.ImagePortViewFactory;
-import org.knime.gateway.impl.node.port.TableSpecViewFactory;
 import org.knime.gateway.impl.node.port.TablePortViewFactory;
+import org.knime.gateway.impl.node.port.TableSpecViewFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

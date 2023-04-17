@@ -58,7 +58,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.workflow.*;
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeOutPort;
@@ -76,6 +76,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("restriction")
 public class FlowVariablePortViewFactoryTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();

@@ -119,13 +119,13 @@ public interface PortTypeEnt extends GatewayEntity {
   public Boolean isHidden();
 
   /**
-   * Display labels of port views that display data. Related to the table specification view at the same index in &#x60;portSpecViews&#x60;.
+   * Display labels of port object views. Corresponds to the port object spec view at the same index  in &#x60;portSpecViews&#x60; (if present).
    * @return portViews 
    **/
   public java.util.List<String> getPortViews();
 
   /**
-   * Display labels of port views that display table specifications. Related to the data view in at the  same index in &#x60;portViews&#x60;. May contain &#x60;null&#x60;-entries if no specification view is available for  some data view.
+   * Display labels of port object spec views. Corresponds to the port object view in the  same index in &#x60;portViews&#x60; (if present).
    * @return portSpecViews 
    **/
   public java.util.List<String> getPortSpecViews();
@@ -190,7 +190,7 @@ public interface PortTypeEnt extends GatewayEntity {
         PortTypeEntBuilder setHidden(Boolean hidden);
         
         /**
-         * Display labels of port views that display data. Related to the table specification view at the same index in &#x60;portSpecViews&#x60;.
+         * Display labels of port object views. Corresponds to the port object spec view at the same index  in &#x60;portSpecViews&#x60; (if present).
          * 
          * @param portViews the property value,  
          * @return this entity builder for chaining
@@ -198,7 +198,7 @@ public interface PortTypeEnt extends GatewayEntity {
         PortTypeEntBuilder setPortViews(java.util.List<String> portViews);
         
         /**
-         * Display labels of port views that display table specifications. Related to the data view in at the  same index in &#x60;portViews&#x60;. May contain &#x60;null&#x60;-entries if no specification view is available for  some data view.
+         * Display labels of port object spec views. Corresponds to the port object view in the  same index in &#x60;portViews&#x60; (if present).
          * 
          * @param portSpecViews the property value,  
          * @return this entity builder for chaining
