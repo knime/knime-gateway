@@ -201,22 +201,17 @@ public final class NodeCreator {
             trackNodeCreation(nc, m_isNodeAddedViaQuickNodeInsertion);
         }
 
-        if (m_nodeConnector != null) {
-            if (!m_nodeConnector.connect(nodeId) && m_failOnConnectionAttempt) {
-                m_wfm.removeNode(nodeId);
-                throw new OperationNotAllowedException(
-                    "Node couldn't be created because a connection couldn't be added.");
-            } else {
-                // TODO log warning?
-                // LOGGER.warn("Could not find a suitable destination port for incomming connection.");
-                // LOGGER.warn("Could not find a suitable destination port for outgoing connection.");
-            }
+        if (m_nodeConnector != null && !m_nodeConnector.connect(nodeId) && m_failOnConnectionAttempt) {
+            m_wfm.removeNode(nodeId);
+            throw new OperationNotAllowedException("Node couldn't be created because a connection couldn't be added.");
         }
 
         return nodeId;
     }
 
     /**
+     * Tracks the node creation via the {@link NodeTimer}.
+     *
      * @param nc the node that has been added
      * @param isNodeAddedViaQuickNodeInsertion
      */

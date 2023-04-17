@@ -57,8 +57,8 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 /**
  * Helper to connect a node to a upstream and/or downstream node.
  *
- * Mandatory parameters to create the node are passed via the constructor, optional ones via individual methods. The
- * node is finally created with the {@link #connect()}-method.
+ * Mandatory parameters to connect the node are passed via the constructor, optional ones via individual methods. The
+ * node is finally connected with the {@link #connect()}-method.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
