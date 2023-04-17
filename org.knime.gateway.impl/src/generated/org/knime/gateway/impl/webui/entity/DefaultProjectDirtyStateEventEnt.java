@@ -54,12 +54,14 @@ import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
  * Event for changes to the dirtyState of a project/workflow.
  *
  * @param dirtyProjectsMap
+ * @param shouldReplace
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultProjectDirtyStateEventEnt(
-    java.util.Map<String, Boolean> dirtyProjectsMap) implements ProjectDirtyStateEventEnt {
+    java.util.Map<String, Boolean> dirtyProjectsMap,
+    Boolean shouldReplace) implements ProjectDirtyStateEventEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -77,12 +79,19 @@ public record DefaultProjectDirtyStateEventEnt(
         return dirtyProjectsMap;
     }
     
+    @Override
+    public Boolean isShouldReplace() {
+        return shouldReplace;
+    }
+    
     /**
      * A builder for {@link DefaultProjectDirtyStateEventEnt}.
      */
     public static class DefaultProjectDirtyStateEventEntBuilder implements ProjectDirtyStateEventEntBuilder {
 
         private java.util.Map<String, Boolean> m_dirtyProjectsMap;
+
+        private Boolean m_shouldReplace = false;
 
         @Override
         public DefaultProjectDirtyStateEventEntBuilder setDirtyProjectsMap(java.util.Map<String, Boolean> dirtyProjectsMap) {
@@ -91,9 +100,16 @@ public record DefaultProjectDirtyStateEventEnt(
         }
 
         @Override
+        public DefaultProjectDirtyStateEventEntBuilder setShouldReplace(Boolean shouldReplace) {
+             m_shouldReplace = shouldReplace;
+             return this;
+        }
+
+        @Override
         public DefaultProjectDirtyStateEventEnt build() {
             return new DefaultProjectDirtyStateEventEnt(
-                immutable(m_dirtyProjectsMap));
+                immutable(m_dirtyProjectsMap),
+                immutable(m_shouldReplace));
         }
     
     }

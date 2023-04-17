@@ -74,6 +74,10 @@ public interface ProjectDirtyStateEventEntMixIn extends ProjectDirtyStateEventEn
     @JsonProperty("dirtyProjectsMap")
     public java.util.Map<String, Boolean> getDirtyProjectsMap();
     
+    @Override
+    @JsonProperty("shouldReplace")
+    public Boolean isShouldReplace();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -90,6 +94,10 @@ public interface ProjectDirtyStateEventEntMixIn extends ProjectDirtyStateEventEn
         @Override
         @JsonProperty("dirtyProjectsMap")
         public ProjectDirtyStateEventEntMixInBuilder setDirtyProjectsMap(final java.util.Map<String, Boolean> dirtyProjectsMap);
+        
+        @Override
+        @JsonProperty("shouldReplace")
+        public ProjectDirtyStateEventEntMixInBuilder setShouldReplace(final Boolean shouldReplace);
         
     }
 

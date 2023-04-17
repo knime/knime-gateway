@@ -97,7 +97,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
             var appStateEvent = buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(lastAppState, appState));
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setDirtyProjectsMap(workflowProjectManager.getProjectIdsToDirtyMap()).build();
+                .setDirtyProjectsMap(workflowProjectManager.getProjectIdsToDirtyMap()).setShouldReplace(true).build();
 
             sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class)
                 .setEvents(List.of(appStateEvent, projectDirtyStateEvent)).build());

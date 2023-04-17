@@ -70,12 +70,19 @@ public interface ProjectDirtyStateEventEnt extends GatewayEntity, EventEnt {
    **/
   public java.util.Map<String, Boolean> getDirtyProjectsMap();
 
+  /**
+   * Whether to replace the entire map or just to updated the set values.
+   * @return shouldReplace 
+   **/
+  public Boolean isShouldReplace();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ProjectDirtyStateEventEnt)other;
       valueConsumer.accept("dirtyProjectsMap", Pair.create(getDirtyProjectsMap(), e.getDirtyProjectsMap()));
+      valueConsumer.accept("shouldReplace", Pair.create(isShouldReplace(), e.isShouldReplace()));
   }
 
     /**
@@ -90,6 +97,14 @@ public interface ProjectDirtyStateEventEnt extends GatewayEntity, EventEnt {
          * @return this entity builder for chaining
          */
         ProjectDirtyStateEventEntBuilder setDirtyProjectsMap(java.util.Map<String, Boolean> dirtyProjectsMap);
+        
+        /**
+         * Whether to replace the entire map or just to updated the set values.
+         * 
+         * @param shouldReplace the property value,  
+         * @return this entity builder for chaining
+         */
+        ProjectDirtyStateEventEntBuilder setShouldReplace(Boolean shouldReplace);
         
         
         /**
