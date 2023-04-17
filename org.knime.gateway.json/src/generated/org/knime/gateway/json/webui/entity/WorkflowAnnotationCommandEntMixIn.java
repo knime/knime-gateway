@@ -42,65 +42,65 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.EventEnt;
-
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt.DefaultWorkflowAnnotationCommandEntBuilder;
 
 /**
- * Event for changes to the dirtyState of a project/workflow.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectDirtyStateEventEnt extends GatewayEntity, EventEnt {
 
+@JsonDeserialize(builder=DefaultWorkflowAnnotationCommandEntBuilder.class)
+@JsonSerialize(as=WorkflowAnnotationCommandEnt.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface WorkflowAnnotationCommandEntMixIn extends WorkflowAnnotationCommandEnt {
 
-  /**
-   * Mapping from project id to isDirty flag of workflow.
-   * @return dirtyProjectsMap 
-   **/
-  public java.util.Map<String, Boolean> getDirtyProjectsMap();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectDirtyStateEventEnt)other;
-      valueConsumer.accept("dirtyProjectsMap", Pair.create(getDirtyProjectsMap(), e.getDirtyProjectsMap()));
-  }
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("annotationId")
+    public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface ProjectDirtyStateEventEntBuilder extends GatewayEntityBuilder<ProjectDirtyStateEventEnt> {
 
-        /**
-         * Mapping from project id to isDirty flag of workflow.
-         * 
-         * @param dirtyProjectsMap the property value,  
-         * @return this entity builder for chaining
-         */
-        ProjectDirtyStateEventEntBuilder setDirtyProjectsMap(java.util.Map<String, Boolean> dirtyProjectsMap);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        ProjectDirtyStateEventEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface WorkflowAnnotationCommandEntMixInBuilder extends WorkflowAnnotationCommandEntBuilder {
     
+        @Override
+        public WorkflowAnnotationCommandEntMixIn build();
+    
+        @Override
+        @JsonProperty("kind")
+        public WorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("annotationId")
+        public WorkflowAnnotationCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
+        
     }
 
+
 }
+

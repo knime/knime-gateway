@@ -46,54 +46,82 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 
 /**
- * Event for changes to the dirtyState of a project/workflow.
+ * Abstract schema for commands manipulating individual workflow annotations
  *
- * @param dirtyProjectsMap
+ * @param kind
+ * @param annotationId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultProjectDirtyStateEventEnt(
-    java.util.Map<String, Boolean> dirtyProjectsMap) implements ProjectDirtyStateEventEnt {
+public record DefaultWorkflowAnnotationCommandEnt(
+    KindEnum kind,
+    org.knime.gateway.api.entity.AnnotationIDEnt annotationId) implements WorkflowAnnotationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultProjectDirtyStateEventEnt {
+    public DefaultWorkflowAnnotationCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(annotationId == null) {
+            throw new IllegalArgumentException("<annotationId> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "ProjectDirtyStateEvent";
+        return "WorkflowAnnotationCommand";
     }
   
     @Override
-    public java.util.Map<String, Boolean> getDirtyProjectsMap() {
-        return dirtyProjectsMap;
+    public KindEnum getKind() {
+        return kind;
+    }
+    
+    @Override
+    public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId() {
+        return annotationId;
     }
     
     /**
-     * A builder for {@link DefaultProjectDirtyStateEventEnt}.
+     * A builder for {@link DefaultWorkflowAnnotationCommandEnt}.
      */
-    public static class DefaultProjectDirtyStateEventEntBuilder implements ProjectDirtyStateEventEntBuilder {
+    public static class DefaultWorkflowAnnotationCommandEntBuilder implements WorkflowAnnotationCommandEntBuilder {
 
-        private java.util.Map<String, Boolean> m_dirtyProjectsMap;
+        private KindEnum m_kind;
+
+        private org.knime.gateway.api.entity.AnnotationIDEnt m_annotationId;
 
         @Override
-        public DefaultProjectDirtyStateEventEntBuilder setDirtyProjectsMap(java.util.Map<String, Boolean> dirtyProjectsMap) {
-             m_dirtyProjectsMap = dirtyProjectsMap;
+        public DefaultWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
+             }
+             m_kind = kind;
              return this;
         }
 
         @Override
-        public DefaultProjectDirtyStateEventEnt build() {
-            return new DefaultProjectDirtyStateEventEnt(
-                immutable(m_dirtyProjectsMap));
+        public DefaultWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
+             if(annotationId == null) {
+                 throw new IllegalArgumentException("<annotationId> must not be null.");
+             }
+             m_annotationId = annotationId;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowAnnotationCommandEnt build() {
+            return new DefaultWorkflowAnnotationCommandEnt(
+                immutable(m_kind),
+                immutable(m_annotationId));
         }
     
     }

@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.EventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,40 +56,49 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event for changes to the dirtyState of a project/workflow.
+ * Abstract schema for commands manipulating individual workflow annotations
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectDirtyStateEventEnt extends GatewayEntity, EventEnt {
+public interface WorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * Mapping from project id to isDirty flag of workflow.
-   * @return dirtyProjectsMap 
+   * The ID of the annotation to manipulate
+   * @return annotationId , never <code>null</code>
    **/
-  public java.util.Map<String, Boolean> getDirtyProjectsMap();
+  public org.knime.gateway.api.entity.AnnotationIDEnt getAnnotationId();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectDirtyStateEventEnt)other;
-      valueConsumer.accept("dirtyProjectsMap", Pair.create(getDirtyProjectsMap(), e.getDirtyProjectsMap()));
+      var e = (WorkflowAnnotationCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("annotationId", Pair.create(getAnnotationId(), e.getAnnotationId()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ProjectDirtyStateEventEntBuilder extends GatewayEntityBuilder<ProjectDirtyStateEventEnt> {
+    public interface WorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<WorkflowAnnotationCommandEnt> {
 
         /**
-         * Mapping from project id to isDirty flag of workflow.
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
          * 
-         * @param dirtyProjectsMap the property value,  
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectDirtyStateEventEntBuilder setDirtyProjectsMap(java.util.Map<String, Boolean> dirtyProjectsMap);
+        WorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * The ID of the annotation to manipulate
+         * 
+         * @param annotationId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
         
         
         /**
@@ -99,7 +108,7 @@ public interface ProjectDirtyStateEventEnt extends GatewayEntity, EventEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProjectDirtyStateEventEnt build();
+        WorkflowAnnotationCommandEnt build();
     
     }
 

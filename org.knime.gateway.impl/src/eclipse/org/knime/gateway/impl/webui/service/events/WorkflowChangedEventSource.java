@@ -165,7 +165,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             return Optional.empty();
         } else {
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setProjectIdToIsDirty(m_workflowProjectManager.getProjectIdsToDirtyMap()).build();
+                .setDirtyProjectsMap(m_workflowProjectManager.getProjectIdsToDirtyMap()).build();
 
             return Optional.of(EntityBuilderManager.builder(CompositeEventEntBuilder.class)
                 .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build());
@@ -188,7 +188,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     private static CompositeEventEnt createCompositeEvent(final WorkflowKey wfKey, final WorkflowManager wfm,
         final WorkflowChangedEventEnt workflowChangedEvent) {
         var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-            .setProjectIdToIsDirty(Map.of(wfKey.getProjectId(), wfm.isDirty())).build();
+            .setDirtyProjectsMap(Map.of(wfKey.getProjectId(), wfm.isDirty())).build();
         return EntityBuilderManager.builder(CompositeEventEntBuilder.class)
             .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build();
     }

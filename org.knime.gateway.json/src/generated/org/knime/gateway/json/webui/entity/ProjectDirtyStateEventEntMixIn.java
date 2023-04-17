@@ -71,8 +71,8 @@ public interface ProjectDirtyStateEventEntMixIn extends ProjectDirtyStateEventEn
     public String getTypeID();
 
     @Override
-    @JsonProperty("projectIdToIsDirty")
-    public java.util.Map<String, Boolean> getProjectIdToIsDirty();
+    @JsonProperty("dirtyProjectsMap")
+    public java.util.Map<String, Boolean> getDirtyProjectsMap();
     
 
     /**
@@ -88,8 +88,8 @@ public interface ProjectDirtyStateEventEntMixIn extends ProjectDirtyStateEventEn
         public ProjectDirtyStateEventEntMixIn build();
     
         @Override
-        @JsonProperty("projectIdToIsDirty")
-        public ProjectDirtyStateEventEntMixInBuilder setProjectIdToIsDirty(final java.util.Map<String, Boolean> projectIdToIsDirty);
+        @JsonProperty("dirtyProjectsMap")
+        public ProjectDirtyStateEventEntMixInBuilder setDirtyProjectsMap(final java.util.Map<String, Boolean> dirtyProjectsMap);
         
     }
 
