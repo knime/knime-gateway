@@ -140,7 +140,7 @@ public final class NodeConnector {
      * Actually carries out the connect-operation.
      *
      * @return {@code true} if the connections were created successfully, {@code false} if at least one connection
-     *         couldn't be added (no more connections will be added from that point on)
+     *         couldn't be added
      */
     public boolean connect() {
         if (m_nodeId == null) {
@@ -154,16 +154,17 @@ public final class NodeConnector {
      *
      * @param nodeId
      * @return {@code true} if the connections were created successfully, {@code false} if at least one connection
-     *         couldn't be added (no more connections will be added from that point on)
+     *         couldn't be added
      */
     boolean connect(final NodeID nodeId) {
+        boolean allConnectionsCreated = true;
         if (m_sourceNodeId != null && !connect(m_wfm, m_sourceNodeId, m_sourcePortIdx, nodeId, m_track)) {
-            return false;
+            allConnectionsCreated = false;
         }
         if (m_destNodeId != null && !connect(m_wfm, nodeId, null, m_destNodeId, m_track)) { // NOSONAR
-            return false;
+            allConnectionsCreated = false;
         }
-        return true;
+        return allConnectionsCreated;
     }
 
     private static boolean connect(final WorkflowManager wfm, final NodeID sourceNodeId,
