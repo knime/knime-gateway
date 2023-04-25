@@ -52,26 +52,19 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToNod
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
-import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
-import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor;
-import org.knime.core.node.workflow.action.ReplaceNodeResult;
-import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -81,20 +74,13 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  * Workflow command to replace a node.
  *
  * @author Juan Baquero
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 final class ReplaceNode extends AbstractWorkflowCommand {
 
-    private ReplaceNodeResult m_result;
+    private InternalReplaceNodeResult m_result;
 
     private final ReplaceNodeCommandEnt m_commandEnt;
-
-    private boolean m_isNativeNodeReplace;
-
-    private NodeContainer m_replacementNodeContainer;
-
-    private WorkflowPersistor m_oldStatePersistor;
-
-    private Set<ConnectionContainer> m_oldStateConnections;
 
     ReplaceNode(final ReplaceNodeCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -103,102 +89,102 @@ final class ReplaceNode extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        var targetNode = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getTargetNodeId());
+        var targetNodeId = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getTargetNodeId());
 
-        if (!wfm.canRemoveNode(targetNode)) {
+        if (!wfm.canRemoveNode(targetNodeId)) {
             throw new OperationNotAllowedException(
                 "Unable to delete the targeted node. Replace operation aborted. Please check for any execution on progress.");
         }
 
-        var replacementNodeEnt = m_commandEnt.getReplacementNodeId();
-        m_replacementNodeContainer = replacementNodeEnt != null
-            ? wfm.getNodeContainer(entityToNodeID(getWorkflowKey().getProjectId(), replacementNodeEnt)) : null;
-        var targetNodeContainer = wfm.getNodeContainer(targetNode);
         var nodeFactoryEnt = m_commandEnt.getNodeFactory();
-        // either node is a SubWorkflow
-        if (isSubWorkflow(targetNodeContainer) || isSubWorkflow(m_replacementNodeContainer)) {
-            replaceSubWorkflowNode(nodeFactoryEnt, targetNode, targetNodeContainer, wfm);
-        } else { // both are native nodes
-            m_isNativeNodeReplace = true;
-            replaceNativeNode(targetNode, nodeFactoryEnt, replacementNodeEnt, wfm);
+        var replacementNodeEnt = m_commandEnt.getReplacementNodeId();
+
+        if (nodeFactoryEnt == null ^ replacementNodeEnt == null) { // xor
+            var targetNodeContainer = wfm.getNodeContainer(targetNodeId);
+            if (nodeFactoryEnt != null && targetNodeContainer instanceof NativeNodeContainer) {
+                m_result = replaceNativeNodeWithNewNode(targetNodeId, nodeFactoryEnt, wfm);
+            } else {
+                var replacementNodeId = replacementNodeEnt == null ? null
+                    : entityToNodeID(getWorkflowKey().getProjectId(), replacementNodeEnt);
+                m_result = replaceNode(nodeFactoryEnt, replacementNodeId, targetNodeContainer, wfm);
+            }
+        } else {
+            throw new UnsupportedOperationException(
+                "Either a node-factory or a replacement-node-id needs to be provided. But never both or none.");
         }
         return true;
     }
 
-    private static boolean isSubWorkflow(final NodeContainer nodeContainer) {
-        return nodeContainer instanceof SubNodeContainer || nodeContainer instanceof WorkflowManager;
-    }
-
-    /**
-     * @param nodeFactoryEnt
-     * @param targetNode
-     * @param targetNodeContainer
-     * @param wfm
-     * @throws OperationNotAllowedException
-     */
-    private void replaceSubWorkflowNode(final NodeFactoryKeyEnt nodeFactoryEnt, final NodeID targetNode,
-        final NodeContainer targetNodeContainer, final WorkflowManager wfm) throws OperationNotAllowedException {
-
-        var nodesToPersist = m_replacementNodeContainer == null ? List.of(targetNode)
-            : List.of(targetNode, m_replacementNodeContainer.getID());
-        m_oldStateConnections = wfm.getIncomingConnectionsFor(targetNode);
-        m_oldStateConnections.addAll(wfm.getOutgoingConnectionsFor(targetNode));
-
-        if (nodeFactoryEnt != null) { // create replacement
-            try {
-                m_replacementNodeContainer = wfm.getNodeContainer(wfm.addNodeAndApplyContext(
-                    CoreUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings()), null, -1));
-            } catch (NoSuchElementException | IOException ex) {
-                throw new OperationNotAllowedException(ex.getMessage(), ex);
-            }
-        } else if (m_replacementNodeContainer == null) {
-            throw new OperationNotAllowedException("Provide one of nodeId and nodeFactoryId.");
-        }
-
-        m_oldStatePersistor = wfm.copy(true, WorkflowCopyContent.builder()
-            .setNodeIDs(nodesToPersist.toArray(new NodeID[nodesToPersist.size()])).build());
-        setUIInformation(targetNodeContainer.getUIInformation(), m_replacementNodeContainer);
-        reconnect(targetNodeContainer, m_replacementNodeContainer, wfm);
-        wfm.removeNode(targetNode);
-    }
-
-    /**
-     * @param targetNode
-     * @param nodeFactoryEnt
-     * @param replacementNodeEnt
-     * @param wfm
-     * @throws OperationNotAllowedException
-     */
-    private void replaceNativeNode(final NodeID targetNode, final NodeFactoryKeyEnt nodeFactoryEnt,
-        final NodeIDEnt replacementNodeEnt, final WorkflowManager wfm) throws OperationNotAllowedException {
-        var nodeSetup = getNodeSetup(nodeFactoryEnt, replacementNodeEnt, wfm);
-        m_result = wfm.replaceNode(targetNode, nodeSetup.getSecond(), nodeSetup.getFirst());
-        if (m_replacementNodeContainer != null) { // remove copy if node already exists
-            m_oldStatePersistor =
-                wfm.copy(true, WorkflowCopyContent.builder().setNodeIDs(m_replacementNodeContainer.getID()).build());
-            wfm.removeNode(m_replacementNodeContainer.getID());
-        }
-    }
-
-    private Pair<NodeFactory<NodeModel>, ModifiableNodeCreationConfiguration> getNodeSetup(
-        final NodeFactoryKeyEnt nodeFactoryEnt, final NodeIDEnt replacementNodeEnt, final WorkflowManager wfm)
+    private static InternalReplaceNodeResult replaceNode(final NodeFactoryKeyEnt nodeFactoryEntOrNull,
+        final NodeID replacementNodeIdOrNull, final NodeContainer targetNodeContainer, final WorkflowManager wfm)
         throws OperationNotAllowedException {
 
-        if (nodeFactoryEnt != null) {
+        final NodeContainer replacementNodeContainer;
+        NodeID[] nodesToRestoreOnUndo;
+        var targetNodeId = targetNodeContainer.getID();
+        if (nodeFactoryEntOrNull != null) {
             try {
-                return new Pair<>(CoreUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings()),
-                    null);
+                replacementNodeContainer = wfm.getNodeContainer(wfm.addNodeAndApplyContext(
+                    CoreUtil.getNodeFactory(nodeFactoryEntOrNull.getClassName(), nodeFactoryEntOrNull.getSettings()),
+                    null, -1));
             } catch (NoSuchElementException | IOException ex) {
                 throw new OperationNotAllowedException(ex.getMessage(), ex);
             }
-        } else if (replacementNodeEnt != null) {
-            var replacementNode = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getReplacementNodeId());
-            return new Pair<>(((NativeNodeContainer)wfm.getNodeContainer(replacementNode)).getNode().getFactory(),
-                CoreUtil.getCopyOfCreationConfig(wfm, replacementNode).orElse(null));
+            nodesToRestoreOnUndo = new NodeID[]{replacementNodeIdOrNull};
         } else {
-            throw new OperationNotAllowedException(
-                "Both replacemenetNodeId and nodeFactoryId are not defined. Provide one of them.");
+            nodesToRestoreOnUndo = new NodeID[]{targetNodeId, replacementNodeIdOrNull};
+            replacementNodeContainer = wfm.getNodeContainer(replacementNodeIdOrNull);
         }
+
+        final var previousConnections = new HashSet<ConnectionContainer>();
+        previousConnections.addAll(wfm.getIncomingConnectionsFor(targetNodeId));
+        previousConnections.addAll(wfm.getOutgoingConnectionsFor(targetNodeId));
+
+        final var previousNodesPersistor =
+            wfm.copy(true, WorkflowCopyContent.builder().setNodeIDs(nodesToRestoreOnUndo).build());
+        setUIInformation(targetNodeContainer.getUIInformation(), replacementNodeContainer);
+        reconnect(targetNodeContainer, replacementNodeContainer, wfm);
+        wfm.removeNode(targetNodeId);
+
+        return new InternalReplaceNodeResult() {
+
+            @Override
+            public boolean canUndo() {
+                return wfm.canRemoveNode(replacementNodeContainer.getID());
+            }
+
+            @Override
+            public void undo() {
+                wfm.paste(previousNodesPersistor);
+                for (ConnectionContainer cc : previousConnections) {
+                    wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
+                }
+            }
+
+        };
+    }
+
+    private static InternalReplaceNodeResult replaceNativeNodeWithNewNode(final NodeID targetNodeId,
+        final NodeFactoryKeyEnt nodeFactoryEnt, final WorkflowManager wfm) throws OperationNotAllowedException {
+        NodeFactory<NodeModel> nodeFactory;
+        try {
+            nodeFactory = CoreUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
+        } catch (NoSuchElementException | IOException ex) {
+            throw new OperationNotAllowedException(ex.getMessage(), ex);
+        }
+        var result = wfm.replaceNode(targetNodeId, null, nodeFactory);
+        return new InternalReplaceNodeResult() {
+
+            @Override
+            public void undo() {
+                result.undo();
+            }
+
+            @Override
+            public boolean canUndo() {
+                return result.canUndo();
+            }
+        };
     }
 
     /**
@@ -210,10 +196,10 @@ final class ReplaceNode extends AbstractWorkflowCommand {
      * @param replacementNode new node container
      * @param wfm
      */
-    public static void reconnect(final NodeContainer targetNode, final NodeContainer replacementNode,
+    private static void reconnect(final NodeContainer targetNode, final NodeContainer replacementNode,
         final WorkflowManager wfm) {
 
-        final NodeID targetNodeId = targetNode.getID();
+        final var targetNodeId = targetNode.getID();
         var incomingConnections = new ArrayList<>(wfm.getIncomingConnectionsFor(targetNodeId));
         var outgoingConnections = new ArrayList<>(wfm.getOutgoingConnectionsFor(targetNodeId));
 
@@ -290,7 +276,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
      * @param uiInfo
      * @param replacement the new node container
      */
-    protected static void setUIInformation(final NodeUIInformation uiInfo, final NodeContainer replacement) {
+    private static void setUIInformation(final NodeUIInformation uiInfo, final NodeContainer replacement) {
         final int[] bounds = uiInfo.getBounds();
         final NodeUIInformation info = NodeUIInformation.builder().setNodeLocation(bounds[0], bounds[1], -1, -1)
             .setHasAbsoluteCoordinates(true).setSnapToGrid(uiInfo.getSnapToGrid()).setIsDropLocation(false).build();
@@ -302,12 +288,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
      */
     @Override
     public boolean canUndo() {
-        var wfm = getWorkflowManager();
-        if (m_isNativeNodeReplace) {
-            return m_result.canUndo();
-        } else {
-            return m_replacementNodeContainer != null && wfm.canRemoveNode(m_replacementNodeContainer.getID());
-        }
+        return m_result != null && m_result.canUndo();
     }
 
     /**
@@ -315,26 +296,15 @@ final class ReplaceNode extends AbstractWorkflowCommand {
      */
     @Override
     public void undo() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-
-        if (m_replacementNodeContainer != null) { // remove replacement
-            wfm.removeNode(m_replacementNodeContainer.getID());
-        }
-
-        if (m_oldStatePersistor != null) {
-            wfm.paste(m_oldStatePersistor); // Restore old node
-        }
-
-        if (m_isNativeNodeReplace) {
+        if (m_result != null) {
             m_result.undo();
             m_result = null;
-        } else {
-            for (ConnectionContainer cc : m_oldStateConnections) {
-                wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
-            }
-            m_oldStateConnections = null;
         }
-        m_replacementNodeContainer = null;
-        m_oldStatePersistor = null;
+    }
+
+    private interface InternalReplaceNodeResult {
+        boolean canUndo();
+
+        void undo();
     }
 }
