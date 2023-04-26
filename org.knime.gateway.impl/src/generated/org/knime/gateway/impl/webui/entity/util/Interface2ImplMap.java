@@ -96,6 +96,8 @@ import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyResultEnt.CopyResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
+import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt.CreateWorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCreateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
@@ -345,6 +347,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == CopyResultEntBuilder.class) {
             return (B)new DefaultCopyResultEnt.DefaultCopyResultEntBuilder();
+        }        
+        if(clazz == CreateWorkflowAnnotationCommandEntBuilder.class) {
+            return (B)new DefaultCreateWorkflowAnnotationCommandEnt.DefaultCreateWorkflowAnnotationCommandEntBuilder();
         }        
         if(clazz == CustomJobManagerEntBuilder.class) {
             return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();

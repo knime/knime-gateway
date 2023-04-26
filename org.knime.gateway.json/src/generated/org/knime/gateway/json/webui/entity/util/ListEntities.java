@@ -70,6 +70,7 @@ import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.ConvertContainerResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CopyCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CopyResultEntMixIn;
+import org.knime.gateway.json.webui.entity.CreateWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CustomJobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.CutCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DeleteCommandEntMixIn;
@@ -194,6 +195,7 @@ public class ListEntities {
         res.add(ConvertContainerResultEntMixIn.class);
         res.add(CopyCommandEntMixIn.class);
         res.add(CopyResultEntMixIn.class);
+        res.add(CreateWorkflowAnnotationCommandEntMixIn.class);
         res.add(CustomJobManagerEntMixIn.class);
         res.add(CutCommandEntMixIn.class);
         res.add(DeleteCommandEntMixIn.class);
@@ -304,6 +306,7 @@ public class ListEntities {
         res.add(ConvertContainerResultEntMixIn.ConvertContainerResultEntMixInBuilder.class);
         res.add(CopyCommandEntMixIn.CopyCommandEntMixInBuilder.class);
         res.add(CopyResultEntMixIn.CopyResultEntMixInBuilder.class);
+        res.add(CreateWorkflowAnnotationCommandEntMixIn.CreateWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(CustomJobManagerEntMixIn.CustomJobManagerEntMixInBuilder.class);
         res.add(CutCommandEntMixIn.CutCommandEntMixInBuilder.class);
         res.add(DeleteCommandEntMixIn.DeleteCommandEntMixInBuilder.class);

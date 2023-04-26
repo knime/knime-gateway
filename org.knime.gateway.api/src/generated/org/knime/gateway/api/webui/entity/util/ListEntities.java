@@ -70,6 +70,7 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyResultEnt;
+import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
@@ -195,6 +196,7 @@ public class ListEntities {
         res.add(ConvertContainerResultEnt.class);
         res.add(CopyCommandEnt.class);
         res.add(CopyResultEnt.class);
+        res.add(CreateWorkflowAnnotationCommandEnt.class);
         res.add(CustomJobManagerEnt.class);
         res.add(CutCommandEnt.class);
         res.add(DeleteCommandEnt.class);
@@ -305,6 +307,7 @@ public class ListEntities {
         res.add(ConvertContainerResultEnt.ConvertContainerResultEntBuilder.class);
         res.add(CopyCommandEnt.CopyCommandEntBuilder.class);
         res.add(CopyResultEnt.CopyResultEntBuilder.class);
+        res.add(CreateWorkflowAnnotationCommandEnt.CreateWorkflowAnnotationCommandEntBuilder.class);
         res.add(CustomJobManagerEnt.CustomJobManagerEntBuilder.class);
         res.add(CutCommandEnt.CutCommandEntBuilder.class);
         res.add(DeleteCommandEnt.DeleteCommandEntBuilder.class);

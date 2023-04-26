@@ -167,7 +167,7 @@ final class Delete extends AbstractWorkflowCommand {
 
         m_copy = wfm.copy(true, content);
         WorkflowAnnotationID[] annoIds = content.getAnnotationIDs();
-        remove(wfm, nodesToDelete, m_connections, content.getAnnotationIDs(), getWorkflowKey());
+        remove(wfm, nodesToDelete, m_connections, annoIds, getWorkflowKey());
         return !nodesToDelete.isEmpty() || !m_connections.isEmpty() || (annoIds != null && annoIds.length != 0);
     }
 
