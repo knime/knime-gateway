@@ -155,6 +155,10 @@ final class ReplaceNode extends AbstractWorkflowCommand {
 
             @Override
             public void undo() {
+                if (replacementNodeIdOrNull != null) {
+                    wfm.removeNode(replacementNodeIdOrNull);
+                }
+
                 wfm.paste(previousNodesPersistor);
                 for (ConnectionContainer cc : previousConnections) {
                     wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
