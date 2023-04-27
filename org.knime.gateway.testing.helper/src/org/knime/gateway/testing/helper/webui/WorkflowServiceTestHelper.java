@@ -119,6 +119,7 @@ import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CopyResultEnt;
+import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt.CreateWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
@@ -2641,5 +2642,40 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Not the same style ranges were brought back", annotationEntAfterUndo.getStyleRanges(),
             is(previousStyleRanges));
         assertThat("Text alignment isn't back", annotationEntAfterUndo.getTextAlign(), is(previousTextAlignment));
+    }
+
+    public void testCreateWorkflowAnnotation() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+
+        var annotationsBefore = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
+        assertThat("There should not be any annotations before command execution", annotationsBefore.size(), is(0));
+
+        var bounds = builder(BoundsEntBuilder.class)//
+            .setX(32)//
+            .setY(64)//
+            .setWidth(128)//
+            .setHeight(256)//
+            .build();
+        var command = builder(CreateWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.CREATE_WORKFLOW_ANNOTATION)//
+            .setBounds(bounds)//
+            .build();
+
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var annotationsAfterExecution =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
+
+        assertThat("There should be exactly one annotation after command execution", annotationsAfterExecution.size(),
+            is(1));
+        var annotation = annotationsAfterExecution.get(0);
+        assertThat("Bounds don't match the bounds passed", annotation.getBounds(), is(bounds));
+        assertThat("Content type must isn't text/html", annotation.getContentType(), is(ContentTypeEnum.HTML));
+        assertThat("The text field wasn't empty.", annotation.getText(), is(""));
+
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var annotationsAfterUndo =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
+
+        assertThat("There should not be any annotatin after command undo", annotationsAfterUndo.size(), is(0));
     }
 }

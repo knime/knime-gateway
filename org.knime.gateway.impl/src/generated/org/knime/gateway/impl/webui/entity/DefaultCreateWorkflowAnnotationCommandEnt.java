@@ -46,7 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt;
@@ -55,14 +55,14 @@ import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt;
  * Creates a new workflow annotation at a given position.
  *
  * @param kind
- * @param position
+ * @param bounds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultCreateWorkflowAnnotationCommandEnt(
     KindEnum kind,
-    XYEnt position) implements CreateWorkflowAnnotationCommandEnt {
+    BoundsEnt bounds) implements CreateWorkflowAnnotationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -71,8 +71,8 @@ public record DefaultCreateWorkflowAnnotationCommandEnt(
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if(position == null) {
-            throw new IllegalArgumentException("<position> must not be null.");
+        if(bounds == null) {
+            throw new IllegalArgumentException("<bounds> must not be null.");
         }
     }
 
@@ -87,8 +87,8 @@ public record DefaultCreateWorkflowAnnotationCommandEnt(
     }
     
     @Override
-    public XYEnt getPosition() {
-        return position;
+    public BoundsEnt getBounds() {
+        return bounds;
     }
     
     /**
@@ -98,7 +98,7 @@ public record DefaultCreateWorkflowAnnotationCommandEnt(
 
         private KindEnum m_kind;
 
-        private XYEnt m_position;
+        private BoundsEnt m_bounds;
 
         @Override
         public DefaultCreateWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
@@ -110,11 +110,11 @@ public record DefaultCreateWorkflowAnnotationCommandEnt(
         }
 
         @Override
-        public DefaultCreateWorkflowAnnotationCommandEntBuilder setPosition(XYEnt position) {
-             if(position == null) {
-                 throw new IllegalArgumentException("<position> must not be null.");
+        public DefaultCreateWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds) {
+             if(bounds == null) {
+                 throw new IllegalArgumentException("<bounds> must not be null.");
              }
-             m_position = position;
+             m_bounds = bounds;
              return this;
         }
 
@@ -122,7 +122,7 @@ public record DefaultCreateWorkflowAnnotationCommandEnt(
         public DefaultCreateWorkflowAnnotationCommandEnt build() {
             return new DefaultCreateWorkflowAnnotationCommandEnt(
                 immutable(m_kind),
-                immutable(m_position));
+                immutable(m_bounds));
         }
     
     }

@@ -44,8 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
 
@@ -66,10 +66,10 @@ public interface CreateWorkflowAnnotationCommandEnt extends GatewayEntity, Workf
 
 
   /**
-   * Get position
-   * @return position , never <code>null</code>
+   * Get bounds
+   * @return bounds , never <code>null</code>
    **/
-  public XYEnt getPosition();
+  public BoundsEnt getBounds();
 
 
   @Override
@@ -77,7 +77,7 @@ public interface CreateWorkflowAnnotationCommandEnt extends GatewayEntity, Workf
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (CreateWorkflowAnnotationCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+      valueConsumer.accept("bounds", Pair.create(getBounds(), e.getBounds()));
   }
 
     /**
@@ -94,12 +94,12 @@ public interface CreateWorkflowAnnotationCommandEnt extends GatewayEntity, Workf
         CreateWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
         
         /**
-   		 * Set position
+   		 * Set bounds
          * 
-         * @param position the property value, NOT <code>null</code>! 
+         * @param bounds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        CreateWorkflowAnnotationCommandEntBuilder setPosition(XYEnt position);
+        CreateWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds);
         
         
         /**

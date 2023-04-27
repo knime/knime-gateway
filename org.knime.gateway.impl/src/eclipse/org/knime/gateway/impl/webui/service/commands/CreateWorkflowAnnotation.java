@@ -61,13 +61,10 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  */
 final class CreateWorkflowAnnotation extends AbstractWorkflowCommand {
 
-    private static final int DEFAULT_WIDTH = 256;
-
-    private static final int DEFAULT_HEIGHT = 128;
-
-    private static final int DEFAULT_BORDER_COLOR = 0;
-
-    private static final int DEFAULT_BG_COLOR = 0;
+    // To make it consistent within the Classic UI
+    private static final int DEFAULT_BORDER_COLOR = 16766976;
+    private static final int DEFAULT_BG_COLOR = 16777215;
+    private static final int DEFAULT_BORDER_SIZE = 10;
 
     private final CreateWorkflowAnnotationCommandEnt m_commandEnt;
 
@@ -83,16 +80,17 @@ final class CreateWorkflowAnnotation extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
+        final var bounds = m_commandEnt.getBounds();
 
         final var annoData = new AnnotationData();
-        annoData.setContentType(ContentType.TEXT_HTML);
-        annoData.setDimension(m_commandEnt.getPosition().getX(), m_commandEnt.getPosition().getY(), DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        annoData.setBorderColor(DEFAULT_BORDER_COLOR);
         annoData.setBgColor(DEFAULT_BG_COLOR);
+        annoData.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+        annoData.setBorderSize(DEFAULT_BORDER_SIZE);
+        annoData.setBorderColor(DEFAULT_BORDER_COLOR);
+        annoData.setContentType(ContentType.TEXT_HTML); // To mark it a modern annotation
 
         final var workflowAnnotation = wfm.addWorkflowAnnotation(annoData, -1);
         m_workflowAnnotationID = workflowAnnotation.getID();
-
         return true;
     }
 

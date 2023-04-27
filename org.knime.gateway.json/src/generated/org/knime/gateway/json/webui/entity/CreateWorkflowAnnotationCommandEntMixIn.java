@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
@@ -76,8 +76,8 @@ public interface CreateWorkflowAnnotationCommandEntMixIn extends CreateWorkflowA
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
+    @JsonProperty("bounds")
+    public BoundsEnt getBounds();
     
 
     /**
@@ -97,8 +97,8 @@ public interface CreateWorkflowAnnotationCommandEntMixIn extends CreateWorkflowA
         public CreateWorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("position")
-        public CreateWorkflowAnnotationCommandEntMixInBuilder setPosition(final XYEnt position);
+        @JsonProperty("bounds")
+        public CreateWorkflowAnnotationCommandEntMixInBuilder setBounds(final BoundsEnt bounds);
         
     }
 
