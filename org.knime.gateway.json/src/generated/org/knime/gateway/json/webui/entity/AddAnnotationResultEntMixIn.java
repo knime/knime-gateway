@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCreateWorkflowAnnotationCommandEnt.DefaultCreateWorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt.DefaultAddAnnotationResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,22 +61,26 @@ import org.knime.gateway.impl.webui.entity.DefaultCreateWorkflowAnnotationComman
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultCreateWorkflowAnnotationCommandEntBuilder.class)
-@JsonSerialize(as=CreateWorkflowAnnotationCommandEnt.class)
+@JsonDeserialize(builder=DefaultAddAnnotationResultEntBuilder.class)
+@JsonSerialize(as=AddAnnotationResultEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface CreateWorkflowAnnotationCommandEntMixIn extends CreateWorkflowAnnotationCommandEnt {
+public interface AddAnnotationResultEntMixIn extends AddAnnotationResultEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
+    @JsonProperty("snapshotId")
+    public String getSnapshotId();
+    
+    @Override
     @JsonProperty("kind")
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("bounds")
-    public BoundsEnt getBounds();
+    @JsonProperty("newAnnotationId")
+    public org.knime.gateway.api.entity.AnnotationIDEnt getNewAnnotationId();
     
 
     /**
@@ -87,18 +90,22 @@ public interface CreateWorkflowAnnotationCommandEntMixIn extends CreateWorkflowA
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface CreateWorkflowAnnotationCommandEntMixInBuilder extends CreateWorkflowAnnotationCommandEntBuilder {
+    public static interface AddAnnotationResultEntMixInBuilder extends AddAnnotationResultEntBuilder {
     
         @Override
-        public CreateWorkflowAnnotationCommandEntMixIn build();
+        public AddAnnotationResultEntMixIn build();
     
         @Override
-        @JsonProperty("kind")
-        public CreateWorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
+        @JsonProperty("snapshotId")
+        public AddAnnotationResultEntMixInBuilder setSnapshotId(final String snapshotId);
         
         @Override
-        @JsonProperty("bounds")
-        public CreateWorkflowAnnotationCommandEntMixInBuilder setBounds(final BoundsEnt bounds);
+        @JsonProperty("kind")
+        public AddAnnotationResultEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("newAnnotationId")
+        public AddAnnotationResultEntMixInBuilder setNewAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt newAnnotationId);
         
     }
 

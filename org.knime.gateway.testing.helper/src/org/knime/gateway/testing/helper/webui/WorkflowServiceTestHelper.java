@@ -98,11 +98,13 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt.AddWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
@@ -119,7 +121,6 @@ import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CopyResultEnt;
-import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt.CreateWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
@@ -2644,7 +2645,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Text alignment isn't back", annotationEntAfterUndo.getTextAlign(), is(previousTextAlignment));
     }
 
-    public void testCreateWorkflowAnnotation() throws Exception {
+    public void testAddWorkflowAnnotation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
 
         var annotationsBefore = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
@@ -2656,12 +2657,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setWidth(128)//
             .setHeight(256)//
             .build();
-        var command = builder(CreateWorkflowAnnotationCommandEntBuilder.class)//
-            .setKind(KindEnum.CREATE_WORKFLOW_ANNOTATION)//
+        var command = builder(AddWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.ADD_WORKFLOW_ANNOTATION)//
             .setBounds(bounds)//
             .build();
 
-        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var result = ws().executeWorkflowCommand(projectId, getRootID(), command);
         var annotationsAfterExecution =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
 
@@ -2669,6 +2670,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             is(1));
         var annotation = annotationsAfterExecution.get(0);
         assertThat("Bounds don't match the bounds passed", annotation.getBounds(), is(bounds));
+
+        if (result instanceof AddAnnotationResultEnt addAnnotationResult) {
+            assertThat("Unexpected annotation ID returned", addAnnotationResult.getNewAnnotationId().toString(),
+                is("root_0"));
+        } else {
+            throw new Exception("Unexpected command result returned");
+        }
+
         assertThat("Content type must isn't text/html", annotation.getContentType(), is(ContentTypeEnum.HTML));
         assertThat("The text field wasn't empty.", annotation.getText(), is(""));
 

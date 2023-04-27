@@ -42,89 +42,66 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.entity;
-
-import static org.knime.gateway.api.util.EntityUtil.immutable;
+package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
-import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddWorkflowAnnotationCommandEnt.DefaultAddWorkflowAnnotationCommandEntBuilder;
 
 /**
- * Creates a new workflow annotation at a given position.
- *
- * @param kind
- * @param bounds
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultCreateWorkflowAnnotationCommandEnt(
-    KindEnum kind,
-    BoundsEnt bounds) implements CreateWorkflowAnnotationCommandEnt {
+
+@JsonDeserialize(builder=DefaultAddWorkflowAnnotationCommandEntBuilder.class)
+@JsonSerialize(as=AddWorkflowAnnotationCommandEnt.class)
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface AddWorkflowAnnotationCommandEntMixIn extends AddWorkflowAnnotationCommandEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("bounds")
+    public BoundsEnt getBounds();
+    
 
     /**
-     * Validation for required parameters not being {@code null}.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public DefaultCreateWorkflowAnnotationCommandEnt {
-        if(kind == null) {
-            throw new IllegalArgumentException("<kind> must not be null.");
-        }
-        if(bounds == null) {
-            throw new IllegalArgumentException("<bounds> must not be null.");
-        }
-    }
 
-    @Override
-    public String getTypeID() {
-        return "CreateWorkflowAnnotationCommand";
-    }
-  
-    @Override
-    public KindEnum getKind() {
-        return kind;
-    }
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface AddWorkflowAnnotationCommandEntMixInBuilder extends AddWorkflowAnnotationCommandEntBuilder {
     
-    @Override
-    public BoundsEnt getBounds() {
-        return bounds;
-    }
+        @Override
+        public AddWorkflowAnnotationCommandEntMixIn build();
     
-    /**
-     * A builder for {@link DefaultCreateWorkflowAnnotationCommandEnt}.
-     */
-    public static class DefaultCreateWorkflowAnnotationCommandEntBuilder implements CreateWorkflowAnnotationCommandEntBuilder {
-
-        private KindEnum m_kind;
-
-        private BoundsEnt m_bounds;
-
         @Override
-        public DefaultCreateWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("<kind> must not be null.");
-             }
-             m_kind = kind;
-             return this;
-        }
-
+        @JsonProperty("kind")
+        public AddWorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
+        
         @Override
-        public DefaultCreateWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds) {
-             if(bounds == null) {
-                 throw new IllegalArgumentException("<bounds> must not be null.");
-             }
-             m_bounds = bounds;
-             return this;
-        }
-
-        @Override
-        public DefaultCreateWorkflowAnnotationCommandEnt build() {
-            return new DefaultCreateWorkflowAnnotationCommandEnt(
-                immutable(m_kind),
-                immutable(m_bounds));
-        }
-    
+        @JsonProperty("bounds")
+        public AddWorkflowAnnotationCommandEntMixInBuilder setBounds(final BoundsEnt bounds);
+        
     }
+
 
 }
+

@@ -78,7 +78,9 @@ public interface CommandResultEnt extends GatewayEntity {
     
     ADDNODERESULT("addNodeResult"),
     
-    ADDPORTRESULT("addPortResult");
+    ADDPORTRESULT("addPortResult"),
+    
+    ADDANNOTATIONRESULT("addAnnotationResult");
 
     private String value;
 

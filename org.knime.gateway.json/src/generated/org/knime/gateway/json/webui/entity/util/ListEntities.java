@@ -44,10 +44,12 @@
  */
 package org.knime.gateway.json.webui.entity.util;
 
+import org.knime.gateway.json.webui.entity.AddAnnotationResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddPortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddPortResultEntMixIn;
+import org.knime.gateway.json.webui.entity.AddWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedConnectionActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedLoopActionsEntMixIn;
@@ -70,7 +72,6 @@ import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.ConvertContainerResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CopyCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CopyResultEntMixIn;
-import org.knime.gateway.json.webui.entity.CreateWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CustomJobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.CutCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DeleteCommandEntMixIn;
@@ -169,10 +170,12 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AddAnnotationResultEntMixIn.class);
         res.add(AddNodeCommandEntMixIn.class);
         res.add(AddNodeResultEntMixIn.class);
         res.add(AddPortCommandEntMixIn.class);
         res.add(AddPortResultEntMixIn.class);
+        res.add(AddWorkflowAnnotationCommandEntMixIn.class);
         res.add(AllowedActionsEntMixIn.class);
         res.add(AllowedConnectionActionsEntMixIn.class);
         res.add(AllowedLoopActionsEntMixIn.class);
@@ -195,7 +198,6 @@ public class ListEntities {
         res.add(ConvertContainerResultEntMixIn.class);
         res.add(CopyCommandEntMixIn.class);
         res.add(CopyResultEntMixIn.class);
-        res.add(CreateWorkflowAnnotationCommandEntMixIn.class);
         res.add(CustomJobManagerEntMixIn.class);
         res.add(CutCommandEntMixIn.class);
         res.add(DeleteCommandEntMixIn.class);
@@ -280,10 +282,12 @@ public class ListEntities {
      */
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
+        res.add(AddAnnotationResultEntMixIn.AddAnnotationResultEntMixInBuilder.class);
         res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
         res.add(AddNodeResultEntMixIn.AddNodeResultEntMixInBuilder.class);
         res.add(AddPortCommandEntMixIn.AddPortCommandEntMixInBuilder.class);
         res.add(AddPortResultEntMixIn.AddPortResultEntMixInBuilder.class);
+        res.add(AddWorkflowAnnotationCommandEntMixIn.AddWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(AllowedActionsEntMixIn.AllowedActionsEntMixInBuilder.class);
         res.add(AllowedConnectionActionsEntMixIn.AllowedConnectionActionsEntMixInBuilder.class);
         res.add(AllowedLoopActionsEntMixIn.AllowedLoopActionsEntMixInBuilder.class);
@@ -306,7 +310,6 @@ public class ListEntities {
         res.add(ConvertContainerResultEntMixIn.ConvertContainerResultEntMixInBuilder.class);
         res.add(CopyCommandEntMixIn.CopyCommandEntMixInBuilder.class);
         res.add(CopyResultEntMixIn.CopyResultEntMixInBuilder.class);
-        res.add(CreateWorkflowAnnotationCommandEntMixIn.CreateWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(CustomJobManagerEntMixIn.CustomJobManagerEntMixInBuilder.class);
         res.add(CutCommandEntMixIn.CutCommandEntMixInBuilder.class);
         res.add(DeleteCommandEntMixIn.DeleteCommandEntMixInBuilder.class);

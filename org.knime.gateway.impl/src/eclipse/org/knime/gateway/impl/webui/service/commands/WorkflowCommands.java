@@ -59,11 +59,11 @@ import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
-import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
@@ -212,8 +212,8 @@ public final class WorkflowCommands {
             command = new UpdateWorkflowAnnotationText(ce);
         } else if (commandEnt instanceof ReorderWorkflowAnnotationsCommandEnt ce) {
             command = new ReorderWorkflowAnnotations(ce);
-        } else if (commandEnt instanceof CreateWorkflowAnnotationCommandEnt ce) {
-            command = new CreateWorkflowAnnotation(ce);
+        } else if (commandEnt instanceof AddWorkflowAnnotationCommandEnt ce) {
+            command = new AddWorkflowAnnotation(ce);
         } else {
             if (m_workflowCommandForTesting != null) {
                 command = m_workflowCommandForTesting;

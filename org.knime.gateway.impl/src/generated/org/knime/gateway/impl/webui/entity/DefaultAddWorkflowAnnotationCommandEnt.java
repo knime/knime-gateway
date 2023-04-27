@@ -42,74 +42,88 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 
 /**
  * Creates a new workflow annotation at a given position.
- * 
+ *
+ * @param kind
+ * @param bounds
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface CreateWorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
-
-
-  /**
-   * Get bounds
-   * @return bounds , never <code>null</code>
-   **/
-  public BoundsEnt getBounds();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (CreateWorkflowAnnotationCommandEnt)other;
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("bounds", Pair.create(getBounds(), e.getBounds()));
-  }
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultAddWorkflowAnnotationCommandEnt(
+    KindEnum kind,
+    BoundsEnt bounds) implements AddWorkflowAnnotationCommandEnt {
 
     /**
-     * The builder for the entity.
+     * Validation for required parameters not being {@code null}.
      */
-    public interface CreateWorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<CreateWorkflowAnnotationCommandEnt> {
+    public DefaultAddWorkflowAnnotationCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(bounds == null) {
+            throw new IllegalArgumentException("<bounds> must not be null.");
+        }
+    }
 
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        CreateWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-   		 * Set bounds
-         * 
-         * @param bounds the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        CreateWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+    @Override
+    public String getTypeID() {
+        return "AddWorkflowAnnotationCommand";
+    }
+  
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
+    
+    @Override
+    public BoundsEnt getBounds() {
+        return bounds;
+    }
+    
+    /**
+     * A builder for {@link DefaultAddWorkflowAnnotationCommandEnt}.
+     */
+    public static class DefaultAddWorkflowAnnotationCommandEntBuilder implements AddWorkflowAnnotationCommandEntBuilder {
+
+        private KindEnum m_kind;
+
+        private BoundsEnt m_bounds;
+
         @Override
-        CreateWorkflowAnnotationCommandEnt build();
+        public DefaultAddWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
+             }
+             m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultAddWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds) {
+             if(bounds == null) {
+                 throw new IllegalArgumentException("<bounds> must not be null.");
+             }
+             m_bounds = bounds;
+             return this;
+        }
+
+        @Override
+        public DefaultAddWorkflowAnnotationCommandEnt build() {
+            return new DefaultAddWorkflowAnnotationCommandEnt(
+                immutable(m_kind),
+                immutable(m_bounds));
+        }
     
     }
 

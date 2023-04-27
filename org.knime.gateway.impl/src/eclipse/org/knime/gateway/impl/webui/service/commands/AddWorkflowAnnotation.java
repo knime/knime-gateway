@@ -48,29 +48,39 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.AnnotationData.ContentType;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.entity.AnnotationIDEnt;
+import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
+import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt.AddAnnotationResultEntBuilder;
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
  * Workflow command to create a new workflow annotation
  *
  * @author Kai Franze, KNIME GmbH
  */
-final class CreateWorkflowAnnotation extends AbstractWorkflowCommand {
+final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements WithResult {
 
     // To make it consistent within the Classic UI
     private static final int DEFAULT_BORDER_COLOR = 16766976;
     private static final int DEFAULT_BG_COLOR = 16777215;
     private static final int DEFAULT_BORDER_SIZE = 10;
 
-    private final CreateWorkflowAnnotationCommandEnt m_commandEnt;
+    private final AddWorkflowAnnotationCommandEnt m_commandEnt;
 
     private WorkflowAnnotationID m_workflowAnnotationID;
 
-    CreateWorkflowAnnotation(final CreateWorkflowAnnotationCommandEnt commandEnt) {
+    AddWorkflowAnnotation(final AddWorkflowAnnotationCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
@@ -102,6 +112,27 @@ final class CreateWorkflowAnnotation extends AbstractWorkflowCommand {
         final var wfm = getWorkflowManager();
         wfm.removeAnnotation(m_workflowAnnotationID);
         m_workflowAnnotationID = null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AddAnnotationResultEnt buildEntity(final String snapshotId) {
+        final var newAnnotationId = new AnnotationIDEnt(m_workflowAnnotationID);
+        return builder(AddAnnotationResultEntBuilder.class)//
+            .setKind(KindEnum.ADDANNOTATIONRESULT)//
+            .setSnapshotId(snapshotId)//
+            .setNewAnnotationId(newAnnotationId)//
+            .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChange.ANNOTATION_ADDED);
     }
 
 }

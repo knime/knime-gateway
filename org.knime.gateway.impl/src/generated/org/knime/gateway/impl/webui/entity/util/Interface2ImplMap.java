@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.impl.webui.entity.util;
 
+import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt.AddAnnotationResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
@@ -52,6 +54,8 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt.AddPortCommandEntBui
 import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt.AddPortResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt.AddWorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
@@ -96,8 +100,6 @@ import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyResultEnt.CopyResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
-import org.knime.gateway.api.webui.entity.CreateWorkflowAnnotationCommandEnt.CreateWorkflowAnnotationCommandEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultCreateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
@@ -270,6 +272,9 @@ public class Interface2ImplMap {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static <B extends GatewayEntityBuilder> B create(final Class<B> clazz) {
+        if(clazz == AddAnnotationResultEntBuilder.class) {
+            return (B)new DefaultAddAnnotationResultEnt.DefaultAddAnnotationResultEntBuilder();
+        }        
         if(clazz == AddNodeCommandEntBuilder.class) {
             return (B)new DefaultAddNodeCommandEnt.DefaultAddNodeCommandEntBuilder();
         }        
@@ -281,6 +286,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == AddPortResultEntBuilder.class) {
             return (B)new DefaultAddPortResultEnt.DefaultAddPortResultEntBuilder();
+        }        
+        if(clazz == AddWorkflowAnnotationCommandEntBuilder.class) {
+            return (B)new DefaultAddWorkflowAnnotationCommandEnt.DefaultAddWorkflowAnnotationCommandEntBuilder();
         }        
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();
@@ -347,9 +355,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == CopyResultEntBuilder.class) {
             return (B)new DefaultCopyResultEnt.DefaultCopyResultEntBuilder();
-        }        
-        if(clazz == CreateWorkflowAnnotationCommandEntBuilder.class) {
-            return (B)new DefaultCreateWorkflowAnnotationCommandEnt.DefaultCreateWorkflowAnnotationCommandEntBuilder();
         }        
         if(clazz == CustomJobManagerEntBuilder.class) {
             return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();
