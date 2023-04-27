@@ -75,9 +75,10 @@ class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
      */
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var projectId = getWorkflowKey().getProjectId();
-        m_annotationId = DefaultServiceUtil.entityToAnnotationID(projectId, m_commandEnt.getAnnotationId());
-        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, m_annotationId);
+        var workflowKey = getWorkflowKey();
+        m_annotationId =
+            DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), m_commandEnt.getAnnotationId());
+        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(workflowKey, m_annotationId);
         m_previousBounds =
             new int[]{annotation.getX(), annotation.getY(), annotation.getWidth(), annotation.getHeight()};
         var bounds = m_commandEnt.getBounds();
@@ -90,8 +91,8 @@ class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
      */
     @Override
     public void undo() throws OperationNotAllowedException {
-        var projectId = getWorkflowKey().getProjectId();
-        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, m_annotationId);
+        var workflowKey = getWorkflowKey();
+        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(workflowKey, m_annotationId);
         annotation.setDimension(m_previousBounds[0], m_previousBounds[1], m_previousBounds[2], m_previousBounds[3]);
         m_previousBounds = null;
         m_annotationId = null;

@@ -2485,21 +2485,23 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testReorderWorkflowAnnotationsCommandWithSingleAnnotation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var annotationEnts = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
+        var workflowId = getRootID();
+        var annotationEnts = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
         var annotationCount = annotationEnts.size();
         if (annotationCount < 2) {
             throw new Exception("Could not perform test since there are less than 2 workflow annotations present");
         }
 
         // Bring bottom annotation forward
-        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
+        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_FORWARD, 0, 1);
         // Bring bottom annotation to front
-        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_TO_FRONT, 0, annotationCount - 1);
+        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_TO_FRONT, 0,
+            annotationCount - 1);
         // Send top annotation backward
-        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
+        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
             annotationCount - 2);
         // Send top annotation to back
-        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
+        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
 
         // Invalid annotation ID
         var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//
@@ -2511,8 +2513,25 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> ws().executeWorkflowCommand(projectId, getRootID(), command));
     }
 
-    private void assertReorderWorkflowAnnotationsCommand(final String projectId, final ActionEnum action,
-        final int initialIndex, final int finalIndex) throws Exception {
+    /**
+     * Tests {@link ReorderWorkflowAnnotationsCommandEnt} within a metanode. This test doesn't cover all the cases, its
+     * purpose is to assert the command logic also works within workflows that aren't the root workflow.
+     *
+     * @throws Exception
+     */
+    public void testReorderWorkflowAnnotationsCommandWithinMetanode() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflowId = new NodeIDEnt(6);
+        var annotationEnts = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
+        var annotationCount = annotationEnts.size();
+        if (annotationCount < 2) {
+            throw new Exception("Could not perform test since there are less than 2 workflow annotations present");
+        }
+        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_FORWARD, 0, 1);
+    }
+
+    private void assertReorderWorkflowAnnotationsCommand(final String projectId, final NodeIDEnt workflowId,
+        final ActionEnum action, final int initialIndex, final int finalIndex) throws Exception {
         var annotationEnt =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(initialIndex);
         var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//

@@ -81,9 +81,10 @@ final class UpdateWorkflowAnnotationText extends AbstractWorkflowCommand {
      */
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var projectId = getWorkflowKey().getProjectId();
-        m_annotationId = DefaultServiceUtil.entityToAnnotationID(projectId, m_commandEnt.getAnnotationId());
-        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, m_annotationId);
+        var workflowKey = getWorkflowKey();
+        m_annotationId =
+            DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), m_commandEnt.getAnnotationId());
+        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(workflowKey, m_annotationId);
         m_previousAnnotationData = annotation.getData().clone();
 
         var newAnnotationData = new AnnotationData();
@@ -107,8 +108,8 @@ final class UpdateWorkflowAnnotationText extends AbstractWorkflowCommand {
      */
     @Override
     public void undo() throws OperationNotAllowedException {
-        var projectId = getWorkflowKey().getProjectId();
-        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, m_annotationId);
+        var workflowKey = getWorkflowKey();
+        var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(workflowKey, m_annotationId);
         annotation.copyFrom(m_previousAnnotationData, true);
         m_previousAnnotationData = null;
         m_annotationId = null;

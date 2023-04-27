@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Moves workflow annotations through the workflow's z-plane.
@@ -94,11 +95,11 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        final var projectId = getWorkflowKey().getProjectId();
+        final var workflowKey = getWorkflowKey();
         final var annotationIds = m_commandEnt.getAnnotationIds().stream()//
-            .map(id -> DefaultServiceUtil.entityToAnnotationID(projectId, id))//
+            .map(id -> DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), id))//
             .collect(Collectors.toList());
-        final var annotations = getAnnotions(projectId, annotationIds);
+        final var annotations = getAnnotions(workflowKey, annotationIds);
         final var action = m_commandEnt.getAction();
 
         m_annotationIdToPreviousIndex = getAnnotationIdToPreviousIndexMap(wfm, annotations);
@@ -121,9 +122,9 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        final var projectId = getWorkflowKey().getProjectId();
+        final var workflowKey = getWorkflowKey();
         final var annotationIds = m_annotationIdToPreviousIndex.keySet().stream().toList();
-        final var annotations = getAnnotions(projectId, annotationIds);
+        final var annotations = getAnnotions(workflowKey, annotationIds);
 
         // Define the function applied to every annotation
         final Function<WorkflowAnnotation, Boolean> function = annotation -> {
@@ -137,11 +138,11 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         m_comparator = null;
     }
 
-    private static List<WorkflowAnnotation> getAnnotions(final String projectId,
+    private static List<WorkflowAnnotation> getAnnotions(final WorkflowKey workflowKey,
         final List<WorkflowAnnotationID> annotationIds) throws OperationNotAllowedException {
         final List<WorkflowAnnotation> annotations = new ArrayList<>();
         for (final var annotationId : annotationIds) {
-            final var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(projectId, annotationId);
+            final var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(workflowKey, annotationId);
             annotations.add(annotation);
         }
         return annotations;

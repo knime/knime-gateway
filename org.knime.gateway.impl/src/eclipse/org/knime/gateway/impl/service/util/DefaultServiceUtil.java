@@ -66,6 +66,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
@@ -190,14 +191,14 @@ public final class DefaultServiceUtil {
     /**
      * Gets the workflow annotation or throws an exception.
      *
-     * @param rootWorkflowID the id of the root workflow
+     * @param workflowKey the workflow key
      * @param annotationId the workflow annotation ID to get a workflow annotation for
-     * @return The {@link WorkflowAnnation} requested
+     * @return The {@link WorkflowAnnotation} requested
      * @throws OperationNotAllowedException If no such workflow annotation was found
      */
-    public static WorkflowAnnotation getWorkflowAnnotationOrThrowException(final String rootWorkflowID,
+    public static WorkflowAnnotation getWorkflowAnnotationOrThrowException(final WorkflowKey workflowKey,
         final WorkflowAnnotationID annotationId) throws OperationNotAllowedException {
-        var wfm = getRootWorkflowManager(rootWorkflowID);
+        var wfm = getWorkflowManager(workflowKey.getProjectId(), workflowKey.getWorkflowId());
         var workflowAnnotation = wfm.getWorkflowAnnotations(annotationId)[0];
         if (workflowAnnotation == null) {
             throw new OperationNotAllowedException(
