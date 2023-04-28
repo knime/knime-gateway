@@ -102,6 +102,12 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public Boolean hasView();
 
+  /**
+   * Indicates whether the node re-executes on its own. 
+   * @return isReexecuting 
+   **/
+  public Boolean isIsReexecuting();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -121,6 +127,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("loopInfo", Pair.create(getLoopInfo(), e.getLoopInfo()));
       valueConsumer.accept("portGroups", Pair.create(getPortGroups(), e.getPortGroups()));
       valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
+      valueConsumer.accept("isReexecuting", Pair.create(isIsReexecuting(), e.isIsReexecuting()));
   }
 
     /**
@@ -239,6 +246,14 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setHasView(Boolean hasView);
+        
+        /**
+         * Indicates whether the node re-executes on its own. 
+         * 
+         * @param isReexecuting the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setIsReexecuting(Boolean isReexecuting);
         
         
         /**

@@ -134,6 +134,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @JsonProperty("hasView")
     public Boolean hasView();
     
+    @Override
+    @JsonProperty("isReexecuting")
+    public Boolean isIsReexecuting();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -202,6 +206,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("hasView")
         public NativeNodeEntMixInBuilder setHasView(final Boolean hasView);
+        
+        @Override
+        @JsonProperty("isReexecuting")
+        public NativeNodeEntMixInBuilder setIsReexecuting(final Boolean isReexecuting);
         
     }
 

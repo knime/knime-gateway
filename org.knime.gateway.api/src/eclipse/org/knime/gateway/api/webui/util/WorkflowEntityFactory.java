@@ -65,6 +65,7 @@ import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.node.interactive.ReExecutable;
 import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
@@ -726,6 +727,10 @@ public final class WorkflowEntityFactory {
         var portGroups = buildPortGroupEntsMapOptional(nnc, inPorts, outPorts, buildContext).orElse(null);
         var hasDialog = NodeDialogManager.hasNodeDialog(nnc) ? Boolean.TRUE : null;
         var hasView = NodeViewManager.hasNodeView(nnc) ? Boolean.TRUE : null;
+        var isReexecuting = false;
+        if (nnc.getNodeModel() instanceof ReExecutable) {
+            isReexecuting = ((ReExecutable<?>) nnc.getNodeModel()).canTriggerReExecution();
+        }
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
             .setKind(KindEnum.NODE)//
@@ -741,6 +746,7 @@ public final class WorkflowEntityFactory {
             .setLoopInfo(buildLoopInfoEnt(nnc, buildContext))//
             .setHasDialog(hasDialog)
             .setHasView(hasView)//
+            .setIsReexecuting(isReexecuting)//
             .build();
     }
 
