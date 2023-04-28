@@ -142,7 +142,7 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         final List<WorkflowAnnotationID> annotationIds) throws OperationNotAllowedException {
         final List<WorkflowAnnotation> annotations = new ArrayList<>();
         for (final var annotationId : annotationIds) {
-            final var annotation = DefaultServiceUtil.getWorkflowAnnotationOrThrowException(workflowKey, annotationId);
+            final var annotation = DefaultServiceUtil.getWorkflowAnnotation(workflowKey, annotationId);
             annotations.add(annotation);
         }
         return annotations;

@@ -196,7 +196,7 @@ public final class DefaultServiceUtil {
      * @return The {@link WorkflowAnnotation} requested
      * @throws OperationNotAllowedException If no such workflow annotation was found
      */
-    public static WorkflowAnnotation getWorkflowAnnotationOrThrowException(final WorkflowKey workflowKey,
+    public static WorkflowAnnotation getWorkflowAnnotation(final WorkflowKey workflowKey,
         final WorkflowAnnotationID annotationId) throws OperationNotAllowedException {
         var wfm = getWorkflowManager(workflowKey.getProjectId(), workflowKey.getWorkflowId());
         var workflowAnnotation = wfm.getWorkflowAnnotations(annotationId)[0];

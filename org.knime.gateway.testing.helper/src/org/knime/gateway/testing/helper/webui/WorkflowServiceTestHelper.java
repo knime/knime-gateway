@@ -54,6 +54,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -2488,9 +2489,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = getRootID();
         var annotationEnts = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
         var annotationCount = annotationEnts.size();
-        if (annotationCount < 2) {
-            throw new Exception("Could not perform test since there are less than 2 workflow annotations present");
-        }
+        assertThat("Could not perform test since there are less than 2 workflow annotations present", annotationCount,
+            greaterThanOrEqualTo(2));
 
         // Bring bottom annotation forward
         assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_FORWARD, 0, 1);
@@ -2524,9 +2524,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = new NodeIDEnt(6);
         var annotationEnts = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
         var annotationCount = annotationEnts.size();
-        if (annotationCount < 2) {
-            throw new Exception("Could not perform test since there are less than 2 workflow annotations present");
-        }
+        assertThat("Could not perform test since there are less than 2 workflow annotations present", annotationCount,
+            greaterThanOrEqualTo(2));
         assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_FORWARD, 0, 1);
     }
 
@@ -2560,9 +2559,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var annotationEnts = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
         var annotationCount = annotationEnts.size();
-        if (annotationCount < 5) {
-            throw new Exception("Could not perform test since there are less than 5 workflow annotations present");
-        }
+        assertThat("Could not perform test since there are less than 5 workflow annotations present", annotationCount,
+            greaterThanOrEqualTo(5));
 
         // Bring two bottom annotations forward twice
         assertReorderWorkflowAnnotationsCommandSequence(projectId, ActionEnum.BRING_FORWARD, Pair.create(0, 2),
