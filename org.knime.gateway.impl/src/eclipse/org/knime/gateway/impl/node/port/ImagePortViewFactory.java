@@ -61,6 +61,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
@@ -98,7 +99,7 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
             public Optional<InitialDataService> createInitialDataService() {
                 return Optional.of(InitialDataService.builder(() -> {
                     IMAGE_DATA_MAP.put(imageId, getImageData(imgValue));
-                    return "ImagePortView/img/" + imageId;
+                    return PageResourceManager.getPagePathPrefix(null) + "/ImagePortView/img/" + imageId;
                 }).build());
             }
 
