@@ -72,7 +72,6 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
 import org.knime.core.node.wizard.page.WizardPageUtil;
 import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
-import org.knime.core.node.workflow.AnnotationData.ContentType;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.ComponentMetadata;
@@ -123,6 +122,7 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder;
+import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
@@ -192,6 +192,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
+import org.knime.shared.workflow.def.AnnotationDataDef;
 import org.xml.sax.SAXException;
 
 /**
@@ -776,10 +777,10 @@ public final class WorkflowEntityFactory {
             .build();
     }
 
-    private ContentTypeEnum getContentType(final ContentType contentType) {
+    private AnnotationEnt.ContentTypeEnum getContentType(final AnnotationDataDef.ContentTypeEnum contentType) {
         return switch (contentType) {
-            case TEXT_PLAIN -> ContentTypeEnum.PLAIN;
-            case TEXT_HTML -> ContentTypeEnum.HTML;
+            case PLAIN -> AnnotationEnt.ContentTypeEnum.PLAIN;
+            case HTML -> AnnotationEnt.ContentTypeEnum.HTML;
         };
     }
 

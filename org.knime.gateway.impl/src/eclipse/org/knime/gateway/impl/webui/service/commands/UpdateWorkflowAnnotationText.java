@@ -52,12 +52,12 @@ import java.util.Collections;
 import java.util.Objects;
 
 import org.knime.core.node.workflow.AnnotationData;
-import org.knime.core.node.workflow.AnnotationData.ContentType;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.shared.workflow.def.AnnotationDataDef;
 
 /**
  * Updates a workflow annotation's text with formatted text.
@@ -96,7 +96,7 @@ final class UpdateWorkflowAnnotationText extends AbstractWorkflowCommand {
         }
 
         newAnnotationData.setText(text);
-        newAnnotationData.setContentType(ContentType.TEXT_HTML);
+        newAnnotationData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML); // To mark it a modern annotation
         newAnnotationData.setStyleRanges(Collections.emptyList()); // No style ranges are back-ported to Classic UI
         newAnnotationData.setAlignment(TextAlignment.LEFT); // Set the default alignment for Classic UI
         annotation.copyFrom(newAnnotationData, true);
