@@ -96,7 +96,7 @@ final class UpdateWorkflowAnnotationText extends AbstractWorkflowCommand {
         }
 
         newAnnotationData.setText(text);
-        newAnnotationData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML); // To mark it a modern annotation
+        newAnnotationData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML);
         newAnnotationData.setStyleRanges(Collections.emptyList()); // No style ranges are back-ported to Classic UI
         newAnnotationData.setAlignment(TextAlignment.LEFT); // Set the default alignment for Classic UI
         annotation.copyFrom(newAnnotationData, true);

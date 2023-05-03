@@ -97,7 +97,7 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
         annoData.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
         annoData.setBorderSize(DEFAULT_BORDER_SIZE);
         annoData.setBorderColor(DEFAULT_BORDER_COLOR);
-        annoData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML); // To mark it a modern annotation
+        annoData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML);
 
         final var workflowAnnotation = wfm.addWorkflowAnnotation(annoData, -1);
         m_workflowAnnotationID = workflowAnnotation.getID();

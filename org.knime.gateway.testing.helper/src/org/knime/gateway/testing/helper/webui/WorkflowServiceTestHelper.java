@@ -2212,6 +2212,45 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
     }
 
+    /**
+     * Test {@link PasteCommandEnt} for annotations especially.
+     *
+     * @throws Exception
+     */
+    public void testExecutePasteCommandForAnnotations() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.ANNOTIONS);
+        var workflowId = getRootID();
+        var annotationEnts = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
+        var annotationIdEnts = annotationEnts.stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList());
+
+        assertContentTypesForWorkflowAnnotations(annotationEnts);
+
+        var copyCommand = buildCopyCommand(Collections.emptyList(), annotationIdEnts);
+        var clipboardContent =
+            ((CopyResultEnt)ws().executeWorkflowCommand(projectId, workflowId, copyCommand)).getContent();
+        var pasteCommand = buildPasteCommand(clipboardContent, List.of(32, 64));
+        var pasteResult = ((PasteResultEnt)ws().executeWorkflowCommand(projectId, workflowId, pasteCommand));
+
+        var pastedAnnotationIdEnts = pasteResult.getAnnotationIds();
+        var annotationEntsAfterPaste =
+            ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
+        var pastedAnnotationEnts = annotationEntsAfterPaste.stream()//
+            .filter(annotation -> pastedAnnotationIdEnts.contains(annotation.getId()))//
+            .collect(Collectors.toList());
+
+        assertContentTypesForWorkflowAnnotations(pastedAnnotationEnts);
+    }
+
+    private static void assertContentTypesForWorkflowAnnotations(final List<WorkflowAnnotationEnt> annotationEnts) {
+        var contentTypes = annotationEnts.stream()//
+            .map(WorkflowAnnotationEnt::getContentType)//
+            .collect(Collectors.toList());
+        assertThat("There should exist at least on 'text/plain' workflow annotation",
+            contentTypes.stream().anyMatch(type -> type == ContentTypeEnum.PLAIN), is(true));
+        assertThat("There should exist at least on 'text/html' workflow annotation",
+            contentTypes.stream().anyMatch(type -> type == ContentTypeEnum.HTML), is(true));
+    }
+
     private static PasteCommandEnt buildPasteCommand(final String clipboardContent, final List<Integer> position) {
         return builder(PasteCommandEntBuilder.class)//
             .setKind(KindEnum.PASTE)//

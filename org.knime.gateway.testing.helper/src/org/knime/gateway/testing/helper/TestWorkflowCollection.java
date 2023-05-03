@@ -66,7 +66,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Contains a node with the new node message properties.
      */
-    NODE_MESSAGE("/files/testflows/Node Message", "node_message");
+    NODE_MESSAGE("/files/testflows/Node Message", "node_message"),
+
+    /**
+     * Contains a contemporary and a legacy annotation.
+     */
+    ANNOTIONS("/files/testflows/Annotations", "node_message");
 
     private final String m_workflowDir;
 
