@@ -71,7 +71,7 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Contains a contemporary and a legacy annotation.
      */
-    ANNOTIONS("/files/testflows/Annotations", "node_message");
+    ANNOTATIONS("/files/testflows/Annotations", "annotations");
 
     private final String m_workflowDir;
 

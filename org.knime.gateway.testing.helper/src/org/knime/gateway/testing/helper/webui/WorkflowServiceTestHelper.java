@@ -2218,7 +2218,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testExecutePasteCommandForAnnotations() throws Exception {
-        var projectId = loadWorkflow(TestWorkflowCollection.ANNOTIONS);
+        var projectId = loadWorkflow(TestWorkflowCollection.ANNOTATIONS);
         var workflowId = getRootID();
         var annotationEnts = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
         var annotationIdEnts = annotationEnts.stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList());
