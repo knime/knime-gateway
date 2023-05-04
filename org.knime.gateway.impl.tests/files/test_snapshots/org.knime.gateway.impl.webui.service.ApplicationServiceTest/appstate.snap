@@ -4,8 +4,20 @@
       "color" : "#000000",
       "kind" : "table",
       "name" : "Table",
-      "portSpecViews" : [ "Table specification" ],
-      "portViews" : [ "Table view" ]
+      "views" : {
+        "descriptorMapping" : {
+          "configured" : [ 0, 2 ],
+          "executed" : [ 1, 2 ]
+        },
+        "descriptors" : [ {
+          "isSpecView" : true,
+          "label" : "Table"
+        }, {
+          "label" : "Table"
+        }, {
+          "label" : "Statistics"
+        } ]
+      }
     },
     "org.knime.core.node.port.PortObject" : {
       "color" : "#9B9B9B",

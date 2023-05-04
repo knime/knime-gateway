@@ -42,70 +42,31 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   May 4, 2023 (hornm): created
  */
 package org.knime.gateway.impl.node.port;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.webui.data.DataServiceContext;
-import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.port.PortContext;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.node.view.table.TableViewUtil;
-import org.knime.core.webui.node.view.table.TableViewViewSettings;
-import org.knime.core.webui.page.Page;
 
 /**
- * Provides information on the table spec.
+ * Factory for a port view of a {@link FlowVariablePortObjectSpec}.
  *
- * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("restriction")
-public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> {
+public class FlowVariableSpecViewFactory implements PortSpecViewFactory<FlowVariablePortObjectSpec> {
+
+    private final FlowVariablePortViewFactory m_portViewFactory = new FlowVariablePortViewFactory();
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public PortView createPortView(final DataTableSpec tableSpec) {
-        var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
-        var nodeId = nc.getID();
-        var tableId = "spec_" + TableViewUtil.toTableId(nodeId);
-        Supplier<BufferedDataTable> emptyTableSupplier = () -> {
-            var emptyTable = DataServiceContext.get().getExecutionContext().createDataContainer(tableSpec);
-            emptyTable.close();
-            return emptyTable.getTable();
-        };
-        return new PortView() { // NOSONAR
-
-            @Override
-            public Page getPage() {
-                return TableViewUtil.PAGE;
-            }
-
-            @Override
-            public Optional<InitialDataService> createInitialDataService() {
-                var settings = new TableViewViewSettings(tableSpec);
-                settings.m_showTitle = false;
-                settings.m_enableGlobalSearch = false;
-                settings.m_enableSortingByHeader = false;
-                settings.m_enableColumnSearch = false;
-                settings.m_compactMode = true;
-                settings.m_showRowIndices = true;
-                settings.m_subscribeToSelection = false;
-                settings.m_publishSelection = false;
-                settings.m_enablePagination = false;
-                return Optional.of(TableViewUtil.createInitialDataService(() -> settings, emptyTableSupplier, tableId));
-            }
-
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                var tableViewDataService = TableViewUtil.createTableViewDataService(emptyTableSupplier, tableId);
-                return Optional.of(TableViewUtil.createRpcDataService(tableViewDataService, tableId));
-            }
-        };
+    public PortView createPortView(final FlowVariablePortObjectSpec portObjectSpec) {
+        return m_portViewFactory.createPortView(null);
     }
 
 }

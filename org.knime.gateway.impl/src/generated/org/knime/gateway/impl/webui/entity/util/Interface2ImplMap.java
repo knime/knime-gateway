@@ -188,6 +188,12 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorEnt.PortViewDescriptorEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewDescriptorEnt;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt.PortViewDescriptorMappingEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewDescriptorMappingEnt;
+import org.knime.gateway.api.webui.entity.PortViewsEnt.PortViewsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewsEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
@@ -487,6 +493,15 @@ public class Interface2ImplMap {
         }        
         if(clazz == PortTypeEntBuilder.class) {
             return (B)new DefaultPortTypeEnt.DefaultPortTypeEntBuilder();
+        }        
+        if(clazz == PortViewDescriptorEntBuilder.class) {
+            return (B)new DefaultPortViewDescriptorEnt.DefaultPortViewDescriptorEntBuilder();
+        }        
+        if(clazz == PortViewDescriptorMappingEntBuilder.class) {
+            return (B)new DefaultPortViewDescriptorMappingEnt.DefaultPortViewDescriptorMappingEntBuilder();
+        }        
+        if(clazz == PortViewsEntBuilder.class) {
+            return (B)new DefaultPortViewsEnt.DefaultPortViewsEntBuilder();
         }        
         if(clazz == ProjectDirtyStateEventEntBuilder.class) {
             return (B)new DefaultProjectDirtyStateEventEnt.DefaultProjectDirtyStateEventEntBuilder();

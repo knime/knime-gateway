@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortViewsEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewDescriptorMappingEnt.DefaultPortViewDescriptorMappingEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,38 +60,22 @@ import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEnt
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultPortTypeEntBuilder.class)
-@JsonSerialize(as=PortTypeEnt.class)
+@JsonDeserialize(builder=DefaultPortViewDescriptorMappingEntBuilder.class)
+@JsonSerialize(as=PortViewDescriptorMappingEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface PortTypeEntMixIn extends PortTypeEnt {
+public interface PortViewDescriptorMappingEntMixIn extends PortViewDescriptorMappingEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("configured")
+    public java.util.List<Integer> getConfigured();
     
     @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("color")
-    public String getColor();
-    
-    @Override
-    @JsonProperty("compatibleTypes")
-    public java.util.List<String> getCompatibleTypes();
-    
-    @Override
-    @JsonProperty("hidden")
-    public Boolean isHidden();
-    
-    @Override
-    @JsonProperty("views")
-    public PortViewsEnt getViews();
+    @JsonProperty("executed")
+    public java.util.List<Integer> getExecuted();
     
 
     /**
@@ -102,34 +85,18 @@ public interface PortTypeEntMixIn extends PortTypeEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface PortTypeEntMixInBuilder extends PortTypeEntBuilder {
+    public static interface PortViewDescriptorMappingEntMixInBuilder extends PortViewDescriptorMappingEntBuilder {
     
         @Override
-        public PortTypeEntMixIn build();
+        public PortViewDescriptorMappingEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public PortTypeEntMixInBuilder setName(final String name);
+        @JsonProperty("configured")
+        public PortViewDescriptorMappingEntMixInBuilder setConfigured(final java.util.List<Integer> configured);
         
         @Override
-        @JsonProperty("kind")
-        public PortTypeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("color")
-        public PortTypeEntMixInBuilder setColor(final String color);
-        
-        @Override
-        @JsonProperty("compatibleTypes")
-        public PortTypeEntMixInBuilder setCompatibleTypes(final java.util.List<String> compatibleTypes);
-        
-        @Override
-        @JsonProperty("hidden")
-        public PortTypeEntMixInBuilder setHidden(final Boolean hidden);
-        
-        @Override
-        @JsonProperty("views")
-        public PortTypeEntMixInBuilder setViews(final PortViewsEnt views);
+        @JsonProperty("executed")
+        public PortViewDescriptorMappingEntMixInBuilder setExecuted(final java.util.List<Integer> executed);
         
     }
 

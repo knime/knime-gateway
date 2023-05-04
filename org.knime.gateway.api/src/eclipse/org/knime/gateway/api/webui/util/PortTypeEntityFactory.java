@@ -50,22 +50,26 @@ package org.knime.gateway.api.webui.util;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortViewManager;
+import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt.PortTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorEnt;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorEnt.PortViewDescriptorEntBuilder;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
+import org.knime.gateway.api.webui.entity.PortViewsEnt;
+import org.knime.gateway.api.webui.entity.PortViewsEnt.PortViewsEntBuilder;
 
 /**
  * See {@link EntityFactory}.
@@ -86,6 +90,7 @@ public final class PortTypeEntityFactory {
      *            workflow
      * @return An entity describing the given port type
      */
+    @SuppressWarnings("java:S2301") // boolean parameter
     public PortTypeEnt buildPortTypeEnt(final PortType ptype, final Collection<PortType> availableTypes,
         final boolean includeInteractionInfo) {
         var kind = getPortTypeKind(ptype);
@@ -97,29 +102,38 @@ public final class PortTypeEntityFactory {
                 .map(CoreUtil::getPortTypeId)//
                 .collect(Collectors.toList());
         }
-        var viewLabels = unzip(PortViewManager.getPortViewLabels(ptype));
         return builder(PortTypeEntBuilder.class)//
             .setName(ptype.getName())//
             .setKind(kind)//
             .setColor(EntityFactory.Workflow.hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
             .setHidden(ptype.isHidden() ? Boolean.TRUE : null)//
-            .setPortSpecViews(includeInteractionInfo ? viewLabels.getLeft() : null)
-            .setPortViews(includeInteractionInfo ? viewLabels.getRight() : null)
+            .setViews(includeInteractionInfo ? buildPortViewsEnt(ptype) : null)//
             .build();
     }
 
-    private <V> Pair<List<V>, List<V>> unzip(List<Pair<V, V>> pairs) {
-        if (pairs.isEmpty()) {
-            return ImmutablePair.nullPair();
+    private PortViewsEnt buildPortViewsEnt(final PortType ptype) {
+        var views = PortViewManager.getPortViews(ptype);
+        if (views == null) {
+            return null;
         }
-        List<V> l1 = new ArrayList<>();
-        List<V> l2 = new ArrayList<>();
-        pairs.forEach(pair -> {
-            l1.add(pair.getLeft());
-            l2.add(pair.getRight());
-        });
-        return ImmutablePair.of(l1, l2);
+        return builder(PortViewsEntBuilder.class).setDescriptors(buildPortViewDescriptorEnt(views.viewDescriptors())) //
+            .setDescriptorMapping( //
+                builder(PortViewDescriptorMappingEnt.PortViewDescriptorMappingEntBuilder.class)//
+                    .setConfigured(views.configuredIndices())//
+                    .setExecuted(views.executedIndices())//
+                    .build()//
+            )//
+            .build();
+    }
+
+    private List<PortViewDescriptorEnt> buildPortViewDescriptorEnt(final List<PortViewDescriptor> viewDescriptors) {
+        return viewDescriptors.stream().map(vd -> //
+        builder(PortViewDescriptorEntBuilder.class) //
+            .setLabel(vd.label()) //
+            .setIsSpecView(vd.viewFactory() instanceof PortSpecViewFactory ? true : null) //
+            .build() //
+        ).collect(Collectors.toList());
     }
 
     private PortTypeEnt.KindEnum getPortTypeKind(final PortType ptype) {

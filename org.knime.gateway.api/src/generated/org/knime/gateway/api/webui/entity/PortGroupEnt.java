@@ -76,13 +76,13 @@ public interface PortGroupEnt extends GatewayEntity {
   public java.util.List<Integer> getOutputRange();
 
   /**
-   * Can you add another input port or not. Either this or the &#39;canAddOutPort&#39; is required for a port group.
+   * Whether an additional input port can be added. Either this or &#x60;canAddOutPort&#x60; is required.
    * @return canAddInPort 
    **/
   public Boolean isCanAddInPort();
 
   /**
-   * Can you add another output port or not. Either this or the &#39;canAddInPort&#39; is required for a port group.
+   * Whether an additional input port can be added. Either this or &#x60;canAddInPort&#x60; is required.
    * @return canAddOutPort 
    **/
   public Boolean isCanAddOutPort();
@@ -127,7 +127,7 @@ public interface PortGroupEnt extends GatewayEntity {
         PortGroupEntBuilder setOutputRange(java.util.List<Integer> outputRange);
         
         /**
-         * Can you add another input port or not. Either this or the &#39;canAddOutPort&#39; is required for a port group.
+         * Whether an additional input port can be added. Either this or &#x60;canAddOutPort&#x60; is required.
          * 
          * @param canAddInPort the property value,  
          * @return this entity builder for chaining
@@ -135,7 +135,7 @@ public interface PortGroupEnt extends GatewayEntity {
         PortGroupEntBuilder setCanAddInPort(Boolean canAddInPort);
         
         /**
-         * Can you add another output port or not. Either this or the &#39;canAddInPort&#39; is required for a port group.
+         * Whether an additional input port can be added. Either this or &#x60;canAddInPort&#x60; is required.
          * 
          * @param canAddOutPort the property value,  
          * @return this entity builder for chaining

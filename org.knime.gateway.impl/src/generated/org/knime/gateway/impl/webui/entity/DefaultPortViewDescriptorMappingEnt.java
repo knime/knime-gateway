@@ -46,146 +46,69 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.PortViewsEnt;
 
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
 
 /**
- * Describes the type of a port.
+ * Mapping of node execution state to list of view IDs to be displayed.
  *
- * @param name
- * @param kind
- * @param color
- * @param compatibleTypes
- * @param hidden
- * @param views
+ * @param configured
+ * @param executed
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultPortTypeEnt(
-    String name,
-    KindEnum kind,
-    String color,
-    java.util.List<String> compatibleTypes,
-    Boolean hidden,
-    PortViewsEnt views) implements PortTypeEnt {
+public record DefaultPortViewDescriptorMappingEnt(
+    java.util.List<Integer> configured,
+    java.util.List<Integer> executed) implements PortViewDescriptorMappingEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultPortTypeEnt {
-        if(name == null) {
-            throw new IllegalArgumentException("<name> must not be null.");
-        }
-        if(kind == null) {
-            throw new IllegalArgumentException("<kind> must not be null.");
-        }
+    public DefaultPortViewDescriptorMappingEnt {
     }
 
     @Override
     public String getTypeID() {
-        return "PortType";
+        return "PortViewDescriptorMapping";
     }
   
     @Override
-    public String getName() {
-        return name;
+    public java.util.List<Integer> getConfigured() {
+        return configured;
     }
     
     @Override
-    public KindEnum getKind() {
-        return kind;
-    }
-    
-    @Override
-    public String getColor() {
-        return color;
-    }
-    
-    @Override
-    public java.util.List<String> getCompatibleTypes() {
-        return compatibleTypes;
-    }
-    
-    @Override
-    public Boolean isHidden() {
-        return hidden;
-    }
-    
-    @Override
-    public PortViewsEnt getViews() {
-        return views;
+    public java.util.List<Integer> getExecuted() {
+        return executed;
     }
     
     /**
-     * A builder for {@link DefaultPortTypeEnt}.
+     * A builder for {@link DefaultPortViewDescriptorMappingEnt}.
      */
-    public static class DefaultPortTypeEntBuilder implements PortTypeEntBuilder {
+    public static class DefaultPortViewDescriptorMappingEntBuilder implements PortViewDescriptorMappingEntBuilder {
 
-        private String m_name;
+        private java.util.List<Integer> m_configured;
 
-        private KindEnum m_kind;
-
-        private String m_color;
-
-        private java.util.List<String> m_compatibleTypes;
-
-        private Boolean m_hidden;
-
-        private PortViewsEnt m_views;
+        private java.util.List<Integer> m_executed;
 
         @Override
-        public DefaultPortTypeEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("<name> must not be null.");
-             }
-             m_name = name;
+        public DefaultPortViewDescriptorMappingEntBuilder setConfigured(java.util.List<Integer> configured) {
+             m_configured = configured;
              return this;
         }
 
         @Override
-        public DefaultPortTypeEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("<kind> must not be null.");
-             }
-             m_kind = kind;
+        public DefaultPortViewDescriptorMappingEntBuilder setExecuted(java.util.List<Integer> executed) {
+             m_executed = executed;
              return this;
         }
 
         @Override
-        public DefaultPortTypeEntBuilder setColor(String color) {
-             m_color = color;
-             return this;
-        }
-
-        @Override
-        public DefaultPortTypeEntBuilder setCompatibleTypes(java.util.List<String> compatibleTypes) {
-             m_compatibleTypes = compatibleTypes;
-             return this;
-        }
-
-        @Override
-        public DefaultPortTypeEntBuilder setHidden(Boolean hidden) {
-             m_hidden = hidden;
-             return this;
-        }
-
-        @Override
-        public DefaultPortTypeEntBuilder setViews(PortViewsEnt views) {
-             m_views = views;
-             return this;
-        }
-
-        @Override
-        public DefaultPortTypeEnt build() {
-            return new DefaultPortTypeEnt(
-                immutable(m_name),
-                immutable(m_kind),
-                immutable(m_color),
-                immutable(m_compatibleTypes),
-                immutable(m_hidden),
-                immutable(m_views));
+        public DefaultPortViewDescriptorMappingEnt build() {
+            return new DefaultPortViewDescriptorMappingEnt(
+                immutable(m_configured),
+                immutable(m_executed));
         }
     
     }

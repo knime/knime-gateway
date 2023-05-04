@@ -42,97 +42,81 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortViewsEnt;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorEnt;
+import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
+
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * Provides information about views available for a port type.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface PortViewsEnt extends GatewayEntity {
 
-@JsonDeserialize(builder=DefaultPortTypeEntBuilder.class)
-@JsonSerialize(as=PortTypeEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface PortTypeEntMixIn extends PortTypeEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+  /**
+   * Get descriptors
+   * @return descriptors , never <code>null</code>
+   **/
+  public java.util.List<PortViewDescriptorEnt> getDescriptors();
 
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("color")
-    public String getColor();
-    
-    @Override
-    @JsonProperty("compatibleTypes")
-    public java.util.List<String> getCompatibleTypes();
-    
-    @Override
-    @JsonProperty("hidden")
-    public Boolean isHidden();
-    
-    @Override
-    @JsonProperty("views")
-    public PortViewsEnt getViews();
-    
+  /**
+   * Get descriptorMapping
+   * @return descriptorMapping , never <code>null</code>
+   **/
+  public PortViewDescriptorMappingEnt getDescriptorMapping();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (PortViewsEnt)other;
+      valueConsumer.accept("descriptors", Pair.create(getDescriptors(), e.getDescriptors()));
+      valueConsumer.accept("descriptorMapping", Pair.create(getDescriptorMapping(), e.getDescriptorMapping()));
+  }
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
+    public interface PortViewsEntBuilder extends GatewayEntityBuilder<PortViewsEnt> {
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface PortTypeEntMixInBuilder extends PortTypeEntBuilder {
+        /**
+   		 * Set descriptors
+         * 
+         * @param descriptors the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PortViewsEntBuilder setDescriptors(java.util.List<PortViewDescriptorEnt> descriptors);
+        
+        /**
+   		 * Set descriptorMapping
+         * 
+         * @param descriptorMapping the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PortViewsEntBuilder setDescriptorMapping(PortViewDescriptorMappingEnt descriptorMapping);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        PortViewsEnt build();
     
-        @Override
-        public PortTypeEntMixIn build();
-    
-        @Override
-        @JsonProperty("name")
-        public PortTypeEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("kind")
-        public PortTypeEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("color")
-        public PortTypeEntMixInBuilder setColor(final String color);
-        
-        @Override
-        @JsonProperty("compatibleTypes")
-        public PortTypeEntMixInBuilder setCompatibleTypes(final java.util.List<String> compatibleTypes);
-        
-        @Override
-        @JsonProperty("hidden")
-        public PortTypeEntMixInBuilder setHidden(final Boolean hidden);
-        
-        @Override
-        @JsonProperty("views")
-        public PortTypeEntMixInBuilder setViews(final PortViewsEnt views);
-        
     }
 
-
 }
-

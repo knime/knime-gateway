@@ -95,43 +95,51 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testGetPortView() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
-        // get table port view for a non-executed node
+        // get table port view (registered at index 1) for a non-executed node
         var message =
             assertThrows(InvalidRequestException.class,
-                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false))
+                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
 
-        // get flow variable port view 0
-        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 0, false);
+        // get flow variable 'spec' view 0
+        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 0);
         assertPortView(portView, "root:1", "FlowVariablePortView", "VUE_COMPONENT_REFERENCE");
 
-        // check table spec view
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0, true);
-        assertPortView(portView, "root:1", "TableSpecView", "VUE_COMPONENT_REFERENCE");
+        // get flow variable port view 1
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 1);
+        assertPortView(portView, "root:1", "FlowVariablePortView", "VUE_COMPONENT_REFERENCE");
+
+        // check table spec view (registered at index 0)
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0);
+        assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
 
         executeWorkflow(wfId);
 
-        // get table port view 1
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false);
+        // get table port view 1 now that node is executed
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
+        assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
+
+        // get table statistics  now that node is executed
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 2);
         assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
 
         // get data for an inactive port
         message =
             assertThrows(InvalidRequestException.class,
-                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(14), 1, 0, false))
+                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(14), 1, 0))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
 
         // get data for a metanode port
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 0, false);
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 1);
         var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
         assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("tableview"));
 
         // get data for a metanode port that is not executed
         message =
             assertThrows(InvalidRequestException.class,
-                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 2, 0, false))
+                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 2, 1))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
     }
@@ -146,11 +154,11 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeWorkflow(wfId);
 
         // get port view for a component
-        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(23), 1, 0, false);
+        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(23), 1, 1);
         assertPortView(portView, "root:23", "tableview", "VUE_COMPONENT_LIB");
 
         // get port view for a metanode
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 0, false);
+        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 1);
         assertPortView(portView, "root:6", "tableview", "VUE_COMPONENT_LIB");
     }
 
@@ -178,14 +186,14 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // initialData
         var initialData =
-            ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false, "initial_data", "");
+            ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 1, "initial_data", "");
         var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
         assertThat(jsonNode.get("result").get("table"), notNullValue());
 
         // data
         var jsonRpcRequest =
             RpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null, "false", "true", "false");
-        var data = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 0, false, "data", jsonRpcRequest);
+        var data = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 1, "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("rows"), notNullValue());
         assertThat(jsonNode.get("id").intValue(), is(1));

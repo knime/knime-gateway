@@ -178,7 +178,7 @@ public class TablePortViewFactoryTest {
         }
     }
 
-    private static Disposable<NodeOutPort> createNodeOutPort(final BufferedDataTable bdt) throws IOException {
+    static Disposable<NodeOutPort> createNodeOutPort(final BufferedDataTable bdt) throws IOException {
         var nc = createNodeWithPortView();
         var port = mock(NodeOutPort.class);
         when(port.getPortObject()).thenReturn(bdt);
@@ -204,7 +204,7 @@ public class TablePortViewFactoryTest {
         return WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory());
     }
 
-    private static interface Disposable<T> {
+    static interface Disposable<T> {
         T get();
 
         void dispose();
@@ -233,7 +233,7 @@ public class TablePortViewFactoryTest {
          * @param rowCount the number of rows in the new table
          * @return the new table instance
          */
-        private static BufferedDataTable createTable(final int rowCount) {
+        static BufferedDataTable createTable(final int rowCount) {
             final DataRow[] rows =
                 IntStream.range(0, rowCount).mapToObj(TablePortViewFactoryTest::createRow).toArray(DataRow[]::new);
             return createTable(SPEC, rows);

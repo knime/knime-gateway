@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PortViewsEnt;
 
 import java.util.function.BiConsumer;
 
@@ -55,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Decribes the type of a port.
+ * Describes the type of a port.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -119,16 +120,10 @@ public interface PortTypeEnt extends GatewayEntity {
   public Boolean isHidden();
 
   /**
-   * Display labels of port object views. Corresponds to the port object spec view at the same index  in &#x60;portSpecViews&#x60; (if present).
-   * @return portViews 
+   * Get views
+   * @return views 
    **/
-  public java.util.List<String> getPortViews();
-
-  /**
-   * Display labels of port object spec views. Corresponds to the port object view in the  same index in &#x60;portViews&#x60; (if present).
-   * @return portSpecViews 
-   **/
-  public java.util.List<String> getPortSpecViews();
+  public PortViewsEnt getViews();
 
 
   @Override
@@ -140,8 +135,7 @@ public interface PortTypeEnt extends GatewayEntity {
       valueConsumer.accept("color", Pair.create(getColor(), e.getColor()));
       valueConsumer.accept("compatibleTypes", Pair.create(getCompatibleTypes(), e.getCompatibleTypes()));
       valueConsumer.accept("hidden", Pair.create(isHidden(), e.isHidden()));
-      valueConsumer.accept("portViews", Pair.create(getPortViews(), e.getPortViews()));
-      valueConsumer.accept("portSpecViews", Pair.create(getPortSpecViews(), e.getPortSpecViews()));
+      valueConsumer.accept("views", Pair.create(getViews(), e.getViews()));
   }
 
     /**
@@ -190,20 +184,12 @@ public interface PortTypeEnt extends GatewayEntity {
         PortTypeEntBuilder setHidden(Boolean hidden);
         
         /**
-         * Display labels of port object views. Corresponds to the port object spec view at the same index  in &#x60;portSpecViews&#x60; (if present).
+   		 * Set views
          * 
-         * @param portViews the property value,  
+         * @param views the property value,  
          * @return this entity builder for chaining
          */
-        PortTypeEntBuilder setPortViews(java.util.List<String> portViews);
-        
-        /**
-         * Display labels of port object spec views. Corresponds to the port object view in the  same index in &#x60;portViews&#x60; (if present).
-         * 
-         * @param portSpecViews the property value,  
-         * @return this entity builder for chaining
-         */
-        PortTypeEntBuilder setPortSpecViews(java.util.List<String> portSpecViews);
+        PortTypeEntBuilder setViews(PortViewsEnt views);
         
         
         /**

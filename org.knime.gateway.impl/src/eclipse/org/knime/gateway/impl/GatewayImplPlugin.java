@@ -48,13 +48,17 @@
  */
 package org.knime.gateway.impl;
 
+import java.util.List;
+
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.image.ImagePortObject;
-import org.knime.core.webui.node.port.PortViewGroup;
 import org.knime.core.webui.node.port.PortViewManager;
+import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
+import org.knime.gateway.impl.node.port.FlowVariableSpecViewFactory;
 import org.knime.gateway.impl.node.port.ImagePortViewFactory;
+import org.knime.gateway.impl.node.port.StatisticsPortViewFactory;
 import org.knime.gateway.impl.node.port.TablePortViewFactory;
 import org.knime.gateway.impl.node.port.TableSpecViewFactory;
 import org.osgi.framework.BundleActivator;
@@ -71,21 +75,31 @@ public class GatewayImplPlugin implements BundleActivator {
     public void start(final BundleContext context) throws Exception {
         // Temporary solution to register port views with port types/objects.
         // To be removed once it's part of the PortObject/PortType API.
-        PortViewManager.registerPortViews(BufferedDataTable.TYPE,
-            PortViewGroup.builder() //
-                .setSpecViewLabel("Table specification") //
-                .setSpecViewFactory(new TableSpecViewFactory()) //
-                .setViewLabel("Table view") //
-                .setViewFactory(new TablePortViewFactory()) //
-                .build());
+
+        PortViewManager.registerPortViews(BufferedDataTable.TYPE, //
+            List.of( //
+                new PortViewDescriptor("Table", new TableSpecViewFactory()), //
+                new PortViewDescriptor("Table", new TablePortViewFactory()), //
+                new PortViewDescriptor("Statistics", new StatisticsPortViewFactory())//
+            ), //
+            List.of(0, 2), //
+            List.of(1, 2)//
+        );
 
         PortViewManager.registerPortViews(FlowVariablePortObject.TYPE, //
-            PortViewGroup.of(new FlowVariablePortViewFactory()) //
+            List.of(//
+                new PortViewDescriptor("Flow variables", new FlowVariableSpecViewFactory()), //
+                new PortViewDescriptor("Flow variables", new FlowVariablePortViewFactory())), //
+            List.of(0), //
+            List.of(1)//
         );
 
         PortViewManager.registerPortViews(ImagePortObject.TYPE, //
-            PortViewGroup.of(new ImagePortViewFactory()) //
+            List.of(new PortViewDescriptor("Image", new ImagePortViewFactory())), //
+            List.of(0), //
+            List.of(0)//
         );
+
     }
 
     @Override

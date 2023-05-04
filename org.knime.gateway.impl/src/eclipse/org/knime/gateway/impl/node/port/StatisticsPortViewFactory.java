@@ -42,6 +42,7 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
  */
 package org.knime.gateway.impl.node.port;
 
@@ -49,37 +50,41 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.page.Page;
 
 /**
- * Provides information on the table spec.
- *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("restriction")
-public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> {
+public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTable> {
+
     @Override
-    public PortView createPortView(final DataTableSpec tableSpec) {
+    public PortView createPortView(final BufferedDataTable table) {
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
         var nodeId = nc.getID();
-        var tableId = "spec_" + TableViewUtil.toTableId(nodeId);
-        Supplier<BufferedDataTable> emptyTableSupplier = () -> {
-            var emptyTable = DataServiceContext.get().getExecutionContext().createDataContainer(tableSpec);
-            emptyTable.close();
-            return emptyTable.getTable();
-        };
-        return new PortView() { // NOSONAR
+        var tableId = "stats_" + TableViewUtil.toTableId(nodeId);
 
+        var spec = new DataTableSpec(new String[]{"foo"}, new DataType[]{StringCell.TYPE});
+        Supplier<BufferedDataTable> tableSupplier = () -> {
+            var dataContainer = DataServiceContext.get().getExecutionContext().createDataContainer(spec);
+            dataContainer.addRowToTable(new DefaultRow("1", new StringCell("bar")));
+            dataContainer.close();
+            return dataContainer.getTable();
+        };
+
+        return new PortView() {
             @Override
             public Page getPage() {
                 return TableViewUtil.PAGE;
@@ -87,25 +92,19 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
 
             @Override
             public Optional<InitialDataService> createInitialDataService() {
-                var settings = new TableViewViewSettings(tableSpec);
+                var settings = new TableViewViewSettings(spec);
                 settings.m_showTitle = false;
-                settings.m_enableGlobalSearch = false;
-                settings.m_enableSortingByHeader = false;
-                settings.m_enableColumnSearch = false;
-                settings.m_compactMode = true;
-                settings.m_showRowIndices = true;
-                settings.m_subscribeToSelection = false;
                 settings.m_publishSelection = false;
-                settings.m_enablePagination = false;
-                return Optional.of(TableViewUtil.createInitialDataService(() -> settings, emptyTableSupplier, tableId));
+                settings.m_subscribeToSelection = false;
+                settings.m_compactMode = true;
+                return Optional.of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, tableId));
             }
 
             @Override
             public Optional<RpcDataService> createRpcDataService() {
-                var tableViewDataService = TableViewUtil.createTableViewDataService(emptyTableSupplier, tableId);
+                var tableViewDataService = TableViewUtil.createTableViewDataService(tableSupplier, tableId);
                 return Optional.of(TableViewUtil.createRpcDataService(tableViewDataService, tableId));
             }
         };
     }
-
 }
