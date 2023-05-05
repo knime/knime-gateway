@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
  * @param name
  * @param state
  * @param link
+ * @param linkStatus
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -87,7 +88,8 @@ public record DefaultMetaNodeEnt(
     NodeExecutionInfoEnt executionInfo,
     String name,
     MetaNodeStateEnt state,
-    String link) implements MetaNodeEnt {
+    String link,
+    String linkStatus) implements MetaNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -181,6 +183,11 @@ public record DefaultMetaNodeEnt(
         return link;
     }
     
+    @Override
+    public String getLinkStatus() {
+        return linkStatus;
+    }
+    
     /**
      * A builder for {@link DefaultMetaNodeEnt}.
      */
@@ -209,6 +216,8 @@ public record DefaultMetaNodeEnt(
         private MetaNodeStateEnt m_state;
 
         private String m_link;
+
+        private String m_linkStatus;
 
         @Override
         public DefaultMetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -304,6 +313,12 @@ public record DefaultMetaNodeEnt(
         }
 
         @Override
+        public DefaultMetaNodeEntBuilder setLinkStatus(String linkStatus) {
+             m_linkStatus = linkStatus;
+             return this;
+        }
+
+        @Override
         public DefaultMetaNodeEnt build() {
             return new DefaultMetaNodeEnt(
                 immutable(m_id),
@@ -317,7 +332,8 @@ public record DefaultMetaNodeEnt(
                 immutable(m_executionInfo),
                 immutable(m_name),
                 immutable(m_state),
-                immutable(m_link));
+                immutable(m_link),
+                immutable(m_linkStatus));
         }
     
     }

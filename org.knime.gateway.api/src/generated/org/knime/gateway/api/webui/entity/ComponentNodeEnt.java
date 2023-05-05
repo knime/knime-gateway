@@ -83,6 +83,12 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
    **/
   public String getLink();
 
+  /**
+   * The status of the link of this component (UpToDate, HasUpdate, Error)
+   * @return linkStatus 
+   **/
+  public String getLinkStatus();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -102,6 +108,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
+      valueConsumer.accept("linkStatus", Pair.create(getLinkStatus(), e.getLinkStatus()));
   }
 
     /**
@@ -220,6 +227,14 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setLink(String link);
+        
+        /**
+         * The status of the link of this component (UpToDate, HasUpdate, Error)
+         * 
+         * @param linkStatus the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setLinkStatus(String linkStatus);
         
         
         /**

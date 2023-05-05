@@ -100,6 +100,12 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public String getLink();
 
+  /**
+   * The status of the link of this component (UpToDate, HasUpdate, Error)
+   * @return linkStatus 
+   **/
+  public String getLinkStatus();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -117,6 +123,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
+      valueConsumer.accept("linkStatus", Pair.create(getLinkStatus(), e.getLinkStatus()));
   }
 
     /**
@@ -219,6 +226,14 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setLink(String link);
+        
+        /**
+         * The status of the link of this component (UpToDate, HasUpdate, Error)
+         * 
+         * @param linkStatus the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setLinkStatus(String linkStatus);
         
         
         /**

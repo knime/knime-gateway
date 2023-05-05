@@ -133,6 +133,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @JsonProperty("link")
     public String getLink();
     
+    @Override
+    @JsonProperty("linkStatus")
+    public String getLinkStatus();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -201,6 +205,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("link")
         public ComponentNodeEntMixInBuilder setLink(final String link);
+        
+        @Override
+        @JsonProperty("linkStatus")
+        public ComponentNodeEntMixInBuilder setLinkStatus(final String linkStatus);
         
     }
 

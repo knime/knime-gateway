@@ -74,6 +74,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  * @param icon
  * @param state
  * @param link
+ * @param linkStatus
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -92,7 +93,8 @@ public record DefaultComponentNodeEnt(
     TypeEnum type,
     String icon,
     NodeStateEnt state,
-    String link) implements ComponentNodeEnt {
+    String link,
+    String linkStatus) implements ComponentNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -193,6 +195,11 @@ public record DefaultComponentNodeEnt(
         return link;
     }
     
+    @Override
+    public String getLinkStatus() {
+        return linkStatus;
+    }
+    
     /**
      * A builder for {@link DefaultComponentNodeEnt}.
      */
@@ -225,6 +232,8 @@ public record DefaultComponentNodeEnt(
         private NodeStateEnt m_state;
 
         private String m_link;
+
+        private String m_linkStatus;
 
         @Override
         public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -329,6 +338,12 @@ public record DefaultComponentNodeEnt(
         }
 
         @Override
+        public DefaultComponentNodeEntBuilder setLinkStatus(String linkStatus) {
+             m_linkStatus = linkStatus;
+             return this;
+        }
+
+        @Override
         public DefaultComponentNodeEnt build() {
             return new DefaultComponentNodeEnt(
                 immutable(m_id),
@@ -344,7 +359,8 @@ public record DefaultComponentNodeEnt(
                 immutable(m_type),
                 immutable(m_icon),
                 immutable(m_state),
-                immutable(m_link));
+                immutable(m_link),
+                immutable(m_linkStatus));
         }
     
     }

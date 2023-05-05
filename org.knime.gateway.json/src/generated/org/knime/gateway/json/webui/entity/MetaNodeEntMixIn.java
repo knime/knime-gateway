@@ -124,6 +124,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     @JsonProperty("link")
     public String getLink();
     
+    @Override
+    @JsonProperty("linkStatus")
+    public String getLinkStatus();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -184,6 +188,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("link")
         public MetaNodeEntMixInBuilder setLink(final String link);
+        
+        @Override
+        @JsonProperty("linkStatus")
+        public MetaNodeEntMixInBuilder setLinkStatus(final String linkStatus);
         
     }
 

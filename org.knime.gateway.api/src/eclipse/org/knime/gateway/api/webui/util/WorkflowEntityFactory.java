@@ -534,6 +534,7 @@ public final class WorkflowEntityFactory {
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
             .setLink(getTemplateLink(nc))//
+            .setLinkStatus(getLinkStatus(nc))//
             .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
@@ -659,6 +660,7 @@ public final class WorkflowEntityFactory {
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
             .setLink(getTemplateLink(wm))//
+            .setLinkStatus(getLinkStatus(wm)) //
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .build();
@@ -1453,6 +1455,14 @@ public final class WorkflowEntityFactory {
         }
         var sourceURI = nct.getTemplateInformation().getSourceURI();
         return sourceURI == null ? null : sourceURI.toString();
+    }
+
+    private String getLinkStatus(final NodeContainerTemplate nct) {
+        if (nct instanceof SubNodeContainer && ((SubNodeContainer)nct).isProject()) {
+            return null;
+        }
+        var updateStatus = nct.getTemplateInformation().getUpdateStatus();
+        return updateStatus == null ? null : updateStatus.toString();
     }
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
