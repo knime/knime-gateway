@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
@@ -98,7 +99,7 @@ public class DefaultPortService implements PortService {
         }
 
         var outPort = nc.getOutPort(portIdx);
-        if (nc.getOutPort(portIdx).getPortObject() == InactiveBranchPortObject.INSTANCE) {
+        if (outPort.getPortObject() == InactiveBranchPortObject.INSTANCE) {
             throw new InvalidRequestException(
                 String.format("No port view available because the port at index %d for node %s is inactive.", portIdx,
                     nc.getNameWithID()));
@@ -108,7 +109,8 @@ public class DefaultPortService implements PortService {
             () -> new InvalidRequestException(String.format("Port %d for node %s doesn't provide a view at index %d",
                 portIdx, nc.getNameWithID(), viewIdx)));
 
-        if (!isExecutionStateValid(viewDescriptor, nc, portIdx)) {
+        var isFlowVariablePort = outPort.getPortType().equals(FlowVariablePortObject.TYPE);
+        if (!isFlowVariablePort && !isExecutionStateValid(viewDescriptor, nc, portIdx)) {
             throw new InvalidRequestException(String.format(
                 "No port view available at index %d for current state of node %s.", portIdx, nc.getNameWithID()));
         }
