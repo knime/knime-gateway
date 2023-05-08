@@ -66,6 +66,8 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.page.Page;
 
 /**
+ * TODO this is just a dummy implementation - https://knime-com.atlassian.net/browse/NXT-1594
+ *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTable> {
