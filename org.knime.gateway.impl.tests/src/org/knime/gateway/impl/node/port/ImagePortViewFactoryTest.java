@@ -128,7 +128,7 @@ public class ImagePortViewFactoryTest {
 
         var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
         var imageId = snc.getID().toString() + ":" + System.identityHashCode(portObject) + ".png";
-        assertThat(initialData, is("{\"result\":\"ImagePortView/img/" + imageId + "\"}"));
+        assertThat(initialData, is("{\"result\":\"uiext/ImagePortView/img/" + imageId + "\"}"));
         assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.size(), is(1));
         assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.get(imageId), is(pngImageData));
 

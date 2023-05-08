@@ -409,7 +409,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(nodeViewJsonNode.get("initialData").textValue(), notNullValue());
         var resourceInfo = nodeViewJsonNode.get("resourceInfo");
         assertThat(resourceInfo.get("id").textValue(),
-            is("view_org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory"));
+            is("org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory"));
         assertThat(resourceInfo.get("type").textValue(), is("HTML"));
 
         message = assertThrows(InvalidRequestException.class,
