@@ -50,13 +50,14 @@
       "connectedVia" : "[ root:6:3_1 ]",
       "index" : 0,
       "name" : "Connected to: Filtered table",
+      "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "typeId" : "org.knime.core.node.BufferedDataTable"
     }, {
       "canRemove" : true,
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "Outport 1",
-      "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+      "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
     } ]
   },
@@ -124,19 +125,21 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "canRemove" : false,
         "connectedVia" : "[ root:6_0 ]",
         "index" : 1,
         "name" : "Filtered",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
         "connectedVia" : "[ root:6_1 ]",
         "index" : 2,
         "name" : "Filtered Out",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {

@@ -99,8 +99,8 @@ public interface NodePortEntMixIn extends NodePortEnt {
     public Boolean isInactive();
     
     @Override
-    @JsonProperty("portObjectVersion")
-    public Integer getPortObjectVersion();
+    @JsonProperty("portContentVersion")
+    public Integer getPortContentVersion();
     
     @Override
     @JsonProperty("portGroupId")
@@ -152,8 +152,8 @@ public interface NodePortEntMixIn extends NodePortEnt {
         public NodePortEntMixInBuilder setInactive(final Boolean inactive);
         
         @Override
-        @JsonProperty("portObjectVersion")
-        public NodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
+        @JsonProperty("portContentVersion")
+        public NodePortEntMixInBuilder setPortContentVersion(final Integer portContentVersion);
         
         @Override
         @JsonProperty("portGroupId")

@@ -33,7 +33,7 @@
   "value" : "Rows: 0, Cols: 1"
 }, {
   "op" : "add",
-  "path" : "/nodes/root:3:0:3/outPorts/1/portObjectVersion",
+  "path" : "/nodes/root:3:0:3/outPorts/1/portContentVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "add",
@@ -45,7 +45,7 @@
   "value" : "Rows: 3, Cols: 2"
 }, {
   "op" : "add",
-  "path" : "/nodes/root:3:0:5/outPorts/1/portObjectVersion",
+  "path" : "/nodes/root:3:0:5/outPorts/1/portContentVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "add",
@@ -61,7 +61,7 @@
   "value" : "Rows: 0, Cols: 3"
 }, {
   "op" : "add",
-  "path" : "/nodes/root:3:0:7/outPorts/1/portObjectVersion",
+  "path" : "/nodes/root:3:0:7/outPorts/1/portContentVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "replace",

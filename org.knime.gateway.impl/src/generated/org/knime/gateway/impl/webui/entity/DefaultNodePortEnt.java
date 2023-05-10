@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
  * @param index
  * @param connectedVia
  * @param inactive
- * @param portObjectVersion
+ * @param portContentVersion
  * @param portGroupId
  * @param canRemove
  *
@@ -75,7 +75,7 @@ public record DefaultNodePortEnt(
     Integer index,
     java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia,
     Boolean inactive,
-    Integer portObjectVersion,
+    Integer portContentVersion,
     String portGroupId,
     Boolean canRemove) implements NodePortEnt {
 
@@ -132,8 +132,8 @@ public record DefaultNodePortEnt(
     }
     
     @Override
-    public Integer getPortObjectVersion() {
-        return portObjectVersion;
+    public Integer getPortContentVersion() {
+        return portContentVersion;
     }
     
     @Override
@@ -165,7 +165,7 @@ public record DefaultNodePortEnt(
 
         private Boolean m_inactive;
 
-        private Integer m_portObjectVersion;
+        private Integer m_portContentVersion;
 
         private String m_portGroupId;
 
@@ -220,8 +220,8 @@ public record DefaultNodePortEnt(
         }
 
         @Override
-        public DefaultNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion) {
-             m_portObjectVersion = portObjectVersion;
+        public DefaultNodePortEntBuilder setPortContentVersion(Integer portContentVersion) {
+             m_portContentVersion = portContentVersion;
              return this;
         }
 
@@ -247,7 +247,7 @@ public record DefaultNodePortEnt(
                 immutable(m_index),
                 immutable(m_connectedVia),
                 immutable(m_inactive),
-                immutable(m_portObjectVersion),
+                immutable(m_portContentVersion),
                 immutable(m_portGroupId),
                 immutable(m_canRemove));
         }

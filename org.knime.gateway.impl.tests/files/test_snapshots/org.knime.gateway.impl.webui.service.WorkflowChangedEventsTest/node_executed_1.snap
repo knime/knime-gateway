@@ -9,7 +9,7 @@
   "value" : "Rows: 8, Cols: 5"
 }, {
   "op" : "add",
-  "path" : "/nodes/root:1/outPorts/1/portObjectVersion",
+  "path" : "/nodes/root:1/outPorts/1/portContentVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "add",
@@ -17,7 +17,7 @@
   "value" : "Rows: 4, Cols: 4"
 }, {
   "op" : "add",
-  "path" : "/nodes/root:1/outPorts/2/portObjectVersion",
+  "path" : "/nodes/root:1/outPorts/2/portContentVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "remove",

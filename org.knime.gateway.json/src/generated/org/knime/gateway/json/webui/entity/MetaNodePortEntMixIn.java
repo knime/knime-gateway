@@ -99,8 +99,8 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public Boolean isInactive();
     
     @Override
-    @JsonProperty("portObjectVersion")
-    public Integer getPortObjectVersion();
+    @JsonProperty("portContentVersion")
+    public Integer getPortContentVersion();
     
     @Override
     @JsonProperty("portGroupId")
@@ -156,8 +156,8 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         public MetaNodePortEntMixInBuilder setInactive(final Boolean inactive);
         
         @Override
-        @JsonProperty("portObjectVersion")
-        public MetaNodePortEntMixInBuilder setPortObjectVersion(final Integer portObjectVersion);
+        @JsonProperty("portContentVersion")
+        public MetaNodePortEntMixInBuilder setPortContentVersion(final Integer portContentVersion);
         
         @Override
         @JsonProperty("portGroupId")

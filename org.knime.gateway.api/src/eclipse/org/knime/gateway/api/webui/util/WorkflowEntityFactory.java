@@ -680,7 +680,7 @@ public final class WorkflowEntityFactory {
                 .setInfo(np.getInfo())//
                 .setName(np.getName())//
                 .setOptional(np.isOptional())//
-                .setPortObjectVersion(np.getPortObjectVersion())//
+                .setPortContentVersion(np.getPortContentVersion())//
                 .setNodeState(nodeState)//
                 .setCanRemove(np.isCanRemove())//
                 .build();
@@ -882,7 +882,7 @@ public final class WorkflowEntityFactory {
     @SuppressWarnings("java:S107") // it's a 'builder'-method, so many parameters are ok
     private NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
         final int portIdx, final Boolean isOptional, final Boolean isInactive, final Boolean canRemovePort,
-        final Collection<ConnectionContainer> connections, final Integer portObjectVersion, final String portGroupId,
+        final Collection<ConnectionContainer> connections, final Integer portContentVersion, final String portGroupId,
         final WorkflowBuildContext buildContext) {
         return builder(NodePortEntBuilder.class) //
             .setIndex(portIdx)//
@@ -893,7 +893,7 @@ public final class WorkflowEntityFactory {
             .setName(name)//
             .setInfo(info)//
             .setTypeId(CoreUtil.getPortTypeId(ptype))//
-            .setPortObjectVersion(portObjectVersion)//
+            .setPortContentVersion(portContentVersion)//
             .setPortGroupId(portGroupId)//
             .setCanRemove(canRemovePort)//
             .build();
@@ -923,7 +923,7 @@ public final class WorkflowEntityFactory {
                 var pt = outPort.getPortType();
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
                     outPort.isInactive() ? outPort.isInactive() : null, canRemovePort, connections,
-                    getPortObjectVersion(outPort, buildContext), portGroupId, buildContext));
+                    getPortContentVersion(outPort, buildContext), portGroupId, buildContext));
             }
         }
         return res;
@@ -939,9 +939,9 @@ public final class WorkflowEntityFactory {
                 Set<ConnectionContainer> connections = wfm.getOutgoingConnectionsFor(wfm.getID(), i);
                 NodeOutPort port = wfm.getWorkflowIncomingPort(i);
                 var isInactive = port.isInactive() ? Boolean.TRUE : null;
-                var portObjectVersion = getPortObjectVersion(port, buildContext);
+                var portContentVersion = getPortContentVersion(port, buildContext);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
-                    isInactive, canRemovePort, connections, portObjectVersion, null, buildContext));
+                    isInactive, canRemovePort, connections, portContentVersion, null, buildContext));
             }
         } else {
             int nrPorts = wfm.getNrWorkflowOutgoingPorts();
@@ -1416,7 +1416,7 @@ public final class WorkflowEntityFactory {
         return null;
     }
 
-    private Integer getPortObjectVersion(final NodeOutPort outPort, final WorkflowBuildContext buildContext) {
+    private Integer getPortContentVersion(final NodeOutPort outPort, final WorkflowBuildContext buildContext) {
         if (!buildContext.includeInteractionInfo()) {
             return null;
         }
@@ -1432,7 +1432,12 @@ public final class WorkflowEntityFactory {
             return hashCodeBuilder.build();
         } else {
             var po = outPort.getPortObject();
-            return po == null ? null : System.identityHashCode(po);
+            if (po == null) {
+                var spec = outPort.getPortObjectSpec();
+                return spec == null ? null : System.identityHashCode(spec);
+            } else {
+                return System.identityHashCode(po);
+            }
         }
     }
 

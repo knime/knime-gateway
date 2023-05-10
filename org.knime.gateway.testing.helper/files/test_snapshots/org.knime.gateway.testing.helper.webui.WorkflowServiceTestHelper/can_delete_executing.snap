@@ -112,7 +112,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "canRemove" : false,
@@ -168,14 +168,14 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "canRemove" : false,
         "connectedVia" : "[ root:3_1 ]",
         "index" : 1,
         "name" : "Output table",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
@@ -226,14 +226,14 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "canRemove" : false,
         "connectedVia" : "[ root:8_0 ]",
         "index" : 1,
         "name" : "Output table",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
@@ -277,7 +277,7 @@
         "index" : 0,
         "info" : "Variables connection",
         "name" : "Variable Outport",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
         "canRemove" : false,
@@ -285,7 +285,7 @@
         "index" : 1,
         "info" : "Rows: 4, Cols: 5",
         "name" : "Random data with cluster ID",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable"
       }, {
         "canRemove" : false,
@@ -293,7 +293,7 @@
         "index" : 2,
         "info" : "Rows: 4, Cols: 4",
         "name" : "Cluster centers",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
@@ -348,7 +348,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {
@@ -397,7 +397,7 @@
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
-        "portObjectVersion" : "PLACEHOLDER_FOR_VERSION",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "position" : {

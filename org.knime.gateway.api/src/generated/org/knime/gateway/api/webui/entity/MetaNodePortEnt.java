@@ -111,7 +111,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
       valueConsumer.accept("index", Pair.create(getIndex(), e.getIndex()));
       valueConsumer.accept("connectedVia", Pair.create(getConnectedVia(), e.getConnectedVia()));
       valueConsumer.accept("inactive", Pair.create(isInactive(), e.isInactive()));
-      valueConsumer.accept("portObjectVersion", Pair.create(getPortObjectVersion(), e.getPortObjectVersion()));
+      valueConsumer.accept("portContentVersion", Pair.create(getPortContentVersion(), e.getPortContentVersion()));
       valueConsumer.accept("portGroupId", Pair.create(getPortGroupId(), e.getPortGroupId()));
       valueConsumer.accept("canRemove", Pair.create(isCanRemove(), e.isCanRemove()));
       valueConsumer.accept("nodeState", Pair.create(getNodeState(), e.getNodeState()));
@@ -179,12 +179,12 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         MetaNodePortEntBuilder setInactive(Boolean inactive);
         
         /**
-         * A port object version which allows one to detect port object changes. Will be absent if there is no data, i.e. no port object or if it&#39;s an input port. Will also be absent if there is no &#39;interaction info&#39; supposed to be included.
+         * A port content version which allows one to detect port content changes (port data and spec). Will be absent if there is no data, i.e. no port content at all or if it&#39;s an input port. Will also be absent if there is no &#39;interaction info&#39; supposed to be included.
          * 
-         * @param portObjectVersion the property value,  
+         * @param portContentVersion the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion);
+        MetaNodePortEntBuilder setPortContentVersion(Integer portContentVersion);
         
         /**
          * The port group this port belongs to. Only available for native nodes.

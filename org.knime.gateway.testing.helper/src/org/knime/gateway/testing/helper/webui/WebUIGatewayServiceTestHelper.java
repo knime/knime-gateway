@@ -168,7 +168,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
         /**
          * Canonical sorting of the patch operations.
-         * And skip the values of patches that are non-deterministic (e.g. 'portObjectVersion').
+         * And skip the values of patches that are non-deterministic (e.g. 'portContentVersion').
          */
         objToString.addException(PatchEnt.class, "ops", (v, gen, e) -> {
             List<PatchOpEnt> l = ((List<PatchOpEnt>)v).stream()
@@ -182,7 +182,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * Non-deterministic field.
          */
-        objToString.addException(NodePortEnt.class, "portObjectVersion",
+        objToString.addException(NodePortEnt.class, "portContentVersion",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_VERSION"));
 
         /**
@@ -214,7 +214,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     private static PatchOpEnt replaceNonDeterministicPatchValues(final PatchOpEnt o) {
         String newValue = null;
-        if (o.getPath().endsWith("/portObjectVersion")) {
+        if (o.getPath().endsWith("/portContentVersion")) {
             newValue = "PLACEHOLDER_FOR_VERSION";
         } else if (o.getPath().endsWith("/state/warning")) {
             newValue = replaceNodeIdsWithPlaceholder((String)o.getValue());

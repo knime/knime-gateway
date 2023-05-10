@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
  * @param index
  * @param connectedVia
  * @param inactive
- * @param portObjectVersion
+ * @param portContentVersion
  * @param portGroupId
  * @param canRemove
  * @param nodeState
@@ -76,7 +76,7 @@ public record DefaultMetaNodePortEnt(
     Integer index,
     java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia,
     Boolean inactive,
-    Integer portObjectVersion,
+    Integer portContentVersion,
     String portGroupId,
     Boolean canRemove,
     NodeStateEnum nodeState) implements MetaNodePortEnt {
@@ -134,8 +134,8 @@ public record DefaultMetaNodePortEnt(
     }
     
     @Override
-    public Integer getPortObjectVersion() {
-        return portObjectVersion;
+    public Integer getPortContentVersion() {
+        return portContentVersion;
     }
     
     @Override
@@ -172,7 +172,7 @@ public record DefaultMetaNodePortEnt(
 
         private Boolean m_inactive;
 
-        private Integer m_portObjectVersion;
+        private Integer m_portContentVersion;
 
         private String m_portGroupId;
 
@@ -229,8 +229,8 @@ public record DefaultMetaNodePortEnt(
         }
 
         @Override
-        public DefaultMetaNodePortEntBuilder setPortObjectVersion(Integer portObjectVersion) {
-             m_portObjectVersion = portObjectVersion;
+        public DefaultMetaNodePortEntBuilder setPortContentVersion(Integer portContentVersion) {
+             m_portContentVersion = portContentVersion;
              return this;
         }
 
@@ -262,7 +262,7 @@ public record DefaultMetaNodePortEnt(
                 immutable(m_index),
                 immutable(m_connectedVia),
                 immutable(m_inactive),
-                immutable(m_portObjectVersion),
+                immutable(m_portContentVersion),
                 immutable(m_portGroupId),
                 immutable(m_canRemove),
                 immutable(m_nodeState));
