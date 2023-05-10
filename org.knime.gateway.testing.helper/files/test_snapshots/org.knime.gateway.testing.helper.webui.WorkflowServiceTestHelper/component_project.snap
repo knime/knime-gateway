@@ -103,6 +103,7 @@
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
+      "linkStatus" : "UpToDate",
       "name" : "Component L1",
       "outPorts" : [ {
         "canRemove" : false,
