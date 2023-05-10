@@ -57,7 +57,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityFactory;
 
 /**
  * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
@@ -96,7 +95,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
             NodeUIInformation.moveNodeBy(nc, delta);
         }
         for (WorkflowAnnotation wa : annotations) {
-            wa.shiftPosition(delta[0], delta[1] + EntityFactory.Workflow.NODE_Y_POS_CORRECTION);
+            wa.shiftPosition(delta[0], delta[1]);
         }
 
         for (NodeContainer nc : nodes) {

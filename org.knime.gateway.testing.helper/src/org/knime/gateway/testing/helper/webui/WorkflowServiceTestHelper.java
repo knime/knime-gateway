@@ -378,7 +378,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         WorkflowAnnotationEnt wa =
             workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno3)).findFirst().orElse(null);
         assertThat(wa.getBounds().getX(), is(116)); // NOSONAR wa guaranteed to be non-null
-        assertThat(wa.getBounds().getY(), is(123));
+        assertThat(wa.getBounds().getY(), is(117));
         assertThat(workflow.getAllowedActions().isCanUndo(), is(true));
         assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
 
@@ -418,7 +418,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         AnnotationIDEnt anno1 = new AnnotationIDEnt("root_1");
         TranslateCommandEnt command2 =
             builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).setAnnotationIds(singletonList(anno1))
-                .setTranslation(builder(XYEntBuilder.class).setX(-880).setY(-26).build()).build();
+                .setTranslation(builder(XYEntBuilder.class).setX(-880).setY(-20).build()).build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command2);
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
         wa = workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno1)).findFirst().orElse(null);
