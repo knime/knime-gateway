@@ -119,6 +119,7 @@
         "optional" : false,
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
+      "isReexecutable" : false,
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,
