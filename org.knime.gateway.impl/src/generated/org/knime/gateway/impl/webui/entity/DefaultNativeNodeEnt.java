@@ -75,7 +75,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param loopInfo
  * @param portGroups
  * @param hasView
- * @param isReexecuting
+ * @param isReexecutable
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -95,7 +95,7 @@ public record DefaultNativeNodeEnt(
     LoopInfoEnt loopInfo,
     java.util.Map<String, PortGroupEnt> portGroups,
     Boolean hasView,
-    Boolean isReexecuting) implements NativeNodeEnt {
+    Object isReexecutable) implements NativeNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -197,8 +197,8 @@ public record DefaultNativeNodeEnt(
     }
     
     @Override
-    public Boolean isIsReexecuting() {
-        return isReexecuting;
+    public Object getIsReexecutable() {
+        return isReexecutable;
     }
     
     /**
@@ -234,7 +234,7 @@ public record DefaultNativeNodeEnt(
 
         private Boolean m_hasView;
 
-        private Boolean m_isReexecuting;
+        private Object m_isReexecutable = null;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -339,8 +339,8 @@ public record DefaultNativeNodeEnt(
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setIsReexecuting(Boolean isReexecuting) {
-             m_isReexecuting = isReexecuting;
+        public DefaultNativeNodeEntBuilder setIsReexecutable(Object isReexecutable) {
+             m_isReexecutable = isReexecutable;
              return this;
         }
 
@@ -361,7 +361,7 @@ public record DefaultNativeNodeEnt(
                 immutable(m_loopInfo),
                 immutable(m_portGroups),
                 immutable(m_hasView),
-                immutable(m_isReexecuting));
+                immutable(m_isReexecutable));
         }
     
     }

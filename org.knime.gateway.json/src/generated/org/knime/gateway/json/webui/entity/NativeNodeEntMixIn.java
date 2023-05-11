@@ -135,8 +135,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public Boolean hasView();
     
     @Override
-    @JsonProperty("isReexecuting")
-    public Boolean isIsReexecuting();
+    @JsonProperty("isReexecutable")
+    public Object getIsReexecutable();
     
 
     /**
@@ -208,8 +208,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         public NativeNodeEntMixInBuilder setHasView(final Boolean hasView);
         
         @Override
-        @JsonProperty("isReexecuting")
-        public NativeNodeEntMixInBuilder setIsReexecuting(final Boolean isReexecuting);
+        @JsonProperty("isReexecutable")
+        public NativeNodeEntMixInBuilder setIsReexecutable(final Object isReexecutable);
         
     }
 

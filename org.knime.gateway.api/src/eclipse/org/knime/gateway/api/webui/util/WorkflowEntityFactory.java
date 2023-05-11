@@ -727,9 +727,9 @@ public final class WorkflowEntityFactory {
         var portGroups = buildPortGroupEntsMapOptional(nnc, inPorts, outPorts, buildContext).orElse(null);
         var hasDialog = NodeDialogManager.hasNodeDialog(nnc) ? Boolean.TRUE : null;
         var hasView = NodeViewManager.hasNodeView(nnc) ? Boolean.TRUE : null;
-        var isReexecuting = false;
+        var isReexecutable = false;
         if (nnc.getNodeModel() instanceof ReExecutable) {
-            isReexecuting = ((ReExecutable<?>) nnc.getNodeModel()).canTriggerReExecution();
+            isReexecutable = ((ReExecutable<?>) nnc.getNodeModel()).canTriggerReExecution();
         }
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
@@ -746,7 +746,7 @@ public final class WorkflowEntityFactory {
             .setLoopInfo(buildLoopInfoEnt(nnc, buildContext))//
             .setHasDialog(hasDialog)
             .setHasView(hasView)//
-            .setIsReexecuting(isReexecuting)//
+            .setIsReexecutable(isReexecutable)//
             .build();
     }
 
