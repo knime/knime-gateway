@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -71,7 +72,6 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
  * @param name
  * @param state
  * @param link
- * @param linkStatus
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -88,8 +88,7 @@ public record DefaultMetaNodeEnt(
     NodeExecutionInfoEnt executionInfo,
     String name,
     MetaNodeStateEnt state,
-    String link,
-    String linkStatus) implements MetaNodeEnt {
+    MetaNodeLinkEnt link) implements MetaNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -179,13 +178,8 @@ public record DefaultMetaNodeEnt(
     }
     
     @Override
-    public String getLink() {
+    public MetaNodeLinkEnt getLink() {
         return link;
-    }
-    
-    @Override
-    public String getLinkStatus() {
-        return linkStatus;
     }
     
     /**
@@ -215,9 +209,7 @@ public record DefaultMetaNodeEnt(
 
         private MetaNodeStateEnt m_state;
 
-        private String m_link;
-
-        private String m_linkStatus;
+        private MetaNodeLinkEnt m_link;
 
         @Override
         public DefaultMetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -307,14 +299,8 @@ public record DefaultMetaNodeEnt(
         }
 
         @Override
-        public DefaultMetaNodeEntBuilder setLink(String link) {
+        public DefaultMetaNodeEntBuilder setLink(MetaNodeLinkEnt link) {
              m_link = link;
-             return this;
-        }
-
-        @Override
-        public DefaultMetaNodeEntBuilder setLinkStatus(String linkStatus) {
-             m_linkStatus = linkStatus;
              return this;
         }
 
@@ -332,8 +318,7 @@ public record DefaultMetaNodeEnt(
                 immutable(m_executionInfo),
                 immutable(m_name),
                 immutable(m_state),
-                immutable(m_link),
-                immutable(m_linkStatus));
+                immutable(m_link));
         }
     
     }

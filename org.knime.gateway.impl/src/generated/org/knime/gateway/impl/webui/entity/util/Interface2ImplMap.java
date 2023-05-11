@@ -128,6 +128,8 @@ import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt.MetaNodeLinkEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt.MetaNodeStateEntBuilder;
@@ -403,6 +405,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == MetaNodeEntBuilder.class) {
             return (B)new DefaultMetaNodeEnt.DefaultMetaNodeEntBuilder();
+        }        
+        if(clazz == MetaNodeLinkEntBuilder.class) {
+            return (B)new DefaultMetaNodeLinkEnt.DefaultMetaNodeLinkEntBuilder();
         }        
         if(clazz == MetaNodePortEntBuilder.class) {
             return (B)new DefaultMetaNodePortEnt.DefaultMetaNodePortEntBuilder();

@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -95,16 +96,10 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
   public java.util.List<MetaNodePortEnt> getOutPorts();
 
   /**
-   * A URL, if the metanode is linked.
+   * Get link
    * @return link 
    **/
-  public String getLink();
-
-  /**
-   * The status of the link of this component (UpToDate, HasUpdate, Error)
-   * @return linkStatus 
-   **/
-  public String getLinkStatus();
+  public MetaNodeLinkEnt getLink();
 
 
   @Override
@@ -123,7 +118,6 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
-      valueConsumer.accept("linkStatus", Pair.create(getLinkStatus(), e.getLinkStatus()));
   }
 
     /**
@@ -220,20 +214,12 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
         MetaNodeEntBuilder setState(MetaNodeStateEnt state);
         
         /**
-         * A URL, if the metanode is linked.
+   		 * Set link
          * 
          * @param link the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeEntBuilder setLink(String link);
-        
-        /**
-         * The status of the link of this component (UpToDate, HasUpdate, Error)
-         * 
-         * @param linkStatus the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodeEntBuilder setLinkStatus(String linkStatus);
+        MetaNodeEntBuilder setLink(MetaNodeLinkEnt link);
         
         
         /**

@@ -86,6 +86,7 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
@@ -216,6 +217,7 @@ public class ListEntities {
         res.add(LinkEnt.class);
         res.add(LoopInfoEnt.class);
         res.add(MetaNodeEnt.class);
+        res.add(MetaNodeLinkEnt.class);
         res.add(MetaNodePortEnt.class);
         res.add(MetaNodeStateEnt.class);
         res.add(MetaPortsEnt.class);
@@ -331,6 +333,7 @@ public class ListEntities {
         res.add(LinkEnt.LinkEntBuilder.class);
         res.add(LoopInfoEnt.LoopInfoEntBuilder.class);
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);
+        res.add(MetaNodeLinkEnt.MetaNodeLinkEntBuilder.class);
         res.add(MetaNodePortEnt.MetaNodePortEntBuilder.class);
         res.add(MetaNodeStateEnt.MetaNodeStateEntBuilder.class);
         res.add(MetaPortsEnt.MetaPortsEntBuilder.class);

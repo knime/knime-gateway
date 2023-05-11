@@ -46,6 +46,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
@@ -78,16 +79,10 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
   public NodeStateEnt getState();
 
   /**
-   * A URL, if the component is linked.
+   * Get link
    * @return link 
    **/
-  public String getLink();
-
-  /**
-   * The status of the link of this component (UpToDate, HasUpdate, Error)
-   * @return linkStatus 
-   **/
-  public String getLinkStatus();
+  public MetaNodeLinkEnt getLink();
 
 
   @Override
@@ -108,7 +103,6 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
-      valueConsumer.accept("linkStatus", Pair.create(getLinkStatus(), e.getLinkStatus()));
   }
 
     /**
@@ -221,20 +215,12 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         ComponentNodeEntBuilder setState(NodeStateEnt state);
         
         /**
-         * A URL, if the component is linked.
+   		 * Set link
          * 
          * @param link the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setLink(String link);
-        
-        /**
-         * The status of the link of this component (UpToDate, HasUpdate, Error)
-         * 
-         * @param linkStatus the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeEntBuilder setLinkStatus(String linkStatus);
+        ComponentNodeEntBuilder setLink(MetaNodeLinkEnt link);
         
         
         /**

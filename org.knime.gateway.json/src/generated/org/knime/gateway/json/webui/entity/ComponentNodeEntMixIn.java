@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -131,11 +132,7 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     
     @Override
     @JsonProperty("link")
-    public String getLink();
-    
-    @Override
-    @JsonProperty("linkStatus")
-    public String getLinkStatus();
+    public MetaNodeLinkEnt getLink();
     
 
     /**
@@ -204,11 +201,7 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         
         @Override
         @JsonProperty("link")
-        public ComponentNodeEntMixInBuilder setLink(final String link);
-        
-        @Override
-        @JsonProperty("linkStatus")
-        public ComponentNodeEntMixInBuilder setLinkStatus(final String linkStatus);
+        public ComponentNodeEntMixInBuilder setLink(final MetaNodeLinkEnt link);
         
     }
 

@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -74,7 +75,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  * @param icon
  * @param state
  * @param link
- * @param linkStatus
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -93,8 +93,7 @@ public record DefaultComponentNodeEnt(
     TypeEnum type,
     String icon,
     NodeStateEnt state,
-    String link,
-    String linkStatus) implements ComponentNodeEnt {
+    MetaNodeLinkEnt link) implements ComponentNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -191,13 +190,8 @@ public record DefaultComponentNodeEnt(
     }
     
     @Override
-    public String getLink() {
+    public MetaNodeLinkEnt getLink() {
         return link;
-    }
-    
-    @Override
-    public String getLinkStatus() {
-        return linkStatus;
     }
     
     /**
@@ -231,9 +225,7 @@ public record DefaultComponentNodeEnt(
 
         private NodeStateEnt m_state;
 
-        private String m_link;
-
-        private String m_linkStatus;
+        private MetaNodeLinkEnt m_link;
 
         @Override
         public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -332,14 +324,8 @@ public record DefaultComponentNodeEnt(
         }
 
         @Override
-        public DefaultComponentNodeEntBuilder setLink(String link) {
+        public DefaultComponentNodeEntBuilder setLink(MetaNodeLinkEnt link) {
              m_link = link;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeEntBuilder setLinkStatus(String linkStatus) {
-             m_linkStatus = linkStatus;
              return this;
         }
 
@@ -359,8 +345,7 @@ public record DefaultComponentNodeEnt(
                 immutable(m_type),
                 immutable(m_icon),
                 immutable(m_state),
-                immutable(m_link),
-                immutable(m_linkStatus));
+                immutable(m_link));
         }
     
     }

@@ -81,6 +81,8 @@ import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowScopeContext;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.LoopEndNode;
+import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
+import org.knime.core.node.workflow.MetaNodeTemplateInformation.UpdateStatus;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
@@ -146,6 +148,7 @@ import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
+import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.NodeStateEnum;
@@ -533,8 +536,7 @@ public final class WorkflowEntityFactory {
             .setState(buildNodeStateEnt(nc))//
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
-            .setLink(getTemplateLink(nc))//
-            .setLinkStatus(getLinkStatus(nc))//
+            .setLink(getMetaNodeLink(nc))//
             .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
@@ -659,8 +661,7 @@ public final class WorkflowEntityFactory {
             .setPosition(buildXYEnt(wm.getUIInformation()))//
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
-            .setLink(getTemplateLink(wm))//
-            .setLinkStatus(getLinkStatus(wm)) //
+            .setLink(getMetaNodeLink(wm))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .build();
@@ -1457,12 +1458,35 @@ public final class WorkflowEntityFactory {
         return sourceURI == null ? null : sourceURI.toString();
     }
 
-    private String getLinkStatus(final NodeContainerTemplate nct) {
-        if (nct instanceof SubNodeContainer && ((SubNodeContainer)nct).isProject()) {
+    private MetaNodeLinkEnt getMetaNodeLink(final NodeContainerTemplate nct) {
+        var role = nct.getTemplateInformation().getRole();
+        if (!role.equals(Role.Link)) {
             return null;
         }
         var updateStatus = nct.getTemplateInformation().getUpdateStatus();
-        return updateStatus == null ? null : updateStatus.toString();
+        return new MetaNodeLinkEnt() {
+
+            @Override
+            public String getTypeID() {
+                return null;
+            }
+
+            @Override
+            public String getUrl() {
+                return getTemplateLink(nct);
+            }
+
+            @Override
+            public LinkStatusEnum getLinkStatus() {
+                if (updateStatus.equals(UpdateStatus.UpToDate)) {
+                  return LinkStatusEnum.UP_TO_DATE;
+              } else if (updateStatus.equals(UpdateStatus.HasUpdate)) {
+                  return LinkStatusEnum.HAS_UPDATE;
+              } else {
+                  return LinkStatusEnum.ERROR;
+              }
+            }
+        };
     }
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
