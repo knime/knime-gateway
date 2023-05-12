@@ -671,7 +671,6 @@
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "component",
-      "linkStatus" : "UpToDate",
       "name" : "Component Failing",
       "outPorts" : [ {
         "canRemove" : false,
@@ -1109,8 +1108,10 @@
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
-      "link" : "knime://knime.mountpoint/Streaming%20Component",
-      "linkStatus" : "UpToDate",
+      "link" : {
+        "linkStatus" : "UP_TO_DATE",
+        "url" : "knime://knime.mountpoint/Streaming%20Component"
+      },
       "name" : "Streaming Component",
       "outPorts" : [ {
         "canRemove" : false,
@@ -1174,7 +1175,6 @@
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
-      "linkStatus" : "UpToDate",
       "name" : "Inactive Component",
       "outPorts" : [ {
         "canRemove" : false,
@@ -1567,7 +1567,6 @@
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "component",
-      "linkStatus" : "UpToDate",
       "name" : "Component",
       "outPorts" : [ {
         "canRemove" : false,
@@ -1945,7 +1944,6 @@
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "metanode",
-      "linkStatus" : "UpToDate",
       "name" : "Metanode",
       "outPorts" : [ {
         "canRemove" : false,
@@ -2068,7 +2066,6 @@
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "kind" : "component",
-      "linkStatus" : "UpToDate",
       "name" : "Component with icon and type",
       "outPorts" : [ {
         "canRemove" : false,
