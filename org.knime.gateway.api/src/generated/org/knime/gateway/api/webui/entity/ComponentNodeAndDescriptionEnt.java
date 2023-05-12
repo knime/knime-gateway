@@ -76,7 +76,9 @@ public interface ComponentNodeAndDescriptionEnt extends GatewayEntity {
     
     MANIPULATOR("Manipulator"),
     
-    VISUALIZER("Visualizer");
+    VISUALIZER("Visualizer"),
+    
+    OTHER("Other");
 
     private String value;
 
