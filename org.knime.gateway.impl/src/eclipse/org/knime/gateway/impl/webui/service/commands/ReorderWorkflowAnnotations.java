@@ -63,7 +63,6 @@ import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Moves workflow annotations through the workflow's z-plane.
@@ -99,7 +98,7 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         final var annotationIds = m_commandEnt.getAnnotationIds().stream()//
             .map(id -> DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), id))//
             .collect(Collectors.toList());
-        final var annotations = getAnnotions(workflowKey, annotationIds);
+        final var annotations = getAnnotions(wfm, annotationIds);
         final var action = m_commandEnt.getAction();
 
         m_annotationIdToPreviousIndex = getAnnotationIdToPreviousIndexMap(wfm, annotations);
@@ -122,9 +121,8 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        final var workflowKey = getWorkflowKey();
         final var annotationIds = m_annotationIdToPreviousIndex.keySet().stream().toList();
-        final var annotations = getAnnotions(workflowKey, annotationIds);
+        final var annotations = getAnnotions(wfm, annotationIds);
 
         // Define the function applied to every annotation
         final Function<WorkflowAnnotation, Boolean> function = annotation -> {
@@ -138,11 +136,11 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         m_comparator = null;
     }
 
-    private static List<WorkflowAnnotation> getAnnotions(final WorkflowKey workflowKey,
+    private static List<WorkflowAnnotation> getAnnotions(final WorkflowManager wfm,
         final List<WorkflowAnnotationID> annotationIds) throws OperationNotAllowedException {
         final List<WorkflowAnnotation> annotations = new ArrayList<>();
         for (final var annotationId : annotationIds) {
-            final var annotation = DefaultServiceUtil.getWorkflowAnnotation(workflowKey, annotationId);
+            final var annotation = AbstractWorkflowAnnotationCommand.getWorkflowAnnotation(wfm, annotationId);
             annotations.add(annotation);
         }
         return annotations;

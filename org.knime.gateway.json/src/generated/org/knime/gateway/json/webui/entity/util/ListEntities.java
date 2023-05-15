@@ -138,7 +138,7 @@ import org.knime.gateway.json.webui.entity.UpdateAvailableEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateNodeLabelCommandEntMixIn;
-import org.knime.gateway.json.webui.entity.UpdateWorkflowAnnotationTextCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.UpdateWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventEntMixIn;
@@ -267,7 +267,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
         res.add(UpdateInfoEntMixIn.class);
         res.add(UpdateNodeLabelCommandEntMixIn.class);
-        res.add(UpdateWorkflowAnnotationTextCommandEntMixIn.class);
+        res.add(UpdateWorkflowAnnotationCommandEntMixIn.class);
         res.add(WorkflowAnnotationCommandEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
         res.add(WorkflowChangedEventEntMixIn.class);
@@ -382,7 +382,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);
         res.add(UpdateInfoEntMixIn.UpdateInfoEntMixInBuilder.class);
         res.add(UpdateNodeLabelCommandEntMixIn.UpdateNodeLabelCommandEntMixInBuilder.class);
-        res.add(UpdateWorkflowAnnotationTextCommandEntMixIn.UpdateWorkflowAnnotationTextCommandEntMixInBuilder.class);
+        res.add(UpdateWorkflowAnnotationCommandEntMixIn.UpdateWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(WorkflowAnnotationCommandEntMixIn.WorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);
         res.add(WorkflowChangedEventEntMixIn.WorkflowChangedEventEntMixInBuilder.class);

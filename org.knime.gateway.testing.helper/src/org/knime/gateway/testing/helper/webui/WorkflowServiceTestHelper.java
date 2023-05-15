@@ -105,6 +105,7 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBui
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt.AddWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
@@ -157,8 +158,8 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEn
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt.UpdateWorkflowAnnotationTextCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -188,6 +189,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 
 /**
  * Test for the endpoints to view/render a workflow.
@@ -2489,9 +2491,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(boundsEnt.getHeight(), is(140));
 
         var newBounds = builder(BoundsEntBuilder.class).setX(4).setY(5).setWidth(10).setHeight(15).build();
-        var command =
-            builder(TransformWorkflowAnnotationCommandEntBuilder.class).setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)
-                .setAnnotationId(annotationEnt.getId()).setBounds(newBounds).build();
+        var command = builder(TransformWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(annotationEnt.getId())//
+            .setBounds(newBounds)//
+            .build();
         ws().executeWorkflowCommand(wfId, getRootID(), command);
 
         annotationEnt = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
@@ -2511,11 +2515,24 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(boundsEnt.getHeight(), is(140));
 
         // test invalid annotation id
-        var command2 =
-            builder(TransformWorkflowAnnotationCommandEntBuilder.class).setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)
-                .setAnnotationId(new AnnotationIDEnt("root_9999")).setBounds(newBounds).build();
+        var command2 = builder(TransformWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(new AnnotationIDEnt("root_9999"))//
+            .setBounds(newBounds)//
+            .build();
         assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
+
+        // test command without change
+        var command3 = builder(TransformWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.TRANSFORM_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(annotationEnt.getId())//
+            .setBounds(boundsEnt)//
+            .build();
+        ws().executeWorkflowCommand(wfId, getRootID(), command3);
+        assertThrows("No command to undo", OperationNotAllowedException.class,
+            () -> ws().undoWorkflowCommand(wfId, getRootID()));
+
     }
 
     /**
@@ -2648,7 +2665,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link UpdateWorkflowAnnotationTextCommandEnt}.
+     * Tests {@link UpdateWorkflowAnnotationCommandEnt} with only text to update.
      *
      * @throws Exception
      */
@@ -2674,8 +2691,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Content type isn't plain text prior to execution", annotationEnt.getContentType(),
             is(ContentTypeEnum.PLAIN));
 
-        var command = builder(UpdateWorkflowAnnotationTextCommandEntBuilder.class)//
-            .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION_TEXT)//
+        var command = builder(UpdateWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION)//
             .setAnnotationId(annotationEnt.getId())//
             .setText(formattedText)//
             .build();
@@ -2701,6 +2718,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Text alignment isn't back", annotationEntAfterUndo.getTextAlign(), is(previousTextAlignment));
     }
 
+    /**
+     * Tests {@link AddWorkflowAnnotationCommandEnt}.
+     *
+     * @throws Exception
+     */
     public void testAddWorkflowAnnotation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
 
@@ -2716,6 +2738,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var command = builder(AddWorkflowAnnotationCommandEntBuilder.class)//
             .setKind(KindEnum.ADD_WORKFLOW_ANNOTATION)//
             .setBounds(bounds)//
+            .setBorderColor("#C0C4C6")//
             .build();
 
         var result = ws().executeWorkflowCommand(projectId, getRootID(), command);
@@ -2742,5 +2765,56 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
 
         assertThat("There should not be any annotatin after command undo", annotationsAfterUndo.size(), is(0));
+    }
+
+    /**
+     * Tests {@link UpdateWorkflowAnnotationCommandEnt} with only the color to update.
+     *
+     * @throws Exception
+     */
+    public void testUpdateWorkflowAnnotationColor() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var initialBorderColor = "#FFD800";
+        var newBorderColor = "#000000";
+        var annotationEnt =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
+        assertThat("Unexpected previous border color", annotationEnt.getBorderColor(), is(initialBorderColor));
+
+        // Test normal command
+        var command = builder(UpdateWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(annotationEnt.getId())//
+            .setBorderColor(newBorderColor)//
+            .build();
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var annotationEntAfterExecution =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
+        assertThat("Unexpected border color after command execution", annotationEntAfterExecution.getBorderColor(),
+            is(newBorderColor));
+
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var annotationEntAfterUndo =
+            ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(0);
+        assertThat("Border color should be reset to previous one", annotationEntAfterUndo.getBorderColor(),
+            is(initialBorderColor));
+
+        // Test command without change
+        var commandWithoutChange = builder(UpdateWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(annotationEntAfterUndo.getId())//
+            .setBorderColor(initialBorderColor)//
+            .build();
+        ws().executeWorkflowCommand(projectId, getRootID(), commandWithoutChange);
+        assertThrows("No command to undo", OperationNotAllowedException.class,
+            () -> ws().undoWorkflowCommand(projectId, getRootID()));
+
+        // Test both arguments are missing case
+        var commandMissing = builder(UpdateWorkflowAnnotationCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_WORKFLOW_ANNOTATION)//
+            .setAnnotationId(annotationEntAfterUndo.getId())//
+            .build();
+        assertThrows("Cannot update a workflow annotation with neither a border color nor a text provided.",
+            OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), commandMissing));
     }
 }

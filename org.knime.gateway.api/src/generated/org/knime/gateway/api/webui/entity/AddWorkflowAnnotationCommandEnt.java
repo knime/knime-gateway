@@ -71,6 +71,12 @@ public interface AddWorkflowAnnotationCommandEnt extends GatewayEntity, Workflow
    **/
   public BoundsEnt getBounds();
 
+  /**
+   * The new border color
+   * @return borderColor , never <code>null</code>
+   **/
+  public String getBorderColor();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -78,6 +84,7 @@ public interface AddWorkflowAnnotationCommandEnt extends GatewayEntity, Workflow
       var e = (AddWorkflowAnnotationCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("bounds", Pair.create(getBounds(), e.getBounds()));
+      valueConsumer.accept("borderColor", Pair.create(getBorderColor(), e.getBorderColor()));
   }
 
     /**
@@ -100,6 +107,14 @@ public interface AddWorkflowAnnotationCommandEnt extends GatewayEntity, Workflow
          * @return this entity builder for chaining
          */
         AddWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds);
+        
+        /**
+         * The new border color
+         * 
+         * @param borderColor the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AddWorkflowAnnotationCommandEntBuilder setBorderColor(String borderColor);
         
         
         /**

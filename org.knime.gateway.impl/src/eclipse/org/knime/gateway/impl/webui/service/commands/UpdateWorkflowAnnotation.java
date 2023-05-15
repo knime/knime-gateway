@@ -44,74 +44,77 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 5, 2023 (kai): created
+ *   May 15, 2023 (kai): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Collections;
 import java.util.Objects;
 
 import org.knime.core.node.workflow.AnnotationData;
-import org.knime.core.node.workflow.AnnotationData.TextAlignment;
-import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
+import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.shared.workflow.def.AnnotationDataDef;
 
 /**
- * Updates a workflow annotation's text with formatted text.
+ * Updates the text and/or the border color of a workflow annotation.
  *
  * @author Kai Franze, KNIME GmbH
  */
-final class UpdateWorkflowAnnotationText extends AbstractWorkflowCommand {
+final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
 
-    private final UpdateWorkflowAnnotationTextCommandEnt m_commandEnt;
-
-    private WorkflowAnnotationID m_annotationId;
-
-    private AnnotationData m_previousAnnotationData;
-
-    UpdateWorkflowAnnotationText(final UpdateWorkflowAnnotationTextCommandEnt commandEnt) {
-        m_commandEnt = commandEnt;
+    UpdateWorkflowAnnotation(final UpdateWorkflowAnnotationCommandEnt commandEnt) {
+        super(commandEnt);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var workflowKey = getWorkflowKey();
-        m_annotationId =
-            DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), m_commandEnt.getAnnotationId());
-        var annotation = DefaultServiceUtil.getWorkflowAnnotation(workflowKey, m_annotationId);
-        m_previousAnnotationData = annotation.getData().clone();
+    protected boolean executeInternal(final WorkflowAnnotationCommandEnt workflowAnnotationCommandEnt,
+        final AnnotationData previousAnnotationData, final WorkflowAnnotation annotation)
+        throws OperationNotAllowedException {
+        final var commandEnt = (UpdateWorkflowAnnotationCommandEnt)workflowAnnotationCommandEnt;
+        final var text = commandEnt.getText();
+        final var borderColor = hexStringToInteger(commandEnt.getBorderColor());
 
-        var newAnnotationData = new AnnotationData();
-        newAnnotationData.copyFrom(m_previousAnnotationData, true);
-        var text = m_commandEnt.getText();
-
-        if (Objects.equals(m_previousAnnotationData.getText(), text)) {
-            return false;
+        if (text == null && borderColor == null) {
+            throw new OperationNotAllowedException(
+                "Cannot update a workflow annotation with neither a border color nor a text provided.");
         }
 
-        newAnnotationData.setText(text);
-        newAnnotationData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML);
-        newAnnotationData.setStyleRanges(Collections.emptyList()); // No style ranges are back-ported to Classic UI
-        newAnnotationData.setAlignment(TextAlignment.LEFT); // Set the default alignment for Classic UI
+        var textUpdated = false;
+        if (text != null) {
+            textUpdated = updateText(text, previousAnnotationData, annotation);
+        }
+
+        var borderColorUpdated = false;
+        if (borderColor != null) {
+            borderColorUpdated = updateBorderColor(borderColor, previousAnnotationData, annotation);
+        }
+
+        return textUpdated || borderColorUpdated;
+    }
+
+    private static boolean updateText(final String text, final AnnotationData previousAnnotationData,
+        final WorkflowAnnotation annotation) {
+        if (Objects.equals(previousAnnotationData.getText(), text)) {
+            return false;
+        }
+        final var newAnnotationData = getUpdatedAnnotationData(previousAnnotationData, ad -> ad.setText(text));
         annotation.copyFrom(newAnnotationData, true);
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void undo() throws OperationNotAllowedException {
-        var workflowKey = getWorkflowKey();
-        var annotation = DefaultServiceUtil.getWorkflowAnnotation(workflowKey, m_annotationId);
-        annotation.copyFrom(m_previousAnnotationData, true);
-        m_previousAnnotationData = null;
-        m_annotationId = null;
+    private static boolean updateBorderColor(final Integer borderColor, final AnnotationData previousAnnotationData,
+        final WorkflowAnnotation annotation) {
+        if (Objects.equals(previousAnnotationData.getBorderColor(), borderColor)) {
+            return false;
+        }
+        final var newAnnotationData =
+            getUpdatedAnnotationData(previousAnnotationData, ad -> ad.setBorderColor(borderColor));
+        annotation.copyFrom(newAnnotationData, true);
+        return true;
     }
+
 }

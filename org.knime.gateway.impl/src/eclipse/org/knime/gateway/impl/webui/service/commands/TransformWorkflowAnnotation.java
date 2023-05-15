@@ -48,53 +48,56 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.core.node.workflow.WorkflowAnnotationID;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.util.Objects;
+
+import org.knime.core.node.workflow.AnnotationData;
+import org.knime.core.node.workflow.WorkflowAnnotation;
+import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Changes the size and position of a workflow annotation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH
  */
-class TransformWorkflowAnnotation extends AbstractWorkflowCommand {
-
-    private final TransformWorkflowAnnotationCommandEnt m_commandEnt;
-
-    private WorkflowAnnotationID m_annotationId;
-
-    private int[] m_previousBounds;
+class TransformWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
 
     TransformWorkflowAnnotation(final TransformWorkflowAnnotationCommandEnt commandEnt) {
-        m_commandEnt = commandEnt;
+        super(commandEnt);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var workflowKey = getWorkflowKey();
-        m_annotationId =
-            DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), m_commandEnt.getAnnotationId());
-        var annotation = DefaultServiceUtil.getWorkflowAnnotation(workflowKey, m_annotationId);
-        m_previousBounds =
-            new int[]{annotation.getX(), annotation.getY(), annotation.getWidth(), annotation.getHeight()};
-        var bounds = m_commandEnt.getBounds();
+    protected boolean executeInternal(final WorkflowAnnotationCommandEnt workflowAnnotationCommandEnt,
+        final AnnotationData previousAnnotationData, final WorkflowAnnotation annotation)
+        throws OperationNotAllowedException {
+        final var commandEnt = (TransformWorkflowAnnotationCommandEnt)workflowAnnotationCommandEnt;
+
+        final var bounds = commandEnt.getBounds();
+        final var previousBounds = getBoundsFromAnnotationData(previousAnnotationData);
+        if (Objects.equals(previousBounds, bounds)) {
+            return false;
+        }
+
+        // Set new dimension directly, especially don't change the content type
         annotation.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void undo() throws OperationNotAllowedException {
-        var workflowKey = getWorkflowKey();
-        var annotation = DefaultServiceUtil.getWorkflowAnnotation(workflowKey, m_annotationId);
-        annotation.setDimension(m_previousBounds[0], m_previousBounds[1], m_previousBounds[2], m_previousBounds[3]);
-        m_previousBounds = null;
-        m_annotationId = null;
+    private static final BoundsEnt getBoundsFromAnnotationData(final AnnotationData ad) {
+        return builder(BoundsEntBuilder.class).setX(ad.getX())//
+            .setY(ad.getY())//
+            .setWidth(ad.getWidth())//
+            .setHeight(ad.getHeight())//
+            .build();
     }
+
 }

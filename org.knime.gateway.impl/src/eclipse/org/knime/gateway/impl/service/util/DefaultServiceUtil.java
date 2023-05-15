@@ -54,7 +54,6 @@ import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -63,10 +62,8 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
@@ -186,25 +183,6 @@ public final class DefaultServiceUtil {
     public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final String rootWorkflowID,
         final NodeIDEnt nodeID) {
         return Pair.create(getRootWorkflowManager(rootWorkflowID), getNodeContainer(rootWorkflowID, nodeID));
-    }
-
-    /**
-     * Gets the workflow annotation or throws an exception.
-     *
-     * @param workflowKey the workflow key
-     * @param annotationId the workflow annotation ID to get a workflow annotation for
-     * @return The {@link WorkflowAnnotation} requested
-     * @throws OperationNotAllowedException If no such workflow annotation was found
-     */
-    public static WorkflowAnnotation getWorkflowAnnotation(final WorkflowKey workflowKey,
-        final WorkflowAnnotationID annotationId) throws OperationNotAllowedException {
-        var wfm = getWorkflowManager(workflowKey.getProjectId(), workflowKey.getWorkflowId());
-        var workflowAnnotation = wfm.getWorkflowAnnotations(annotationId)[0];
-        if (workflowAnnotation == null) {
-            throw new OperationNotAllowedException(
-                "No workflow annotation found for id " + (new AnnotationIDEnt(annotationId)));
-        }
-        return workflowAnnotation;
     }
 
     /**

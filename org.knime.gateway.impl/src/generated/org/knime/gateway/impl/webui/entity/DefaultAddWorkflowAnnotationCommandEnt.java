@@ -56,13 +56,15 @@ import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
  *
  * @param kind
  * @param bounds
+ * @param borderColor
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAddWorkflowAnnotationCommandEnt(
     KindEnum kind,
-    BoundsEnt bounds) implements AddWorkflowAnnotationCommandEnt {
+    BoundsEnt bounds,
+    String borderColor) implements AddWorkflowAnnotationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -73,6 +75,9 @@ public record DefaultAddWorkflowAnnotationCommandEnt(
         }
         if(bounds == null) {
             throw new IllegalArgumentException("<bounds> must not be null.");
+        }
+        if(borderColor == null) {
+            throw new IllegalArgumentException("<borderColor> must not be null.");
         }
     }
 
@@ -91,6 +96,11 @@ public record DefaultAddWorkflowAnnotationCommandEnt(
         return bounds;
     }
     
+    @Override
+    public String getBorderColor() {
+        return borderColor;
+    }
+    
     /**
      * A builder for {@link DefaultAddWorkflowAnnotationCommandEnt}.
      */
@@ -99,6 +109,8 @@ public record DefaultAddWorkflowAnnotationCommandEnt(
         private KindEnum m_kind;
 
         private BoundsEnt m_bounds;
+
+        private String m_borderColor;
 
         @Override
         public DefaultAddWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
@@ -119,10 +131,20 @@ public record DefaultAddWorkflowAnnotationCommandEnt(
         }
 
         @Override
+        public DefaultAddWorkflowAnnotationCommandEntBuilder setBorderColor(String borderColor) {
+             if(borderColor == null) {
+                 throw new IllegalArgumentException("<borderColor> must not be null.");
+             }
+             m_borderColor = borderColor;
+             return this;
+        }
+
+        @Override
         public DefaultAddWorkflowAnnotationCommandEnt build() {
             return new DefaultAddWorkflowAnnotationCommandEnt(
                 immutable(m_kind),
-                immutable(m_bounds));
+                immutable(m_bounds),
+                immutable(m_borderColor));
         }
     
     }

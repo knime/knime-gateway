@@ -48,41 +48,40 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 
-import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 
 /**
- * Updates the text of a workflow annotation
+ * Updates the text and/or the border color of a workflow annotation. Either one can be &#39;null&#39;,  but never both of them.
  *
  * @param kind
  * @param annotationId
  * @param text
+ * @param borderColor
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
+public record DefaultUpdateWorkflowAnnotationCommandEnt(
     KindEnum kind,
     org.knime.gateway.api.entity.AnnotationIDEnt annotationId,
-    String text) implements UpdateWorkflowAnnotationTextCommandEnt {
+    String text,
+    String borderColor) implements UpdateWorkflowAnnotationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultUpdateWorkflowAnnotationTextCommandEnt {
+    public DefaultUpdateWorkflowAnnotationCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
         if(annotationId == null) {
             throw new IllegalArgumentException("<annotationId> must not be null.");
         }
-        if(text == null) {
-            throw new IllegalArgumentException("<text> must not be null.");
-        }
     }
 
     @Override
     public String getTypeID() {
-        return "UpdateWorkflowAnnotationTextCommand";
+        return "UpdateWorkflowAnnotationCommand";
     }
   
     @Override
@@ -100,10 +99,15 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
         return text;
     }
     
+    @Override
+    public String getBorderColor() {
+        return borderColor;
+    }
+    
     /**
-     * A builder for {@link DefaultUpdateWorkflowAnnotationTextCommandEnt}.
+     * A builder for {@link DefaultUpdateWorkflowAnnotationCommandEnt}.
      */
-    public static class DefaultUpdateWorkflowAnnotationTextCommandEntBuilder implements UpdateWorkflowAnnotationTextCommandEntBuilder {
+    public static class DefaultUpdateWorkflowAnnotationCommandEntBuilder implements UpdateWorkflowAnnotationCommandEntBuilder {
 
         private KindEnum m_kind;
 
@@ -111,8 +115,10 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
 
         private String m_text;
 
+        private String m_borderColor;
+
         @Override
-        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultUpdateWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
@@ -121,7 +127,7 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
         }
 
         @Override
-        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
+        public DefaultUpdateWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId) {
              if(annotationId == null) {
                  throw new IllegalArgumentException("<annotationId> must not be null.");
              }
@@ -130,20 +136,24 @@ public record DefaultUpdateWorkflowAnnotationTextCommandEnt(
         }
 
         @Override
-        public DefaultUpdateWorkflowAnnotationTextCommandEntBuilder setText(String text) {
-             if(text == null) {
-                 throw new IllegalArgumentException("<text> must not be null.");
-             }
+        public DefaultUpdateWorkflowAnnotationCommandEntBuilder setText(String text) {
              m_text = text;
              return this;
         }
 
         @Override
-        public DefaultUpdateWorkflowAnnotationTextCommandEnt build() {
-            return new DefaultUpdateWorkflowAnnotationTextCommandEnt(
+        public DefaultUpdateWorkflowAnnotationCommandEntBuilder setBorderColor(String borderColor) {
+             m_borderColor = borderColor;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateWorkflowAnnotationCommandEnt build() {
+            return new DefaultUpdateWorkflowAnnotationCommandEnt(
                 immutable(m_kind),
                 immutable(m_annotationId),
-                immutable(m_text));
+                immutable(m_text),
+                immutable(m_borderColor));
         }
     
     }

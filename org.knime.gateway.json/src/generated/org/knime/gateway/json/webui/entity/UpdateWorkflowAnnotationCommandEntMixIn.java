@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationTextCommandEnt.DefaultUpdateWorkflowAnnotationTextCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt.DefaultUpdateWorkflowAnnotationCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,10 +61,10 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationTextCo
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultUpdateWorkflowAnnotationTextCommandEntBuilder.class)
-@JsonSerialize(as=UpdateWorkflowAnnotationTextCommandEnt.class)
+@JsonDeserialize(builder=DefaultUpdateWorkflowAnnotationCommandEntBuilder.class)
+@JsonSerialize(as=UpdateWorkflowAnnotationCommandEnt.class)
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface UpdateWorkflowAnnotationTextCommandEntMixIn extends UpdateWorkflowAnnotationTextCommandEnt {
+public interface UpdateWorkflowAnnotationCommandEntMixIn extends UpdateWorkflowAnnotationCommandEnt {
 
     @Override
     @JsonIgnore
@@ -82,6 +82,10 @@ public interface UpdateWorkflowAnnotationTextCommandEntMixIn extends UpdateWorkf
     @JsonProperty("text")
     public String getText();
     
+    @Override
+    @JsonProperty("borderColor")
+    public String getBorderColor();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -90,22 +94,26 @@ public interface UpdateWorkflowAnnotationTextCommandEntMixIn extends UpdateWorkf
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface UpdateWorkflowAnnotationTextCommandEntMixInBuilder extends UpdateWorkflowAnnotationTextCommandEntBuilder {
+    public static interface UpdateWorkflowAnnotationCommandEntMixInBuilder extends UpdateWorkflowAnnotationCommandEntBuilder {
     
         @Override
-        public UpdateWorkflowAnnotationTextCommandEntMixIn build();
+        public UpdateWorkflowAnnotationCommandEntMixIn build();
     
         @Override
         @JsonProperty("kind")
-        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setKind(final KindEnum kind);
+        public UpdateWorkflowAnnotationCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("annotationId")
-        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
+        public UpdateWorkflowAnnotationCommandEntMixInBuilder setAnnotationId(final org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
         
         @Override
         @JsonProperty("text")
-        public UpdateWorkflowAnnotationTextCommandEntMixInBuilder setText(final String text);
+        public UpdateWorkflowAnnotationCommandEntMixInBuilder setText(final String text);
+        
+        @Override
+        @JsonProperty("borderColor")
+        public UpdateWorkflowAnnotationCommandEntMixInBuilder setBorderColor(final String borderColor);
         
     }
 

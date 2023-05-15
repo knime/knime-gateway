@@ -98,7 +98,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     TRANSFORM_WORKFLOW_ANNOTATION("transform_workflow_annotation"),
     
-    UPDATE_WORKFLOW_ANNOTATION_TEXT("update_workflow_annotation_text"),
+    UPDATE_WORKFLOW_ANNOTATION("update_workflow_annotation"),
     
     REORDER_WORKFLOW_ANNOTATIONS("reorder_workflow_annotations"),
     

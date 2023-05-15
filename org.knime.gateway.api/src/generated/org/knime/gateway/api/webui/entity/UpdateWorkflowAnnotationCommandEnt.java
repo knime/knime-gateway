@@ -56,34 +56,41 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Updates the text of a workflow annotation
+ * Updates the text and/or the border color of a workflow annotation. Either one can be &#39;null&#39;,  but never both of them.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface UpdateWorkflowAnnotationTextCommandEnt extends GatewayEntity, WorkflowAnnotationCommandEnt {
+public interface UpdateWorkflowAnnotationCommandEnt extends GatewayEntity, WorkflowAnnotationCommandEnt {
 
 
   /**
    * The new formatted text to update the annotation with
-   * @return text , never <code>null</code>
+   * @return text 
    **/
   public String getText();
+
+  /**
+   * The new border color
+   * @return borderColor 
+   **/
+  public String getBorderColor();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (UpdateWorkflowAnnotationTextCommandEnt)other;
+      var e = (UpdateWorkflowAnnotationCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("annotationId", Pair.create(getAnnotationId(), e.getAnnotationId()));
       valueConsumer.accept("text", Pair.create(getText(), e.getText()));
+      valueConsumer.accept("borderColor", Pair.create(getBorderColor(), e.getBorderColor()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface UpdateWorkflowAnnotationTextCommandEntBuilder extends GatewayEntityBuilder<UpdateWorkflowAnnotationTextCommandEnt> {
+    public interface UpdateWorkflowAnnotationCommandEntBuilder extends GatewayEntityBuilder<UpdateWorkflowAnnotationCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -91,7 +98,7 @@ public interface UpdateWorkflowAnnotationTextCommandEnt extends GatewayEntity, W
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        UpdateWorkflowAnnotationTextCommandEntBuilder setKind(KindEnum kind);
+        UpdateWorkflowAnnotationCommandEntBuilder setKind(KindEnum kind);
         
         /**
          * The ID of the annotation to manipulate
@@ -99,15 +106,23 @@ public interface UpdateWorkflowAnnotationTextCommandEnt extends GatewayEntity, W
          * @param annotationId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        UpdateWorkflowAnnotationTextCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
+        UpdateWorkflowAnnotationCommandEntBuilder setAnnotationId(org.knime.gateway.api.entity.AnnotationIDEnt annotationId);
         
         /**
          * The new formatted text to update the annotation with
          * 
-         * @param text the property value, NOT <code>null</code>! 
+         * @param text the property value,  
          * @return this entity builder for chaining
          */
-        UpdateWorkflowAnnotationTextCommandEntBuilder setText(String text);
+        UpdateWorkflowAnnotationCommandEntBuilder setText(String text);
+        
+        /**
+         * The new border color
+         * 
+         * @param borderColor the property value,  
+         * @return this entity builder for chaining
+         */
+        UpdateWorkflowAnnotationCommandEntBuilder setBorderColor(String borderColor);
         
         
         /**
@@ -117,7 +132,7 @@ public interface UpdateWorkflowAnnotationTextCommandEnt extends GatewayEntity, W
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        UpdateWorkflowAnnotationTextCommandEnt build();
+        UpdateWorkflowAnnotationCommandEnt build();
     
     }
 

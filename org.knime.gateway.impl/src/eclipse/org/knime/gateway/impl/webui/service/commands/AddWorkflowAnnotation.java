@@ -53,7 +53,6 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.util.Collections;
 import java.util.Set;
 
-import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
@@ -62,7 +61,6 @@ import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.shared.workflow.def.AnnotationDataDef;
 
 /**
  * Workflow command to create a new workflow annotation
@@ -70,11 +68,6 @@ import org.knime.shared.workflow.def.AnnotationDataDef;
  * @author Kai Franze, KNIME GmbH
  */
 final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements WithResult {
-
-    // To make it consistent within the Classic UI
-    private static final int DEFAULT_BORDER_COLOR = 16766976;
-    private static final int DEFAULT_BG_COLOR = 16777215;
-    private static final int DEFAULT_BORDER_SIZE = 10;
 
     private final AddWorkflowAnnotationCommandEnt m_commandEnt;
 
@@ -91,14 +84,11 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
         final var bounds = m_commandEnt.getBounds();
-
-        final var annoData = new AnnotationData();
-        annoData.setBgColor(DEFAULT_BG_COLOR);
-        annoData.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-        annoData.setBorderSize(DEFAULT_BORDER_SIZE);
-        annoData.setBorderColor(DEFAULT_BORDER_COLOR);
-        annoData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML);
-
+        final var borderColor = AbstractWorkflowAnnotationCommand.hexStringToInteger(m_commandEnt.getBorderColor());
+        final var annoData = AbstractWorkflowAnnotationCommand.getUpdatedAnnotationData(null, ad -> {
+            ad.setBorderColor(borderColor);
+            ad.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+        });
         final var workflowAnnotation = wfm.addWorkflowAnnotation(annoData, -1);
         m_workflowAnnotationID = workflowAnnotation.getID();
         return true;

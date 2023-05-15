@@ -138,7 +138,7 @@ import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationTextCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
@@ -268,7 +268,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEnt.class);
         res.add(UpdateInfoEnt.class);
         res.add(UpdateNodeLabelCommandEnt.class);
-        res.add(UpdateWorkflowAnnotationTextCommandEnt.class);
+        res.add(UpdateWorkflowAnnotationCommandEnt.class);
         res.add(WorkflowAnnotationCommandEnt.class);
         res.add(WorkflowAnnotationEnt.class);
         res.add(WorkflowChangedEventEnt.class);
@@ -383,7 +383,7 @@ public class ListEntities {
         res.add(UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder.class);
         res.add(UpdateInfoEnt.UpdateInfoEntBuilder.class);
         res.add(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class);
-        res.add(UpdateWorkflowAnnotationTextCommandEnt.UpdateWorkflowAnnotationTextCommandEntBuilder.class);
+        res.add(UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder.class);
         res.add(WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);
         res.add(WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder.class);

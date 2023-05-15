@@ -79,6 +79,10 @@ public interface AddWorkflowAnnotationCommandEntMixIn extends AddWorkflowAnnotat
     @JsonProperty("bounds")
     public BoundsEnt getBounds();
     
+    @Override
+    @JsonProperty("borderColor")
+    public String getBorderColor();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -99,6 +103,10 @@ public interface AddWorkflowAnnotationCommandEntMixIn extends AddWorkflowAnnotat
         @Override
         @JsonProperty("bounds")
         public AddWorkflowAnnotationCommandEntMixInBuilder setBounds(final BoundsEnt bounds);
+        
+        @Override
+        @JsonProperty("borderColor")
+        public AddWorkflowAnnotationCommandEntMixInBuilder setBorderColor(final String borderColor);
         
     }
 
