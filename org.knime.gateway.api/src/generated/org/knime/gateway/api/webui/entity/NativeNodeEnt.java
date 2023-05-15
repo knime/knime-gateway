@@ -103,7 +103,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
   public Boolean hasView();
 
   /**
-   * Indicates whether the node can re-execute itself (e.g. within a page of a data app).
+   * Indicates whether the node can re-execute itself (e.g. within a page of a data app). It&#39;s absent if the node isn&#39;t re-executable at all (i.e. it can&#39;t even be configured to be re-executable).
    * @return isReexecutable 
    **/
   public Object getIsReexecutable();
@@ -248,7 +248,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         NativeNodeEntBuilder setHasView(Boolean hasView);
         
         /**
-         * Indicates whether the node can re-execute itself (e.g. within a page of a data app).
+         * Indicates whether the node can re-execute itself (e.g. within a page of a data app). It&#39;s absent if the node isn&#39;t re-executable at all (i.e. it can&#39;t even be configured to be re-executable).
          * 
          * @param isReexecutable the property value,  
          * @return this entity builder for chaining
