@@ -86,12 +86,14 @@ final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
         var workflowChanged = false;
         List<Consumer<AnnotationData>> updatesToApply = new ArrayList<>();
 
-        if (!Objects.equals(annotation.getText(), text)) {
+        // Update text if possible
+        if (!(text == null || Objects.equals(annotation.getText(), text))) {
             updatesToApply.add(ad -> ad.setText(text));
             workflowChanged = true;
         }
 
-        if (!Objects.equals(annotation.getBorderColor(), borderColor)) {
+        // Update border color if possible
+        if (!(borderColor == null || Objects.equals(annotation.getBorderColor(), borderColor))) {
             updatesToApply.add(ad -> ad.setBorderColor(borderColor));
             workflowChanged = true;
         }
