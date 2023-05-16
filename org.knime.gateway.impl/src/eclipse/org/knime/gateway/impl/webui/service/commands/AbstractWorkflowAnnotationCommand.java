@@ -176,7 +176,6 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
             return null;
         }
         try {
-//            return Integer.parseUnsignedInt(hexString.replace("#", ""), 16);
             return Integer.decode(hexString);
         } catch (NumberFormatException e) {
             throw new OperationNotAllowedException("Invalid hex string <" + hexString + ">", e);
