@@ -51,8 +51,11 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
@@ -85,10 +88,10 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
         final var wfm = getWorkflowManager();
         final var bounds = m_commandEnt.getBounds();
         final var borderColor = AbstractWorkflowAnnotationCommand.hexStringToInteger(m_commandEnt.getBorderColor());
-        final var annoData = AbstractWorkflowAnnotationCommand.getUpdatedAnnotationData(null, ad -> {
-            ad.setBorderColor(borderColor);
-            ad.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
-        });
+        List<Consumer<AnnotationData>> updatesToApply = List.of(//
+            ad -> ad.setBorderColor(borderColor), //
+            ad -> ad.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()));
+        final var annoData = AbstractWorkflowAnnotationCommand.getUpdatedAnnotationData(null, updatesToApply);
         final var workflowAnnotation = wfm.addWorkflowAnnotation(annoData, -1);
         m_workflowAnnotationID = workflowAnnotation.getID();
         return true;

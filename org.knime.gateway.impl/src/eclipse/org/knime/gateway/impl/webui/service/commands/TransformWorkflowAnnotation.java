@@ -57,7 +57,6 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
@@ -76,13 +75,11 @@ class TransformWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeInternal(final WorkflowAnnotationCommandEnt workflowAnnotationCommandEnt,
-        final AnnotationData previousAnnotationData, final WorkflowAnnotation annotation)
-        throws OperationNotAllowedException {
-        final var commandEnt = (TransformWorkflowAnnotationCommandEnt)workflowAnnotationCommandEnt;
+    protected boolean executeInternal(final WorkflowAnnotation annotation) throws OperationNotAllowedException {
+        final var transformWorkflowAnnotationCommandEnt = (TransformWorkflowAnnotationCommandEnt)m_commandEnt;
+        final var bounds = transformWorkflowAnnotationCommandEnt.getBounds();
+        final var previousBounds = getBoundsFromAnnotationData(m_previousAnnotationData);
 
-        final var bounds = commandEnt.getBounds();
-        final var previousBounds = getBoundsFromAnnotationData(previousAnnotationData);
         if (Objects.equals(previousBounds, bounds)) {
             return false;
         }

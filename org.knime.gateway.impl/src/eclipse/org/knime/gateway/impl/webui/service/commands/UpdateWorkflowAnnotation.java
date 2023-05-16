@@ -48,12 +48,14 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
@@ -71,50 +73,32 @@ final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeInternal(final WorkflowAnnotationCommandEnt workflowAnnotationCommandEnt,
-        final AnnotationData previousAnnotationData, final WorkflowAnnotation annotation)
-        throws OperationNotAllowedException {
-        final var commandEnt = (UpdateWorkflowAnnotationCommandEnt)workflowAnnotationCommandEnt;
-        final var text = commandEnt.getText();
-        final var borderColor = hexStringToInteger(commandEnt.getBorderColor());
+    protected boolean executeInternal(final WorkflowAnnotation annotation) throws OperationNotAllowedException {
+        final var updateWorkflowAnnotationCommandEnt = (UpdateWorkflowAnnotationCommandEnt)m_commandEnt;
+        final var text = updateWorkflowAnnotationCommandEnt.getText();
+        final var borderColor = hexStringToInteger(updateWorkflowAnnotationCommandEnt.getBorderColor());
 
         if (text == null && borderColor == null) {
             throw new OperationNotAllowedException(
                 "Cannot update a workflow annotation with neither a border color nor a text provided.");
         }
 
-        var textUpdated = false;
-        if (text != null) {
-            textUpdated = updateText(text, previousAnnotationData, annotation);
+        var workflowChanged = false;
+        List<Consumer<AnnotationData>> updatesToApply = new ArrayList<>();
+
+        if (!Objects.equals(annotation.getText(), text)) {
+            updatesToApply.add(ad -> ad.setText(text));
+            workflowChanged = true;
         }
 
-        var borderColorUpdated = false;
-        if (borderColor != null) {
-            borderColorUpdated = updateBorderColor(borderColor, previousAnnotationData, annotation);
+        if (!Objects.equals(annotation.getBorderColor(), borderColor)) {
+            updatesToApply.add(ad -> ad.setBorderColor(borderColor));
+            workflowChanged = true;
         }
 
-        return textUpdated || borderColorUpdated;
-    }
-
-    private static boolean updateText(final String text, final AnnotationData previousAnnotationData,
-        final WorkflowAnnotation annotation) {
-        if (Objects.equals(previousAnnotationData.getText(), text)) {
-            return false;
-        }
-        final var newAnnotationData = getUpdatedAnnotationData(previousAnnotationData, ad -> ad.setText(text));
+        final var newAnnotationData = getUpdatedAnnotationData(m_previousAnnotationData, updatesToApply);
         annotation.copyFrom(newAnnotationData, true);
-        return true;
-    }
-
-    private static boolean updateBorderColor(final Integer borderColor, final AnnotationData previousAnnotationData,
-        final WorkflowAnnotation annotation) {
-        if (Objects.equals(previousAnnotationData.getBorderColor(), borderColor)) {
-            return false;
-        }
-        final var newAnnotationData =
-            getUpdatedAnnotationData(previousAnnotationData, ad -> ad.setBorderColor(borderColor));
-        annotation.copyFrom(newAnnotationData, true);
-        return true;
+        return workflowChanged;
     }
 
 }

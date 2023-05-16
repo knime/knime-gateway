@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.AnnotationData;
@@ -74,11 +75,11 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
     private static final int DEFAULT_BG_COLOR = 0xFFFFFF;
     private static final int DEFAULT_BORDER_SIZE = 10;
 
-    private final WorkflowAnnotationCommandEnt m_commandEnt;
+    protected final WorkflowAnnotationCommandEnt m_commandEnt;
 
-    private WorkflowAnnotationID m_annotationId;
+    protected WorkflowAnnotationID m_annotationId;
 
-    private AnnotationData m_previousAnnotationData;
+    protected AnnotationData m_previousAnnotationData;
 
     protected AbstractWorkflowAnnotationCommand(final WorkflowAnnotationCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -93,22 +94,18 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
             DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_commandEnt.getAnnotationId());
         final var annotation = getWorkflowAnnotation(getWorkflowManager(), m_annotationId);
         m_previousAnnotationData = annotation.getData().clone();
-        return executeInternal(m_commandEnt, m_previousAnnotationData, annotation);
+        return executeInternal(annotation);
     }
 
     /**
      * Executes the command, must be implemented by child classes.
      *
-     * @param workflowAnnotationCommandEnt The workflow annotation command to execute
-     * @param previousAnnotationData The previous annotation data
      * @param annotation The workflow annotation to manipulate
      *
      * @return Whether the command changed the workflow or not
      * @throws OperationNotAllowedException
      */
-    protected abstract boolean executeInternal(final WorkflowAnnotationCommandEnt workflowAnnotationCommandEnt,
-        final AnnotationData previousAnnotationData, final WorkflowAnnotation annotation)
-        throws OperationNotAllowedException;
+    protected abstract boolean executeInternal(final WorkflowAnnotation annotation) throws OperationNotAllowedException;
 
     /**
      * {@inheritDoc}
@@ -143,16 +140,16 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
     /**
      * Useful if updating the workflow annotation requires creating a new {@link AnnotationData} instance.
      *
-     * @param previousAnnotationData The previous annotation data, can be {@code null}.
-     * @param updateToApply Consumer encapsulating the annotation data update to apply
+     * @param annotationData The previous annotation data, can be {@code null}.
+     * @param updatesToApply The list of updates to apply
      * @return The updated annotation data
      */
-    static AnnotationData getUpdatedAnnotationData(final AnnotationData previousAnnotationData,
-        final Consumer<AnnotationData> updateToApply) {
+    static AnnotationData getUpdatedAnnotationData(final AnnotationData annotationData,
+        final List<Consumer<AnnotationData>> updatesToApply) {
         final var newAnnotationData = new AnnotationData();
 
-        if (previousAnnotationData != null) {
-            newAnnotationData.copyFrom(previousAnnotationData, true);
+        if (annotationData != null) {
+            newAnnotationData.copyFrom(annotationData, true);
         }
 
         // Set the default values
@@ -162,8 +159,8 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
         newAnnotationData.setBgColor(DEFAULT_BG_COLOR);
         newAnnotationData.setBorderSize(DEFAULT_BORDER_SIZE);
 
-        // Apply update last, might overwrite default values
-        updateToApply.accept(newAnnotationData);
+        // Apply updates last, might overwrite default values
+        updatesToApply.forEach(update -> update.accept(newAnnotationData));
         return newAnnotationData;
     }
 
@@ -179,9 +176,10 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
             return null;
         }
         try {
+//            return Integer.parseUnsignedInt(hexString.replace("#", ""), 16);
             return Integer.decode(hexString);
         } catch (NumberFormatException e) {
-            throw new OperationNotAllowedException("Invalid hex string", e);
+            throw new OperationNotAllowedException("Invalid hex string <" + hexString + ">", e);
         }
     }
 
