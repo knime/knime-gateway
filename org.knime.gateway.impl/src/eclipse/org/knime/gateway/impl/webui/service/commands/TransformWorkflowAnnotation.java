@@ -67,18 +67,22 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  */
 class TransformWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
 
+    private final TransformWorkflowAnnotationCommandEnt m_commandEnt;
+
     TransformWorkflowAnnotation(final TransformWorkflowAnnotationCommandEnt commandEnt) {
         super(commandEnt);
+        m_commandEnt = commandEnt;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeInternal(final WorkflowAnnotation annotation) throws OperationNotAllowedException {
-        final var transformWorkflowAnnotationCommandEnt = (TransformWorkflowAnnotationCommandEnt)m_commandEnt;
+    protected boolean executeInternal(final WorkflowAnnotation annotation, final AnnotationData annotationDataCopy)
+        throws OperationNotAllowedException {
+        final var transformWorkflowAnnotationCommandEnt = m_commandEnt;
         final var bounds = transformWorkflowAnnotationCommandEnt.getBounds();
-        final var previousBounds = getBoundsFromAnnotationData(m_previousAnnotationData);
+        final var previousBounds = getBoundsFromAnnotationData(annotationDataCopy);
 
         if (Objects.equals(previousBounds, bounds)) {
             return false;

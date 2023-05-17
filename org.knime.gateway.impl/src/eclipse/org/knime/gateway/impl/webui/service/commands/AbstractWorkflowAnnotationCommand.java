@@ -75,14 +75,14 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
     private static final int DEFAULT_BG_COLOR = 0xFFFFFF;
     private static final int DEFAULT_BORDER_SIZE = 10;
 
-    protected final WorkflowAnnotationCommandEnt m_commandEnt;
+    private final AnnotationIDEnt m_annotationIdEnt;
 
-    protected WorkflowAnnotationID m_annotationId;
+    private WorkflowAnnotationID m_annotationId;
 
-    protected AnnotationData m_previousAnnotationData;
+    private AnnotationData m_previousAnnotationData;
 
     protected AbstractWorkflowAnnotationCommand(final WorkflowAnnotationCommandEnt commandEnt) {
-        m_commandEnt = commandEnt;
+        m_annotationIdEnt = commandEnt.getAnnotationId();
     }
 
     /**
@@ -90,22 +90,23 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
      */
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        m_annotationId =
-            DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_commandEnt.getAnnotationId());
+        m_annotationId = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_annotationIdEnt);
         final var annotation = getWorkflowAnnotation(getWorkflowManager(), m_annotationId);
         m_previousAnnotationData = annotation.getData().clone();
-        return executeInternal(annotation);
+        return executeInternal(annotation, m_previousAnnotationData);
     }
 
     /**
      * Executes the command, must be implemented by child classes.
      *
      * @param annotation The workflow annotation to manipulate
+     * @param annotationDataCopy a copy(!) of the annotation's data
      *
      * @return Whether the command changed the workflow or not
      * @throws OperationNotAllowedException
      */
-    protected abstract boolean executeInternal(final WorkflowAnnotation annotation) throws OperationNotAllowedException;
+    protected abstract boolean executeInternal(final WorkflowAnnotation annotation, AnnotationData annotationDataCopy)
+        throws OperationNotAllowedException;
 
     /**
      * {@inheritDoc}

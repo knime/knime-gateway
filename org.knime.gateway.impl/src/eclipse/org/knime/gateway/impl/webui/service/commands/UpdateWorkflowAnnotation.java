@@ -50,7 +50,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.AnnotationData;
@@ -65,16 +64,20 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  */
 final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
 
+    private final UpdateWorkflowAnnotationCommandEnt m_commandEnt;
+
     UpdateWorkflowAnnotation(final UpdateWorkflowAnnotationCommandEnt commandEnt) {
         super(commandEnt);
+        m_commandEnt = commandEnt;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeInternal(final WorkflowAnnotation annotation) throws OperationNotAllowedException {
-        final var updateWorkflowAnnotationCommandEnt = (UpdateWorkflowAnnotationCommandEnt)m_commandEnt;
+    protected boolean executeInternal(final WorkflowAnnotation annotation, final AnnotationData annotationDataCopy)
+        throws OperationNotAllowedException {
+        final var updateWorkflowAnnotationCommandEnt = m_commandEnt;
         final var text = updateWorkflowAnnotationCommandEnt.getText();
         final var borderColor = hexStringToInteger(updateWorkflowAnnotationCommandEnt.getBorderColor());
 
@@ -87,18 +90,18 @@ final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
         List<Consumer<AnnotationData>> updatesToApply = new ArrayList<>();
 
         // Update text if possible
-        if (!(text == null || Objects.equals(annotation.getText(), text))) {
+        if (text != null && !text.equals(annotation.getText())) {
             updatesToApply.add(ad -> ad.setText(text));
             workflowChanged = true;
         }
 
         // Update border color if possible
-        if (!(borderColor == null || Objects.equals(annotation.getBorderColor(), borderColor))) {
+        if (borderColor != null && !borderColor.equals(annotation.getBorderColor())) {
             updatesToApply.add(ad -> ad.setBorderColor(borderColor));
             workflowChanged = true;
         }
 
-        final var newAnnotationData = getUpdatedAnnotationData(m_previousAnnotationData, updatesToApply);
+        final var newAnnotationData = getUpdatedAnnotationData(annotationDataCopy, updatesToApply);
         annotation.copyFrom(newAnnotationData, true);
         return workflowChanged;
     }
