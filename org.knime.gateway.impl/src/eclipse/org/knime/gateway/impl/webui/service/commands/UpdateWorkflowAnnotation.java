@@ -77,9 +77,8 @@ final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
     @Override
     protected boolean executeInternal(final WorkflowAnnotation annotation, final AnnotationData annotationDataCopy)
         throws OperationNotAllowedException {
-        final var updateWorkflowAnnotationCommandEnt = m_commandEnt;
-        final var text = updateWorkflowAnnotationCommandEnt.getText();
-        final var borderColor = hexStringToInteger(updateWorkflowAnnotationCommandEnt.getBorderColor());
+        final var text = m_commandEnt.getText();
+        final var borderColor = hexStringToInteger(m_commandEnt.getBorderColor());
 
         if (text == null && borderColor == null) {
             throw new OperationNotAllowedException(

@@ -80,8 +80,7 @@ class TransformWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
     @Override
     protected boolean executeInternal(final WorkflowAnnotation annotation, final AnnotationData annotationDataCopy)
         throws OperationNotAllowedException {
-        final var transformWorkflowAnnotationCommandEnt = m_commandEnt;
-        final var bounds = transformWorkflowAnnotationCommandEnt.getBounds();
+        final var bounds = m_commandEnt.getBounds();
         final var previousBounds = getBoundsFromAnnotationData(annotationDataCopy);
 
         if (Objects.equals(previousBounds, bounds)) {
