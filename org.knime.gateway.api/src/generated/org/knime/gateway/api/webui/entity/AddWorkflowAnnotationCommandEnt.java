@@ -72,7 +72,7 @@ public interface AddWorkflowAnnotationCommandEnt extends GatewayEntity, Workflow
   public BoundsEnt getBounds();
 
   /**
-   * The new border color
+   * The new border color as a hex string (rgb)
    * @return borderColor , never <code>null</code>
    **/
   public String getBorderColor();
@@ -109,7 +109,7 @@ public interface AddWorkflowAnnotationCommandEnt extends GatewayEntity, Workflow
         AddWorkflowAnnotationCommandEntBuilder setBounds(BoundsEnt bounds);
         
         /**
-         * The new border color
+         * The new border color as a hex string (rgb)
          * 
          * @param borderColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

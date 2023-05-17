@@ -71,7 +71,7 @@ public interface UpdateWorkflowAnnotationCommandEnt extends GatewayEntity, Workf
   public String getText();
 
   /**
-   * The new border color
+   * The new border color as a hex string (rgb)
    * @return borderColor 
    **/
   public String getBorderColor();
@@ -117,7 +117,7 @@ public interface UpdateWorkflowAnnotationCommandEnt extends GatewayEntity, Workf
         UpdateWorkflowAnnotationCommandEntBuilder setText(String text);
         
         /**
-         * The new border color
+         * The new border color as a hex string (rgb)
          * 
          * @param borderColor the property value,  
          * @return this entity builder for chaining

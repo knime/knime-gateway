@@ -85,7 +85,7 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
   public Integer getBorderWidth();
 
   /**
-   * Get borderColor
+   * A hex color string (rgb).
    * @return borderColor , never <code>null</code>
    **/
   public String getBorderColor();
@@ -185,7 +185,7 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
         WorkflowAnnotationEntBuilder setBorderWidth(Integer borderWidth);
         
         /**
-   		 * Set borderColor
+         * A hex color string (rgb).
          * 
          * @param borderColor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
