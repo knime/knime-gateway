@@ -1109,7 +1109,7 @@
       } ],
       "kind" : "component",
       "link" : {
-        "linkStatus" : "UP_TO_DATE",
+        "updateStatus" : "UP_TO_DATE",
         "url" : "knime://knime.mountpoint/Streaming%20Component"
       },
       "name" : "Streaming Component",

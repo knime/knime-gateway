@@ -47,11 +47,11 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
-import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 
@@ -88,7 +88,7 @@ public record DefaultMetaNodeEnt(
     NodeExecutionInfoEnt executionInfo,
     String name,
     MetaNodeStateEnt state,
-    MetaNodeLinkEnt link) implements MetaNodeEnt {
+    TemplateLinkEnt link) implements MetaNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -178,7 +178,7 @@ public record DefaultMetaNodeEnt(
     }
     
     @Override
-    public MetaNodeLinkEnt getLink() {
+    public TemplateLinkEnt getLink() {
         return link;
     }
     
@@ -209,7 +209,7 @@ public record DefaultMetaNodeEnt(
 
         private MetaNodeStateEnt m_state;
 
-        private MetaNodeLinkEnt m_link;
+        private TemplateLinkEnt m_link;
 
         @Override
         public DefaultMetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -299,7 +299,7 @@ public record DefaultMetaNodeEnt(
         }
 
         @Override
-        public DefaultMetaNodeEntBuilder setLink(MetaNodeLinkEnt link) {
+        public DefaultMetaNodeEntBuilder setLink(TemplateLinkEnt link) {
              m_link = link;
              return this;
         }

@@ -45,12 +45,12 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
-import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
@@ -99,7 +99,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
    * Get link
    * @return link 
    **/
-  public MetaNodeLinkEnt getLink();
+  public TemplateLinkEnt getLink();
 
 
   @Override
@@ -219,7 +219,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @param link the property value,  
          * @return this entity builder for chaining
          */
-        MetaNodeEntBuilder setLink(MetaNodeLinkEnt link);
+        MetaNodeEntBuilder setLink(TemplateLinkEnt link);
         
         
         /**

@@ -42,64 +42,102 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
 
+import java.util.function.BiConsumer;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.knime.core.util.Pair;
 
-import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodeLinkEnt.DefaultMetaNodeLinkEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * The link of a metanode or component.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface TemplateLinkEnt extends GatewayEntity {
 
-@JsonDeserialize(builder=DefaultMetaNodeLinkEntBuilder.class)
-@JsonSerialize(as=MetaNodeLinkEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface MetaNodeLinkEntMixIn extends MetaNodeLinkEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("url")
-    public String getUrl();
+  /**
+   * The status of the link of this metanode/component (UpToDate, HasUpdate, Error)
+   */
+  public enum UpdateStatusEnum {
+    UP_TO_DATE("UP_TO_DATE"),
     
-    @Override
-    @JsonProperty("linkStatus")
-    public LinkStatusEnum getLinkStatus();
+    HAS_UPDATE("HAS_UPDATE"),
     
+    ERROR("ERROR");
 
-    /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
-     */
+    private String value;
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface MetaNodeLinkEntMixInBuilder extends MetaNodeLinkEntBuilder {
-    
-        @Override
-        public MetaNodeLinkEntMixIn build();
-    
-        @Override
-        @JsonProperty("url")
-        public MetaNodeLinkEntMixInBuilder setUrl(final String url);
-        
-        @Override
-        @JsonProperty("linkStatus")
-        public MetaNodeLinkEntMixInBuilder setLinkStatus(final LinkStatusEnum linkStatus);
-        
+    UpdateStatusEnum(String value) {
+      this.value = value;
     }
 
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * A URL, if the metanode/component is linked to.
+   * @return url 
+   **/
+  public String getUrl();
+
+  /**
+   * The status of the link of this metanode/component (UpToDate, HasUpdate, Error)
+   * @return updateStatus 
+   **/
+  public UpdateStatusEnum getUpdateStatus();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (TemplateLinkEnt)other;
+      valueConsumer.accept("url", Pair.create(getUrl(), e.getUrl()));
+      valueConsumer.accept("updateStatus", Pair.create(getUpdateStatus(), e.getUpdateStatus()));
+  }
+
+    /**
+     * The builder for the entity.
+     */
+    public interface TemplateLinkEntBuilder extends GatewayEntityBuilder<TemplateLinkEnt> {
+
+        /**
+         * A URL, if the metanode/component is linked to.
+         * 
+         * @param url the property value,  
+         * @return this entity builder for chaining
+         */
+        TemplateLinkEntBuilder setUrl(String url);
+        
+        /**
+         * The status of the link of this metanode/component (UpToDate, HasUpdate, Error)
+         * 
+         * @param updateStatus the property value,  
+         * @return this entity builder for chaining
+         */
+        TemplateLinkEntBuilder setUpdateStatus(UpdateStatusEnum updateStatus);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        TemplateLinkEnt build();
+    
+    }
 
 }
-

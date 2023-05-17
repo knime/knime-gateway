@@ -45,11 +45,11 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
-import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
@@ -123,7 +123,7 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     
     @Override
     @JsonProperty("link")
-    public MetaNodeLinkEnt getLink();
+    public TemplateLinkEnt getLink();
     
 
     /**
@@ -184,7 +184,7 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         
         @Override
         @JsonProperty("link")
-        public MetaNodeEntMixInBuilder setLink(final MetaNodeLinkEnt link);
+        public MetaNodeEntMixInBuilder setLink(final TemplateLinkEnt link);
         
     }
 

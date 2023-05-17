@@ -86,7 +86,6 @@ import org.knime.gateway.json.webui.entity.JobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
 import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
-import org.knime.gateway.json.webui.entity.MetaNodeLinkEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodePortEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeStateEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaPortsEntMixIn;
@@ -132,6 +131,7 @@ import org.knime.gateway.json.webui.entity.SpaceItemReferenceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpacePathSegmentEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceProviderEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
+import org.knime.gateway.json.webui.entity.TemplateLinkEntMixIn;
 import org.knime.gateway.json.webui.entity.TransformWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.TranslateCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateAvailableEventEntMixIn;
@@ -216,7 +216,6 @@ public class ListEntities {
         res.add(LinkEntMixIn.class);
         res.add(LoopInfoEntMixIn.class);
         res.add(MetaNodeEntMixIn.class);
-        res.add(MetaNodeLinkEntMixIn.class);
         res.add(MetaNodePortEntMixIn.class);
         res.add(MetaNodeStateEntMixIn.class);
         res.add(MetaPortsEntMixIn.class);
@@ -262,6 +261,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEntMixIn.class);
         res.add(SpaceProviderEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
+        res.add(TemplateLinkEntMixIn.class);
         res.add(TransformWorkflowAnnotationCommandEntMixIn.class);
         res.add(TranslateCommandEntMixIn.class);
         res.add(UpdateAvailableEventEntMixIn.class);
@@ -332,7 +332,6 @@ public class ListEntities {
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
         res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
-        res.add(MetaNodeLinkEntMixIn.MetaNodeLinkEntMixInBuilder.class);
         res.add(MetaNodePortEntMixIn.MetaNodePortEntMixInBuilder.class);
         res.add(MetaNodeStateEntMixIn.MetaNodeStateEntMixInBuilder.class);
         res.add(MetaPortsEntMixIn.MetaPortsEntMixInBuilder.class);
@@ -378,6 +377,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEntMixIn.SpacePathSegmentEntMixInBuilder.class);
         res.add(SpaceProviderEntMixIn.SpaceProviderEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
+        res.add(TemplateLinkEntMixIn.TemplateLinkEntMixInBuilder.class);
         res.add(TransformWorkflowAnnotationCommandEntMixIn.TransformWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(TranslateCommandEntMixIn.TranslateCommandEntMixInBuilder.class);
         res.add(UpdateAvailableEventEntMixIn.UpdateAvailableEventEntMixInBuilder.class);

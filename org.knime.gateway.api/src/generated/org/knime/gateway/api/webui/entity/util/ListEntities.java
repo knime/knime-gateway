@@ -86,7 +86,6 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
-import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
@@ -132,6 +131,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
@@ -217,7 +217,6 @@ public class ListEntities {
         res.add(LinkEnt.class);
         res.add(LoopInfoEnt.class);
         res.add(MetaNodeEnt.class);
-        res.add(MetaNodeLinkEnt.class);
         res.add(MetaNodePortEnt.class);
         res.add(MetaNodeStateEnt.class);
         res.add(MetaPortsEnt.class);
@@ -263,6 +262,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEnt.class);
         res.add(SpaceProviderEnt.class);
         res.add(StyleRangeEnt.class);
+        res.add(TemplateLinkEnt.class);
         res.add(TransformWorkflowAnnotationCommandEnt.class);
         res.add(TranslateCommandEnt.class);
         res.add(UpdateAvailableEventEnt.class);
@@ -333,7 +333,6 @@ public class ListEntities {
         res.add(LinkEnt.LinkEntBuilder.class);
         res.add(LoopInfoEnt.LoopInfoEntBuilder.class);
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);
-        res.add(MetaNodeLinkEnt.MetaNodeLinkEntBuilder.class);
         res.add(MetaNodePortEnt.MetaNodePortEntBuilder.class);
         res.add(MetaNodeStateEnt.MetaNodeStateEntBuilder.class);
         res.add(MetaPortsEnt.MetaPortsEntBuilder.class);
@@ -379,6 +378,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEnt.SpacePathSegmentEntBuilder.class);
         res.add(SpaceProviderEnt.SpaceProviderEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
+        res.add(TemplateLinkEnt.TemplateLinkEntBuilder.class);
         res.add(TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder.class);
         res.add(TranslateCommandEnt.TranslateCommandEntBuilder.class);
         res.add(UpdateAvailableEventEnt.UpdateAvailableEventEntBuilder.class);

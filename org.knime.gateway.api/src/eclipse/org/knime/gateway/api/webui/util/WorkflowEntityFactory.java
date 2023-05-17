@@ -82,7 +82,6 @@ import org.knime.core.node.workflow.FlowScopeContext;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
-import org.knime.core.node.workflow.MetaNodeTemplateInformation.UpdateStatus;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
@@ -148,7 +147,6 @@ import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
-import org.knime.gateway.api.webui.entity.MetaNodeLinkEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.MetaNodePortEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt.NodeStateEnum;
@@ -186,6 +184,9 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt.UpdateStatusEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -536,7 +537,7 @@ public final class WorkflowEntityFactory {
             .setState(buildNodeStateEnt(nc))//
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
-            .setLink(getMetaNodeLink(nc))//
+            .setLink(buildTemplateLinkEnt(nc))//
             .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
@@ -661,7 +662,7 @@ public final class WorkflowEntityFactory {
             .setPosition(buildXYEnt(wm.getUIInformation()))//
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
-            .setLink(getMetaNodeLink(wm))//
+            .setLink(buildTemplateLinkEnt(wm))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .build();
@@ -1458,35 +1459,20 @@ public final class WorkflowEntityFactory {
         return sourceURI == null ? null : sourceURI.toString();
     }
 
-    private MetaNodeLinkEnt getMetaNodeLink(final NodeContainerTemplate nct) {
+    private TemplateLinkEnt buildTemplateLinkEnt(final NodeContainerTemplate nct) {
         var role = nct.getTemplateInformation().getRole();
-        if (!role.equals(Role.Link)) {
+        if (role != Role.Link) {
             return null;
         }
-        var updateStatus = nct.getTemplateInformation().getUpdateStatus();
-        return new MetaNodeLinkEnt() {
-
-            @Override
-            public String getTypeID() {
-                return null;
-            }
-
-            @Override
-            public String getUrl() {
-                return getTemplateLink(nct);
-            }
-
-            @Override
-            public LinkStatusEnum getLinkStatus() {
-                if (updateStatus.equals(UpdateStatus.UpToDate)) {
-                  return LinkStatusEnum.UP_TO_DATE;
-              } else if (updateStatus.equals(UpdateStatus.HasUpdate)) {
-                  return LinkStatusEnum.HAS_UPDATE;
-              } else {
-                  return LinkStatusEnum.ERROR;
-              }
-            }
+        var updateStatus = switch (nct.getTemplateInformation().getUpdateStatus()) {
+            case UpToDate -> UpdateStatusEnum.UP_TO_DATE;
+            case HasUpdate -> UpdateStatusEnum.HAS_UPDATE;
+            case Error -> UpdateStatusEnum.ERROR;
         };
+        return builder(TemplateLinkEntBuilder.class) //
+            .setUrl(getTemplateLink(nct))//
+            .setUpdateStatus(updateStatus) //
+            .build();
     }
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {

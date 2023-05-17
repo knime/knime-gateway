@@ -42,101 +42,74 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 
 /**
- * The link of a metanode.
- * 
+ * The link of a metanode or component.
+ *
+ * @param url
+ * @param updateStatus
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface MetaNodeLinkEnt extends GatewayEntity {
+@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultTemplateLinkEnt(
+    String url,
+    UpdateStatusEnum updateStatus) implements TemplateLinkEnt {
 
-  /**
-   * The status of the link of this component (UpToDate, HasUpdate, Error)
-   */
-  public enum LinkStatusEnum {
-    UP_TO_DATE("UP_TO_DATE"),
-    
-    HAS_UPDATE("HAS_UPDATE"),
-    
-    ERROR("ERROR");
-
-    private String value;
-
-    LinkStatusEnum(String value) {
-      this.value = value;
+    /**
+     * Validation for required parameters not being {@code null}.
+     */
+    public DefaultTemplateLinkEnt {
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    public String getTypeID() {
+        return "TemplateLink";
     }
-
-  }
-
-
-  /**
-   * A URL, if the metanode is linked.
-   * @return url 
-   **/
-  public String getUrl();
-
-  /**
-   * The status of the link of this component (UpToDate, HasUpdate, Error)
-   * @return linkStatus 
-   **/
-  public LinkStatusEnum getLinkStatus();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (MetaNodeLinkEnt)other;
-      valueConsumer.accept("url", Pair.create(getUrl(), e.getUrl()));
-      valueConsumer.accept("linkStatus", Pair.create(getLinkStatus(), e.getLinkStatus()));
-  }
-
+  
+    @Override
+    public String getUrl() {
+        return url;
+    }
+    
+    @Override
+    public UpdateStatusEnum getUpdateStatus() {
+        return updateStatus;
+    }
+    
     /**
-     * The builder for the entity.
+     * A builder for {@link DefaultTemplateLinkEnt}.
      */
-    public interface MetaNodeLinkEntBuilder extends GatewayEntityBuilder<MetaNodeLinkEnt> {
+    public static class DefaultTemplateLinkEntBuilder implements TemplateLinkEntBuilder {
 
-        /**
-         * A URL, if the metanode is linked.
-         * 
-         * @param url the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodeLinkEntBuilder setUrl(String url);
-        
-        /**
-         * The status of the link of this component (UpToDate, HasUpdate, Error)
-         * 
-         * @param linkStatus the property value,  
-         * @return this entity builder for chaining
-         */
-        MetaNodeLinkEntBuilder setLinkStatus(LinkStatusEnum linkStatus);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+        private String m_url;
+
+        private UpdateStatusEnum m_updateStatus;
+
         @Override
-        MetaNodeLinkEnt build();
+        public DefaultTemplateLinkEntBuilder setUrl(String url) {
+             m_url = url;
+             return this;
+        }
+
+        @Override
+        public DefaultTemplateLinkEntBuilder setUpdateStatus(UpdateStatusEnum updateStatus) {
+             m_updateStatus = updateStatus;
+             return this;
+        }
+
+        @Override
+        public DefaultTemplateLinkEnt build() {
+            return new DefaultTemplateLinkEnt(
+                immutable(m_url),
+                immutable(m_updateStatus));
+        }
     
     }
 
