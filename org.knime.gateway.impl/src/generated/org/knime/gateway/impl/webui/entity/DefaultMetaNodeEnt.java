@@ -72,6 +72,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
  * @param name
  * @param state
  * @param link
+ * @param isLocked
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -88,7 +89,8 @@ public record DefaultMetaNodeEnt(
     NodeExecutionInfoEnt executionInfo,
     String name,
     MetaNodeStateEnt state,
-    TemplateLinkEnt link) implements MetaNodeEnt {
+    TemplateLinkEnt link,
+    Boolean isLocked) implements MetaNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -182,6 +184,11 @@ public record DefaultMetaNodeEnt(
         return link;
     }
     
+    @Override
+    public Boolean isIsLocked() {
+        return isLocked;
+    }
+    
     /**
      * A builder for {@link DefaultMetaNodeEnt}.
      */
@@ -210,6 +217,8 @@ public record DefaultMetaNodeEnt(
         private MetaNodeStateEnt m_state;
 
         private TemplateLinkEnt m_link;
+
+        private Boolean m_isLocked;
 
         @Override
         public DefaultMetaNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -305,6 +314,12 @@ public record DefaultMetaNodeEnt(
         }
 
         @Override
+        public DefaultMetaNodeEntBuilder setIsLocked(Boolean isLocked) {
+             m_isLocked = isLocked;
+             return this;
+        }
+
+        @Override
         public DefaultMetaNodeEnt build() {
             return new DefaultMetaNodeEnt(
                 immutable(m_id),
@@ -318,7 +333,8 @@ public record DefaultMetaNodeEnt(
                 immutable(m_executionInfo),
                 immutable(m_name),
                 immutable(m_state),
-                immutable(m_link));
+                immutable(m_link),
+                immutable(m_isLocked));
         }
     
     }

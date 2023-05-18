@@ -75,6 +75,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  * @param icon
  * @param state
  * @param link
+ * @param isLocked
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -93,7 +94,8 @@ public record DefaultComponentNodeEnt(
     TypeEnum type,
     String icon,
     NodeStateEnt state,
-    TemplateLinkEnt link) implements ComponentNodeEnt {
+    TemplateLinkEnt link,
+    Boolean isLocked) implements ComponentNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -194,6 +196,11 @@ public record DefaultComponentNodeEnt(
         return link;
     }
     
+    @Override
+    public Boolean isIsLocked() {
+        return isLocked;
+    }
+    
     /**
      * A builder for {@link DefaultComponentNodeEnt}.
      */
@@ -226,6 +233,8 @@ public record DefaultComponentNodeEnt(
         private NodeStateEnt m_state;
 
         private TemplateLinkEnt m_link;
+
+        private Boolean m_isLocked;
 
         @Override
         public DefaultComponentNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -330,6 +339,12 @@ public record DefaultComponentNodeEnt(
         }
 
         @Override
+        public DefaultComponentNodeEntBuilder setIsLocked(Boolean isLocked) {
+             m_isLocked = isLocked;
+             return this;
+        }
+
+        @Override
         public DefaultComponentNodeEnt build() {
             return new DefaultComponentNodeEnt(
                 immutable(m_id),
@@ -345,7 +360,8 @@ public record DefaultComponentNodeEnt(
                 immutable(m_type),
                 immutable(m_icon),
                 immutable(m_state),
-                immutable(m_link));
+                immutable(m_link),
+                immutable(m_isLocked));
         }
     
     }

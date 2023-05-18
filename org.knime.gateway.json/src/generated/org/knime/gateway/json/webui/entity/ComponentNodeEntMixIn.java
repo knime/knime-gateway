@@ -134,6 +134,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @JsonProperty("link")
     public TemplateLinkEnt getLink();
     
+    @Override
+    @JsonProperty("isLocked")
+    public Boolean isIsLocked();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -202,6 +206,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("link")
         public ComponentNodeEntMixInBuilder setLink(final TemplateLinkEnt link);
+        
+        @Override
+        @JsonProperty("isLocked")
+        public ComponentNodeEntMixInBuilder setIsLocked(final Boolean isLocked);
         
     }
 

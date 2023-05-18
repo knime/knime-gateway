@@ -84,6 +84,12 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
    **/
   public TemplateLinkEnt getLink();
 
+  /**
+   * The lock-status of this node. It has three states: absent if there is no lock at all, true if it&#39;s locked, false if it&#39;s unlocked.
+   * @return isLocked 
+   **/
+  public Boolean isIsLocked();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -103,6 +109,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
+      valueConsumer.accept("isLocked", Pair.create(isIsLocked(), e.isIsLocked()));
   }
 
     /**
@@ -221,6 +228,14 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setLink(TemplateLinkEnt link);
+        
+        /**
+         * The lock-status of this node. It has three states: absent if there is no lock at all, true if it&#39;s locked, false if it&#39;s unlocked.
+         * 
+         * @param isLocked the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setIsLocked(Boolean isLocked);
         
         
         /**

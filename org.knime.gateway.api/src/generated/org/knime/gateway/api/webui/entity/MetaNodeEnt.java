@@ -101,6 +101,12 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public TemplateLinkEnt getLink();
 
+  /**
+   * The lock-status of this node. It has three states: absent if there is no lock at all, true if it&#39;s locked, false if it&#39;s unlocked.
+   * @return isLocked 
+   **/
+  public Boolean isIsLocked();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -118,6 +124,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
+      valueConsumer.accept("isLocked", Pair.create(isIsLocked(), e.isIsLocked()));
   }
 
     /**
@@ -220,6 +227,14 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setLink(TemplateLinkEnt link);
+        
+        /**
+         * The lock-status of this node. It has three states: absent if there is no lock at all, true if it&#39;s locked, false if it&#39;s unlocked.
+         * 
+         * @param isLocked the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setIsLocked(Boolean isLocked);
         
         
         /**

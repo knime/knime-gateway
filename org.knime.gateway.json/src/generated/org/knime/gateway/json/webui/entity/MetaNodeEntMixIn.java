@@ -125,6 +125,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     @JsonProperty("link")
     public TemplateLinkEnt getLink();
     
+    @Override
+    @JsonProperty("isLocked")
+    public Boolean isIsLocked();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -185,6 +189,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("link")
         public MetaNodeEntMixInBuilder setLink(final TemplateLinkEnt link);
+        
+        @Override
+        @JsonProperty("isLocked")
+        public MetaNodeEntMixInBuilder setIsLocked(final Boolean isLocked);
         
     }
 

@@ -60,7 +60,11 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowCipherPrompt;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -147,6 +151,36 @@ public class WorkflowServiceTest extends GatewayServiceTest {
         assertThat(stateEntExecuted.getWarning(), containsString("can not be transformed"));
         assertThat(stateEntExecuted.getIssue(), containsString("For input string"));
         assertThat(stateEntExecuted.getResolutions().size(), is(0));
+    }
+
+    /**
+     * Checks the {@link ComponentNodeEnt#isIsLocked()} property.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testLockedMetanodeAndComponent() throws Exception {
+        var wfm = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS, "wf_id");
+        var workflowService = DefaultWorkflowService.getInstance();
+        var nodes = workflowService.getWorkflow("wf_id", getRootID(), false).getWorkflow().getNodes();
+        var metanode = (MetaNodeEnt)nodes.get("root:27");
+        var component = (ComponentNodeEnt)nodes.get("root:28");
+        assertThat(metanode.isIsLocked(), is(Boolean.TRUE));
+        assertThat(component.isIsLocked(), is(Boolean.TRUE));
+
+        var prompt = new WorkflowCipherPrompt() {
+            @Override
+            public String prompt(final String message, final String errorFromPrevious) throws PromptCancelled {
+                return "test";
+            }
+        };
+        ((WorkflowManager)wfm.getNodeContainer(wfm.getID().createChild(27))).unlock(prompt);
+        ((SubNodeContainer)wfm.getNodeContainer(wfm.getID().createChild(28))).getWorkflowManager().unlock(prompt);
+        nodes = workflowService.getWorkflow("wf_id", getRootID(), false).getWorkflow().getNodes();
+        metanode = (MetaNodeEnt)nodes.get("root:27");
+        component = (ComponentNodeEnt)nodes.get("root:28");
+        assertThat(metanode.isIsLocked(), is(Boolean.FALSE));
+        assertThat(component.isIsLocked(), is(Boolean.FALSE));
     }
 
 }
