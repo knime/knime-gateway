@@ -95,7 +95,7 @@ public record DefaultNativeNodeEnt(
     LoopInfoEnt loopInfo,
     java.util.Map<String, PortGroupEnt> portGroups,
     Boolean hasView,
-    Object isReexecutable) implements NativeNodeEnt {
+    Boolean isReexecutable) implements NativeNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -197,7 +197,7 @@ public record DefaultNativeNodeEnt(
     }
     
     @Override
-    public Object getIsReexecutable() {
+    public Boolean isIsReexecutable() {
         return isReexecutable;
     }
     
@@ -234,7 +234,7 @@ public record DefaultNativeNodeEnt(
 
         private Boolean m_hasView;
 
-        private Object m_isReexecutable = null;
+        private Boolean m_isReexecutable;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -339,7 +339,7 @@ public record DefaultNativeNodeEnt(
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setIsReexecutable(Object isReexecutable) {
+        public DefaultNativeNodeEntBuilder setIsReexecutable(Boolean isReexecutable) {
              m_isReexecutable = isReexecutable;
              return this;
         }

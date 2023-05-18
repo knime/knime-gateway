@@ -106,7 +106,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
    * Indicates whether the node can re-execute itself (e.g. within a page of a data app). It&#39;s absent if the node isn&#39;t re-executable at all (i.e. it can&#39;t even be configured to be re-executable).
    * @return isReexecutable 
    **/
-  public Object getIsReexecutable();
+  public Boolean isIsReexecutable();
 
 
   @Override
@@ -127,7 +127,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("loopInfo", Pair.create(getLoopInfo(), e.getLoopInfo()));
       valueConsumer.accept("portGroups", Pair.create(getPortGroups(), e.getPortGroups()));
       valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
-      valueConsumer.accept("isReexecutable", Pair.create(getIsReexecutable(), e.getIsReexecutable()));
+      valueConsumer.accept("isReexecutable", Pair.create(isIsReexecutable(), e.isIsReexecutable()));
   }
 
     /**
@@ -253,7 +253,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @param isReexecutable the property value,  
          * @return this entity builder for chaining
          */
-        NativeNodeEntBuilder setIsReexecutable(Object isReexecutable);
+        NativeNodeEntBuilder setIsReexecutable(Boolean isReexecutable);
         
         
         /**

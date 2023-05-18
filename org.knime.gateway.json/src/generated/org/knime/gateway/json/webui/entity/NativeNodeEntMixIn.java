@@ -136,7 +136,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     
     @Override
     @JsonProperty("isReexecutable")
-    public Object getIsReexecutable();
+    public Boolean isIsReexecutable();
     
 
     /**
@@ -209,7 +209,7 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         
         @Override
         @JsonProperty("isReexecutable")
-        public NativeNodeEntMixInBuilder setIsReexecutable(final Object isReexecutable);
+        public NativeNodeEntMixInBuilder setIsReexecutable(final Boolean isReexecutable);
         
     }
 
