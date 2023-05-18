@@ -197,7 +197,7 @@ public record DefaultNativeNodeEnt(
     }
     
     @Override
-    public Boolean isIsReexecutable() {
+    public Boolean isReexecutable() {
         return isReexecutable;
     }
     

@@ -197,7 +197,7 @@ public record DefaultComponentNodeEnt(
     }
     
     @Override
-    public Boolean isIsLocked() {
+    public Boolean isLocked() {
         return isLocked;
     }
     

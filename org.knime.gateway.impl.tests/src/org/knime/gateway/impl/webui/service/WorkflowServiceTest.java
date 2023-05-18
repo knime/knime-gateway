@@ -165,8 +165,8 @@ public class WorkflowServiceTest extends GatewayServiceTest {
         var nodes = workflowService.getWorkflow("wf_id", getRootID(), false).getWorkflow().getNodes();
         var metanode = (MetaNodeEnt)nodes.get("root:27");
         var component = (ComponentNodeEnt)nodes.get("root:28");
-        assertThat(metanode.isIsLocked(), is(Boolean.TRUE));
-        assertThat(component.isIsLocked(), is(Boolean.TRUE));
+        assertThat(metanode.isLocked(), is(Boolean.TRUE));
+        assertThat(component.isLocked(), is(Boolean.TRUE));
 
         var prompt = new WorkflowCipherPrompt() {
             @Override
@@ -179,8 +179,8 @@ public class WorkflowServiceTest extends GatewayServiceTest {
         nodes = workflowService.getWorkflow("wf_id", getRootID(), false).getWorkflow().getNodes();
         metanode = (MetaNodeEnt)nodes.get("root:27");
         component = (ComponentNodeEnt)nodes.get("root:28");
-        assertThat(metanode.isIsLocked(), is(Boolean.FALSE));
-        assertThat(component.isIsLocked(), is(Boolean.FALSE));
+        assertThat(metanode.isLocked(), is(Boolean.FALSE));
+        assertThat(component.isLocked(), is(Boolean.FALSE));
     }
 
 }

@@ -79,7 +79,7 @@ public interface UpdateInfoEntMixIn extends UpdateInfoEnt {
     
     @Override
     @JsonProperty("isUpdatePossible")
-    public Boolean isIsUpdatePossible();
+    public Boolean isUpdatePossible();
     
 
     /**

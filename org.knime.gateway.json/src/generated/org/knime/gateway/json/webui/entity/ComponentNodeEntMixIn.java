@@ -136,7 +136,7 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     
     @Override
     @JsonProperty("isLocked")
-    public Boolean isIsLocked();
+    public Boolean isLocked();
     
 
     /**

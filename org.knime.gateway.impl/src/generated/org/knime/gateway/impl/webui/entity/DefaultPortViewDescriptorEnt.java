@@ -82,7 +82,7 @@ public record DefaultPortViewDescriptorEnt(
     }
     
     @Override
-    public Boolean isIsSpecView() {
+    public Boolean isSpecView() {
         return isSpecView;
     }
     

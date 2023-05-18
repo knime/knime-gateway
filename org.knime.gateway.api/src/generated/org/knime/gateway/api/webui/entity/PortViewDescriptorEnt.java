@@ -73,7 +73,7 @@ public interface PortViewDescriptorEnt extends GatewayEntity {
    * Whether the view is a port object spec view. Assumed to be false if omitted.
    * @return isSpecView 
    **/
-  public Boolean isIsSpecView();
+  public Boolean isSpecView();
 
 
   @Override
@@ -81,7 +81,7 @@ public interface PortViewDescriptorEnt extends GatewayEntity {
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (PortViewDescriptorEnt)other;
       valueConsumer.accept("label", Pair.create(getLabel(), e.getLabel()));
-      valueConsumer.accept("isSpecView", Pair.create(isIsSpecView(), e.isIsSpecView()));
+      valueConsumer.accept("isSpecView", Pair.create(isSpecView(), e.isSpecView()));
   }
 
     /**

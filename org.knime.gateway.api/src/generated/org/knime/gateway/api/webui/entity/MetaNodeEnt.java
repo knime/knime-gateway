@@ -105,7 +105,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
    * The lock-status of this node. It has three states: absent if there is no lock at all, true if it&#39;s locked, false if it&#39;s unlocked.
    * @return isLocked 
    **/
-  public Boolean isIsLocked();
+  public Boolean isLocked();
 
 
   @Override
@@ -124,7 +124,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
-      valueConsumer.accept("isLocked", Pair.create(isIsLocked(), e.isIsLocked()));
+      valueConsumer.accept("isLocked", Pair.create(isLocked(), e.isLocked()));
   }
 
     /**

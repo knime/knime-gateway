@@ -79,7 +79,7 @@ public interface UpdateInfoEnt extends GatewayEntity {
    * Whether a direct update is possible or not.
    * @return isUpdatePossible , never <code>null</code>
    **/
-  public Boolean isIsUpdatePossible();
+  public Boolean isUpdatePossible();
 
 
   @Override
@@ -88,7 +88,7 @@ public interface UpdateInfoEnt extends GatewayEntity {
       var e = (UpdateInfoEnt)other;
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("shortName", Pair.create(getShortName(), e.getShortName()));
-      valueConsumer.accept("isUpdatePossible", Pair.create(isIsUpdatePossible(), e.isIsUpdatePossible()));
+      valueConsumer.accept("isUpdatePossible", Pair.create(isUpdatePossible(), e.isUpdatePossible()));
   }
 
     /**

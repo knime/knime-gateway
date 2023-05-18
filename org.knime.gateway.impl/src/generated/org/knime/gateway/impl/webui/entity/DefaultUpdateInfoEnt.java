@@ -95,7 +95,7 @@ public record DefaultUpdateInfoEnt(
     }
     
     @Override
-    public Boolean isIsUpdatePossible() {
+    public Boolean isUpdatePossible() {
         return isUpdatePossible;
     }
     

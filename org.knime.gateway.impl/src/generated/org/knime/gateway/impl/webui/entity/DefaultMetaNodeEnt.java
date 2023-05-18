@@ -185,7 +185,7 @@ public record DefaultMetaNodeEnt(
     }
     
     @Override
-    public Boolean isIsLocked() {
+    public Boolean isLocked() {
         return isLocked;
     }
     

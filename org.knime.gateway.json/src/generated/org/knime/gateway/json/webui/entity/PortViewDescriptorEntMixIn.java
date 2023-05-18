@@ -75,7 +75,7 @@ public interface PortViewDescriptorEntMixIn extends PortViewDescriptorEnt {
     
     @Override
     @JsonProperty("isSpecView")
-    public Boolean isIsSpecView();
+    public Boolean isSpecView();
     
 
     /**

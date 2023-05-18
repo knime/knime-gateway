@@ -127,7 +127,7 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     
     @Override
     @JsonProperty("isLocked")
-    public Boolean isIsLocked();
+    public Boolean isLocked();
     
 
     /**
