@@ -115,7 +115,8 @@ public class DefaultPortService implements PortService {
                 "No port view available at index %d for current state of node %s.", portIdx, nc.getNameWithID()));
         }
 
-        if ((viewDescriptor.viewFactory() instanceof PortSpecViewFactory) && outPort.getPortObjectSpec() == null) {
+        if (!isFlowVariablePort && (viewDescriptor.viewFactory() instanceof PortSpecViewFactory)
+            && outPort.getPortObjectSpec() == null) {
             throw new InvalidRequestException(
                 String.format("No port object spec available at index %d for node %s.", portIdx, nc.getNameWithID()));
         }
