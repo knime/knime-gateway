@@ -164,8 +164,8 @@ public final class DefaultServiceUtil {
         } else {
             throw new IllegalStateException("The node id '" + nodeID + "' doesn't reference a sub workflow.");
         }
-        if (wfm.isEncrypted()) {
-            throw new IllegalStateException("Workflow is encrypted and cannot be accessed.");
+        if (wfm.isEncrypted() && !wfm.isUnlocked()) {
+            throw new IllegalStateException("Workflow is locked and cannot be accessed.");
         }
         return wfm;
     }
