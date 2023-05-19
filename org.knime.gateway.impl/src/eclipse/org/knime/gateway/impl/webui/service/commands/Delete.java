@@ -226,7 +226,7 @@ final class Delete extends AbstractWorkflowCommand {
         final List<AnnotationIDEnt> annotationIds) {
         return WorkflowCopyContent.builder().setNodeIDs(nodeIDs.toArray(new NodeID[nodeIDs.size()]))
             .setAnnotationIDs(annotationIds.stream()
-                .map(id -> new WorkflowAnnotationID(id.getNodeIDEnt().toNodeID(wfmId), id.getIndex()))
+                .map(id -> new WorkflowAnnotationID(wfmId, id.getIndex()))
                 .toArray(size -> new WorkflowAnnotationID[size]))
             .build();
     }
