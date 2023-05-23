@@ -1235,8 +1235,8 @@ public final class WorkflowEntityFactory {
         if (!isContainerNode) {
             throw new IllegalArgumentException("Not a container node");
         }
-        if (nc instanceof SubNodeContainer && portIndex == 0) {
-            // First input/output port of component nodes is always a fixed flow variable port.
+        // First input/output port of component nodes is always a fixed flow variable port - last port might be report
+        if (nc instanceof SubNodeContainer snc && (portIndex == 0 || snc.isReportOutPort(portIndex))) {
             return false;
         }
         var metaPortInfo = getContainerMetaPortInfo(nc, isInputPort);
