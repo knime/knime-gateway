@@ -49,11 +49,10 @@ package org.knime.gateway.impl.node.port;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.StringCell;
+import org.knime.core.data.statistics.UnivariateStatistics;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.InitialDataService;
@@ -66,42 +65,58 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.page.Page;
 
 /**
- * TODO this is just a dummy implementation - https://knime-com.atlassian.net/browse/NXT-1594
+ * A port view displaying statistics over the columns of the output table at that port.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("restriction")
 public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTable> {
 
     @Override
     public PortView createPortView(final BufferedDataTable table) {
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
         var nodeId = nc.getID();
-        var tableId = "stats_" + TableViewUtil.toTableId(nodeId);
+        var tableId = "statistics_" + TableViewUtil.toTableId(nodeId);
 
-        var spec = new DataTableSpec(new String[]{"foo"}, new DataType[]{StringCell.TYPE});
+        var selectedStatistics = UnivariateStatistics.getDefaultStatistics();
+
         Supplier<BufferedDataTable> tableSupplier = () -> {
-            var dataContainer = DataServiceContext.get().getExecutionContext().createDataContainer(spec);
-            dataContainer.addRowToTable(new DefaultRow("1", new StringCell("bar")));
-            dataContainer.close();
-            return dataContainer.getTable();
+            var context = DataServiceContext.get().getExecutionContext();
+            try {
+                return UnivariateStatistics.computeStatisticsTable(table, context, selectedStatistics);
+            } catch (CanceledExecutionException e) {
+                NodeLogger.getLogger(this.getClass()).error("Statistics computation cancelled", e);
+                return null;
+            }
         };
 
-        return new PortView() {
+        return new PortView() { // NOSONAR
             @Override
             public Page getPage() {
                 return TableViewUtil.PAGE;
             }
 
             @Override
+            @SuppressWarnings({"rawtypes", "unchecked", "restriction"})
             public Optional<InitialDataService> createInitialDataService() {
-                var settings = new TableViewViewSettings(spec);
+                var settings =
+                    new TableViewViewSettings(UnivariateStatistics.getStatisticsTableSpec(selectedStatistics));
                 settings.m_showTitle = false;
-                settings.m_publishSelection = false;
-                settings.m_subscribeToSelection = false;
+                settings.m_enableGlobalSearch = false;
+                settings.m_enableSortingByHeader = false;
+                settings.m_enableColumnSearch = false;
                 settings.m_compactMode = true;
+                settings.m_subscribeToSelection = false;
+                settings.m_publishSelection = false;
+                // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
+                settings.m_enablePagination = true;
+                settings.m_enableRendererSelection = false;
+                settings.m_showRowKeys = false;
+                settings.m_showRowIndices = false;
                 return Optional.of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, tableId));
             }
 
+            @SuppressWarnings("restriction")
             @Override
             public Optional<RpcDataService> createRpcDataService() {
                 var tableViewDataService = TableViewUtil.createTableViewDataService(tableSupplier, tableId);

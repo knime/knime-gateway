@@ -55,8 +55,8 @@ import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.page.Page;
@@ -77,6 +77,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         return new PortView() { // NOSONAR
 
             @Override
+            @SuppressWarnings({"rawtypes", "unchecked", "restriction"})
             public Optional<InitialDataService> createInitialDataService() {
                 var settings = new TableViewViewSettings(table.getDataTableSpec());
                 settings.m_showTitle = false;

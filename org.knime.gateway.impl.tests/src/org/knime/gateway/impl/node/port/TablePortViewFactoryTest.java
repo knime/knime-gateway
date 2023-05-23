@@ -52,8 +52,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -80,8 +78,6 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
 import org.knime.core.webui.data.InitialDataService;
@@ -89,8 +85,6 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
-import org.knime.testing.node.view.NodeViewNodeFactory;
-import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Tests {@link TablePortViewFactory}.
@@ -106,8 +100,8 @@ public class TablePortViewFactoryTest {
      */
     @Test
     public void testTablePortViewPage() throws IOException {
-        var bdt = createTable(2);
-        var port = createNodeOutPort(bdt);
+        var bdt = TestingUtilities.createTable(2);
+        var port = TestingUtilities.createNodeOutPort(bdt);
         PortContext.pushContext(port.get());
         try {
             var portView = new TablePortViewFactory().createPortView(bdt);
@@ -128,8 +122,8 @@ public class TablePortViewFactoryTest {
      */
     @Test
     public void testTablePortViewInitialData() throws IOException {
-        var bdt = createTable(2);
-        var port = createNodeOutPort(bdt);
+        var bdt = TestingUtilities.createTable(2);
+        var port = TestingUtilities.createNodeOutPort(bdt);
         PortContext.pushContext(port.get());
         try {
             var initialData =
@@ -165,8 +159,8 @@ public class TablePortViewFactoryTest {
      */
     @Test
     public void testTablePortViewData() throws IOException {
-        var bdt = createTable(10);
-        var port = createNodeOutPort(bdt);
+        var bdt = TestingUtilities.createTable(10);
+        var port = TestingUtilities.createNodeOutPort(bdt);
         PortContext.pushContext(port.get());
         try {
             var jsonRpcResponse = new TablePortViewFactory().createPortView(bdt).createRpcDataService().get()
@@ -178,95 +172,63 @@ public class TablePortViewFactoryTest {
         }
     }
 
-    static Disposable<NodeOutPort> createNodeOutPort(final BufferedDataTable bdt) throws IOException {
-        var nc = createNodeWithPortView();
-        var port = mock(NodeOutPort.class);
-        when(port.getPortObject()).thenReturn(bdt);
-        when(port.getConnectedNodeContainer()).thenReturn(nc);
-        return new Disposable<NodeOutPort>() {
-            @Override
-            public NodeOutPort get() {
-                return port;
-            }
-
-            @Override
-            public void dispose() {
-                WorkflowManagerUtil.disposeWorkflow(nc.getParent());
-            }
-        };
-    }
-
-    /*
-     * returns the node with the port view
-     */
-    private static NativeNodeContainer createNodeWithPortView() throws IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        return WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory());
-    }
-
-    static interface Disposable<T> {
-        T get();
-
-        void dispose();
-    }
-
     private static final DataTableSpec SPEC =
-            new DataTableSpec(new DataColumnSpecCreator("int", IntCell.TYPE).createSpec(),
-                new DataColumnSpecCreator("string", StringCell.TYPE).createSpec(),
-                new DataColumnSpecCreator("long", LongCell.TYPE).createSpec(),
-                new DataColumnSpecCreator("double", DoubleCell.TYPE).createSpec(),
-                new DataColumnSpecCreator("boolean", BooleanCell.TYPE).createSpec(),
-                new DataColumnSpecCreator("mixed-type", DataType.getCommonSuperType(StringCell.TYPE, DoubleCell.TYPE))
-                    .createSpec());
+        new DataTableSpec(new DataColumnSpecCreator("int", IntCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("string", StringCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("long", LongCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("double", DoubleCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("boolean", BooleanCell.TYPE).createSpec(),
+            new DataColumnSpecCreator("mixed-type", DataType.getCommonSuperType(StringCell.TYPE, DoubleCell.TYPE))
+                .createSpec());
 
-        private static final VirtualParallelizedChunkPortObjectInNodeFactory FACTORY =
-            new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
+    private static final VirtualParallelizedChunkPortObjectInNodeFactory FACTORY =
+        new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        private static final ExecutionContext EXEC =
-            new ExecutionContext(new DefaultNodeProgressMonitor(), new Node((NodeFactory)FACTORY),
-                SingleNodeContainer.MemoryPolicy.CacheSmallInMemory, NotInWorkflowDataRepository.newInstance());
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static final ExecutionContext EXEC =
+        new ExecutionContext(new DefaultNodeProgressMonitor(), new Node((NodeFactory)FACTORY),
+            SingleNodeContainer.MemoryPolicy.CacheSmallInMemory, NotInWorkflowDataRepository.newInstance());
 
-        /**
-         * Creates a new {@link BufferedDataTable} for testing purposes with some dummy values per row.
-         *
-         * @param rowCount the number of rows in the new table
-         * @return the new table instance
-         */
-        static BufferedDataTable createTable(final int rowCount) {
-            final DataRow[] rows =
-                IntStream.range(0, rowCount).mapToObj(TablePortViewFactoryTest::createRow).toArray(DataRow[]::new);
-            return createTable(SPEC, rows);
+    /**
+     * Creates a new {@link BufferedDataTable} for testing purposes with some dummy values per row.
+     *
+     * @param rowCount the number of rows in the new table
+     * @return the new table instance
+     */
+    static BufferedDataTable createTable(final int rowCount) {
+        final DataRow[] rows =
+            IntStream.range(0, rowCount).mapToObj(TablePortViewFactoryTest::createRow).toArray(DataRow[]::new);
+        return createTable(SPEC, rows);
+    }
+
+    /**
+     * Creates a new {@link BufferedDataTable} for testing purposes.
+     *
+     * @param spec the spec of the new table
+     * @param rows the rows of the new table
+     * @return the new table instance
+     */
+    private static BufferedDataTable createTable(final DataTableSpec spec, final DataRow... rows) {
+        final BufferedDataContainer cont = EXEC.createDataContainer(spec, true, Integer.MAX_VALUE);
+        for (final DataRow r : rows) {
+            cont.addRowToTable(r);
         }
+        cont.close();
+        return cont.getTable();
+    }
 
-        /**
-         * Creates a new {@link BufferedDataTable} for testing purposes.
-         *
-         * @param spec the spec of the new table
-         * @param rows the rows of the new table
-         * @return the new table instance
-         */
-        private static BufferedDataTable createTable(final DataTableSpec spec, final DataRow... rows) {
-            final BufferedDataContainer cont = EXEC.createDataContainer(spec, true, Integer.MAX_VALUE);
-            for (final DataRow r : rows) {
-                cont.addRowToTable(r);
-            }
-            cont.close();
-            return cont.getTable();
+    private static DataRow createRow(final int i) {
+        if (i == 1) {
+            // add a row with missing cells
+            return new DefaultRow(new RowKey(Integer.toString(i)),
+                IntStream.range(0, SPEC.getNumColumns())
+                    .mapToObj(colIdx -> new MissingCell(colIdx % 2 == 1 ? ("error " + colIdx) : null))
+                    .collect(Collectors.toList()));
+        } else {
+            return new DefaultRow(new RowKey(Integer.toString(i)), new IntCell(i), new StringCell(Integer.toString(i)),
+                new LongCell(i), new DoubleCell(i), i % 2 != 0 ? BooleanCell.TRUE : BooleanCell.FALSE,
+                i % 2 != 0 ? new StringCell(Integer.toBinaryString(i)) : new DoubleCell(Double.MAX_VALUE));
         }
-
-        private static DataRow createRow(final int i) {
-            if (i == 1) {
-                // add a row with missing cells
-                return new DefaultRow(new RowKey(Integer.toString(i)),
-                    IntStream.range(0, SPEC.getNumColumns())
-                        .mapToObj(colIdx -> new MissingCell(colIdx % 2 == 1 ? ("error " + colIdx) : null))
-                        .collect(Collectors.toList()));
-            } else {
-                return new DefaultRow(new RowKey(Integer.toString(i)), new IntCell(i), new StringCell(Integer.toString(i)),
-                    new LongCell(i), new DoubleCell(i), i % 2 != 0 ? BooleanCell.TRUE : BooleanCell.FALSE,
-                    i % 2 != 0 ? new StringCell(Integer.toBinaryString(i)) : new DoubleCell(Double.MAX_VALUE));
-            }
-        }
+    }
 
 }

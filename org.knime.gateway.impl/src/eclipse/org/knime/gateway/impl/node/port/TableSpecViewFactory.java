@@ -93,8 +93,8 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
                 settings.m_enableSortingByHeader = false;
                 settings.m_enableColumnSearch = false;
                 settings.m_compactMode = true;
-                settings.m_showRowIndices = true;
                 settings.m_subscribeToSelection = false;
+                settings.m_showRowIndices = true;
                 settings.m_publishSelection = false;
                 // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
                 settings.m_enablePagination = true;
