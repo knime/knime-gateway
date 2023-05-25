@@ -435,7 +435,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         DefaultEventService.getInstance().addEventListener(eventType);
 
         var testCommand = new TestWorkflowCommand();
-        commands.setCommandToExecuteForTesting(testCommand);
+        commands.setCommandToExecute(testCommand);
 
         try {
             commands.execute(wfKey, null, workflowMiddleware, null, null);

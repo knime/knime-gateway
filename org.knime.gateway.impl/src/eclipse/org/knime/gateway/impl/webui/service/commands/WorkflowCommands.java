@@ -106,7 +106,7 @@ public final class WorkflowCommands {
 
     private final int m_maxNumUndoAndRedoCommandsPerWorkflow;
 
-    private WorkflowCommand m_workflowCommandForTesting;
+    private WorkflowCommand m_workflowCommandToExecute;
 
     /**
      * Creates a new instance with initially empty undo- and redo-stacks.
@@ -215,8 +215,9 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AddWorkflowAnnotationCommandEnt ce) {
             command = new AddWorkflowAnnotation(ce);
         } else {
-            if (m_workflowCommandForTesting != null) {
-                command = m_workflowCommandForTesting;
+            if (m_workflowCommandToExecute != null) {
+                command = m_workflowCommandToExecute;
+                m_workflowCommandToExecute = null;
             } else {
                 throw new OperationNotAllowedException("Command of type " + commandEnt.getClass().getSimpleName()
                     + " cannot be executed. Unknown command.");
@@ -512,8 +513,15 @@ public final class WorkflowCommands {
 
     }
 
-    void setCommandToExecuteForTesting(final WorkflowCommand wc) {
-        m_workflowCommandForTesting = wc;
+    /**
+     * Sets the workflow command to be executed next. Only required for testing and to execute commands without the need
+     * to map them from a command-entity (which is only required as a temporary workaround for the case were actions
+     * can't be implemented as commands yet, because java-UI is still used to executed those - e.g. component import).
+     *
+     * @param wc
+     */
+    public void setCommandToExecute(final WorkflowCommand wc) {
+        m_workflowCommandToExecute = wc;
     }
 
 }
