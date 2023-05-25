@@ -1155,6 +1155,12 @@ public final class WorkflowEntityFactory {
     }
 
     private XYEnt buildXYEnt(final NodeUIInformation uiInfo) {
+        if (uiInfo == null) {
+            // This can happen when, e.g., components are added. In that case the component is added to the workflow first
+            // without any uiInfo (which already triggers workflow changed event). And then the uiInfo is set via NodeContainer.setUIInformation
+            // (which triggers another workflow changed event).
+            return builder(XYEntBuilder.class).setX(0).setY(0).build();
+        }
         int[] bounds = uiInfo.getBounds();
         return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
     }
