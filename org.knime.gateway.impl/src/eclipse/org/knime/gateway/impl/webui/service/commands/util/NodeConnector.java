@@ -174,7 +174,7 @@ public final class NodeConnector {
     boolean connect(final NodeID nodeId) {
         boolean allConnectionsCreated = true;
         if (m_sourceNodeId != null
-            && !findMatchingPortAndConnect(m_wfm, m_sourceNodeId, m_sourcePortIdx, nodeId, m_destPortIdx, m_track)) {
+            && !findMatchingPortAndConnect(m_wfm, m_sourceNodeId, m_sourcePortIdx, nodeId, null, m_track)) {
             allConnectionsCreated = false;
         }
         if (m_destNodeId != null
