@@ -89,21 +89,39 @@ final class MatchingPortsUtil {
      * @param sourceNodeId source node
      * @param destNodeId destination node
      * @param sourcePortIdx optional source port, if <code>null</code> it will be automatically determined
+     * @param destPortIdx optional dest port, if <code>null</code> it will be automatically determined
      * @param wfm workflow manager
      *
      * @return The patching pairs of ports; the destination port index can be {@code -1} if the port index couldn't be
      *         determined
      */
     static Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId,
-        final Integer sourcePortIdx, final WorkflowManager wfm) {
-        if (sourcePortIdx != null) { // Currently in use by the FE, supports dynamic nodes and flow variables
-            var destPortIdx = getDestPortIdxFromSourcePortIdx(sourceNodeId, sourcePortIdx, destNodeId, wfm);
-            return Map.of(sourcePortIdx, destPortIdx);
-        } else { // Currently not used by the FE, ignores dynamic nodes and flow variables. Might be added later.
-            var sourceNode = wfm.getNodeContainer(sourceNodeId);
-            var destNode = wfm.getNodeContainer(destNodeId);
-            return getFirstMatchingSourcePortsForDestPorts(sourceNode, destNode, wfm);
+        final Integer sourcePortIdx, final Integer destPortIdx, final WorkflowManager wfm) {
+        var sourceNode = wfm.getNodeContainer(sourceNodeId);
+        var destNode = wfm.getNodeContainer(destNodeId);
+        if (sourcePortIdx != null && destPortIdx != null) { // Check if both ports are compatible
+            var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+            var destPortType = destNode.getInPort(destPortIdx).getPortType();
+            if (CoreUtil.arePortTypesCompatible(sourcePortType, destPortType)) {
+                return Map.of(sourcePortIdx, destPortIdx);
+            } else {
+                return Map.of();
+            }
         }
+
+        if (sourcePortIdx != null) { // Looks for matching destPort, supports dynamic nodes and flow variables
+            var destPort = getDestPortIdxFromSourcePortIdx(sourceNodeId, sourcePortIdx, destNodeId, wfm);
+            return Map.of(sourcePortIdx, destPort);
+        }
+
+        if (destPortIdx != null) { // Looks for matching sourcePort, supports dynamic nodes and flow variables
+            var sourcePort = getSourcePortIdxFromDestPortIdx(sourceNodeId, destNodeId, destPortIdx, wfm);
+            return Map.of(sourcePort, destPortIdx);
+        }
+
+        // Looks for first matching pair
+        // ignores dynamic nodes and flow variables. Might be added later.
+        return getFirstMatchingSourcePortsForDestPorts(sourceNode, destNode, wfm);
     }
 
     /**
@@ -138,6 +156,32 @@ final class MatchingPortsUtil {
             }
             return -1;
         }
+    }
+
+    /**
+     * Get the source port that best matches a given source port.
+     *
+     * @return Port index of best matching destination port or {@code -1} if there is none
+     */
+    private static Integer getSourcePortIdxFromDestPortIdx(final NodeID sourceNodeId, final NodeID destNodeId,
+        final Integer destPortIdx, final WorkflowManager wfm) {
+        var destNode = wfm.getNodeContainer(destNodeId);
+        var destPortType = destNode.getInPort(destPortIdx).getPortType();
+        var sourceNode = wfm.getNodeContainer(sourceNodeId);
+
+        var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1;
+        for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
+            var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+            if (CoreUtil.arePortTypesCompatible(destPortType, sourcePortType)) {
+                return sourcePortIdx;
+            }
+        }
+
+        if (CoreUtil.arePortTypesCompatible(destPortType, FlowVariablePortObject.TYPE)) {
+            return 0;
+        }
+
+        return -1;
     }
 
     /**

@@ -74,6 +74,8 @@ public final class NodeConnector {
 
     private NodeID m_destNodeId;
 
+    private Integer m_destPortIdx;
+
     private boolean m_track;
 
     NodeConnector(final WorkflowManager wfm) {
@@ -116,13 +118,26 @@ public final class NodeConnector {
     }
 
     /**
-     * Connects an existing updstream node to this node.
+     * Connects an existing upstream node to this node.
      *
      * @param destNodeId
      * @return this connector
      */
     public NodeConnector connectTo(final NodeID destNodeId) {
         m_destNodeId = destNodeId;
+        return this;
+    }
+
+    /**
+     * Connects an existing upstream node to this node from a set port.
+     *
+     * @param destNodeId
+     * @param destPortIdx
+     * @return this connector
+     */
+    public NodeConnector connectTo(final NodeID destNodeId, final Integer destPortIdx) {
+        m_destNodeId = destNodeId;
+        m_destPortIdx = destPortIdx;
         return this;
     }
 
@@ -158,18 +173,22 @@ public final class NodeConnector {
      */
     boolean connect(final NodeID nodeId) {
         boolean allConnectionsCreated = true;
-        if (m_sourceNodeId != null && !connect(m_wfm, m_sourceNodeId, m_sourcePortIdx, nodeId, m_track)) {
+        if (m_sourceNodeId != null
+            && !findMatchingPortAndConnect(m_wfm, m_sourceNodeId, m_sourcePortIdx, nodeId, m_destPortIdx, m_track)) {
             allConnectionsCreated = false;
         }
-        if (m_destNodeId != null && !connect(m_wfm, nodeId, null, m_destNodeId, m_track)) { // NOSONAR
+        if (m_destNodeId != null
+            && !findMatchingPortAndConnect(m_wfm, nodeId, null, m_destNodeId, m_destPortIdx, m_track)) { // NOSONAR
             allConnectionsCreated = false;
         }
         return allConnectionsCreated;
     }
 
-    private static boolean connect(final WorkflowManager wfm, final NodeID sourceNodeId,
-        final Integer sourcePortIdxParam, final NodeID destNodeId, final boolean track) {
-        var matchingPorts = MatchingPortsUtil.getMatchingPorts(sourceNodeId, destNodeId, sourcePortIdxParam, wfm);
+    private static boolean findMatchingPortAndConnect(final WorkflowManager wfm, final NodeID sourceNodeId,
+        final Integer sourcePortIdxParam, final NodeID destNodeId, final Integer destPortIdxParam,
+        final boolean track) {
+        var matchingPorts =
+            MatchingPortsUtil.getMatchingPorts(sourceNodeId, destNodeId, sourcePortIdxParam, destPortIdxParam, wfm);
         for (var entry : matchingPorts.entrySet()) {
             Integer sourcePortIdx = entry.getKey();
             Integer destPortIdx = entry.getValue();

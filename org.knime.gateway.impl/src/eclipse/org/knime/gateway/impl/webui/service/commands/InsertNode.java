@@ -124,13 +124,13 @@ final class InsertNode extends AbstractWorkflowCommand {
             var oldPosition = nodeContainer.getUIInformation().getBounds();
             Translate.performTranslation(wfm, Set.of(nodeContainer), Set.of(),
                 new int[]{position.getX() - oldPosition[0], position.getY() - oldPosition[1]});
-            new NodeConnector(wfm, m_insertedNode).connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode)
+            new NodeConnector(wfm, m_insertedNode).connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort)
                 .trackCreation().connect();
         } else if (nodeFactoryEnt != null) { // New node
             m_insertedNode = new NodeCreator(wfm, nodeFactoryEnt, position) //
                 .centerNode() //
                 .trackCreation() //
-                .connect(connector -> connector.connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode).trackCreation()) //
+                .connect(connector -> connector.connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort).trackCreation()) //
                 .create();
         } else {
             throw new OperationNotAllowedException(
