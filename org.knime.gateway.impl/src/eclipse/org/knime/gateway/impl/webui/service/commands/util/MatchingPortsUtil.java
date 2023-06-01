@@ -177,6 +177,7 @@ final class MatchingPortsUtil {
             }
         }
 
+        // check default flow variable if compatible with destination port
         if (CoreUtil.arePortTypesCompatible(destPortType, FlowVariablePortObject.TYPE)) {
             return 0;
         }
