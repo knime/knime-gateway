@@ -108,7 +108,7 @@ final class InsertNode extends AbstractWorkflowCommand {
         try {
             wfm.removeConnection(connectionContainer);
         } catch (Exception ex) {
-            throw new OperationNotAllowedException("Could not remove connection");
+            throw new OperationNotAllowedException("Could not remove connection. Reason: " + ex.getMessage());
         }
 
         // Move previous node / Create new node
