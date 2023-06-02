@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -187,8 +188,10 @@ public final class NodeConnector {
     private static boolean findMatchingPortAndConnect(final WorkflowManager wfm, final NodeID sourceNodeId,
         final Integer sourcePortIdxParam, final NodeID destNodeId, final Integer destPortIdxParam,
         final boolean track) {
+        var sourceNode = getNodeContainer(sourceNodeId, wfm);
+        var destNode = getNodeContainer(destNodeId, wfm);
         var matchingPorts =
-            MatchingPortsUtil.getMatchingPorts(sourceNodeId, destNodeId, sourcePortIdxParam, destPortIdxParam, wfm);
+            MatchingPortsUtil.getMatchingPorts(sourceNode, destNode, sourcePortIdxParam, destPortIdxParam, wfm);
         for (var entry : matchingPorts.entrySet()) {
             Integer sourcePortIdx = entry.getKey();
             Integer destPortIdx = entry.getValue();
@@ -207,8 +210,15 @@ public final class NodeConnector {
 
     private static void trackConnectionCreation(final WorkflowManager wfm, final NodeID sourceNodeId,
         final NodeID destNodeId) {
-        NodeTimer.GLOBAL_TIMER.addConnectionCreation(wfm.getNodeContainer(sourceNodeId),
-            wfm.getNodeContainer(destNodeId));
+        NodeTimer.GLOBAL_TIMER.addConnectionCreation(getNodeContainer(sourceNodeId, wfm),
+            getNodeContainer(destNodeId, wfm));
+    }
+
+    private static NodeContainer getNodeContainer(final NodeID nodeId, final WorkflowManager wfm) {
+        if (nodeId.equals(wfm.getID())) {
+            return wfm;
+        }
+        return wfm.getNodeContainer(nodeId);
     }
 
     /**

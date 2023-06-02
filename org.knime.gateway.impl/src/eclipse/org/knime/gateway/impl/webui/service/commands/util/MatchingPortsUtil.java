@@ -95,10 +95,8 @@ final class MatchingPortsUtil {
      * @return The patching pairs of ports; the destination port index can be {@code -1} if the port index couldn't be
      *         determined
      */
-    static Map<Integer, Integer> getMatchingPorts(final NodeID sourceNodeId, final NodeID destNodeId,
+    static Map<Integer, Integer> getMatchingPorts(final NodeContainer sourceNode, final NodeContainer destNode,
         final Integer sourcePortIdx, final Integer destPortIdx, final WorkflowManager wfm) {
-        var sourceNode = wfm.getNodeContainer(sourceNodeId);
-        var destNode = wfm.getNodeContainer(destNodeId);
         if (sourcePortIdx != null && destPortIdx != null) { // Check if both ports are compatible
             var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
             var destPortType = destNode.getInPort(destPortIdx).getPortType();
@@ -110,12 +108,12 @@ final class MatchingPortsUtil {
         }
 
         if (sourcePortIdx != null) { // Looks for matching destPort, supports dynamic nodes and flow variables
-            var destPort = getDestPortIdxFromSourcePortIdx(sourceNodeId, sourcePortIdx, destNodeId, wfm);
+            var destPort = getDestPortIdxFromSourcePortIdx(sourceNode, sourcePortIdx, destNode, wfm);
             return Map.of(sourcePortIdx, destPort);
         }
 
         if (destPortIdx != null) { // Looks for matching sourcePort, supports dynamic nodes and flow variables
-            var sourcePort = getSourcePortIdxFromDestPortIdx(sourceNodeId, destNodeId, destPortIdx, wfm);
+            var sourcePort = getSourcePortIdxFromDestPortIdx(sourceNode, destNode, destPortIdx);
             return Map.of(sourcePort, destPortIdx);
         }
 
@@ -130,11 +128,9 @@ final class MatchingPortsUtil {
      *
      * @return Port index of best matching destination port or {@code -1} if there is none
      */
-    private static Integer getDestPortIdxFromSourcePortIdx(final NodeID sourceNodeId, final Integer sourcePortIdx,
-        final NodeID destNodeId, final WorkflowManager wfm) {
-        var sourceNode = wfm.getNodeContainer(sourceNodeId);
+    private static Integer getDestPortIdxFromSourcePortIdx(final NodeContainer sourceNode, final Integer sourcePortIdx,
+        final NodeContainer destNode, final WorkflowManager wfm) {
         var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
-        var destNode = wfm.getNodeContainer(destNodeId);
 
         // First try to find an existing matching port
         var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1;
@@ -147,7 +143,7 @@ final class MatchingPortsUtil {
 
         // Second try to create a matching port for dynamic nodes
         try {
-            return createAndGetDestPortIdx(sourcePortType, destNodeId, wfm).orElseThrow();
+            return createAndGetDestPortIdx(sourcePortType, destNode.getID(), wfm).orElseThrow();
         } catch (IllegalArgumentException | NoSuchElementException e) { // NOSONAR
 
             // Third, consider the default flow variable port if compatible
@@ -163,11 +159,9 @@ final class MatchingPortsUtil {
      *
      * @return Port index of best matching destination port or {@code -1} if there is none
      */
-    private static Integer getSourcePortIdxFromDestPortIdx(final NodeID sourceNodeId, final NodeID destNodeId,
-        final Integer destPortIdx, final WorkflowManager wfm) {
-        var destNode = wfm.getNodeContainer(destNodeId);
+    private static Integer getSourcePortIdxFromDestPortIdx(final NodeContainer sourceNode, final NodeContainer destNode,
+        final Integer destPortIdx) {
         var destPortType = destNode.getInPort(destPortIdx).getPortType();
-        var sourceNode = wfm.getNodeContainer(sourceNodeId);
 
         var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1;
         for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
