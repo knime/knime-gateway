@@ -2411,6 +2411,45 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("source should be original", connection.getSourceNode().toString(), is("root:1"));
     }
 
+    /**
+     * Test Insert Node command inside metanode
+     *
+     * @throws Exception
+     */
+    public void testExecuteInsertNodeMetanode() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflowId = new NodeIDEnt(6);
+
+        var columnAppenderFactory = "org.knime.base.node.preproc.columnappend.ColumnAppenderNodeFactory";
+        var command = buildInsertNodeCommand(new ConnectionIDEnt(new NodeIDEnt(6), 0),
+            builder(XYEntBuilder.class).setX(0).setY(0).build(),
+            builder(NodeFactoryKeyEntBuilder.class).setClassName(columnAppenderFactory).setSettings(null).build(),
+            null);
+
+        // execute command
+        ws().executeWorkflowCommand(wfId, workflowId, command);
+
+        var nodes = ws().getWorkflow(wfId, workflowId, false).getWorkflow().getNodes();
+        var newNode = nodes.entrySet().stream()
+            .filter(entry -> entry.getValue() instanceof NativeNodeEnt && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
+            .findFirst().get().getValue();
+        var connections = ws().getWorkflow(wfId, workflowId, false).getWorkflow().getConnections();
+        var ingoingConnection = connections.get(newNode.getId().toString() + "_1");
+        assertThat(
+            "connection between src and node exists", ingoingConnection.getSourceNode().toString(), is("root:6:3"));
+
+        var outgoingConnection = connections.get("root:6_0");
+        assertThat("connection between node and dest exists", outgoingConnection.getSourceNode().toString(),
+            is(newNode.getId().toString()));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, workflowId);
+
+        connections = ws().getWorkflow(wfId, workflowId, false).getWorkflow().getConnections();
+        var connection = connections.get("root:6_1");
+        assertThat("source should be original", connection.getSourceNode().toString(), is("root:6:3"));
+    }
+
     private static InsertNodeCommandEnt buildInsertNodeCommand(final ConnectionIDEnt connection, final XYEnt position,
         final NodeFactoryKeyEnt nodeFactory, final NodeIDEnt nodeId) {
         return builder(InsertNodeCommandEntBuilder.class)//

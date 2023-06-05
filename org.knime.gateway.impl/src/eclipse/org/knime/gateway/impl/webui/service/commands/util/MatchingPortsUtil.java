@@ -86,8 +86,8 @@ final class MatchingPortsUtil {
      * function when it also provides a source port index to connect from. The case where no source port index is
      * provided (a.k.a. auto-connecting two existing nodes present in the workflow) is not used yet.
      *
-     * @param sourceNodeId source node
-     * @param destNodeId destination node
+     * @param sourceNode source node container
+     * @param destNode destination node
      * @param sourcePortIdx optional source port, if <code>null</code> it will be automatically determined
      * @param destPortIdx optional dest port, if <code>null</code> it will be automatically determined
      * @param wfm workflow manager
