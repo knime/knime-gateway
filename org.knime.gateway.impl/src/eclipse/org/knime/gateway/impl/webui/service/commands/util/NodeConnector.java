@@ -188,8 +188,8 @@ public final class NodeConnector {
     private static boolean findMatchingPortAndConnect(final WorkflowManager wfm, final NodeID sourceNodeId,
         final Integer sourcePortIdxParam, final NodeID destNodeId, final Integer destPortIdxParam,
         final boolean track) {
-        var sourceNode = getNodeContainer(sourceNodeId, wfm);
-        var destNode = getNodeContainer(destNodeId, wfm);
+        var sourceNode = getNodeContainerOrSelf(sourceNodeId, wfm);
+        var destNode = getNodeContainerOrSelf(destNodeId, wfm);
         var matchingPorts =
             MatchingPortsUtil.getMatchingPorts(sourceNode, destNode, sourcePortIdxParam, destPortIdxParam, wfm);
         for (var entry : matchingPorts.entrySet()) {
@@ -210,11 +210,11 @@ public final class NodeConnector {
 
     private static void trackConnectionCreation(final WorkflowManager wfm, final NodeID sourceNodeId,
         final NodeID destNodeId) {
-        NodeTimer.GLOBAL_TIMER.addConnectionCreation(getNodeContainer(sourceNodeId, wfm),
-            getNodeContainer(destNodeId, wfm));
+        NodeTimer.GLOBAL_TIMER.addConnectionCreation(getNodeContainerOrSelf(sourceNodeId, wfm),
+            getNodeContainerOrSelf(destNodeId, wfm));
     }
 
-    private static NodeContainer getNodeContainer(final NodeID nodeId, final WorkflowManager wfm) {
+    private static NodeContainer getNodeContainerOrSelf(final NodeID nodeId, final WorkflowManager wfm) {
         if (nodeId.equals(wfm.getID())) {
             return wfm;
         }
