@@ -96,7 +96,7 @@ public class GatewayImplPlugin implements BundleActivator {
 
         PortViewManager.registerPortViews(ImagePortObject.TYPE, //
             List.of(new PortViewDescriptor("Image", new ImagePortViewFactory())), //
-            List.of(0), //
+            List.of(), //
             List.of(0)//
         );
 
