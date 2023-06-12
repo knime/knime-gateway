@@ -87,20 +87,7 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
 
             @Override
             public Optional<InitialDataService> createInitialDataService() {
-                var settings = new TableViewViewSettings(tableSpec);
-                settings.m_showTitle = false;
-                settings.m_enableGlobalSearch = false;
-                settings.m_enableSortingByHeader = false;
-                settings.m_enableColumnSearch = false;
-                settings.m_compactMode = true;
-                settings.m_subscribeToSelection = false;
-                settings.m_showRowIndices = true;
-                settings.m_publishSelection = false;
-                // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
-                settings.m_enablePagination = true;
-                settings.m_enableRendererSelection = false;
-                settings.m_showRowKeys = false;
-                settings.m_showRowIndices = false;
+                var settings = TableViewViewSettings.getSpecViewSettings(tableSpec);
                 return Optional.of(TableViewUtil.createInitialDataService(() -> settings, emptyTableSupplier, tableId));
             }
 

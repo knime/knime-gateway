@@ -46,6 +46,8 @@
  */
 package org.knime.gateway.impl.node.port;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -77,8 +79,11 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPortObjectInNodeFactory;
+import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public final class TestingUtilities {
 
@@ -169,6 +174,28 @@ public final class TestingUtilities {
                 new LongCell(i), new DoubleCell(i), i % 2 != 0 ? BooleanCell.TRUE : BooleanCell.FALSE,
                 i % 2 != 0 ? new StringCell(Integer.toBinaryString(i)) : new DoubleCell(Double.MAX_VALUE));
         }
+    }
+
+    /**
+     * Check some fields of the view settings supplied to the frontend against a given settings object.
+     * 
+     * @param actual The actual settings
+     * @param expected The expected settings
+     * @throws AssertionError If values do not match.
+     */
+    static void assertViewSettings(JsonNode actual, TableViewViewSettings expected) throws AssertionError {
+        assertThat(actual.get("showTitle").asBoolean(), is(expected.m_showTitle));
+        assertThat(actual.get("publishSelection").asBoolean(), is(expected.m_publishSelection));
+        assertThat(actual.get("subscribeToSelection").asBoolean(), is(expected.m_subscribeToSelection));
+        assertThat(actual.get("enablePagination").asBoolean(), is(expected.m_enablePagination));
+        assertThat(actual.get("compactMode").asBoolean(), is(expected.m_compactMode));
+        assertThat(actual.get("showRowKeys").asBoolean(), is(expected.m_showRowKeys));
+        assertThat(actual.get("showColumnDataType").asBoolean(), is(expected.m_showColumnDataType));
+        assertThat(actual.get("showRowIndices").asBoolean(), is(expected.m_showRowIndices));
+        assertThat(actual.get("enableGlobalSearch").asBoolean(), is(expected.m_enableGlobalSearch));
+        assertThat(actual.get("enableColumnSearch").asBoolean(), is(expected.m_enableColumnSearch));
+        assertThat(actual.get("enableSortingByHeader").asBoolean(), is(expected.m_enableSortingByHeader));
+        assertThat(actual.get("enableRendererSelection").asBoolean(), is(expected.m_enableRendererSelection));
     }
 
     interface Disposable<T> {

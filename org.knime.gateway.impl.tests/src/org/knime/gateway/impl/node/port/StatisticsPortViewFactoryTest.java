@@ -51,13 +51,20 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.statistics.UnivariateStatistics;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.view.table.TableViewViewSettings;
 
+/**
+ * Tests {@link StatisticsPortViewFactory}, i.e. the integration of the statistics port view.
+ */
 @SuppressWarnings("javadoc")
 public class StatisticsPortViewFactoryTest {
 
@@ -99,21 +106,25 @@ public class StatisticsPortViewFactoryTest {
                 new StatisticsPortViewFactory().createPortView(bdt).createInitialDataService().get().getInitialData();
             assertThat(initialData, containsString("{\"result\":{"));
             assertThat(initialData, containsString("\"table\":{"));
+
+            var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+
+            // check set of displayed columns
+            var nStats = UnivariateStatistics.getDefaultStatistics().size();
+            var displayedColumns = mapper.readTree(initialData).get("result").get("table").get("displayedColumns");
+            assertThat(displayedColumns.size(), is(nStats));
+            IntStream.range(0, nStats).forEach(i -> {
+                var actual = displayedColumns.get(i).asText();
+                var expected = UnivariateStatistics.getDefaultStatistics().get(i).getName();
+                assertThat(actual, is(expected));
+            });
+
             assertThat(initialData, containsString("\"settings\":{"));
-            var initialDataTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
-            var settings = initialDataTree.get("result").get("settings");
-            assertThat(settings.get("showTitle").asBoolean(), is(false));
-            assertThat(settings.get("publishSelection").asBoolean(), is(false));
-            assertThat(settings.get("subscribeToSelection").asBoolean(), is(false));
-            assertThat(settings.get("enablePagination").asBoolean(), is(true));
-            assertThat(settings.get("compactMode").asBoolean(), is(true));
-            assertThat(settings.get("showRowKeys").asBoolean(), is(false));
-            assertThat(settings.get("showColumnDataType").asBoolean(), is(true));
-            assertThat(settings.get("showRowIndices").asBoolean(), is(false));
-            assertThat(settings.get("enableGlobalSearch").asBoolean(), is(false));
-            assertThat(settings.get("enableColumnSearch").asBoolean(), is(false));
-            assertThat(settings.get("enableSortingByHeader").asBoolean(), is(false));
-            assertThat(settings.get("enableRendererSelection").asBoolean(), is(false));
+            var settings = mapper.readTree(initialData).get("result").get("settings");
+            TestingUtilities.assertViewSettings( //
+                settings, //
+                TableViewViewSettings.getSpecViewSettings(new DataTableSpec()) //
+            );
         } finally {
             PortContext.removeLastContext();
             port.dispose();
