@@ -74,6 +74,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("javadoc")
 public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
@@ -162,10 +163,37 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertPortView(portView, "root:6", "tableview", "VUE_COMPONENT_LIB");
     }
 
+    /**
+     * Test {@link PortService#getPortView(String, NodeIDEnt, NodeIDEnt, Integer, Integer)} for nodes with flow-variable
+     * output ports
+     *
+     * @throws Exception
+     */
+    public void testGetPortViewForFlowVariableOutPort() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
+        var waitNodeIdx = 2;  // a non-executed wait node (has a flow variable outport)
+        var waitNodeId = new NodeIDEnt(waitNodeIdx);
+
+        var portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 0);
+        assertPortView(portView, "root:"+waitNodeIdx, "FlowVariablePortView", "VUE_COMPONENT_REFERENCE",
+            TestWorkflowCollection.EXECUTION_STATES);
+
+        portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 1);
+        assertPortView(portView, "root:"+waitNodeIdx, "FlowVariablePortView", "VUE_COMPONENT_REFERENCE",
+            TestWorkflowCollection.EXECUTION_STATES);
+    }
+
     private static void assertPortView(final Object portView, final String nodeId, final String expectedResourceId,
         final String expectedResourceType) {
+        assertPortView(portView, nodeId, expectedResourceId, expectedResourceType,
+            TestWorkflowCollection.GENERAL_WEB_UI);
+    }
+
+    private static void assertPortView(final Object portView, final String nodeId, final String expectedResourceId,
+        final String expectedResourceType, TestWorkflowCollection testWorkflow) {
         var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
-        assertThat(portViewJsonNode.get("projectId").textValue(), containsString("general_web_ui"));
+        assertThat(portViewJsonNode.get("projectId").textValue(),
+            containsString(testWorkflow.getName()));
         assertThat(portViewJsonNode.get("workflowId").textValue(), is("root"));
         assertThat(portViewJsonNode.get("nodeId").textValue(), is(nodeId));
         assertThat(portViewJsonNode.get("extensionType").textValue(), is("port"));
