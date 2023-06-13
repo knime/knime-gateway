@@ -292,14 +292,13 @@ public final class AppStateEntityFactory {
 
     private static List<String> getAncestorItemIds(final WorkflowProject.Origin origin,
         final SpaceProviders spaceProviders) {
-        var space =
-            SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()).orElse(null);
-        if (space != null) {
-            return space.getAncestorItemIds(origin.getItemId());
-        }
-        NodeLogger.getLogger(AppStateEntityFactory.class)
-            .error("Ancestor item-ids couldn't be determined for workflow project '" + origin.getItemId() + "'");
-        return List.of();
+        return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId())
+            .map(space -> space.getAncestorItemIds(origin.getItemId())) //
+            .orElseGet(() -> { //
+                NodeLogger.getLogger(AppStateEntityFactory.class).error(
+                    "Ancestor item-ids couldn't be determined for workflow project '" + origin.getItemId() + "'");
+                return List.of();
+            });
     }
 
 }
