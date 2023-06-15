@@ -66,6 +66,7 @@ import org.knime.core.webui.page.Page;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("restriction")
 public final class TablePortViewFactory implements PortViewFactory<BufferedDataTable> {
 
     @Override
@@ -77,7 +78,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         return new PortView() { // NOSONAR
 
             @Override
-            @SuppressWarnings({"rawtypes", "unchecked", "restriction"})
+            @SuppressWarnings({"rawtypes", "unchecked"})
             public Optional<InitialDataService> createInitialDataService() {
                 var settings = new TableViewViewSettings(table.getDataTableSpec());
                 settings.m_showTitle = false;

@@ -68,6 +68,7 @@ import org.knime.core.webui.page.Page;
  */
 @SuppressWarnings("restriction")
 public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> {
+
     @Override
     public PortView createPortView(final DataTableSpec tableSpec) {
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
@@ -86,8 +87,9 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
             }
 
             @Override
+            @SuppressWarnings({"rawtypes", "unchecked"})
             public Optional<InitialDataService> createInitialDataService() {
-                var settings = TableViewViewSettings.getSpecViewSettings(tableSpec);
+                var settings = getSettingsForDataTable(tableSpec);
                 return Optional.of(TableViewUtil.createInitialDataService(() -> settings, emptyTableSupplier, tableId));
             }
 
@@ -96,6 +98,26 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
                 return Optional.empty();
             }
         };
+    }
+
+    /**
+     * Package scope for testing
+     */
+    static TableViewViewSettings getSettingsForDataTable(final DataTableSpec tableSpec) {
+        var settings = new TableViewViewSettings(tableSpec);
+        settings.m_showTitle = false;
+        settings.m_enableGlobalSearch = false;
+        settings.m_enableSortingByHeader = false;
+        settings.m_enableColumnSearch = false;
+        settings.m_compactMode = true;
+        settings.m_subscribeToSelection = false;
+        settings.m_publishSelection = false;
+        // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
+        settings.m_enablePagination = true;
+        settings.m_enableRendererSelection = false;
+        settings.m_showRowKeys = false;
+        settings.m_showRowIndices = false;
+        return settings;
     }
 
 }

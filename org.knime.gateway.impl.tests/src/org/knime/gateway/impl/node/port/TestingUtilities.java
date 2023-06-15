@@ -85,7 +85,11 @@ import org.knime.testing.util.WorkflowManagerUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public final class TestingUtilities {
+/**
+ * Some utility method to help test port views
+ */
+@SuppressWarnings("restriction")
+final class TestingUtilities {
 
     private static final DataTableSpec SPEC =
         new DataTableSpec(new DataColumnSpecCreator("int", IntCell.TYPE).createSpec(),
@@ -177,13 +181,13 @@ public final class TestingUtilities {
     }
 
     /**
-     * Check some fields of the view settings supplied to the frontend against a given settings object.
-     * 
+     * Check some fields of the view settings supplied to the front-end against a given settings object.
+     *
      * @param actual The actual settings
      * @param expected The expected settings
      * @throws AssertionError If values do not match.
      */
-    static void assertViewSettings(JsonNode actual, TableViewViewSettings expected) throws AssertionError {
+    static void assertViewSettings(final JsonNode actual, final TableViewViewSettings expected) throws AssertionError {
         assertThat(actual.get("showTitle").asBoolean(), is(expected.m_showTitle));
         assertThat(actual.get("publishSelection").asBoolean(), is(expected.m_publishSelection));
         assertThat(actual.get("subscribeToSelection").asBoolean(), is(expected.m_subscribeToSelection));

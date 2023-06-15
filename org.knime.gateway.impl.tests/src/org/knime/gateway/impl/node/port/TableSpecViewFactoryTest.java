@@ -68,7 +68,6 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -143,7 +142,7 @@ public class TableSpecViewFactoryTest {
             var jsonNode = mapper.readTree(initialData);
             TestingUtilities.assertViewSettings( //
                 jsonNode.get("result").get("settings"), //
-                TableViewViewSettings.getSpecViewSettings(new DataTableSpec()) //
+                TableSpecViewFactory.getSettingsForDataTable((new DataTableSpec())) //
             );
             var table = jsonNode.get("result").get("table");
             var rows = table.get("rows");

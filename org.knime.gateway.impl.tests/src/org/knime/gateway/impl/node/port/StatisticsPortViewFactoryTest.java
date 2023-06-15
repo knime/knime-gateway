@@ -60,12 +60,11 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.node.view.table.TableViewViewSettings;
 
 /**
  * Tests {@link StatisticsPortViewFactory}, i.e. the integration of the statistics port view.
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings("restriction")
 public class StatisticsPortViewFactoryTest {
 
     /**
@@ -123,7 +122,7 @@ public class StatisticsPortViewFactoryTest {
             var settings = mapper.readTree(initialData).get("result").get("settings");
             TestingUtilities.assertViewSettings( //
                 settings, //
-                TableViewViewSettings.getSpecViewSettings(new DataTableSpec()) //
+                StatisticsPortViewFactory.getSettingsForDataTable((new DataTableSpec())) //
             );
         } finally {
             PortContext.removeLastContext();
