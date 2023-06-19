@@ -1,12 +1,20 @@
 {
   "ops" : [ {
   "op" : "add",
+  "path" : "/nodes/root:12/state/issue",
+  "value" : "Component Input #8: Component does not have input data, execute upstream nodes first"
+}, {
+  "op" : "add",
   "path" : "/nodes/root:12/state/resolutions",
   "value" : [ ]
 }, {
   "op" : "add",
   "path" : "/nodes/root:12/state/warning",
-  "value" : "Component Input NODE_ID_PLACEHOLDER: Component does not have input data, execute upstream nodes first"
+  "value" : "Contains one node with execution failure (Component Input #8)"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:23/state/issue",
+  "value" : "Component Input #8: Component does not have input data, execute upstream nodes first"
 }, {
   "op" : "add",
   "path" : "/nodes/root:23/state/resolutions",
@@ -14,7 +22,11 @@
 }, {
   "op" : "add",
   "path" : "/nodes/root:23/state/warning",
-  "value" : "Component Input NODE_ID_PLACEHOLDER: Component does not have input data, execute upstream nodes first"
+  "value" : "Contains one node with execution failure (Component Input #8)"
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:9/state/issue",
+  "value" : "Component Input #8: Component does not have input data, execute upstream nodes first"
 }, {
   "op" : "add",
   "path" : "/nodes/root:9/state/resolutions",
@@ -22,7 +34,7 @@
 }, {
   "op" : "add",
   "path" : "/nodes/root:9/state/warning",
-  "value" : "Component Input NODE_ID_PLACEHOLDER: Component does not have input data, execute upstream nodes first"
+  "value" : "Contains one node with execution failure (Component Input #8)"
 }, {
   "op" : "remove",
   "path" : "/nodes/root:1/outPorts/0/info"

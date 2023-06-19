@@ -685,6 +685,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "issue" : "Component Input #8: Component does not have input data, execute upstream nodes first",
         "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       }
@@ -1173,6 +1174,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "issue" : "Component Input #185: Component does not have input data, execute upstream nodes first",
         "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       }
@@ -1564,6 +1566,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "issue" : "Component Input #8: Component does not have input data, execute upstream nodes first",
         "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       }
@@ -2047,6 +2050,7 @@
       },
       "state" : {
         "executionState" : "IDLE",
+        "issue" : "Component Input #8: Component does not have input data, execute upstream nodes first",
         "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },

@@ -694,6 +694,7 @@
       "state" : {
         "error" : "PLACEHOLDER_FOR_ERROR_MESSAGE",
         "executionState" : "CONFIGURED",
+        "issue" : "Fail in execution #10: This node fails on each execution.",
         "resolutions" : [ ]
       }
     },

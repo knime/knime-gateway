@@ -29,16 +29,25 @@
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "remove",
+  "path" : "/nodes/root:12/state/issue"
+}, {
+  "op" : "remove",
   "path" : "/nodes/root:12/state/resolutions"
 }, {
   "op" : "remove",
   "path" : "/nodes/root:12/state/warning"
 }, {
   "op" : "remove",
+  "path" : "/nodes/root:23/state/issue"
+}, {
+  "op" : "remove",
   "path" : "/nodes/root:23/state/resolutions"
 }, {
   "op" : "remove",
   "path" : "/nodes/root:23/state/warning"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:9/state/issue"
 }, {
   "op" : "remove",
   "path" : "/nodes/root:9/state/resolutions"
