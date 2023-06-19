@@ -48,6 +48,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
@@ -57,7 +58,6 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
  *
  * @param text
  * @param backgroundColor
- * @param contentType
  * @param textAlign
  * @param defaultFontSize
  * @param styleRanges
@@ -70,9 +70,8 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultWorkflowAnnotationEnt(
-    String text,
+    TypedTextEnt text,
     String backgroundColor,
-    ContentTypeEnum contentType,
     TextAlignEnum textAlign,
     Integer defaultFontSize,
     java.util.List<StyleRangeEnt> styleRanges,
@@ -87,9 +86,6 @@ public record DefaultWorkflowAnnotationEnt(
     public DefaultWorkflowAnnotationEnt {
         if(text == null) {
             throw new IllegalArgumentException("<text> must not be null.");
-        }
-        if(contentType == null) {
-            throw new IllegalArgumentException("<contentType> must not be null.");
         }
         if(bounds == null) {
             throw new IllegalArgumentException("<bounds> must not be null.");
@@ -111,18 +107,13 @@ public record DefaultWorkflowAnnotationEnt(
     }
   
     @Override
-    public String getText() {
+    public TypedTextEnt getText() {
         return text;
     }
     
     @Override
     public String getBackgroundColor() {
         return backgroundColor;
-    }
-    
-    @Override
-    public ContentTypeEnum getContentType() {
-        return contentType;
     }
     
     @Override
@@ -165,11 +156,9 @@ public record DefaultWorkflowAnnotationEnt(
      */
     public static class DefaultWorkflowAnnotationEntBuilder implements WorkflowAnnotationEntBuilder {
 
-        private String m_text;
+        private TypedTextEnt m_text;
 
         private String m_backgroundColor;
-
-        private ContentTypeEnum m_contentType;
 
         private TextAlignEnum m_textAlign;
 
@@ -186,7 +175,7 @@ public record DefaultWorkflowAnnotationEnt(
         private String m_borderColor;
 
         @Override
-        public DefaultWorkflowAnnotationEntBuilder setText(String text) {
+        public DefaultWorkflowAnnotationEntBuilder setText(TypedTextEnt text) {
              if(text == null) {
                  throw new IllegalArgumentException("<text> must not be null.");
              }
@@ -197,15 +186,6 @@ public record DefaultWorkflowAnnotationEnt(
         @Override
         public DefaultWorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
              m_backgroundColor = backgroundColor;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowAnnotationEntBuilder setContentType(ContentTypeEnum contentType) {
-             if(contentType == null) {
-                 throw new IllegalArgumentException("<contentType> must not be null.");
-             }
-             m_contentType = contentType;
              return this;
         }
 
@@ -268,7 +248,6 @@ public record DefaultWorkflowAnnotationEnt(
             return new DefaultWorkflowAnnotationEnt(
                 immutable(m_text),
                 immutable(m_backgroundColor),
-                immutable(m_contentType),
                 immutable(m_textAlign),
                 immutable(m_defaultFontSize),
                 immutable(m_styleRanges),

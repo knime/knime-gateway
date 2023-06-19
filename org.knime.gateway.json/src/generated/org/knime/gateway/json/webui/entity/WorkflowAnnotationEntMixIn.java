@@ -46,6 +46,7 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 
 
@@ -74,15 +75,11 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
 
     @Override
     @JsonProperty("text")
-    public String getText();
+    public TypedTextEnt getText();
     
     @Override
     @JsonProperty("backgroundColor")
     public String getBackgroundColor();
-    
-    @Override
-    @JsonProperty("contentType")
-    public ContentTypeEnum getContentType();
     
     @Override
     @JsonProperty("textAlign")
@@ -127,15 +124,11 @@ public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
     
         @Override
         @JsonProperty("text")
-        public WorkflowAnnotationEntMixInBuilder setText(final String text);
+        public WorkflowAnnotationEntMixInBuilder setText(final TypedTextEnt text);
         
         @Override
         @JsonProperty("backgroundColor")
         public WorkflowAnnotationEntMixInBuilder setBackgroundColor(final String backgroundColor);
-        
-        @Override
-        @JsonProperty("contentType")
-        public WorkflowAnnotationEntMixInBuilder setContentType(final ContentTypeEnum contentType);
         
         @Override
         @JsonProperty("textAlign")

@@ -46,125 +46,128 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.AnnotationEnt;
+import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 
 /**
- * A text annotation.
+ * Updates a projects metadata. At least one property must be set.
  *
- * @param text
- * @param backgroundColor
- * @param textAlign
- * @param defaultFontSize
- * @param styleRanges
+ * @param kind
+ * @param description
+ * @param tags
+ * @param links
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultAnnotationEnt(
-    TypedTextEnt text,
-    String backgroundColor,
-    TextAlignEnum textAlign,
-    Integer defaultFontSize,
-    java.util.List<StyleRangeEnt> styleRanges) implements AnnotationEnt {
+public record DefaultUpdateProjectMetadataCommandEnt(
+    KindEnum kind,
+    TypedTextEnt description,
+    java.util.List<String> tags,
+    java.util.List<LinkEnt> links) implements UpdateProjectMetadataCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultAnnotationEnt {
-        if(text == null) {
-            throw new IllegalArgumentException("<text> must not be null.");
+    public DefaultUpdateProjectMetadataCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(description == null) {
+            throw new IllegalArgumentException("<description> must not be null.");
+        }
+        if(tags == null) {
+            throw new IllegalArgumentException("<tags> must not be null.");
+        }
+        if(links == null) {
+            throw new IllegalArgumentException("<links> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "Annotation";
+        return "UpdateProjectMetadataCommand";
     }
   
     @Override
-    public TypedTextEnt getText() {
-        return text;
+    public KindEnum getKind() {
+        return kind;
     }
     
     @Override
-    public String getBackgroundColor() {
-        return backgroundColor;
+    public TypedTextEnt getDescription() {
+        return description;
     }
     
     @Override
-    public TextAlignEnum getTextAlign() {
-        return textAlign;
+    public java.util.List<String> getTags() {
+        return tags;
     }
     
     @Override
-    public Integer getDefaultFontSize() {
-        return defaultFontSize;
-    }
-    
-    @Override
-    public java.util.List<StyleRangeEnt> getStyleRanges() {
-        return styleRanges;
+    public java.util.List<LinkEnt> getLinks() {
+        return links;
     }
     
     /**
-     * A builder for {@link DefaultAnnotationEnt}.
+     * A builder for {@link DefaultUpdateProjectMetadataCommandEnt}.
      */
-    public static class DefaultAnnotationEntBuilder implements AnnotationEntBuilder {
+    public static class DefaultUpdateProjectMetadataCommandEntBuilder implements UpdateProjectMetadataCommandEntBuilder {
 
-        private TypedTextEnt m_text;
+        private KindEnum m_kind;
 
-        private String m_backgroundColor;
+        private TypedTextEnt m_description;
 
-        private TextAlignEnum m_textAlign;
+        private java.util.List<String> m_tags = new java.util.ArrayList<>();
 
-        private Integer m_defaultFontSize;
-
-        private java.util.List<StyleRangeEnt> m_styleRanges;
+        private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
 
         @Override
-        public DefaultAnnotationEntBuilder setText(TypedTextEnt text) {
-             if(text == null) {
-                 throw new IllegalArgumentException("<text> must not be null.");
+        public DefaultUpdateProjectMetadataCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
              }
-             m_text = text;
+             m_kind = kind;
              return this;
         }
 
         @Override
-        public DefaultAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
-             m_backgroundColor = backgroundColor;
+        public DefaultUpdateProjectMetadataCommandEntBuilder setDescription(TypedTextEnt description) {
+             if(description == null) {
+                 throw new IllegalArgumentException("<description> must not be null.");
+             }
+             m_description = description;
              return this;
         }
 
         @Override
-        public DefaultAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
-             m_textAlign = textAlign;
+        public DefaultUpdateProjectMetadataCommandEntBuilder setTags(java.util.List<String> tags) {
+             if(tags == null) {
+                 throw new IllegalArgumentException("<tags> must not be null.");
+             }
+             m_tags = tags;
              return this;
         }
 
         @Override
-        public DefaultAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize) {
-             m_defaultFontSize = defaultFontSize;
+        public DefaultUpdateProjectMetadataCommandEntBuilder setLinks(java.util.List<LinkEnt> links) {
+             if(links == null) {
+                 throw new IllegalArgumentException("<links> must not be null.");
+             }
+             m_links = links;
              return this;
         }
 
         @Override
-        public DefaultAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
-             m_styleRanges = styleRanges;
-             return this;
-        }
-
-        @Override
-        public DefaultAnnotationEnt build() {
-            return new DefaultAnnotationEnt(
-                immutable(m_text),
-                immutable(m_backgroundColor),
-                immutable(m_textAlign),
-                immutable(m_defaultFontSize),
-                immutable(m_styleRanges));
+        public DefaultUpdateProjectMetadataCommandEnt build() {
+            return new DefaultUpdateProjectMetadataCommandEnt(
+                immutable(m_kind),
+                immutable(m_description),
+                immutable(m_tags),
+                immutable(m_links));
         }
     
     }

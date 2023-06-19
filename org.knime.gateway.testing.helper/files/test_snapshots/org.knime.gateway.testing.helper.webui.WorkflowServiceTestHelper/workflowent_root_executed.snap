@@ -2095,6 +2095,11 @@
       "type" : "Visualizer"
     }
   },
+  "projectMetadata" : {
+    "contentType" : "text/plain",
+    "description" : "",
+    "lastEdit" : "DATE_TIME_PLACEHOLDER"
+  },
   "workflowAnnotations" : [ {
     "backgroundColor" : "#FFFFFF",
     "borderColor" : "#FFD800",

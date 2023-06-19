@@ -48,13 +48,13 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.time.OffsetDateTime;
 import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 
 /**
  * The metadata for a workflow project, i.e. for the root-workflow.
  *
- * @param title
  * @param description
  * @param tags
  * @param links
@@ -64,8 +64,7 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultProjectMetadataEnt(
-    String title,
-    String description,
+    TypedTextEnt description,
     java.util.List<String> tags,
     java.util.List<LinkEnt> links,
     OffsetDateTime lastEdit) implements ProjectMetadataEnt {
@@ -74,6 +73,15 @@ public record DefaultProjectMetadataEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultProjectMetadataEnt {
+        if(description == null) {
+            throw new IllegalArgumentException("<description> must not be null.");
+        }
+        if(tags == null) {
+            throw new IllegalArgumentException("<tags> must not be null.");
+        }
+        if(links == null) {
+            throw new IllegalArgumentException("<links> must not be null.");
+        }
     }
 
     @Override
@@ -82,12 +90,7 @@ public record DefaultProjectMetadataEnt(
     }
   
     @Override
-    public String getTitle() {
-        return title;
-    }
-    
-    @Override
-    public String getDescription() {
+    public TypedTextEnt getDescription() {
         return description;
     }
     
@@ -111,36 +114,37 @@ public record DefaultProjectMetadataEnt(
      */
     public static class DefaultProjectMetadataEntBuilder implements ProjectMetadataEntBuilder {
 
-        private String m_title;
+        private TypedTextEnt m_description;
 
-        private String m_description;
+        private java.util.List<String> m_tags = new java.util.ArrayList<>();
 
-        private java.util.List<String> m_tags;
-
-        private java.util.List<LinkEnt> m_links;
+        private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
 
         private OffsetDateTime m_lastEdit;
 
         @Override
-        public DefaultProjectMetadataEntBuilder setTitle(String title) {
-             m_title = title;
-             return this;
-        }
-
-        @Override
-        public DefaultProjectMetadataEntBuilder setDescription(String description) {
+        public DefaultProjectMetadataEntBuilder setDescription(TypedTextEnt description) {
+             if(description == null) {
+                 throw new IllegalArgumentException("<description> must not be null.");
+             }
              m_description = description;
              return this;
         }
 
         @Override
         public DefaultProjectMetadataEntBuilder setTags(java.util.List<String> tags) {
+             if(tags == null) {
+                 throw new IllegalArgumentException("<tags> must not be null.");
+             }
              m_tags = tags;
              return this;
         }
 
         @Override
         public DefaultProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links) {
+             if(links == null) {
+                 throw new IllegalArgumentException("<links> must not be null.");
+             }
              m_links = links;
              return this;
         }
@@ -154,7 +158,6 @@ public record DefaultProjectMetadataEnt(
         @Override
         public DefaultProjectMetadataEnt build() {
             return new DefaultProjectMetadataEnt(
-                immutable(m_title),
                 immutable(m_description),
                 immutable(m_tags),
                 immutable(m_links),

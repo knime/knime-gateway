@@ -42,87 +42,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.entity;
-
-import static org.knime.gateway.api.util.EntityUtil.immutable;
+package org.knime.gateway.json.webui.entity;
 
 
-import org.knime.gateway.api.webui.entity.PortViewMetaEnt;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTypedTextEnt.DefaultTypedTextEntBuilder;
 
 /**
- * Identifies a port view
- *
- * @param label
- * @param state
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultPortViewMetaEnt(
-    String label,
-    StateEnum state) implements PortViewMetaEnt {
+
+@JsonDeserialize(builder=DefaultTypedTextEntBuilder.class)
+@JsonSerialize(as=TypedTextEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface TypedTextEntMixIn extends TypedTextEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("value")
+    public String getValue();
+    
+    @Override
+    @JsonProperty("contentType")
+    public ContentTypeEnum getContentType();
+    
 
     /**
-     * Validation for required parameters not being {@code null}.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public DefaultPortViewMetaEnt {
-        if(label == null) {
-            throw new IllegalArgumentException("<label> must not be null.");
-        }
-        if(state == null) {
-            throw new IllegalArgumentException("<state> must not be null.");
-        }
-    }
 
-    @Override
-    public String getTypeID() {
-        return "PortViewMeta";
-    }
-  
-    @Override
-    public String getLabel() {
-        return label;
-    }
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface TypedTextEntMixInBuilder extends TypedTextEntBuilder {
     
-    @Override
-    public StateEnum getState() {
-        return state;
-    }
+        @Override
+        public TypedTextEntMixIn build();
     
-    /**
-     * A builder for {@link DefaultPortViewMetaEnt}.
-     */
-    public static class DefaultPortViewMetaEntBuilder implements PortViewMetaEntBuilder {
-
-        private String m_label;
-
-        private StateEnum m_state;
-
         @Override
-        public DefaultPortViewMetaEntBuilder setLabel(String label) {
-             if(label == null) {
-                 throw new IllegalArgumentException("<label> must not be null.");
-             }
-             m_label = label;
-             return this;
-        }
-
+        @JsonProperty("value")
+        public TypedTextEntMixInBuilder setValue(final String value);
+        
         @Override
-        public DefaultPortViewMetaEntBuilder setState(StateEnum state) {
-             if(state == null) {
-                 throw new IllegalArgumentException("<state> must not be null.");
-             }
-             m_state = state;
-             return this;
-        }
-
-        @Override
-        public DefaultPortViewMetaEnt build() {
-            return new DefaultPortViewMetaEnt(
-                immutable(m_label),
-                immutable(m_state));
-        }
-    
+        @JsonProperty("contentType")
+        public TypedTextEntMixInBuilder setContentType(final ContentTypeEnum contentType);
+        
     }
+
 
 }
+

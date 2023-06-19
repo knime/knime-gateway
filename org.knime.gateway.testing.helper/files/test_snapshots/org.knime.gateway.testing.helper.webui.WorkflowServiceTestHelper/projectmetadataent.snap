@@ -1,10 +1,10 @@
 {
-  "description" : "The workflow description\n",
-  "lastEdit" : "2020-10-20T09:42:57Z",
+  "contentType" : "text/plain",
+  "description" : "Workflow with metadata\n\nThe workflow description\n",
+  "lastEdit" : "DATE_TIME_PLACEHOLDER",
   "links" : [ {
     "text" : "BLUB",
     "url" : "http://blub.com"
   } ],
-  "tags" : [ "tag1", "tag2" ],
-  "title" : "Workflow with metadata"
+  "tags" : [ "tag1", "tag2" ]
 }

@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.entity;
 import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 import java.util.function.BiConsumer;
 
@@ -97,7 +98,6 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
       var e = (WorkflowAnnotationEnt)other;
       valueConsumer.accept("text", Pair.create(getText(), e.getText()));
       valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
-      valueConsumer.accept("contentType", Pair.create(getContentType(), e.getContentType()));
       valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
       valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
       valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
@@ -118,7 +118,7 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
          * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowAnnotationEntBuilder setText(String text);
+        WorkflowAnnotationEntBuilder setText(TypedTextEnt text);
         
         /**
          * The background color. If not given, the default background color needs to be used (which is usually opaque).
@@ -127,14 +127,6 @@ public interface WorkflowAnnotationEnt extends GatewayEntity, AnnotationEnt {
          * @return this entity builder for chaining
          */
         WorkflowAnnotationEntBuilder setBackgroundColor(String backgroundColor);
-        
-        /**
-         * The content type of the annotation.
-         * 
-         * @param contentType the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        WorkflowAnnotationEntBuilder setContentType(ContentTypeEnum contentType);
         
         /**
    		 * Set textAlign

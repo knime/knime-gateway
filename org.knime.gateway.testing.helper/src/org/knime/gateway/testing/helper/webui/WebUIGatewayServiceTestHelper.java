@@ -66,6 +66,7 @@ import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
@@ -203,6 +204,12 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
          */
         objToString.addException(SpaceItemReferenceEnt.class, "itemId",
             (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_ITEM_ID"));
+
+        /**
+         * Value keeps increasing for legacy workflow metadata due to AP-20406 changes
+         */
+        objToString.addException(ProjectMetadataEnt.class, "lastEdit",
+            (v, gen, e) -> gen.writeString("DATE_TIME_PLACEHOLDER"));
 
         try {
             return new ResultChecker(objToString, CoreUtil.resolveToFile("/files/test_snapshots", testClass));

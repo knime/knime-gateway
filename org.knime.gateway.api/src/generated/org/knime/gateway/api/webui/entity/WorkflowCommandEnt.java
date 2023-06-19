@@ -102,7 +102,9 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     REORDER_WORKFLOW_ANNOTATIONS("reorder_workflow_annotations"),
     
-    ADD_WORKFLOW_ANNOTATION("add_workflow_annotation");
+    ADD_WORKFLOW_ANNOTATION("add_workflow_annotation"),
+    
+    UPDATE_PROJECT_METADATA("update_project_metadata");
 
     private String value;
 

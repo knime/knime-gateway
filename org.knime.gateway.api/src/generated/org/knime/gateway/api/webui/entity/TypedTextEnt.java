@@ -44,9 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AnnotationEnt;
-import org.knime.gateway.api.webui.entity.StyleRangeEnt;
-import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 import java.util.function.BiConsumer;
 
@@ -58,70 +55,76 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The annotation to a node.
+ * A text of a certain content type.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeAnnotationEnt extends GatewayEntity, AnnotationEnt {
+public interface TypedTextEnt extends GatewayEntity {
 
+  /**
+   * The content type of the text.
+   */
+  public enum ContentTypeEnum {
+    PLAIN("text/plain"),
+    
+    HTML("text/html");
+
+    private String value;
+
+    ContentTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * The actual text.
+   * @return value , never <code>null</code>
+   **/
+  public String getValue();
+
+  /**
+   * The content type of the text.
+   * @return contentType , never <code>null</code>
+   **/
+  public ContentTypeEnum getContentType();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (NodeAnnotationEnt)other;
-      valueConsumer.accept("text", Pair.create(getText(), e.getText()));
-      valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
-      valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
-      valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
-      valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
+      var e = (TypedTextEnt)other;
+      valueConsumer.accept("value", Pair.create(getValue(), e.getValue()));
+      valueConsumer.accept("contentType", Pair.create(getContentType(), e.getContentType()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface NodeAnnotationEntBuilder extends GatewayEntityBuilder<NodeAnnotationEnt> {
+    public interface TypedTextEntBuilder extends GatewayEntityBuilder<TypedTextEnt> {
 
         /**
-   		 * Set text
+         * The actual text.
          * 
-         * @param text the property value, NOT <code>null</code>! 
+         * @param value the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeAnnotationEntBuilder setText(TypedTextEnt text);
+        TypedTextEntBuilder setValue(String value);
         
         /**
-         * The background color. If not given, the default background color needs to be used (which is usually opaque).
+         * The content type of the text.
          * 
-         * @param backgroundColor the property value,  
+         * @param contentType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeAnnotationEntBuilder setBackgroundColor(String backgroundColor);
-        
-        /**
-   		 * Set textAlign
-         * 
-         * @param textAlign the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign);
-        
-        /**
-         * The default font size (in pt) for parts of the text where no style range is defined.
-         * 
-         * @param defaultFontSize the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize);
-        
-        /**
-         * Defines ranges of different styles within the annotation.
-         * 
-         * @param styleRanges the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges);
+        TypedTextEntBuilder setContentType(ContentTypeEnum contentType);
         
         
         /**
@@ -131,7 +134,7 @@ public interface NodeAnnotationEnt extends GatewayEntity, AnnotationEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeAnnotationEnt build();
+        TypedTextEnt build();
     
     }
 

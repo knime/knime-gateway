@@ -60,6 +60,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
@@ -131,6 +132,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultReorderWorkflowAnnotationsCommandEnt.class, name = "reorder_workflow_annotations")
 ,
   @Type(value = DefaultAddWorkflowAnnotationCommandEnt.class, name = "add_workflow_annotation")
+,
+  @Type(value = DefaultUpdateProjectMetadataCommandEnt.class, name = "update_project_metadata")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -197,6 +200,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultReorderWorkflowAnnotationsCommandEnt.class, name = "reorder_workflow_annotations")
 ,
   @Type(value = DefaultAddWorkflowAnnotationCommandEnt.class, name = "add_workflow_annotation")
+,
+  @Type(value = DefaultUpdateProjectMetadataCommandEnt.class, name = "update_project_metadata")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

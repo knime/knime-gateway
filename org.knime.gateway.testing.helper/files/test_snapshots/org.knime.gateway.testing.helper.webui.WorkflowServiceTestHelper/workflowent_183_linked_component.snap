@@ -8,7 +8,7 @@
       "typeId" : "org.knime.core.node.BufferedDataTable",
       "typeName" : "Table"
     }, {
-      "optional" : true,
+      "optional" : false,
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
       "typeName" : "Flow Variable"
     } ],

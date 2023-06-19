@@ -44,95 +44,104 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
+
+import org.knime.gateway.api.entity.GatewayEntity;
+
 /**
- * Identifies a port view
- *
+ * Updates a projects metadata. At least one property must be set.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface PortViewMetaEnt extends GatewayEntity {
-
-  /**
-   * The earliest point the node execution lifecycle for which this view is available
-   */
-  public enum StateEnum {
-    CONFIGURED("configured"),
-
-    EXECUTED("executed");
-
-    private String value;
-
-    StateEnum(final String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * The display label of the port view
-   * @return label , never <code>null</code>
+   * Get description
+   * @return description , never <code>null</code>
    **/
-  public String getLabel();
+  public TypedTextEnt getDescription();
 
   /**
-   * The earliest point the node execution lifecycle for which this view is available
-   * @return state , never <code>null</code>
+   * A collection of tags the user chose to describe the workflow
+   * @return tags , never <code>null</code>
    **/
-  public StateEnum getState();
+  public java.util.List<String> getTags();
+
+  /**
+   * A collection of URLs attached to the workflow
+   * @return links , never <code>null</code>
+   **/
+  public java.util.List<LinkEnt> getLinks();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (PortViewMetaEnt)other;
-      valueConsumer.accept("label", Pair.create(getLabel(), e.getLabel()));
-      valueConsumer.accept("state", Pair.create(getState(), e.getState()));
+      var e = (UpdateProjectMetadataCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
+      valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface PortViewMetaEntBuilder extends GatewayEntityBuilder<PortViewMetaEnt> {
+    public interface UpdateProjectMetadataCommandEntBuilder extends GatewayEntityBuilder<UpdateProjectMetadataCommandEnt> {
 
         /**
-         * The display label of the port view
-         *
-         * @param label the property value, NOT <code>null</code>!
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        PortViewMetaEntBuilder setLabel(String label);
-
+        UpdateProjectMetadataCommandEntBuilder setKind(KindEnum kind);
+        
         /**
-         * The earliest point the node execution lifecycle for which this view is available
-         *
-         * @param state the property value, NOT <code>null</code>!
+   		 * Set description
+         * 
+         * @param description the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        PortViewMetaEntBuilder setState(StateEnum state);
-
-
+        UpdateProjectMetadataCommandEntBuilder setDescription(TypedTextEnt description);
+        
+        /**
+         * A collection of tags the user chose to describe the workflow
+         * 
+         * @param tags the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        UpdateProjectMetadataCommandEntBuilder setTags(java.util.List<String> tags);
+        
+        /**
+         * A collection of URLs attached to the workflow
+         * 
+         * @param links the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        UpdateProjectMetadataCommandEntBuilder setLinks(java.util.List<LinkEnt> links);
+        
+        
         /**
         * Creates the entity from the builder.
-        *
+        * 
         * @return the entity
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        PortViewMetaEnt build();
-
+        UpdateProjectMetadataCommandEnt build();
+    
     }
 
 }

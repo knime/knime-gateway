@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 import java.util.function.BiConsumer;
 
@@ -62,27 +63,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AnnotationEnt extends GatewayEntity {
-
-  /**
-   * The content type of the annotation.
-   */
-  public enum ContentTypeEnum {
-    PLAIN("text/plain"),
-    
-    HTML("text/html");
-
-    private String value;
-
-    ContentTypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
 
   /**
    * Gets or Sets textAlign
@@ -112,19 +92,13 @@ public interface AnnotationEnt extends GatewayEntity {
    * Get text
    * @return text , never <code>null</code>
    **/
-  public String getText();
+  public TypedTextEnt getText();
 
   /**
    * The background color. If not given, the default background color needs to be used (which is usually opaque).
    * @return backgroundColor 
    **/
   public String getBackgroundColor();
-
-  /**
-   * The content type of the annotation.
-   * @return contentType , never <code>null</code>
-   **/
-  public ContentTypeEnum getContentType();
 
   /**
    * Get textAlign
@@ -151,7 +125,6 @@ public interface AnnotationEnt extends GatewayEntity {
       var e = (AnnotationEnt)other;
       valueConsumer.accept("text", Pair.create(getText(), e.getText()));
       valueConsumer.accept("backgroundColor", Pair.create(getBackgroundColor(), e.getBackgroundColor()));
-      valueConsumer.accept("contentType", Pair.create(getContentType(), e.getContentType()));
       valueConsumer.accept("textAlign", Pair.create(getTextAlign(), e.getTextAlign()));
       valueConsumer.accept("defaultFontSize", Pair.create(getDefaultFontSize(), e.getDefaultFontSize()));
       valueConsumer.accept("styleRanges", Pair.create(getStyleRanges(), e.getStyleRanges()));
@@ -168,7 +141,7 @@ public interface AnnotationEnt extends GatewayEntity {
          * @param text the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AnnotationEntBuilder setText(String text);
+        AnnotationEntBuilder setText(TypedTextEnt text);
         
         /**
          * The background color. If not given, the default background color needs to be used (which is usually opaque).
@@ -177,14 +150,6 @@ public interface AnnotationEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AnnotationEntBuilder setBackgroundColor(String backgroundColor);
-        
-        /**
-         * The content type of the annotation.
-         * 
-         * @param contentType the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        AnnotationEntBuilder setContentType(ContentTypeEnum contentType);
         
         /**
    		 * Set textAlign

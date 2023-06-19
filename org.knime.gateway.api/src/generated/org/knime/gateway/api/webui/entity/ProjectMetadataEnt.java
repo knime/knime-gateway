@@ -46,6 +46,7 @@ package org.knime.gateway.api.webui.entity;
 
 import java.time.OffsetDateTime;
 import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 import java.util.function.BiConsumer;
 
@@ -66,26 +67,20 @@ public interface ProjectMetadataEnt extends GatewayEntity {
 
 
   /**
-   * Single-line description of the workflow
-   * @return title 
+   * Get description
+   * @return description , never <code>null</code>
    **/
-  public String getTitle();
-
-  /**
-   * A detailed description of the project workflow.
-   * @return description 
-   **/
-  public String getDescription();
+  public TypedTextEnt getDescription();
 
   /**
    * A collection of tags the user chose to describe the workflow
-   * @return tags 
+   * @return tags , never <code>null</code>
    **/
   public java.util.List<String> getTags();
 
   /**
    * A collection of URLs attached to the workflow
-   * @return links 
+   * @return links , never <code>null</code>
    **/
   public java.util.List<LinkEnt> getLinks();
 
@@ -100,7 +95,6 @@ public interface ProjectMetadataEnt extends GatewayEntity {
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ProjectMetadataEnt)other;
-      valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
       valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
@@ -113,25 +107,17 @@ public interface ProjectMetadataEnt extends GatewayEntity {
     public interface ProjectMetadataEntBuilder extends GatewayEntityBuilder<ProjectMetadataEnt> {
 
         /**
-         * Single-line description of the workflow
+   		 * Set description
          * 
-         * @param title the property value,  
+         * @param description the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setTitle(String title);
-        
-        /**
-         * A detailed description of the project workflow.
-         * 
-         * @param description the property value,  
-         * @return this entity builder for chaining
-         */
-        ProjectMetadataEntBuilder setDescription(String description);
+        ProjectMetadataEntBuilder setDescription(TypedTextEnt description);
         
         /**
          * A collection of tags the user chose to describe the workflow
          * 
-         * @param tags the property value,  
+         * @param tags the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ProjectMetadataEntBuilder setTags(java.util.List<String> tags);
@@ -139,7 +125,7 @@ public interface ProjectMetadataEnt extends GatewayEntity {
         /**
          * A collection of URLs attached to the workflow
          * 
-         * @param links the property value,  
+         * @param links the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);

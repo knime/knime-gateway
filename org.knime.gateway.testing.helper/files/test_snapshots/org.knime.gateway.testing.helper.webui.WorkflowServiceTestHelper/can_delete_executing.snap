@@ -409,5 +409,10 @@
       }
     }
   },
+  "projectMetadata" : {
+    "contentType" : "text/plain",
+    "description" : "",
+    "lastEdit" : "DATE_TIME_PLACEHOLDER"
+  },
   "workflowAnnotations" : [ ]
 }

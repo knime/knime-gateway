@@ -44,15 +44,18 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
-
-import org.knime.gateway.api.webui.entity.PortViewMetaEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPortViewMetaEnt.DefaultPortViewMetaEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt.DefaultUpdateProjectMetadataCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,23 +63,31 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultPortViewMetaEntBuilder.class)
-@JsonSerialize(as=PortViewMetaEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface PortViewMetaEntMixIn extends PortViewMetaEnt {
+@JsonDeserialize(builder=DefaultUpdateProjectMetadataCommandEntBuilder.class)
+@JsonSerialize(as=UpdateProjectMetadataCommandEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface UpdateProjectMetadataCommandEntMixIn extends UpdateProjectMetadataCommandEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("label")
-    public String getLabel();
-
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
     @Override
-    @JsonProperty("state")
-    public StateEnum getState();
-
+    @JsonProperty("description")
+    public TypedTextEnt getDescription();
+    
+    @Override
+    @JsonProperty("tags")
+    public java.util.List<String> getTags();
+    
+    @Override
+    @JsonProperty("links")
+    public java.util.List<LinkEnt> getLinks();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -85,19 +96,27 @@ public interface PortViewMetaEntMixIn extends PortViewMetaEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface PortViewMetaEntMixInBuilder extends PortViewMetaEntBuilder {
-
+    public static interface UpdateProjectMetadataCommandEntMixInBuilder extends UpdateProjectMetadataCommandEntBuilder {
+    
         @Override
-        public PortViewMetaEntMixIn build();
-
+        public UpdateProjectMetadataCommandEntMixIn build();
+    
         @Override
-        @JsonProperty("label")
-        public PortViewMetaEntMixInBuilder setLabel(final String label);
-
+        @JsonProperty("kind")
+        public UpdateProjectMetadataCommandEntMixInBuilder setKind(final KindEnum kind);
+        
         @Override
-        @JsonProperty("state")
-        public PortViewMetaEntMixInBuilder setState(final StateEnum state);
-
+        @JsonProperty("description")
+        public UpdateProjectMetadataCommandEntMixInBuilder setDescription(final TypedTextEnt description);
+        
+        @Override
+        @JsonProperty("tags")
+        public UpdateProjectMetadataCommandEntMixInBuilder setTags(final java.util.List<String> tags);
+        
+        @Override
+        @JsonProperty("links")
+        public UpdateProjectMetadataCommandEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
+        
     }
 
 

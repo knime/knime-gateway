@@ -46,125 +46,81 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
-import org.knime.gateway.api.webui.entity.AnnotationEnt;
-
 /**
- * A text annotation.
+ * A text of a certain content type.
  *
- * @param text
- * @param backgroundColor
- * @param textAlign
- * @param defaultFontSize
- * @param styleRanges
+ * @param value
+ * @param contentType
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultAnnotationEnt(
-    TypedTextEnt text,
-    String backgroundColor,
-    TextAlignEnum textAlign,
-    Integer defaultFontSize,
-    java.util.List<StyleRangeEnt> styleRanges) implements AnnotationEnt {
+public record DefaultTypedTextEnt(
+    String value,
+    ContentTypeEnum contentType) implements TypedTextEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultAnnotationEnt {
-        if(text == null) {
-            throw new IllegalArgumentException("<text> must not be null.");
+    public DefaultTypedTextEnt {
+        if(value == null) {
+            throw new IllegalArgumentException("<value> must not be null.");
+        }
+        if(contentType == null) {
+            throw new IllegalArgumentException("<contentType> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "Annotation";
+        return "TypedText";
     }
   
     @Override
-    public TypedTextEnt getText() {
-        return text;
+    public String getValue() {
+        return value;
     }
     
     @Override
-    public String getBackgroundColor() {
-        return backgroundColor;
-    }
-    
-    @Override
-    public TextAlignEnum getTextAlign() {
-        return textAlign;
-    }
-    
-    @Override
-    public Integer getDefaultFontSize() {
-        return defaultFontSize;
-    }
-    
-    @Override
-    public java.util.List<StyleRangeEnt> getStyleRanges() {
-        return styleRanges;
+    public ContentTypeEnum getContentType() {
+        return contentType;
     }
     
     /**
-     * A builder for {@link DefaultAnnotationEnt}.
+     * A builder for {@link DefaultTypedTextEnt}.
      */
-    public static class DefaultAnnotationEntBuilder implements AnnotationEntBuilder {
+    public static class DefaultTypedTextEntBuilder implements TypedTextEntBuilder {
 
-        private TypedTextEnt m_text;
+        private String m_value;
 
-        private String m_backgroundColor;
-
-        private TextAlignEnum m_textAlign;
-
-        private Integer m_defaultFontSize;
-
-        private java.util.List<StyleRangeEnt> m_styleRanges;
+        private ContentTypeEnum m_contentType;
 
         @Override
-        public DefaultAnnotationEntBuilder setText(TypedTextEnt text) {
-             if(text == null) {
-                 throw new IllegalArgumentException("<text> must not be null.");
+        public DefaultTypedTextEntBuilder setValue(String value) {
+             if(value == null) {
+                 throw new IllegalArgumentException("<value> must not be null.");
              }
-             m_text = text;
+             m_value = value;
              return this;
         }
 
         @Override
-        public DefaultAnnotationEntBuilder setBackgroundColor(String backgroundColor) {
-             m_backgroundColor = backgroundColor;
+        public DefaultTypedTextEntBuilder setContentType(ContentTypeEnum contentType) {
+             if(contentType == null) {
+                 throw new IllegalArgumentException("<contentType> must not be null.");
+             }
+             m_contentType = contentType;
              return this;
         }
 
         @Override
-        public DefaultAnnotationEntBuilder setTextAlign(TextAlignEnum textAlign) {
-             m_textAlign = textAlign;
-             return this;
-        }
-
-        @Override
-        public DefaultAnnotationEntBuilder setDefaultFontSize(Integer defaultFontSize) {
-             m_defaultFontSize = defaultFontSize;
-             return this;
-        }
-
-        @Override
-        public DefaultAnnotationEntBuilder setStyleRanges(java.util.List<StyleRangeEnt> styleRanges) {
-             m_styleRanges = styleRanges;
-             return this;
-        }
-
-        @Override
-        public DefaultAnnotationEnt build() {
-            return new DefaultAnnotationEnt(
-                immutable(m_text),
-                immutable(m_backgroundColor),
-                immutable(m_textAlign),
-                immutable(m_defaultFontSize),
-                immutable(m_styleRanges));
+        public DefaultTypedTextEnt build() {
+            return new DefaultTypedTextEnt(
+                immutable(m_value),
+                immutable(m_contentType));
         }
     
     }
