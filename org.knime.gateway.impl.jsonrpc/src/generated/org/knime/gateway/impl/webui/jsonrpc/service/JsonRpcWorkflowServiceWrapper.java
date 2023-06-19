@@ -64,7 +64,7 @@ import org.knime.gateway.api.webui.service.WorkflowService;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @JsonRpcService(value = "WorkflowService")
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
 public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
 
     private final java.util.function.Supplier<WorkflowService> m_service;

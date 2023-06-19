@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt.DefaultCopyComm
 
 @JsonDeserialize(builder=DefaultCopyCommandEntBuilder.class)
 @JsonSerialize(as=CopyCommandEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface CopyCommandEntMixIn extends CopyCommandEnt {
 
     @Override

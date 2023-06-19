@@ -48,18 +48,15 @@ package org.knime.gateway.api.webui.entity;
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Identifies a port view
- * 
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface PortViewMetaEnt extends GatewayEntity {
 
   /**
@@ -67,12 +64,12 @@ public interface PortViewMetaEnt extends GatewayEntity {
    */
   public enum StateEnum {
     CONFIGURED("configured"),
-    
+
     EXECUTED("executed");
 
     private String value;
 
-    StateEnum(String value) {
+    StateEnum(final String value) {
       this.value = value;
     }
 
@@ -112,30 +109,30 @@ public interface PortViewMetaEnt extends GatewayEntity {
 
         /**
          * The display label of the port view
-         * 
-         * @param label the property value, NOT <code>null</code>! 
+         *
+         * @param label the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         PortViewMetaEntBuilder setLabel(String label);
-        
+
         /**
          * The earliest point the node execution lifecycle for which this view is available
-         * 
-         * @param state the property value, NOT <code>null</code>! 
+         *
+         * @param state the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
         PortViewMetaEntBuilder setState(StateEnum state);
-        
-        
+
+
         /**
         * Creates the entity from the builder.
-        * 
+        *
         * @return the entity
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
         PortViewMetaEnt build();
-    
+
     }
 
 }

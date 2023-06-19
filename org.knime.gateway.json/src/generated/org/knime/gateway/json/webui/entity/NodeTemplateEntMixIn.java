@@ -65,7 +65,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt.DefaultNodeTem
 
 @JsonDeserialize(builder=DefaultNodeTemplateEntBuilder.class)
 @JsonSerialize(as=NodeTemplateEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
 
     @Override

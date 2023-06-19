@@ -62,7 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBu
 
 @JsonDeserialize(builder=DefaultPatchOpEntBuilder.class)
 @JsonSerialize(as=PatchOpEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface PatchOpEntMixIn extends PatchOpEnt {
 
     @Override

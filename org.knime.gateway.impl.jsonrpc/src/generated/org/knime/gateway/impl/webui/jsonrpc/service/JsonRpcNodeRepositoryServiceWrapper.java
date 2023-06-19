@@ -64,7 +64,7 @@ import org.knime.gateway.api.webui.service.NodeRepositoryService;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @JsonRpcService(value = "NodeRepositoryService")
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
 public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryService {
 
     private final java.util.function.Supplier<NodeRepositoryService> m_service;

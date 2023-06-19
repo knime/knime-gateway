@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultWorkflowProjectEnt(
     String projectId,
     SpaceItemReferenceEnt origin,
@@ -73,9 +73,6 @@ public record DefaultWorkflowProjectEnt(
     public DefaultWorkflowProjectEnt {
         if(projectId == null) {
             throw new IllegalArgumentException("<projectId> must not be null.");
-        }
-        if(origin == null) {
-            throw new IllegalArgumentException("<origin> must not be null.");
         }
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
@@ -131,9 +128,6 @@ public record DefaultWorkflowProjectEnt(
 
         @Override
         public DefaultWorkflowProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin) {
-             if(origin == null) {
-                 throw new IllegalArgumentException("<origin> must not be null.");
-             }
              m_origin = origin;
              return this;
         }

@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsComm
 
 @JsonDeserialize(builder=DefaultReorderWorkflowAnnotationsCommandEntBuilder.class)
 @JsonSerialize(as=ReorderWorkflowAnnotationsCommandEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ReorderWorkflowAnnotationsCommandEntMixIn extends ReorderWorkflowAnnotationsCommandEnt {
 
     @Override

@@ -64,7 +64,7 @@ import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt.DefaultCompo
 
 @JsonDeserialize(builder=DefaultCompositeEventEntBuilder.class)
 @JsonSerialize(as=CompositeEventEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface CompositeEventEntMixIn extends CompositeEventEnt {
 
     @Override

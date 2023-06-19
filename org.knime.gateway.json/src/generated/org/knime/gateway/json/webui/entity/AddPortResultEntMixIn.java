@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt.DefaultAddPor
 
 @JsonDeserialize(builder=DefaultAddPortResultEntBuilder.class)
 @JsonSerialize(as=AddPortResultEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface AddPortResultEntMixIn extends AddPortResultEnt {
 
     @Override

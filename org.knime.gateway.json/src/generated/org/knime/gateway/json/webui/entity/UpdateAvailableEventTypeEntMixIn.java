@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventTypeEnt.De
 
 @JsonDeserialize(builder=DefaultUpdateAvailableEventTypeEntBuilder.class)
 @JsonSerialize(as=UpdateAvailableEventTypeEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface UpdateAvailableEventTypeEntMixIn extends UpdateAvailableEventTypeEnt {
 
     @Override

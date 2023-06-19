@@ -88,7 +88,7 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 })
 @JsonDeserialize(builder=DefaultNodeEntBuilder.class)
 @JsonSerialize(as=NodeEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeEntMixIn extends NodeEnt {
 
     @Override

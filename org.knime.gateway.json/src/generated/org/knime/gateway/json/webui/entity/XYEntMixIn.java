@@ -62,7 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultXYEnt.DefaultXYEntBuilder;
 
 @JsonDeserialize(builder=DefaultXYEntBuilder.class)
 @JsonSerialize(as=XYEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface XYEntMixIn extends XYEnt {
 
     @Override

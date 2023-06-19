@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt.Defa
 
 @JsonDeserialize(builder=DefaultConvertContainerResultEntBuilder.class)
 @JsonSerialize(as=ConvertContainerResultEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ConvertContainerResultEntMixIn extends ConvertContainerResultEnt {
 
     @Override

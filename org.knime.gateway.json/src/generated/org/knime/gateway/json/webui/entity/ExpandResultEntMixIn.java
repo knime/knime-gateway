@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt.DefaultExpandR
 
 @JsonDeserialize(builder=DefaultExpandResultEntBuilder.class)
 @JsonSerialize(as=ExpandResultEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ExpandResultEntMixIn extends ExpandResultEnt {
 
     @Override

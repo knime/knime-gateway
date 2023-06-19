@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt.DefaultRe
 
 @JsonDeserialize(builder=DefaultRemovePortCommandEntBuilder.class)
 @JsonSerialize(as=RemovePortCommandEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface RemovePortCommandEntMixIn extends RemovePortCommandEnt {
 
     @Override

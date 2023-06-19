@@ -64,7 +64,7 @@ import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTra
 
 @JsonDeserialize(builder=DefaultTranslateCommandEntBuilder.class)
 @JsonSerialize(as=TranslateCommandEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
 
     @Override

@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAllowedWorkflowActionsEnt.Defa
 
 @JsonDeserialize(builder=DefaultAllowedWorkflowActionsEntBuilder.class)
 @JsonSerialize(as=AllowedWorkflowActionsEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface AllowedWorkflowActionsEntMixIn extends AllowedWorkflowActionsEnt {
 
     @Override

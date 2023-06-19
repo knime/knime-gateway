@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt.DefaultJobManage
 
 @JsonDeserialize(builder=DefaultJobManagerEntBuilder.class)
 @JsonSerialize(as=JobManagerEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface JobManagerEntMixIn extends JobManagerEnt {
 
     @Override

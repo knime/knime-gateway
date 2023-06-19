@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt.DefaultExpand
 
 @JsonDeserialize(builder=DefaultExpandCommandEntBuilder.class)
 @JsonSerialize(as=ExpandCommandEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ExpandCommandEntMixIn extends ExpandCommandEnt {
 
     @Override

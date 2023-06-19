@@ -57,7 +57,7 @@ import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultPortViewDescriptorMappingEnt(
     java.util.List<Integer> configured,
     java.util.List<Integer> executed) implements PortViewDescriptorMappingEnt {

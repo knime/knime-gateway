@@ -67,7 +67,7 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt.De
 
 @JsonDeserialize(builder=DefaultComponentNodeDescriptionEntBuilder.class)
 @JsonSerialize(as=ComponentNodeDescriptionEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescriptionEnt {
 
     @Override

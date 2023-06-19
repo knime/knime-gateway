@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeGroupEnt.DefaultNodeGroupE
 
 @JsonDeserialize(builder=DefaultNodeGroupEntBuilder.class)
 @JsonSerialize(as=NodeGroupEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeGroupEntMixIn extends NodeGroupEnt {
 
     @Override

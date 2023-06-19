@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt.DefaultAnnotatio
 
 @JsonDeserialize(builder=DefaultAnnotationEntBuilder.class)
 @JsonSerialize(as=AnnotationEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface AnnotationEntMixIn extends AnnotationEnt {
 
     @Override

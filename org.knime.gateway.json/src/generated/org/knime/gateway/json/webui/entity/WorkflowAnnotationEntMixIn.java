@@ -65,7 +65,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationEnt.DefaultW
 
 @JsonDeserialize(builder=DefaultWorkflowAnnotationEntBuilder.class)
 @JsonSerialize(as=WorkflowAnnotationEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface WorkflowAnnotationEntMixIn extends WorkflowAnnotationEnt {
 
     @Override

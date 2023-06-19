@@ -79,7 +79,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentNodeEnt(
     org.knime.gateway.api.entity.NodeIDEnt id,
     java.util.List<? extends NodePortEnt> inPorts,

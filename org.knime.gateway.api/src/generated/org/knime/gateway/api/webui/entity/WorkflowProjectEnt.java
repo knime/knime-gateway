@@ -60,7 +60,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface WorkflowProjectEnt extends GatewayEntity {
 
 
@@ -72,7 +72,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
 
   /**
    * Get origin
-   * @return origin , never <code>null</code>
+   * @return origin 
    **/
   public SpaceItemReferenceEnt getOrigin();
 
@@ -115,7 +115,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
         /**
    		 * Set origin
          * 
-         * @param origin the property value, NOT <code>null</code>! 
+         * @param origin the property value,  
          * @return this entity builder for chaining
          */
         WorkflowProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin);

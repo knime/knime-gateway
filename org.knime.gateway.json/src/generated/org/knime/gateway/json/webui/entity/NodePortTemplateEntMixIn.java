@@ -62,7 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodePortTemplateEnt.DefaultNod
 
 @JsonDeserialize(builder=DefaultNodePortTemplateEntBuilder.class)
 @JsonSerialize(as=NodePortTemplateEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodePortTemplateEntMixIn extends NodePortTemplateEnt {
 
     @Override

@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt.DefaultPortComm
 
 @JsonDeserialize(builder=DefaultPortCommandEntBuilder.class)
 @JsonSerialize(as=PortCommandEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface PortCommandEntMixIn extends PortCommandEnt {
 
     @Override

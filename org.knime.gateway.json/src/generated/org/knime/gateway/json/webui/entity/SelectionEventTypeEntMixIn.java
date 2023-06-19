@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt.DefaultS
 
 @JsonDeserialize(builder=DefaultSelectionEventTypeEntBuilder.class)
 @JsonSerialize(as=SelectionEventTypeEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
 
     @Override

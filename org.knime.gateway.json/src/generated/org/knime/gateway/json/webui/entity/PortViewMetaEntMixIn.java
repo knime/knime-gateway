@@ -46,13 +46,13 @@ package org.knime.gateway.json.webui.entity;
 
 
 
+import org.knime.gateway.api.webui.entity.PortViewMetaEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPortViewMetaEnt.DefaultPortViewMetaEntBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.PortViewMetaEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPortViewMetaEnt.DefaultPortViewMetaEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,7 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPortViewMetaEnt.DefaultPortVie
 
 @JsonDeserialize(builder=DefaultPortViewMetaEntBuilder.class)
 @JsonSerialize(as=PortViewMetaEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface PortViewMetaEntMixIn extends PortViewMetaEnt {
 
     @Override
@@ -72,11 +72,11 @@ public interface PortViewMetaEntMixIn extends PortViewMetaEnt {
     @Override
     @JsonProperty("label")
     public String getLabel();
-    
+
     @Override
     @JsonProperty("state")
     public StateEnum getState();
-    
+
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -86,18 +86,18 @@ public interface PortViewMetaEntMixIn extends PortViewMetaEnt {
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface PortViewMetaEntMixInBuilder extends PortViewMetaEntBuilder {
-    
+
         @Override
         public PortViewMetaEntMixIn build();
-    
+
         @Override
         @JsonProperty("label")
         public PortViewMetaEntMixInBuilder setLabel(final String label);
-        
+
         @Override
         @JsonProperty("state")
         public PortViewMetaEntMixInBuilder setState(final StateEnum state);
-        
+
     }
 
 

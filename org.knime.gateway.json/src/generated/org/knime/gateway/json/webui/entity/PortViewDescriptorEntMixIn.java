@@ -62,7 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPortViewDescriptorEnt.DefaultP
 
 @JsonDeserialize(builder=DefaultPortViewDescriptorEntBuilder.class)
 @JsonSerialize(as=PortViewDescriptorEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface PortViewDescriptorEntMixIn extends PortViewDescriptorEnt {
 
     @Override

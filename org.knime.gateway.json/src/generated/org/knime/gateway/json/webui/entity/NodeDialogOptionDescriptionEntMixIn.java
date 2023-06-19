@@ -62,7 +62,7 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeDialogOptionDescriptionEnt
 
 @JsonDeserialize(builder=DefaultNodeDialogOptionDescriptionEntBuilder.class)
 @JsonSerialize(as=NodeDialogOptionDescriptionEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface NodeDialogOptionDescriptionEntMixIn extends NodeDialogOptionDescriptionEnt {
 
     @Override

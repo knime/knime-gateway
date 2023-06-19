@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt.DefaultCopyResul
 
 @JsonDeserialize(builder=DefaultCopyResultEntBuilder.class)
 @JsonSerialize(as=CopyResultEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface CopyResultEntMixIn extends CopyResultEnt {
 
     @Override

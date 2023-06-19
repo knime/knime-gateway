@@ -64,7 +64,7 @@ import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCom
 
 @JsonDeserialize(builder=DefaultTransformWorkflowAnnotationCommandEntBuilder.class)
 @JsonSerialize(as=TransformWorkflowAnnotationCommandEnt.class)
-@javax.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface TransformWorkflowAnnotationCommandEntMixIn extends TransformWorkflowAnnotationCommandEnt {
 
     @Override
