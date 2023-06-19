@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-metadata xmlns="http://www.knime.org/core/node/workflow/metadata/v1.0">
+    <last-modified>2023-06-19T17:09:46.601+02:00</last-modified>
+    <description content-type="plain">My new description...</description>
+    <tags>
+        <tag>tag1</tag>
+        <tag>tag2</tag>
+        <tag>tag3</tag>
+        <tag>tag4</tag>
+    </tags>
+    <links>
+        <link href="http://www.knime.com">The KNIME website</link>
+        <link href="http://www.yeah.com">The yeah website</link>
+    </links>
+</workflow-metadata>

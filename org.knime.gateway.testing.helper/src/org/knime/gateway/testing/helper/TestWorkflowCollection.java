@@ -34,6 +34,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     METADATA("/files/testflows/Workflow Metadata", "workflow_metadata"),
 
     /**
+     * Workflow to test workflow and component metadata, new format.
+     */
+    METADATA2("/files/testflows/Workflow Metadata New Format", "workflow_metadata2"),
+
+
+    /**
      * Workflow to test job managers.
      */
     STREAMING_EXECUTION("/files/testflows/Streaming Execution", "streaming_execution"),

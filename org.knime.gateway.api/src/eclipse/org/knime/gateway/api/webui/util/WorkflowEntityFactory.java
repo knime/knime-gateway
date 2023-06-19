@@ -24,13 +24,11 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,12 +45,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.knime.core.internal.ReferencedFile;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
@@ -85,6 +80,7 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContainerMetadata.ContentType;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeContainerTemplate;
@@ -100,15 +96,11 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2.LocationType;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
-import org.knime.core.util.workflowalizer.WorkflowGroupMetadata;
-import org.knime.core.util.workflowalizer.WorkflowSetMeta.Link;
-import org.knime.core.util.workflowalizer.Workflowalizer;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
@@ -116,6 +108,7 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
@@ -140,8 +133,6 @@ import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
-import org.knime.gateway.api.webui.entity.LinkEnt;
-import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
@@ -198,7 +189,6 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.knime.shared.workflow.def.AnnotationDataDef;
-import org.xml.sax.SAXException;
 
 /**
  * See {@link EntityFactory}.
@@ -636,12 +626,6 @@ public final class WorkflowEntityFactory {
         }
     }
 
-    private List<LinkEnt> buildLinkEnts(final List<Link> links) {
-        return links.stream()
-            .map(link -> builder(LinkEntBuilder.class).setUrl(link.getUrl()).setText(link.getText()).build())
-            .collect(Collectors.toList());
-    }
-
     private LoopInfoEnt buildLoopInfoEnt(final NativeNodeContainer nc, final WorkflowBuildContext buildContext) {
         if (!nc.isModelCompatibleTo(LoopEndNode.class)) {
             return null;
@@ -1066,25 +1050,23 @@ public final class WorkflowEntityFactory {
 
     private ProjectMetadataEnt buildProjectMetadataEnt(final WorkflowManager wfm) {
         assert wfm.isProject();
-        final ReferencedFile rf = wfm.getWorkingDir();
-        var metadataFile = new File(rf.getFile(), WorkflowPersistor.METAINFO_FILE);
-        if (metadataFile.exists()) {
-            WorkflowGroupMetadata metadata;
-            try {
-                metadata = Workflowalizer.readWorkflowGroup(metadataFile.toPath());
-            } catch (XPathExpressionException | SAXException | IOException ex) {
-                NodeLogger.getLogger(WorkflowEntityFactory.class).error("Workflow metadata could not be read", ex);
-                return null;
-            }
-            return builder(ProjectMetadataEntBuilder.class).setDescription(metadata.getDescription().orElse(null))
-                .setLastEdit(wfm.getAuthorInformation().getLastEditDate()
-                    // the Date class doesn't support time zones. We just assume UTC here to create an OffsetDateTime
-                    .map(date -> date.toInstant().atOffset(ZoneOffset.UTC)).orElse(null))
-                .setLinks(metadata.getLinks().map(this::buildLinkEnts).orElse(null))
-                .setTags(metadata.getTags().orElse(null)).setTitle(metadata.getTitle().orElse(null)).build();
-        } else {
-            return null;
-        }
+        final var metadata = wfm.getMetadata();
+        final var links = metadata.getLinks();
+        final var tags = metadata.getTags();
+        return builder(ProjectMetadataEntBuilder.class)//
+            .setDescription(metadata.getDescription().orElse(null))//
+            .setContentType(getContentTypeEnum(metadata.getDescriptionContentType()))//
+            .setLinks(links.isEmpty() ? null : EntityUtil.toLinkEnts(links))//
+            .setTags(tags.isEmpty() ? null : tags)//
+            .setLastEdit(metadata.getLastModified().toOffsetDateTime())//
+            .build();
+    }
+
+    private ProjectMetadataEnt.ContentTypeEnum getContentTypeEnum(final ContentType contentType) {
+        return switch (contentType) {
+            case HTML -> ProjectMetadataEnt.ContentTypeEnum.HTML;
+            case PLAIN -> ProjectMetadataEnt.ContentTypeEnum.PLAIN;
+        };
     }
 
     private StyleRangeEnt buildStyleRangeEnt(final StyleRange sr) {

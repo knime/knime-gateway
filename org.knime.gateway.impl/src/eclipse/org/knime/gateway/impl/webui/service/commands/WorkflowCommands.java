@@ -76,6 +76,7 @@ import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
@@ -147,7 +148,7 @@ public final class WorkflowCommands {
      * @param commandEnt the workflow command entity to execute
      * @param workflowMiddleware additional dependency required to rexecute some commands
      * @param nodeFactoryProvider additional dependency required to execute some commands
-     * @param spaceProviders TODO
+     * @param spaceProviders The space providers
      *
      * @return The instance of the executed command
      *
@@ -214,6 +215,8 @@ public final class WorkflowCommands {
             command = new ReorderWorkflowAnnotations(ce);
         } else if (commandEnt instanceof AddWorkflowAnnotationCommandEnt ce) {
             command = new AddWorkflowAnnotation(ce);
+        } else if (commandEnt instanceof UpdateProjectMetadataCommandEnt ce) {
+            command = new UpdateProjectMetadata(ce);
         } else {
             if (m_workflowCommandToExecute != null) {
                 command = m_workflowCommandToExecute;

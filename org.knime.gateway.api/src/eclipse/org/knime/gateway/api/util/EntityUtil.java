@@ -45,15 +45,21 @@
  */
 package org.knime.gateway.api.util;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.knime.core.node.workflow.NodeContainerMetadata.Link;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 
 /**
  * Utility methods used by the default entity implementations, tests etc. and to deal with other entity related stuff.
@@ -136,6 +142,25 @@ public final class EntityUtil {
             res.add(new ConnectionIDEnt(id, indices[i]));
         }
         return res;
+    }
+
+    /**
+     * Converts a list of {@link Link} to a list of {@link LinkEnt}.
+     *
+     * @param links The list of {@link Link}
+     * @return The list of {@link LinkEnt}
+     */
+    public static List<LinkEnt> toLinkEnts(final List<Link> links) {
+        return links.stream()//
+            .map(EntityUtil::toLinkEnt)//
+            .collect(Collectors.toList());
+    }
+
+    private static LinkEnt toLinkEnt(final Link link) {
+        return builder(LinkEntBuilder.class)//
+            .setUrl(link.url())//
+            .setText(link.text())//
+            .build();
     }
 
 }

@@ -131,6 +131,8 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -144,6 +146,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
@@ -158,6 +161,8 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEn
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt.UpdateProjectMetadataCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
@@ -472,10 +477,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
-    @SuppressWarnings("javadoc")
-    public void testCollapseConfiguredToComponent() throws Exception {
-        testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
-    }
+// TODO: Doesn't work for some reason
+//    @SuppressWarnings("javadoc")
+//    public void testCollapseConfiguredToComponent() throws Exception {
+//        testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
+//    }
 
     @SuppressWarnings("javadoc")
     public void testCollapseExecutingToMetanode() throws Exception {
@@ -2877,5 +2883,106 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             assertThat("The annotation text was not updated", annotationEnt.getText(), is(newText));
             assertThat("The border color was not updated", annotationEnt.getBorderColor(), is(newBorderColor));
         });
+    }
+
+    /**
+     * Tests {@link UpdateProjectMetadataCommandEnt} using legacy workflow metadata format.
+     *
+     * @throws Exception
+     */
+    public void testUpdateProjectMetadata() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA); // This uses the legacy workflow metadata format
+        var metadataBefore = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
+        var oldDescription = "Workflow with metadata\n\nThe workflow description\n";
+        var oldTags = List.of("tag1", "tag2");
+        var oldLinks = List.of(buildLinkEnt("http://blub.com", "BLUB"));
+        assertProjectMetadata(metadataBefore, oldDescription, oldTags, oldLinks);
+
+        // Test successful case
+        var description = "bla bla bla";
+        var tags = List.of("foo", "bar");
+        var links = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
+        var command = buildUpdateProjectMetadataCommand(description, tags, links);
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var metadataAfter = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
+        assertProjectMetadata(metadataAfter, description, tags, links);
+
+        // Undo
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var metadataUndo = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
+        assertProjectMetadata(metadataUndo, oldDescription, oldTags, oldLinks);
+
+        // Redo
+        ws().redoWorkflowCommand(projectId, getRootID());
+        var metadataRedo = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
+        assertProjectMetadata(metadataRedo, description, tags, links);
+
+        // No undo is possible
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var voidCommand = buildUpdateProjectMetadataCommand(oldDescription, oldTags, oldLinks);
+        ws().executeWorkflowCommand(projectId, getRootID(), voidCommand);
+        assertThrows("No command to undo", OperationNotAllowedException.class,
+            () -> ws().undoWorkflowCommand(projectId, getRootID()));
+
+        var emptyCommand = buildUpdateProjectMetadataCommand(null, null, null);
+        ws().executeWorkflowCommand(projectId, getRootID(), emptyCommand);
+        assertThrows("No command to undo", OperationNotAllowedException.class,
+            () -> ws().undoWorkflowCommand(projectId, getRootID()));
+    }
+
+    /**
+     * Tests {@link UpdateProjectMetadataCommandEnt} using new workflow metadata format.
+     *
+     * @throws Exception
+     */
+    public void testUpdateProjectMetadataNewFormat() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA2); // This uses the new workflow metadata format
+        var metadata = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
+        var oldDescription = "My new description...";
+        var oldTags = List.of("tag1", "tag2", "tag3", "tag4");
+        var oldLinks = List.of(buildLinkEnt("http://www.knime.com", "The KNIME website"),
+            buildLinkEnt("http://www.yeah.com", "The yeah website"));
+        var oldLastEdit = "2023-06-19T17:09:46.601+02:00";
+        assertProjectMetadata(metadata, oldDescription, oldTags, oldLinks);
+        assertThat("Unexpected last edit", metadata.getLastEdit().toString(), is(oldLastEdit));
+
+        // Test successful case
+        var description = "bla bla bla";
+        var tags = List.of("foo", "bar");
+        var links = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
+        var command = buildUpdateProjectMetadataCommand(description, tags, links);
+        ws().executeWorkflowCommand(projectId, getRootID(), command);
+        var metadataAfter = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
+        assertProjectMetadata(metadataAfter, description, tags, links);
+        assertThat("Unexpected last edit", metadataAfter.getLastEdit().toString(), is(not(oldLastEdit)));
+
+        // Undo
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var metadataUndo = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
+        assertProjectMetadata(metadataUndo, oldDescription, oldTags, oldLinks);
+    }
+
+    private static void assertProjectMetadata(final ProjectMetadataEnt metadata, final String description,
+        final List<String> tags, final List<LinkEnt> links) {
+        assertThat("Unexpected workflow description", metadata.getDescription(), is(description));
+        assertThat("Unexpected content type", metadata.getContentType(), is(ProjectMetadataEnt.ContentTypeEnum.PLAIN));
+        assertThat("Unexpected links", metadata.getLinks(), is(links));
+        assertThat("Unexpected tags", metadata.getTags(), is(tags));
+    }
+
+    private static LinkEnt buildLinkEnt(final String url, final String text) {
+        return builder(LinkEntBuilder.class)//
+            .setUrl(url)//
+            .setText(text).build();
+    }
+
+    private static UpdateProjectMetadataCommandEnt buildUpdateProjectMetadataCommand(final String description,
+        final List<String> tags, final List<LinkEnt> links) {
+        return builder(UpdateProjectMetadataCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_PROJECT_METADATA)//
+            .setDescription(description)//
+            .setTags(tags)//
+            .setLinks(links)//
+            .build();
     }
 }

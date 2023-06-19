@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
@@ -68,6 +69,8 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class DefaultWorkflowService implements WorkflowService {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultWorkflowService.class);
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
@@ -98,6 +101,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         var wfKey = new WorkflowKey(projectId, workflowId);
+        LOGGER.debug("'getWorkflow()' was called for: " + wfKey); // Quickly get project ID and workflow ID while debugging
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
                 () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
