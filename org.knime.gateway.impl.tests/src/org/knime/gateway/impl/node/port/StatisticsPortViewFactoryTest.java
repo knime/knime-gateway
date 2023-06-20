@@ -122,7 +122,7 @@ public class StatisticsPortViewFactoryTest {
             var settings = mapper.readTree(initialData).get("result").get("settings");
             TestingUtilities.assertViewSettings( //
                 settings, //
-                StatisticsPortViewFactory.getSettingsForDataTable((new DataTableSpec())) //
+                StatisticsPortViewFactory.getSettingsForDataTable(new DataTableSpec(), bdt.getSpec().getNumColumns()) //
             );
         } finally {
             PortContext.removeLastContext();

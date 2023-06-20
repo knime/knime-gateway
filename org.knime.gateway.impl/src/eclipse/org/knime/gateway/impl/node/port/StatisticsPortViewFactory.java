@@ -78,6 +78,7 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
         var nodeId = nc.getID();
         var tableId = "statistics_" + TableViewUtil.toTableId(nodeId);
+        var numColumns = table.getSpec().getNumColumns();
 
         var selectedStatistics = UnivariateStatistics.getDefaultStatistics();
 
@@ -100,7 +101,8 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
             @SuppressWarnings({"rawtypes", "unchecked"})
             @Override
             public Optional<InitialDataService> createInitialDataService() {
-                var settings = getSettingsForDataTable(UnivariateStatistics.getStatisticsTableSpec(selectedStatistics));
+                var settings = getSettingsForDataTable(UnivariateStatistics.getStatisticsTableSpec(selectedStatistics),
+                    numColumns);
                 return Optional.of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, tableId));
             }
 
@@ -114,7 +116,7 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
     /**
      * Package scope for testing
      */
-    static TableViewViewSettings getSettingsForDataTable(final DataTableSpec tableSpec) {
+    static TableViewViewSettings getSettingsForDataTable(final DataTableSpec tableSpec, final int numColumns) {
         var settings = new TableViewViewSettings(tableSpec);
         settings.m_showTitle = false;
         settings.m_enableGlobalSearch = false;
@@ -125,7 +127,9 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         settings.m_publishSelection = false;
         settings.m_showColumnDataType = false;
         // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
+        // BUT: set the page-size to the 'maximum' such that the 'paging-buttons' actually don't show up
         settings.m_enablePagination = true;
+        settings.m_pageSize = numColumns;
         settings.m_enableRendererSelection = false;
         settings.m_showRowKeys = false;
         settings.m_showRowIndices = false;
