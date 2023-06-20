@@ -72,7 +72,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
     @Override
     public PortView createPortView(final BufferedDataTable table) {
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
-        var tableId = TableViewUtil.toTableId(nc.getID()) + "_" + table.getBufferedTableId();
+        var tableId = "table_" + TableViewUtil.toTableId(nc.getID()) + "_" + table.getBufferedTableId();
         TableViewUtil.registerRendererRegistryCleanup(tableId, nc);
 
         return new PortView() { // NOSONAR
