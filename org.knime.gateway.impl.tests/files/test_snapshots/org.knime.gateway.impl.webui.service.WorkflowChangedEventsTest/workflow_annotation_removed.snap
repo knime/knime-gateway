@@ -295,7 +295,7 @@
   "value" : "root_1"
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/0/text",
+  "path" : "/workflowAnnotations/0/text/value",
   "value" : "this is a red workflow annotation"
 }, {
   "op" : "replace",
@@ -315,7 +315,7 @@
   "value" : "root_2"
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/1/text",
+  "path" : "/workflowAnnotations/1/text/value",
   "value" : ""
 }, {
   "op" : "replace",
@@ -335,7 +335,7 @@
   "value" : "root_3"
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/2/text",
+  "path" : "/workflowAnnotations/2/text/value",
   "value" : "<= an empty\nworkflow\nannotation"
 }, {
   "op" : "replace",
@@ -379,7 +379,7 @@
   "value" : 0
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/3/text",
+  "path" : "/workflowAnnotations/3/text/value",
   "value" : "normal16red16greenbold24normal9bolditalic13\n﷽\n\nabcde👮🏻‍♂️f\n\n\nabc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc \n\nnormal16red16greenbold24normal9bolditalic13\n﷽\n---\nעברית היא שפה שמית."
 }, {
   "op" : "replace",
@@ -431,7 +431,7 @@
   "value" : 11
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/4/text",
+  "path" : "/workflowAnnotations/4/text/value",
   "value" : "Annotation front"
 }, {
   "op" : "replace",
@@ -467,7 +467,7 @@
   "value" : 4
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/5/text",
+  "path" : "/workflowAnnotations/5/text/value",
   "value" : "Annotation back\nfoo and bar"
 }, {
   "op" : "replace",
@@ -507,7 +507,7 @@
   "value" : "root_7"
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/6/text",
+  "path" : "/workflowAnnotations/6/text/value",
   "value" : ""
 }, {
   "op" : "replace",

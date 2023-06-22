@@ -1,6 +1,8 @@
 {
-  "contentType" : "text/plain",
-  "description" : "Workflow with metadata\n\nThe workflow description\n",
+  "description" : {
+    "contentType" : "text/plain",
+    "value" : "Workflow with metadata\n\nThe workflow description\n"
+  },
   "lastEdit" : "DATE_TIME_PLACEHOLDER",
   "links" : [ {
     "text" : "BLUB",

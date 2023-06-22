@@ -54,12 +54,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.workflow.NodeContainerMetadata;
 import org.knime.core.node.workflow.NodeContainerMetadata.Link;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
+import org.knime.gateway.api.webui.entity.TypedTextEnt.TypedTextEntBuilder;
+import org.knime.shared.workflow.def.AnnotationDataDef;
 
 /**
  * Utility methods used by the default entity implementations, tests etc. and to deal with other entity related stuff.
@@ -161,6 +166,42 @@ public final class EntityUtil {
             .setUrl(link.url())//
             .setText(link.text())//
             .build();
+    }
+
+    /**
+     * Converts a text and a content type to a {@code TypedTextEnt}.
+     *
+     * @param text
+     * @param contentType
+     * @return The {@code TypedTextEnt}
+     */
+    public static TypedTextEnt toTypedTextEnt(final String text, final ContentTypeEnum contentType) {
+        return builder(TypedTextEntBuilder.class)//
+            .setValue(text)//
+            .setContentType(contentType)//
+            .build();
+    }
+
+    /**
+     * Converts a text and a content type to a {@code TypedTextEnt}.
+     *
+     * @param text
+     * @param contentType
+     * @return The {@code TypedTextEnt}
+     */
+    public static TypedTextEnt toTypedTextEnt(final String text, final NodeContainerMetadata.ContentType contentType) {
+        return toTypedTextEnt(text, CoreUtil.ContentTypeConverter.fromNodeContainerMetadata(contentType));
+    }
+
+    /**
+     * Converts a text and a content type to a {@code TypedTextEnt}.
+     *
+     * @param text
+     * @param contentType
+     * @return The {@code TypedTextEnt}
+     */
+    public static TypedTextEnt toTypedTextEnt(final String text, final AnnotationDataDef.ContentTypeEnum contentType) {
+        return toTypedTextEnt(text, CoreUtil.ContentTypeConverter.fromAnnotationDataDef(contentType));
     }
 
 }

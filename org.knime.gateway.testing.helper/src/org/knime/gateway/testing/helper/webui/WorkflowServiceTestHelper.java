@@ -99,6 +99,7 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
@@ -108,8 +109,6 @@ import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt.AddWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
-import org.knime.gateway.api.webui.entity.AnnotationEnt;
-import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
@@ -158,6 +157,8 @@ import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
@@ -477,11 +478,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
-// TODO: Doesn't work for some reason
-//    @SuppressWarnings("javadoc")
-//    public void testCollapseConfiguredToComponent() throws Exception {
-//        testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
-//    }
+    @SuppressWarnings("javadoc")
+    public void testCollapseConfiguredToComponent() throws Exception {
+        testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
+    }
 
     @SuppressWarnings("javadoc")
     public void testCollapseExecutingToMetanode() throws Exception {
@@ -789,8 +789,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             annotsToCollapseInts.stream().map(i -> new AnnotationIDEnt(getRootID(), i)).collect(Collectors.toList());
 
         WorkflowEnt unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), true).getWorkflow();
-        Set<String> annotationContents =
-            unchangedWfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(Collectors.toSet());
+        Set<String> annotationContents = unchangedWfEnt.getWorkflowAnnotations().stream()//
+            .map(annotation -> annotation.getText().getValue())//
+            .collect(Collectors.toSet());
 
         assertTrue("Expect selected nodes to have allowed action for collapse set to true",
             getAllowedActionsOfNodes(nodesToCollapseEnts, unchangedWfEnt).stream()
@@ -893,8 +894,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         if (annotationContents.isEmpty()) {
             return;
         }
-        assertEquals(message, annotationContents,
-            wfEnt.getWorkflowAnnotations().stream().map(AnnotationEnt::getText).collect(Collectors.toSet()));
+        assertEquals(message, annotationContents, wfEnt.getWorkflowAnnotations().stream()
+            .map(annotation -> annotation.getText().getValue()).collect(Collectors.toSet()));
     }
 
     private static void assertAnnotationsPresent(final String message, final WorkflowEnt wfEnt,
@@ -1572,7 +1573,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     private static String getLabelFromNodeInWorkflow(final WorkflowEnt wf, final NodeIDEnt nodeId) {
         var annotation = wf.getNodes().get(nodeId.toString()).getAnnotation();
-        return annotation == null ? "" : annotation.getText();
+        return annotation == null ? "" : annotation.getText().getValue();
     }
 
     /**
@@ -2251,7 +2252,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static void assertContentTypesForWorkflowAnnotations(final List<WorkflowAnnotationEnt> annotationEnts) {
         var contentTypes = annotationEnts.stream()//
-            .map(WorkflowAnnotationEnt::getContentType)//
+            .map(annotation -> annotation.getText().getContentType())//
             .collect(Collectors.toList());
         assertThat("There should exist at least on 'text/plain' workflow annotation",
             contentTypes.stream().anyMatch(type -> type == ContentTypeEnum.PLAIN), is(true));
@@ -2719,7 +2720,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotationIdx = 4; // Using that specific annotation for the test
         var annotationEnt =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
-        var previousText = annotationEnt.getText();
+        var previousText = annotationEnt.getText().getValue();
         var previousStyleRanges = annotationEnt.getStyleRanges();
         var previousTextAlignment = annotationEnt.getTextAlign();
         var formattedText =
@@ -2733,7 +2734,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             <p style="text-align: right">and right aligned text</p><p style="text-align: right"></p>
             """;
 
-        assertThat("Content type isn't plain text prior to execution", annotationEnt.getContentType(),
+        assertThat("Content type isn't plain text prior to execution", annotationEnt.getText().getContentType(),
             is(ContentTypeEnum.PLAIN));
 
         var command = buildUpdateWorkflowAnnotationCommand(annotationEnt, formattedText, null);
@@ -2741,8 +2742,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotationEntAfterExecution =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
 
-        assertThat("Text field wasn't updated", annotationEntAfterExecution.getText(), is(formattedText));
-        assertThat("Content type isn't HTML text", annotationEntAfterExecution.getContentType(),
+        assertThat("Text field wasn't updated", annotationEntAfterExecution.getText().getValue(), is(formattedText));
+        assertThat("Content type isn't HTML text", annotationEntAfterExecution.getText().getContentType(),
             is(ContentTypeEnum.HTML));
         assertThat("Style ranges aren't gone", annotationEntAfterExecution.getStyleRanges(), nullValue());
         assertThat("Text alignment isn't gone", annotationEntAfterExecution.getTextAlign(), nullValue());
@@ -2751,8 +2752,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotationEntAfterUndo =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(annotationIdx);
 
-        assertThat("Regular text field wasn't reset", annotationEntAfterUndo.getText(), is(previousText));
-        assertThat("Content type isn't plain text again", annotationEnt.getContentType(), is(ContentTypeEnum.PLAIN));
+        assertThat("Regular text field wasn't reset", annotationEntAfterUndo.getText().getValue(), is(previousText));
+        assertThat("Content type isn't plain text again", annotationEnt.getText().getContentType(),
+            is(ContentTypeEnum.PLAIN));
         assertThat("Not exactly 18 style ranges are back", annotationEntAfterUndo.getStyleRanges().size(), is(18));
         assertThat("Not the same style ranges were brought back", annotationEntAfterUndo.getStyleRanges(),
             is(previousStyleRanges));
@@ -2808,8 +2810,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             throw new Exception("Unexpected command result returned");
         }
 
-        assertThat("Content type must isn't text/html", annotation.getContentType(), is(ContentTypeEnum.HTML));
-        assertThat("The text field wasn't empty.", annotation.getText(), is(""));
+        assertThat("Content type must isn't text/html", annotation.getText().getContentType(),
+            is(ContentTypeEnum.HTML));
+        assertThat("The text field wasn't empty.", annotation.getText().getValue(), is(""));
 
         ws().undoWorkflowCommand(projectId, getRootID());
         var annotationsAfterUndo =
@@ -2879,8 +2882,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotationEntsAfterExecution =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations();
         annotationEntsAfterExecution.forEach(annotationEnt -> {
-            assertThat("The content type was not updated", annotationEnt.getContentType(), is(ContentTypeEnum.HTML));
-            assertThat("The annotation text was not updated", annotationEnt.getText(), is(newText));
+            assertThat("The content type was not updated", annotationEnt.getText().getContentType(),
+                is(ContentTypeEnum.HTML));
+            assertThat("The annotation text was not updated", annotationEnt.getText().getValue(), is(newText));
             assertThat("The border color was not updated", annotationEnt.getBorderColor(), is(newBorderColor));
         });
     }
@@ -2893,13 +2897,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testUpdateProjectMetadata() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA); // This uses the legacy workflow metadata format
         var metadataBefore = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
-        var oldDescription = "Workflow with metadata\n\nThe workflow description\n";
+        var oldDescription =
+            EntityUtil.toTypedTextEnt("Workflow with metadata\n\nThe workflow description\n", ContentTypeEnum.PLAIN);
         var oldTags = List.of("tag1", "tag2");
         var oldLinks = List.of(buildLinkEnt("http://blub.com", "BLUB"));
         assertProjectMetadata(metadataBefore, oldDescription, oldTags, oldLinks);
 
         // Test successful case
-        var description = "bla bla bla";
+        var description = EntityUtil.toTypedTextEnt("<p>bla bla bla</p>", ContentTypeEnum.HTML);
         var tags = List.of("foo", "bar");
         var links = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
         var command = buildUpdateProjectMetadataCommand(description, tags, links);
@@ -2923,11 +2928,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().executeWorkflowCommand(projectId, getRootID(), voidCommand);
         assertThrows("No command to undo", OperationNotAllowedException.class,
             () -> ws().undoWorkflowCommand(projectId, getRootID()));
-
-        var emptyCommand = buildUpdateProjectMetadataCommand(null, null, null);
-        ws().executeWorkflowCommand(projectId, getRootID(), emptyCommand);
-        assertThrows("No command to undo", OperationNotAllowedException.class,
-            () -> ws().undoWorkflowCommand(projectId, getRootID()));
     }
 
     /**
@@ -2938,7 +2938,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testUpdateProjectMetadataNewFormat() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA2); // This uses the new workflow metadata format
         var metadata = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
-        var oldDescription = "My new description...";
+        var oldDescription = EntityUtil.toTypedTextEnt("My new description...", ContentTypeEnum.PLAIN);
         var oldTags = List.of("tag1", "tag2", "tag3", "tag4");
         var oldLinks = List.of(buildLinkEnt("http://www.knime.com", "The KNIME website"),
             buildLinkEnt("http://www.yeah.com", "The yeah website"));
@@ -2947,7 +2947,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Unexpected last edit", metadata.getLastEdit().toString(), is(oldLastEdit));
 
         // Test successful case
-        var description = "bla bla bla";
+        var description = EntityUtil.toTypedTextEnt("<p>bla bla bla</p>", ContentTypeEnum.HTML);
         var tags = List.of("foo", "bar");
         var links = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
         var command = buildUpdateProjectMetadataCommand(description, tags, links);
@@ -2962,10 +2962,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertProjectMetadata(metadataUndo, oldDescription, oldTags, oldLinks);
     }
 
-    private static void assertProjectMetadata(final ProjectMetadataEnt metadata, final String description,
+    private static void assertProjectMetadata(final ProjectMetadataEnt metadata, final TypedTextEnt description,
         final List<String> tags, final List<LinkEnt> links) {
         assertThat("Unexpected workflow description", metadata.getDescription(), is(description));
-        assertThat("Unexpected content type", metadata.getContentType(), is(ProjectMetadataEnt.ContentTypeEnum.PLAIN));
         assertThat("Unexpected links", metadata.getLinks(), is(links));
         assertThat("Unexpected tags", metadata.getTags(), is(tags));
     }
@@ -2976,7 +2975,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setText(text).build();
     }
 
-    private static UpdateProjectMetadataCommandEnt buildUpdateProjectMetadataCommand(final String description,
+    private static UpdateProjectMetadataCommandEnt buildUpdateProjectMetadataCommand(final TypedTextEnt description,
         final List<String> tags, final List<LinkEnt> links) {
         return builder(UpdateProjectMetadataCommandEntBuilder.class)//
             .setKind(KindEnum.UPDATE_PROJECT_METADATA)//

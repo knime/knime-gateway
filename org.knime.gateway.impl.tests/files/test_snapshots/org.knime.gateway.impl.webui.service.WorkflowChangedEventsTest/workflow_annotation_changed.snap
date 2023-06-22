@@ -16,7 +16,7 @@
   "value" : 0
 }, {
   "op" : "replace",
-  "path" : "/workflowAnnotations/0/text",
+  "path" : "/workflowAnnotations/0/text/value",
   "value" : ""
 } ]
 }

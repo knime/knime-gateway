@@ -61,7 +61,7 @@ import org.junit.Test;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.GatewayEntity;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
+import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt.NodeDialogOpt
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
+import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
@@ -146,9 +147,9 @@ public class PatchChangeProcessorTest {
             .setBorderColor("test")//
             .setStyleRanges(Collections.emptyList())//
             .setBorderWidth(0);
-        var anno1 = workflowAnnoBuilder.setText("anno1").setContentType(ContentTypeEnum.PLAIN).build();
-        var anno2 = workflowAnnoBuilder.setText("anno2").setContentType(ContentTypeEnum.PLAIN).build();
-        var anno3 = workflowAnnoBuilder.setText("anno3").setContentType(ContentTypeEnum.PLAIN).build();
+        var anno1 = workflowAnnoBuilder.setText(EntityUtil.toTypedTextEnt("anno1", ContentTypeEnum.PLAIN)).build();
+        var anno2 = workflowAnnoBuilder.setText(EntityUtil.toTypedTextEnt("anno2", ContentTypeEnum.PLAIN)).build();
+        var anno3 = workflowAnnoBuilder.setText(EntityUtil.toTypedTextEnt("anno3", ContentTypeEnum.PLAIN)).build();
 
         WorkflowEnt workflow1 = workflowBuilder.setWorkflowAnnotations(List.of(anno1, anno2, anno3)).build();
         // remove all wf annotations
@@ -160,7 +161,7 @@ public class PatchChangeProcessorTest {
         workflow2 = workflowBuilder.setWorkflowAnnotations(List.of(anno3)).build();
         patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
         verify(patchCreator, Mockito.times(2)).removed("/workflowAnnotations/1");
-        verify(patchCreator).replaced("/workflowAnnotations/0/text", "anno3");
+        verify(patchCreator).replaced("/workflowAnnotations/0/text/value", "anno3");
     }
 
     /**

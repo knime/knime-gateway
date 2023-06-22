@@ -12,10 +12,12 @@
       "x" : 0,
       "y" : 0
     },
-    "contentType" : "text/plain",
     "id" : "root_7",
     "styleRanges" : [ ],
-    "text" : "",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
     "textAlign" : "left"
   }
 } ]

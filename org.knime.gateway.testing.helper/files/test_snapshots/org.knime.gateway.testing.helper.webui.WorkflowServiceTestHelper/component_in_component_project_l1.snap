@@ -121,9 +121,11 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "styleRanges" : [ ],
-        "text" : "",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : ""
+        },
         "textAlign" : "center"
       },
       "id" : "root:5:0:7",

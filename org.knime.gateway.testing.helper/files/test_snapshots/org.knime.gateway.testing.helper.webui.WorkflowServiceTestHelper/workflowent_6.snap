@@ -167,7 +167,6 @@
       "x" : 233,
       "y" : 293
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root:6_0",
     "styleRanges" : [ {
@@ -182,7 +181,10 @@
       "length" : 15,
       "start" : 38
     } ],
-    "text" : "Workflow Annotation with Style Ranges and another one",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "Workflow Annotation with Style Ranges and another one"
+    },
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#FFFFFF",
@@ -194,11 +196,13 @@
       "x" : 840,
       "y" : 200
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root:6_1",
     "styleRanges" : [ ],
-    "text" : "<- this output bar has a custom position and size",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "<- this output bar has a custom position and size"
+    },
     "textAlign" : "left"
   } ]
 }

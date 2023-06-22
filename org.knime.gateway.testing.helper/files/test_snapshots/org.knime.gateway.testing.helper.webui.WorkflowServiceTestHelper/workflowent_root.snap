@@ -534,10 +534,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "a node created\nvia a node set factory",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "a node created\nvia a node set factory"
+        },
         "textAlign" : "center"
       },
       "id" : "root:10",
@@ -642,9 +644,11 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "styleRanges" : [ ],
-        "text" : "",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : ""
+        },
         "textAlign" : "center"
       },
       "id" : "root:12",
@@ -700,10 +704,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "Node 13",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "Node 13"
+        },
         "textAlign" : "center"
       },
       "id" : "root:13",
@@ -757,10 +763,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "inactive branch",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "inactive branch"
+        },
         "textAlign" : "center"
       },
       "id" : "root:14",
@@ -908,10 +916,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 13,
         "styleRanges" : [ ],
-        "text" : "Missing",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "Missing"
+        },
         "textAlign" : "center"
       },
       "id" : "root:172",
@@ -953,10 +963,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "checking flow\nvariables (string)",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "checking flow\nvariables (string)"
+        },
         "textAlign" : "center"
       },
       "id" : "root:18",
@@ -1010,10 +1022,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 13,
         "styleRanges" : [ ],
-        "text" : "🤷🏻‍♂️ 🤨",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "🤷🏻‍♂️ 🤨"
+        },
         "textAlign" : "center"
       },
       "id" : "root:182",
@@ -1056,10 +1070,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 13,
         "styleRanges" : [ ],
-        "text" : "Component",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "Component"
+        },
         "textAlign" : "center"
       },
       "executionInfo" : {
@@ -1137,9 +1153,11 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "styleRanges" : [ ],
-        "text" : "",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : ""
+        },
         "textAlign" : "center"
       },
       "id" : "root:185",
@@ -1190,10 +1208,12 @@
       },
       "annotation" : {
         "backgroundColor" : "#F57900",
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "Node annotation with\nbackground color",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "Node annotation with\nbackground color"
+        },
         "textAlign" : "center"
       },
       "id" : "root:19",
@@ -1248,10 +1268,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "node annotation",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "node annotation"
+        },
         "textAlign" : "center"
       },
       "hasDialog" : true,
@@ -1306,10 +1328,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "check for simple port spec\n(distance measure)",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "check for simple port spec\n(distance measure)"
+        },
         "textAlign" : "center"
       },
       "id" : "root:20",
@@ -1377,10 +1401,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "optional\nin-ports",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "optional\nin-ports"
+        },
         "textAlign" : "center"
       },
       "id" : "root:21",
@@ -1456,10 +1482,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "Check a \n'generic'\nport type spec",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "Check a \n'generic'\nport type spec"
+        },
         "textAlign" : "center"
       },
       "id" : "root:22",
@@ -1522,10 +1550,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "with JS view inside\n(i.e. with composite view)",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "with JS view inside\n(i.e. with composite view)"
+        },
         "textAlign" : "center"
       },
       "id" : "root:23",
@@ -1645,10 +1675,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "test of another\nport object spec",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "test of another\nport object spec"
+        },
         "textAlign" : "center"
       },
       "id" : "root:26",
@@ -1709,10 +1741,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "dynamic\nports",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "dynamic\nports"
+        },
         "textAlign" : "center"
       },
       "hasDialog" : true,
@@ -1837,10 +1871,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "a non-executing node",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "a non-executing node"
+        },
         "textAlign" : "center"
       },
       "id" : "root:5",
@@ -2006,9 +2042,11 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "styleRanges" : [ ],
-        "text" : "",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : ""
+        },
         "textAlign" : "center"
       },
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
@@ -2058,9 +2096,13 @@
     }
   },
   "projectMetadata" : {
-    "contentType" : "text/plain",
-    "description" : "",
-    "lastEdit" : "DATE_TIME_PLACEHOLDER"
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "lastEdit" : "DATE_TIME_PLACEHOLDER",
+    "links" : [ ],
+    "tags" : [ ]
   },
   "workflowAnnotations" : [ {
     "backgroundColor" : "#FFFFFF",
@@ -2072,11 +2114,13 @@
       "x" : 20,
       "y" : 20
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root_0",
     "styleRanges" : [ ],
-    "text" : "this is a workflow annotation",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "this is a workflow annotation"
+    },
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#FFFFFF",
@@ -2088,11 +2132,13 @@
       "x" : 880,
       "y" : 20
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root_1",
     "styleRanges" : [ ],
-    "text" : "this is a red workflow annotation",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "this is a red workflow annotation"
+    },
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#FFFFFF",
@@ -2104,10 +2150,12 @@
       "x" : 80,
       "y" : 880
     },
-    "contentType" : "text/plain",
     "id" : "root_2",
     "styleRanges" : [ ],
-    "text" : "",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#FFFFFF",
@@ -2119,7 +2167,6 @@
       "x" : 340,
       "y" : 880
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root_3",
     "styleRanges" : [ {
@@ -2128,7 +2175,10 @@
       "length" : 1,
       "start" : 1
     } ],
-    "text" : "<= an empty\nworkflow\nannotation",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "<= an empty\nworkflow\nannotation"
+    },
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#F3F3F3",
@@ -2140,7 +2190,6 @@
       "x" : 1120,
       "y" : 700
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 11,
     "id" : "root_4",
     "styleRanges" : [ {
@@ -2246,7 +2295,10 @@
       "length" : 23,
       "start" : 303
     } ],
-    "text" : "normal16red16greenbold24normal9bolditalic13\n﷽\n\nabcde👮🏻‍♂️f\n\n\nabc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc \n\nnormal16red16greenbold24normal9bolditalic13\n﷽\n---\nעברית היא שפה שמית.",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "normal16red16greenbold24normal9bolditalic13\n﷽\n\nabcde👮🏻‍♂️f\n\n\nabc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc \n\nnormal16red16greenbold24normal9bolditalic13\n﷽\n---\nעברית היא שפה שמית."
+    },
     "textAlign" : "center"
   }, {
     "backgroundColor" : "#FFFFFF",
@@ -2258,7 +2310,6 @@
       "x" : 1220,
       "y" : 380
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 13,
     "id" : "root_5",
     "styleRanges" : [ {
@@ -2267,7 +2318,10 @@
       "length" : 5,
       "start" : 11
     } ],
-    "text" : "Annotation front",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "Annotation front"
+    },
     "textAlign" : "left"
   }, {
     "backgroundColor" : "#EFF0EE",
@@ -2279,7 +2333,6 @@
       "x" : 1360,
       "y" : 400
     },
-    "contentType" : "text/plain",
     "defaultFontSize" : 13,
     "id" : "root_6",
     "styleRanges" : [ {
@@ -2305,7 +2358,10 @@
       "length" : 3,
       "start" : 24
     } ],
-    "text" : "Annotation back\nfoo and bar",
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : "Annotation back\nfoo and bar"
+    },
     "textAlign" : "center"
   } ]
 }

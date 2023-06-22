@@ -84,10 +84,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "idle",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "idle"
+        },
         "textAlign" : "center"
       },
       "id" : "root:1",
@@ -140,10 +142,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "configured/executing",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "configured/executing"
+        },
         "textAlign" : "center"
       },
       "id" : "root:2",
@@ -198,10 +202,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "queued",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "queued"
+        },
         "textAlign" : "center"
       },
       "id" : "root:3",
@@ -255,10 +261,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "configured/executed",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "configured/executed"
+        },
         "textAlign" : "center"
       },
       "id" : "root:4",
@@ -316,7 +324,6 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ {
           "color" : "#000000",
@@ -324,7 +331,10 @@
           "length" : 33,
           "start" : 0
         } ],
-        "text" : "'executing remotely'\n-> executing",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "'executing remotely'\n-> executing"
+        },
         "textAlign" : "center"
       },
       "executionInfo" : {
@@ -370,10 +380,12 @@
         "canReset" : false
       },
       "annotation" : {
-        "contentType" : "text/plain",
         "defaultFontSize" : 11,
         "styleRanges" : [ ],
-        "text" : "queued",
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "queued"
+        },
         "textAlign" : "center"
       },
       "executionInfo" : {
@@ -410,9 +422,13 @@
     }
   },
   "projectMetadata" : {
-    "contentType" : "text/plain",
-    "description" : "",
-    "lastEdit" : "DATE_TIME_PLACEHOLDER"
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "lastEdit" : "DATE_TIME_PLACEHOLDER",
+    "links" : [ ],
+    "tags" : [ ]
   },
   "workflowAnnotations" : [ ]
 }

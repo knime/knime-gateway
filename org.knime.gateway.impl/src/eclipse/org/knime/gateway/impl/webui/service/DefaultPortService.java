@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.NodeContainer;
@@ -70,6 +71,8 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class DefaultPortService implements PortService {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultPortService.class);
 
     /**
      * Returns the singleton instance for this service.

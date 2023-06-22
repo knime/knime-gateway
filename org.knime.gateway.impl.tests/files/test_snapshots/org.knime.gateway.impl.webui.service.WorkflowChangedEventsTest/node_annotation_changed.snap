@@ -1,7 +1,7 @@
 {
   "ops" : [ {
   "op" : "replace",
-  "path" : "/nodes/root:1/annotation/text",
+  "path" : "/nodes/root:1/annotation/text/value",
   "value" : "yet another text"
 } ]
 }

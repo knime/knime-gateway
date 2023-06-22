@@ -80,7 +80,6 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContainerMetadata.ContentType;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeContainerTemplate;
@@ -117,8 +116,6 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder;
-import org.knime.gateway.api.webui.entity.AnnotationEnt;
-import org.knime.gateway.api.webui.entity.AnnotationEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
@@ -178,6 +175,7 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt.UpdateStatusEnum;
+import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -188,7 +186,6 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
-import org.knime.shared.workflow.def.AnnotationDataDef;
 
 /**
  * See {@link EntityFactory}.
@@ -759,25 +756,17 @@ public final class WorkflowEntityFactory {
         if (na.getData().isDefault()) {
             return null;
         }
-        var contentType = getContentType(na.getContentType());
+        var text = EntityUtil.toTypedTextEnt(na.getText(), na.getContentType());
         var textAlignSupplier = getTextAlignSupplier(na.getAlignment());
         var styleRangesSupplier = getStyleRangesSupplier(na.getStyleRanges());
         var bgColor = na.getBgColor();
         return builder(NodeAnnotationEntBuilder.class)//
-            .setText(na.getText())//
-            .setContentType(contentType)//
-            .setTextAlign(contentType == ContentTypeEnum.PLAIN ? textAlignSupplier.get() : null)//
-            .setStyleRanges(contentType == ContentTypeEnum.PLAIN ? styleRangesSupplier.get() : null)//
+            .setText(text)//
+            .setTextAlign(text.getContentType() == ContentTypeEnum.PLAIN ? textAlignSupplier.get() : null)//
+            .setStyleRanges(text.getContentType() == ContentTypeEnum.PLAIN ? styleRangesSupplier.get() : null)//
             .setBackgroundColor(bgColor == DEFAULT_NODE_ANNOTATION_BG_COLOR ? null : hexStringColor(bgColor))//
             .setDefaultFontSize(na.getDefaultFontSize() > 0 ? na.getDefaultFontSize() : null)//
             .build();
-    }
-
-    private AnnotationEnt.ContentTypeEnum getContentType(final AnnotationDataDef.ContentTypeEnum contentType) {
-        return switch (contentType) {
-            case PLAIN -> AnnotationEnt.ContentTypeEnum.PLAIN;
-            case HTML -> AnnotationEnt.ContentTypeEnum.HTML;
-        };
     }
 
     private Supplier<TextAlignEnum> getTextAlignSupplier(final TextAlignment alignment) {
@@ -1051,22 +1040,15 @@ public final class WorkflowEntityFactory {
     private ProjectMetadataEnt buildProjectMetadataEnt(final WorkflowManager wfm) {
         assert wfm.isProject();
         final var metadata = wfm.getMetadata();
-        final var links = metadata.getLinks();
-        final var tags = metadata.getTags();
+        final var description =
+            EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(""), metadata.getDescriptionContentType());
+        final var links = EntityUtil.toLinkEnts(metadata.getLinks());
         return builder(ProjectMetadataEntBuilder.class)//
-            .setDescription(metadata.getDescription().orElse(null))//
-            .setContentType(getContentTypeEnum(metadata.getDescriptionContentType()))//
-            .setLinks(links.isEmpty() ? null : EntityUtil.toLinkEnts(links))//
-            .setTags(tags.isEmpty() ? null : tags)//
+            .setDescription(description)//
+            .setLinks(links)//
+            .setTags(metadata.getTags())//
             .setLastEdit(metadata.getLastModified().toOffsetDateTime())//
             .build();
-    }
-
-    private ProjectMetadataEnt.ContentTypeEnum getContentTypeEnum(final ContentType contentType) {
-        return switch (contentType) {
-            case HTML -> ProjectMetadataEnt.ContentTypeEnum.HTML;
-            case PLAIN -> ProjectMetadataEnt.ContentTypeEnum.PLAIN;
-        };
     }
 
     private StyleRangeEnt buildStyleRangeEnt(final StyleRange sr) {
@@ -1101,14 +1083,13 @@ public final class WorkflowEntityFactory {
             .setWidth(wa.getWidth())//
             .setHeight(wa.getHeight())//
             .build();
-        var contentType = getContentType(wa.getContentType());
-        var textAlignSupplier = getTextAlignSupplier(wa.getAlignment());
-        var styleRangesSupplier = getStyleRangesSupplier(wa.getStyleRanges());
+        final var text = EntityUtil.toTypedTextEnt(wa.getText(), wa.getContentType());
+        final var textAlignSupplier = getTextAlignSupplier(wa.getAlignment());
+        final var styleRangesSupplier = getStyleRangesSupplier(wa.getStyleRanges());
         return builder(WorkflowAnnotationEntBuilder.class).setId(new AnnotationIDEnt(wa.getID()))//
-            .setText(wa.getText())//
-            .setContentType(contentType)//
-            .setTextAlign(contentType == ContentTypeEnum.PLAIN ? textAlignSupplier.get() : null)//
-            .setStyleRanges(contentType == ContentTypeEnum.PLAIN ? styleRangesSupplier.get() : null)//
+            .setText(text)//
+            .setTextAlign(text.getContentType() == ContentTypeEnum.PLAIN ? textAlignSupplier.get() : null)//
+            .setStyleRanges(text.getContentType() == ContentTypeEnum.PLAIN ? styleRangesSupplier.get() : null)//
             .setBackgroundColor(hexStringColor(wa.getBgColor()))//
             .setBorderColor(hexStringColor(wa.getBorderColor()))//
             .setBorderWidth(wa.getBorderSize())//

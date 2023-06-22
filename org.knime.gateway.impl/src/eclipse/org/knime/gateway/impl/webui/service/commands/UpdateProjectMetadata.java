@@ -48,15 +48,15 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.knime.core.node.workflow.NodeContainerMetadata.ContentType;
 import org.knime.core.node.workflow.WorkflowMetadata;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
@@ -80,18 +80,14 @@ final class UpdateProjectMetadata extends AbstractWorkflowCommand {
      */
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        if (m_commandEnt.getDescription() == null && m_commandEnt.getTags() == null
-            && m_commandEnt.getLinks() == null) {
-            return false; // Nothing changed
-        }
+        final var description = m_commandEnt.getDescription();
+        final var tags = m_commandEnt.getTags();
+        final var links = m_commandEnt.getLinks();
 
-        final var description = m_commandEnt.getDescription() == null ? "" : m_commandEnt.getDescription();
-        final List<String> tags = m_commandEnt.getTags() == null ? Collections.emptyList() : m_commandEnt.getTags();
-        final List<LinkEnt> links = m_commandEnt.getLinks() == null ? Collections.emptyList() : m_commandEnt.getLinks();
         final var wfm = getWorkflowManager();
         m_metadata = wfm.getMetadata();
-
-        final var oldDescription = m_metadata.getDescription().orElse(null);
+        final var oldDescription =
+            EntityUtil.toTypedTextEnt(m_metadata.getDescription().orElse(""), m_metadata.getDescriptionContentType());
         final var oldTags = m_metadata.getTags();
         final var oldLinks = EntityUtil.toLinkEnts(m_metadata.getLinks());
         final var oldAndNewMetadata =
@@ -102,7 +98,7 @@ final class UpdateProjectMetadata extends AbstractWorkflowCommand {
         }
 
         final var updated = oldAndNewMetadata.getUpdatedMetadata();
-        wfm.setContainerMetadata(updated);
+        wfm.setContainerMetadata(updated); // Second update doesn't trigger a patch. See {@link WorkflowManager#setDirty()}
         return true;
     }
 
@@ -112,12 +108,12 @@ final class UpdateProjectMetadata extends AbstractWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        wfm.setContainerMetadata(m_metadata);
+        wfm.setContainerMetadata(m_metadata); // Undo doesn't trigger a patch. See {@link WorkflowManager#setDirty()}
         m_metadata = null;
     }
 
     private static record OldAndNewMetadata(// NOSONAR: record
-        String oldDescription, String description, // NOSONAR: record
+        TypedTextEnt oldDescription, TypedTextEnt description, // NOSONAR: record
         List<String> oldTags, List<String> tags, //
         List<LinkEnt> oldLinks, List<LinkEnt> links) {
 
@@ -128,9 +124,8 @@ final class UpdateProjectMetadata extends AbstractWorkflowCommand {
         }
 
         private WorkflowMetadata getUpdatedMetadata() {
-            final var builder = WorkflowMetadata.fluentBuilder()//
-                .withLastModifiedNow()// Since we are modifying it now
-                .withDescription(description, ContentType.PLAIN);
+            final var builder =
+                CoreUtil.applyDescriptionToBuilder(WorkflowMetadata.fluentBuilder().withLastModifiedNow(), description);
             tags.forEach(builder::addTag);
             links.forEach(link -> builder.addLink(link.getUrl(), link.getText()));
             return builder.build();

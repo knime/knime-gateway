@@ -87,6 +87,9 @@ import org.knime.core.node.workflow.FlowLoopContext;
 import org.knime.core.node.workflow.LoopStartNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContainerMetadata;
+import org.knime.core.node.workflow.NodeContainerMetadata.MetadataOptionals;
+import org.knime.core.node.workflow.NodeContainerMetadata.NeedsDescription;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
@@ -96,7 +99,10 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowMetadata;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
+import org.knime.shared.workflow.def.AnnotationDataDef;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -570,4 +576,63 @@ public final class CoreUtil {
             return Optional.empty();
         }
     }
+
+    /**
+     * Helper class to convert {@link TypedTextEnt.ContentTypeEnum}s to the corresponding `knime-core` classes.
+     */
+    static final class ContentTypeConverter {
+
+        private ContentTypeConverter() {
+            // Utility class
+        }
+
+        static NodeContainerMetadata.ContentType toNodeContainerMetadata(//
+            final TypedTextEnt.ContentTypeEnum contentType) {
+            return switch (contentType) {
+                case PLAIN -> NodeContainerMetadata.ContentType.PLAIN;
+                case HTML -> NodeContainerMetadata.ContentType.HTML;
+            };
+        }
+
+        static TypedTextEnt.ContentTypeEnum fromNodeContainerMetadata(//
+            final NodeContainerMetadata.ContentType contentType) {
+            return switch (contentType) {
+                case PLAIN -> TypedTextEnt.ContentTypeEnum.PLAIN;
+                case HTML -> TypedTextEnt.ContentTypeEnum.HTML;
+            };
+        }
+
+        static AnnotationDataDef.ContentTypeEnum toAnnotationDataDef(//
+            final TypedTextEnt.ContentTypeEnum contentType) {
+            return switch (contentType) {
+                case PLAIN -> AnnotationDataDef.ContentTypeEnum.PLAIN;
+                case HTML -> AnnotationDataDef.ContentTypeEnum.HTML;
+            };
+
+        }
+
+        static TypedTextEnt.ContentTypeEnum fromAnnotationDataDef(//
+            final AnnotationDataDef.ContentTypeEnum contentType) {
+            return switch (contentType) {
+                case PLAIN -> TypedTextEnt.ContentTypeEnum.PLAIN;
+                case HTML -> TypedTextEnt.ContentTypeEnum.HTML;
+            };
+        }
+
+    }
+
+    /**
+     * Applies the description to the workflow metadata builder doing the type translation automatically
+     *
+     * @param builder The builder to use
+     * @param description The description to apply
+     * @return The updated workflow metadata builder
+     */
+    public static MetadataOptionals<WorkflowMetadata>
+        applyDescriptionToBuilder(final NeedsDescription<WorkflowMetadata> builder, final TypedTextEnt description) {
+        final var text = description.getValue();
+        final var format = ContentTypeConverter.toNodeContainerMetadata(description.getContentType());
+        return builder.withDescription(text, format);
+    }
+
 }
