@@ -44,72 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 18, 2022 (hornm): created
+ *   Jun 22, 2023 (hornm): created
  */
-package org.knime.gateway.impl;
+package org.knime.gateway.impl.node.port;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.knime.core.data.DirectAccessTable;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.image.ImagePortObject;
-import org.knime.core.webui.node.port.PortViewManager;
-import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
-import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
-import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
-import org.knime.gateway.impl.node.port.FlowVariableSpecViewFactory;
-import org.knime.gateway.impl.node.port.ImagePortViewFactory;
-import org.knime.gateway.impl.node.port.StatisticsPortViewFactory;
-import org.knime.gateway.impl.node.port.TablePortViewFactory;
-import org.knime.gateway.impl.node.port.TableSpecViewFactory;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.ui.CoreUIPlugin;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewFactory;
+import org.knime.core.webui.page.Page;
 
 /**
- * Bundle activator of the gateway.impl plugin.
+ * A {@link PortView} for all port objects that implement {@link DirectAccessTable}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class GatewayImplPlugin implements BundleActivator {
+public class DirectAccessTablePortViewFactory implements PortViewFactory<PortObject> {
 
     @Override
-    public void start(final BundleContext context) throws Exception {
-        // Temporary solution to register port views with port types/objects.
-        // To be removed once it's part of the PortObject/PortType API.
+    public PortView createPortView(final PortObject portObject) {
+        var directAccessTable = (DirectAccessTable)portObject;
+        return new PortView() {
 
-        PortViewManager.registerPortViews(BufferedDataTable.TYPE, //
-            List.of( //
-                new PortViewDescriptor("Table", new TableSpecViewFactory()), //
-                new PortViewDescriptor("Table", new TablePortViewFactory()), //
-                new PortViewDescriptor("Statistics", new StatisticsPortViewFactory())//
-            ), //
-            List.of(0, 2), //
-            List.of(1, 2)//
-        );
+            @Override
+            public Page getPage() {
+                return Page.builder(CoreUIPlugin.class, "js-src/dist", "DeferredTableView.umd.js")
+                    .markAsReusable("deferredtableview").build();
+            }
 
-        PortViewManager.registerPortViews(FlowVariablePortObject.TYPE, //
-            List.of(//
-                new PortViewDescriptor("Flow variables", new FlowVariableSpecViewFactory()), //
-                new PortViewDescriptor("Flow variables", new FlowVariablePortViewFactory())), //
-            List.of(0), //
-            List.of(1)//
-        );
+            @Override
+            public Optional<InitialDataService<String>> createInitialDataService() {
+                return Optional.of(InitialDataService
+                    .builder(() -> "ignored - TODO: empty initial data produces an error, but shouldn't").build());
+            }
 
-        PortViewManager.registerPortViews(ImagePortObject.TYPE, //
-            List.of(new PortViewDescriptor("Image", new ImagePortViewFactory())), //
-            List.of(), //
-            List.of(0)//
-        );
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                var ds = RpcDataService.builder(new DirectAccessTableDataService(directAccessTable)).build();
+                return Optional.of(ds);
+            }
 
-        PortViewManager.registerPortViews(DirectAccessTable.class, //
-            List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
-
-    }
-
-    @Override
-    public void stop(final BundleContext context) throws Exception {
-        //
+        };
     }
 
 }
