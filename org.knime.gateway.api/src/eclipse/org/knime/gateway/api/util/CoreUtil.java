@@ -88,8 +88,6 @@ import org.knime.core.node.workflow.LoopStartNode;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerMetadata;
-import org.knime.core.node.workflow.NodeContainerMetadata.MetadataOptionals;
-import org.knime.core.node.workflow.NodeContainerMetadata.NeedsDescription;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
@@ -99,7 +97,6 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowMetadata;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.shared.workflow.def.AnnotationDataDef;
@@ -619,20 +616,6 @@ public final class CoreUtil {
             };
         }
 
-    }
-
-    /**
-     * Applies the description to the workflow metadata builder doing the type translation automatically
-     *
-     * @param builder The builder to use
-     * @param description The description to apply
-     * @return The updated workflow metadata builder
-     */
-    public static MetadataOptionals<WorkflowMetadata>
-        applyDescriptionToBuilder(final NeedsDescription<WorkflowMetadata> builder, final TypedTextEnt description) {
-        final var text = description.getValue();
-        final var format = ContentTypeConverter.toNodeContainerMetadata(description.getContentType());
-        return builder.withDescription(text, format);
     }
 
 }

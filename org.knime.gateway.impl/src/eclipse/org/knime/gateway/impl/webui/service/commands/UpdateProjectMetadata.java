@@ -50,10 +50,11 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.knime.core.node.workflow.NodeContainerMetadata.NeedsLastModified;
 import org.knime.core.node.workflow.WorkflowMetadata;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
@@ -87,7 +88,7 @@ final class UpdateProjectMetadata extends AbstractWorkflowCommand {
         final var wfm = getWorkflowManager();
         m_metadata = wfm.getMetadata();
         final var oldDescription =
-            EntityUtil.toTypedTextEnt(m_metadata.getDescription().orElse(""), m_metadata.getDescriptionContentType());
+            EntityUtil.toTypedTextEnt(m_metadata.getDescription().orElse(""), m_metadata.getContentType());
         final var oldTags = m_metadata.getTags();
         final var oldLinks = EntityUtil.toLinkEnts(m_metadata.getLinks());
         final var oldAndNewMetadata =
@@ -124,8 +125,13 @@ final class UpdateProjectMetadata extends AbstractWorkflowCommand {
         }
 
         private WorkflowMetadata getUpdatedMetadata() {
-            final var builder =
-                CoreUtil.applyDescriptionToBuilder(WorkflowMetadata.fluentBuilder().withLastModifiedNow(), description);
+            final Supplier<NeedsLastModified<WorkflowMetadata>> supplier = () -> switch (description.getContentType()) {
+                case PLAIN -> WorkflowMetadata.fluentBuilder().withPlainContent();
+                case HTML -> WorkflowMetadata.fluentBuilder().withHtmlContent();
+            };
+            final var builder = supplier.get()//
+                .withLastModifiedNow()// Since we are just modifying it
+                .withDescription(description.getValue());
             tags.forEach(builder::addTag);
             links.forEach(link -> builder.addLink(link.getUrl(), link.getText()));
             return builder.build();

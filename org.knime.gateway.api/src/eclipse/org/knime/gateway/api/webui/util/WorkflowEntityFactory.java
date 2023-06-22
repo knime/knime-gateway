@@ -1041,7 +1041,7 @@ public final class WorkflowEntityFactory {
         assert wfm.isProject();
         final var metadata = wfm.getMetadata();
         final var description =
-            EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(""), metadata.getDescriptionContentType());
+            EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(""), metadata.getContentType());
         final var links = EntityUtil.toLinkEnts(metadata.getLinks());
         return builder(ProjectMetadataEntBuilder.class)//
             .setDescription(description)//
