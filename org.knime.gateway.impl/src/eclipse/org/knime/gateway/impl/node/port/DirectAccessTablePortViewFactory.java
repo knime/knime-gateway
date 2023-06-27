@@ -79,8 +79,7 @@ public class DirectAccessTablePortViewFactory implements PortViewFactory<PortObj
 
             @Override
             public Optional<InitialDataService<String>> createInitialDataService() {
-                return Optional.of(InitialDataService
-                    .builder(() -> "ignored - TODO: empty initial data produces an error, but shouldn't").build());
+                return Optional.empty();
             }
 
             @Override
