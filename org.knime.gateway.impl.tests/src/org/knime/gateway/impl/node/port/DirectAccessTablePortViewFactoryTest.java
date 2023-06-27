@@ -125,7 +125,7 @@ public class DirectAccessTablePortViewFactoryTest {
                     {
                         "jsonrpc" : "2.0",
                         "method" : "getTableViewInitialData",
-                        "params" : [2],
+                        "params" : [100],
                         "id" : 1
                     }
                     """);
@@ -230,7 +230,7 @@ public class DirectAccessTablePortViewFactoryTest {
                     "title" : "Table View",
                     "showTitle" : false,
                     "enablePagination" : true,
-                    "pageSize" : 2,
+                    "pageSize" : 100,
                     "compactMode" : true,
                     "enableGlobalSearch" : false,
                     "enableColumnSearch" : false,

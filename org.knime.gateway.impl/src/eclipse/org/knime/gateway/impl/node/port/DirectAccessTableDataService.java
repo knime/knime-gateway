@@ -135,7 +135,7 @@ public class DirectAccessTableDataService {
 
                     @Override
                     public long getRowCount() {
-                        return numRows;
+                        return rows.length;
                     }
 
                     @Override
@@ -203,8 +203,7 @@ public class DirectAccessTableDataService {
         } catch (IndexOutOfBoundsException | CanceledExecutionException ex) {
             throw new IllegalStateException("Problem rendering rows", ex);
         }
-
-        var stringRows = new String[numRows][table.getDataTableSpec().getNumColumns() + 2];
+        var stringRows = new String[rows.size()][table.getDataTableSpec().getNumColumns() + 2];
 
         for (var i = 0; i < stringRows.length; i++) {
             var row = rows.get(i);
