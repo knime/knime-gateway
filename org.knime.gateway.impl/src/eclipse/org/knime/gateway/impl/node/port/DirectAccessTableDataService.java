@@ -209,7 +209,7 @@ public class DirectAccessTableDataService {
             var row = rows.get(i);
             for (var j = 0; j < stringRows[0].length; j++) {
                 if (j == 0) {
-                    stringRows[i][0] = String.valueOf(i);
+                    stringRows[i][0] = String.valueOf(i + 1);
                 } else if (j == 1) {
                     stringRows[i][1] = row.getKey().toString();
                 } else {

@@ -198,7 +198,7 @@ public class DirectAccessTablePortViewFactoryTest {
         """
                 {
                   "table" : {
-                    "rows" : [ [ "0", "0", "0", "0", "0", "0.0", "false", "1.7976931348623157E308" ], [ "1", "1", "?", "?", "?", "?", "?", "?" ] ],
+                    "rows" : [ [ "1", "0", "0", "0", "0", "0.0", "false", "1.7976931348623157E308" ], [ "2", "1", "?", "?", "?", "?", "?", "?" ] ],
                     "rowCount" : 2,
                     "columnCount" : 6,
                     "displayedColumns" : [ "int", "string", "long", "double", "boolean", "mixed-type" ],
