@@ -154,7 +154,13 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
             public Optional<InitialDataService> createInitialDataService() {
                 var settings = getSettingsForDataTable(UnivariateStatistics.getStatisticsTableSpec(selectedStatistics),
                     numColumns);
-                return Optional.of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, tableId));
+                Runnable onDispose = () -> {
+                    if (hasFutureOf(tableId)) {
+                        cancelCurrent();
+                    }
+                };
+                return Optional
+                    .of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, tableId, onDispose));
             }
 
             @Override
