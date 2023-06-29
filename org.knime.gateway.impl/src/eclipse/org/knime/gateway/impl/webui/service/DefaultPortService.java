@@ -121,7 +121,10 @@ public class DefaultPortService implements PortService {
                 String.format("No port object spec available at index %d for node %s.", portIdx, nc.getNameWithID()));
         }
 
-        return new PortViewEnt(nc, portIdx, viewIdx);
+        var wrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
+        var portViewManager = PortViewManager.getInstance();
+        var portView = portViewManager.getPortView(wrapper);
+        return new PortViewEnt(wrapper, portViewManager, portView);
 
     }
 
