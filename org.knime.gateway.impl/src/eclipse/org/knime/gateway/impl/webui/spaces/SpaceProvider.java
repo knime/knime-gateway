@@ -90,6 +90,14 @@ public interface SpaceProvider {
     }
 
     /**
+     * Returns the server address of the current space provider
+     * @return the server address or an empty optional if this provider is not connected
+     */
+    default Optional<String> getServerAddress() {
+        return Optional.empty();
+    }
+
+    /**
      * Creates an entity representing this space provider and its available spaces.
      *
      * @return entity representing this space provider
