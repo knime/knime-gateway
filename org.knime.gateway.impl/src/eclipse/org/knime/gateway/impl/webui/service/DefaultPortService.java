@@ -126,8 +126,7 @@ public class DefaultPortService implements PortService {
 
         var wrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
         var portViewManager = PortViewManager.getInstance();
-        var portView = portViewManager.getPortView(wrapper);
-        return new PortViewEnt(wrapper, portViewManager, portView);
+        return new PortViewEnt(wrapper, portViewManager);
 
     }
 
