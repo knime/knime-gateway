@@ -9,12 +9,14 @@
   "componentMetadata" : {
     "description" : "The component description",
     "inPorts" : [ {
+      "name" : "Port 1",
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
       "typeName" : "Table"
     } ],
     "name" : "component project",
     "outPorts" : [ {
+      "name" : "Port 1",
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
       "typeName" : "Table"
