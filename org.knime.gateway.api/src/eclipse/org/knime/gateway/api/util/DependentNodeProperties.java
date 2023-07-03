@@ -51,6 +51,7 @@ package org.knime.gateway.api.util;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
@@ -316,11 +317,12 @@ public final class DependentNodeProperties {
         if (nc instanceof NativeNodeContainer
             && ((NativeNodeContainer)nc).getNodeModel() instanceof VirtualSubNodeOutputNodeModel) {
             // special handling of component output nodes
-            var snc = getParentComponent(wfm);
-            if (snc.getParent().hasSuccessorInProgress(snc.getID())) {
-                p.setHasExecutingSuccessors(true);
-                hasExecutingSuccessors.add(snc.getID());
-            }
+            getParentComponent(wfm) //
+                .filter(snc -> snc.getParent().hasSuccessorInProgress(snc.getID())) //
+                .ifPresent(snc -> {
+                    p.setHasExecutingSuccessors(true);
+                    hasExecutingSuccessors.add(snc.getID());
+                });
         } else {
             // special handling of nodes connected to metanode incoming or outgoing ports (i.e. from within the metanode)
             if (wfm.getIncomingConnectionsFor(id).stream().anyMatch(cc -> cc.getSource().equals(wfm.getID())) && //
@@ -386,8 +388,15 @@ public final class DependentNodeProperties {
         }
     }
 
-    private static SubNodeContainer getParentComponent(final WorkflowManager wfm) {
-        return (SubNodeContainer)wfm.getDirectNCParent();
+    /**
+     * @param wfm The child workflow manager
+     * @return The parent component of a child wfm, or empty if there is no parent component (i.e. the parent is the
+     *         root wfm, which is not a component).
+     */
+    private static Optional<SubNodeContainer> getParentComponent(final WorkflowManager wfm) {
+        return Optional.of(wfm.getDirectNCParent()) //
+            .filter(p -> p != WorkflowManager.ROOT) //
+            .map(p -> (SubNodeContainer)p);
     }
 
     private static class Properties {
