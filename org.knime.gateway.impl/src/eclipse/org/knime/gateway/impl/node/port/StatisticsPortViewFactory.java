@@ -49,9 +49,11 @@ package org.knime.gateway.impl.node.port;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 import org.knime.core.data.DataTableSpec;
@@ -59,6 +61,7 @@ import org.knime.core.data.statistics.UnivariateStatistics;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
@@ -97,14 +100,14 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
      * @param task The task to compute
      * @return A {@link CompletableFuture} for {@code task}
      */
-    private static CompletableFuture<BufferedDataTable> cancelOtherAndGetFutureFor(final String tableId,
-        final Supplier<BufferedDataTable> task) {
+    private static Future<BufferedDataTable> cancelOtherAndGetFutureFor(final String tableId,
+        final Callable<BufferedDataTable> task) {
         if (hasFutureOf(tableId)) {
             return mostRecent.future();
         } else {
             cancelCurrent();
         }
-        var newFuture = CompletableFuture.supplyAsync(task);
+        var newFuture = KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(task);
         mostRecent = new StatisticsComputation(tableId, newFuture);
         return newFuture;
     }
@@ -206,6 +209,6 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
      * @param tableId Identifies the source table
      * @param future A Future that might still be in progress or be already completed
      */
-    private record StatisticsComputation(String tableId, CompletableFuture<BufferedDataTable> future) { // NOSONAR
+    private record StatisticsComputation(String tableId, Future<BufferedDataTable> future) { // NOSONAR
     }
 }
