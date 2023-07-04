@@ -130,7 +130,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
             } catch (NoSuchElementException | IOException ex) {
                 throw new OperationNotAllowedException(ex.getMessage(), ex);
             }
-            nodesToRestoreOnUndo = new NodeID[]{replacementNodeIdOrNull};
+            nodesToRestoreOnUndo = new NodeID[]{targetNodeId};
         } else {
             nodesToRestoreOnUndo = new NodeID[]{targetNodeId, replacementNodeIdOrNull};
             replacementNodeContainer = wfm.getNodeContainer(replacementNodeIdOrNull);
@@ -155,10 +155,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
 
             @Override
             public void undo() {
-                if (replacementNodeIdOrNull != null) {
-                    wfm.removeNode(replacementNodeIdOrNull);
-                }
-
+                wfm.removeNode(replacementNodeContainer.getID());
                 wfm.paste(previousNodesPersistor);
                 for (ConnectionContainer cc : previousConnections) {
                     wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
