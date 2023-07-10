@@ -2898,7 +2898,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA); // This uses the legacy workflow metadata format
         var metadataBefore = ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getProjectMetadata();
         var oldDescription =
-            EntityUtil.toTypedTextEnt("Workflow with metadata\n\nThe workflow description\n", ContentTypeEnum.PLAIN);
+            EntityUtil.toTypedTextEnt("Workflow with metadata\n\nThe workflow description", ContentTypeEnum.PLAIN);
         var oldTags = List.of("tag1", "tag2");
         var oldLinks = List.of(buildLinkEnt("http://blub.com", "BLUB"));
         assertProjectMetadata(metadataBefore, oldDescription, oldTags, oldLinks);
