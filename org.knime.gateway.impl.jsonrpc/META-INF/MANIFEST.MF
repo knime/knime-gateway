@@ -10,7 +10,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.knime.gateway.impl.jsonrpc,
  org.knime.gateway.impl.webui.jsonrpc,
  org.knime.gateway.impl.webui.jsonrpc.service.util
-Require-Bundle: com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)",
+Require-Bundle: com.github.briandilley.jsonrpc4j;bundle-version="[1.6,2.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.13.2.2,3.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.13.2,3.0.0)",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.13.2,3.0.0)",
