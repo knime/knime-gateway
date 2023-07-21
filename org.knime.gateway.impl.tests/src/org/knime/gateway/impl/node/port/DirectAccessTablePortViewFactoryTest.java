@@ -204,7 +204,8 @@ public class DirectAccessTablePortViewFactoryTest {
                     "displayedColumns" : [ "int", "string", "long", "double", "boolean", "mixed-type" ],
                     "columnContentTypes" : [ "txt", "txt", "txt", "txt", "txt", "txt" ],
                     "columnFormatterDescriptions" : [ null, null, null, null, null, null ],
-                    "totalSelected" : 0
+                    "totalSelected" : 0,
+                    "firstRowImageDimensions" : {}
                   },
                   "settings" : {
                     "displayedColumns" : {
@@ -227,10 +228,12 @@ public class DirectAccessTablePortViewFactoryTest {
                     "showRowIndices" : true,
                     "showRowKeys" : true,
                     "showColumnDataType" : true,
+                    "showTableSize" : false,
                     "title" : "Table View",
                     "showTitle" : false,
                     "enablePagination" : true,
                     "pageSize" : 100,
+                    "autoSizeColumnsToContent":"FIXED",
                     "compactMode" : true,
                     "enableGlobalSearch" : false,
                     "enableColumnSearch" : false,

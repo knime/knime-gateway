@@ -68,6 +68,7 @@ import org.knime.core.webui.node.view.table.data.DataType;
 import org.knime.core.webui.node.view.table.data.Table;
 import org.knime.core.webui.node.view.table.data.TableViewInitialData;
 import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
+import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
 
 /**
  * The {@link RpcDataService} for the {@linke PortView} created by {@link DirectAccessTablePortViewFactory}.
@@ -146,6 +147,11 @@ public class DirectAccessTableDataService {
                     @Override
                     public Long getTotalSelected() {
                         return 0l;
+                    }
+
+                    @Override
+                    public Map<String, ImageDimension> getFirstRowImageDimensions() {
+                        return Map.of();
                     }
 
                 };
