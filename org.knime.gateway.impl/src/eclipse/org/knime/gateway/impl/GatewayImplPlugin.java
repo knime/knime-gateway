@@ -78,6 +78,8 @@ public class GatewayImplPlugin implements BundleActivator {
         // Temporary solution to register port views with port types/objects.
         // To be removed once it's part of the PortObject/PortType API.
 
+        System.out.println("GatewayImplPlugin#start");
+
         PortViewManager.registerPortViews(BufferedDataTable.TYPE, //
             List.of( //
                 new PortViewDescriptor("Table", new TableSpecViewFactory()), //
