@@ -62,6 +62,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.BufferedDataTable;
@@ -140,12 +141,32 @@ public final class AppStateEntityFactory {
         final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
         final NodeFactoryProvider nodeFactoryProvider) {
+        return buildAppStateEnt(previousAppState, workflowProjectManager, preferenceProvider, exampleProjects,
+            spaceProviders, nodeFactoryProvider, null);
+    }
+
+    /**
+     * @param previousAppState the previously created app state, or {@code null} if there is none
+     * @param workflowProjectManager
+     * @param preferenceProvider
+     * @param exampleProjects if {@code null}, example projects will be taken from the previous app state
+     * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
+     * @param nodeFactoryProvider used to determine the nodeFactory based on a fileExtension; can be {@code null}
+     * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if
+     *            all projects are to be included
+     * @return a new entity instance
+     */
+    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
+        final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
+        final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
+        final NodeFactoryProvider nodeFactoryProvider, final Predicate<String> workflowProjectFilter) {
         List<ExampleProjectEnt> exampleProjectEnts =
             exampleProjects == null ? null : buildExampleProjects(exampleProjects);
         if (exampleProjectEnts == null && previousAppState != null) {
             exampleProjectEnts = previousAppState.getExampleProjects();
         }
-        var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders);
+        var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders,
+            workflowProjectFilter == null ? id -> true : workflowProjectFilter);
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
             .setExampleProjects(exampleProjectEnts) //
@@ -194,8 +215,9 @@ public final class AppStateEntityFactory {
     }
 
     private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
-        final SpaceProviders spaceProviders) {
+        final SpaceProviders spaceProviders, final Predicate<String> filter) {
         return workflowProjectManager.getWorkflowProjectsIds().stream() //
+            .filter(filter) //
             .flatMap(id -> workflowProjectManager.getWorkflowProject(id).stream()) //
             .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, spaceProviders)) //
             .collect(toList());

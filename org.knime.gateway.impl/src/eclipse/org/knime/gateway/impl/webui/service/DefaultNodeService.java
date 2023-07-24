@@ -109,6 +109,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         try {
             DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
@@ -125,6 +126,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         try {
             var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
             if (nc instanceof NativeNodeContainer) {
@@ -173,6 +175,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         var snc = getNC(projectId, workflowId, nodeId, SingleNodeContainer.class);
         if (!NodeDialogManager.hasNodeDialog(snc)) {
             throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
@@ -186,6 +189,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
         if (!NodeViewManager.hasNodeView(nnc)) {
             throw new InvalidRequestException("The node " + nnc.getNameWithID() + " doesn't have a view");
@@ -221,6 +225,7 @@ public final class DefaultNodeService implements NodeService {
     public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String extensionType, final String serviceType, final String request)
         throws NodeNotFoundException, InvalidRequestException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
 
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
 
@@ -257,6 +262,8 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final String mode, final List<String> selection) {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+
         final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase());
         var nc = (NativeNodeContainer)DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
         try {

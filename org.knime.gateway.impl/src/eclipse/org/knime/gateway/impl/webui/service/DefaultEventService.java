@@ -129,26 +129,26 @@ public final class DefaultEventService implements EventService {
         EventSource eventSource;
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new WorkflowChangedEventSource(this::sendEvent, m_workflowMiddleware, m_workflowProjectManager));
+                t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_workflowProjectManager));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new AppStateChangedEventSource(this::sendEvent, m_appStateUpdater, m_workflowProjectManager,
                     m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider));
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new SelectionEventSourceDelegator(this::sendEvent));
+                t -> new SelectionEventSourceDelegator(m_eventConsumer));
         } else if (eventTypeEnt instanceof UpdateAvailableEventTypeEnt) {
             if (m_updateStateProvider == null) {
                 throw new InvalidRequestException(
                     "Cannot register listener to update state changed events if no update state provider was declared.");
             }
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new UpdateAvailableEventSource(this::sendEvent, m_updateStateProvider));
+                t -> new UpdateAvailableEventSource(m_eventConsumer, m_updateStateProvider));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
         try {
-            eventSource.addEventListenerFor(eventTypeEnt);
+            eventSource.addEventListenerFor(eventTypeEnt, DefaultServiceContext.getWorkflowProjectId().orElse(null));
         } catch (IllegalArgumentException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         }
@@ -180,18 +180,6 @@ public final class DefaultEventService implements EventService {
      */
     void setPreEventCreationCallbackForTesting(final Runnable preEventCreationCallback) {
         m_eventSources.values().forEach(s -> s.setPreEventCreationCallback(preEventCreationCallback));
-    }
-
-    /**
-     * Send a named event to the event consumer. It's done in an extra method (instead of calling the event consumer
-     * directly whereever needed) in order to synchronize the calls on the event consumer. Because it's not guaranteed
-     * that the event consumer is thread-safe.
-     *
-     * @param name The event name
-     * @param event The actual event object
-     */
-    private synchronized void sendEvent(final String name, final Object event) {
-        m_eventConsumer.accept(name, event);
     }
 
     /*

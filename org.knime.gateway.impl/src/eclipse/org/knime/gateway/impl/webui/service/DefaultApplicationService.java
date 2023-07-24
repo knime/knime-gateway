@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.function.Predicate;
+
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
@@ -68,7 +70,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 public final class DefaultApplicationService implements ApplicationService {
 
     private final AppStateUpdater m_appStateUpdater =
-        ServiceDependencies.getServiceDependency(AppStateUpdater.class, true);
+        ServiceDependencies.getServiceDependency(AppStateUpdater.class, false);
 
     private final WorkflowProjectManager m_workflowProjectManager =
         ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
@@ -103,7 +105,9 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public void dispose() {
-        m_appStateUpdater.setLastAppState(null);
+        if (m_appStateUpdater != null) {
+            m_appStateUpdater.setLastAppState(null);
+        }
     }
 
     /**
@@ -111,9 +115,14 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public AppStateEnt getState() {
+        var workflowProjectFilter =
+            DefaultServiceContext.getWorkflowProjectId().<Predicate<String>> map(id -> id::equals).orElse(null);
+
         var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_preferencesProvider,
-            m_exampleProjects, m_spaceProviders, m_nodeFactoryProvider);
-        m_appStateUpdater.setLastAppState(appState);
+            m_exampleProjects, m_spaceProviders, m_nodeFactoryProvider, workflowProjectFilter);
+        if (m_appStateUpdater != null) {
+            m_appStateUpdater.setLastAppState(appState);
+        }
         return appState;
     }
 

@@ -91,6 +91,7 @@ public class DefaultPortService implements PortService {
     public Object getPortView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final Integer portIdx, final Integer viewIdx)
         throws NodeNotFoundException, InvalidRequestException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         NodeContainer nc;
         try {
             nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
@@ -142,6 +143,7 @@ public class DefaultPortService implements PortService {
     public String callPortDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final Integer portIdx, final Integer viewIdx, final String serviceType, final String body)
         throws NodeNotFoundException, InvalidRequestException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         NodeContainer nc;
         try {
             nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);

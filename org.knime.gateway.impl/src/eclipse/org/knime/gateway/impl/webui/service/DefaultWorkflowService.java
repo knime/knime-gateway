@@ -100,6 +100,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         var wfKey = new WorkflowKey(projectId, workflowId);
         LOGGER.debug("'getWorkflow()' was called for: " + wfKey); // Quickly get project ID and workflow ID while debugging
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
@@ -120,6 +121,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
             m_workflowMiddleware, m_nodeFactoryProvider, m_spaceProvides);
     }
@@ -130,6 +132,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
@@ -139,6 +142,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws OperationNotAllowedException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 
