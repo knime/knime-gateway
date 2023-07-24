@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
@@ -87,7 +88,7 @@ public final class DefaultEventService implements EventService {
         Collections.synchronizedMap(new HashMap<>());
 
     private final AppStateUpdater m_appStateUpdater =
-        ServiceDependencies.getServiceDependency(AppStateUpdater.class, true);
+        ServiceDependencies.getServiceDependency(AppStateUpdater.class, false);
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
@@ -131,9 +132,15 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_workflowProjectManager));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
-            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new AppStateChangedEventSource(this::sendEvent, m_appStateUpdater, m_workflowProjectManager,
-                    m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider));
+            if (m_appStateUpdater != null) {
+                eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                    t -> new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, m_workflowProjectManager,
+                        m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider));
+            } else {
+                NodeLogger.getLogger(getClass()).warn(
+                    "Listener for 'app state changed' event type can't be attached. No app state updater available.");
+                return;
+            }
         } else if (eventTypeEnt instanceof SelectionEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SelectionEventSourceDelegator(m_eventConsumer));
