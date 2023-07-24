@@ -68,6 +68,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJsonRpcErrorTranslator {
 
     /**
+     * Json rpc error code caused by an unexpected exception.
+     */
+    public static final int UNEXPECTED_EXCEPTION_ERROR_CODE = -32601;
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -85,7 +90,7 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
 
     @Override
     public int getUnexpectedExceptionErrorCode(final Throwable t) {
-        return -32601;
+        return UNEXPECTED_EXCEPTION_ERROR_CODE;
     }
 
     private static JsonNode getExceptionDetails(final Throwable t) {

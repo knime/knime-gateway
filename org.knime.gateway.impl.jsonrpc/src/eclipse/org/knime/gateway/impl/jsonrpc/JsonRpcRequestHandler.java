@@ -106,11 +106,28 @@ public class JsonRpcRequestHandler {
         } catch (IOException e) {
             NodeLogger.getLogger(getClass()).warn("Problem handling json rpc request", e);
             // turn it into a json error object
-            ObjectNode jsonRpc = m_mapper.createObjectNode().put("jsonrpc", "2.0"); // NOSONAR
-            jsonRpc.putObject("error").put("code", m_exceptionTranslator.getUnexpectedExceptionErrorCode(e))
-                .put("message", m_exceptionTranslator.getMessage(e))
-                .set("data", m_mapper.convertValue(m_exceptionTranslator.getData(e), JsonNode.class));
-            return jsonRpc.toPrettyString().getBytes(StandardCharsets.UTF_8);
+            return createJsonRpcErrorResponse(m_mapper, m_exceptionTranslator.getUnexpectedExceptionErrorCode(e),
+                m_exceptionTranslator.getMessage(e), m_exceptionTranslator.getData(e)).getBytes(StandardCharsets.UTF_8);
         }
     }
+
+    /**
+     * Creates a json rpc error response.
+     *
+     * @param mapper mapper used to create the json object and serialize the data, if given.
+     * @param errorCode
+     * @param message
+     * @param data the data to be set in the data field, or {@code null} if none
+     * @return the json rpc error response
+     */
+    public static String createJsonRpcErrorResponse(final ObjectMapper mapper, final int errorCode,
+        final String message, final Object data) {
+        ObjectNode jsonRpc = mapper.createObjectNode().put("jsonrpc", "2.0"); // NOSONAR
+        var res = jsonRpc.putObject("error").put("code", errorCode).put("message", message);
+        if (data != null) {
+            res.set("data", mapper.convertValue(data, JsonNode.class));
+        }
+        return jsonRpc.toPrettyString();
+    }
+
 }
