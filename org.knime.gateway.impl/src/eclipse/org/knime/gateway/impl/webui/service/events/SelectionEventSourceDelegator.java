@@ -52,11 +52,11 @@ import java.util.Optional;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
+import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.events.SelectionEvent;
 import org.knime.gateway.impl.service.events.SelectionEventSource;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.service.util.EventConsumer;
 
 /**
  * A event source that delegates to the actual {@link SelectionEventSource}-implementation (which is also used by other

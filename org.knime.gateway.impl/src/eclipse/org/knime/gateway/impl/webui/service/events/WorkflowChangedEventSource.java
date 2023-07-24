@@ -73,8 +73,8 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
-import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
@@ -180,7 +180,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
                 patchEntCreator, patchEntCreator.getLastSnapshotId(), true, tracker);
             if (workflowChangedEvent != null) {
                 var compositeEvent = createCompositeEvent(wfKey, wfm, workflowChangedEvent);
-                sendEvent(compositeEvent);
+                sendEvent(compositeEvent, wfKey.getProjectId());
             }
         };
     }

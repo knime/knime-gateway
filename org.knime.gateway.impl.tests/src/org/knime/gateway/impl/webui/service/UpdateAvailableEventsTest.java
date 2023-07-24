@@ -61,19 +61,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
-import org.knime.gateway.impl.service.util.EventConsumer;
-import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 
 /**

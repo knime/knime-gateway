@@ -54,8 +54,8 @@ import java.util.function.Consumer;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
-import org.knime.gateway.impl.service.util.EventConsumer;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
 

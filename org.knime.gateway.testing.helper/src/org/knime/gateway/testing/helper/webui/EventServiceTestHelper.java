@@ -72,7 +72,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.impl.service.util.EventConsumer;
+import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.testing.helper.ResultChecker;

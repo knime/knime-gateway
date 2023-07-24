@@ -77,7 +77,7 @@ import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.impl.service.util.EventConsumer;
+import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
