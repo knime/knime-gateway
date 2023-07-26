@@ -142,7 +142,7 @@ public final class AppStateEntityFactory {
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
         final NodeFactoryProvider nodeFactoryProvider) {
         return buildAppStateEnt(previousAppState, workflowProjectManager, preferenceProvider, exampleProjects,
-            spaceProviders, nodeFactoryProvider, null);
+            spaceProviders, nodeFactoryProvider, null, null);
     }
 
     /**
@@ -154,19 +154,24 @@ public final class AppStateEntityFactory {
      * @param nodeFactoryProvider used to determine the nodeFactory based on a fileExtension; can be {@code null}
      * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if
      *            all projects are to be included
+     * @param isActiveProject determines the projects to be set to active (see
+     *            {@link WorkflowProjectEnt#getActiveWorkflowId()}; if {@code null}
+     *            {@link WorkflowProjectManager#isActiveWorkflowProject(String)} is used
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
-        final NodeFactoryProvider nodeFactoryProvider, final Predicate<String> workflowProjectFilter) {
+        final NodeFactoryProvider nodeFactoryProvider, final Predicate<String> workflowProjectFilter,
+        final Predicate<String> isActiveProject) {
         List<ExampleProjectEnt> exampleProjectEnts =
             exampleProjects == null ? null : buildExampleProjects(exampleProjects);
         if (exampleProjectEnts == null && previousAppState != null) {
             exampleProjectEnts = previousAppState.getExampleProjects();
         }
         var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders,
-            workflowProjectFilter == null ? id -> true : workflowProjectFilter);
+            workflowProjectFilter == null ? id -> true : workflowProjectFilter, //
+            isActiveProject == null ? workflowProjectManager::isActiveWorkflowProject : isActiveProject);
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
             .setExampleProjects(exampleProjectEnts) //
@@ -215,11 +220,12 @@ public final class AppStateEntityFactory {
     }
 
     private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
-        final SpaceProviders spaceProviders, final Predicate<String> filter) {
+        final SpaceProviders spaceProviders, final Predicate<String> projectFilter,
+        final Predicate<String> isActiveProject) {
         return workflowProjectManager.getWorkflowProjectsIds().stream() //
-            .filter(filter) //
+            .filter(projectFilter) //
             .flatMap(id -> workflowProjectManager.getWorkflowProject(id).stream()) //
-            .map(wp -> buildWorkflowProjectEnt(wp, workflowProjectManager, spaceProviders)) //
+            .map(wp -> buildWorkflowProjectEnt(wp, isActiveProject, spaceProviders)) //
             .collect(toList());
     }
 
@@ -288,12 +294,12 @@ public final class AppStateEntityFactory {
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
-        final WorkflowProjectManager workflowProjectManager, final SpaceProviders spaceProviders) {
+        final Predicate<String> isActiveProject, final SpaceProviders spaceProviders) {
         final WorkflowProjectEntBuilder projectEntBuilder =
             builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
 
         // optionally set an active workflow for this workflow project
-        if (workflowProjectManager.isActiveWorkflowProject(wp.getID())) {
+        if (isActiveProject.test(wp.getID())) {
             projectEntBuilder.setActiveWorkflowId(NodeIDEnt.getRootID());
         }
 

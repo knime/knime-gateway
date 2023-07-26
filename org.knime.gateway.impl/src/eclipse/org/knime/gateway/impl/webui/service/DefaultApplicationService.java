@@ -117,9 +117,10 @@ public final class DefaultApplicationService implements ApplicationService {
     public AppStateEnt getState() {
         var workflowProjectFilter =
             DefaultServiceContext.getWorkflowProjectId().<Predicate<String>> map(id -> id::equals).orElse(null);
+        Predicate<String> isActiveProject = workflowProjectFilter == null ? null : id -> true;
 
         var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_preferencesProvider,
-            m_exampleProjects, m_spaceProviders, m_nodeFactoryProvider, workflowProjectFilter);
+            m_exampleProjects, m_spaceProviders, m_nodeFactoryProvider, workflowProjectFilter, isActiveProject);
         if (m_appStateUpdater != null) {
             m_appStateUpdater.setLastAppState(appState);
         }
