@@ -159,6 +159,7 @@ public final class AppStateEntityFactory {
      *            {@link WorkflowProjectManager#isActiveWorkflowProject(String)} is used
      * @return a new entity instance
      */
+    @SuppressWarnings("java:S107") // lots of parameters are okay because it's a builder helper method
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
