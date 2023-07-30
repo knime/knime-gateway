@@ -154,6 +154,7 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
         }
 
         // Set the default values
+        newAnnotationData.setVersion(AnnotationData.VERSION_20230412);
         newAnnotationData.setContentType(AnnotationDataDef.ContentTypeEnum.HTML);
         newAnnotationData.setStyleRanges(Collections.emptyList()); // No style ranges are back-ported to Classic UI
         newAnnotationData.setAlignment(DEFAULT_ALIGNMENT);
