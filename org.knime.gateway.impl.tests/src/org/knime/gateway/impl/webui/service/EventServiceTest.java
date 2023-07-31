@@ -208,7 +208,7 @@ public class EventServiceTest extends GatewayServiceTest {
             return se.getNodeId().equals("root:1") && //
             se.getSelection().equals(List.of("Row2")) && //
             se.getMode() == SelectionEventMode.ADD;//
-        }));
+        }), eq(null));
         Awaitility.await().untilAsserted(() -> verify(m_testConsumer).accept(eq("SelectionEvent"), argThat(e -> {
             var se = (SelectionEvent)e;
             return se.getNodeId().equals("root:1") && //
