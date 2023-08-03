@@ -78,9 +78,9 @@ import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeMode
  * calculation of those dependent node properties) should be covered by and tightly integrated into the workflow-manager
  * API/framework.
  *
- * Another note: every time the {@link #calc()}-method is called the entire workflow (of the associated workflow
- * manager and partly of the parent workflow manager) graph is traversed. That maybe could be avoided somehow if we knew
- * what parts of the graph have been changed (a changed node state itself is not enough).
+ * Another note: every time the {@link #calc()}-method is called the entire workflow (of the associated workflow manager
+ * and partly of the parent workflow manager) graph is traversed. That maybe could be avoided somehow if we knew what
+ * parts of the graph have been changed (a changed node state itself is not enough).
  *
  * @noreference This class is not intended to be referenced by clients.
  *
@@ -153,11 +153,12 @@ public final class DependentNodeProperties {
         // Will not be true if there is a paused successor in a parent workflow. However, then, the workflow manager
         //  will not allow to reset the node by means of canResetContainedNodes -> canResetSuccessors,
         //  which checks for isExecutionInProgress, which also applies to paused tail nodes.
-        return  wfmCanReset && !hasPausedSuccessor;
+        return wfmCanReset && !hasPausedSuccessor;
     }
 
     /**
      * Determine whether a connection incident to the given node can be removed.
+     *
      * @param id The node to consider.
      * @return Whether a connection on that node can be removed.
      */
@@ -170,12 +171,13 @@ public final class DependentNodeProperties {
     }
 
     /**
-     * Determine whether nodes in the "loop body" are currently executing, based on the current dependent node properties.
-     * Here, the loop body is the set of nodes forward-reachable from the loop head, up to the loop tail.
+     * Determine whether nodes in the "loop body" are currently executing, based on the current dependent node
+     * properties. Here, the loop body is the set of nodes forward-reachable from the loop head, up to the loop tail.
      * Consequently, this includes outgoing branches and does not include incoming branches.
+     *
      * @param tail The tail node of the loop, expected to be an instance of {@link LoopEndNode}.
      * @return A boolean indicating whether nodes in the loop body (as defined above) are currently executing. If there
-     *     is no loop body (i.e. no loop head), this method returns {@code false}.
+     *         is no loop body (i.e. no loop head), this method returns {@code false}.
      */
     public boolean hasExecutingLoopBody(final NativeNodeContainer tail) {
         if (!tail.isModelCompatibleTo(LoopEndNode.class)) {
@@ -191,7 +193,8 @@ public final class DependentNodeProperties {
                 return false;
             }
             boolean sHead = props.hasExecutingSuccessors();
-            boolean sTail = CoreUtil.successors(tail.getID(), m_wfm).stream().anyMatch(id -> m_props.get(id).hasExecutingSuccessors());
+            boolean sTail = CoreUtil.successors(tail.getID(), m_wfm).stream()
+                .anyMatch(id -> m_props.get(id).hasExecutingSuccessors());
             return sHead && !sTail;
         }).orElse(false);
     }
@@ -200,8 +203,8 @@ public final class DependentNodeProperties {
      * @param id
      *
      * @return Whether the node has a successor that is currently executing. Also considers successors across
-     *  component/metanode borders. The property is boundary-inclusive: A currently executing node will also have
-     *  this property.
+     *         component/metanode borders. The property is boundary-inclusive: A currently executing node will also have
+     *         this property.
      */
     public boolean hasExecutingSuccessor(final NodeID id) {
         if (!m_props.containsKey(id)) {
@@ -210,10 +213,9 @@ public final class DependentNodeProperties {
         return m_props.get(id).hasExecutingSuccessors();
     }
 
-
     /**
      * @return True iff at least one node in the workflow can be reset. Here, reset-ability also considers the context
-     *      of the node, e.g. whether it has executing successors.
+     *         of the node, e.g. whether it has executing successors.
      */
     public boolean canResetAny() {
         return m_props.keySet().stream().anyMatch(this::canResetNode);
@@ -265,9 +267,9 @@ public final class DependentNodeProperties {
         }
     }
 
-
-    private static void findAndInitStartNodes(final WorkflowManager wfm, final Map<NodeID, Properties> propsMap, final Queue<NodeID> hasExecutingSuccessors, final Queue<NodeID> hasExecutablePredecessors,
-            final LinkedList<NodeID> hasPausedSuccessors) {
+    private static void findAndInitStartNodes(final WorkflowManager wfm, final Map<NodeID, Properties> propsMap,
+        final Queue<NodeID> hasExecutingSuccessors, final Queue<NodeID> hasExecutablePredecessors,
+        final LinkedList<NodeID> hasPausedSuccessors) {
         for (NodeContainer nc : wfm.getNodeContainers()) {
             var nodeId = nc.getID();
             var props = propsMap.computeIfAbsent(nodeId, i -> new Properties());
@@ -294,8 +296,8 @@ public final class DependentNodeProperties {
             }
 
             if (!added) {
-                handleNodesAtComponentAndMetanodeBorders(wfm, hasExecutingSuccessors, hasExecutablePredecessors, nc, nodeId,
-                    props);
+                handleNodesAtComponentAndMetanodeBorders(wfm, hasExecutingSuccessors, hasExecutablePredecessors, nc,
+                    nodeId, props);
             }
         }
     }
@@ -363,7 +365,8 @@ public final class DependentNodeProperties {
             return false;
         }
         var nnc = (NativeNodeContainer)nc;
-        return nnc.isModelCompatibleTo(LoopEndNode.class) && nnc.getLoopStatus() == NativeNodeContainer.LoopStatus.PAUSED;
+        return nnc.isModelCompatibleTo(LoopEndNode.class)
+            && nnc.getLoopStatus() == NativeNodeContainer.LoopStatus.PAUSED;
     }
 
     private boolean hasExecutablePredecessorVisitor(final NodeID id) {
@@ -426,8 +429,8 @@ public final class DependentNodeProperties {
 
         /**
          * @return Whether the node has a predecessor that is executable. Also considers predecessors across
-         *  component/metanode borders. The property is boundary-inclusive: An executable node will also have
-         *  this property.
+         *         component/metanode borders. The property is boundary-inclusive: An executable node will also have
+         *         this property.
          */
         boolean hasExecutablePredecessors() {
             return m_hasExecutablePredecessors;
@@ -435,16 +438,17 @@ public final class DependentNodeProperties {
 
         /**
          * @return Whether the node has a successor that is currently executing. Also considers successors across
-         *  component/metanode borders. The property is boundary-inclusive: A currently executing node will also have
-         *  this property.
+         *         component/metanode borders. The property is boundary-inclusive: A currently executing node will also
+         *         have this property.
          */
         boolean hasExecutingSuccessors() {
             return m_hasExecutingSuccessors;
         }
 
         /**
-         * @return Whether the node has a successor that is a loop end node ("tail") in a paused state. Note that any such nodes
-         * outside the current workflow (i.e. in a parent workflow) are not considered, see {@link #canResetNode(NodeID)}}.
+         * @return Whether the node has a successor that is a loop end node ("tail") in a paused state. Note that any
+         *         such nodes outside the current workflow (i.e. in a parent workflow) are not considered, see
+         *         {@link #canResetNode(NodeID)}}.
          */
         boolean hasPausedSuccessor() {
             return m_hasPausedSuccessor;
