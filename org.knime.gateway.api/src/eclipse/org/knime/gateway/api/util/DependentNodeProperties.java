@@ -283,7 +283,7 @@ public final class DependentNodeProperties {
             }
 
             props.setHasExecutablePredecessors(nodeState.isConfigured());
-            if (nodeState.isConfigured()) {
+            if (nodeState.isConfigured() || isIdleButContainsConfiguredNodes(nodeState, nc)) {
                 hasExecutablePredecessors.add(nodeId);
                 added = true;
             }
@@ -298,6 +298,14 @@ public final class DependentNodeProperties {
                     props);
             }
         }
+    }
+
+    private static boolean isIdleButContainsConfiguredNodes(final NodeContainerState nodeState,
+        final NodeContainer nc) {
+        if (nodeState.isIdle() && (nc instanceof SubNodeContainer || nc instanceof WorkflowManager)) {
+            return nc.getParent().canExecuteNodeDirectly(nc.getID());
+        }
+        return false;
     }
 
     /*
