@@ -103,7 +103,7 @@ public final class LocalWorkspace implements Space {
     /**
      * Holds both, the item ID to path map and the path to type map
      */
-    final SpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache; // Package scope for testing
+    final LocalSpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache; // Package scope for testing
 
     private final Path m_localWorkspaceRootPath;
 
@@ -113,7 +113,7 @@ public final class LocalWorkspace implements Space {
     public LocalWorkspace(final Path localWorkspaceRootPath) {
         m_localWorkspaceRootPath = localWorkspaceRootPath;
         // To make sure the path of the root item ID can also be retrieved from the cache
-        m_spaceItemPathAndTypeCache = new SpaceItemPathAndTypeCache(Space.ROOT_ITEM_ID, localWorkspaceRootPath);
+        m_spaceItemPathAndTypeCache = new LocalSpaceItemPathAndTypeCache(Space.ROOT_ITEM_ID, localWorkspaceRootPath);
     }
 
     @Override
@@ -398,9 +398,9 @@ public final class LocalWorkspace implements Space {
         try { // Moving within the same file system, simple move can be applied
             return Files.move(srcPath, destPath, StandardCopyOption.ATOMIC_MOVE);
         } catch (AtomicMoveNotSupportedException e) { // Moving across different file systems, simple move isn't possible
-          FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
-          FileUtil.deleteRecursively(srcPath.toFile()); // Delete the remaining space item
-          return destPath;
+            FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
+            FileUtil.deleteRecursively(srcPath.toFile()); // Delete the remaining space item
+            return destPath;
         }
     }
 
