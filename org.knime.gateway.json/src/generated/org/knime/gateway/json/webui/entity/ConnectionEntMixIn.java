@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -106,6 +107,10 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
     @JsonProperty("allowedActions")
     public AllowedConnectionActionsEnt getAllowedActions();
     
+    @Override
+    @JsonProperty("bendpoints")
+    public java.util.List<XYEnt> getBendpoints();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -154,6 +159,10 @@ public interface ConnectionEntMixIn extends ConnectionEnt {
         @Override
         @JsonProperty("allowedActions")
         public ConnectionEntMixInBuilder setAllowedActions(final AllowedConnectionActionsEnt allowedActions);
+        
+        @Override
+        @JsonProperty("bendpoints")
+        public ConnectionEntMixInBuilder setBendpoints(final java.util.List<XYEnt> bendpoints);
         
     }
 

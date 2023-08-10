@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
 
@@ -118,6 +119,12 @@ public interface ConnectionEnt extends GatewayEntity {
    **/
   public AllowedConnectionActionsEnt getAllowedActions();
 
+  /**
+   * List of bendpoint coordinates.
+   * @return bendpoints 
+   **/
+  public java.util.List<XYEnt> getBendpoints();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -132,6 +139,7 @@ public interface ConnectionEnt extends GatewayEntity {
       valueConsumer.accept("streaming", Pair.create(isStreaming(), e.isStreaming()));
       valueConsumer.accept("label", Pair.create(getLabel(), e.getLabel()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
+      valueConsumer.accept("bendpoints", Pair.create(getBendpoints(), e.getBendpoints()));
   }
 
     /**
@@ -210,6 +218,14 @@ public interface ConnectionEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ConnectionEntBuilder setAllowedActions(AllowedConnectionActionsEnt allowedActions);
+        
+        /**
+         * List of bendpoint coordinates.
+         * 
+         * @param bendpoints the property value,  
+         * @return this entity builder for chaining
+         */
+        ConnectionEntBuilder setBendpoints(java.util.List<XYEnt> bendpoints);
         
         
         /**

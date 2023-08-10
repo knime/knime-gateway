@@ -296,6 +296,10 @@
       "allowedActions" : {
         "canDelete" : true
       },
+      "bendpoints" : [ {
+        "x" : 242,
+        "y" : 518
+      } ],
       "destNode" : "root:9",
       "destPort" : 1,
       "id" : "root:9_1",

@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 
@@ -62,6 +63,7 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
  * @param streaming
  * @param label
  * @param allowedActions
+ * @param bendpoints
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -75,7 +77,8 @@ public record DefaultConnectionEnt(
     Boolean flowVariableConnection,
     Boolean streaming,
     String label,
-    AllowedConnectionActionsEnt allowedActions) implements ConnectionEnt {
+    AllowedConnectionActionsEnt allowedActions,
+    java.util.List<XYEnt> bendpoints) implements ConnectionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -148,6 +151,11 @@ public record DefaultConnectionEnt(
         return allowedActions;
     }
     
+    @Override
+    public java.util.List<XYEnt> getBendpoints() {
+        return bendpoints;
+    }
+    
     /**
      * A builder for {@link DefaultConnectionEnt}.
      */
@@ -170,6 +178,8 @@ public record DefaultConnectionEnt(
         private String m_label;
 
         private AllowedConnectionActionsEnt m_allowedActions;
+
+        private java.util.List<XYEnt> m_bendpoints;
 
         @Override
         public DefaultConnectionEntBuilder setId(org.knime.gateway.api.entity.ConnectionIDEnt id) {
@@ -241,6 +251,12 @@ public record DefaultConnectionEnt(
         }
 
         @Override
+        public DefaultConnectionEntBuilder setBendpoints(java.util.List<XYEnt> bendpoints) {
+             m_bendpoints = bendpoints;
+             return this;
+        }
+
+        @Override
         public DefaultConnectionEnt build() {
             return new DefaultConnectionEnt(
                 immutable(m_id),
@@ -251,7 +267,8 @@ public record DefaultConnectionEnt(
                 immutable(m_flowVariableConnection),
                 immutable(m_streaming),
                 immutable(m_label),
-                immutable(m_allowedActions));
+                immutable(m_allowedActions),
+                immutable(m_bendpoints));
         }
     
     }

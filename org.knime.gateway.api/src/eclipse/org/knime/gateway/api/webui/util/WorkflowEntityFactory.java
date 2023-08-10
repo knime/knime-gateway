@@ -568,7 +568,8 @@ public final class WorkflowEntityFactory {
             .setDestNode(id.getDestNodeIDEnt())//
             .setDestPort(cc.getDestPort())//
             .setSourceNode(buildContext.buildNodeIDEnt(cc.getSource())).setSourcePort(cc.getSourcePort())//
-            .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null);
+            .setFlowVariableConnection(cc.isFlowVariablePortConnection() ? cc.isFlowVariablePortConnection() : null)//
+            .setBendpoints(buildBendpoints(cc));
         if (buildContext.isInStreamingMode()) {
             var connectionProgress = cc.getConnectionProgress().orElse(null);
             if (connectionProgress != null) {
@@ -579,6 +580,19 @@ public final class WorkflowEntityFactory {
             builder.setAllowedActions(buildAllowedConnectionActionsEnt(cc, buildContext));
         }
         return builder.build();
+    }
+
+    private List<XYEnt> buildBendpoints(final ConnectionContainer cc) {
+        if (cc.getUIInfo() != null) {
+            int[][] allBendpoints = cc.getUIInfo().getAllBendpoints();
+            if (allBendpoints.length == 0) {
+                return null;
+            }
+            return Arrays.stream(allBendpoints).map(a -> builder(XYEntBuilder.class).setX(a[0]).setY(a[1]).build())
+                .toList();
+        } else {
+            return null;
+        }
     }
 
     private ConnectionIDEnt buildConnectionIDEnt(final ConnectionContainer c, final WorkflowBuildContext buildContext) {
