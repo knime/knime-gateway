@@ -74,6 +74,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
     @JsonProperty("spaces")
     public java.util.List<SpaceEnt> getSpaces();
     
+    @Override
+    @JsonProperty("remoteLocation")
+    public RemoteLocationEnum getRemoteLocation();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -90,6 +94,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
         @Override
         @JsonProperty("spaces")
         public SpaceProviderEntMixInBuilder setSpaces(final java.util.List<SpaceEnt> spaces);
+        
+        @Override
+        @JsonProperty("remoteLocation")
+        public SpaceProviderEntMixInBuilder setRemoteLocation(final RemoteLocationEnum remoteLocation);
         
     }
 

@@ -87,13 +87,16 @@ public final class SpaceEntityFactory {
     }
 
     /**
+     * @param location
      * @param spaces
      *
      * @return a new {@link SpaceProviderEnt}-instance
      */
-    public SpaceProviderEnt buildSpaceProviderEnt(final List<SpaceEnt> spaces) {
+    public SpaceProviderEnt buildSpaceProviderEnt(final SpaceProviderEnt.RemoteLocationEnum location,
+            final List<SpaceEnt> spaces) {
         return builder(SpaceProviderEntBuilder.class) //
             .setSpaces(spaces) //
+            .setRemoteLocation(location) //
             .build();
     }
 

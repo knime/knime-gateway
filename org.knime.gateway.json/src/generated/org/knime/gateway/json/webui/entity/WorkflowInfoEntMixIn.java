@@ -87,8 +87,8 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
     public Boolean isLinked();
     
     @Override
-    @JsonProperty("onHub")
-    public Boolean isOnHub();
+    @JsonProperty("remoteLocation")
+    public RemoteLocationEnum getRemoteLocation();
     
     @Override
     @JsonProperty("jobManager")
@@ -124,8 +124,8 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
         public WorkflowInfoEntMixInBuilder setLinked(final Boolean linked);
         
         @Override
-        @JsonProperty("onHub")
-        public WorkflowInfoEntMixInBuilder setOnHub(final Boolean onHub);
+        @JsonProperty("remoteLocation")
+        public WorkflowInfoEntMixInBuilder setRemoteLocation(final RemoteLocationEnum remoteLocation);
         
         @Override
         @JsonProperty("jobManager")

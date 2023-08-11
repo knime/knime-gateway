@@ -294,6 +294,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
             final Space... spaces) {
+        return createSpaceProvider(null, id, spaceProviderName, spaces);
+    }
+
+    private static SpaceProvider createSpaceProvider(final SpaceProviderEnt.RemoteLocationEnum location,
+            final String id, final String spaceProviderName, final Space... spaces) {
         return new SpaceProvider() {
 
             @Override
@@ -308,7 +313,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public SpaceProviderEnt toEntity() {
-                return EntityFactory.Space.buildSpaceProviderEnt(
+                return EntityFactory.Space.buildSpaceProviderEnt(location,
                     Arrays.stream(spaces).map(Space::toEntity).collect(Collectors.toList()));
             }
 
@@ -432,7 +437,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public SpaceProviderEnt toEntity() {
-                return EntityFactory.Space.buildSpaceProviderEnt(List.of(localWorkspace.toEntity()));
+                return EntityFactory.Space.buildSpaceProviderEnt(null, List.of(localWorkspace.toEntity()));
             }
 
             @Override

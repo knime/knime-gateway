@@ -57,7 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
  * @param containerId
  * @param containerType
  * @param linked
- * @param onHub
+ * @param remoteLocation
  * @param jobManager
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -68,7 +68,7 @@ public record DefaultWorkflowInfoEnt(
     org.knime.gateway.api.entity.NodeIDEnt containerId,
     ContainerTypeEnum containerType,
     Boolean linked,
-    Boolean onHub,
+    RemoteLocationEnum remoteLocation,
     JobManagerEnt jobManager) implements WorkflowInfoEnt {
 
     /**
@@ -112,8 +112,8 @@ public record DefaultWorkflowInfoEnt(
     }
     
     @Override
-    public Boolean isOnHub() {
-        return onHub;
+    public RemoteLocationEnum getRemoteLocation() {
+        return remoteLocation;
     }
     
     @Override
@@ -134,7 +134,7 @@ public record DefaultWorkflowInfoEnt(
 
         private Boolean m_linked;
 
-        private Boolean m_onHub;
+        private RemoteLocationEnum m_remoteLocation;
 
         private JobManagerEnt m_jobManager;
 
@@ -172,8 +172,8 @@ public record DefaultWorkflowInfoEnt(
         }
 
         @Override
-        public DefaultWorkflowInfoEntBuilder setOnHub(Boolean onHub) {
-             m_onHub = onHub;
+        public DefaultWorkflowInfoEntBuilder setRemoteLocation(RemoteLocationEnum remoteLocation) {
+             m_remoteLocation = remoteLocation;
              return this;
         }
 
@@ -190,7 +190,7 @@ public record DefaultWorkflowInfoEnt(
                 immutable(m_containerId),
                 immutable(m_containerType),
                 immutable(m_linked),
-                immutable(m_onHub),
+                immutable(m_remoteLocation),
                 immutable(m_jobManager));
         }
     

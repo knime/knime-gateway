@@ -54,12 +54,14 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
  * Provides one or more spaces.
  *
  * @param spaces
+ * @param remoteLocation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpaceProviderEnt(
-    java.util.List<SpaceEnt> spaces) implements SpaceProviderEnt {
+    java.util.List<SpaceEnt> spaces,
+    RemoteLocationEnum remoteLocation) implements SpaceProviderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -80,12 +82,19 @@ public record DefaultSpaceProviderEnt(
         return spaces;
     }
     
+    @Override
+    public RemoteLocationEnum getRemoteLocation() {
+        return remoteLocation;
+    }
+    
     /**
      * A builder for {@link DefaultSpaceProviderEnt}.
      */
     public static class DefaultSpaceProviderEntBuilder implements SpaceProviderEntBuilder {
 
         private java.util.List<SpaceEnt> m_spaces = new java.util.ArrayList<>();
+
+        private RemoteLocationEnum m_remoteLocation;
 
         @Override
         public DefaultSpaceProviderEntBuilder setSpaces(java.util.List<SpaceEnt> spaces) {
@@ -97,9 +106,16 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
+        public DefaultSpaceProviderEntBuilder setRemoteLocation(RemoteLocationEnum remoteLocation) {
+             m_remoteLocation = remoteLocation;
+             return this;
+        }
+
+        @Override
         public DefaultSpaceProviderEnt build() {
             return new DefaultSpaceProviderEnt(
-                immutable(m_spaces));
+                immutable(m_spaces),
+                immutable(m_remoteLocation));
         }
     
     }

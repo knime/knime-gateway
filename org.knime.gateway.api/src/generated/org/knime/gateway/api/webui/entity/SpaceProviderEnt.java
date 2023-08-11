@@ -63,6 +63,27 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface SpaceProviderEnt extends GatewayEntity {
 
+  /**
+   * Original location of the provided spaces. If local, this property is absent.
+   */
+  public enum RemoteLocationEnum {
+    HUB("HUB"),
+    
+    SERVER("SERVER");
+
+    private String value;
+
+    RemoteLocationEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Get spaces
@@ -70,12 +91,19 @@ public interface SpaceProviderEnt extends GatewayEntity {
    **/
   public java.util.List<SpaceEnt> getSpaces();
 
+  /**
+   * Original location of the provided spaces. If local, this property is absent.
+   * @return remoteLocation 
+   **/
+  public RemoteLocationEnum getRemoteLocation();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (SpaceProviderEnt)other;
       valueConsumer.accept("spaces", Pair.create(getSpaces(), e.getSpaces()));
+      valueConsumer.accept("remoteLocation", Pair.create(getRemoteLocation(), e.getRemoteLocation()));
   }
 
     /**
@@ -90,6 +118,14 @@ public interface SpaceProviderEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceProviderEntBuilder setSpaces(java.util.List<SpaceEnt> spaces);
+        
+        /**
+         * Original location of the provided spaces. If local, this property is absent.
+         * 
+         * @param remoteLocation the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setRemoteLocation(RemoteLocationEnum remoteLocation);
         
         
         /**
