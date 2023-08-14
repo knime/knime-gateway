@@ -239,6 +239,7 @@ public class DirectAccessTablePortViewFactoryTest {
                     "enableColumnSearch" : false,
                     "enableSortingByHeader" : false,
                     "enableRendererSelection" : false,
+                    "enableCellCopying" : true,
                     "publishSelection" : false,
                     "subscribeToSelection" : false,
                     "skipRemainingColumns" : false,

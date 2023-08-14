@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.node.port;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -130,13 +131,13 @@ public class DirectAccessTableDataService {
                     }
 
                     @Override
-                    public String[][] getRows() {
+                    public List<List<Object>> getRows() {
                         return rows;
                     }
 
                     @Override
                     public long getRowCount() {
-                        return rows.length;
+                        return rows.size();
                     }
 
                     @Override
@@ -202,26 +203,24 @@ public class DirectAccessTableDataService {
         return settings;
     }
 
-    private static String[][] renderRows(final DirectAccessTable table, final int numRows) {
+    private static List<List<Object>> renderRows(final DirectAccessTable table, final int numRows) {
         List<DataRow> rows;
         try {
             rows = table.getRows(0, numRows, null);
         } catch (IndexOutOfBoundsException | CanceledExecutionException ex) {
             throw new IllegalStateException("Problem rendering rows", ex);
         }
-        var stringRows = new String[rows.size()][table.getDataTableSpec().getNumColumns() + 2];
-
-        for (var i = 0; i < stringRows.length; i++) {
-            var row = rows.get(i);
-            for (var j = 0; j < stringRows[0].length; j++) {
-                if (j == 0) {
-                    stringRows[i][0] = String.valueOf(i + 1);
-                } else if (j == 1) {
-                    stringRows[i][1] = row.getKey().toString();
-                } else {
-                    stringRows[i][j] = row.getCell(j - 2).toString();
-                }
+        var numCols = table.getDataTableSpec().getNumColumns();
+        final var stringRows = new ArrayList<List<Object>>(numRows);
+        for (int i = 0; i < rows.size(); i++) {
+            final var stringRow = new ArrayList<Object>(numCols + 2);
+            stringRow.add(String.valueOf(i + 1));
+            final var row = rows.get(i);
+            stringRow.add(row.getKey().toString());
+            for (int j = 0; j < numCols; j++) {
+                stringRow.add(row.getCell(j).toString());
             }
+            stringRows.add(stringRow);
         }
         return stringRows;
     }
