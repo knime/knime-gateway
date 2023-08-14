@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name:  JSON-RPC for Java classpath fix
+Bundle-SymbolicName: com.github.briandilley.jsonrpc4j.clfix
+Bundle-Version: 1.5.2
+Fragment-Host: com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)"
+Import-Package: javax.jws;version="[2.1.0,3.0.0)"
+Automatic-Module-Name: com.github.briandilley.jsonrpc4j.clfix
