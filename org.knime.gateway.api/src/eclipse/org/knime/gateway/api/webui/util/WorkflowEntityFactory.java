@@ -97,6 +97,8 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2.LocationType;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.view.NodeViewManager;
@@ -1118,12 +1120,14 @@ public final class WorkflowEntityFactory {
         } else {
             template = wfm;
         }
+        var locationType =
+            Optional.ofNullable(wfm.getContextV2()).map(WorkflowContextV2::getLocationType).orElse(LocationType.LOCAL);
         return builder(WorkflowInfoEntBuilder.class)//
             .setName(wfm.getName())//
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) != null ? Boolean.TRUE : null)//
-            .setProviderType(switch (wfm.getContextV2().getLocationType()) {
+            .setProviderType(switch (locationType) {
                 case LOCAL -> ProviderTypeEnum.LOCAL;
                 case HUB_SPACE -> ProviderTypeEnum.HUB;
                 case SERVER_REPOSITORY -> ProviderTypeEnum.SERVER;
