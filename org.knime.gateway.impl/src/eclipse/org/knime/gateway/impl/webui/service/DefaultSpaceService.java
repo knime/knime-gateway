@@ -131,6 +131,32 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
+    public List<Object> listJobsForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
+        throws InvalidRequestException {
+        try {
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).listJobsForWorkflow(workflowId);
+        } catch (NoSuchElementException e) {
+            throw new InvalidRequestException("Problem fetching jobs", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
+        throws InvalidRequestException {
+        try {
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).listSchedulesForWorkflow(workflowId);
+        } catch (NoSuchElementException e) {
+            throw new InvalidRequestException("Problem fetching jobs", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId,
             final String name) throws InvalidRequestException, ServiceExceptions.IOException {
         try {

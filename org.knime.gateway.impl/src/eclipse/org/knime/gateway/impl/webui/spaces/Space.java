@@ -136,6 +136,30 @@ public interface Space {
     WorkflowGroupContentEnt listWorkflowGroup(String workflowGroupItemId) throws IOException;
 
     /**
+     * Lists the jobs for a workflow for the given id.
+     *
+     * @param workflowId
+     *
+     * @return list of jobs where each job is in the format of
+     *         com.knime.enterprise.server.rest.api.v4.jobs.ent.WorkflowJob
+     */
+    default List<Object> listJobsForWorkflow(final String workflowId) {
+        return List.of();
+    }
+
+    /**
+     * Lists the schedules for a workflow for the given id.
+     *
+     * @param workflowId
+     *
+     * @return list of schedules where each schedule is in the format of
+     *         com.knime.enterprise.server.rest.api.v4.schedule.ent.ScheduledJobInfo
+     */
+    default List<Object> listSchedulesForWorkflow(final String workflowId) {
+        return List.of();
+    }
+
+    /**
      * Creates a new workflow.
      *
      * @param workflowGroupItemId The ID of the workflow group where to create the new workflow

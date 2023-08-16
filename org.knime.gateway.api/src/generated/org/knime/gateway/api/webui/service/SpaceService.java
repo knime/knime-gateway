@@ -110,6 +110,30 @@ public interface SpaceService extends GatewayService {
     SpaceProviderEnt getSpaceProvider(String spaceProviderId)  throws ServiceExceptions.InvalidRequestException;
         
     /**
+     * Lists the available jobs for the given workflow.
+     *
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param spaceProviderId Identifies a space-provider.
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     *
+     * @return the result
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    java.util.List<Object> listJobsForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException;
+        
+    /**
+     * Lists the available schedules for the given workflow.
+     *
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param spaceProviderId Identifies a space-provider.
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     *
+     * @return the result
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    java.util.List<Object> listSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException;
+        
+    /**
      * Get shallow list of workflows, components and data-files within a given workflow group.
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
