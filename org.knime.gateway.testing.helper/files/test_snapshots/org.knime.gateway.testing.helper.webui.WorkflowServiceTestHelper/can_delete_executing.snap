@@ -45,7 +45,8 @@
   "info" : {
     "containerId" : "root",
     "containerType" : "project",
-    "name" : "execution states"
+    "name" : "execution states",
+    "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
     "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory" : {

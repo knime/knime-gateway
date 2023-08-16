@@ -48,7 +48,8 @@
   "info" : {
     "containerId" : "root",
     "containerType" : "project",
-    "name" : "component project"
+    "name" : "component project",
+    "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
     "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory" : {

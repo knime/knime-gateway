@@ -4,5 +4,6 @@
   "jobManager" : {
     "type" : "streaming"
   },
-  "name" : "Component"
+  "name" : "Component",
+  "providerType" : "LOCAL"
 }

@@ -115,7 +115,8 @@
   "info" : {
     "containerId" : "root",
     "containerType" : "project",
-    "name" : "general_web_ui"
+    "name" : "general_web_ui",
+    "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
     "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING+Variants2Proteins" : {

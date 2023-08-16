@@ -80,6 +80,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
@@ -294,7 +295,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
             final Space... spaces) {
-        return createSpaceProvider(null, id, spaceProviderName, spaces);
+        return createSpaceProvider(TypeEnum.LOCAL, id, spaceProviderName, spaces);
     }
 
     private static SpaceProvider createSpaceProvider(final SpaceProviderEnt.TypeEnum type,

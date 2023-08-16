@@ -33,7 +33,8 @@
       "type" : "streaming"
     },
     "linked" : true,
-    "name" : "Streaming Component"
+    "name" : "Streaming Component",
+    "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
     "org.knime.base.node.flowvariable.extractvariables.ExtractVariablesNodeFactory" : {
@@ -187,7 +188,8 @@
   "parents" : [ {
     "containerId" : "root",
     "containerType" : "project",
-    "name" : "general_web_ui"
+    "name" : "general_web_ui",
+    "providerType" : "LOCAL"
   } ],
   "workflowAnnotations" : [ ]
 }

@@ -42,7 +42,8 @@
   "info" : {
     "containerId" : "root:6",
     "containerType" : "metanode",
-    "name" : "Metanode"
+    "name" : "Metanode",
+    "providerType" : "LOCAL"
   },
   "metaInPorts" : {
     "ports" : [ {
@@ -155,7 +156,8 @@
   "parents" : [ {
     "containerId" : "root",
     "containerType" : "project",
-    "name" : "general_web_ui"
+    "name" : "general_web_ui",
+    "providerType" : "LOCAL"
   } ],
   "workflowAnnotations" : [ {
     "backgroundColor" : "#FFFFFF",

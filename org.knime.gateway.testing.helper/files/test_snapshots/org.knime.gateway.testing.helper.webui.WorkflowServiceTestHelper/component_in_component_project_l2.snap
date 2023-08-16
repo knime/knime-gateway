@@ -15,7 +15,8 @@
   "info" : {
     "containerId" : "root:5:0:7",
     "containerType" : "component",
-    "name" : "Component L2"
+    "name" : "Component L2",
+    "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
     "org.knime.base.node.util.sampledata.SampleDataNodeFactory" : {
@@ -172,11 +173,13 @@
   "parents" : [ {
     "containerId" : "root",
     "containerType" : "project",
-    "name" : "component project"
+    "name" : "component project",
+    "providerType" : "LOCAL"
   }, {
     "containerId" : "root:5",
     "containerType" : "component",
-    "name" : "Component L1"
+    "name" : "Component L1",
+    "providerType" : "LOCAL"
   } ],
   "workflowAnnotations" : [ ]
 }

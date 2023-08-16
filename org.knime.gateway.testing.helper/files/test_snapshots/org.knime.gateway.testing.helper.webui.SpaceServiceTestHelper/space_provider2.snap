@@ -11,5 +11,6 @@
     "name" : "name3",
     "owner" : "owner3",
     "private" : false
-  } ]
+  } ],
+  "type" : "LOCAL"
 }

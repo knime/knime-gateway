@@ -15,7 +15,8 @@
   "info" : {
     "containerId" : "root:5",
     "containerType" : "component",
-    "name" : "Component L1"
+    "name" : "Component L1",
+    "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
     "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component+Input" : {
@@ -159,7 +160,8 @@
   "parents" : [ {
     "containerId" : "root",
     "containerType" : "project",
-    "name" : "component project"
+    "name" : "component project",
+    "providerType" : "LOCAL"
   } ],
   "workflowAnnotations" : [ ]
 }
