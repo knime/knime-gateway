@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 
 /**
@@ -62,13 +61,6 @@ import org.knime.gateway.impl.webui.service.ServiceDependencies;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public interface SpaceProviders {
-
-    /**
-     * @return remote location or {Optional#empty} for local spaces
-     */
-    default TypeEnum getType() {
-        return TypeEnum.LOCAL;
-    }
 
     /**
      * @param spaceProviders

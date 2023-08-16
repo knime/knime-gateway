@@ -56,6 +56,7 @@ import java.util.Optional;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
@@ -64,6 +65,13 @@ import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public interface SpaceProvider {
+
+    /**
+     * @return remote location or {Optional#empty} for local spaces
+     */
+    default TypeEnum getType() {
+        return TypeEnum.LOCAL;
+    }
 
     /**
      * @return a globally unique id
