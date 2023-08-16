@@ -55,11 +55,12 @@ import java.util.stream.Collectors;
 
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.ui.CoreUIPlugin;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -97,9 +98,8 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
 
             @Override
             public Page getPage() {
-                return Page.builder(FlowVariablePortViewFactory.class, "not-used", "vue_component_reference") //
-                    // this is the name of the component used and already present in the frontend
-                    .markAsReusable("FlowVariablePortView")//
+                return Page.builder(CoreUIPlugin.class, "js-src/dist", "FlowVariableView.umd.js") //
+                    .markAsReusable("flowvariableview")//
                     .build();
             }
 

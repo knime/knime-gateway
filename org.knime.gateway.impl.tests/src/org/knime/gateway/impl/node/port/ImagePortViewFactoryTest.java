@@ -122,13 +122,13 @@ public class ImagePortViewFactoryTest {
             PortContext.removeLastContext();
         }
         var page = portView.getPage();
-        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_REFERENCE"));
+        assertThat(page.getContentType().toString(), is("VUE_COMPONENT_LIB"));
         var pageId = page.getPageIdForReusablePage().orElse(null);
-        assertThat(pageId, is("ImagePortView"));
+        assertThat(pageId, is("imageview"));
 
         var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
         var imageId = snc.getID().toString() + ":" + System.identityHashCode(portObject) + ".png";
-        assertThat(initialData, is("{\"result\":\"uiext/ImagePortView/img/" + imageId + "\"}"));
+        assertThat(initialData, is("{\"result\":\"uiext/imageview/img/" + imageId + "\"}"));
         assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.size(), is(1));
         assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.get(imageId), is(pngImageData));
 

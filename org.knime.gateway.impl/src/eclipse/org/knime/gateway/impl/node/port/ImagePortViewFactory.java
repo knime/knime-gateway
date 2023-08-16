@@ -59,12 +59,13 @@ import org.knime.core.data.image.ImageValue;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.ui.CoreUIPlugin;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.port.PortContext;
-import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -99,7 +100,7 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
             public Optional<InitialDataService> createInitialDataService() {
                 return Optional.of(InitialDataService.builder(() -> {
                     IMAGE_DATA_MAP.put(imageId, getImageData(imgValue));
-                    return PageResourceManager.getPagePathPrefix(null) + "/ImagePortView/img/" + imageId;
+                    return PageResourceManager.getPagePathPrefix(null) + "/imageview/img/" + imageId;
                 }).build());
             }
 
@@ -110,9 +111,9 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
 
             @Override
             public Page getPage() {
-                return Page.builder(ImagePortViewFactory.class, "not-used", "vue_component_reference") //
+                return Page.builder(CoreUIPlugin.class, "js-src/dist", "ImageView.umd.js") //
                     // this is the name of the component used and already present in the frontend
-                    .markAsReusable("ImagePortView")//
+                    .markAsReusable("imageview")//
                     .addResources(imageId -> new ByteArrayInputStream(IMAGE_DATA_MAP.remove(imageId)), "img", true)
                     .build();
             }

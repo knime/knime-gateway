@@ -105,11 +105,11 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // get flow variable 'spec' view 0
         var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 0);
-        assertPortView(portView, "root:1", "FlowVariablePortView", "VUE_COMPONENT_REFERENCE");
+        assertPortView(portView, "root:1", "flowvariableview", "VUE_COMPONENT_LIB");
 
         // get flow variable port view 1
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 1);
-        assertPortView(portView, "root:1", "FlowVariablePortView", "VUE_COMPONENT_REFERENCE");
+        assertPortView(portView, "root:1", "flowvariableview", "VUE_COMPONENT_LIB");
 
         // check table spec view (registered at index 0)
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0);
@@ -175,11 +175,11 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var waitNodeId = new NodeIDEnt(waitNodeIdx);
 
         var portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 0);
-        assertPortView(portView, "root:"+waitNodeIdx, "FlowVariablePortView", "VUE_COMPONENT_REFERENCE",
+        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "VUE_COMPONENT_LIB",
             TestWorkflowCollection.EXECUTION_STATES);
 
         portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 1);
-        assertPortView(portView, "root:"+waitNodeIdx, "FlowVariablePortView", "VUE_COMPONENT_REFERENCE",
+        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "VUE_COMPONENT_LIB",
             TestWorkflowCollection.EXECUTION_STATES);
     }
 
@@ -190,7 +190,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static void assertPortView(final Object portView, final String nodeId, final String expectedResourceId,
-        final String expectedResourceType, TestWorkflowCollection testWorkflow) {
+        final String expectedResourceType, final TestWorkflowCollection testWorkflow) {
         var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
         assertThat(portViewJsonNode.get("projectId").textValue(),
             containsString(testWorkflow.getName()));
