@@ -64,16 +64,18 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface SpaceProviderEnt extends GatewayEntity {
 
   /**
-   * Original location of the provided spaces. If local, this property is absent.
+   * Type of the space provider.
    */
-  public enum RemoteLocationEnum {
+  public enum TypeEnum {
+    LOCAL("LOCAL"),
+    
     HUB("HUB"),
     
     SERVER("SERVER");
 
     private String value;
 
-    RemoteLocationEnum(String value) {
+    TypeEnum(String value) {
       this.value = value;
     }
 
@@ -92,10 +94,10 @@ public interface SpaceProviderEnt extends GatewayEntity {
   public java.util.List<SpaceEnt> getSpaces();
 
   /**
-   * Original location of the provided spaces. If local, this property is absent.
-   * @return remoteLocation 
+   * Type of the space provider.
+   * @return type , never <code>null</code>
    **/
-  public RemoteLocationEnum getRemoteLocation();
+  public TypeEnum getType();
 
 
   @Override
@@ -103,7 +105,7 @@ public interface SpaceProviderEnt extends GatewayEntity {
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (SpaceProviderEnt)other;
       valueConsumer.accept("spaces", Pair.create(getSpaces(), e.getSpaces()));
-      valueConsumer.accept("remoteLocation", Pair.create(getRemoteLocation(), e.getRemoteLocation()));
+      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
   }
 
     /**
@@ -120,12 +122,12 @@ public interface SpaceProviderEnt extends GatewayEntity {
         SpaceProviderEntBuilder setSpaces(java.util.List<SpaceEnt> spaces);
         
         /**
-         * Original location of the provided spaces. If local, this property is absent.
+         * Type of the space provider.
          * 
-         * @param remoteLocation the property value,  
+         * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceProviderEntBuilder setRemoteLocation(RemoteLocationEnum remoteLocation);
+        SpaceProviderEntBuilder setType(TypeEnum type);
         
         
         /**

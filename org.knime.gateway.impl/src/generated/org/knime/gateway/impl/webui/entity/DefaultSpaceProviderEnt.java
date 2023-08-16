@@ -54,14 +54,14 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
  * Provides one or more spaces.
  *
  * @param spaces
- * @param remoteLocation
+ * @param type
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpaceProviderEnt(
     java.util.List<SpaceEnt> spaces,
-    RemoteLocationEnum remoteLocation) implements SpaceProviderEnt {
+    TypeEnum type) implements SpaceProviderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -69,6 +69,9 @@ public record DefaultSpaceProviderEnt(
     public DefaultSpaceProviderEnt {
         if(spaces == null) {
             throw new IllegalArgumentException("<spaces> must not be null.");
+        }
+        if(type == null) {
+            throw new IllegalArgumentException("<type> must not be null.");
         }
     }
 
@@ -83,8 +86,8 @@ public record DefaultSpaceProviderEnt(
     }
     
     @Override
-    public RemoteLocationEnum getRemoteLocation() {
-        return remoteLocation;
+    public TypeEnum getType() {
+        return type;
     }
     
     /**
@@ -94,7 +97,7 @@ public record DefaultSpaceProviderEnt(
 
         private java.util.List<SpaceEnt> m_spaces = new java.util.ArrayList<>();
 
-        private RemoteLocationEnum m_remoteLocation;
+        private TypeEnum m_type;
 
         @Override
         public DefaultSpaceProviderEntBuilder setSpaces(java.util.List<SpaceEnt> spaces) {
@@ -106,8 +109,11 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
-        public DefaultSpaceProviderEntBuilder setRemoteLocation(RemoteLocationEnum remoteLocation) {
-             m_remoteLocation = remoteLocation;
+        public DefaultSpaceProviderEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("<type> must not be null.");
+             }
+             m_type = type;
              return this;
         }
 
@@ -115,7 +121,7 @@ public record DefaultSpaceProviderEnt(
         public DefaultSpaceProviderEnt build() {
             return new DefaultSpaceProviderEnt(
                 immutable(m_spaces),
-                immutable(m_remoteLocation));
+                immutable(m_type));
         }
     
     }

@@ -75,8 +75,8 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
     public java.util.List<SpaceEnt> getSpaces();
     
     @Override
-    @JsonProperty("remoteLocation")
-    public RemoteLocationEnum getRemoteLocation();
+    @JsonProperty("type")
+    public TypeEnum getType();
     
 
     /**
@@ -96,8 +96,8 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
         public SpaceProviderEntMixInBuilder setSpaces(final java.util.List<SpaceEnt> spaces);
         
         @Override
-        @JsonProperty("remoteLocation")
-        public SpaceProviderEntMixInBuilder setRemoteLocation(final RemoteLocationEnum remoteLocation);
+        @JsonProperty("type")
+        public SpaceProviderEntMixInBuilder setType(final TypeEnum type);
         
     }
 
