@@ -57,7 +57,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
-import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
  * Represents an entity that holds spaces. E.g. a Hub instance.
@@ -89,13 +88,6 @@ public interface SpaceProvider {
      * @throws NoSuchElementException if no space with the given ID exists
      */
     Space getSpace(String spaceId);
-
-    /**
-     * @return {@code true} if this provider only returns {@link LocalWorkspace LocalWorkspace(s)}
-     */
-    default boolean isLocal() {
-        return false;
-    }
 
     /**
      * Returns the server address of the current space provider
