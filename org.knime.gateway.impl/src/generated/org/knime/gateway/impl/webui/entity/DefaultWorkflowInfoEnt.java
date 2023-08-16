@@ -57,7 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
  * @param containerId
  * @param containerType
  * @param linked
- * @param remoteLocation
+ * @param providerType
  * @param jobManager
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -68,7 +68,7 @@ public record DefaultWorkflowInfoEnt(
     org.knime.gateway.api.entity.NodeIDEnt containerId,
     ContainerTypeEnum containerType,
     Boolean linked,
-    RemoteLocationEnum remoteLocation,
+    ProviderTypeEnum providerType,
     JobManagerEnt jobManager) implements WorkflowInfoEnt {
 
     /**
@@ -112,8 +112,8 @@ public record DefaultWorkflowInfoEnt(
     }
     
     @Override
-    public RemoteLocationEnum getRemoteLocation() {
-        return remoteLocation;
+    public ProviderTypeEnum getProviderType() {
+        return providerType;
     }
     
     @Override
@@ -134,7 +134,7 @@ public record DefaultWorkflowInfoEnt(
 
         private Boolean m_linked;
 
-        private RemoteLocationEnum m_remoteLocation;
+        private ProviderTypeEnum m_providerType;
 
         private JobManagerEnt m_jobManager;
 
@@ -172,8 +172,8 @@ public record DefaultWorkflowInfoEnt(
         }
 
         @Override
-        public DefaultWorkflowInfoEntBuilder setRemoteLocation(RemoteLocationEnum remoteLocation) {
-             m_remoteLocation = remoteLocation;
+        public DefaultWorkflowInfoEntBuilder setProviderType(ProviderTypeEnum providerType) {
+             m_providerType = providerType;
              return this;
         }
 
@@ -190,7 +190,7 @@ public record DefaultWorkflowInfoEnt(
                 immutable(m_containerId),
                 immutable(m_containerType),
                 immutable(m_linked),
-                immutable(m_remoteLocation),
+                immutable(m_providerType),
                 immutable(m_jobManager));
         }
     

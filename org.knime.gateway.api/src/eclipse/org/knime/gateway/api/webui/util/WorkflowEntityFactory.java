@@ -97,9 +97,6 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
-import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
-import org.knime.core.node.workflow.contextv2.RestLocationInfo;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.view.NodeViewManager;
@@ -183,7 +180,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
-import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.RemoteLocationEnum;
+import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ProviderTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -1126,12 +1123,11 @@ public final class WorkflowEntityFactory {
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) != null ? Boolean.TRUE : null)//
-            .setRemoteLocation(Optional.ofNullable(wfm.getContextV2())//
-                .map(WorkflowContextV2::getLocationInfo)//
-                .filter(RestLocationInfo.class::isInstance)//
-                .map(info -> info instanceof HubSpaceLocationInfo
-                    ? RemoteLocationEnum.HUB : RemoteLocationEnum.SERVER)//
-                .orElse(null))//
+            .setProviderType(switch (wfm.getContextV2().getLocationType()) {
+                case LOCAL -> ProviderTypeEnum.LOCAL;
+                case HUB_SPACE -> ProviderTypeEnum.HUB;
+                case SERVER_REPOSITORY -> ProviderTypeEnum.SERVER;
+            })//
             .setJobManager(buildJobManagerEnt(wfm.findJobManager())).build();
     }
 

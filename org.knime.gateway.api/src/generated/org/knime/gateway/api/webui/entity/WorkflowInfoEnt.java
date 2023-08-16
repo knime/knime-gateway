@@ -87,16 +87,18 @@ public interface WorkflowInfoEnt extends GatewayEntity {
   }
 
   /**
-   * Original location of the workflow. If local, this property is absent.
+   * Type of the surrounding space&#39;s provider.
    */
-  public enum RemoteLocationEnum {
+  public enum ProviderTypeEnum {
+    LOCAL("LOCAL"),
+    
     HUB("HUB"),
     
     SERVER("SERVER");
 
     private String value;
 
-    RemoteLocationEnum(String value) {
+    ProviderTypeEnum(String value) {
       this.value = value;
     }
 
@@ -133,10 +135,10 @@ public interface WorkflowInfoEnt extends GatewayEntity {
   public Boolean isLinked();
 
   /**
-   * Original location of the workflow. If local, this property is absent.
-   * @return remoteLocation 
+   * Type of the surrounding space&#39;s provider.
+   * @return providerType 
    **/
-  public RemoteLocationEnum getRemoteLocation();
+  public ProviderTypeEnum getProviderType();
 
   /**
    * Get jobManager
@@ -153,7 +155,7 @@ public interface WorkflowInfoEnt extends GatewayEntity {
       valueConsumer.accept("containerId", Pair.create(getContainerId(), e.getContainerId()));
       valueConsumer.accept("containerType", Pair.create(getContainerType(), e.getContainerType()));
       valueConsumer.accept("linked", Pair.create(isLinked(), e.isLinked()));
-      valueConsumer.accept("remoteLocation", Pair.create(getRemoteLocation(), e.getRemoteLocation()));
+      valueConsumer.accept("providerType", Pair.create(getProviderType(), e.getProviderType()));
       valueConsumer.accept("jobManager", Pair.create(getJobManager(), e.getJobManager()));
   }
 
@@ -195,12 +197,12 @@ public interface WorkflowInfoEnt extends GatewayEntity {
         WorkflowInfoEntBuilder setLinked(Boolean linked);
         
         /**
-         * Original location of the workflow. If local, this property is absent.
+         * Type of the surrounding space&#39;s provider.
          * 
-         * @param remoteLocation the property value,  
+         * @param providerType the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowInfoEntBuilder setRemoteLocation(RemoteLocationEnum remoteLocation);
+        WorkflowInfoEntBuilder setProviderType(ProviderTypeEnum providerType);
         
         /**
    		 * Set jobManager
