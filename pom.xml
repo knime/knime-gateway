@@ -32,6 +32,7 @@
                 <module>org.knime.gateway.impl</module>
                 <module>org.knime.gateway.impl.jsonrpc</module>
                 <module>org.knime.gateway.testing.helper</module>
+                <module>com.github.briandilley.jsonrpc4j.clfix</module>
                 <module>org.knime.update.gateway</module>
                 <module>org.knime.features.gateway</module>
             </modules>
