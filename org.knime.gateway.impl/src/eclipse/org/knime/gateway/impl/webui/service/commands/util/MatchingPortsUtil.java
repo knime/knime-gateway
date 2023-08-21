@@ -190,6 +190,7 @@ final class MatchingPortsUtil {
         var portGroupIds = portsConfig.getPortGroupNames();
 
         var inPortGroups = portGroupIds.stream()//
+            .filter(portsConfig::isInteractive) //
             .map(portsConfig::getGroup)//
             .filter(PortGroupConfiguration::definesInputPorts)//
             .collect(Collectors.toList());
