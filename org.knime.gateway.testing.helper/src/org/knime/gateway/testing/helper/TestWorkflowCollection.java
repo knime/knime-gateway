@@ -77,7 +77,9 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Contains a contemporary and a legacy annotation.
      */
-    ANNOTATIONS("/files/testflows/Annotations", "annotations");
+        ANNOTATIONS("/files/testflows/Annotations", "annotations"),
+
+        BENDPOINTS("/files/testflows/Bendpoints", "bendpoints");
 
     private final String m_workflowDir;
 

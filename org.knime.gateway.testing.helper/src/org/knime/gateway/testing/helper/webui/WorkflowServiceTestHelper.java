@@ -50,7 +50,6 @@ package org.knime.gateway.testing.helper.webui;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -155,8 +154,6 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeComma
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
@@ -344,134 +341,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertNull(workflow.getComponentMetadata());
     }
 
-    /**
-     * Tests
-     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
-     * when called with {@link TranslateCommandEnt}.
-     *
-     * @throws Exception
-     */
-    public void testExecuteTranslateCommand() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-
-        var node15 = new NodeIDEnt(15);
-        var node16 = new NodeIDEnt(16);
-        var node18 = new NodeIDEnt(18);
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-        Map<String, NodeEnt> nodes = workflow.getNodes();
-        XYEnt orgPosNode15 = nodes.get(node15.toString()).getPosition();
-        XYEnt orgPosNode16 = nodes.get(node16.toString()).getPosition();
-        XYEnt orgPosNode18 = nodes.get(node18.toString()).getPosition();
-
-        assertThat(workflow.getAllowedActions().isCanUndo(), is(false));
-        assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
-
-        // node and annotation translation
-        var anno3 = new AnnotationIDEnt("root_3");
-        TranslateCommandEnt command = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
-            .setNodeIds(asList(node15, node16, node18)).setAnnotationIds(singletonList(anno3))
-            .setTranslation(builder(XYEntBuilder.class).setX(-224).setY(-763).build()).build();
-        ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-        nodes = workflow.getNodes();
-        XYEnt pos = nodes.get(node15.toString()).getPosition();
-        assertThat(pos.getX(), is(0));
-        assertThat(pos.getY(), is(0));
-        pos = nodes.get(node16.toString()).getPosition();
-        assertThat(pos.getX(), is(120));
-        assertThat(pos.getY(), is(0));
-        pos = nodes.get(node18.toString()).getPosition();
-        assertThat(pos.getX(), is(240));
-        assertThat(pos.getY(), is(0));
-        WorkflowAnnotationEnt wa =
-            workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno3)).findFirst().orElse(null);
-        assertThat(wa.getBounds().getX(), is(116)); // NOSONAR wa guaranteed to be non-null
-        assertThat(wa.getBounds().getY(), is(117));
-        assertThat(workflow.getAllowedActions().isCanUndo(), is(true));
-        assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
-
-        // undo
-        ws().undoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-        nodes = workflow.getNodes();
-        pos = nodes.get(node15.toString()).getPosition();
-        assertThat(pos.getX(), is(orgPosNode15.getX()));
-        assertThat(pos.getY(), is(orgPosNode15.getY()));
-        pos = nodes.get(node16.toString()).getPosition();
-        assertThat(pos.getX(), is(orgPosNode16.getX()));
-        assertThat(pos.getY(), is(orgPosNode16.getY()));
-        pos = nodes.get(node18.toString()).getPosition();
-        assertThat(pos.getX(), is(orgPosNode18.getX()));
-        assertThat(pos.getY(), is(orgPosNode18.getY()));
-        assertThat(workflow.getAllowedActions().isCanUndo(), is(false));
-        assertThat(workflow.getAllowedActions().isCanRedo(), is(true));
-
-        // redo
-        ws().redoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-        nodes = workflow.getNodes();
-        pos = nodes.get(node15.toString()).getPosition();
-        assertThat(pos.getX(), is(0));
-        assertThat(pos.getY(), is(0));
-        pos = nodes.get(node16.toString()).getPosition();
-        assertThat(pos.getX(), is(120));
-        assertThat(pos.getY(), is(0));
-        pos = nodes.get(node18.toString()).getPosition();
-        assertThat(pos.getX(), is(240));
-        assertThat(pos.getY(), is(0));
-        assertThat(workflow.getAllowedActions().isCanUndo(), is(true));
-        assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
-
-        // annotation translation alone
-        AnnotationIDEnt anno1 = new AnnotationIDEnt("root_1");
-        TranslateCommandEnt command2 =
-            builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).setAnnotationIds(singletonList(anno1))
-                .setTranslation(builder(XYEntBuilder.class).setX(-880).setY(-20).build()).build();
-        ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command2);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
-        wa = workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno1)).findFirst().orElse(null);
-        assertThat(wa.getBounds().getX(), is(0)); // NOSONAR wa guaranteed to be non-null
-        assertThat(wa.getBounds().getY(), is(0));
-
-        // move a node within a component
-        TranslateCommandEnt command3 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
-            .setNodeIds(asList(new NodeIDEnt(12, 0, 10))).setAnnotationIds(emptyList())
-            .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
-        NodeEnt nodeBefore =
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10");
-        ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), command3);
-        NodeEnt nodeAfter =
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10");
-        assertThat(nodeAfter.getPosition().getX(), is(nodeBefore.getPosition().getX() + 10));
-        assertThat(nodeAfter.getPosition().getY(), is(nodeBefore.getPosition().getY() + 10));
-
-        // move a node within a metanode
-        TranslateCommandEnt command4 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
-            .setNodeIds(asList(new NodeIDEnt(6, 3))).setAnnotationIds(emptyList())
-            .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
-        nodeBefore = ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3");
-        ws().executeWorkflowCommand(wfId, new NodeIDEnt(6), command4);
-        nodeAfter = ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3");
-        assertThat(nodeAfter.getPosition().getX(), is(nodeBefore.getPosition().getX() + 10));
-        assertThat(nodeAfter.getPosition().getY(), is(nodeBefore.getPosition().getY() + 10));
-
-        // exceptions
-        TranslateCommandEnt command5 = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
-            .setNodeIds(singletonList(new NodeIDEnt(9999)))
-            .setAnnotationIds(singletonList(new AnnotationIDEnt("root_12345")))
-            .setTranslation(builder(XYEntBuilder.class).setX(0).setY(0).build()).build();
-        assertThrows(NodeNotFoundException.class,
-            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(999999), command5));
-        try {
-            ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command5);
-        } catch (Exception e) { // NOSONAR
-            assertThat("unexpected exception class", e, Matchers.instanceOf(OperationNotAllowedException.class));
-            assertThat("unexpected exception message", e.getMessage(),
-                is("Failed to execute command. Workflow parts not found: "
-                    + "nodes (0:9999), workflow-annotations (0:12345)"));
-        }
-
-    }
 
     @SuppressWarnings("javadoc")
     public void testCollapseConfiguredToMetanode() throws Exception {
