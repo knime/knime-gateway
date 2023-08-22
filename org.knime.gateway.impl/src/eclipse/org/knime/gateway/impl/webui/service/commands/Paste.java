@@ -52,11 +52,13 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowCopyContent;
@@ -122,10 +124,11 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
             .map(id -> CoreUtil.getAnnotation(id, wfm).orElse(null))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toSet());
+        Map<ConnectionID, List<Integer>> bendpoints = Map.of(); // TODO
         // Move pasted content to the correct position
         var delta = calculateShift(nodes, annotations);
         // TODO: NXT-1169 Enable translation of connection bend points too
-        Translate.performTranslation(wfm, nodes, annotations, delta);
+        Translate.performTranslation(wfm, nodes, annotations, bendpoints, delta);
         return true;
     }
 

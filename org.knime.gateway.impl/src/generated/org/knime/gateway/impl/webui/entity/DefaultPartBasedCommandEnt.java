@@ -46,8 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
-
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 
 /**
@@ -56,6 +54,7 @@ import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
  * @param kind
  * @param nodeIds
  * @param annotationIds
+ * @param connectionBendpoints
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,7 +62,8 @@ import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 public record DefaultPartBasedCommandEnt(
     KindEnum kind,
     java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
-    java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) implements PartBasedCommandEnt {
+    java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds,
+    java.util.Map<String, java.util.List<Integer>> connectionBendpoints) implements PartBasedCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -77,6 +77,9 @@ public record DefaultPartBasedCommandEnt(
         }
         if(annotationIds == null) {
             throw new IllegalArgumentException("<annotationIds> must not be null.");
+        }
+        if (connectionBendpoints == null) {
+            throw new IllegalArgumentException("<connectionBendpoints> must not be null.");
         }
     }
 
@@ -100,6 +103,11 @@ public record DefaultPartBasedCommandEnt(
         return annotationIds;
     }
     
+    @Override
+    public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
+        return connectionBendpoints;
+    }
+
     /**
      * A builder for {@link DefaultPartBasedCommandEnt}.
      */
@@ -110,6 +118,8 @@ public record DefaultPartBasedCommandEnt(
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
 
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
+
+        private java.util.Map<String, java.util.List<Integer>> m_connectionBendpoints = new java.util.HashMap<>();
 
         @Override
         public DefaultPartBasedCommandEntBuilder setKind(KindEnum kind) {
@@ -139,11 +149,21 @@ public record DefaultPartBasedCommandEnt(
         }
 
         @Override
+        public DefaultPartBasedCommandEntBuilder
+            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
+            if (connectionBendpoints == null) {
+                throw new IllegalArgumentException("<connectionBendpoints> must not be null.");
+            }
+            m_connectionBendpoints = connectionBendpoints;
+            return this;
+        }
+
+        @Override
         public DefaultPartBasedCommandEnt build() {
             return new DefaultPartBasedCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
-                immutable(m_annotationIds));
+                immutable(m_annotationIds), immutable(m_connectionBendpoints));
         }
     
     }

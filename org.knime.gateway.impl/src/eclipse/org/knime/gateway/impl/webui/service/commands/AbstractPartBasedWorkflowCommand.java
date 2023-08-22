@@ -48,19 +48,31 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static java.util.Arrays.stream;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
 
 /**
  * Workflow command based on workflow parts (i.e. nodes and annotations).
@@ -74,6 +86,8 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     private NodeID[] m_nodesQueried;
 
     private WorkflowAnnotationID[] m_annotationsQueried;
+
+    private Map<ConnectionID, List<Integer>> m_bendpointsQueried;
 
     private boolean m_partsChecked = false;
 
@@ -100,31 +114,79 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
             .filter(id -> CoreUtil.getNodeContainer(id, wfm).isEmpty()) //
             .collect(Collectors.toSet());
 
-        var annotsNotFound = stream(getAnnotationIDs()) //
+        var annotationsNotFound = stream(getAnnotationIDs()) //
             .filter(id -> CoreUtil.getAnnotation(id, wfm).isEmpty()) //
             .collect(Collectors.toSet());
 
-        boolean nodesMissing = !nodesNotFound.isEmpty();
-        boolean annotsMissing = !annotsNotFound.isEmpty();
-        if (nodesMissing || annotsMissing) {
-            var message = new StringBuilder("Failed to execute command. Workflow parts not found: ");
-            if (nodesMissing) {
-                message.append("nodes (")
-                    .append(nodesNotFound.stream().map(NodeID::toString).collect(Collectors.joining(","))).append(")");
+        var connectionsNotFound = new HashSet<ConnectionID>();
+        var bendpointsNotFound = new HashMap<ConnectionContainer, List<Integer>>();
+        getBendpoints().forEach((connectionId, requestedBendpointIndices) -> {
+            if (!hasConnection(wfm, connectionId)) {
+                connectionsNotFound.add(connectionId);
+                return; // do not try to check bendpoints on non-existent connections
             }
-            if (nodesMissing && annotsMissing) {
-                message.append(", ");
+            var connection = wfm.getConnection(connectionId);
+            if (!EditBendpoints.hasBendpoints(connection)) {
+                bendpointsNotFound.put(connection, requestedBendpointIndices);
+            } else {
+                var existingBendpoints = connection.getUIInfo().getAllBendpoints();
+                var nonExistingBendpoints = requestedBendpointIndices.stream()
+                    .filter(requestedIndex -> requestedIndex + 1 > existingBendpoints.length).toList();
+                if (!nonExistingBendpoints.isEmpty()) {
+                    bendpointsNotFound.put(connection, nonExistingBendpoints);
+                }
             }
-            if (annotsMissing) {
-                message.append("workflow-annotations (")
-                    .append(
-                        annotsNotFound.stream().map(WorkflowAnnotationID::toString).collect(Collectors.joining(",")))
-                    .append(")");
-            }
-            throw new ServiceExceptions.OperationNotAllowedException(message.toString());
+        });
+
+        if (!(nodesNotFound.isEmpty() && annotationsNotFound.isEmpty() && connectionsNotFound.isEmpty()
+            && bendpointsNotFound.isEmpty())) {
+            String message =
+                printMissingParts(nodesNotFound, annotationsNotFound, connectionsNotFound, bendpointsNotFound);
+            throw new ServiceExceptions.OperationNotAllowedException(message);
         }
 
         m_partsChecked = true;
+    }
+
+    /**
+     * Assumed to be only called if one collection is nonempty
+     *
+     * @param nodesNotFound
+     * @param annotationsNotFound
+     * @param connectionsNotFound
+     * @param bendpointsNotFound
+     * @return
+     */
+    private static String printMissingParts(final Set<NodeID> nodesNotFound,
+        final Set<WorkflowAnnotationID> annotationsNotFound, final Set<ConnectionID> connectionsNotFound,
+        final HashMap<ConnectionContainer, List<Integer>> bendpointsNotFound) {
+        Function<Map.Entry<ConnectionContainer, List<Integer>>, String> printBendpoints = entry -> {
+            // assumes that connection exists
+            return entry.getValue().stream() //
+                .map(i -> Integer.toString(i)) //
+                .collect(Collectors.joining(",")) //
+                + " on connection " //
+                + entry.getKey().toString();
+        };
+        Function<ConnectionID, String> printConnectionId = connectionID -> {
+            // this is all we know about nonexistent connections
+            return "[? -> " + connectionID.getDestinationNode().toString() + "(" + connectionID.getDestinationPort()
+                + ")]";
+        };
+        return "Failed to execute command. Workflow parts not found: " + Stream
+            .of(listParts("nodes", nodesNotFound, NodeID::toString),
+                listParts("workflow-annotations", annotationsNotFound, WorkflowAnnotationID::toString),
+                listParts("connections", connectionsNotFound, printConnectionId),
+                listParts("bendpoints", bendpointsNotFound.entrySet(), printBendpoints))
+            .filter(Objects::nonNull).collect(Collectors.joining(","));
+    }
+
+    private static <O> String listParts(final String label, final Collection<O> parts,
+        final Function<O, String> toString) {
+        if (parts.isEmpty()) {
+            return null;
+        }
+        return label + " " + "(" + parts.stream().map(toString).collect(Collectors.joining(",")) + ")";
     }
 
     /**
@@ -178,6 +240,30 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
                 .toArray(WorkflowAnnotationID[]::new);
         }
         return m_annotationsQueried;
+    }
+
+    protected final Map<ConnectionID, List<Integer>> getBendpoints() {
+        if (m_bendpointsQueried == null) {
+            m_bendpointsQueried = m_commandEnt.getConnectionBendpoints().entrySet().stream()
+                .collect(Collectors.toMap(e -> toConnectionId(e.getKey()), Map.Entry::getValue));
+        }
+        return m_bendpointsQueried;
+    }
+
+    private ConnectionID toConnectionId(final String connectionId) {
+        var ent = new ConnectionIDEnt(connectionId);
+        var projectId = getWorkflowKey().getProjectId();
+        return new ConnectionID(DefaultServiceUtil.entityToNodeID(projectId, ent.getDestNodeIDEnt()),
+            ent.getDestPortIdx());
+    }
+
+    private static boolean hasConnection(final WorkflowManager wfm, final ConnectionID connectionID) {
+        try {
+            var connection = wfm.getConnection(connectionID);
+            return connection != null;
+        } catch (IllegalArgumentException e) { // NOSONAR
+            return false;
+        }
     }
 
 }

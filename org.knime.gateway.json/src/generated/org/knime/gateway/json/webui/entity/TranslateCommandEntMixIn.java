@@ -44,17 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
-
+import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt.DefaultTranslateCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -84,6 +81,10 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
     public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
     
     @Override
+    @JsonProperty("connectionBendpoints")
+    public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
+
+    @Override
     @JsonProperty("translation")
     public XYEnt getTranslation();
     
@@ -112,6 +113,11 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
         @JsonProperty("annotationIds")
         public TranslateCommandEntMixInBuilder setAnnotationIds(final java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
+        @Override
+        @JsonProperty("connectionBendpoints")
+        public TranslateCommandEntMixInBuilder
+            setConnectionBendpoints(final java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
+
         @Override
         @JsonProperty("translation")
         public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);

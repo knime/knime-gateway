@@ -48,8 +48,11 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -57,6 +60,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
 
 /**
  * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
@@ -65,7 +69,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
  */
 final class Translate extends AbstractPartBasedWorkflowCommand {
 
-    private int[] m_delta;
+    private final int[] m_delta;
 
     Translate(final TranslateCommandEnt commandEnt) {
         super(commandEnt);
@@ -78,30 +82,37 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         if (m_delta[0] == 0 && m_delta[1] == 0) {
             return false;
         }
-        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), m_delta);
+        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(), m_delta);
         return true;
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), invert(m_delta));
+        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(),
+            invert(m_delta));
     }
 
-    // TODO: NXT-1169 Enable translation of connection bend points too
-    static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
-        final Set<WorkflowAnnotation> annotations, final int[] delta) {
+    static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> selectedNodes,
+        final Set<WorkflowAnnotation> selectedAnnotations, final Map<ConnectionID, List<Integer>> selectedBendpoints,
+        final int[] delta) {
 
-        for (NodeContainer nc : nodes) {
+        for (NodeContainer nc : selectedNodes) {
             NodeUIInformation.moveNodeBy(nc, delta);
+            nc.setDirty(); // will propagate upwards
         }
-        for (WorkflowAnnotation wa : annotations) {
+        for (WorkflowAnnotation wa : selectedAnnotations) {
             wa.shiftPosition(delta[0], delta[1]);
         }
 
-        for (NodeContainer nc : nodes) {
-            nc.setDirty(); // will propagate upwards
-        }
-        if (!annotations.isEmpty()) {
+        selectedBendpoints.forEach(((connectionID, bendpointIndices) -> { //
+            EditBendpoints.translateSomeBendpoints( //
+                wfm.getConnection(connectionID), //
+                bendpointIndices, //
+                delta //
+            ); //
+        }));
+
+        if (!selectedAnnotations.isEmpty()) {
             wfm.setDirty();
         }
     }

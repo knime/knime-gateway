@@ -44,16 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Resets selected nodes and collapses selected nodes and annotations into a metanode or component.
@@ -99,6 +94,7 @@ public interface CollapseCommandEnt extends GatewayEntity, PartBasedCommandEnt {
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
       valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
+      valueConsumer.accept("connectionBendpoints", Pair.create(getConnectionBendpoints(), e.getConnectionBendpoints()));
       valueConsumer.accept("containerType", Pair.create(getContainerType(), e.getContainerType()));
   }
 
@@ -131,6 +127,15 @@ public interface CollapseCommandEnt extends GatewayEntity, PartBasedCommandEnt {
          */
         CollapseCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
+        /**
+         * Map from connection ID to indices of bendpoints on that connection
+         * 
+         * @param connectionBendpoints the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        CollapseCommandEntBuilder
+            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
+
         /**
    		 * Set containerType
          * 

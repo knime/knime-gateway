@@ -46,10 +46,8 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
-
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
  * Moves workflow nodes and workflow annotations to a defined position.
@@ -57,6 +55,7 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
  * @param kind
  * @param nodeIds
  * @param annotationIds
+ * @param connectionBendpoints
  * @param translation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -66,6 +65,7 @@ public record DefaultTranslateCommandEnt(
     KindEnum kind,
     java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
     java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds,
+    java.util.Map<String, java.util.List<Integer>> connectionBendpoints,
     XYEnt translation) implements TranslateCommandEnt {
 
     /**
@@ -80,6 +80,9 @@ public record DefaultTranslateCommandEnt(
         }
         if(annotationIds == null) {
             throw new IllegalArgumentException("<annotationIds> must not be null.");
+        }
+        if (connectionBendpoints == null) {
+            throw new IllegalArgumentException("<connectionBendpoints> must not be null.");
         }
         if(translation == null) {
             throw new IllegalArgumentException("<translation> must not be null.");
@@ -107,6 +110,11 @@ public record DefaultTranslateCommandEnt(
     }
     
     @Override
+    public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
+        return connectionBendpoints;
+    }
+
+    @Override
     public XYEnt getTranslation() {
         return translation;
     }
@@ -121,6 +129,8 @@ public record DefaultTranslateCommandEnt(
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
 
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
+
+        private java.util.Map<String, java.util.List<Integer>> m_connectionBendpoints = new java.util.HashMap<>();
 
         private XYEnt m_translation;
 
@@ -152,6 +162,16 @@ public record DefaultTranslateCommandEnt(
         }
 
         @Override
+        public DefaultTranslateCommandEntBuilder
+            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
+            if (connectionBendpoints == null) {
+                throw new IllegalArgumentException("<connectionBendpoints> must not be null.");
+            }
+            m_connectionBendpoints = connectionBendpoints;
+            return this;
+        }
+
+        @Override
         public DefaultTranslateCommandEntBuilder setTranslation(XYEnt translation) {
              if(translation == null) {
                  throw new IllegalArgumentException("<translation> must not be null.");
@@ -166,6 +186,7 @@ public record DefaultTranslateCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
                 immutable(m_annotationIds),
+                immutable(m_connectionBendpoints),
                 immutable(m_translation));
         }
     

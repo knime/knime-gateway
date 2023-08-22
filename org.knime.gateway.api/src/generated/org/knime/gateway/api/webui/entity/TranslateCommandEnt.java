@@ -44,17 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Moves workflow nodes and workflow annotations to a defined position.
@@ -79,6 +73,7 @@ public interface TranslateCommandEnt extends GatewayEntity, PartBasedCommandEnt 
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
       valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
+      valueConsumer.accept("connectionBendpoints", Pair.create(getConnectionBendpoints(), e.getConnectionBendpoints()));
       valueConsumer.accept("translation", Pair.create(getTranslation(), e.getTranslation()));
   }
 
@@ -111,6 +106,15 @@ public interface TranslateCommandEnt extends GatewayEntity, PartBasedCommandEnt 
          */
         TranslateCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
+        /**
+         * Map from connection ID to indices of bendpoints on that connection
+         * 
+         * @param connectionBendpoints the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        TranslateCommandEntBuilder
+            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
+
         /**
    		 * Set translation
          * 

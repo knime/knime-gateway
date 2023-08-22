@@ -44,16 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * A command that is based on a number of selected workflow parts (nodes or workflow annotations)
@@ -76,6 +71,12 @@ public interface PartBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
 
+  /**
+   * Map from connection ID to indices of bendpoints on that connection
+   * 
+   * @return connectionBendpoints , never <code>null</code>
+   **/
+  public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -84,6 +85,7 @@ public interface PartBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
       valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
+      valueConsumer.accept("connectionBendpoints", Pair.create(getConnectionBendpoints(), e.getConnectionBendpoints()));
   }
 
     /**
@@ -115,6 +117,14 @@ public interface PartBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          */
         PartBasedCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
         
+        /**
+         * Map from connection ID to indices of bendpoints on that connection
+         * 
+         * @param connectionBendpoints the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        PartBasedCommandEntBuilder
+            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
         
         /**
         * Creates the entity from the builder.

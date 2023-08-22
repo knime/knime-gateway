@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
@@ -119,7 +120,7 @@ final class InsertNode extends AbstractWorkflowCommand {
             var nodeContainer = wfm.getNodeContainer(m_insertedNode);
             var oldPosition = nodeContainer.getUIInformation().getBounds();
             Translate.performTranslation(wfm, Set.of(nodeContainer), Set.of(),
-                new int[]{position.getX() - oldPosition[0], position.getY() - oldPosition[1]});
+                Map.of(), new int[]{position.getX() - oldPosition[0], position.getY() - oldPosition[1]});
             new NodeConnector(wfm, m_insertedNode).connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort)
                 .trackCreation().connect();
         } else if (nodeFactoryEnt != null) { // New node
