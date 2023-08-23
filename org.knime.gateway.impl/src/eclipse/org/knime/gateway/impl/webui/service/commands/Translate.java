@@ -51,7 +51,9 @@ package org.knime.gateway.impl.webui.service.commands;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeUIInformation;
@@ -92,28 +94,79 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
             invert(m_delta));
     }
 
-    static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> selectedNodes,
-        final Set<WorkflowAnnotation> selectedAnnotations, final Map<ConnectionID, List<Integer>> selectedBendpoints,
+    /**
+     * Translate the given elements
+     * 
+     * @param wfm The workflow manager to operate in
+     * @param nodes The nodes to move
+     * @param annotations The annotations to move
+     * @param bendpoints The connection bendpoints to move. Mapping from connection ID to sequence indices of bendpoints
+     *            on connections
+     * @param delta The 2D translation vector
+     */
+    static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
+        final Set<WorkflowAnnotation> annotations, final Map<ConnectionID, List<Integer>> bendpoints,
         final int[] delta) {
+        translateNodes(nodes, delta);
+        translateAnnotations(wfm, annotations, delta);
+        translateSomeBendpoints(wfm, bendpoints, delta);
+    }
 
-        for (NodeContainer nc : selectedNodes) {
-            NodeUIInformation.moveNodeBy(nc, delta);
-            nc.setDirty(); // will propagate upwards
+    private static void translateSomeBendpoints(WorkflowManager wfm, Map<ConnectionID, List<Integer>> bendpoints,
+        int[] delta) {
+        var modifiedConnections = bendpoints.entrySet().stream() //
+            .filter(e -> !e.getValue().isEmpty()).collect(Collectors.toSet());
+        modifiedConnections //
+            .forEach((e) -> { //
+                var connection = wfm.getConnection(e.getKey());
+                var bendpointIndices = e.getValue();
+                EditBendpoints.translateSomeBendpoints(connection, bendpointIndices, delta);
+                wfm.setDirty();
+            });
+        if (!modifiedConnections.isEmpty()) {
+            wfm.setDirty();
         }
+    }
+
+    /**
+     * Translate the given elements, implicitly including all connection bendpoints between given nodes
+     * 
+     * @param wfm The workflow manager to operate in
+     * @param nodes The nodes to move
+     * @param annotations The annotations to move
+     * @param delta The 2D translation vector
+     */
+    static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
+        final Set<WorkflowAnnotation> annotations, final int[] delta) {
+        translateNodes(nodes, delta);
+        translateAnnotations(wfm, annotations, delta);
+        translateAllBendpoints(wfm, nodes, delta);
+    }
+
+    private static void translateAllBendpoints(WorkflowManager wfm, Set<NodeContainer> nodes, int[] delta) {
+        Set<ConnectionContainer> modifiedConnections = EditBendpoints.inducedConnections(nodes, wfm);
+        modifiedConnections.forEach(connectionInSet -> {
+            EditBendpoints.translateAllBendpoints(connectionInSet, delta);
+        });
+        if (!modifiedConnections.isEmpty()) {
+            wfm.setDirty();
+        }
+    }
+
+    private static void translateAnnotations(final WorkflowManager wfm, Set<WorkflowAnnotation> selectedAnnotations,
+        int[] delta) {
         for (WorkflowAnnotation wa : selectedAnnotations) {
             wa.shiftPosition(delta[0], delta[1]);
         }
-
-        selectedBendpoints.forEach(((connectionID, bendpointIndices) -> { //
-            EditBendpoints.translateSomeBendpoints( //
-                wfm.getConnection(connectionID), //
-                bendpointIndices, //
-                delta //
-            ); //
-        }));
-
         if (!selectedAnnotations.isEmpty()) {
             wfm.setDirty();
+        }
+    }
+
+    private static void translateNodes(Set<NodeContainer> selectedNodes, int[] delta) {
+        for (NodeContainer nc : selectedNodes) {
+            NodeUIInformation.moveNodeBy(nc, delta);
+            nc.setDirty(); // will propagate upwards
         }
     }
 

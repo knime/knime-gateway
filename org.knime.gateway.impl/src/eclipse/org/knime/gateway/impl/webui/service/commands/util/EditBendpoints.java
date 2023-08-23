@@ -47,9 +47,14 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionUIInformation;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Utility methods for editing connection bendpoints.
@@ -72,10 +77,33 @@ public class EditBendpoints {
      * @param delta The translation shift. First component is X-coordinate, second is Y-coordinate.
      */
     public static void translateSomeBendpoints(final ConnectionContainer connection,
-        final List<Integer> bendpointIndices, int[] delta) {
+        final List<Integer> bendpointIndices, final int[] delta) {
+        var indices = bendpointIndices.stream().mapToInt(i -> i).toArray();
+        editConnectionUIInformation(connection, b -> b.translate(delta, indices));
+    }
+
+    public static void translateAllBendpoints(final ConnectionContainer connection, final int[] delta) {
+        editConnectionUIInformation(connection, b -> b.translate(delta));
+    }
+
+    private static void editConnectionUIInformation(final ConnectionContainer connection,
+        final Function<ConnectionUIInformation.Builder, ConnectionUIInformation.Builder> transformation) {
         var builder = ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
-        builder.translate(delta, bendpointIndices.stream().mapToInt(i -> i).toArray());
-        connection.setUIInfo(builder.build()); // need to explicitly set to notify listeners
+        connection.setUIInfo(transformation.apply(builder).build()); // need to explicitly set to notify listeners
+    }
+
+    /**
+     *
+     * @param nodes
+     * @return The set of all connections between nodes in the given set
+     */
+    public static Set<ConnectionContainer> inducedConnections(final Set<NodeContainer> nodes,
+        final WorkflowManager wfm) {
+        var nodeIds = nodes.stream().map(NodeContainer::getID).collect(Collectors.toSet());
+        return nodes.stream() //
+            .flatMap(pastedNode -> wfm.getOutgoingConnectionsFor(pastedNode.getID()).stream()) //
+            .filter(connectionStartingInSet -> nodeIds.contains(connectionStartingInSet.getDest()))
+            .collect(Collectors.toSet());
     }
 
 }

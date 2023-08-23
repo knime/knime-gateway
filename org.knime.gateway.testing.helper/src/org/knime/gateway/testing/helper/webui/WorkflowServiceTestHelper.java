@@ -55,7 +55,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -118,11 +117,6 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
-import org.knime.gateway.api.webui.entity.CopyCommandEnt;
-import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.CopyResultEnt;
-import org.knime.gateway.api.webui.entity.CutCommandEnt;
-import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
@@ -140,9 +134,6 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBui
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
-import org.knime.gateway.api.webui.entity.PasteCommandEnt;
-import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
@@ -184,14 +175,8 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
-import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
-import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
-import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 
 /**
@@ -1951,191 +1936,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         } else {
             return idEnt.appendNodeID(id);
         }
-    }
-
-    /**
-     * Test Copy command
-     *
-     * @throws Exception
-     */
-    public void testExecuteCopyCommand() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var command = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)),
-            asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
-        // execute command
-        var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
-        assertCopyResultValid(commandResult);
-    }
-
-    private static CopyCommandEnt buildCopyCommand(final List<NodeIDEnt> nodeIds,
-        final List<AnnotationIDEnt> annotationIds) {
-        return builder(CopyCommandEntBuilder.class)//
-            .setKind(KindEnum.COPY)//
-            .setNodeIds(nodeIds)//
-            .setAnnotationIds(annotationIds)//
-            .build();
-    }
-
-    private static void assertCopyResultValid(final CopyResultEnt copyResult) throws JsonProcessingException,
-        IllegalArgumentException, InvalidDefClipboardContentVersionException, ObfuscatorException {
-        var clipboardContent = copyResult.getContent();
-        var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
-        var systemClipboardContent = mapper.readValue(clipboardContent, String.class);
-        var defClipboardContent = SystemClipboardFormat.deserialize(systemClipboardContent);
-        assertThat("The DefClipboardContent could not be read", defClipboardContent != null);
-    }
-
-    /**
-     * Test Cut command
-     *
-     * @throws Exception
-     */
-    public void testExecuteCutCommand() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var command = buildCutCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)),
-            asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
-        var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-        var annKeysBefore = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-        // execute command
-        var commandResult = (CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), command);
-        var nodeKeysAfterExecution =
-            ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-        var annKeysAfterExecution = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-        assertCopyResultValid(commandResult);
-        assertThat("We should have less nodes in the workflow after cutting",
-            nodeKeysAfterExecution.size() < nodeKeysBefore.size());
-        assertThat("We should have less annotations in the workflow after cutting",
-            annKeysAfterExecution.size() < annKeysBefore.size());
-        assertThat("We should not have more nodes in the workflow after cutting",
-            nodeKeysBefore.containsAll(nodeKeysAfterExecution));
-        assertThat("We should not have more annotations in the workflow after cutting",
-            annKeysBefore.containsAll(annKeysAfterExecution));
-        // undo command
-        ws().undoWorkflowCommand(wfId, getRootID());
-        var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-        var annKeysAfterUndo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-        assertEquals("We should have the same nodes as before execution", nodeKeysBefore, nodeKeysAfterUndo);
-        assertEquals("We should have the same annotations as before execution", annKeysBefore, annKeysAfterUndo);
-        // redo command
-        ws().redoWorkflowCommand(wfId, getRootID());
-        var nodeKeysAfterRedo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-        var annKeysAfterRedo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-        assertEquals("We should have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
-        assertEquals("We should have the same annotations as after execution", annKeysAfterExecution, annKeysAfterRedo);
-    }
-
-    private static CutCommandEnt buildCutCommand(final List<NodeIDEnt> nodeIds,
-        final List<AnnotationIDEnt> annotationIds) {
-        return builder(CutCommandEntBuilder.class)//
-            .setKind(KindEnum.CUT)//
-            .setNodeIds(nodeIds)//
-            .setAnnotationIds(annotationIds)//
-            .build();
-    }
-
-    private static Set<String> getAnnotationsKeysFromWorkflow(final WorkflowSnapshotEnt workflow) {
-        return workflow.getWorkflow().getWorkflowAnnotations().stream().map(a -> a.getId().toString())
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Test Paste command
-     *
-     * @throws Exception
-     */
-    public void testExecutePasteCommand() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var copyCommand = buildCopyCommand(asList(new NodeIDEnt(1), new NodeIDEnt(2)),
-            asList(new AnnotationIDEnt("root_0"), new AnnotationIDEnt("root_1")));
-        var clipboardContent =
-            ((CopyResultEnt)ws().executeWorkflowCommand(wfId, getRootID(), copyCommand)).getContent();
-        // test paste commands
-        var pasteCommands =
-            List.of(buildPasteCommand(clipboardContent, null), buildPasteCommand(clipboardContent, List.of(16, 32)));
-        for (var pasteCommand : pasteCommands) {
-            var nodeKeysBefore = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            var annKeysBefore = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-            // execute command
-            var commandResult = ws().executeWorkflowCommand(wfId, getRootID(), pasteCommand);
-            assertThat(commandResult.getSnapshotId(), notNullValue());
-            assertThat(commandResult.getKind().toString(), is("pasteResult"));
-            var pasteResult = (PasteResultEnt)commandResult;
-            assertThat(pasteResult.getNodeIds(), hasSize(2));
-            assertThat(pasteResult.getAnnotationIds(), hasSize(2));
-            var nodeKeysAfterExecution =
-                ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            var annKeysAfterExecution =
-                getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-            assertThat("We should have more nodes in the workflow after pasting",
-                nodeKeysAfterExecution.size() > nodeKeysBefore.size());
-            assertThat("We shouldn't have lost any nodes while pasting",
-                nodeKeysAfterExecution.containsAll(nodeKeysBefore));
-            assertThat("We should have more annotations in the workflow after pasting",
-                annKeysAfterExecution.size() > annKeysBefore.size());
-            assertThat("We shouldn't have lost any annotations while pasting",
-                annKeysAfterExecution.containsAll(annKeysBefore));
-            // undo command
-            ws().undoWorkflowCommand(wfId, getRootID());
-            var nodeKeysAfterUndo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            var annKeysAfterUndo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-            assertEquals("We should have the same nodes as before execution", nodeKeysBefore, nodeKeysAfterUndo);
-            assertEquals("We should have the same annotations as before execution", annKeysBefore, annKeysAfterUndo);
-            // redo command
-            ws().redoWorkflowCommand(wfId, getRootID());
-            var nodeKeysAfterRedo = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow().getNodes().keySet();
-            var annKeysAfterRedo = getAnnotationsKeysFromWorkflow(ws().getWorkflow(wfId, getRootID(), Boolean.TRUE));
-            assertEquals("We should have the same nodes as after execution", nodeKeysAfterExecution, nodeKeysAfterRedo);
-            assertEquals("We should have the same annotations as after execution", annKeysAfterExecution,
-                annKeysAfterRedo);
-        }
-    }
-
-    /**
-     * Test {@link PasteCommandEnt} for annotations especially.
-     *
-     * @throws Exception
-     */
-    public void testExecutePasteCommandForAnnotations() throws Exception {
-        var projectId = loadWorkflow(TestWorkflowCollection.ANNOTATIONS);
-        var workflowId = getRootID();
-        var annotationEnts = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
-        var annotationIdEnts = annotationEnts.stream().map(WorkflowAnnotationEnt::getId).collect(Collectors.toList());
-
-        assertContentTypesForWorkflowAnnotations(annotationEnts);
-
-        var copyCommand = buildCopyCommand(Collections.emptyList(), annotationIdEnts);
-        var clipboardContent =
-            ((CopyResultEnt)ws().executeWorkflowCommand(projectId, workflowId, copyCommand)).getContent();
-        var pasteCommand = buildPasteCommand(clipboardContent, List.of(32, 64));
-        var pasteResult = ((PasteResultEnt)ws().executeWorkflowCommand(projectId, workflowId, pasteCommand));
-
-        var pastedAnnotationIdEnts = pasteResult.getAnnotationIds();
-        var annotationEntsAfterPaste =
-            ws().getWorkflow(projectId, workflowId, false).getWorkflow().getWorkflowAnnotations();
-        var pastedAnnotationEnts = annotationEntsAfterPaste.stream()//
-            .filter(annotation -> pastedAnnotationIdEnts.contains(annotation.getId()))//
-            .collect(Collectors.toList());
-
-        assertContentTypesForWorkflowAnnotations(pastedAnnotationEnts);
-    }
-
-    private static void assertContentTypesForWorkflowAnnotations(final List<WorkflowAnnotationEnt> annotationEnts) {
-        var contentTypes = annotationEnts.stream()//
-            .map(annotation -> annotation.getText().getContentType())//
-            .collect(Collectors.toList());
-        assertThat("There should exist at least on 'text/plain' workflow annotation",
-            contentTypes.stream().anyMatch(type -> type == ContentTypeEnum.PLAIN), is(true));
-        assertThat("There should exist at least on 'text/html' workflow annotation",
-            contentTypes.stream().anyMatch(type -> type == ContentTypeEnum.HTML), is(true));
-    }
-
-    private static PasteCommandEnt buildPasteCommand(final String clipboardContent, final List<Integer> position) {
-        return builder(PasteCommandEntBuilder.class)//
-            .setKind(KindEnum.PASTE)//
-            .setContent(clipboardContent)//
-            .setPosition(position != null
-                ? builder(XYEntBuilder.class).setX(position.get(0)).setY(position.get(1)).build() : null)
-            .build();
     }
 
     /**

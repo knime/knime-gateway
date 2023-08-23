@@ -46,7 +46,8 @@ public final class GatewayTestCollection {
         SpaceServiceTestHelper.class, //
         StreamingExecutionTestHelper.class, //
         WorkflowServiceTestHelper.class, //
-        TranslateCommandTestHelper.class
+        TranslateCommandTestHelper.class, //
+        CutCopyPasteCommandsTestHelper.class
     );
 
     private GatewayTestCollection() {

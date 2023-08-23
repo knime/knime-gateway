@@ -51,15 +51,13 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
@@ -71,6 +69,7 @@ import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PasteResultEnt.PasteResultEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
@@ -124,30 +123,31 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
             .map(id -> CoreUtil.getAnnotation(id, wfm).orElse(null))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toSet());
-        Map<ConnectionID, List<Integer>> bendpoints = Map.of(); // TODO
         // Move pasted content to the correct position
         var delta = calculateShift(nodes, annotations);
-        // TODO: NXT-1169 Enable translation of connection bend points too
-        Translate.performTranslation(wfm, nodes, annotations, bendpoints, delta);
+        Translate.performTranslation(wfm, nodes, annotations, delta);
         return true;
     }
 
     private int[] calculateShift(final Set<NodeContainer> nodes, final Set<WorkflowAnnotation> annotations) {
-        var delta = new int[2];
         if (m_commandEnt.getPosition() == null) {
-            delta[0] = OFFSET;
-            delta[1] = OFFSET;
+            return new int[]{OFFSET, OFFSET};
         } else {
-            var position = Stream.concat(//
-                nodes.stream()
-                    .map(nc -> Arrays.stream(nc.getUIInformation().getBounds()).boxed().collect(Collectors.toList())),
-                annotations.stream().map(an -> List.of(an.getX(), an.getY(), an.getWidth(), an.getHeight())))
-                .reduce(List.of(Integer.MAX_VALUE, Integer.MAX_VALUE),
-                    (acc, nxt) -> List.of(Math.min(acc.get(0), nxt.get(0)), Math.min(acc.get(1), nxt.get(1))));
-            delta[0] = m_commandEnt.getPosition().getX() - position.get(0);
-            delta[1] = m_commandEnt.getPosition().getY() - position.get(1);
+            var nodePositions = nodes.stream().map(NodeContainer::getUIInformation).map(NodeUIInformation::getBounds)
+                .filter(Objects::nonNull).map(bounds -> new int[]{bounds[0], bounds[1]});
+            var annotationPositions = annotations.stream().map(an -> new int[]{an.getX(), an.getY()});
+            var bendpointPositions = EditBendpoints.inducedConnections(nodes, getWorkflowManager()) //
+                .stream().flatMap(connection -> { //
+                    return Arrays.stream(connection.getUIInfo().getAllBendpoints()); // already are XY-arrays
+                });
+            var position = Stream.of(nodePositions, annotationPositions, bendpointPositions).flatMap(s -> s) //
+                .reduce( //
+                    new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE}, //
+                    (acc, nxt) -> new int[]{Math.min(acc[0], nxt[0]), Math.min(acc[1], nxt[1])} //
+                );
+            return new int[]{m_commandEnt.getPosition().getX() - position[0],
+                m_commandEnt.getPosition().getY() - position[1]};
         }
-        return delta;
     }
 
     @Override

@@ -88,7 +88,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public TranslateCommandTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        super(WorkflowServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+        super(TranslateCommandTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
     private static TranslateCommandEnt translateCommand(final int[] delta, final List<NodeIDEnt> nodes,
@@ -112,7 +112,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testTranslateBendpointsUndoRedo() throws Exception {
-        var wf = loadWorkflow();
+        var wf = loadBendpointsWorkflow();
         NodeIDEnt targetNode = new NodeIDEnt(187);
         var connection = new ConnectionIDEnt(targetNode, 1).toString();
         var bendpointIndex = 1;
@@ -134,7 +134,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testTranslateBendpointsOnlySelected() throws Exception {
-        var wf = loadWorkflow();
+        var wf = loadBendpointsWorkflow();
         NodeIDEnt sourceNode = new NodeIDEnt(189);
         NodeIDEnt targetNode = new NodeIDEnt(187);
         var connection = new ConnectionIDEnt(targetNode, 1).toString();
@@ -146,14 +146,14 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         TranslateCommandTestHelper.assertMoved(bendpoint, delta, wf.originalEnt(), modifiedWorkflow);
     }
 
-    private LoadedWorkflow loadWorkflow() throws Exception {
+    private LoadedWorkflow loadBendpointsWorkflow() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         WorkflowEnt originalWorkflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
         return new LoadedWorkflow(wfId, originalWorkflow);
     }
 
     public void testTranslateBendpointOfInvalidIndex() throws Exception {
-        var wf = loadWorkflow();
+        var wf = loadBendpointsWorkflow();
         NodeIDEnt targetNode = new NodeIDEnt(188);
         var connection = new ConnectionIDEnt(targetNode, 1).toString();
         var bendpointIndex = 999;
@@ -169,7 +169,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testTranslateBendpointsOnConnectionWithNone() throws Exception {
-        var wf = loadWorkflow();
+        var wf = loadBendpointsWorkflow();
         NodeIDEnt targetNode = new NodeIDEnt(190);
         var connection = new ConnectionIDEnt(targetNode, 1).toString();
         var bendpointIndex = 999;
@@ -185,7 +185,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testTranslateBendpointsOnInexistentConnection() throws Exception {
-        var wf = loadWorkflow();
+        var wf = loadBendpointsWorkflow();
         var connection = new ConnectionIDEnt(new NodeIDEnt(999), 999).toString();
         var translateInvalidBendpointIndex =
             TranslateCommandTestHelper.translateCommand(delta, List.of(), Map.of(connection, List.of(0)));
