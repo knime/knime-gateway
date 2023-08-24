@@ -48,7 +48,7 @@ package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.ConnectionContainer;
@@ -59,7 +59,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 /**
  * Utility methods for editing connection bendpoints.
  */
-public class EditBendpoints {
+public final class EditBendpoints {
 
     private EditBendpoints() {
 
@@ -77,17 +77,17 @@ public class EditBendpoints {
      * @param delta The translation shift. First component is X-coordinate, second is Y-coordinate.
      */
     public static void translateSomeBendpoints(final ConnectionContainer connection,
-        final List<Integer> bendpointIndices, final int[] delta) {
+        final List<Integer> bendpointIndices, final Geometry.Delta delta) {
         var indices = bendpointIndices.stream().mapToInt(i -> i).toArray();
-        editConnectionUIInformation(connection, b -> b.translate(delta, indices));
+        editConnectionUIInformation(connection, b -> b.translate(delta.toArray(), indices));
     }
 
-    public static void translateAllBendpoints(final ConnectionContainer connection, final int[] delta) {
-        editConnectionUIInformation(connection, b -> b.translate(delta));
+    public static void translateAllBendpoints(final ConnectionContainer connection, final Geometry.Delta delta) {
+        editConnectionUIInformation(connection, b -> b.translate(delta.toArray()));
     }
 
     private static void editConnectionUIInformation(final ConnectionContainer connection,
-        final Function<ConnectionUIInformation.Builder, ConnectionUIInformation.Builder> transformation) {
+        final UnaryOperator<ConnectionUIInformation.Builder> transformation) {
         var builder = ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
         connection.setUIInfo(transformation.apply(builder).build()); // need to explicitly set to notify listeners
     }

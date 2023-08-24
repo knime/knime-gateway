@@ -88,6 +88,11 @@ import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+/**
+ * Tests the implementations of {@link org.knime.gateway.impl.webui.service.commands.Cut},
+ * {@link org.knime.gateway.impl.webui.service.commands.Copy} and
+ * {@link org.knime.gateway.impl.webui.service.commands.Paste}.
+ */
 @SuppressWarnings("javadoc")
 public class CutCopyPasteCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 

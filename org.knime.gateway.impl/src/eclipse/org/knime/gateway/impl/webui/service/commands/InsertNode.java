@@ -48,10 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Map;
 import java.util.Set;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
@@ -59,6 +57,7 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
 
@@ -68,8 +67,6 @@ import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
  * @author Juan Baquero, KNIME GmbH
  */
 final class InsertNode extends AbstractWorkflowCommand {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(InsertNode.class);
 
     private final InsertNodeCommandEnt m_commandEnt;
 
@@ -109,7 +106,7 @@ final class InsertNode extends AbstractWorkflowCommand {
         wfm.removeConnection(connectionContainer);
 
         // Move previous node / Create new node
-        var position = m_commandEnt.getPosition();
+        var targetPosition = m_commandEnt.getPosition();
         var nodeEnt = m_commandEnt.getNodeId();
         var nodeFactoryEnt = m_commandEnt.getNodeFactory();
         if (nodeEnt != null) { // Move node
@@ -118,13 +115,13 @@ final class InsertNode extends AbstractWorkflowCommand {
             m_copy = wfm.copy(true, content);
 
             var nodeContainer = wfm.getNodeContainer(m_insertedNode);
-            var oldPosition = nodeContainer.getUIInformation().getBounds();
-            Translate.performTranslation(wfm, Set.of(nodeContainer), Set.of(),
-                Map.of(), new int[]{position.getX() - oldPosition[0], position.getY() - oldPosition[1]});
+            var originalPosition = nodeContainer.getUIInformation().getBounds();
+            var delta = Geometry.Delta.of(Geometry.Point.of(targetPosition), Geometry.Point.of(originalPosition));
+            Translate.translateNodes(Set.of(nodeContainer), delta);
             new NodeConnector(wfm, m_insertedNode).connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort)
                 .trackCreation().connect();
         } else if (nodeFactoryEnt != null) { // New node
-            m_insertedNode = new NodeCreator(wfm, nodeFactoryEnt, position) //
+            m_insertedNode = new NodeCreator(wfm, nodeFactoryEnt, targetPosition) //
                 .centerNode() //
                 .trackCreation() //
                 .connect(connector -> connector.connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort).trackCreation()) //

@@ -60,9 +60,9 @@ import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 
 /**
  * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
@@ -71,17 +71,16 @@ import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
  */
 final class Translate extends AbstractPartBasedWorkflowCommand {
 
-    private final int[] m_delta;
+    private final Geometry.Delta m_delta;
 
     Translate(final TranslateCommandEnt commandEnt) {
         super(commandEnt);
-        XYEnt translationEnt = commandEnt.getTranslation();
-        m_delta = new int[]{translationEnt.getX(), translationEnt.getY()};
+        m_delta = Geometry.Delta.of(commandEnt.getTranslation());
     }
 
     @Override
     public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        if (m_delta[0] == 0 && m_delta[1] == 0) {
+        if (m_delta.isZero()) {
             return false;
         }
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(), m_delta);
@@ -91,7 +90,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(),
-            invert(m_delta));
+            m_delta.invert());
     }
 
     /**
@@ -106,18 +105,18 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
      */
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final Map<ConnectionID, List<Integer>> bendpoints,
-        final int[] delta) {
+        final Geometry.Delta delta) {
         translateNodes(nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateSomeBendpoints(wfm, bendpoints, delta);
     }
 
     private static void translateSomeBendpoints(WorkflowManager wfm, Map<ConnectionID, List<Integer>> bendpoints,
-        int[] delta) {
+        Geometry.Delta delta) {
         var modifiedConnections = bendpoints.entrySet().stream() //
             .filter(e -> !e.getValue().isEmpty()).collect(Collectors.toSet());
         modifiedConnections //
-            .forEach((e) -> { //
+            .forEach(e -> { //
                 var connection = wfm.getConnection(e.getKey());
                 var bendpointIndices = e.getValue();
                 EditBendpoints.translateSomeBendpoints(connection, bendpointIndices, delta);
@@ -137,41 +136,35 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
      * @param delta The 2D translation vector
      */
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
-        final Set<WorkflowAnnotation> annotations, final int[] delta) {
+        final Set<WorkflowAnnotation> annotations, final Geometry.Delta delta) {
         translateNodes(nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateAllBendpoints(wfm, nodes, delta);
     }
 
-    private static void translateAllBendpoints(WorkflowManager wfm, Set<NodeContainer> nodes, int[] delta) {
+    private static void translateAllBendpoints(WorkflowManager wfm, Set<NodeContainer> nodes, Geometry.Delta delta) {
         Set<ConnectionContainer> modifiedConnections = EditBendpoints.inducedConnections(nodes, wfm);
-        modifiedConnections.forEach(connectionInSet -> {
-            EditBendpoints.translateAllBendpoints(connectionInSet, delta);
-        });
+        modifiedConnections.forEach(connectionInSet -> EditBendpoints.translateAllBendpoints(connectionInSet, delta));
         if (!modifiedConnections.isEmpty()) {
             wfm.setDirty();
         }
     }
 
     private static void translateAnnotations(final WorkflowManager wfm, Set<WorkflowAnnotation> selectedAnnotations,
-        int[] delta) {
+        Geometry.Delta delta) {
         for (WorkflowAnnotation wa : selectedAnnotations) {
-            wa.shiftPosition(delta[0], delta[1]);
+            wa.shiftPosition(delta.x(), delta.y());
         }
         if (!selectedAnnotations.isEmpty()) {
             wfm.setDirty();
         }
     }
 
-    private static void translateNodes(Set<NodeContainer> selectedNodes, int[] delta) {
+    static void translateNodes(Set<NodeContainer> selectedNodes, Geometry.Delta delta) {
         for (NodeContainer nc : selectedNodes) {
-            NodeUIInformation.moveNodeBy(nc, delta);
+            NodeUIInformation.moveNodeBy(nc, delta.toArray());
             nc.setDirty(); // will propagate upwards
         }
-    }
-
-    private static int[] invert(final int[] source) {
-        return new int[]{-1 * source[0], -1 * source[1]};
     }
 
 }

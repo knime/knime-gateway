@@ -75,7 +75,10 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
-@SuppressWarnings("javadoc")
+/**
+ * Tests the implementation of {@link org.knime.gateway.impl.webui.service.commands.Translate}.
+ */
+@SuppressWarnings({"javadoc", "java:1166", "java:S112", "java:1186", "java:1172"})
 public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static final int[] delta = new int[]{-880, -20};
@@ -197,9 +200,8 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         }
     }
 
-    public void testExecuteTranslateCommand() throws Exception {
+    public void testTranslateNodesAndAnnotations() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-
         var node15 = new NodeIDEnt(15);
         var node16 = new NodeIDEnt(16);
         var node18 = new NodeIDEnt(18);

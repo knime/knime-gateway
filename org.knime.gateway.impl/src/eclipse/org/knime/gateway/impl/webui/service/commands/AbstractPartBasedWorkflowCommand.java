@@ -120,7 +120,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
 
         var connectionsNotFound = new HashSet<ConnectionID>();
         var bendpointsNotFound = new HashMap<ConnectionContainer, List<Integer>>();
-        getBendpoints().forEach((connectionId, requestedBendpointIndices) -> {
+        getBendpoints().forEach((connectionId, requestedBendpointIndices) -> { // NOSONAR
             if (!hasConnection(wfm, connectionId)) {
                 connectionsNotFound.add(connectionId);
                 return; // do not try to check bendpoints on non-existent connections
@@ -160,19 +160,19 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     private static String printMissingParts(final Set<NodeID> nodesNotFound,
         final Set<WorkflowAnnotationID> annotationsNotFound, final Set<ConnectionID> connectionsNotFound,
         final HashMap<ConnectionContainer, List<Integer>> bendpointsNotFound) {
-        Function<Map.Entry<ConnectionContainer, List<Integer>>, String> printBendpoints = entry -> {
-            // assumes that connection exists
-            return entry.getValue().stream() //
-                .map(i -> Integer.toString(i)) //
+
+        // assumes that connection exists
+        Function<Map.Entry<ConnectionContainer, List<Integer>>, String> printBendpoints =
+            entry -> entry.getValue().stream() //
+                .map(i -> Integer.toString(i)) // NOSONAR
                 .collect(Collectors.joining(",")) //
                 + " on connection " //
                 + entry.getKey().toString();
-        };
-        Function<ConnectionID, String> printConnectionId = connectionID -> {
-            // this is all we know about nonexistent connections
-            return "[? -> " + connectionID.getDestinationNode().toString() + "(" + connectionID.getDestinationPort()
-                + ")]";
-        };
+
+        // this is all we know about nonexistent connections
+        Function<ConnectionID, String> printConnectionId = connectionID -> "[? -> "
+            + connectionID.getDestinationNode().toString() + "(" + connectionID.getDestinationPort() + ")]";
+
         return "Failed to execute command. Workflow parts not found: " + Stream
             .of(listParts("nodes", nodesNotFound, NodeID::toString),
                 listParts("workflow-annotations", annotationsNotFound, WorkflowAnnotationID::toString),

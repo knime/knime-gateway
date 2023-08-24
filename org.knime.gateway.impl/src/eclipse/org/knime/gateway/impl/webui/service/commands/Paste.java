@@ -54,7 +54,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeUIInformation;
@@ -70,6 +69,7 @@ import org.knime.gateway.api.webui.entity.PasteResultEnt.PasteResultEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
@@ -84,7 +84,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 class Paste extends AbstractWorkflowCommand implements WithResult {
 
-    private static final int OFFSET = 120;
+    private static final Geometry.Delta DEFAULT_SHIFT = new Geometry.Delta(120, 120);
 
     private final PasteCommandEnt m_commandEnt;
 
@@ -129,26 +129,21 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
         return true;
     }
 
-    private int[] calculateShift(final Set<NodeContainer> nodes, final Set<WorkflowAnnotation> annotations) {
+    private Geometry.Delta calculateShift(final Set<NodeContainer> nodes, final Set<WorkflowAnnotation> annotations) {
         if (m_commandEnt.getPosition() == null) {
-            return new int[]{OFFSET, OFFSET};
+            return DEFAULT_SHIFT;
         } else {
             var nodePositions = nodes.stream().map(NodeContainer::getUIInformation).map(NodeUIInformation::getBounds)
-                .filter(Objects::nonNull).map(bounds -> new int[]{bounds[0], bounds[1]});
-            var annotationPositions = annotations.stream().map(an -> new int[]{an.getX(), an.getY()});
+                .filter(Objects::nonNull).map(bounds -> new Geometry.Point(bounds[0], bounds[1]));
+            var annotationPositions = annotations.stream().map(an -> new Geometry.Point(an.getX(), an.getY()));
             var bendpointPositions = EditBendpoints.inducedConnections(nodes, getWorkflowManager()) //
-                .stream().flatMap(connection -> { //
-                    return Arrays.stream(connection.getUIInfo().getAllBendpoints()); // already are XY-arrays
-                });
-            var position = Stream.of(nodePositions, annotationPositions, bendpointPositions).flatMap(s -> s) //
-                .reduce( //
-                    new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE}, //
-                    (acc, nxt) -> new int[]{Math.min(acc[0], nxt[0]), Math.min(acc[1], nxt[1])} //
-                );
-            return new int[]{m_commandEnt.getPosition().getX() - position[0],
-                m_commandEnt.getPosition().getY() - position[1]};
+                .stream().flatMap(connection -> Arrays.stream(connection.getUIInfo().getAllBendpoints())) //
+                .map(Geometry.Point::of);
+            var topLeft = Geometry.Point.min(nodePositions, annotationPositions, bendpointPositions);
+            return Geometry.Delta.of(Geometry.Point.of(m_commandEnt.getPosition()), topLeft);
         }
     }
+
 
     @Override
     public PasteResultEnt buildEntity(final String snapshotId) {
@@ -165,5 +160,6 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
     public Set<WorkflowChange> getChangesToWaitFor() {
         return Set.of(WorkflowChange.NODE_ADDED, WorkflowChange.ANNOTATION_ADDED);
     }
+
 
 }
