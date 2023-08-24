@@ -70,6 +70,8 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -316,6 +318,31 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     protected SpaceService ss() {
         return m_serviceProvider.getSpaceService();
+    }
+
+    /**
+     * Execute the given workflow command and return the new workflow snapshot
+     *
+     * @param commandEnt
+     */
+    @SuppressWarnings("java:S112") // generic exception
+    protected WorkflowEnt executeWorkflowCommand(final WorkflowCommandEnt commandEnt, final String workflowId)
+        throws Exception {
+        ws().executeWorkflowCommand(workflowId, NodeIDEnt.getRootID(), commandEnt);
+        return ws().getWorkflow(workflowId, NodeIDEnt.getRootID(), true).getWorkflow();
+
+    }
+
+    @SuppressWarnings("java:S112") // generic exception
+    protected WorkflowEnt undoWorkflowCommand(final String wfId) throws Exception {
+        ws().undoWorkflowCommand(wfId, NodeIDEnt.getRootID());
+        return ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+    }
+
+    @SuppressWarnings("java:S112") // generic exception
+    protected WorkflowEnt redoWorkflowCommand(final String wfId) throws Exception {
+        ws().redoWorkflowCommand(wfId, NodeIDEnt.getRootID());
+        return ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
     }
 
 }

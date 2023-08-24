@@ -47,6 +47,7 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import static java.util.Arrays.stream;
+import static org.knime.gateway.api.util.CoreUtil.getConnection;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -65,14 +66,12 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
 
 /**
  * Workflow command based on workflow parts (i.e. nodes and annotations).
@@ -94,6 +93,14 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
 
     protected AbstractPartBasedWorkflowCommand(final PartBasedCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
+    }
+
+    public static ConnectionID toConnectionId(final String connectionId, final String projectId) {
+        // required because in some more complex command parameters (namely maps) we cannot enforce a `ConnectionEnt` property type
+        // and can only expect Strings.
+        var ent = new ConnectionIDEnt(connectionId);
+        return new ConnectionID(DefaultServiceUtil.entityToNodeID(projectId, ent.getDestNodeIDEnt()),
+            ent.getDestPortIdx());
     }
 
     /**
@@ -121,12 +128,12 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
         var connectionsNotFound = new HashSet<ConnectionID>();
         var bendpointsNotFound = new HashMap<ConnectionContainer, List<Integer>>();
         getBendpoints().forEach((connectionId, requestedBendpointIndices) -> { // NOSONAR
-            if (!hasConnection(wfm, connectionId)) {
+            if (getConnection(connectionId, wfm).isEmpty()) {
                 connectionsNotFound.add(connectionId);
                 return; // do not try to check bendpoints on non-existent connections
             }
             var connection = wfm.getConnection(connectionId);
-            if (!EditBendpoints.hasBendpoints(connection)) {
+            if (!CoreUtil.hasBendpoints(connection)) {
                 bendpointsNotFound.put(connection, requestedBendpointIndices);
             } else {
                 var existingBendpoints = connection.getUIInfo().getAllBendpoints();
@@ -247,27 +254,13 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
             if (m_commandEnt.getConnectionBendpoints() == null) {
                 m_bendpointsQueried = Map.of();
             } else {
+                var projId = getWorkflowKey().getProjectId();
                 m_bendpointsQueried = m_commandEnt.getConnectionBendpoints().entrySet().stream()
-                    .collect(Collectors.toMap(e -> toConnectionId(e.getKey()), Map.Entry::getValue));
+                    .collect(Collectors.toMap(e -> toConnectionId(e.getKey(), projId), Map.Entry::getValue));
             }
         }
         return m_bendpointsQueried;
     }
 
-    private ConnectionID toConnectionId(final String connectionId) {
-        var ent = new ConnectionIDEnt(connectionId);
-        var projectId = getWorkflowKey().getProjectId();
-        return new ConnectionID(DefaultServiceUtil.entityToNodeID(projectId, ent.getDestNodeIDEnt()),
-            ent.getDestPortIdx());
-    }
-
-    private static boolean hasConnection(final WorkflowManager wfm, final ConnectionID connectionID) {
-        try {
-            var connection = wfm.getConnection(connectionID);
-            return connection != null;
-        } catch (IllegalArgumentException e) { // NOSONAR
-            return false;
-        }
-    }
 
 }

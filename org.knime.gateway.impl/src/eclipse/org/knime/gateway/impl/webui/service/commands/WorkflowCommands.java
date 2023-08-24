@@ -57,6 +57,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
+import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
@@ -69,6 +70,7 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
+import org.knime.gateway.api.webui.entity.RemoveBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -217,6 +219,10 @@ public final class WorkflowCommands {
             command = new AddWorkflowAnnotation(ce);
         } else if (commandEnt instanceof UpdateProjectMetadataCommandEnt ce) {
             command = new UpdateProjectMetadata(ce);
+        } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
+            command = new AddBendpoint(ce);
+        } else if (commandEnt instanceof RemoveBendpointCommandEnt ce) {
+            command = new RemoveBendpoint(ce);
         } else {
             if (m_workflowCommandToExecute != null) {
                 command = m_workflowCommandToExecute;

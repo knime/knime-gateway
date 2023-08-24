@@ -44,7 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
+import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
@@ -59,6 +63,7 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.api.webui.entity.BendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
@@ -121,6 +126,7 @@ import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
 import org.knime.gateway.api.webui.entity.PortViewsEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.RemoveBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -155,10 +161,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * Lists all gateway entities of package <code>org.knime.gateway.api.entity</code>.
  *
@@ -178,6 +180,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEnt.class);
+        res.add(AddBendpointCommandEnt.class);
         res.add(AddNodeCommandEnt.class);
         res.add(AddNodeResultEnt.class);
         res.add(AddPortCommandEnt.class);
@@ -192,6 +195,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEnt.class);
         res.add(AppStateChangedEventTypeEnt.class);
         res.add(AppStateEnt.class);
+        res.add(BendpointCommandEnt.class);
         res.add(BoundsEnt.class);
         res.add(CollapseCommandEnt.class);
         res.add(CollapseResultEnt.class);
@@ -254,6 +258,7 @@ public class ListEntities {
         res.add(PortViewsEnt.class);
         res.add(ProjectDirtyStateEventEnt.class);
         res.add(ProjectMetadataEnt.class);
+        res.add(RemoveBendpointCommandEnt.class);
         res.add(RemovePortCommandEnt.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.class);
         res.add(ReplaceNodeCommandEnt.class);
@@ -296,6 +301,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEnt.AddAnnotationResultEntBuilder.class);
+        res.add(AddBendpointCommandEnt.AddBendpointCommandEntBuilder.class);
         res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
         res.add(AddNodeResultEnt.AddNodeResultEntBuilder.class);
         res.add(AddPortCommandEnt.AddPortCommandEntBuilder.class);
@@ -310,6 +316,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEnt.AppStateChangedEventEntBuilder.class);
         res.add(AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder.class);
         res.add(AppStateEnt.AppStateEntBuilder.class);
+        res.add(BendpointCommandEnt.BendpointCommandEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);
         res.add(CollapseCommandEnt.CollapseCommandEntBuilder.class);
         res.add(CollapseResultEnt.CollapseResultEntBuilder.class);
@@ -372,6 +379,7 @@ public class ListEntities {
         res.add(PortViewsEnt.PortViewsEntBuilder.class);
         res.add(ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
+        res.add(RemoveBendpointCommandEnt.RemoveBendpointCommandEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder.class);
         res.add(ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder.class);

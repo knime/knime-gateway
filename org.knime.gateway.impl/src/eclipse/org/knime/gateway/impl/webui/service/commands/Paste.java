@@ -68,7 +68,6 @@ import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PasteResultEnt.PasteResultEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Point;
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
@@ -137,7 +136,7 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
             var nodePositions = nodes.stream().map(NodeContainer::getUIInformation).map(NodeUIInformation::getBounds)
                 .filter(Objects::nonNull).map(bounds -> Point.of(bounds[0], bounds[1]));
             var annotationPositions = annotations.stream().map(an -> Point.of(an.getX(), an.getY()));
-            var bendpointPositions = EditBendpoints.inducedConnections(nodes, getWorkflowManager()) //
+            var bendpointPositions = CoreUtil.inducedConnections(nodes, getWorkflowManager()) //
                 .stream().flatMap(connection -> Arrays.stream(connection.getUIInfo().getAllBendpoints())) //
                 .map(Point::of);
             var topLeft = Point.min(nodePositions, annotationPositions, bendpointPositions);

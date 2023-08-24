@@ -59,9 +59,9 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 
@@ -120,7 +120,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
             .forEach(e -> { //
                 var connection = wfm.getConnection(e.getKey());
                 var bendpointIndices = e.getValue();
-                EditBendpoints.translateSomeBendpoints(connection, bendpointIndices, delta);
+                CoreUtil.translateSomeBendpoints(connection, bendpointIndices, delta.toArray());
                 wfm.setDirty();
             });
         if (!modifiedConnections.isEmpty()) {
@@ -144,8 +144,9 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     private static void translateAllBendpoints(final WorkflowManager wfm, final Set<NodeContainer> nodes, final Delta delta) {
-        Set<ConnectionContainer> modifiedConnections = EditBendpoints.inducedConnections(nodes, wfm);
-        modifiedConnections.forEach(connectionInSet -> EditBendpoints.translateAllBendpoints(connectionInSet, delta));
+        Set<ConnectionContainer> modifiedConnections = CoreUtil.inducedConnections(nodes, wfm);
+        modifiedConnections
+            .forEach(connectionInSet -> CoreUtil.translateAllBendpoints(connectionInSet, delta.toArray()));
         if (!modifiedConnections.isEmpty()) {
             wfm.setDirty();
         }

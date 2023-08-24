@@ -362,7 +362,10 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void addConnectionUIInformationListener(final ConnectionContainer cc) {
-        ConnectionUIInformationListener l = e -> callback();
+        ConnectionUIInformationListener l = e -> {
+            updateWorkflowChangesTrackers(WorkflowChange.BENDPOINTS_MODIFIED);
+            callback();
+        };
         cc.addUIInformationListener(l);
         m_connectionUIInformationListeners.put(cc.getID(), l);
     }
@@ -389,7 +392,7 @@ public class WorkflowChangesListener implements Closeable {
             m_executorService.execute(() -> {
                 do {
                     m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
-                    m_postProcessCallbacks.forEach(c -> c.run());
+                    m_postProcessCallbacks.forEach(Runnable::run);
                 } while (m_callbackState.checkIsCallbackAwaitingAndChangeState());
             });
         }

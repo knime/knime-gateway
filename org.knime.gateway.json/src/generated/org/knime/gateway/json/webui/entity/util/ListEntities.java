@@ -44,7 +44,11 @@
  */
 package org.knime.gateway.json.webui.entity.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.knime.gateway.json.webui.entity.AddAnnotationResultEntMixIn;
+import org.knime.gateway.json.webui.entity.AddBendpointCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddPortCommandEntMixIn;
@@ -59,6 +63,7 @@ import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateChangedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
+import org.knime.gateway.json.webui.entity.BendpointCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseResultEntMixIn;
@@ -121,6 +126,7 @@ import org.knime.gateway.json.webui.entity.PortViewDescriptorMappingEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewsEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectDirtyStateEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.RemoveBendpointCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationsCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReplaceNodeCommandEntMixIn;
@@ -154,9 +160,6 @@ import org.knime.gateway.json.webui.entity.WorkflowProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.XYEntMixIn;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * Lists all gateway entities of package <code>com.knime.gateway.jsonrpc.entity</code>.
@@ -177,6 +180,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEntMixIn.class);
+        res.add(AddBendpointCommandEntMixIn.class);
         res.add(AddNodeCommandEntMixIn.class);
         res.add(AddNodeResultEntMixIn.class);
         res.add(AddPortCommandEntMixIn.class);
@@ -191,6 +195,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEntMixIn.class);
         res.add(AppStateChangedEventTypeEntMixIn.class);
         res.add(AppStateEntMixIn.class);
+        res.add(BendpointCommandEntMixIn.class);
         res.add(BoundsEntMixIn.class);
         res.add(CollapseCommandEntMixIn.class);
         res.add(CollapseResultEntMixIn.class);
@@ -253,6 +258,7 @@ public class ListEntities {
         res.add(PortViewsEntMixIn.class);
         res.add(ProjectDirtyStateEventEntMixIn.class);
         res.add(ProjectMetadataEntMixIn.class);
+        res.add(RemoveBendpointCommandEntMixIn.class);
         res.add(RemovePortCommandEntMixIn.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.class);
         res.add(ReplaceNodeCommandEntMixIn.class);
@@ -295,6 +301,7 @@ public class ListEntities {
     public static List<Class<?>> listEntityBuilderClasses() {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEntMixIn.AddAnnotationResultEntMixInBuilder.class);
+        res.add(AddBendpointCommandEntMixIn.AddBendpointCommandEntMixInBuilder.class);
         res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
         res.add(AddNodeResultEntMixIn.AddNodeResultEntMixInBuilder.class);
         res.add(AddPortCommandEntMixIn.AddPortCommandEntMixInBuilder.class);
@@ -309,6 +316,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEntMixIn.AppStateChangedEventEntMixInBuilder.class);
         res.add(AppStateChangedEventTypeEntMixIn.AppStateChangedEventTypeEntMixInBuilder.class);
         res.add(AppStateEntMixIn.AppStateEntMixInBuilder.class);
+        res.add(BendpointCommandEntMixIn.BendpointCommandEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);
         res.add(CollapseCommandEntMixIn.CollapseCommandEntMixInBuilder.class);
         res.add(CollapseResultEntMixIn.CollapseResultEntMixInBuilder.class);
@@ -371,6 +379,7 @@ public class ListEntities {
         res.add(PortViewsEntMixIn.PortViewsEntMixInBuilder.class);
         res.add(ProjectDirtyStateEventEntMixIn.ProjectDirtyStateEventEntMixInBuilder.class);
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
+        res.add(RemoveBendpointCommandEntMixIn.RemoveBendpointCommandEntMixInBuilder.class);
         res.add(RemovePortCommandEntMixIn.RemovePortCommandEntMixInBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.ReorderWorkflowAnnotationsCommandEntMixInBuilder.class);
         res.add(ReplaceNodeCommandEntMixIn.ReplaceNodeCommandEntMixInBuilder.class);

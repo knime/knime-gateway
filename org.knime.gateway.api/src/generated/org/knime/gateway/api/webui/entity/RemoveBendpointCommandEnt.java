@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-
+import java.math.BigDecimal;
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
@@ -52,112 +52,61 @@ import org.knime.gateway.api.entity.GatewayEntity;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
- * A command that is executed to change a workflow.
+ * Remove a bendpoint on a given connection.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    ADD_NODE("add_node"),
-    
-    REPLACE_NODE("replace_node"),
-    
-    INSERT_NODE("insert_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    UPDATE_NODE_LABEL("update_node_label"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy"),
-    
-    CUT("cut"),
-    
-    PASTE("paste"),
-    
-    TRANSFORM_WORKFLOW_ANNOTATION("transform_workflow_annotation"),
-    
-    UPDATE_WORKFLOW_ANNOTATION("update_workflow_annotation"),
-    
-    REORDER_WORKFLOW_ANNOTATIONS("reorder_workflow_annotations"),
-    
-    ADD_WORKFLOW_ANNOTATION("add_workflow_annotation"),
-    
-          UPDATE_PROJECT_METADATA("update_project_metadata"),
-
-          ADD_BENDPOINT("add_bendpoint"),
-
-          REMOVE_BENDPOINT("remove_bendpoint");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen",
+    "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface RemoveBendpointCommandEnt extends GatewayEntity, BendpointCommandEnt {
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    default void forEachPropertyValue(final GatewayEntity other,
+        final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+        var e = (RemoveBendpointCommandEnt)other;
+        valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+        valueConsumer.accept("connectionId", Pair.create(getConnectionId(), e.getConnectionId()));
+        valueConsumer.accept("index", Pair.create(getIndex(), e.getIndex()));
     }
-
-  }
-
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (WorkflowCommandEnt)other;
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-  }
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface RemoveBendpointCommandEntBuilder extends GatewayEntityBuilder<RemoveBendpointCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param kind the property value, NOT <code>null</code>!
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
-        
-        
+        RemoveBendpointCommandEntBuilder setKind(KindEnum kind);
+
         /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+         * The connection id to remove a bendpoint from.
+         * 
+         * @param connectionId the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        RemoveBendpointCommandEntBuilder setConnectionId(org.knime.gateway.api.entity.ConnectionIDEnt connectionId);
+
+        /**
+         * The index of the bendpoint to be removed
+         * 
+         * @param index the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        RemoveBendpointCommandEntBuilder setIndex(BigDecimal index);
+
+        /**
+         * Creates the entity from the builder.
+         * 
+         * @return the entity
+         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+         */
         @Override
-        WorkflowCommandEnt build();
-    
+        RemoveBendpointCommandEnt build();
+
     }
 
 }

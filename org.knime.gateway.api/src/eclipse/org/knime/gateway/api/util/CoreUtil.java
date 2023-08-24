@@ -55,10 +55,12 @@ import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -82,6 +84,8 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.FlowLoopContext;
 import org.knime.core.node.workflow.LoopStartNode;
@@ -463,6 +467,19 @@ public final class CoreUtil {
     }
 
     /**
+     * @param id The identifier of the queried connection
+     * @param wfm The workflow manager to look in
+     * @return The connection identified by the given ID, or an empty optional.
+     */
+    public static Optional<ConnectionContainer> getConnection(final ConnectionID id, final WorkflowManager wfm) {
+        try {
+            return Optional.of(wfm.getConnection(id));
+        } catch (IllegalArgumentException e) { // NOSONAR
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Find a node with given id in the given workflow manager.
      *
      * @param id The node to query
@@ -476,6 +493,80 @@ public final class CoreUtil {
         } catch (IllegalArgumentException e) { // NOSONAR
             return Optional.empty();
         }
+    }
+
+    /**
+     * @param connection The connection to examine
+     * @return {@code true} iff the given connection has any bendpoints.
+     */
+    public static boolean hasBendpoints(final ConnectionContainer connection) {
+        return connection.getUIInfo() != null && connection.getUIInfo().getAllBendpoints().length > 0;
+    }
+
+    /**
+     * Translate specified bendpoints on the workflow canvas by {@code delta}.
+     *
+     * @param connection The connection on which the bendpoints are located.
+     * @param bendpointIndices Indices identifying the bendpoints to move
+     * @param delta The translation shift. First component is X-coordinate, second is Y-coordinate.
+     */
+    public static void translateSomeBendpoints(final ConnectionContainer connection,
+        final List<Integer> bendpointIndices, final int[] delta) {
+        var indices = bendpointIndices.stream().mapToInt(i -> i).toArray();
+        editConnectionUIInformation(connection, b -> b.translate(delta, indices));
+    }
+
+    /**
+     * Translate all bendpoints by {@code delta}
+     * 
+     * @param connection The connection on which the bendpoints are located.
+     * @param delta The translation shift. First component is X-coordinate, second is Y-coordinate.
+     */
+    public static void translateAllBendpoints(final ConnectionContainer connection, final int[] delta) {
+        editConnectionUIInformation(connection, b -> b.translate(delta));
+    }
+
+    /**
+     * Insert a bendpoint.
+     * 
+     * @param connection The connection to insert the bendpoint on.
+     * @param index The index at which to insert the bendpoint.
+     * @param xPos The X-Position of the bendpoint on the canvas.
+     * @param yPos The Y-Position of the workflow on the canvas.
+     */
+    public static void insertBendpoint(final ConnectionContainer connection, final int index, final int xPos,
+        final int yPos) {
+        editConnectionUIInformation(connection, b -> b.addBendpoint(xPos, yPos, index));
+    }
+
+    /**
+     * Remove a bendpoint.
+     * 
+     * @param connection The connection from which to remove a bendpoint.
+     * @param index The index of the bendpoint to remove.
+     */
+    public static void removeBendpoint(final ConnectionContainer connection, final int index) {
+        editConnectionUIInformation(connection, b -> b.removeBendpoint(index));
+    }
+
+    private static void editConnectionUIInformation(final ConnectionContainer connection,
+        final Function<ConnectionUIInformation.Builder, ConnectionUIInformation.Builder> transformation) {
+        var builder = ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
+        connection.setUIInfo(transformation.apply(builder).build()); // need to explicitly set to notify listeners
+    }
+
+    /**
+     *
+     * @param nodes
+     * @return The set of all connections between nodes in the given set
+     */
+    public static Set<ConnectionContainer> inducedConnections(final Set<NodeContainer> nodes,
+        final WorkflowManager wfm) {
+        var nodeIds = nodes.stream().map(NodeContainer::getID).collect(Collectors.toSet());
+        return nodes.stream() //
+            .flatMap(pastedNode -> wfm.getOutgoingConnectionsFor(pastedNode.getID()).stream()) //
+            .filter(connectionStartingInSet -> nodeIds.contains(connectionStartingInSet.getDest()))
+            .collect(Collectors.toSet());
     }
 
     /**

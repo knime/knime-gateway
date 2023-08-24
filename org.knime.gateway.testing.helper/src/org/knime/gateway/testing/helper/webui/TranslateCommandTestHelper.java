@@ -78,7 +78,7 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 /**
  * Tests the implementation of {@link org.knime.gateway.impl.webui.service.commands.Translate}.
  */
-@SuppressWarnings({"javadoc", "java:1166", "java:S112", "java:1186", "java:1172"})
+@SuppressWarnings({"javadoc", "java:S1166", "java:S112", "java:1186", "java:1172"})
 public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static final int[] delta = new int[]{-880, -20};
@@ -116,8 +116,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testTranslateBendpointsUndoRedo() throws Exception {
         var wf = loadBendpointsWorkflow();
-        NodeIDEnt targetNode = new NodeIDEnt(187);
-        var connection = new ConnectionIDEnt(targetNode, 1).toString();
+        var connection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints.toString();
         var bendpointIndex = 1;
         Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connection, bendpointIndex);
         var command =
@@ -130,38 +129,26 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         TranslateCommandTestHelper.assertMoved(bendpoint, delta, wf.originalEnt(), redoneWorkflow);
     }
 
-    /**
-     * Selected is a pair of adjacent nodes with two bendpoints on their connection, plus one of the connection
-     * bendpoints. Expected is that only the selected elements are moved and the unselected bendpoint is not moved.
-     * 
-     * @throws Exception
-     */
     public void testTranslateBendpointsOnlySelected() throws Exception {
         var wf = loadBendpointsWorkflow();
-        NodeIDEnt sourceNode = new NodeIDEnt(189);
-        NodeIDEnt targetNode = new NodeIDEnt(187);
-        var connection = new ConnectionIDEnt(targetNode, 1).toString();
-        var bendpointIndex = 1;
-        Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connection, bendpointIndex);
+        var connectionId = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints.toString();
+        NodeIDEnt sourceNode = TestWorkflowCollection.BendpointsWorkflow.twoBendpointsSource;
+        NodeIDEnt targetNode = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints.getDestNodeIDEnt();
+        var selectedBendpointIndex = 1;
+        Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connectionId, selectedBendpointIndex);
         var command = TranslateCommandTestHelper.translateCommand(delta, List.of(sourceNode, targetNode),
-            Map.of(connection, List.of(bendpointIndex)));
+            Map.of(connectionId, List.of(selectedBendpointIndex)));
         var modifiedWorkflow = executeWorkflowCommand(command, wf.id());
         TranslateCommandTestHelper.assertMoved(bendpoint, delta, wf.originalEnt(), modifiedWorkflow);
     }
 
-    private LoadedWorkflow loadBendpointsWorkflow() throws Exception {
-        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
-        WorkflowEnt originalWorkflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-        return new LoadedWorkflow(wfId, originalWorkflow);
-    }
-
     public void testTranslateBendpointOfInvalidIndex() throws Exception {
         var wf = loadBendpointsWorkflow();
-        NodeIDEnt targetNode = new NodeIDEnt(188);
-        var connection = new ConnectionIDEnt(targetNode, 1).toString();
+        String connectionId = TestWorkflowCollection.BendpointsWorkflow.oneBendpoint.toString();
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
-            TranslateCommandTestHelper.translateCommand(delta, List.of(), Map.of(connection, List.of(bendpointIndex)));
+            TranslateCommandTestHelper.translateCommand(delta, List.of(),
+                Map.of(connectionId, List.of(bendpointIndex)));
         try {
             executeWorkflowCommand(translateInvalidBendpointIndex, wf.id());
         } catch (Exception e) {
@@ -173,11 +160,11 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testTranslateBendpointsOnConnectionWithNone() throws Exception {
         var wf = loadBendpointsWorkflow();
-        NodeIDEnt targetNode = new NodeIDEnt(190);
-        var connection = new ConnectionIDEnt(targetNode, 1).toString();
+        String connectionId = TestWorkflowCollection.BendpointsWorkflow.noBendpoints.toString();
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
-            TranslateCommandTestHelper.translateCommand(delta, List.of(), Map.of(connection, List.of(bendpointIndex)));
+            TranslateCommandTestHelper.translateCommand(delta, List.of(),
+                Map.of(connectionId, List.of(bendpointIndex)));
         try {
             executeWorkflowCommand(translateInvalidBendpointIndex, wf.id());
         } catch (Exception e) {
@@ -329,29 +316,9 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     }
 
-    /**
-     * Execute the given workflow command and return the new workflow snapshot
-     *
-     * @param commandEnt
-     */
-    private WorkflowEnt executeWorkflowCommand(final WorkflowCommandEnt commandEnt, final String workflowId)
-        throws Exception {
-        ws().executeWorkflowCommand(workflowId, NodeIDEnt.getRootID(), commandEnt);
-        return ws().getWorkflow(workflowId, NodeIDEnt.getRootID(), true).getWorkflow();
-
-    }
-
-    private WorkflowEnt undoWorkflowCommand(final String wfId) throws Exception {
-        ws().undoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        return ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-    }
-
-    private WorkflowEnt redoWorkflowCommand(final String wfId) throws Exception {
-        ws().redoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        return ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-    }
-
-    private record LoadedWorkflow(String id, WorkflowEnt originalEnt) {
-
+    private TestWorkflowCollection.BendpointsWorkflow loadBendpointsWorkflow() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        WorkflowEnt originalWorkflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        return new TestWorkflowCollection.BendpointsWorkflow(wfId, originalWorkflow);
     }
 }

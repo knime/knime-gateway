@@ -45,6 +45,31 @@
 package org.knime.gateway.json.webui.entity;
 
 
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddBendpointCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultRemoveBendpointCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,33 +78,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddWorkflowAnnotationCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -134,6 +132,9 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddWorkflowAnnotationCommandEnt.class, name = "add_workflow_annotation")
 ,
   @Type(value = DefaultUpdateProjectMetadataCommandEnt.class, name = "update_project_metadata")
+    , @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint"),
+    @Type(value = DefaultRemoveBendpointCommandEnt.class,
+        name = "remove_bendpoint")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -202,6 +203,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddWorkflowAnnotationCommandEnt.class, name = "add_workflow_annotation")
 ,
   @Type(value = DefaultUpdateProjectMetadataCommandEnt.class, name = "update_project_metadata")
+    , @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint"),
+    @Type(value = DefaultRemoveBendpointCommandEnt.class, name = "remove_bendpoint")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {
