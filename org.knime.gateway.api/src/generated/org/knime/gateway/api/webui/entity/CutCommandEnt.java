@@ -102,7 +102,7 @@ public interface CutCommandEnt extends GatewayEntity, PartBasedCommandEnt {
         /**
          * Map from connection ID to indices of bendpoints on that connection
          * 
-         * @param connectionBendpoints the property value, NOT <code>null</code>!
+         * @param connectionBendpoints the property value,
          * @return this entity builder for chaining
          */
         CutCommandEntBuilder

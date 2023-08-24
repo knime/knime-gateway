@@ -78,9 +78,6 @@ public record DefaultPartBasedCommandEnt(
         if(annotationIds == null) {
             throw new IllegalArgumentException("<annotationIds> must not be null.");
         }
-        if (connectionBendpoints == null) {
-            throw new IllegalArgumentException("<connectionBendpoints> must not be null.");
-        }
     }
 
     @Override
@@ -119,7 +116,7 @@ public record DefaultPartBasedCommandEnt(
 
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
 
-        private java.util.Map<String, java.util.List<Integer>> m_connectionBendpoints = new java.util.HashMap<>();
+        private java.util.Map<String, java.util.List<Integer>> m_connectionBendpoints;
 
         @Override
         public DefaultPartBasedCommandEntBuilder setKind(KindEnum kind) {
@@ -151,9 +148,6 @@ public record DefaultPartBasedCommandEnt(
         @Override
         public DefaultPartBasedCommandEntBuilder
             setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
-            if (connectionBendpoints == null) {
-                throw new IllegalArgumentException("<connectionBendpoints> must not be null.");
-            }
             m_connectionBendpoints = connectionBendpoints;
             return this;
         }

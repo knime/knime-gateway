@@ -244,8 +244,12 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
 
     protected final Map<ConnectionID, List<Integer>> getBendpoints() {
         if (m_bendpointsQueried == null) {
-            m_bendpointsQueried = m_commandEnt.getConnectionBendpoints().entrySet().stream()
-                .collect(Collectors.toMap(e -> toConnectionId(e.getKey()), Map.Entry::getValue));
+            if (m_commandEnt.getConnectionBendpoints() == null) {
+                m_bendpointsQueried = Map.of();
+            } else {
+                m_bendpointsQueried = m_commandEnt.getConnectionBendpoints().entrySet().stream()
+                    .collect(Collectors.toMap(e -> toConnectionId(e.getKey()), Map.Entry::getValue));
+            }
         }
         return m_bendpointsQueried;
     }

@@ -83,6 +83,7 @@ public interface PartBasedCommandEntMixIn extends PartBasedCommandEnt {
     @JsonProperty("connectionBendpoints")
     public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
 
+
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *

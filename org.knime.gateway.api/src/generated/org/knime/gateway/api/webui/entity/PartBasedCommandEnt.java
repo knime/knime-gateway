@@ -74,9 +74,10 @@ public interface PartBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {
   /**
    * Map from connection ID to indices of bendpoints on that connection
    * 
-   * @return connectionBendpoints , never <code>null</code>
+   * @return connectionBendpoints
    **/
   public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -120,7 +121,7 @@ public interface PartBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         /**
          * Map from connection ID to indices of bendpoints on that connection
          * 
-         * @param connectionBendpoints the property value, NOT <code>null</code>!
+         * @param connectionBendpoints the property value,
          * @return this entity builder for chaining
          */
         PartBasedCommandEntBuilder
