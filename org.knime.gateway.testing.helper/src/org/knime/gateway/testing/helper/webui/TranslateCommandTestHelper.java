@@ -160,7 +160,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testTranslateBendpointsOnConnectionWithNone() throws Exception {
         var wf = loadBendpointsWorkflow();
-        String connectionId = TestWorkflowCollection.BendpointsWorkflow.noBendpoints.toString();
+        String connectionId = TestWorkflowCollection.BendpointsWorkflow.noBendpointsEmptyUiInfo.toString();
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
             TranslateCommandTestHelper.translateCommand(delta, List.of(),

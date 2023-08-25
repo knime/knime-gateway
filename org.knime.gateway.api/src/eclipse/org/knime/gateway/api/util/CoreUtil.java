@@ -551,7 +551,8 @@ public final class CoreUtil {
 
     private static void editConnectionUIInformation(final ConnectionContainer connection,
         final Function<ConnectionUIInformation.Builder, ConnectionUIInformation.Builder> transformation) {
-        var builder = ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
+        var builder = connection.getUIInfo() == null ? ConnectionUIInformation.builder()
+            : ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
         connection.setUIInfo(transformation.apply(builder).build()); // need to explicitly set to notify listeners
     }
 

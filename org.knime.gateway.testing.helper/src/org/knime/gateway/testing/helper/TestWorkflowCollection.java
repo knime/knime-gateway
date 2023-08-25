@@ -147,9 +147,14 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
         public static final ConnectionIDEnt oneBendpoint = new ConnectionIDEnt(new NodeIDEnt(188), 1);
 
         /**
-         * A connection with no bendpoint on it
+         * A connection with no bendpoint on it, but the ConnectionUIInfo property still set.
          */
-        public static final ConnectionIDEnt noBendpoints = new ConnectionIDEnt(new NodeIDEnt(190), 1);
+        public static final ConnectionIDEnt noBendpointsEmptyUiInfo = new ConnectionIDEnt(new NodeIDEnt(190), 1);
+
+        /**
+         * A connection with the ConnectionUIInfo property set to {@code null}.
+         */
+        public static final ConnectionIDEnt noBendpointsNullUiInfo = new ConnectionIDEnt(new NodeIDEnt(191), 1);
 
         public static final XYEnt somePosition = builder(XYEnt.XYEntBuilder.class).setX(42).setY(17).build();
 

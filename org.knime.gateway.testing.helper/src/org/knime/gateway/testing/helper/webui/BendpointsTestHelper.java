@@ -83,11 +83,22 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
             && (Objects.equals(position.getY(), bendpointAccess.getY()));
     }
 
-    public void testBendpointIsAddedOnConnectionWithNone() throws Exception {
+    public void testBendpointIsAddedOnConnectionWithEmptyUiInfo() throws Exception {
         var wf = loadBendpointsWorkflow();
-        var modifiedConnection = wf.noBendpoints;
+        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.noBendpointsEmptyUiInfo;
+        assertConnectionAdded(wf, modifiedConnection);
+    }
+
+    public void testBendpointIsAddedOnConnectionWithNullUiInfo() throws Exception {
+        var wf = loadBendpointsWorkflow();
+        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.noBendpointsNullUiInfo;
+        assertConnectionAdded(wf, modifiedConnection);
+    }
+
+    private void assertConnectionAdded(TestWorkflowCollection.BendpointsWorkflow wf, ConnectionIDEnt modifiedConnection)
+        throws Exception {
         var insertionIndex = 0;
-        var insertionPosition = wf.somePosition;
+        var insertionPosition = TestWorkflowCollection.BendpointsWorkflow.somePosition;
         var modifiedWf = executeWorkflowCommand(
             addBendpointCommandEnt(modifiedConnection, insertionIndex, insertionPosition), wf.id());
         assert bendpointPresentAt(modifiedWf, modifiedConnection.toString(), insertionIndex, insertionPosition);
@@ -99,9 +110,9 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testBendpointIsAddedBetweenExisting() throws Exception {
         var wf = loadBendpointsWorkflow();
-        var modifiedConnection = wf.twoBendpoints;
+        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints;
         var insertionIndex = 1;
-        var insertionPosition = wf.somePosition;
+        var insertionPosition = TestWorkflowCollection.BendpointsWorkflow.somePosition;
         var modifiedWf = executeWorkflowCommand(
             addBendpointCommandEnt(modifiedConnection, insertionIndex, insertionPosition), wf.id());
         assert bendpointPresentAt(modifiedWf, modifiedConnection.toString(), insertionIndex, insertionPosition);
@@ -109,7 +120,7 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testBendpointIsRemovedWithRemaining() throws Exception {
         var wf = loadBendpointsWorkflow();
-        var modifiedConnection = wf.twoBendpoints;
+        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints;
         var removalIndex = 0;
         var removedBendpointPosition =
             wf.originalEnt().getConnections().get(modifiedConnection.toString()).getBendpoints().get(removalIndex);
@@ -126,7 +137,7 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testBendpointIsRemovedWithNoneRemaining() throws Exception {
         var wf = loadBendpointsWorkflow();
-        var modifiedConnection = wf.oneBendpoint;
+        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.oneBendpoint;
         var removalIndex = 0;
         var modifiedWf = executeWorkflowCommand(removeBendpointCommand(modifiedConnection, removalIndex), wf.id());
         assert modifiedWf.getConnections().get(modifiedConnection.toString()).getBendpoints() == null;
