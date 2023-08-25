@@ -53,48 +53,55 @@ import java.util.stream.Stream;
 
 import org.knime.gateway.api.webui.entity.XYEnt;
 
+/**
+ * Utility class for geometric objects.
+ *
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ */
 public final class Geometry {
 
     private Geometry() {
 
     }
 
-    public static class Vec2D { // NOSONAR
+    private static sealed class Vec2D permits Point, Delta {
 
-        private final int x;
+        private final int m_x;
 
-        private final int y;
+        private final int m_y;
 
-        private Vec2D(int a, int b) {
-            x = a;
-            y = b;
+        private Vec2D(final int x, final int y) {
+            m_x = x;
+            m_y = y;
         }
 
-        static <T extends Vec2D> T zip(Vec2D a, Vec2D b, IntBinaryOperator zipper,
-            BiFunction<Integer, Integer, T> wrapper) {
+        static <T extends Vec2D> T zip(final Vec2D a, final Vec2D b, final IntBinaryOperator zipper,
+            final BiFunction<Integer, Integer, T> wrapper) {
             return wrapper.apply( //
                 zipper.applyAsInt(a.x(), b.x()), //
                 zipper.applyAsInt(a.y(), b.y()) //
             );
         }
 
-        static <T extends Vec2D> T map(T a, IntUnaryOperator mapper, BiFunction<Integer, Integer, T> wrapper) {
+        static <T extends Vec2D> T map(final T a, final IntUnaryOperator mapper,
+            final BiFunction<Integer, Integer, T> wrapper) {
             return wrapper.apply( //
                 mapper.applyAsInt(a.x()), //
                 mapper.applyAsInt(a.y()) //
             );
         }
 
-        public static <T extends Vec2D> T min(Vec2D a, Vec2D b, BiFunction<Integer, Integer, T> wrapper) {
+        public static <T extends Vec2D> T min(final Vec2D a, final Vec2D b,
+            final BiFunction<Integer, Integer, T> wrapper) {
             return zip(a, b, Math::min, wrapper);
         }
 
         public int x() {
-            return x;
+            return m_x;
         }
 
         public int y() {
-            return y;
+            return m_y;
         }
 
         public int[] toArray() {
@@ -106,47 +113,93 @@ public final class Geometry {
         }
     }
 
-    public static class Point extends Vec2D {
+    /**
+     * Represents a point in the 2-dim space.
+     */
+    public final static class Point extends Vec2D {
 
-        public static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        private static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-        public Point(int a, int b) {
-            super(a, b);
+        private Point(final int x, final int y) {
+            super(x, y);
         }
 
-        public static Point of(int[] pos) {
-            return new Point(pos[0], pos[1]);
+        /**
+         * @param xy the x,y coordinates of the point
+         * @return the new instance
+         */
+        public static Point of(final int... xy) {
+            return new Point(xy[0], xy[1]);
         }
 
-        public static Point of(XYEnt ent) {
+        /**
+         * @param ent the {@link XYEnt} to create the point from
+         * @return the new instance
+         */
+        public static Point of(final XYEnt ent) {
             return new Point(ent.getX(), ent.getY());
         }
 
-        public static Point min(Point a, Point b) {
+        /**
+         * @param a
+         * @param b
+         * @return the min of two points
+         */
+        public static Point min(final Point a, final Point b) {
             return min(a, b, Point::new);
         }
 
+        /**
+         * @param pointStreams
+         * @return the min of multiple point streams
+         */
         @SafeVarargs
-        public static Point min(Stream<Point>... pointStreams) {
+        public static Point min(final Stream<Point>... pointStreams) {
             return Stream.of(pointStreams).flatMap(s -> s).reduce(Point.MAX_VALUE, Point::min);
         }
 
     }
 
-    public static class Delta extends Vec2D {
+    /**
+     * Represents the a delta in the 2-dim space.
+     */
+    public final static class Delta extends Vec2D {
 
-        public Delta(int a, int b) {
-            super(a, b);
+        private Delta(final int dx, final int dy) {
+            super(dx, dy);
         }
 
-        public static Delta of(Point a, Point b) {
+        /**
+         * @param dx
+         * @param dy
+         * @return a new instance
+         */
+        public static Delta of(final int dx, final int dy) {
+            return new Delta(dx, dy);
+        }
+
+        /**
+         * Calculates the delta between two point.
+         *
+         * @param a
+         * @param b
+         * @return a new instance
+         */
+        public static Delta of(final Point a, final Point b) {
             return zip(a, b, (p, q) -> p - q, Delta::new);
         }
 
-        public static Delta of(XYEnt ent) {
+        /**
+         * @param ent the {@link XYEnt} representing the deltas
+         * @return a new instance
+         */
+        public static Delta of(final XYEnt ent) {
             return new Delta(ent.getX(), ent.getY());
         }
 
+        /**
+         * @return a new instance we the inverted deltas
+         */
         public Delta invert() {
             return map(this, i -> i * (-1), Delta::new);
         }

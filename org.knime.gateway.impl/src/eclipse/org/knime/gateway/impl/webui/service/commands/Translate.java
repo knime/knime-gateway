@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.service.commands.util.EditBendpoints;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 
 /**
  * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
@@ -71,11 +72,11 @@ import org.knime.gateway.impl.webui.service.commands.util.Geometry;
  */
 final class Translate extends AbstractPartBasedWorkflowCommand {
 
-    private final Geometry.Delta m_delta;
+    private final Delta m_delta;
 
     Translate(final TranslateCommandEnt commandEnt) {
         super(commandEnt);
-        m_delta = Geometry.Delta.of(commandEnt.getTranslation());
+        m_delta = Delta.of(commandEnt.getTranslation());
     }
 
     @Override
@@ -95,7 +96,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
 
     /**
      * Translate the given elements
-     * 
+     *
      * @param wfm The workflow manager to operate in
      * @param nodes The nodes to move
      * @param annotations The annotations to move
@@ -105,14 +106,14 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
      */
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final Map<ConnectionID, List<Integer>> bendpoints,
-        final Geometry.Delta delta) {
+        final Delta delta) {
         translateNodes(nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateSomeBendpoints(wfm, bendpoints, delta);
     }
 
-    private static void translateSomeBendpoints(WorkflowManager wfm, Map<ConnectionID, List<Integer>> bendpoints,
-        Geometry.Delta delta) {
+    private static void translateSomeBendpoints(final WorkflowManager wfm, final Map<ConnectionID, List<Integer>> bendpoints,
+        final Geometry.Delta delta) {
         var modifiedConnections = bendpoints.entrySet().stream() //
             .filter(e -> !e.getValue().isEmpty()).collect(Collectors.toSet());
         modifiedConnections //
@@ -129,20 +130,20 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
 
     /**
      * Translate the given elements, implicitly including all connection bendpoints between given nodes
-     * 
+     *
      * @param wfm The workflow manager to operate in
      * @param nodes The nodes to move
      * @param annotations The annotations to move
      * @param delta The 2D translation vector
      */
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
-        final Set<WorkflowAnnotation> annotations, final Geometry.Delta delta) {
+        final Set<WorkflowAnnotation> annotations, final Delta delta) {
         translateNodes(nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateAllBendpoints(wfm, nodes, delta);
     }
 
-    private static void translateAllBendpoints(WorkflowManager wfm, Set<NodeContainer> nodes, Geometry.Delta delta) {
+    private static void translateAllBendpoints(final WorkflowManager wfm, final Set<NodeContainer> nodes, final Delta delta) {
         Set<ConnectionContainer> modifiedConnections = EditBendpoints.inducedConnections(nodes, wfm);
         modifiedConnections.forEach(connectionInSet -> EditBendpoints.translateAllBendpoints(connectionInSet, delta));
         if (!modifiedConnections.isEmpty()) {
@@ -150,8 +151,8 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         }
     }
 
-    private static void translateAnnotations(final WorkflowManager wfm, Set<WorkflowAnnotation> selectedAnnotations,
-        Geometry.Delta delta) {
+    private static void translateAnnotations(final WorkflowManager wfm,
+        final Set<WorkflowAnnotation> selectedAnnotations, final Delta delta) {
         for (WorkflowAnnotation wa : selectedAnnotations) {
             wa.shiftPosition(delta.x(), delta.y());
         }
@@ -160,7 +161,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         }
     }
 
-    static void translateNodes(Set<NodeContainer> selectedNodes, Geometry.Delta delta) {
+    static void translateNodes(final Set<NodeContainer> selectedNodes, final Delta delta) {
         for (NodeContainer nc : selectedNodes) {
             NodeUIInformation.moveNodeBy(nc, delta.toArray());
             nc.setDirty(); // will propagate upwards

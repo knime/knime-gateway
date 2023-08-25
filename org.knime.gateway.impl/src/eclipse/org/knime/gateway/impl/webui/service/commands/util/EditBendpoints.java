@@ -55,6 +55,7 @@ import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 
 /**
  * Utility methods for editing connection bendpoints.
@@ -65,24 +66,35 @@ public final class EditBendpoints {
 
     }
 
+    /**
+     * @param connection
+     *
+     * @return whether the given connection has bendpoints
+     */
     public static boolean hasBendpoints(final ConnectionContainer connection) {
         return connection.getUIInfo() != null && connection.getUIInfo().getAllBendpoints().length > 0;
     }
 
     /**
      * Translate bendpoints on the workflow canvas by {@code delta}. Assumes all connections and bendpoints are present.
-     * 
+     *
      * @param connection The connection on which the bendpoints are
      * @param bendpointIndices Indices identifying the bendpoints to move
      * @param delta The translation shift. First component is X-coordinate, second is Y-coordinate.
      */
     public static void translateSomeBendpoints(final ConnectionContainer connection,
-        final List<Integer> bendpointIndices, final Geometry.Delta delta) {
+        final List<Integer> bendpointIndices, final Delta delta) {
         var indices = bendpointIndices.stream().mapToInt(i -> i).toArray();
         editConnectionUIInformation(connection, b -> b.translate(delta.toArray(), indices));
     }
 
-    public static void translateAllBendpoints(final ConnectionContainer connection, final Geometry.Delta delta) {
+    /**
+     * Moves all the bendpoints of the given connection by the given delta.
+     *
+     * @param connection
+     * @param delta
+     */
+    public static void translateAllBendpoints(final ConnectionContainer connection, final Delta delta) {
         editConnectionUIInformation(connection, b -> b.translate(delta.toArray()));
     }
 
@@ -95,6 +107,7 @@ public final class EditBendpoints {
     /**
      *
      * @param nodes
+     * @param wfm
      * @return The set of all connections between nodes in the given set
      */
     public static Set<ConnectionContainer> inducedConnections(final Set<NodeContainer> nodes,
