@@ -55,6 +55,7 @@ import java.util.Optional;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.knime.core.util.Version;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 
@@ -145,6 +146,25 @@ public interface SpaceProvider {
      */
     default Optional<SpaceProviderConnection> getConnection(final boolean doConnect) {
         return Optional.empty();
+    }
+
+    /**
+     * Gets the path to the server's REST interface.
+     *
+     * @return the REST path if known, or an empty optional if not available
+     */
+    default Optional<String> getRESTPath() {
+        return Optional.empty();
+    }
+
+    /**
+     * Gets the server version.
+     *
+     * @return The {@link Version} running on this server
+     * @throws UnsupportedOperationException for local space providers
+     */
+    default Version getServerVersion() {
+        throw new UnsupportedOperationException();
     }
 
     /**

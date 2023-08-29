@@ -76,6 +76,7 @@ import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
+import org.knime.core.util.Version;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -323,6 +324,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 return Arrays.stream(spaces).filter(s -> s.getId().equals(spaceId)).findFirst() //
                         .orElseThrow(() -> new NoSuchElementException("No space with ID " + spaceId + " found."));
             }
+
+            @Override
+            public Version getServerVersion() {
+                return new Version(1,2,3);
+            }
         };
     }
 
@@ -449,6 +455,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public Space getSpace(final String spaceId) {
                 return Optional.of(localWorkspace).filter(space -> space.getId().equals(spaceId)).orElseThrow();
+            }
+
+            @Override
+            public Version getServerVersion() {
+                return new Version(1,2,3);
             }
         };
     }
