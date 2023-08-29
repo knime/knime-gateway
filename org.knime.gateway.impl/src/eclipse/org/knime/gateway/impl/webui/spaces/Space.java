@@ -57,6 +57,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
@@ -303,6 +304,18 @@ public interface Space {
      * @return space entity for this space
      */
     SpaceEnt toEntity();
+
+    /**
+     * Opens the permission dialog for Server items only. All other calls of that interface will result in a
+     * {@link NotImplementedException} being thrown.
+     *
+     * @param workflowGroupItemId The workflow group item to get the dialog for
+     * @throws IOException Thrown if the there was a problem with read or fetching the items.
+     * @throws NotImplementedException Thrown if method isn't called on a `ServerSpace`.
+     */
+    default void openPermissionsDialogForItem(final String workflowGroupItemId) throws IOException, NotImplementedException {
+        throw new NotImplementedException("Cannot call this method on Spaces other then ServerSpaces.");
+    }
 
     /**
      * Generates unique space item names, preserves file extensions.
