@@ -46,6 +46,8 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 
 /**
@@ -104,7 +106,7 @@ public record DefaultPartBasedCommandEnt(
     public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
         return connectionBendpoints;
     }
-
+    
     /**
      * A builder for {@link DefaultPartBasedCommandEnt}.
      */
@@ -146,10 +148,9 @@ public record DefaultPartBasedCommandEnt(
         }
 
         @Override
-        public DefaultPartBasedCommandEntBuilder
-            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
-            m_connectionBendpoints = connectionBendpoints;
-            return this;
+        public DefaultPartBasedCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
+             m_connectionBendpoints = connectionBendpoints;
+             return this;
         }
 
         @Override
@@ -157,7 +158,8 @@ public record DefaultPartBasedCommandEnt(
             return new DefaultPartBasedCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
-                immutable(m_annotationIds), immutable(m_connectionBendpoints));
+                immutable(m_annotationIds),
+                immutable(m_connectionBendpoints));
         }
     
     }

@@ -47,9 +47,10 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.math.BigDecimal;
+import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
  * Insert a new bendpoint on a given connection.
@@ -61,25 +62,27 @@ import org.knime.gateway.api.webui.entity.XYEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen",
-    "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultAddBendpointCommandEnt(KindEnum kind, org.knime.gateway.api.entity.ConnectionIDEnt connectionId,
-    BigDecimal index, XYEnt position) implements AddBendpointCommandEnt {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultAddBendpointCommandEnt(
+    KindEnum kind,
+    org.knime.gateway.api.entity.ConnectionIDEnt connectionId,
+    BigDecimal index,
+    XYEnt position) implements AddBendpointCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
     public DefaultAddBendpointCommandEnt {
-        if (kind == null) {
+        if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if (connectionId == null) {
+        if(connectionId == null) {
             throw new IllegalArgumentException("<connectionId> must not be null.");
         }
-        if (index == null) {
+        if(index == null) {
             throw new IllegalArgumentException("<index> must not be null.");
         }
-        if (position == null) {
+        if(position == null) {
             throw new IllegalArgumentException("<position> must not be null.");
         }
     }
@@ -88,27 +91,27 @@ public record DefaultAddBendpointCommandEnt(KindEnum kind, org.knime.gateway.api
     public String getTypeID() {
         return "AddBendpointCommand";
     }
-
+  
     @Override
     public KindEnum getKind() {
         return kind;
     }
-
+    
     @Override
     public org.knime.gateway.api.entity.ConnectionIDEnt getConnectionId() {
         return connectionId;
     }
-
+    
     @Override
     public BigDecimal getIndex() {
         return index;
     }
-
+    
     @Override
     public XYEnt getPosition() {
         return position;
     }
-
+    
     /**
      * A builder for {@link DefaultAddBendpointCommandEnt}.
      */
@@ -124,47 +127,49 @@ public record DefaultAddBendpointCommandEnt(KindEnum kind, org.knime.gateway.api
 
         @Override
         public DefaultAddBendpointCommandEntBuilder setKind(KindEnum kind) {
-            if (kind == null) {
-                throw new IllegalArgumentException("<kind> must not be null.");
-            }
-            m_kind = kind;
-            return this;
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
+             }
+             m_kind = kind;
+             return this;
         }
 
         @Override
-        public DefaultAddBendpointCommandEntBuilder
-            setConnectionId(org.knime.gateway.api.entity.ConnectionIDEnt connectionId) {
-            if (connectionId == null) {
-                throw new IllegalArgumentException("<connectionId> must not be null.");
-            }
-            m_connectionId = connectionId;
-            return this;
+        public DefaultAddBendpointCommandEntBuilder setConnectionId(org.knime.gateway.api.entity.ConnectionIDEnt connectionId) {
+             if(connectionId == null) {
+                 throw new IllegalArgumentException("<connectionId> must not be null.");
+             }
+             m_connectionId = connectionId;
+             return this;
         }
 
         @Override
         public DefaultAddBendpointCommandEntBuilder setIndex(BigDecimal index) {
-            if (index == null) {
-                throw new IllegalArgumentException("<index> must not be null.");
-            }
-            m_index = index;
-            return this;
+             if(index == null) {
+                 throw new IllegalArgumentException("<index> must not be null.");
+             }
+             m_index = index;
+             return this;
         }
 
         @Override
         public DefaultAddBendpointCommandEntBuilder setPosition(XYEnt position) {
-            if (position == null) {
-                throw new IllegalArgumentException("<position> must not be null.");
-            }
-            m_position = position;
-            return this;
+             if(position == null) {
+                 throw new IllegalArgumentException("<position> must not be null.");
+             }
+             m_position = position;
+             return this;
         }
 
         @Override
         public DefaultAddBendpointCommandEnt build() {
-            return new DefaultAddBendpointCommandEnt(immutable(m_kind), immutable(m_connectionId), immutable(m_index),
+            return new DefaultAddBendpointCommandEnt(
+                immutable(m_kind),
+                immutable(m_connectionId),
+                immutable(m_index),
                 immutable(m_position));
         }
-
+    
     }
 
 }

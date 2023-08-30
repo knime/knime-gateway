@@ -46,11 +46,12 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 
 /**
- * Cut selected workflow parts and serialize to workflow definition format. This command returns the serialized workflow
- * parts and deletes the selected nodes and annotations.
+ * Cut selected workflow parts and serialize to workflow definition format. This command returns the serialized workflow parts and deletes the selected nodes and annotations.
  *
  * @param kind
  * @param nodeIds
@@ -105,7 +106,7 @@ public record DefaultCutCommandEnt(
     public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
         return connectionBendpoints;
     }
-
+    
     /**
      * A builder for {@link DefaultCutCommandEnt}.
      */
@@ -147,10 +148,9 @@ public record DefaultCutCommandEnt(
         }
 
         @Override
-        public DefaultCutCommandEntBuilder
-            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
-            m_connectionBendpoints = connectionBendpoints;
-            return this;
+        public DefaultCutCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
+             m_connectionBendpoints = connectionBendpoints;
+             return this;
         }
 
         @Override
@@ -158,7 +158,8 @@ public record DefaultCutCommandEnt(
             return new DefaultCutCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
-                immutable(m_annotationIds), immutable(m_connectionBendpoints));
+                immutable(m_annotationIds),
+                immutable(m_connectionBendpoints));
         }
     
     }

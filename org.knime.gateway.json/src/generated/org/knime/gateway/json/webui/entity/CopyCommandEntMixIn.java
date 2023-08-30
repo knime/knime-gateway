@@ -44,13 +44,16 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.CopyCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt.DefaultCopyCommandEntBuilder;
+import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.CopyCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt.DefaultCopyCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -82,7 +85,7 @@ public interface CopyCommandEntMixIn extends CopyCommandEnt {
     @Override
     @JsonProperty("connectionBendpoints")
     public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
-
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -110,9 +113,8 @@ public interface CopyCommandEntMixIn extends CopyCommandEnt {
         
         @Override
         @JsonProperty("connectionBendpoints")
-        public CopyCommandEntMixInBuilder
-            setConnectionBendpoints(final java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
-
+        public CopyCommandEntMixInBuilder setConnectionBendpoints(final java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
+        
     }
 
 

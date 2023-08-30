@@ -48,6 +48,7 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static java.util.Arrays.stream;
 import static org.knime.gateway.api.util.CoreUtil.getConnection;
+import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToConnectionID;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,14 +94,6 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
 
     protected AbstractPartBasedWorkflowCommand(final PartBasedCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
-    }
-
-    public static ConnectionID toConnectionId(final String connectionId, final String projectId) {
-        // required because in some more complex command parameters (namely maps) we cannot enforce a `ConnectionEnt` property type
-        // and can only expect Strings.
-        var ent = new ConnectionIDEnt(connectionId);
-        return new ConnectionID(DefaultServiceUtil.entityToNodeID(projectId, ent.getDestNodeIDEnt()),
-            ent.getDestPortIdx());
     }
 
     /**
@@ -255,8 +248,8 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
                 m_bendpointsQueried = Map.of();
             } else {
                 var projId = getWorkflowKey().getProjectId();
-                m_bendpointsQueried = m_commandEnt.getConnectionBendpoints().entrySet().stream()
-                    .collect(Collectors.toMap(e -> toConnectionId(e.getKey(), projId), Map.Entry::getValue));
+                m_bendpointsQueried = m_commandEnt.getConnectionBendpoints().entrySet().stream().collect(Collectors
+                    .toMap(e -> entityToConnectionID(projId, new ConnectionIDEnt(e.getKey())), Map.Entry::getValue));
             }
         }
         return m_bendpointsQueried;

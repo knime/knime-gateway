@@ -54,7 +54,6 @@ import java.util.Objects;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
-import org.knime.gateway.api.webui.entity.RemoveBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -64,6 +63,11 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
+/**
+ * Tests bendpoint-related commands (e.g. the AddBendpoint-command).
+ *
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ */
 @SuppressWarnings({"javadoc", "restriction"})
 public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
 
@@ -72,7 +76,7 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         super(BendpointsTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
-    public static boolean bendpointPresentAt(final WorkflowEnt wfEnt, final String connection, final int index,
+    private static boolean bendpointPresentAt(final WorkflowEnt wfEnt, final String connection, final int index,
         final XYEnt position) {
         var bendpoints = wfEnt.getConnections().get(connection).getBendpoints();
         if (bendpoints == null) {
@@ -95,7 +99,7 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         assertConnectionAdded(wf, modifiedConnection);
     }
 
-    private void assertConnectionAdded(TestWorkflowCollection.BendpointsWorkflow wf, ConnectionIDEnt modifiedConnection)
+    private void assertConnectionAdded(final TestWorkflowCollection.BendpointsWorkflow wf, final ConnectionIDEnt modifiedConnection)
         throws Exception {
         var insertionIndex = 0;
         var insertionPosition = TestWorkflowCollection.BendpointsWorkflow.somePosition;
@@ -118,30 +122,30 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         assert bendpointPresentAt(modifiedWf, modifiedConnection.toString(), insertionIndex, insertionPosition);
     }
 
-    public void testBendpointIsRemovedWithRemaining() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints;
-        var removalIndex = 0;
-        var removedBendpointPosition =
-            wf.originalEnt().getConnections().get(modifiedConnection.toString()).getBendpoints().get(removalIndex);
-        var modifiedWf = executeWorkflowCommand(removeBendpointCommand(modifiedConnection, removalIndex), wf.id());
-        // a succeeding bendpoint will now be at that index, so all we can do is compare positions
-        assert !bendpointPresentAt(modifiedWf, modifiedConnection.toString(), removalIndex, removedBendpointPosition);
-        var undoneWorkflow = undoWorkflowCommand(wf.id());
-        assert bendpointPresentAt(undoneWorkflow, modifiedConnection.toString(), removalIndex,
-            removedBendpointPosition);
-        var redoneWorkflow = redoWorkflowCommand(wf.id());
-        assert !bendpointPresentAt(redoneWorkflow, modifiedConnection.toString(), removalIndex,
-            removedBendpointPosition);
-    }
+//    public void testBendpointIsRemovedWithRemaining() throws Exception {
+//        var wf = loadBendpointsWorkflow();
+//        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints;
+//        var removalIndex = 0;
+//        var removedBendpointPosition =
+//            wf.originalEnt().getConnections().get(modifiedConnection.toString()).getBendpoints().get(removalIndex);
+//        var modifiedWf = executeWorkflowCommand(removeBendpointCommand(modifiedConnection, removalIndex), wf.id());
+//        // a succeeding bendpoint will now be at that index, so all we can do is compare positions
+//        assert !bendpointPresentAt(modifiedWf, modifiedConnection.toString(), removalIndex, removedBendpointPosition);
+//        var undoneWorkflow = undoWorkflowCommand(wf.id());
+//        assert bendpointPresentAt(undoneWorkflow, modifiedConnection.toString(), removalIndex,
+//            removedBendpointPosition);
+//        var redoneWorkflow = redoWorkflowCommand(wf.id());
+//        assert !bendpointPresentAt(redoneWorkflow, modifiedConnection.toString(), removalIndex,
+//            removedBendpointPosition);
+//    }
 
-    public void testBendpointIsRemovedWithNoneRemaining() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.oneBendpoint;
-        var removalIndex = 0;
-        var modifiedWf = executeWorkflowCommand(removeBendpointCommand(modifiedConnection, removalIndex), wf.id());
-        assert modifiedWf.getConnections().get(modifiedConnection.toString()).getBendpoints() == null;
-    }
+//    public void testBendpointIsRemovedWithNoneRemaining() throws Exception {
+//        var wf = loadBendpointsWorkflow();
+//        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.oneBendpoint;
+//        var removalIndex = 0;
+//        var modifiedWf = executeWorkflowCommand(removeBendpointCommand(modifiedConnection, removalIndex), wf.id());
+//        assert modifiedWf.getConnections().get(modifiedConnection.toString()).getBendpoints() == null;
+//    }
 
     private static AddBendpointCommandEnt addBendpointCommandEnt(final ConnectionIDEnt connection, final int index,
         final XYEnt position) {
@@ -150,12 +154,12 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
             .setIndex(BigDecimal.valueOf(index)).setPosition(position).build();
     }
 
-    private static RemoveBendpointCommandEnt removeBendpointCommand(final ConnectionIDEnt connectionIDEnt,
-        final int index) {
-        return builder(RemoveBendpointCommandEnt.RemoveBendpointCommandEntBuilder.class)
-            .setKind(WorkflowCommandEnt.KindEnum.REMOVE_BENDPOINT).setConnectionId(connectionIDEnt)
-            .setIndex(BigDecimal.valueOf(index)).build();
-    }
+//    private static RemoveBendpointCommandEnt removeBendpointCommand(final ConnectionIDEnt connectionIDEnt,
+//        final int index) {
+//        return builder(RemoveBendpointCommandEnt.RemoveBendpointCommandEntBuilder.class)
+//            .setKind(WorkflowCommandEnt.KindEnum.REMOVE_BENDPOINT).setConnectionId(connectionIDEnt)
+//            .setIndex(BigDecimal.valueOf(index)).build();
+//    }
 
     private TestWorkflowCollection.BendpointsWorkflow loadBendpointsWorkflow() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);

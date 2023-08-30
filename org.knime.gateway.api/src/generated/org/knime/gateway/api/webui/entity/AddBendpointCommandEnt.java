@@ -45,37 +45,55 @@
 package org.knime.gateway.api.webui.entity;
 
 import java.math.BigDecimal;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
+
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Insert a new bendpoint on a given connection.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen",
-    "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AddBendpointCommandEnt extends GatewayEntity, BendpointCommandEnt {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface AddBendpointCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
-    /**
-     * Get position
-     * 
-     * @return position , never <code>null</code>
-     **/
-    public XYEnt getPosition();
 
-    @Override
-    default void forEachPropertyValue(final GatewayEntity other,
-        final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-        var e = (AddBendpointCommandEnt)other;
-        valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-        valueConsumer.accept("connectionId", Pair.create(getConnectionId(), e.getConnectionId()));
-        valueConsumer.accept("index", Pair.create(getIndex(), e.getIndex()));
-        valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
-    }
+  /**
+   * The connection id to add a bendpoint to.
+   * @return connectionId , never <code>null</code>
+   **/
+  public org.knime.gateway.api.entity.ConnectionIDEnt getConnectionId();
+
+  /**
+   * The index of the bendpoint to be added
+   * @return index , never <code>null</code>
+   **/
+  public BigDecimal getIndex();
+
+  /**
+   * Get position
+   * @return position , never <code>null</code>
+   **/
+  public XYEnt getPosition();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AddBendpointCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("connectionId", Pair.create(getConnectionId(), e.getConnectionId()));
+      valueConsumer.accept("index", Pair.create(getIndex(), e.getIndex()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+  }
 
     /**
      * The builder for the entity.
@@ -85,44 +103,45 @@ public interface AddBendpointCommandEnt extends GatewayEntity, BendpointCommandE
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
          * 
-         * @param kind the property value, NOT <code>null</code>!
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AddBendpointCommandEntBuilder setKind(KindEnum kind);
-
+        
         /**
-         * The connection id to remove a bendpoint from.
+         * The connection id to add a bendpoint to.
          * 
-         * @param connectionId the property value, NOT <code>null</code>!
+         * @param connectionId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AddBendpointCommandEntBuilder setConnectionId(org.knime.gateway.api.entity.ConnectionIDEnt connectionId);
-
+        
         /**
-         * The index of the bendpoint to be removed
+         * The index of the bendpoint to be added
          * 
-         * @param index the property value, NOT <code>null</code>!
+         * @param index the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AddBendpointCommandEntBuilder setIndex(BigDecimal index);
-
+        
         /**
-         * Set position
+   		 * Set position
          * 
-         * @param position the property value, NOT <code>null</code>!
+         * @param position the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AddBendpointCommandEntBuilder setPosition(XYEnt position);
-
+        
+        
         /**
-         * Creates the entity from the builder.
-         * 
-         * @return the entity
-         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-         */
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
         @Override
         AddBendpointCommandEnt build();
-
+    
     }
 
 }

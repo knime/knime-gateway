@@ -46,11 +46,12 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 
 /**
- * Copy selected workflow parts and serialize to workflow definition format. This command only returns the serialized
- * workflow parts.
+ * Copy selected workflow parts and serialize to workflow definition format.  This command only returns the serialized workflow parts.
  *
  * @param kind
  * @param nodeIds
@@ -105,7 +106,7 @@ public record DefaultCopyCommandEnt(
     public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
         return connectionBendpoints;
     }
-
+    
     /**
      * A builder for {@link DefaultCopyCommandEnt}.
      */
@@ -147,10 +148,9 @@ public record DefaultCopyCommandEnt(
         }
 
         @Override
-        public DefaultCopyCommandEntBuilder
-            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
-            m_connectionBendpoints = connectionBendpoints;
-            return this;
+        public DefaultCopyCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
+             m_connectionBendpoints = connectionBendpoints;
+             return this;
         }
 
         @Override
@@ -158,7 +158,8 @@ public record DefaultCopyCommandEnt(
             return new DefaultCopyCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
-                immutable(m_annotationIds), immutable(m_connectionBendpoints));
+                immutable(m_annotationIds),
+                immutable(m_connectionBendpoints));
         }
     
     }

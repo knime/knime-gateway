@@ -54,13 +54,14 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -518,7 +519,7 @@ public final class CoreUtil {
 
     /**
      * Translate all bendpoints by {@code delta}
-     * 
+     *
      * @param connection The connection on which the bendpoints are located.
      * @param delta The translation shift. First component is X-coordinate, second is Y-coordinate.
      */
@@ -528,7 +529,7 @@ public final class CoreUtil {
 
     /**
      * Insert a bendpoint.
-     * 
+     *
      * @param connection The connection to insert the bendpoint on.
      * @param index The index at which to insert the bendpoint.
      * @param xPos The X-Position of the bendpoint on the canvas.
@@ -541,24 +542,26 @@ public final class CoreUtil {
 
     /**
      * Remove a bendpoint.
-     * 
+     *
      * @param connection The connection from which to remove a bendpoint.
-     * @param index The index of the bendpoint to remove.
+     * @param indices The indices of the bendpoints to remove.
      */
-    public static void removeBendpoint(final ConnectionContainer connection, final int index) {
-        editConnectionUIInformation(connection, b -> b.removeBendpoint(index));
+    public static void removeBendpoints(final ConnectionContainer connection, final int... indices) {
+        editConnectionUIInformation(connection, b -> Arrays.stream(indices).forEach(b::removeBendpoint));
     }
 
     private static void editConnectionUIInformation(final ConnectionContainer connection,
-        final Function<ConnectionUIInformation.Builder, ConnectionUIInformation.Builder> transformation) {
+        final Consumer<ConnectionUIInformation.Builder> transformation) {
         var builder = connection.getUIInfo() == null ? ConnectionUIInformation.builder()
             : ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
-        connection.setUIInfo(transformation.apply(builder).build()); // need to explicitly set to notify listeners
+        transformation.accept(builder);
+        connection.setUIInfo(builder.build()); // need to explicitly set to notify listeners
     }
 
     /**
      *
      * @param nodes
+     * @param wfm
      * @return The set of all connections between nodes in the given set
      */
     public static Set<ConnectionContainer> inducedConnections(final Set<NodeContainer> nodes,

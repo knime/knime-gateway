@@ -70,7 +70,6 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
-import org.knime.gateway.api.webui.entity.RemoveBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -221,8 +220,6 @@ public final class WorkflowCommands {
             command = new UpdateProjectMetadata(ce);
         } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
             command = new AddBendpoint(ce);
-        } else if (commandEnt instanceof RemoveBendpointCommandEnt ce) {
-            command = new RemoveBendpoint(ce);
         } else {
             if (m_workflowCommandToExecute != null) {
                 command = m_workflowCommandToExecute;

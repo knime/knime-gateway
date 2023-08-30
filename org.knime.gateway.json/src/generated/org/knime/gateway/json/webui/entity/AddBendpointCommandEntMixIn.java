@@ -45,15 +45,17 @@
 package org.knime.gateway.json.webui.entity;
 
 import java.math.BigDecimal;
-
-import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddBendpointCommandEnt.DefaultAddBendpointCommandEntBuilder;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddBendpointCommandEnt.DefaultAddBendpointCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,10 +63,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder = DefaultAddBendpointCommandEntBuilder.class)
-@JsonSerialize(as = AddBendpointCommandEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen",
-    "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+@JsonDeserialize(builder=DefaultAddBendpointCommandEntBuilder.class)
+@JsonSerialize(as=AddBendpointCommandEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
 public interface AddBendpointCommandEntMixIn extends AddBendpointCommandEnt {
 
     @Override
@@ -74,18 +75,19 @@ public interface AddBendpointCommandEntMixIn extends AddBendpointCommandEnt {
     @Override
     @JsonProperty("kind")
     public KindEnum getKind();
-
+    
     @Override
     @JsonProperty("connectionId")
     public org.knime.gateway.api.entity.ConnectionIDEnt getConnectionId();
-
+    
     @Override
     @JsonProperty("index")
     public BigDecimal getIndex();
-
+    
     @Override
     @JsonProperty("position")
     public XYEnt getPosition();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -95,27 +97,28 @@ public interface AddBendpointCommandEntMixIn extends AddBendpointCommandEnt {
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface AddBendpointCommandEntMixInBuilder extends AddBendpointCommandEntBuilder {
-
+    
         @Override
         public AddBendpointCommandEntMixIn build();
-
+    
         @Override
         @JsonProperty("kind")
         public AddBendpointCommandEntMixInBuilder setKind(final KindEnum kind);
-
+        
         @Override
         @JsonProperty("connectionId")
-        public AddBendpointCommandEntMixInBuilder
-            setConnectionId(final org.knime.gateway.api.entity.ConnectionIDEnt connectionId);
-
+        public AddBendpointCommandEntMixInBuilder setConnectionId(final org.knime.gateway.api.entity.ConnectionIDEnt connectionId);
+        
         @Override
         @JsonProperty("index")
         public AddBendpointCommandEntMixInBuilder setIndex(final BigDecimal index);
-
+        
         @Override
         @JsonProperty("position")
         public AddBendpointCommandEntMixInBuilder setPosition(final XYEnt position);
-
+        
     }
 
+
 }
+

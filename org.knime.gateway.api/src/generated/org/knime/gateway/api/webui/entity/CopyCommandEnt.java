@@ -44,11 +44,16 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
+
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Copy selected workflow parts and serialize to workflow definition format.  This command only returns the serialized workflow parts.
@@ -102,11 +107,11 @@ public interface CopyCommandEnt extends GatewayEntity, PartBasedCommandEnt {
         /**
          * Map from connection ID to indices of bendpoints on that connection
          * 
-         * @param connectionBendpoints the property value,
+         * @param connectionBendpoints the property value,  
          * @return this entity builder for chaining
          */
-        CopyCommandEntBuilder
-            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
+        CopyCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
+        
         
         /**
         * Creates the entity from the builder.

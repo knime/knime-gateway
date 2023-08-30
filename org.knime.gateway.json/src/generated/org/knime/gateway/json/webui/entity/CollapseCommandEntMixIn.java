@@ -44,13 +44,16 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt.DefaultCollapseCommandEntBuilder;
+import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt.DefaultCollapseCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -82,7 +85,7 @@ public interface CollapseCommandEntMixIn extends CollapseCommandEnt {
     @Override
     @JsonProperty("connectionBendpoints")
     public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
-
+    
     @Override
     @JsonProperty("containerType")
     public ContainerTypeEnum getContainerType();
@@ -114,9 +117,8 @@ public interface CollapseCommandEntMixIn extends CollapseCommandEnt {
         
         @Override
         @JsonProperty("connectionBendpoints")
-        public CollapseCommandEntMixInBuilder
-            setConnectionBendpoints(final java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
-
+        public CollapseCommandEntMixInBuilder setConnectionBendpoints(final java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
+        
         @Override
         @JsonProperty("containerType")
         public CollapseCommandEntMixInBuilder setContainerType(final ContainerTypeEnum containerType);

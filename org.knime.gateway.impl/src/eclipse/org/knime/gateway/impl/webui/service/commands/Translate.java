@@ -51,7 +51,6 @@ package org.knime.gateway.impl.webui.service.commands;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
@@ -62,7 +61,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 
 /**
@@ -112,20 +110,15 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         translateSomeBendpoints(wfm, bendpoints, delta);
     }
 
-    private static void translateSomeBendpoints(final WorkflowManager wfm, final Map<ConnectionID, List<Integer>> bendpoints,
-        final Geometry.Delta delta) {
-        var modifiedConnections = bendpoints.entrySet().stream() //
-            .filter(e -> !e.getValue().isEmpty()).collect(Collectors.toSet());
-        modifiedConnections //
-            .forEach(e -> { //
+    private static void translateSomeBendpoints(final WorkflowManager wfm,
+        final Map<ConnectionID, List<Integer>> bendpoints, final Delta delta) {
+        bendpoints.entrySet().stream() //
+            .filter(e -> !e.getValue().isEmpty()).forEach(e -> { //
                 var connection = wfm.getConnection(e.getKey());
                 var bendpointIndices = e.getValue();
                 CoreUtil.translateSomeBendpoints(connection, bendpointIndices, delta.toArray());
                 wfm.setDirty();
             });
-        if (!modifiedConnections.isEmpty()) {
-            wfm.setDirty();
-        }
     }
 
     /**

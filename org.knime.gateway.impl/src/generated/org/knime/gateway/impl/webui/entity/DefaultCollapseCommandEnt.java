@@ -46,6 +46,8 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 
 /**
@@ -109,7 +111,7 @@ public record DefaultCollapseCommandEnt(
     public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
         return connectionBendpoints;
     }
-
+    
     @Override
     public ContainerTypeEnum getContainerType() {
         return containerType;
@@ -158,10 +160,9 @@ public record DefaultCollapseCommandEnt(
         }
 
         @Override
-        public DefaultCollapseCommandEntBuilder
-            setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
-            m_connectionBendpoints = connectionBendpoints;
-            return this;
+        public DefaultCollapseCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
+             m_connectionBendpoints = connectionBendpoints;
+             return this;
         }
 
         @Override

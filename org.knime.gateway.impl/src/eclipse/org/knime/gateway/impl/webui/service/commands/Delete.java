@@ -53,6 +53,7 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToNod
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -181,7 +182,8 @@ final class Delete extends AbstractWorkflowCommand {
     }
 
     private void remove(final WorkflowManager wfm, final Set<NodeID> nodeIDs,
-        final Set<ConnectionContainer> connections, final WorkflowAnnotationID[] annotationIDs, final WorkflowKey wfKey) {
+        final Set<ConnectionContainer> connections, final WorkflowAnnotationID[] annotationIDs,
+        final Map<ConnectionID, List<Integer>> bendpoints, final WorkflowKey wfKey) {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
@@ -195,6 +197,12 @@ final class Delete extends AbstractWorkflowCommand {
             }
         }
         Arrays.stream(annotationIDs).forEach(wfm::removeAnnotation);
+        bendpoints.entrySet().stream() //
+        .filter(e -> !e.getValue().isEmpty()).forEach(e -> { //
+            var connection = wfm.getConnection(e.getKey());
+            var bendpointIndices = e.getValue();
+            wfm.setDirty();
+        });
     }
 
     private static boolean canRemoveAllNodes(final WorkflowManager wfm, final Set<NodeID> nodeIDs) {

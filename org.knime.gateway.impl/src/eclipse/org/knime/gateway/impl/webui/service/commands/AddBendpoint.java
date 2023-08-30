@@ -46,20 +46,78 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.util.Collections;
+import java.util.Set;
+
+import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 
-public class AddBendpoint extends AbstractBendpointCommand implements WithResult {
+/**
+ * Workflow command to add bendpoints to an existing connection.
+ *
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ */
+class AddBendpoint extends AbstractWorkflowCommand implements WithResult {
+
     private final AddBendpointCommandEnt m_commandEnt;
 
-    public AddBendpoint(final AddBendpointCommandEnt commandEnt) {
-        super(commandEnt);
+    private ConnectionUIInformation m_originalConnectionUiInfo;
+
+    private ConnectionContainer m_connection;
+
+    protected AddBendpoint(final AddBendpointCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
     @Override
-    protected void modifyBendpoints() {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+
+        var wfm = getWorkflowManager();
+        var connectionId =
+            DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
+        m_connection = CoreUtil.getConnection(connectionId, wfm).orElseThrow(
+            () -> new ServiceExceptions.OperationNotAllowedException("Connection not found: " + connectionId));
+        var connectionUIInfo = m_connection.getUIInfo();
+        var nBendpoints = connectionUIInfo == null ? 0 : connectionUIInfo.getAllBendpoints().length;
+
+        if (connectionUIInfo == null) {
+            m_originalConnectionUiInfo = null;
+        } else {
+            m_originalConnectionUiInfo = ConnectionUIInformation.builder().copyFrom(connectionUIInfo).build();
+        }
+
+        var index = clip(m_commandEnt.getIndex().intValue(), 0, nBendpoints);
         var position = m_commandEnt.getPosition();
-        CoreUtil.insertBendpoint(getConnection(), getIndex(), position.getX(), position.getY());
+        CoreUtil.insertBendpoint(m_connection, index, position.getX(), position.getY());
+
+        wfm.setDirty();
+        return true;
+    }
+
+    @Override
+    public CommandResultEnt buildEntity(final String snapshotId) {
+        return builder(CommandResultEnt.CommandResultEntBuilder.class).setSnapshotId(snapshotId).build();
+    }
+
+    @Override
+    public Set<WorkflowChangesTracker.WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChangesTracker.WorkflowChange.BENDPOINTS_MODIFIED);
+    }
+
+    @Override
+    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+        m_connection.setUIInfo(m_originalConnectionUiInfo);
+    }
+
+    private static int clip(final int value, final int min, final int max) {
+        return Math.max(min, Math.min(value, max));
     }
 }
