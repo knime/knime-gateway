@@ -86,6 +86,10 @@ public interface DeleteCommandEntMixIn extends DeleteCommandEnt {
     @JsonProperty("connectionIds")
     public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectionIds();
     
+    @Override
+    @JsonProperty("connectionBendpoints")
+    public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -114,6 +118,10 @@ public interface DeleteCommandEntMixIn extends DeleteCommandEnt {
         @Override
         @JsonProperty("connectionIds")
         public DeleteCommandEntMixInBuilder setConnectionIds(final java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectionIds);
+        
+        @Override
+        @JsonProperty("connectionBendpoints")
+        public DeleteCommandEntMixInBuilder setConnectionBendpoints(final java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
         
     }
 

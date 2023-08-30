@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
  * @param nodeIds
  * @param annotationIds
  * @param connectionIds
+ * @param connectionBendpoints
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -65,7 +66,8 @@ public record DefaultDeleteCommandEnt(
     KindEnum kind,
     java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
     java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds,
-    java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectionIds) implements DeleteCommandEnt {
+    java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectionIds,
+    java.util.Map<String, java.util.List<Integer>> connectionBendpoints) implements DeleteCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -110,6 +112,11 @@ public record DefaultDeleteCommandEnt(
         return connectionIds;
     }
     
+    @Override
+    public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
+        return connectionBendpoints;
+    }
+    
     /**
      * A builder for {@link DefaultDeleteCommandEnt}.
      */
@@ -122,6 +129,8 @@ public record DefaultDeleteCommandEnt(
         private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
 
         private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectionIds = new java.util.ArrayList<>();
+
+        private java.util.Map<String, java.util.List<Integer>> m_connectionBendpoints;
 
         @Override
         public DefaultDeleteCommandEntBuilder setKind(KindEnum kind) {
@@ -160,12 +169,19 @@ public record DefaultDeleteCommandEnt(
         }
 
         @Override
+        public DefaultDeleteCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
+             m_connectionBendpoints = connectionBendpoints;
+             return this;
+        }
+
+        @Override
         public DefaultDeleteCommandEnt build() {
             return new DefaultDeleteCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
                 immutable(m_annotationIds),
-                immutable(m_connectionIds));
+                immutable(m_connectionIds),
+                immutable(m_connectionBendpoints));
         }
     
     }

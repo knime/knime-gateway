@@ -82,6 +82,12 @@ public interface DeleteCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    **/
   public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectionIds();
 
+  /**
+   * Map from connection ID to indices of bendpoints on that connection
+   * @return connectionBendpoints 
+   **/
+  public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -91,6 +97,7 @@ public interface DeleteCommandEnt extends GatewayEntity, WorkflowCommandEnt {
       valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
       valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
       valueConsumer.accept("connectionIds", Pair.create(getConnectionIds(), e.getConnectionIds()));
+      valueConsumer.accept("connectionBendpoints", Pair.create(getConnectionBendpoints(), e.getConnectionBendpoints()));
   }
 
     /**
@@ -129,6 +136,14 @@ public interface DeleteCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @return this entity builder for chaining
          */
         DeleteCommandEntBuilder setConnectionIds(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectionIds);
+        
+        /**
+         * Map from connection ID to indices of bendpoints on that connection
+         * 
+         * @param connectionBendpoints the property value,  
+         * @return this entity builder for chaining
+         */
+        DeleteCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints);
         
         
         /**

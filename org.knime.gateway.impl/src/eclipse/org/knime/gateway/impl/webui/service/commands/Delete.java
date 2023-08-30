@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToNodeID;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,8 +70,10 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
@@ -81,11 +84,13 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 final class Delete extends AbstractWorkflowCommand {
 
-    private List<ConnectionIDEnt> m_connectionIdsQueried;
+    private final List<ConnectionIDEnt> m_connectionIdsQueried;
 
-    private List<AnnotationIDEnt> m_annotationIdsQueried;
+    private final List<AnnotationIDEnt> m_annotationIdsQueried;
 
-    private List<NodeIDEnt> m_nodeIdsQueried;
+    private final List<NodeIDEnt> m_nodeIdsQueried;
+
+    private final Map<String, List<Integer>> m_bendpointsIndicesQueried;
 
     private WorkflowPersistor m_copy;
 
@@ -101,6 +106,7 @@ final class Delete extends AbstractWorkflowCommand {
         m_nodeIdsQueried = commandEnt.getNodeIds();
         m_annotationIdsQueried = commandEnt.getAnnotationIds();
         m_connectionIdsQueried = commandEnt.getConnectionIds();
+        m_bendpointsIndicesQueried = commandEnt.getConnectionBendpoints();
         m_workflowMiddleware = workflowMiddleware;
     }
 
@@ -161,14 +167,23 @@ final class Delete extends AbstractWorkflowCommand {
             throw new OperationNotAllowedException("Some connections can't be deleted. Delete operation aborted.");
         }
 
-        WorkflowCopyContent content = createWorkflowCopyContent(wfm.getID(), nodesToDelete, m_annotationIdsQueried);
+        var annotationIDsToDelete =
+            m_annotationIdsQueried.stream().map(id -> new WorkflowAnnotationID(wfm.getID(), id.getIndex()))
+                .toArray(size -> new WorkflowAnnotationID[size]);
+        WorkflowCopyContent content = createWorkflowCopyContent(nodesToDelete, annotationIDsToDelete);
         if (!checkThatAllWorkflowAnnotationsExist(wfm, content.getAnnotationIDs())) {
             throw new OperationNotAllowedException("Some workflow annotations don't exist. Delete operation aborted.");
         }
 
         m_copy = wfm.copy(true, content);
         WorkflowAnnotationID[] annoIds = content.getAnnotationIDs();
-        remove(wfm, nodesToDelete, m_connections, annoIds, getWorkflowKey());
+
+        var bendpointsToDelete = m_bendpointsIndicesQueried == null ? Collections.<ConnectionID, int[]> emptyMap()
+            : m_bendpointsIndicesQueried.entrySet().stream().filter(e -> !e.getValue().isEmpty())
+                .collect(Collectors.toMap(
+                    e -> DefaultServiceUtil.entityToConnectionID(projectId, new ConnectionIDEnt(e.getKey())),
+                    e -> e.getValue().stream().mapToInt(Integer::intValue).toArray()));
+        remove(wfm, nodesToDelete, m_connections, annoIds, bendpointsToDelete, getWorkflowKey());
         return !nodesToDelete.isEmpty() || !m_connections.isEmpty() || (annoIds != null && annoIds.length != 0);
     }
 
@@ -183,7 +198,7 @@ final class Delete extends AbstractWorkflowCommand {
 
     private void remove(final WorkflowManager wfm, final Set<NodeID> nodeIDs,
         final Set<ConnectionContainer> connections, final WorkflowAnnotationID[] annotationIDs,
-        final Map<ConnectionID, List<Integer>> bendpoints, final WorkflowKey wfKey) {
+        final Map<ConnectionID, int[]> bendpoints, final WorkflowKey wfKey) {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
@@ -198,11 +213,11 @@ final class Delete extends AbstractWorkflowCommand {
         }
         Arrays.stream(annotationIDs).forEach(wfm::removeAnnotation);
         bendpoints.entrySet().stream() //
-        .filter(e -> !e.getValue().isEmpty()).forEach(e -> { //
-            var connection = wfm.getConnection(e.getKey());
-            var bendpointIndices = e.getValue();
-            wfm.setDirty();
-        });
+            .forEach(e -> { //
+                var connection = wfm.getConnection(e.getKey());
+                CoreUtil.removeBendpoints(connection, e.getValue());
+            });
+        // TODO set wfm dirty if only bendpoints are being removed?
     }
 
     private static boolean canRemoveAllNodes(final WorkflowManager wfm, final Set<NodeID> nodeIDs) {
@@ -230,13 +245,10 @@ final class Delete extends AbstractWorkflowCommand {
         return Arrays.stream(annos).noneMatch(Objects::isNull);
     }
 
-    private static WorkflowCopyContent createWorkflowCopyContent(final NodeID wfmId, final Set<NodeID> nodeIDs,
-        final List<AnnotationIDEnt> annotationIds) {
+    private static WorkflowCopyContent createWorkflowCopyContent(final Set<NodeID> nodeIDs,
+        final WorkflowAnnotationID[] annotationIds) {
         return WorkflowCopyContent.builder().setNodeIDs(nodeIDs.toArray(new NodeID[nodeIDs.size()]))
-            .setAnnotationIDs(annotationIds.stream()
-                .map(id -> new WorkflowAnnotationID(wfmId, id.getIndex()))
-                .toArray(size -> new WorkflowAnnotationID[size]))
-            .build();
+            .setAnnotationIDs(annotationIds).build();
     }
 
 }
