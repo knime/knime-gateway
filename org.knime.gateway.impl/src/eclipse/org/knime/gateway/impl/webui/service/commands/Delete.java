@@ -227,8 +227,16 @@ final class Delete extends AbstractWorkflowCommand {
         Arrays.stream(annotationIDs).forEach(wfm::removeAnnotation);
         bendpoints.entrySet().stream() //
             .forEach(e -> { //
-                var connection = wfm.getConnection(e.getKey());
-                CoreUtil.removeBendpoints(connection, e.getValue());
+                ConnectionContainer connection = null;
+                try {
+                    connection = wfm.getConnection(e.getKey());
+                } catch (IllegalArgumentException ex) {
+                    //
+                }
+
+                if (connection != null) { // connection already deleted?
+                    CoreUtil.removeBendpoints(connection, e.getValue());
+                }
             });
         // TODO set wfm dirty if only bendpoints are being removed?
     }
