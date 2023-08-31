@@ -1,16 +1,10 @@
 package org.knime.gateway.testing.helper;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.knime.gateway.api.entity.ConnectionIDEnt;
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
  * Workflows used in the tests.
@@ -83,9 +77,12 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Contains a contemporary and a legacy annotation.
      */
-        ANNOTATIONS("/files/testflows/Annotations", "annotations"),
+    ANNOTATIONS("/files/testflows/Annotations", "annotations"),
 
-        BENDPOINTS("/files/testflows/Bendpoints", "bendpoints");
+    /**
+     * To test operations on bendpoints.
+     */
+    BENDPOINTS("/files/testflows/Bendpoints", "bendpoints");
 
     private final String m_workflowDir;
 
@@ -129,57 +126,4 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
         return m_name;
     }
 
-    public static class BendpointsWorkflow extends LoadedWorkflow {
-
-        /**
-         * A connection with two bendpoints on it.
-         */
-        public static final ConnectionIDEnt twoBendpoints = new ConnectionIDEnt(new NodeIDEnt(187), 1);
-
-        /**
-         * @see this#twoBendpoints
-         */
-        public static final NodeIDEnt twoBendpointsSource = new NodeIDEnt(189);
-
-        /**
-         * A connection with a single bendpoint on it
-         */
-        public static final ConnectionIDEnt oneBendpoint = new ConnectionIDEnt(new NodeIDEnt(188), 1);
-
-        /**
-         * A connection with no bendpoint on it, but the ConnectionUIInfo property still set.
-         */
-        public static final ConnectionIDEnt noBendpointsEmptyUiInfo = new ConnectionIDEnt(new NodeIDEnt(190), 1);
-
-        /**
-         * A connection with the ConnectionUIInfo property set to {@code null}.
-         */
-        public static final ConnectionIDEnt noBendpointsNullUiInfo = new ConnectionIDEnt(new NodeIDEnt(191), 1);
-
-        public static final XYEnt somePosition = builder(XYEnt.XYEntBuilder.class).setX(42).setY(17).build();
-
-        public BendpointsWorkflow(final String id, final WorkflowEnt originalEnt) {
-            super(id, originalEnt);
-        }
-
-    }
-
-    public static class LoadedWorkflow {
-        private final String m_id;
-
-        private final WorkflowEnt m_originalEnt;
-
-        public LoadedWorkflow(String id, WorkflowEnt originalEnt) {
-            m_id = id;
-            m_originalEnt = originalEnt;
-        }
-
-        public String id() {
-            return m_id;
-        }
-
-        public WorkflowEnt originalEnt() {
-            return m_originalEnt;
-        }
-    }
 }

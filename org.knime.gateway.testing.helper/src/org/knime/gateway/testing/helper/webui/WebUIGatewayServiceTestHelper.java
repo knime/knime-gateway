@@ -324,6 +324,9 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * Execute the given workflow command and return the new workflow snapshot
      *
      * @param commandEnt
+     * @param workflowId
+     * @return the updated workflow after the command was executed
+     * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
     protected WorkflowEnt executeWorkflowCommand(final WorkflowCommandEnt commandEnt, final String workflowId)
@@ -333,12 +336,22 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     }
 
+    /**
+     * @param wfId
+     * @return the updated workflow after the last command was undone
+     * @throws Exception
+     */
     @SuppressWarnings("java:S112") // generic exception
     protected WorkflowEnt undoWorkflowCommand(final String wfId) throws Exception {
         ws().undoWorkflowCommand(wfId, NodeIDEnt.getRootID());
         return ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
     }
 
+    /**
+     * @param wfId
+     * @return the update workflow after a command was redone
+     * @throws Exception
+     */
     @SuppressWarnings("java:S112") // generic exception
     protected WorkflowEnt redoWorkflowCommand(final String wfId) throws Exception {
         ws().redoWorkflowCommand(wfId, NodeIDEnt.getRootID());

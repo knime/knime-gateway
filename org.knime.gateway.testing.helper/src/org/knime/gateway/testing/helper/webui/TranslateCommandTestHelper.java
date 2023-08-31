@@ -115,42 +115,42 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testTranslateBendpointsUndoRedo() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var connection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints.toString();
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        var originalWfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        var connection = BendpointsTestHelper.connectionWithTwoBendpoints.toString();
         var bendpointIndex = 1;
         Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connection, bendpointIndex);
-        var command =
-            TranslateCommandTestHelper.translateCommand(delta, List.of(), Map.of(connection, List.of(bendpointIndex)));
-        var modifiedWorkflow = executeWorkflowCommand(command, wf.id());
-        TranslateCommandTestHelper.assertMoved(bendpoint, delta, wf.originalEnt(), modifiedWorkflow);
-        var undoneWorkflow = undoWorkflowCommand(wf.id());
-        TranslateCommandTestHelper.assertMoved(bendpoint, new int[]{0, 0}, wf.originalEnt(), undoneWorkflow);
-        var redoneWorkflow = redoWorkflowCommand(wf.id());
-        TranslateCommandTestHelper.assertMoved(bendpoint, delta, wf.originalEnt(), redoneWorkflow);
+        var command = translateCommand(delta, List.of(), Map.of(connection, List.of(bendpointIndex)));
+        var modifiedWorkflow = executeWorkflowCommand(command, wfId);
+        assertMoved(bendpoint, delta, originalWfEnt, modifiedWorkflow);
+        var undoneWorkflow = undoWorkflowCommand(wfId);
+        assertMoved(bendpoint, new int[]{0, 0}, originalWfEnt, undoneWorkflow);
+        var redoneWorkflow = redoWorkflowCommand(wfId);
+        assertMoved(bendpoint, delta, originalWfEnt, redoneWorkflow);
     }
 
     public void testTranslateBendpointsOnlySelected() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var connectionId = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints.toString();
-        NodeIDEnt sourceNode = TestWorkflowCollection.BendpointsWorkflow.twoBendpointsSource;
-        NodeIDEnt targetNode = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints.getDestNodeIDEnt();
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        var originalWfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        var connectionId = BendpointsTestHelper.connectionWithTwoBendpoints.toString();
+        var sourceNode = new NodeIDEnt(189);
+        var targetNode = BendpointsTestHelper.connectionWithTwoBendpoints.getDestNodeIDEnt();
         var selectedBendpointIndex = 1;
         Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connectionId, selectedBendpointIndex);
-        var command = TranslateCommandTestHelper.translateCommand(delta, List.of(sourceNode, targetNode),
+        var command = translateCommand(delta, List.of(sourceNode, targetNode),
             Map.of(connectionId, List.of(selectedBendpointIndex)));
-        var modifiedWorkflow = executeWorkflowCommand(command, wf.id());
-        TranslateCommandTestHelper.assertMoved(bendpoint, delta, wf.originalEnt(), modifiedWorkflow);
+        var modifiedWorkflow = executeWorkflowCommand(command, wfId);
+        assertMoved(bendpoint, delta, originalWfEnt, modifiedWorkflow);
     }
 
     public void testTranslateBendpointOfInvalidIndex() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        String connectionId = TestWorkflowCollection.BendpointsWorkflow.oneBendpoint.toString();
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        String connectionId = BendpointsTestHelper.connectionWithOneBendpoint.toString();
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
-            TranslateCommandTestHelper.translateCommand(delta, List.of(),
-                Map.of(connectionId, List.of(bendpointIndex)));
+            translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
         try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wf.id());
+            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
         } catch (Exception e) {
             assertThat("unexpected exception message", e.getMessage(),
                 is("Failed to execute command. Workflow parts not found: "
@@ -159,14 +159,13 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testTranslateBendpointsOnConnectionWithNone() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        String connectionId = TestWorkflowCollection.BendpointsWorkflow.noBendpointsEmptyUiInfo.toString();
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        var connectionId = BendpointsTestHelper.connectionWithNoBendpointsEmptyUiInfo.toString();
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
-            TranslateCommandTestHelper.translateCommand(delta, List.of(),
-                Map.of(connectionId, List.of(bendpointIndex)));
+            translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
         try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wf.id());
+            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
         } catch (Exception e) {
             assertThat("unexpected exception message", e.getMessage(),
                 is("Failed to execute command. Workflow parts not found: "
@@ -175,12 +174,11 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testTranslateBendpointsOnInexistentConnection() throws Exception {
-        var wf = loadBendpointsWorkflow();
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var connection = new ConnectionIDEnt(new NodeIDEnt(999), 999).toString();
-        var translateInvalidBendpointIndex =
-            TranslateCommandTestHelper.translateCommand(delta, List.of(), Map.of(connection, List.of(0)));
+        var translateInvalidBendpointIndex = translateCommand(delta, List.of(), Map.of(connection, List.of(0)));
         try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wf.id());
+            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
         } catch (Exception e) {
             assertThat("unexpected exception message", e.getMessage(),
                 is("Failed to execute command. Workflow parts not found: " + "connections ([? -> 3:999(999)])"));
@@ -316,9 +314,4 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     }
 
-    private TestWorkflowCollection.BendpointsWorkflow loadBendpointsWorkflow() throws Exception {
-        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
-        WorkflowEnt originalWorkflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-        return new TestWorkflowCollection.BendpointsWorkflow(wfId, originalWorkflow);
-    }
 }

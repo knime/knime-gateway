@@ -76,6 +76,16 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 @SuppressWarnings({"javadoc", "restriction"})
 public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
 
+    static final ConnectionIDEnt connectionWithTwoBendpoints = new ConnectionIDEnt(new NodeIDEnt(187), 1);
+
+    static final ConnectionIDEnt connectionWithOneBendpoint = new ConnectionIDEnt(new NodeIDEnt(188), 1);
+
+    static final ConnectionIDEnt connectionWithNoBendpointsEmptyUiInfo = new ConnectionIDEnt(new NodeIDEnt(190), 1);
+
+    private static final ConnectionIDEnt connectionWithNoBendpointsNullUiInfo = new ConnectionIDEnt(new NodeIDEnt(191), 1);
+
+    private static final XYEnt somePosition = builder(XYEnt.XYEntBuilder.class).setX(42).setY(17).build();
+
     public BendpointsTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(BendpointsTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
@@ -93,63 +103,55 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testBendpointIsAddedOnConnectionWithEmptyUiInfo() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.noBendpointsEmptyUiInfo;
-        assertConnectionAdded(wf, modifiedConnection);
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        assertConnectionAdded(wfId, connectionWithNoBendpointsEmptyUiInfo);
     }
 
     public void testBendpointIsAddedOnConnectionWithNullUiInfo() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.noBendpointsNullUiInfo;
-        assertConnectionAdded(wf, modifiedConnection);
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        assertConnectionAdded(wfId, connectionWithNoBendpointsNullUiInfo);
     }
 
-    private void assertConnectionAdded(final TestWorkflowCollection.BendpointsWorkflow wf, final ConnectionIDEnt modifiedConnection)
-        throws Exception {
+    private void assertConnectionAdded(final String wfId, final ConnectionIDEnt modifiedConnection) throws Exception {
         var insertionIndex = 0;
-        var insertionPosition = TestWorkflowCollection.BendpointsWorkflow.somePosition;
         var modifiedWf = executeWorkflowCommand(
-            createAddBendpointCommandEnt(modifiedConnection, insertionIndex, insertionPosition), wf.id());
-        assert bendpointPresentAt(modifiedWf, modifiedConnection.toString(), insertionIndex, insertionPosition);
-        var undoneWorkflow = undoWorkflowCommand(wf.id());
-        assert !bendpointPresentAt(undoneWorkflow, modifiedConnection.toString(), insertionIndex, insertionPosition);
-        var redoneWorkflow = redoWorkflowCommand(wf.id());
-        assert bendpointPresentAt(redoneWorkflow, modifiedConnection.toString(), insertionIndex, insertionPosition);
+            createAddBendpointCommandEnt(modifiedConnection, insertionIndex, somePosition), wfId);
+        assert bendpointPresentAt(modifiedWf, modifiedConnection.toString(), insertionIndex, somePosition);
+        var undoneWorkflow = undoWorkflowCommand(wfId);
+        assert !bendpointPresentAt(undoneWorkflow, modifiedConnection.toString(), insertionIndex, somePosition);
+        var redoneWorkflow = redoWorkflowCommand(wfId);
+        assert bendpointPresentAt(redoneWorkflow, modifiedConnection.toString(), insertionIndex, somePosition);
     }
 
     public void testBendpointIsAddedBetweenExisting() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints;
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var insertionIndex = 1;
-        var insertionPosition = TestWorkflowCollection.BendpointsWorkflow.somePosition;
         var modifiedWf = executeWorkflowCommand(
-            createAddBendpointCommandEnt(modifiedConnection, insertionIndex, insertionPosition), wf.id());
-        assert bendpointPresentAt(modifiedWf, modifiedConnection.toString(), insertionIndex, insertionPosition);
+            createAddBendpointCommandEnt(connectionWithTwoBendpoints, insertionIndex, somePosition), wfId);
+        assert bendpointPresentAt(modifiedWf, connectionWithTwoBendpoints.toString(), insertionIndex, somePosition);
     }
 
     public void testBendpointIsRemovedWithRemaining() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.twoBendpoints;
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var removalIndex = 0;
-        var removedBendpointPosition =
-            wf.originalEnt().getConnections().get(modifiedConnection.toString()).getBendpoints().get(removalIndex);
-        var modifiedWf = executeWorkflowCommand(createDeleteCommandToRemoveBendpoints(modifiedConnection, removalIndex), wf.id());
+        var removedBendpointPosition = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+            .getConnections().get(connectionWithTwoBendpoints.toString()).getBendpoints().get(removalIndex);
+        var modifiedWf = executeWorkflowCommand(createDeleteCommandToRemoveBendpoints(connectionWithTwoBendpoints, removalIndex), wfId);
         // a succeeding bendpoint will now be at that index, so all we can do is compare positions
-        assert !bendpointPresentAt(modifiedWf, modifiedConnection.toString(), removalIndex, removedBendpointPosition);
-        var undoneWorkflow = undoWorkflowCommand(wf.id());
-        assert bendpointPresentAt(undoneWorkflow, modifiedConnection.toString(), removalIndex,
+        assert !bendpointPresentAt(modifiedWf, connectionWithTwoBendpoints.toString(), removalIndex, removedBendpointPosition);
+        var undoneWorkflow = undoWorkflowCommand(wfId);
+        assert bendpointPresentAt(undoneWorkflow, connectionWithTwoBendpoints.toString(), removalIndex,
             removedBendpointPosition);
-        var redoneWorkflow = redoWorkflowCommand(wf.id());
-        assert !bendpointPresentAt(redoneWorkflow, modifiedConnection.toString(), removalIndex,
+        var redoneWorkflow = redoWorkflowCommand(wfId);
+        assert !bendpointPresentAt(redoneWorkflow, connectionWithTwoBendpoints.toString(), removalIndex,
             removedBendpointPosition);
     }
 
     public void testBendpointIsRemovedWithNoneRemaining() throws Exception {
-        var wf = loadBendpointsWorkflow();
-        var modifiedConnection = TestWorkflowCollection.BendpointsWorkflow.oneBendpoint;
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var removalIndex = 0;
-        var modifiedWf = executeWorkflowCommand(createDeleteCommandToRemoveBendpoints(modifiedConnection, removalIndex), wf.id());
-        assert modifiedWf.getConnections().get(modifiedConnection.toString()).getBendpoints() == null;
+        var modifiedWf = executeWorkflowCommand(createDeleteCommandToRemoveBendpoints(connectionWithOneBendpoint, removalIndex), wfId);
+        assert modifiedWf.getConnections().get(connectionWithOneBendpoint.toString()).getBendpoints() == null;
     }
 
     private static AddBendpointCommandEnt createAddBendpointCommandEnt(final ConnectionIDEnt connection,
@@ -163,12 +165,6 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         final int index) {
         return builder(DeleteCommandEntBuilder.class).setKind(WorkflowCommandEnt.KindEnum.DELETE)
             .setConnectionBendpoints(Map.of(connectionIDEnt.toString(), List.of(index))).build();
-    }
-
-    private TestWorkflowCollection.BendpointsWorkflow loadBendpointsWorkflow() throws Exception {
-        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
-        WorkflowEnt originalWorkflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
-        return new TestWorkflowCollection.BendpointsWorkflow(wfId, originalWorkflow);
     }
 
 }
