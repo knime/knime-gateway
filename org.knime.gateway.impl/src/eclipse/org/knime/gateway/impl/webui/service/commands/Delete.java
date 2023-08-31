@@ -61,6 +61,7 @@ import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
@@ -98,7 +99,9 @@ final class Delete extends AbstractWorkflowCommand {
      * Set of the connection that have been deleted. Both explicitly selected ones and those that are not part of the
      * persistor (persistor only covers connections whose source and destination are part of the persistor too).
      */
-    private Set<ConnectionContainer> m_connections;
+    private Set<ConnectionContainer> m_connectionsDeleted;
+
+    private Map<ConnectionID, ConnectionUIInformation> m_connectionsWithBendpointsRemoved;
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
@@ -117,9 +120,16 @@ final class Delete extends AbstractWorkflowCommand {
     public void undo() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         wfm.paste(m_copy);
-        for (ConnectionContainer cc : m_connections) {
+        for (ConnectionContainer cc : m_connectionsDeleted) {
             wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
         }
+        m_connectionsWithBendpointsRemoved.entrySet().forEach(e -> {
+            var cc = wfm.getConnection(e.getKey());
+            var uiInfo = e.getValue();
+            if (cc != null && uiInfo != null) {
+                cc.setUIInfo(uiInfo);
+            }
+        });
     }
 
     @Override
@@ -127,7 +137,7 @@ final class Delete extends AbstractWorkflowCommand {
         var wfm = getWorkflowManager();
         // we only need to check the connections here because every node removal will also require a
         // connection removal - and if the connection can't be removed so can't the node
-        return m_connections != null && m_connections.stream().allMatch(wfm::canRemoveConnection);
+        return m_connectionsDeleted != null && m_connectionsDeleted.stream().allMatch(wfm::canRemoveConnection);
     }
 
     /**
@@ -147,23 +157,23 @@ final class Delete extends AbstractWorkflowCommand {
         // Connections are identified by their destination node ID and port. Connections to metanode outputs are
         //   represented by pointing to the node ID of the parent metanode.
         // Filter connections from the command s.t. all connections are guaranteed to exist in this workflow manager.
-        m_connections = m_connectionIdsQueried.stream()
+        m_connectionsDeleted = m_connectionIdsQueried.stream()
             .map(id -> new ConnectionID(entityToNodeID(projectId, id.getDestNodeIDEnt()), id.getDestPortIdx()))
             .filter(id -> wfm.containsNodeContainer(id.getDestinationNode()) || wfm.getID().equals(id.getDestinationNode()))
             .map(wfm::getConnection)
             .collect(Collectors.toCollection(HashSet::new));
 
-        if (m_connections.size() != m_connectionIdsQueried.size()) {
+        if (m_connectionsDeleted.size() != m_connectionIdsQueried.size()) {
             throw new OperationNotAllowedException("Some connections don't exist. Delete operation aborted.");
         }
 
         // add all connections that have a to-be-deleted-node as source _or_ destination (but _not_ both)
         for (NodeID id : nodesToDelete) {
-            addIfConnectedToJustOneNode(wfm.getIncomingConnectionsFor(id), m_connections, nodesToDelete);
-            addIfConnectedToJustOneNode(wfm.getOutgoingConnectionsFor(id), m_connections, nodesToDelete);
+            addIfConnectedToJustOneNode(wfm.getIncomingConnectionsFor(id), m_connectionsDeleted, nodesToDelete);
+            addIfConnectedToJustOneNode(wfm.getOutgoingConnectionsFor(id), m_connectionsDeleted, nodesToDelete);
         }
 
-        if (!canRemoveAllConnections(wfm, m_connections)) {
+        if (!canRemoveAllConnections(wfm, m_connectionsDeleted)) {
             throw new OperationNotAllowedException("Some connections can't be deleted. Delete operation aborted.");
         }
 
@@ -183,8 +193,11 @@ final class Delete extends AbstractWorkflowCommand {
                 .collect(Collectors.toMap(
                     e -> DefaultServiceUtil.entityToConnectionID(projectId, new ConnectionIDEnt(e.getKey())),
                     e -> e.getValue().stream().mapToInt(Integer::intValue).toArray()));
-        remove(wfm, nodesToDelete, m_connections, annoIds, bendpointsToDelete, getWorkflowKey());
-        return !nodesToDelete.isEmpty() || !m_connections.isEmpty() || (annoIds != null && annoIds.length != 0);
+        m_connectionsWithBendpointsRemoved = bendpointsToDelete.keySet().stream()
+            .collect(Collectors.toMap(id -> id, id -> wfm.getConnection(id).getUIInfo()));
+        remove(wfm, nodesToDelete, m_connectionsDeleted, annoIds, bendpointsToDelete, getWorkflowKey());
+        return !nodesToDelete.isEmpty() || !m_connectionsDeleted.isEmpty() || (annoIds != null && annoIds.length != 0)
+            || !bendpointsToDelete.isEmpty();
     }
 
     private static void addIfConnectedToJustOneNode(final Set<ConnectionContainer> connectionsToAdd,
