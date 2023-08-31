@@ -308,13 +308,15 @@ public class WorkflowChangesListener implements Closeable {
                 removeWorkflowAnnotationListener((WorkflowAnnotation)e.getOldValue());
                 break;
             case CONNECTION_ADDED:
+                addConnectionUIInformationListener((ConnectionContainer)e.getNewValue());
                 if (m_isInStreamingMode) {
                     addConnectionProgressListener((ConnectionContainer)e.getNewValue());
                 }
                 break;
             case CONNECTION_REMOVED:
+                removeConnectionUIInformationListener((ConnectionContainer)e.getOldValue());
                 if (m_isInStreamingMode) {
-                    removeConnectionListener((ConnectionContainer)e.getOldValue());
+                    removeConnectionProgressListener((ConnectionContainer)e.getOldValue());
                 }
                 break;
             default:
@@ -355,7 +357,7 @@ public class WorkflowChangesListener implements Closeable {
         m_connectionProgressListeners.put(cc.getID(), l);
     }
 
-    private void removeConnectionListener(final ConnectionContainer cc) {
+    private void removeConnectionProgressListener(final ConnectionContainer cc) {
         ConnectionID id = cc.getID();
         cc.removeProgressListener(m_connectionProgressListeners.get(id));
         m_connectionProgressListeners.remove(id);
@@ -409,7 +411,7 @@ public class WorkflowChangesListener implements Closeable {
         m_workflowAnnotationListeners.clear();
         var connectionContainers = m_wfm.getConnectionContainers();
         if (m_isInStreamingMode) {
-            connectionContainers.forEach(this::removeConnectionListener);
+            connectionContainers.forEach(this::removeConnectionProgressListener);
             m_connectionProgressListeners.clear();
         }
         connectionContainers.forEach(this::removeConnectionUIInformationListener);
