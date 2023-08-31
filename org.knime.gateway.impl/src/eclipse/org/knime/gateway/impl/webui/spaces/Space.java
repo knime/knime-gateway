@@ -310,11 +310,10 @@ public interface Space {
      * {@link NotImplementedException} being thrown.
      *
      * @param workflowGroupItemId The workflow group item to get the dialog for
-     * @throws IOException Thrown if the there was a problem with read or fetching the items.
-     * @throws NotImplementedException Thrown if method isn't called on a `ServerSpace`.
+     * @throws IOException Thrown if there was a problem with read or fetching the items.
      */
-    default void openPermissionsDialogForItem(final String workflowGroupItemId) throws IOException, NotImplementedException {
-        throw new NotImplementedException("Cannot call this method on Spaces other then ServerSpaces.");
+    default void openPermissionsDialogForItem(final String workflowGroupItemId) throws IOException {
+        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other then 'ServerSpaces'.");
     }
 
     /**
