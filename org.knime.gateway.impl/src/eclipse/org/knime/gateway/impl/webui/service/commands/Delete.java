@@ -236,9 +236,9 @@ final class Delete extends AbstractWorkflowCommand {
 
                 if (connection != null) { // connection already deleted?
                     CoreUtil.removeBendpoints(connection, e.getValue());
+                    wfm.setDirty();
                 }
             });
-        // TODO set wfm dirty if only bendpoints are being removed?
     }
 
     private static boolean canRemoveAllNodes(final WorkflowManager wfm, final Set<NodeID> nodeIDs) {
