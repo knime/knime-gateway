@@ -544,10 +544,16 @@ public final class CoreUtil {
      * Remove a bendpoint.
      *
      * @param connection The connection from which to remove a bendpoint.
-     * @param indices The indices of the bendpoints to remove.
+     * @param indices The indices of the bendpoints to remove
      */
     public static void removeBendpoints(final ConnectionContainer connection, final int... indices) {
-        editConnectionUIInformation(connection, b -> Arrays.stream(indices).forEach(b::removeBendpoint));
+        editConnectionUIInformation(connection, b -> {
+            int[] sortedIndices = indices.clone();
+            Arrays.sort(sortedIndices);
+            for (int i = 0; i < sortedIndices.length; i++) {
+                b.removeBendpoint(sortedIndices[i] - i);
+            }
+        });
     }
 
     private static void editConnectionUIInformation(final ConnectionContainer connection,

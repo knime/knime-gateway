@@ -150,6 +150,11 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         assertFalse(bendpointPresentAt(redoneWorkflow, connectionWithTwoBendpoints.toString(), removalIndex,
             removedBendpointPosition));
     }
+
+    public void testRemoveMultipleBendpoints() throws Exception {
+        var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
+        var modifiedWf = executeWorkflowCommand(createDeleteCommandToRemoveBendpoints(connectionWithTwoBendpoints, 0,1), wfId);
+        assertThat(modifiedWf.getConnections().get(connectionWithTwoBendpoints.toString()).getBendpoints(), nullValue());
     }
 
     public void testBendpointIsRemovedWithNoneRemaining() throws Exception {
