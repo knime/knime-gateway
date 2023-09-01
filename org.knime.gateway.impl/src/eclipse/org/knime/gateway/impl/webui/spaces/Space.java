@@ -307,9 +307,9 @@ public interface Space {
     /**
      * Opens the permission dialog for Server items only.
      *
-     * @param workflowGroupItemId The workflow group item to get the dialog for
+     * @param itemId The item to get the dialog for
      */
-    default void openPermissionsDialogForItem(final String workflowGroupItemId) {
+    default void openPermissionsDialogForItem(final String itemId) {
         throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other then 'ServerSpaces'.");
     }
 
