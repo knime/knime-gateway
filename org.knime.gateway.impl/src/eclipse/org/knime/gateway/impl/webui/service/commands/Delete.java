@@ -225,20 +225,19 @@ final class Delete extends AbstractWorkflowCommand {
             }
         }
         Arrays.stream(annotationIDs).forEach(wfm::removeAnnotation);
-        bendpoints.entrySet().stream() //
-            .forEach(e -> { //
-                ConnectionContainer connection = null;
-                try {
-                    connection = wfm.getConnection(e.getKey());
-                } catch (IllegalArgumentException ex) {
-                    //
-                }
-
-                if (connection != null) { // connection already deleted?
-                    CoreUtil.removeBendpoints(connection, e.getValue());
-                    wfm.setDirty();
-                }
-            });
+        bendpoints.forEach((key, value) -> { //
+            ConnectionContainer connection = null;
+            try {
+                connection = wfm.getConnection(key);
+            } catch (IllegalArgumentException ex) {
+                //
+            }
+            if (connection != null) {
+                // connection might have already been deleted (explicitly, or implicitly by removal of source/target node.)
+                CoreUtil.removeBendpoints(connection, value);
+                wfm.setDirty();
+            }
+        });
     }
 
     private static boolean canRemoveAllNodes(final WorkflowManager wfm, final Set<NodeID> nodeIDs) {
