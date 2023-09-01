@@ -120,12 +120,15 @@ final class Delete extends AbstractWorkflowCommand {
     public void undo() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         wfm.paste(m_copy);
-        for (ConnectionContainer cc : m_connectionsDeleted) {
-            wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
+        for (ConnectionContainer originalConnection : m_connectionsDeleted) {
+            // restore connection as well as bendpoints on that connection
+            var reAddedConnection = wfm.addConnection(originalConnection.getSource(),
+                originalConnection.getSourcePort(), originalConnection.getDest(), originalConnection.getDestPort());
+            reAddedConnection.setUIInfo(originalConnection.getUIInfo());
         }
-        m_connectionsWithBendpointsRemoved.entrySet().forEach(e -> {
-            var cc = wfm.getConnection(e.getKey());
-            var uiInfo = e.getValue();
+        m_connectionsWithBendpointsRemoved.forEach((key, uiInfo) -> {
+            // restore individually deleted bendpoints
+            var cc = wfm.getConnection(key);
             if (cc != null && uiInfo != null) {
                 cc.setUIInfo(uiInfo);
             }
