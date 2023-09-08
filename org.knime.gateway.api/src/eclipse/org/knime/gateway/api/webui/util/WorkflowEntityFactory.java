@@ -525,7 +525,7 @@ public final class WorkflowEntityFactory {
             .setState(buildNodeStateEnt(nc))//
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
-            .setLink(buildTemplateLinkEnt(nc))//
+            .setLink(buildTemplateLinkEnt(nc, buildContext))//
             .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
@@ -659,7 +659,7 @@ public final class WorkflowEntityFactory {
             .setPosition(buildXYEnt(wm.getUIInformation()))//
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
-            .setLink(buildTemplateLinkEnt(wm))//
+            .setLink(buildTemplateLinkEnt(wm, buildContext))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .setIsLocked(isLocked(wm)) //
@@ -1448,9 +1448,9 @@ public final class WorkflowEntityFactory {
         return sourceURI == null ? null : sourceURI.toString();
     }
 
-    private TemplateLinkEnt buildTemplateLinkEnt(final NodeContainerTemplate nct) {
+    private TemplateLinkEnt buildTemplateLinkEnt(final NodeContainerTemplate nct, final WorkflowBuildContext buildContext) {
         var role = nct.getTemplateInformation().getRole();
-        if (role != Role.Link) {
+        if (role != Role.Link) { // Only works for linked components and metanodes
             return null;
         }
         var updateStatus = switch (nct.getTemplateInformation().getUpdateStatus()) {
@@ -1461,6 +1461,10 @@ public final class WorkflowEntityFactory {
         return builder(TemplateLinkEntBuilder.class) //
             .setUrl(getTemplateLink(nct))//
             .setUpdateStatus(updateStatus) //
+<<<<<<< Updated upstream
+=======
+            .setIsLinkTypeChangable(buildContext.isLinkTypeChangable(nct)) //
+>>>>>>> Stashed changes
             .build();
     }
 

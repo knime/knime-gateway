@@ -64,6 +64,7 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.ComponentPropertiesProvider;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
@@ -108,6 +109,9 @@ public final class DefaultEventService implements EventService {
     private final NodeFactoryProvider m_nodeFactoryProvider =
             ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
 
+    private final ComponentPropertiesProvider m_componentPropertiesProvider =
+            ServiceDependencies.getServiceDependency(ComponentPropertiesProvider.class, true);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -130,7 +134,8 @@ public final class DefaultEventService implements EventService {
         EventSource eventSource;
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_workflowProjectManager));
+                t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_workflowProjectManager,
+                    m_componentPropertiesProvider));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),

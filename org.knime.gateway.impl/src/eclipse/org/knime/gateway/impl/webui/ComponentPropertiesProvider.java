@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,80 +41,28 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Sep 8, 2023 (kai): created
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui;
 
-
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder;
+import org.knime.core.node.workflow.NodeContainerTemplate;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * Get component properties you otherwise wouldn't get
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
  */
-
-@JsonDeserialize(builder=DefaultTemplateLinkEntBuilder.class)
-@JsonSerialize(as=TemplateLinkEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("url")
-    public String getUrl();
-    
-    @Override
-    @JsonProperty("updateStatus")
-    public UpdateStatusEnum getUpdateStatus();
-    
-<<<<<<< Updated upstream
-=======
-    @Override
-    @JsonProperty("isLinkTypeChangable")
-    public Boolean isLinkTypeChangable();
-    
->>>>>>> Stashed changes
+public interface ComponentPropertiesProvider {
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     * Whether a {@link NodeContainerTemplate} is updatable or not.
      *
-     * @author Martin Horn, University of Konstanz
+     * @param nct
+     * @return {@code true} if updatable, {@code false} otherwise
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TemplateLinkEntMixInBuilder extends TemplateLinkEntBuilder {
-    
-        @Override
-        public TemplateLinkEntMixIn build();
-    
-        @Override
-        @JsonProperty("url")
-        public TemplateLinkEntMixInBuilder setUrl(final String url);
-        
-        @Override
-        @JsonProperty("updateStatus")
-        public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
-        
-<<<<<<< Updated upstream
-=======
-        @Override
-        @JsonProperty("isLinkTypeChangable")
-        public TemplateLinkEntMixInBuilder setIsLinkTypeChangable(final Boolean isLinkTypeChangable);
-        
->>>>>>> Stashed changes
-    }
-
+    boolean isNodeLinkTypeChangable(NodeContainerTemplate nct);
 
 }
-

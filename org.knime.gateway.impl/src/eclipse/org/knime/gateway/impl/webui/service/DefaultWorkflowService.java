@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.webui.ComponentPropertiesProvider;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -80,6 +81,9 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final SpaceProviders m_spaceProvides =
         ServiceDependencies.getServiceDependency(SpaceProviders.class, false);
+
+    private final ComponentPropertiesProvider m_componentPropertiesProvider =
+        ServiceDependencies.getServiceDependency(ComponentPropertiesProvider.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -104,13 +108,17 @@ public final class DefaultWorkflowService implements WorkflowService {
         var wfKey = new WorkflowKey(projectId, workflowId);
         LOGGER.debug("'getWorkflow()' was called for: " + wfKey); // Quickly get project ID and workflow ID while debugging
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
-                () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
-                    .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))
-                    .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey)));
+            var buildContext = WorkflowBuildContext.builder()//
+                .includeInteractionInfo(true)//
+                .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
+                .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
+                .setIsLinkTypePredicate(m_componentPropertiesProvider::isNodeLinkTypeChangable);
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
-            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
-                () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
+            var buildConext = WorkflowBuildContext.builder()//
+                .includeInteractionInfo(false)//
+                .setIsLinkTypePredicate(m_componentPropertiesProvider::isNodeLinkTypeChangable); // TODO: Is this needed here?
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildConext);
         }
     }
 

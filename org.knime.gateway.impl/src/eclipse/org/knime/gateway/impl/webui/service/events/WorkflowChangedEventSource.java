@@ -79,6 +79,7 @@ import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
+import org.knime.gateway.impl.webui.ComponentPropertiesProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
@@ -102,16 +103,21 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private final WorkflowProjectManager m_workflowProjectManager;
 
+    private final ComponentPropertiesProvider m_componentPropertiesProvider;
+
     /**
      * @param eventConsumer
      * @param workflowMiddleware
      * @param workflowProjectManager
+     * @param componentPropertiesProvider
      */
     public WorkflowChangedEventSource(final EventConsumer eventConsumer, final WorkflowMiddleware workflowMiddleware,
-        final WorkflowProjectManager workflowProjectManager) {
+        final WorkflowProjectManager workflowProjectManager,
+        final ComponentPropertiesProvider componentPropertiesProvider) {
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
         m_workflowProjectManager = workflowProjectManager;
+        m_componentPropertiesProvider = componentPropertiesProvider;
     }
 
     /**
@@ -148,7 +154,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             new PatchEntCreator(null), //
             wfEventType.getSnapshotId(), //
             true, //
-            wfChangesTracker //
+            wfChangesTracker, //
+            m_componentPropertiesProvider //
         );
 
         // add and keep track of callback added to the workflow changes listener (if not already)
@@ -177,7 +184,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         return wfm -> {
             preEventCreation();
             WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey,
-                patchEntCreator, patchEntCreator.getLastSnapshotId(), true, tracker);
+                patchEntCreator, patchEntCreator.getLastSnapshotId(), true, tracker, m_componentPropertiesProvider);
             if (workflowChangedEvent != null) {
                 var compositeEvent = createCompositeEvent(wfKey, wfm, workflowChangedEvent);
                 sendEvent(compositeEvent, wfKey.getProjectId());

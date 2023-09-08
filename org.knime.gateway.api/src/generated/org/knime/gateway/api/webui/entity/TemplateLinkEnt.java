@@ -98,6 +98,15 @@ public interface TemplateLinkEnt extends GatewayEntity {
    **/
   public UpdateStatusEnum getUpdateStatus();
 
+<<<<<<< Updated upstream
+=======
+  /**
+   * Whether this link type can be changed or not.
+   * @return isLinkTypeChangable 
+   **/
+  public Boolean isLinkTypeChangable();
+
+>>>>>>> Stashed changes
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -105,6 +114,10 @@ public interface TemplateLinkEnt extends GatewayEntity {
       var e = (TemplateLinkEnt)other;
       valueConsumer.accept("url", Pair.create(getUrl(), e.getUrl()));
       valueConsumer.accept("updateStatus", Pair.create(getUpdateStatus(), e.getUpdateStatus()));
+<<<<<<< Updated upstream
+=======
+      valueConsumer.accept("isLinkTypeChangable", Pair.create(isLinkTypeChangable(), e.isLinkTypeChangable()));
+>>>>>>> Stashed changes
   }
 
     /**
@@ -128,6 +141,17 @@ public interface TemplateLinkEnt extends GatewayEntity {
          */
         TemplateLinkEntBuilder setUpdateStatus(UpdateStatusEnum updateStatus);
         
+<<<<<<< Updated upstream
+=======
+        /**
+         * Whether this link type can be changed or not.
+         * 
+         * @param isLinkTypeChangable the property value,  
+         * @return this entity builder for chaining
+         */
+        TemplateLinkEntBuilder setIsLinkTypeChangable(Boolean isLinkTypeChangable);
+        
+>>>>>>> Stashed changes
         
         /**
         * Creates the entity from the builder.
