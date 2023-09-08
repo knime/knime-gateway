@@ -163,7 +163,8 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
                     }
                 };
                 return Optional
-                    .of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, tableId, onDispose));
+                    .of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, null, tableId,
+                        onDispose));
             }
 
             @Override
