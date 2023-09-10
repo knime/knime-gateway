@@ -77,13 +77,6 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
     @JsonProperty("updateStatus")
     public UpdateStatusEnum getUpdateStatus();
     
-<<<<<<< Updated upstream
-=======
-    @Override
-    @JsonProperty("isLinkTypeChangable")
-    public Boolean isLinkTypeChangable();
-    
->>>>>>> Stashed changes
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -105,13 +98,6 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
         @JsonProperty("updateStatus")
         public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
         
-<<<<<<< Updated upstream
-=======
-        @Override
-        @JsonProperty("isLinkTypeChangable")
-        public TemplateLinkEntMixInBuilder setIsLinkTypeChangable(final Boolean isLinkTypeChangable);
-        
->>>>>>> Stashed changes
     }
 
 

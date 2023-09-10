@@ -129,19 +129,10 @@ public final class WorkflowMiddleware {
         });
     }
 
-<<<<<<< Updated upstream
-=======
-    // TODO: This does more harm than good. Do we really need it?
-//    public void clearSubtreeWorkflowStates(final WorkflowKey rootKey) {
-//        clearWorkflowState(key -> key.getProjectId().equals(rootKey.getProjectId())
-//            && key.getWorkflowId().isInSubtreeOf(rootKey.getWorkflowId()));
-//    }
-
->>>>>>> Stashed changes
     /**
      * Notify this class that a workflow has been disposed.
      *
-     * @param wfKey the keys to clear the workflow state for
+     * @param wfKey the keys to klear the workflow state for
      */
     public void clearWorkflowState(final WorkflowKey wfKey) {
         clearWorkflowState(k -> k.equals(wfKey));
@@ -160,7 +151,8 @@ public final class WorkflowMiddleware {
     public WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowKey wfKey,
         final Supplier<WorkflowBuildContextBuilder> buildContextSupplier) {
         var workflowState = getWorkflowState(wfKey);
-        var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
+        var workflowEntity =
+            EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
 
         // try to commit the workflow entity and return the (existing or new) snapshot
         return buildWorkflowSnapshotEnt(workflowEntity, m_entityRepo.commit(wfKey, workflowEntity));
@@ -236,16 +228,13 @@ public final class WorkflowMiddleware {
      * @param snapshotId the latest snapshot id
      * @param includeInteractionInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
      * @param changes A workflow changes tracker to determine if and how to build the event
-     * @param componentPropertiesProvider Get properties from components
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchCreator<WorkflowChangedEventEnt> patchEntCreator, final String snapshotId,
-        final boolean includeInteractionInfo, final WorkflowChangesTracker changes,
-        final ComponentPropertiesProvider componentPropertiesProvider) {
+        final boolean includeInteractionInfo, final WorkflowChangesTracker changes) {
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
-            .includeInteractionInfo(includeInteractionInfo)//
-            .setIsLinkTypePredicate(componentPropertiesProvider::isNodeLinkTypeChangable);
+            .includeInteractionInfo(includeInteractionInfo);
         WorkflowState ws = getWorkflowState(wfKey);
         if (includeInteractionInfo) {
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//

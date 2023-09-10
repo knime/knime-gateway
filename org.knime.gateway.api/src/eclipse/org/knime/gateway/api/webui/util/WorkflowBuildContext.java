@@ -52,13 +52,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainerTemplate;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -97,8 +95,6 @@ public final class WorkflowBuildContext {
 
     private Map<NodeID, ModifiablePortsConfiguration> m_portsConfigurations;
 
-    private final Predicate<NodeContainerTemplate> m_isLinkTypeChangable;
-
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
         final DependentNodeProperties depNodeProps) {
@@ -109,7 +105,6 @@ public final class WorkflowBuildContext {
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
-        m_isLinkTypeChangable = builder.m_isLinkTypeChangable;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -197,10 +192,6 @@ public final class WorkflowBuildContext {
             .orElse(null);
     }
 
-    boolean isLinkTypeChangable(final NodeContainerTemplate nct) {
-        return m_isLinkTypeChangable.test(nct);
-    }
-
     /**
      * Creates a new builder instance.
      *
@@ -222,8 +213,6 @@ public final class WorkflowBuildContext {
         private boolean m_canRedo = false;
 
         private Supplier<DependentNodeProperties> m_depNodeProps;
-
-        private Predicate<NodeContainerTemplate> m_isLinkTypeChangable;
 
         private WorkflowBuildContextBuilder() {
             //
@@ -274,18 +263,6 @@ public final class WorkflowBuildContext {
          */
         public WorkflowBuildContextBuilder setDependentNodeProperties(final Supplier<DependentNodeProperties> depNodeProps) {
             m_depNodeProps = depNodeProps;
-            return this;
-        }
-
-        /**
-         * Set the predicate for linked components.
-         *
-         * @param isLinkTypeChangable
-         * @return This builder instance
-         */
-        public WorkflowBuildContextBuilder
-            setIsLinkTypePredicate(final Predicate<NodeContainerTemplate> isLinkTypeChangable) {
-            m_isLinkTypeChangable = isLinkTypeChangable;
             return this;
         }
 

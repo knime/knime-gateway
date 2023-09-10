@@ -54,22 +54,13 @@ import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
  *
  * @param url
  * @param updateStatus
-<<<<<<< Updated upstream
-=======
- * @param isLinkTypeChangable
->>>>>>> Stashed changes
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultTemplateLinkEnt(
     String url,
-<<<<<<< Updated upstream
     UpdateStatusEnum updateStatus) implements TemplateLinkEnt {
-=======
-    UpdateStatusEnum updateStatus,
-    Boolean isLinkTypeChangable) implements TemplateLinkEnt {
->>>>>>> Stashed changes
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -92,14 +83,6 @@ public record DefaultTemplateLinkEnt(
         return updateStatus;
     }
     
-<<<<<<< Updated upstream
-=======
-    @Override
-    public Boolean isLinkTypeChangable() {
-        return isLinkTypeChangable;
-    }
-    
->>>>>>> Stashed changes
     /**
      * A builder for {@link DefaultTemplateLinkEnt}.
      */
@@ -109,11 +92,6 @@ public record DefaultTemplateLinkEnt(
 
         private UpdateStatusEnum m_updateStatus;
 
-<<<<<<< Updated upstream
-=======
-        private Boolean m_isLinkTypeChangable;
-
->>>>>>> Stashed changes
         @Override
         public DefaultTemplateLinkEntBuilder setUrl(String url) {
              m_url = url;
@@ -127,24 +105,10 @@ public record DefaultTemplateLinkEnt(
         }
 
         @Override
-<<<<<<< Updated upstream
         public DefaultTemplateLinkEnt build() {
             return new DefaultTemplateLinkEnt(
                 immutable(m_url),
                 immutable(m_updateStatus));
-=======
-        public DefaultTemplateLinkEntBuilder setIsLinkTypeChangable(Boolean isLinkTypeChangable) {
-             m_isLinkTypeChangable = isLinkTypeChangable;
-             return this;
-        }
-
-        @Override
-        public DefaultTemplateLinkEnt build() {
-            return new DefaultTemplateLinkEnt(
-                immutable(m_url),
-                immutable(m_updateStatus),
-                immutable(m_isLinkTypeChangable));
->>>>>>> Stashed changes
         }
     
     }
