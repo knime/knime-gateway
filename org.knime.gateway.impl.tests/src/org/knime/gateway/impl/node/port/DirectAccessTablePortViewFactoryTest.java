@@ -243,7 +243,8 @@ public class DirectAccessTablePortViewFactoryTest {
                     "publishSelection" : false,
                     "subscribeToSelection" : false,
                     "skipRemainingColumns" : false,
-                    "showTableSize" : false
+                    "showTableSize" : false,
+                    "showOnlySelectedRows" : false
                   },
                   "columnDomainValues" : { }
                 }

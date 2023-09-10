@@ -163,8 +163,9 @@ public class TablePortViewFactoryTest {
         var port = TestingUtilities.createNodeOutPort(bdt);
         PortContext.pushContext(port.get());
         try {
-            var jsonRpcResponse = new TablePortViewFactory().createPortView(bdt).createRpcDataService().get()
-                .handleRpcRequest(jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false"));
+            var jsonRpcResponse =
+                new TablePortViewFactory().createPortView(bdt).createRpcDataService().get().handleRpcRequest(
+                    jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false", "false"));
             assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
         } finally {
             PortContext.removeLastContext();
