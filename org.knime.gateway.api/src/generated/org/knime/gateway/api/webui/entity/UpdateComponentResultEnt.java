@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,89 +56,58 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Alters the z-order of a list of workflow annotations.
+ * UpdateComponentResultEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ReorderWorkflowAnnotationsCommandEnt extends GatewayEntity, WorkflowCommandEnt {
-
-  /**
-   * The specific reorder action to perform, can be one of four: &#39;bring_forward&#39; brings the selected annotation forward by one relative-to-other-annotations position; &#39;bring_to_front&#39; moves the selected annotation in front of all other annotations; &#39;send_backward&#39; sends the selected annotation backward by one relative-to-other-annotations position; &#39;send_to_back&#39; sends the selected annotation back of all other annotations.
-   */
-  public enum ActionEnum {
-    BRING_FORWARD("bring_forward"),
-    
-    BRING_TO_FRONT("bring_to_front"),
-    
-    SEND_BACKWARD("send_backward"),
-    
-    SEND_TO_BACK("send_to_back");
-
-    private String value;
-
-    ActionEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface UpdateComponentResultEnt extends GatewayEntity, CommandResultEnt {
 
 
   /**
-   * The IDs of the annotations to reorder
-   * @return annotationIds , never <code>null</code>
+   * The id of the updated component.
+   * @return updatedNodeId , never <code>null</code>
    **/
-  public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds();
-
-  /**
-   * The specific reorder action to perform, can be one of four: &#39;bring_forward&#39; brings the selected annotation forward by one relative-to-other-annotations position; &#39;bring_to_front&#39; moves the selected annotation in front of all other annotations; &#39;send_backward&#39; sends the selected annotation backward by one relative-to-other-annotations position; &#39;send_to_back&#39; sends the selected annotation back of all other annotations.
-   * @return action , never <code>null</code>
-   **/
-  public ActionEnum getAction();
+  public org.knime.gateway.api.entity.NodeIDEnt getUpdatedNodeId();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ReorderWorkflowAnnotationsCommandEnt)other;
+      var e = (UpdateComponentResultEnt)other;
+      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("annotationIds", Pair.create(getAnnotationIds(), e.getAnnotationIds()));
-      valueConsumer.accept("action", Pair.create(getAction(), e.getAction()));
+      valueConsumer.accept("updatedNodeId", Pair.create(getUpdatedNodeId(), e.getUpdatedNodeId()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ReorderWorkflowAnnotationsCommandEntBuilder extends GatewayEntityBuilder<ReorderWorkflowAnnotationsCommandEnt> {
+    public interface UpdateComponentResultEntBuilder extends GatewayEntityBuilder<UpdateComponentResultEnt> {
 
         /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param snapshotId the property value,  
          * @return this entity builder for chaining
          */
-        ReorderWorkflowAnnotationsCommandEntBuilder setKind(KindEnum kind);
+        UpdateComponentResultEntBuilder setSnapshotId(String snapshotId);
         
         /**
-         * The IDs of the annotations to reorder
+   		 * Set kind
          * 
-         * @param annotationIds the property value, NOT <code>null</code>! 
+         * @param kind the property value,  
          * @return this entity builder for chaining
          */
-        ReorderWorkflowAnnotationsCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds);
+        UpdateComponentResultEntBuilder setKind(KindEnum kind);
         
         /**
-         * The specific reorder action to perform, can be one of four: &#39;bring_forward&#39; brings the selected annotation forward by one relative-to-other-annotations position; &#39;bring_to_front&#39; moves the selected annotation in front of all other annotations; &#39;send_backward&#39; sends the selected annotation backward by one relative-to-other-annotations position; &#39;send_to_back&#39; sends the selected annotation back of all other annotations.
+         * The id of the updated component.
          * 
-         * @param action the property value, NOT <code>null</code>! 
+         * @param updatedNodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ReorderWorkflowAnnotationsCommandEntBuilder setAction(ActionEnum action);
+        UpdateComponentResultEntBuilder setUpdatedNodeId(org.knime.gateway.api.entity.NodeIDEnt updatedNodeId);
         
         
         /**
@@ -148,7 +117,7 @@ public interface ReorderWorkflowAnnotationsCommandEnt extends GatewayEntity, Wor
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ReorderWorkflowAnnotationsCommandEnt build();
+        UpdateComponentResultEnt build();
     
     }
 

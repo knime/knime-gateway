@@ -66,7 +66,7 @@ public interface WorkflowGroupContentEnt extends GatewayEntity {
 
 
   /**
-   * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
+   * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry in the list being the id of the direct parent of these space items. Empty list if at root-level.
    * @return path , never <code>null</code>
    **/
   public java.util.List<SpacePathSegmentEnt> getPath();
@@ -92,7 +92,7 @@ public interface WorkflowGroupContentEnt extends GatewayEntity {
     public interface WorkflowGroupContentEntBuilder extends GatewayEntityBuilder<WorkflowGroupContentEnt> {
 
         /**
-         * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry  in the list being the id of the direct parent of these space items. Empty list if at root-level.
+         * The path (id and name per path-segment) of all workflow groups along the path-hierarchy with the last entry in the list being the id of the direct parent of these space items. Empty list if at root-level.
          * 
          * @param path the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

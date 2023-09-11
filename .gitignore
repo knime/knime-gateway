@@ -5,4 +5,6 @@
 **/.flattened-pom.xml
 **/target
 **/CHANGELOG.md
+**/.polyglot.build.properties
+**/.polyglot.feature.xml
 **/.polyglot.META-INF

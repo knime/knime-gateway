@@ -65,7 +65,6 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
  */
 public final class DefaultServicesUtil {
 

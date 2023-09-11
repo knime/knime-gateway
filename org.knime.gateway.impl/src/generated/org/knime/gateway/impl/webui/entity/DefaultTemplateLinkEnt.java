@@ -54,13 +54,15 @@ import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
  *
  * @param url
  * @param updateStatus
+ * @param isLinkTypeChangable
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultTemplateLinkEnt(
     String url,
-    UpdateStatusEnum updateStatus) implements TemplateLinkEnt {
+    UpdateStatusEnum updateStatus,
+    Boolean isLinkTypeChangable) implements TemplateLinkEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -83,6 +85,11 @@ public record DefaultTemplateLinkEnt(
         return updateStatus;
     }
     
+    @Override
+    public Boolean isLinkTypeChangable() {
+        return isLinkTypeChangable;
+    }
+    
     /**
      * A builder for {@link DefaultTemplateLinkEnt}.
      */
@@ -91,6 +98,8 @@ public record DefaultTemplateLinkEnt(
         private String m_url;
 
         private UpdateStatusEnum m_updateStatus;
+
+        private Boolean m_isLinkTypeChangable;
 
         @Override
         public DefaultTemplateLinkEntBuilder setUrl(String url) {
@@ -105,10 +114,17 @@ public record DefaultTemplateLinkEnt(
         }
 
         @Override
+        public DefaultTemplateLinkEntBuilder setIsLinkTypeChangable(Boolean isLinkTypeChangable) {
+             m_isLinkTypeChangable = isLinkTypeChangable;
+             return this;
+        }
+
+        @Override
         public DefaultTemplateLinkEnt build() {
             return new DefaultTemplateLinkEnt(
                 immutable(m_url),
-                immutable(m_updateStatus));
+                immutable(m_updateStatus),
+                immutable(m_isLinkTypeChangable));
         }
     
     }

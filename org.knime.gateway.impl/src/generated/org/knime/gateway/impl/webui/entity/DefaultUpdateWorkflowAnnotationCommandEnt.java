@@ -51,7 +51,7 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 
 /**
- * Updates the text and/or the border color of a workflow annotation. Either one can be &#39;null&#39;,  but never both of them.
+ * Updates the text and/or the border color of a workflow annotation. Either one can be &#39;null&#39;, but never both of them.
  *
  * @param kind
  * @param annotationId

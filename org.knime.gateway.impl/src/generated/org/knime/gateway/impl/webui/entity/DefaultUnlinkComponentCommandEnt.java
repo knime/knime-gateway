@@ -42,72 +42,88 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
 
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder;
+import org.knime.gateway.api.webui.entity.UnlinkComponentCommandEnt;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * Unlink a component from its template.
+ *
+ * @param kind
+ * @param nodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-
-@JsonDeserialize(builder=DefaultTemplateLinkEntBuilder.class)
-@JsonSerialize(as=TemplateLinkEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("url")
-    public String getUrl();
-    
-    @Override
-    @JsonProperty("updateStatus")
-    public UpdateStatusEnum getUpdateStatus();
-    
-    @Override
-    @JsonProperty("isLinkTypeChangable")
-    public Boolean isLinkTypeChangable();
-    
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultUnlinkComponentCommandEnt(
+    KindEnum kind,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements UnlinkComponentCommandEnt {
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * Validation for required parameters not being {@code null}.
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TemplateLinkEntMixInBuilder extends TemplateLinkEntBuilder {
-    
-        @Override
-        public TemplateLinkEntMixIn build();
-    
-        @Override
-        @JsonProperty("url")
-        public TemplateLinkEntMixInBuilder setUrl(final String url);
-        
-        @Override
-        @JsonProperty("updateStatus")
-        public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
-        
-        @Override
-        @JsonProperty("isLinkTypeChangable")
-        public TemplateLinkEntMixInBuilder setIsLinkTypeChangable(final Boolean isLinkTypeChangable);
-        
+    public DefaultUnlinkComponentCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
+        }
     }
 
+    @Override
+    public String getTypeID() {
+        return "UnlinkComponentCommand";
+    }
+  
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
+    
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
+    
+    /**
+     * A builder for {@link DefaultUnlinkComponentCommandEnt}.
+     */
+    public static class DefaultUnlinkComponentCommandEntBuilder implements UnlinkComponentCommandEntBuilder {
+
+        private KindEnum m_kind;
+
+        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
+
+        @Override
+        public DefaultUnlinkComponentCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
+             }
+             m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultUnlinkComponentCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
+             if(nodeId == null) {
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
+             }
+             m_nodeId = nodeId;
+             return this;
+        }
+
+        @Override
+        public DefaultUnlinkComponentCommandEnt build() {
+            return new DefaultUnlinkComponentCommandEnt(
+                immutable(m_kind),
+                immutable(m_nodeId));
+        }
+    
+    }
 
 }
-

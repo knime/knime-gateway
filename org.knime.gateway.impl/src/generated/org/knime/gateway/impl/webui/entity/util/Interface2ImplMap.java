@@ -208,6 +208,8 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeComma
 import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SetComponentLinkInformationCommandEnt.SetComponentLinkInformationCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSetComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
@@ -228,6 +230,8 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEn
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.TypedTextEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTypedTextEnt;
+import org.knime.gateway.api.webui.entity.UnlinkComponentCommandEnt.UnlinkComponentCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUnlinkComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt.UpdateAvailableEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt.UpdateAvailableEventTypeEntBuilder;
@@ -532,6 +536,9 @@ public class Interface2ImplMap {
         if(clazz == SelectionEventTypeEntBuilder.class) {
             return (B)new DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder();
         }        
+        if(clazz == SetComponentLinkInformationCommandEntBuilder.class) {
+            return (B)new DefaultSetComponentLinkInformationCommandEnt.DefaultSetComponentLinkInformationCommandEntBuilder();
+        }        
         if(clazz == SpaceEntBuilder.class) {
             return (B)new DefaultSpaceEnt.DefaultSpaceEntBuilder();
         }        
@@ -561,6 +568,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == TypedTextEntBuilder.class) {
             return (B)new DefaultTypedTextEnt.DefaultTypedTextEntBuilder();
+        }        
+        if(clazz == UnlinkComponentCommandEntBuilder.class) {
+            return (B)new DefaultUnlinkComponentCommandEnt.DefaultUnlinkComponentCommandEntBuilder();
         }        
         if(clazz == UpdateAvailableEventEntBuilder.class) {
             return (B)new DefaultUpdateAvailableEventEnt.DefaultUpdateAvailableEventEntBuilder();

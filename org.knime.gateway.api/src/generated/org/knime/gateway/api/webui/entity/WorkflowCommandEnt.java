@@ -106,7 +106,11 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     UPDATE_PROJECT_METADATA("update_project_metadata"),
     
-    ADD_BENDPOINT("add_bendpoint");
+    ADD_BENDPOINT("add_bendpoint"),
+    
+    UNLINK_COMPONENT("unlink_component"),
+    
+    SET_COMPONENT_LINK_INFORMATION("set_component_link_information");
 
     private String value;
 

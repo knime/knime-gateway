@@ -104,13 +104,14 @@ public final class DefaultWorkflowService implements WorkflowService {
         var wfKey = new WorkflowKey(projectId, workflowId);
         LOGGER.debug("'getWorkflow()' was called for: " + wfKey); // Quickly get project ID and workflow ID while debugging
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
-                () -> WorkflowBuildContext.builder().includeInteractionInfo(true)
-                    .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))
-                    .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey)));
+            var buildContext = WorkflowBuildContext.builder()//
+                .includeInteractionInfo(true)//
+                .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
+                .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey));
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
-            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
-                () -> WorkflowBuildContext.builder().includeInteractionInfo(false));
+            var buildConext = WorkflowBuildContext.builder().includeInteractionInfo(false);
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildConext);
         }
     }
 

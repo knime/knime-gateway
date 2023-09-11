@@ -97,7 +97,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
   public java.util.Map<String, PortGroupEnt> getPortGroups();
 
   /**
-   * Indicates whether the node has a view.  Not present, if the node has no view.
+   * Indicates whether the node has a view. Not present, if the node has no view.
    * @return hasView 
    **/
   public Boolean hasView();
@@ -240,7 +240,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
         NativeNodeEntBuilder setPortGroups(java.util.Map<String, PortGroupEnt> portGroups);
         
         /**
-         * Indicates whether the node has a view.  Not present, if the node has no view.
+         * Indicates whether the node has a view. Not present, if the node has no view.
          * 
          * @param hasView the property value,  
          * @return this entity builder for chaining

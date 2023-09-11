@@ -126,6 +126,7 @@ import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationsCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReplaceNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventTypeEntMixIn;
+import org.knime.gateway.json.webui.entity.SetComponentLinkInformationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemReferenceEntMixIn;
@@ -136,6 +137,7 @@ import org.knime.gateway.json.webui.entity.TemplateLinkEntMixIn;
 import org.knime.gateway.json.webui.entity.TransformWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.TranslateCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.TypedTextEntMixIn;
+import org.knime.gateway.json.webui.entity.UnlinkComponentCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateAvailableEventEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateAvailableEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
@@ -259,6 +261,7 @@ public class ListEntities {
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.class);
         res.add(ReplaceNodeCommandEntMixIn.class);
         res.add(SelectionEventTypeEntMixIn.class);
+        res.add(SetComponentLinkInformationCommandEntMixIn.class);
         res.add(SpaceEntMixIn.class);
         res.add(SpaceItemEntMixIn.class);
         res.add(SpaceItemReferenceEntMixIn.class);
@@ -269,6 +272,7 @@ public class ListEntities {
         res.add(TransformWorkflowAnnotationCommandEntMixIn.class);
         res.add(TranslateCommandEntMixIn.class);
         res.add(TypedTextEntMixIn.class);
+        res.add(UnlinkComponentCommandEntMixIn.class);
         res.add(UpdateAvailableEventEntMixIn.class);
         res.add(UpdateAvailableEventTypeEntMixIn.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
@@ -378,6 +382,7 @@ public class ListEntities {
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.ReorderWorkflowAnnotationsCommandEntMixInBuilder.class);
         res.add(ReplaceNodeCommandEntMixIn.ReplaceNodeCommandEntMixInBuilder.class);
         res.add(SelectionEventTypeEntMixIn.SelectionEventTypeEntMixInBuilder.class);
+        res.add(SetComponentLinkInformationCommandEntMixIn.SetComponentLinkInformationCommandEntMixInBuilder.class);
         res.add(SpaceEntMixIn.SpaceEntMixInBuilder.class);
         res.add(SpaceItemEntMixIn.SpaceItemEntMixInBuilder.class);
         res.add(SpaceItemReferenceEntMixIn.SpaceItemReferenceEntMixInBuilder.class);
@@ -388,6 +393,7 @@ public class ListEntities {
         res.add(TransformWorkflowAnnotationCommandEntMixIn.TransformWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(TranslateCommandEntMixIn.TranslateCommandEntMixInBuilder.class);
         res.add(TypedTextEntMixIn.TypedTextEntMixInBuilder.class);
+        res.add(UnlinkComponentCommandEntMixIn.UnlinkComponentCommandEntMixInBuilder.class);
         res.add(UpdateAvailableEventEntMixIn.UpdateAvailableEventEntMixInBuilder.class);
         res.add(UpdateAvailableEventTypeEntMixIn.UpdateAvailableEventTypeEntMixInBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);

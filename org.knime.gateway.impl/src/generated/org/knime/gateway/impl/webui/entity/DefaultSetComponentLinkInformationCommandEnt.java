@@ -46,45 +46,40 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.CopyCommandEnt;
+import org.knime.gateway.api.webui.entity.SetComponentLinkInformationCommandEnt;
 
 /**
- * Copy selected workflow parts and serialize to workflow definition format. This command only returns the serialized workflow parts.
+ * Unlink a component from its template.
  *
  * @param kind
- * @param nodeIds
- * @param annotationIds
- * @param connectionBendpoints
+ * @param nodeId
+ * @param newUrl
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultCopyCommandEnt(
+public record DefaultSetComponentLinkInformationCommandEnt(
     KindEnum kind,
-    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
-    java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds,
-    java.util.Map<String, java.util.List<Integer>> connectionBendpoints) implements CopyCommandEnt {
+    org.knime.gateway.api.entity.NodeIDEnt nodeId,
+    String newUrl) implements SetComponentLinkInformationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultCopyCommandEnt {
+    public DefaultSetComponentLinkInformationCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if(nodeIds == null) {
-            throw new IllegalArgumentException("<nodeIds> must not be null.");
-        }
-        if(annotationIds == null) {
-            throw new IllegalArgumentException("<annotationIds> must not be null.");
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "CopyCommand";
+        return "SetComponentLinkInformationCommand";
     }
   
     @Override
@@ -93,35 +88,28 @@ public record DefaultCopyCommandEnt(
     }
     
     @Override
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds() {
-        return nodeIds;
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
     }
     
     @Override
-    public java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> getAnnotationIds() {
-        return annotationIds;
-    }
-    
-    @Override
-    public java.util.Map<String, java.util.List<Integer>> getConnectionBendpoints() {
-        return connectionBendpoints;
+    public String getNewUrl() {
+        return newUrl;
     }
     
     /**
-     * A builder for {@link DefaultCopyCommandEnt}.
+     * A builder for {@link DefaultSetComponentLinkInformationCommandEnt}.
      */
-    public static class DefaultCopyCommandEntBuilder implements CopyCommandEntBuilder {
+    public static class DefaultSetComponentLinkInformationCommandEntBuilder implements SetComponentLinkInformationCommandEntBuilder {
 
         private KindEnum m_kind;
 
-        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
+        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
-        private java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> m_annotationIds = new java.util.ArrayList<>();
-
-        private java.util.Map<String, java.util.List<Integer>> m_connectionBendpoints;
+        private String m_newUrl;
 
         @Override
-        public DefaultCopyCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultSetComponentLinkInformationCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
@@ -130,36 +118,26 @@ public record DefaultCopyCommandEnt(
         }
 
         @Override
-        public DefaultCopyCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds) {
-             if(nodeIds == null) {
-                 throw new IllegalArgumentException("<nodeIds> must not be null.");
+        public DefaultSetComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
+             if(nodeId == null) {
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
-             m_nodeIds = nodeIds;
+             m_nodeId = nodeId;
              return this;
         }
 
         @Override
-        public DefaultCopyCommandEntBuilder setAnnotationIds(java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds) {
-             if(annotationIds == null) {
-                 throw new IllegalArgumentException("<annotationIds> must not be null.");
-             }
-             m_annotationIds = annotationIds;
+        public DefaultSetComponentLinkInformationCommandEntBuilder setNewUrl(String newUrl) {
+             m_newUrl = newUrl;
              return this;
         }
 
         @Override
-        public DefaultCopyCommandEntBuilder setConnectionBendpoints(java.util.Map<String, java.util.List<Integer>> connectionBendpoints) {
-             m_connectionBendpoints = connectionBendpoints;
-             return this;
-        }
-
-        @Override
-        public DefaultCopyCommandEnt build() {
-            return new DefaultCopyCommandEnt(
+        public DefaultSetComponentLinkInformationCommandEnt build() {
+            return new DefaultSetComponentLinkInformationCommandEnt(
                 immutable(m_kind),
-                immutable(m_nodeIds),
-                immutable(m_annotationIds),
-                immutable(m_connectionBendpoints));
+                immutable(m_nodeId),
+                immutable(m_newUrl));
         }
     
     }

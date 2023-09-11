@@ -64,13 +64,13 @@ public interface PortGroupEnt extends GatewayEntity {
 
 
   /**
-   * Which input ports (identified by index position) belong to the port group. Either this or the  &#39;outputRange&#39; is required for a port group.
+   * Which input ports (identified by index position) belong to the port group. Either this or the &#39;outputRange&#39; is required for a port group.
    * @return inputRange 
    **/
   public java.util.List<Integer> getInputRange();
 
   /**
-   * Which output ports (identified by index position) belong to the port group. Either this or the  &#39;inputRange&#39; is required for a port group.
+   * Which output ports (identified by index position) belong to the port group. Either this or the &#39;inputRange&#39; is required for a port group.
    * @return outputRange 
    **/
   public java.util.List<Integer> getOutputRange();
@@ -111,7 +111,7 @@ public interface PortGroupEnt extends GatewayEntity {
     public interface PortGroupEntBuilder extends GatewayEntityBuilder<PortGroupEnt> {
 
         /**
-         * Which input ports (identified by index position) belong to the port group. Either this or the  &#39;outputRange&#39; is required for a port group.
+         * Which input ports (identified by index position) belong to the port group. Either this or the &#39;outputRange&#39; is required for a port group.
          * 
          * @param inputRange the property value,  
          * @return this entity builder for chaining
@@ -119,7 +119,7 @@ public interface PortGroupEnt extends GatewayEntity {
         PortGroupEntBuilder setInputRange(java.util.List<Integer> inputRange);
         
         /**
-         * Which output ports (identified by index position) belong to the port group. Either this or the  &#39;inputRange&#39; is required for a port group.
+         * Which output ports (identified by index position) belong to the port group. Either this or the &#39;inputRange&#39; is required for a port group.
          * 
          * @param outputRange the property value,  
          * @return this entity builder for chaining

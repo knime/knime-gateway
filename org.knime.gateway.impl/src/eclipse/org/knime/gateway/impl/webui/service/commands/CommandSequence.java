@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-abstract class CommandSequence extends HigherOrderCommand {
+public abstract class CommandSequence extends HigherOrderCommand {
 
     /** Not private so {@link Cut} command can access it */
     protected final List<WorkflowCommand> m_commands;

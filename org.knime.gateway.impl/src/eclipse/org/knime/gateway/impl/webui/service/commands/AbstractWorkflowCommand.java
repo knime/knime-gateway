@@ -61,7 +61,7 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-abstract class AbstractWorkflowCommand implements WorkflowCommand {
+public abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
     private WorkflowKey m_wfKey;
 

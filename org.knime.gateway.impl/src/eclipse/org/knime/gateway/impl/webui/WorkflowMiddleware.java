@@ -58,6 +58,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -93,6 +94,8 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
  * @author Kai Franze, KNIME GmbH
  */
 public final class WorkflowMiddleware {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowMiddleware.class);
 
     /**
      * Determines the number of commands per workflow kept in the undo and redo stacks.
@@ -132,7 +135,7 @@ public final class WorkflowMiddleware {
     /**
      * Notify this class that a workflow has been disposed.
      *
-     * @param wfKey the keys to klear the workflow state for
+     * @param wfKey the keys to clear the workflow state for
      */
     public void clearWorkflowState(final WorkflowKey wfKey) {
         clearWorkflowState(k -> k.equals(wfKey));
@@ -151,8 +154,7 @@ public final class WorkflowMiddleware {
     public WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowKey wfKey,
         final Supplier<WorkflowBuildContextBuilder> buildContextSupplier) {
         var workflowState = getWorkflowState(wfKey);
-        var workflowEntity =
-            EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
+        var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
 
         // try to commit the workflow entity and return the (existing or new) snapshot
         return buildWorkflowSnapshotEnt(workflowEntity, m_entityRepo.commit(wfKey, workflowEntity));
@@ -235,13 +237,13 @@ public final class WorkflowMiddleware {
         final boolean includeInteractionInfo, final WorkflowChangesTracker changes) {
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
-        WorkflowState ws = getWorkflowState(wfKey);
+        final var ws = getWorkflowState(wfKey);
         if (includeInteractionInfo) {
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
                 .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
-        WorkflowEnt wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
+        final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {
             // no change
             return null;
@@ -269,7 +271,22 @@ public final class WorkflowMiddleware {
     }
 
     private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
-        return m_workflowStateCache.computeIfAbsent(wfKey, WorkflowState::new);
+        return m_workflowStateCache.computeIfAbsent(wfKey, this::computeAndEventuallyClearWorkflowState);
+    }
+
+    /**
+     * TODO: NXT-1039
+     *
+     * When a metanode/component is beeing removed or a linked metanode/component is being updated, their corresponding
+     * cache entry in `m_workflowStateCache` needs to be removed. See
+     * {@link WorkflowMiddleware#clearWorkflowState(Predicate)}.
+     */
+    private WorkflowState computeAndEventuallyClearWorkflowState(final WorkflowKey wfKey) {
+        if (m_workflowStateCache.containsKey(wfKey)) {
+            final var workflowState = m_workflowStateCache.get(wfKey);
+            LOGGER.info(String.format("Current workflow state <%s>", workflowState));
+        }
+        return new WorkflowState(wfKey);
     }
 
     private static class SnapshotIdGenerator implements Supplier<String> {
@@ -303,7 +320,7 @@ public final class WorkflowMiddleware {
 
         DependentNodeProperties getDependentNodeProperties() {
             if (m_depNodeProperties == null) {
-                m_depNodeProperties = new CachedDependentNodeProperties(m_wfm, m_changesListener);
+                m_depNodeProperties = new CachedDependentNodeProperties(m_wfm, changesListener());
             }
             return m_depNodeProperties.get();
         }

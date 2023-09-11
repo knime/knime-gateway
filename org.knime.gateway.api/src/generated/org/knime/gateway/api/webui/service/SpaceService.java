@@ -64,7 +64,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      * @param itemName Name given to a space item.
      *
      * @return the result
@@ -78,7 +78,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
@@ -114,7 +114,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
@@ -126,7 +126,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
@@ -138,7 +138,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
@@ -166,7 +166,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceProviderId Identifies a space-provider.
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      * @param itemName Name given to a space item.
      *
      * @return the result

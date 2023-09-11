@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Copy selected workflow parts and serialize to workflow definition format.  This command only returns the serialized workflow parts.
+ * Copy selected workflow parts and serialize to workflow definition format. This command only returns the serialized workflow parts.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

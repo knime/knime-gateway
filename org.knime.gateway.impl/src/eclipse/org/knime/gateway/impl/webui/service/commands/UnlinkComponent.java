@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,74 +41,51 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
- */
-package org.knime.gateway.json.webui.entity;
-
-
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder;
-
-/**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * ---------------------------------------------------------------------
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * History
+ *   Aug 14, 2023 (leonard.woerteler): created
  */
+package org.knime.gateway.impl.webui.service.commands;
 
-@JsonDeserialize(builder=DefaultTemplateLinkEntBuilder.class)
-@JsonSerialize(as=TemplateLinkEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
+import org.knime.core.node.util.CheckUtils;
+import org.knime.core.node.workflow.MetaNodeTemplateInformation;
+import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.UnlinkComponentCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+public final class UnlinkComponent extends AbstractWorkflowCommand {
 
-    @Override
-    @JsonProperty("url")
-    public String getUrl();
-    
-    @Override
-    @JsonProperty("updateStatus")
-    public UpdateStatusEnum getUpdateStatus();
-    
-    @Override
-    @JsonProperty("isLinkTypeChangable")
-    public Boolean isLinkTypeChangable();
-    
+    private final NodeIDEnt m_componentId;
+    private MetaNodeTemplateInformation m_templateInfo;
 
-    /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
-     */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TemplateLinkEntMixInBuilder extends TemplateLinkEntBuilder {
-    
-        @Override
-        public TemplateLinkEntMixIn build();
-    
-        @Override
-        @JsonProperty("url")
-        public TemplateLinkEntMixInBuilder setUrl(final String url);
-        
-        @Override
-        @JsonProperty("updateStatus")
-        public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
-        
-        @Override
-        @JsonProperty("isLinkTypeChangable")
-        public TemplateLinkEntMixInBuilder setIsLinkTypeChangable(final Boolean isLinkTypeChangable);
-        
+    public UnlinkComponent(final UnlinkComponentCommandEnt ce) {
+        m_componentId = ce.getNodeId();
     }
 
+    @Override
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        final var wfm = getWorkflowManager();
+        if (wfm.isWriteProtected()) {
+            throw new OperationNotAllowedException("Container is read-only.");
+        }
 
+        final var componentId = m_componentId.toNodeID(wfm.getProjectWFM().getID());
+        final var component = wfm.getNodeContainer(componentId, SubNodeContainer.class, false);
+        if (component == null || component.getTemplateInformation().getRole() != Role.Link) {
+            throw new OperationNotAllowedException("Not a linked component: " + m_componentId);
+        }
+
+        m_templateInfo = wfm.setTemplateInformation(componentId, MetaNodeTemplateInformation.NONE);
+        return m_templateInfo != MetaNodeTemplateInformation.NONE;
+    }
+
+    @Override
+    public void undo() {
+        final var wfm = getWorkflowManager();
+        final var componentId = m_componentId.toNodeID(wfm.getProjectWFM().getID());
+        wfm.setTemplateInformation(componentId, CheckUtils.checkNotNull(m_templateInfo));
+    }
 }
-

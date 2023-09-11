@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateComponentResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentResultEnt.DefaultUpdateComponentResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,26 +61,26 @@ import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplat
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultTemplateLinkEntBuilder.class)
-@JsonSerialize(as=TemplateLinkEnt.class)
+@JsonDeserialize(builder=DefaultUpdateComponentResultEntBuilder.class)
+@JsonSerialize(as=UpdateComponentResultEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
+public interface UpdateComponentResultEntMixIn extends UpdateComponentResultEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("url")
-    public String getUrl();
+    @JsonProperty("snapshotId")
+    public String getSnapshotId();
     
     @Override
-    @JsonProperty("updateStatus")
-    public UpdateStatusEnum getUpdateStatus();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
     @Override
-    @JsonProperty("isLinkTypeChangable")
-    public Boolean isLinkTypeChangable();
+    @JsonProperty("updatedNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getUpdatedNodeId();
     
 
     /**
@@ -89,22 +90,22 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TemplateLinkEntMixInBuilder extends TemplateLinkEntBuilder {
+    public static interface UpdateComponentResultEntMixInBuilder extends UpdateComponentResultEntBuilder {
     
         @Override
-        public TemplateLinkEntMixIn build();
+        public UpdateComponentResultEntMixIn build();
     
         @Override
-        @JsonProperty("url")
-        public TemplateLinkEntMixInBuilder setUrl(final String url);
+        @JsonProperty("snapshotId")
+        public UpdateComponentResultEntMixInBuilder setSnapshotId(final String snapshotId);
         
         @Override
-        @JsonProperty("updateStatus")
-        public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
+        @JsonProperty("kind")
+        public UpdateComponentResultEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("isLinkTypeChangable")
-        public TemplateLinkEntMixInBuilder setIsLinkTypeChangable(final Boolean isLinkTypeChangable);
+        @JsonProperty("updatedNodeId")
+        public UpdateComponentResultEntMixInBuilder setUpdatedNodeId(final org.knime.gateway.api.entity.NodeIDEnt updatedNodeId);
         
     }
 
