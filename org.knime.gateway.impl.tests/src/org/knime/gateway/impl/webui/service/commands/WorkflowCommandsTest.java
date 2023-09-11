@@ -265,7 +265,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
 
         var deleteCommandEnt = builder(DeleteCommandEntBuilder.class).setNodeIds(List.of(new NodeIDEnt(2)))
             .setKind(KindEnum.DELETE).build();
-        var deleteCommand = new Delete(deleteCommandEnt, new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+        var deleteCommand = new Delete(deleteCommandEnt);
         deleteCommand.execute(wfKey);
         assertThat(wfm.getNodeContainers().size(), is(1));
         deleteCommand.undo();

@@ -58,6 +58,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowEvent;
+import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -127,15 +131,6 @@ public final class WorkflowMiddleware {
                 return false;
             }
         });
-    }
-
-    /**
-     * Notify this class that a workflow has been disposed.
-     *
-     * @param wfKey the keys to clear the workflow state for
-     */
-    public void clearWorkflowState(final WorkflowKey wfKey) {
-        clearWorkflowState(k -> k.equals(wfKey));
     }
 
     /**
@@ -268,7 +263,39 @@ public final class WorkflowMiddleware {
     }
 
     private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
-        return m_workflowStateCache.computeIfAbsent(wfKey, WorkflowState::new);
+        return m_workflowStateCache.computeIfAbsent(wfKey, this::createWorkflowStateAndEventuallyClearCache);
+    }
+
+    private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey) {
+        final var state = new WorkflowState(wfKey);
+        final var wfm = state.m_wfm;
+        if (!wfm.isProject()) {
+            var nc = getNodeContainerOf(wfm);
+            var parent = nc.getParent();
+            WorkflowListener listener = new WorkflowListener() {
+
+                @Override
+                public void workflowChanged(final WorkflowEvent e) {
+                    if (e.getType() == WorkflowEvent.Type.NODE_REMOVED && nc == e.getOldValue()) {
+                        clearWorkflowState(k -> wfKey.getProjectId().equals(k.getProjectId())
+                            && wfKey.getWorkflowId().isEqualOrParentOf(k.getWorkflowId()));
+                        parent.removeListener(this);
+                    }
+
+                }
+            };
+            parent.addListener(listener);
+        }
+        return state;
+    }
+
+    private static NodeContainer getNodeContainerOf(final WorkflowManager wfm) {
+        final var ncParent = (NodeContainer)wfm.getDirectNCParent();
+        if (ncParent instanceof SubNodeContainer) {
+            return ncParent;
+        } else {
+            return wfm;
+        }
     }
 
     private static class SnapshotIdGenerator implements Supplier<String> {

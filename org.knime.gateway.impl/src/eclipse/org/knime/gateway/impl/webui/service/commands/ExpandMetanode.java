@@ -51,7 +51,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Expand a metanode.
@@ -60,8 +59,8 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 class ExpandMetanode extends AbstractExpand {
 
-    ExpandMetanode(final ExpandCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
-        super(commandEnt, workflowMiddleware);
+    ExpandMetanode(final ExpandCommandEnt commandEnt) {
+        super(commandEnt);
     }
 
     @Override

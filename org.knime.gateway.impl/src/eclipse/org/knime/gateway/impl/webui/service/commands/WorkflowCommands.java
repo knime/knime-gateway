@@ -149,7 +149,7 @@ public final class WorkflowCommands {
      * @param <E> the type of workflow command
      * @param wfKey reference to the workflow to execute the command for
      * @param commandEnt the workflow command entity to execute
-     * @param workflowMiddleware additional dependency required to rexecute some commands
+     * @param workflowMiddleware additional dependency required to assemble the command result
      * @param nodeFactoryProvider additional dependency required to execute some commands
      * @param spaceProviders The space providers
      *
@@ -163,7 +163,7 @@ public final class WorkflowCommands {
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
         final SpaceProviders spaceProviders)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        var command = createWorkflowCommand(commandEnt, workflowMiddleware, nodeFactoryProvider, spaceProviders);
+        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
@@ -176,14 +176,14 @@ public final class WorkflowCommands {
 
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
-        final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProviders spaceProviders) throws OperationNotAllowedException {
+        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders)
+        throws OperationNotAllowedException {
         WorkflowCommand command;
         // TODO: Replace by 'instanceof switch expressions' once they become available
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
         } else if (commandEnt instanceof DeleteCommandEnt ce) {
-            command = new Delete(ce, workflowMiddleware);
+            command = new Delete(ce);
         } else if (commandEnt instanceof ConnectCommandEnt ce) {
             command = new Connect(ce);
         } else if (commandEnt instanceof AddNodeCommandEnt ce) {
@@ -197,9 +197,9 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof UpdateNodeLabelCommandEnt ce) {
            command = new UpdateNodeLabel(ce);
         } else if (commandEnt instanceof CollapseCommandEnt ce) {
-           command = new Collapse(ce, workflowMiddleware);
+           command = new Collapse(ce);
         } else if (commandEnt instanceof ExpandCommandEnt ce) {
-            command = new Expand(ce, workflowMiddleware);
+            command = new Expand(ce);
         } else if (commandEnt instanceof AddPortCommandEnt ce) {
           command = new AddPort(ce);
         } else if (commandEnt instanceof RemovePortCommandEnt ce) {
@@ -207,7 +207,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof CopyCommandEnt ce) {
             command = new Copy(ce);
         } else if (commandEnt instanceof CutCommandEnt ce) {
-            command = new Cut(ce, workflowMiddleware);
+            command = new Cut(ce);
         } else if (commandEnt instanceof PasteCommandEnt ce) {
             command = new Paste(ce);
         } else if (commandEnt instanceof TransformWorkflowAnnotationCommandEnt ce) {

@@ -59,8 +59,6 @@ import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
@@ -71,11 +69,8 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
 
     static final String DEFAULT_METANODE_NAME = "Metanode";
 
-    private final WorkflowMiddleware m_workflowMiddleware;
-
-    CollapseToMetanode(final CollapseCommandEnt commandEntity, final WorkflowMiddleware workflowMiddleware) {
+    CollapseToMetanode(final CollapseCommandEnt commandEntity) {
         super(commandEntity);
-        m_workflowMiddleware = workflowMiddleware;
     }
 
     @Override
@@ -84,13 +79,8 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
             throw new ServiceExceptions.OperationNotAllowedException("Can not undo metanode creation");
         }
 
-        var collapsedNodeId = m_metaNodeCollapseResult.getCollapsedMetanodeID();
         m_metaNodeCollapseResult.undo();
         m_metaNodeCollapseResult = null;
-
-        // TODO remove, see NXT-1039
-        m_workflowMiddleware.clearWorkflowState(
-            new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(collapsedNodeId)));
     }
 
     @Override

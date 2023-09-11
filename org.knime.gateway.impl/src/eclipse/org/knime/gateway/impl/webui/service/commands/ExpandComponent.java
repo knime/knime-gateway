@@ -51,7 +51,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Expand a component.
@@ -60,8 +59,8 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 class ExpandComponent extends AbstractExpand {
 
-    ExpandComponent(final ExpandCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
-        super(commandEnt, workflowMiddleware);
+    ExpandComponent(final ExpandCommandEnt commandEnt) {
+        super(commandEnt);
     }
 
     @Override

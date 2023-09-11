@@ -68,8 +68,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Base methods for expanding a component or a metanode.
@@ -84,11 +82,8 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
 
     private WorkflowPersistor m_expandedNodePersistor;
 
-    private final WorkflowMiddleware m_workflowMiddleware;
-
-    AbstractExpand(final ExpandCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+    AbstractExpand(final ExpandCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
-        m_workflowMiddleware = workflowMiddleware;
     }
 
     @Override
@@ -108,11 +103,6 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
         m_expandedNodePersistor = wfm.copy(true, copyContent);
 
         m_subNodeExpandResult = wfm.expandSubWorkflow(nodeToExpand);
-
-        // TODO remove, see NXT-1039
-        m_workflowMiddleware
-            .clearWorkflowState(new WorkflowKey(getWorkflowKey().getProjectId(), new NodeIDEnt(nodeToExpand)));
-
         return true;
     }
 

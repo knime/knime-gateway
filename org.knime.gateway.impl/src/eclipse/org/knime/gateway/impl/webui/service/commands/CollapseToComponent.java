@@ -55,7 +55,6 @@ import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Collapse the queried workflow parts into a component. This operation is a {@link CommandSequence} of collapsing to a
@@ -65,13 +64,12 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 class CollapseToComponent extends CommandSequence {
 
-    CollapseToComponent(final CollapseCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
-        super(getCommands(commandEnt, workflowMiddleware));
+    CollapseToComponent(final CollapseCommandEnt commandEnt) {
+        super(getCommands(commandEnt));
     }
 
-    private static List<WorkflowCommand> getCommands(final CollapseCommandEnt commandEnt,
-        final WorkflowMiddleware workflowMiddleware) {
-        var collapseCommand = new CollapseToMetanode(commandEnt, workflowMiddleware);
+    private static List<WorkflowCommand> getCommands(final CollapseCommandEnt commandEnt) {
+        var collapseCommand = new CollapseToMetanode(commandEnt);
         Supplier<NodeIDEnt> newNodeIdSupplier = () -> collapseCommand.buildEntity(null).getNewNodeId();
         var convertCommand = new ConvertMetanodeToComponent(newNodeIdSupplier);
         return List.of(collapseCommand, convertCommand);

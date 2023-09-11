@@ -75,8 +75,6 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Workflow command to delete nodes, connections or workflow annotations.
@@ -103,14 +101,11 @@ final class Delete extends AbstractWorkflowCommand {
 
     private Map<ConnectionID, ConnectionUIInformation> m_connectionsWithBendpointsRemoved;
 
-    private final WorkflowMiddleware m_workflowMiddleware;
-
-    Delete(final DeleteCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+    Delete(final DeleteCommandEnt commandEnt) {
         m_nodeIdsQueried = commandEnt.getNodeIds();
         m_annotationIdsQueried = commandEnt.getAnnotationIds();
         m_connectionIdsQueried = commandEnt.getConnectionIds();
         m_bendpointsIndicesQueried = commandEnt.getConnectionBendpoints();
-        m_workflowMiddleware = workflowMiddleware;
     }
 
     /**
@@ -198,7 +193,7 @@ final class Delete extends AbstractWorkflowCommand {
                     e -> e.getValue().stream().mapToInt(Integer::intValue).toArray()));
         m_connectionsWithBendpointsRemoved = bendpointsToDelete.keySet().stream()
             .collect(Collectors.toMap(id -> id, id -> wfm.getConnection(id).getUIInfo()));
-        remove(wfm, nodesToDelete, m_connectionsDeleted, annoIds, bendpointsToDelete, getWorkflowKey());
+        remove(wfm, nodesToDelete, m_connectionsDeleted, annoIds, bendpointsToDelete);
         return !nodesToDelete.isEmpty() || !m_connectionsDeleted.isEmpty() || (annoIds != null && annoIds.length != 0)
             || !bendpointsToDelete.isEmpty();
     }
@@ -212,14 +207,12 @@ final class Delete extends AbstractWorkflowCommand {
         }
     }
 
-    private void remove(final WorkflowManager wfm, final Set<NodeID> nodeIDs,
+    private static void remove(final WorkflowManager wfm, final Set<NodeID> nodeIDs,
         final Set<ConnectionContainer> connections, final WorkflowAnnotationID[] annotationIDs,
-        final Map<ConnectionID, int[]> bendpoints, final WorkflowKey wfKey) {
+        final Map<ConnectionID, int[]> bendpoints) {
         if (nodeIDs != null) {
             for (NodeID id : nodeIDs) {
                 wfm.removeNode(id);
-                // TODO remove, see NXT-1039
-                m_workflowMiddleware.clearWorkflowState(new WorkflowKey(wfKey.getProjectId(), new NodeIDEnt(id)));
             }
         }
         if (connections != null) {

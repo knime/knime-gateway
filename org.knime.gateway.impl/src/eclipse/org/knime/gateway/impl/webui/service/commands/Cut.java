@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Workflow command to cut selected workflow parts and return them in workflow definition format.
@@ -70,8 +69,8 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
  */
 class Cut extends CommandSequence {
 
-    Cut(final CutCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
-        super(getCommands(commandEnt, workflowMiddleware));
+    Cut(final CutCommandEnt commandEnt) {
+        super(getCommands(commandEnt));
     }
 
     /**
@@ -84,8 +83,7 @@ class Cut extends CommandSequence {
         return Optional.of((WithResult)m_commands.get(0));
     }
 
-    private static List<WorkflowCommand> getCommands(final CutCommandEnt commandEnt,
-        final WorkflowMiddleware workflowMiddleware) {
+    private static List<WorkflowCommand> getCommands(final CutCommandEnt commandEnt) {
         var copyCommandEnt = builder(CopyCommandEnt.CopyCommandEntBuilder.class)//
             .setKind(WorkflowCommandEnt.KindEnum.COPY)//
             .setNodeIds(commandEnt.getNodeIds())//
@@ -96,7 +94,7 @@ class Cut extends CommandSequence {
             .setNodeIds(commandEnt.getNodeIds())//
             .setAnnotationIds(commandEnt.getAnnotationIds())//
             .build();
-        return List.of(new Copy(copyCommandEnt), new Delete(deleteCommandEnt, workflowMiddleware));
+        return List.of(new Copy(copyCommandEnt), new Delete(deleteCommandEnt));
     }
 
 }
