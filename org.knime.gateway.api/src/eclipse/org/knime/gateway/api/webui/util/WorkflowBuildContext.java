@@ -52,13 +52,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainerTemplate;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -215,8 +213,6 @@ public final class WorkflowBuildContext {
         private boolean m_canRedo = false;
 
         private Supplier<DependentNodeProperties> m_depNodeProps;
-
-        private Predicate<NodeContainerTemplate> m_isLinkTypeChangable;
 
         private WorkflowBuildContextBuilder() {
             //
