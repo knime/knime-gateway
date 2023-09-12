@@ -144,6 +144,15 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
+    public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
+        final String jobId) throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        // TODO: NXT-2025, implement this.
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
         throws InvalidRequestException {
         try {
