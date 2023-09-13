@@ -2667,25 +2667,33 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var linkedComponent = new NodeIDEnt(1);
         var notLinkedComponent = new NodeIDEnt(10);
+        var oldLink = "knime://LOCAL/Component/";
+        var newLink = "newUrl";
 
         // Test happy path
-        var command1 = buildUpdateComponentLinkInformationCommand(linkedComponent, "newUrl");
+        var command1 = buildUpdateComponentLinkInformationCommand(linkedComponent, newLink);
         var nodeBefore = getNodeEntFromWorkflowSnapshotEnt(
             ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
-        assertComponentWithLink(nodeBefore, "knime://LOCAL/Component/");
+        assertComponentWithLink(nodeBefore, oldLink);
 
         ws().executeWorkflowCommand(projectId, getRootID(), command1);
         var nodeAfter = getNodeEntFromWorkflowSnapshotEnt(
             ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
-        assertComponentWithLink(nodeAfter, "newUrl");
+        assertComponentWithLink(nodeAfter, newLink);
+
+        // Test undo command
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var nodeUndone = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeUndone, oldLink);
 
         // Test not a component
-        var command2 = buildUpdateComponentLinkInformationCommand(new NodeIDEnt(99), "newUrl");
+        var command2 = buildUpdateComponentLinkInformationCommand(new NodeIDEnt(99), newLink);
         assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(projectId, getRootID(), command2));
 
         // Test not a linked component
-        var command3 = buildUpdateComponentLinkInformationCommand(notLinkedComponent, "newUrl");
+        var command3 = buildUpdateComponentLinkInformationCommand(notLinkedComponent, newLink);
         assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
 
