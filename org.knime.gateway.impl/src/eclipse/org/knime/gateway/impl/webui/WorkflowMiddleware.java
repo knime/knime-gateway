@@ -58,7 +58,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -94,8 +95,6 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
  * @author Kai Franze, KNIME GmbH
  */
 public final class WorkflowMiddleware {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowMiddleware.class);
 
     /**
      * Determines the number of commands per workflow kept in the undo and redo stacks.
@@ -271,22 +270,29 @@ public final class WorkflowMiddleware {
     }
 
     private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
-        return m_workflowStateCache.computeIfAbsent(wfKey, this::computeAndEventuallyClearWorkflowState);
+        return m_workflowStateCache.computeIfAbsent(wfKey, this::computeWorkflowStateAndEventuallyClearCache);
     }
 
-    /**
-     * TODO: NXT-1039
-     *
-     * When a metanode/component is beeing removed or a linked metanode/component is being updated, their corresponding
-     * cache entry in `m_workflowStateCache` needs to be removed. See
-     * {@link WorkflowMiddleware#clearWorkflowState(Predicate)}.
-     */
-    private WorkflowState computeAndEventuallyClearWorkflowState(final WorkflowKey wfKey) {
-        if (m_workflowStateCache.containsKey(wfKey)) {
-            final var workflowState = m_workflowStateCache.get(wfKey);
-            LOGGER.info(String.format("Current workflow state <%s>", workflowState));
+    private WorkflowState computeWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey) {
+        var state = new WorkflowState(wfKey);
+        var wfm = state.m_wfm;
+        if (!wfm.isProject()) {
+            getParentWfm(wfm).addListener(e -> {
+                if (e.getType() == WorkflowEvent.Type.NODE_REMOVED && e.getID().equals(wfm.getID())) {
+                    m_workflowStateCache.remove(wfKey);
+                }
+            });
         }
-        return new WorkflowState(wfKey);
+        return state;
+
+    }
+
+    private static WorkflowManager getParentWfm(final WorkflowManager wfm) {
+        var ncParent = wfm.getDirectNCParent();
+        if (ncParent instanceof SubNodeContainer snc) {
+            return snc.getParent();
+        }
+        return (WorkflowManager)ncParent;
     }
 
     private static class SnapshotIdGenerator implements Supplier<String> {

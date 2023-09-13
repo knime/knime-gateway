@@ -8,6 +8,7 @@
     <config key="model"/>
     <config key="nodeAnnotation">
         <entry key="text" type="xstring" value="reset%%00013%%00010to expand"/>
+        <entry key="contentType" type="xstring" value="text/plain"/>
         <entry key="bgcolor" type="xint" value="16777215"/>
         <entry key="x-coordinate" type="xint" value="547"/>
         <entry key="y-coordinate" type="xint" value="499"/>
@@ -36,9 +37,6 @@
     <config key="inports"/>
     <entry key="virtual-out-ID" type="xint" value="11"/>
     <config key="outports"/>
-    <config key="metadata">
-        <entry key="description" type="xstring" value=""/>
-    </config>
     <entry key="layoutJSON" type="xstring" value="{&quot;parentLayoutLegacyMode&quot;:false}"/>
     <entry key="configurationLayoutJSON" type="xstring" value="{}"/>
     <entry key="hideInWizard" type="xboolean" value="false"/>

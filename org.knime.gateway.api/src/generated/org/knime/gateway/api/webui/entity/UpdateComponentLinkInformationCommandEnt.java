@@ -56,22 +56,22 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Unlink a component from its template.
+ * Updates a components link information or unlinks a component
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SetComponentLinkInformationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
+public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * Id of component to be unlinked
+   * Id of component which link inforation is to be updated
    * @return nodeId , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
   /**
-   * New link URL, absent for unlinking
+   * New link URL, empty if you want to unlink the component
    * @return newUrl 
    **/
   public String getNewUrl();
@@ -80,7 +80,7 @@ public interface SetComponentLinkInformationCommandEnt extends GatewayEntity, Wo
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (SetComponentLinkInformationCommandEnt)other;
+      var e = (UpdateComponentLinkInformationCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
       valueConsumer.accept("newUrl", Pair.create(getNewUrl(), e.getNewUrl()));
@@ -89,7 +89,7 @@ public interface SetComponentLinkInformationCommandEnt extends GatewayEntity, Wo
     /**
      * The builder for the entity.
      */
-    public interface SetComponentLinkInformationCommandEntBuilder extends GatewayEntityBuilder<SetComponentLinkInformationCommandEnt> {
+    public interface UpdateComponentLinkInformationCommandEntBuilder extends GatewayEntityBuilder<UpdateComponentLinkInformationCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -97,23 +97,23 @@ public interface SetComponentLinkInformationCommandEnt extends GatewayEntity, Wo
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SetComponentLinkInformationCommandEntBuilder setKind(KindEnum kind);
+        UpdateComponentLinkInformationCommandEntBuilder setKind(KindEnum kind);
         
         /**
-         * Id of component to be unlinked
+         * Id of component which link inforation is to be updated
          * 
          * @param nodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SetComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        UpdateComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         /**
-         * New link URL, absent for unlinking
+         * New link URL, empty if you want to unlink the component
          * 
          * @param newUrl the property value,  
          * @return this entity builder for chaining
          */
-        SetComponentLinkInformationCommandEntBuilder setNewUrl(String newUrl);
+        UpdateComponentLinkInformationCommandEntBuilder setNewUrl(String newUrl);
         
         
         /**
@@ -123,7 +123,7 @@ public interface SetComponentLinkInformationCommandEnt extends GatewayEntity, Wo
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SetComponentLinkInformationCommandEnt build();
+        UpdateComponentLinkInformationCommandEnt build();
     
     }
 

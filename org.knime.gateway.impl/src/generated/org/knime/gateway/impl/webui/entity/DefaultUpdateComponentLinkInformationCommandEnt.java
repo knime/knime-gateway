@@ -48,10 +48,10 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.SetComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 
 /**
- * Unlink a component from its template.
+ * Updates a components link information or unlinks a component
  *
  * @param kind
  * @param nodeId
@@ -60,15 +60,15 @@ import org.knime.gateway.api.webui.entity.SetComponentLinkInformationCommandEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultSetComponentLinkInformationCommandEnt(
+public record DefaultUpdateComponentLinkInformationCommandEnt(
     KindEnum kind,
     org.knime.gateway.api.entity.NodeIDEnt nodeId,
-    String newUrl) implements SetComponentLinkInformationCommandEnt {
+    String newUrl) implements UpdateComponentLinkInformationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultSetComponentLinkInformationCommandEnt {
+    public DefaultUpdateComponentLinkInformationCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
@@ -79,7 +79,7 @@ public record DefaultSetComponentLinkInformationCommandEnt(
 
     @Override
     public String getTypeID() {
-        return "SetComponentLinkInformationCommand";
+        return "UpdateComponentLinkInformationCommand";
     }
   
     @Override
@@ -98,9 +98,9 @@ public record DefaultSetComponentLinkInformationCommandEnt(
     }
     
     /**
-     * A builder for {@link DefaultSetComponentLinkInformationCommandEnt}.
+     * A builder for {@link DefaultUpdateComponentLinkInformationCommandEnt}.
      */
-    public static class DefaultSetComponentLinkInformationCommandEntBuilder implements SetComponentLinkInformationCommandEntBuilder {
+    public static class DefaultUpdateComponentLinkInformationCommandEntBuilder implements UpdateComponentLinkInformationCommandEntBuilder {
 
         private KindEnum m_kind;
 
@@ -109,7 +109,7 @@ public record DefaultSetComponentLinkInformationCommandEnt(
         private String m_newUrl;
 
         @Override
-        public DefaultSetComponentLinkInformationCommandEntBuilder setKind(KindEnum kind) {
+        public DefaultUpdateComponentLinkInformationCommandEntBuilder setKind(KindEnum kind) {
              if(kind == null) {
                  throw new IllegalArgumentException("<kind> must not be null.");
              }
@@ -118,7 +118,7 @@ public record DefaultSetComponentLinkInformationCommandEnt(
         }
 
         @Override
-        public DefaultSetComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
+        public DefaultUpdateComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
                  throw new IllegalArgumentException("<nodeId> must not be null.");
              }
@@ -127,14 +127,14 @@ public record DefaultSetComponentLinkInformationCommandEnt(
         }
 
         @Override
-        public DefaultSetComponentLinkInformationCommandEntBuilder setNewUrl(String newUrl) {
+        public DefaultUpdateComponentLinkInformationCommandEntBuilder setNewUrl(String newUrl) {
              m_newUrl = newUrl;
              return this;
         }
 
         @Override
-        public DefaultSetComponentLinkInformationCommandEnt build() {
-            return new DefaultSetComponentLinkInformationCommandEnt(
+        public DefaultUpdateComponentLinkInformationCommandEnt build() {
+            return new DefaultUpdateComponentLinkInformationCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeId),
                 immutable(m_newUrl));

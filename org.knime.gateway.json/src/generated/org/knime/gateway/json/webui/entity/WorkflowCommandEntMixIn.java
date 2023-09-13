@@ -59,7 +59,6 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWork
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUnlinkComponentCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
@@ -74,8 +73,8 @@ import org.knime.gateway.impl.webui.entity.DefaultAddWorkflowAnnotationCommandEn
 import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSetComponentLinkInformationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
@@ -140,9 +139,7 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 ,
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,
-  @Type(value = DefaultUnlinkComponentCommandEnt.class, name = "unlink_component")
-,
-  @Type(value = DefaultSetComponentLinkInformationCommandEnt.class, name = "set_component_link_information")
+  @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -214,9 +211,7 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
 ,
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,
-  @Type(value = DefaultUnlinkComponentCommandEnt.class, name = "unlink_component")
-,
-  @Type(value = DefaultSetComponentLinkInformationCommandEnt.class, name = "set_component_link_information")
+  @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

@@ -76,8 +76,6 @@ public class WorkflowChangesTracker {
         /** Tracked whenever a metanode or a component have been expanded */
         NODE_EXPANDED,
         /** Tracked whenever a component has been updated. */
-        TEMPLATE_UPDATED,
-        /** Tracked whenever a node's port configuration has changed */
         NODE_PORTS_CHANGED,
         /** Tracked when a connection is added */
         CONNECTION_ADDED,

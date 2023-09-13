@@ -48,21 +48,49 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.net.URI;
+import java.util.function.UnaryOperator;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.UnlinkComponentCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
-public final class UnlinkComponent extends AbstractWorkflowCommand {
+/**
+ * Workflow command to update link types of link components. The command is accessed from outside the package.
+ *
+ * @author Leonard Wörteler, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
+ */
+public final class UpdateComponentLinkInformation extends AbstractWorkflowCommand {
 
-    private final NodeIDEnt m_componentId;
-    private MetaNodeTemplateInformation m_templateInfo;
+    private final UnaryOperator<NodeID> m_componentId;
 
-    public UnlinkComponent(final UnlinkComponentCommandEnt ce) {
-        m_componentId = ce.getNodeId();
+    private final URI m_newURI;
+
+    private MetaNodeTemplateInformation m_oldTemplateInfo;
+
+    UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
+        m_componentId = wfmId -> ce.getNodeId().toNodeID(wfmId);
+        final var newUrl = ce.getNewUrl();
+        m_newURI = newUrl != null ? URI.create(newUrl) : null;
+    }
+
+    /**
+     * Creates an instance of the {@link UpdateComponentLinkInformation} workflow command. This is called from outside
+     * the package.
+     *
+     * @param componentId
+     * @param targetUri
+     */
+    public UpdateComponentLinkInformation(final NodeID componentId, final URI targetUri) {
+        m_componentId = wfmIdIgnored -> componentId;
+        m_newURI = targetUri;
     }
 
     @Override
@@ -72,20 +100,49 @@ public final class UnlinkComponent extends AbstractWorkflowCommand {
             throw new OperationNotAllowedException("Container is read-only.");
         }
 
-        final var componentId = m_componentId.toNodeID(wfm.getProjectWFM().getID());
+        final var componentId = m_componentId.apply(wfm.getProjectWFM().getID());
         final var component = wfm.getNodeContainer(componentId, SubNodeContainer.class, false);
-        if (component == null || component.getTemplateInformation().getRole() != Role.Link) {
-            throw new OperationNotAllowedException("Not a linked component: " + m_componentId);
+        if (component == null) {
+            throw new OperationNotAllowedException("Not a component: " + m_componentId);
         }
 
-        m_templateInfo = wfm.setTemplateInformation(componentId, MetaNodeTemplateInformation.NONE);
-        return m_templateInfo != MetaNodeTemplateInformation.NONE;
+        final var templateInformation = component.getTemplateInformation();
+        if (templateInformation.getRole() == Role.Template) {
+            throw new OperationNotAllowedException(
+                "Cannot set link source on component template directly: " + m_componentId);
+        }
+        if (templateInformation.getRole() != Role.Link) {
+            throw new OperationNotAllowedException("Component not linked: " + m_componentId);
+        }
+
+        final var newTemplateInfo = updateTemplateInformation(templateInformation, m_newURI);
+        m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
+        return !m_oldTemplateInfo.equals(newTemplateInfo);
     }
 
     @Override
     public void undo() {
         final var wfm = getWorkflowManager();
-        final var componentId = m_componentId.toNodeID(wfm.getProjectWFM().getID());
-        wfm.setTemplateInformation(componentId, CheckUtils.checkNotNull(m_templateInfo));
+        final var componentId = m_componentId.apply(wfm.getProjectWFM().getID());
+        wfm.setTemplateInformation(componentId, CheckUtils.checkNotNull(m_oldTemplateInfo));
+
+    }
+
+    private static MetaNodeTemplateInformation
+        updateTemplateInformation(final MetaNodeTemplateInformation templateInformation, final URI newURI) {
+        if (newURI == null) {
+            return MetaNodeTemplateInformation.NONE;
+        }
+        if (newURI.equals(templateInformation.getSourceURI())) {
+            return templateInformation; // Nothing changed
+        }
+        try {
+            return templateInformation.createLinkWithUpdatedSource(newURI);
+        } catch (final InvalidSettingsException e) {
+            // Cannot happen since we already checked for non-null and Role.Link
+            NodeLogger.getLogger(UpdateComponentLinkInformation.class)
+                .coding("New component template source null or template info not Link", e);
+            return templateInformation; // Nothing changed
+        }
     }
 }

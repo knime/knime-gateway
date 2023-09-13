@@ -1461,7 +1461,7 @@ public final class WorkflowEntityFactory {
         return builder(TemplateLinkEntBuilder.class) //
             .setUrl(getTemplateLink(nct))//
             .setUpdateStatus(updateStatus) //
-            .setIsLinkTypeChangable(true) // TODO: NXT-2021, Properly determine whether or not a component link is updatable
+            .setIsLinkTypeChangable(false) // TODO: NXT-2021, Always hide for now
             .build();
     }
 

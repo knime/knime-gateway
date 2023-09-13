@@ -77,6 +77,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -84,6 +85,7 @@ import java.util.stream.Collectors;
 
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
@@ -147,6 +149,8 @@ import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
+import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt.UpdateComponentLinkInformationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
@@ -2652,5 +2656,77 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setTags(tags)//
             .setLinks(links)//
             .build();
+    }
+
+    /**
+     * Tests {@link UpdateComponentOrMetanodeNameCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testUpdateComponentLinkInformation() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var linkedComponent = new NodeIDEnt(1);
+        var notLinkedComponent = new NodeIDEnt(10);
+
+        // Test happy path
+        var command1 = buildUpdateComponentLinkInformationCommand(linkedComponent, "newUrl");
+        var nodeBefore = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeBefore, "knime://LOCAL/Component/");
+
+        ws().executeWorkflowCommand(projectId, getRootID(), command1);
+        var nodeAfter = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeAfter, "newUrl");
+
+        // Test not a component
+        var command2 = buildUpdateComponentLinkInformationCommand(new NodeIDEnt(99), "newUrl");
+        assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), command2));
+
+        // Test not a linked component
+        var command3 = buildUpdateComponentLinkInformationCommand(notLinkedComponent, "newUrl");
+        assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
+
+        // Test unlink a component
+        var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent, null);
+        ws().executeWorkflowCommand(projectId, getRootID(), command4);
+        var nodeUnlinked = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeUnlinked, null);
+    }
+
+    private static UpdateComponentLinkInformationCommandEnt
+        buildUpdateComponentLinkInformationCommand(final NodeIDEnt nodeIdEnt, final String newUrl) {
+        return builder(UpdateComponentLinkInformationCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_COMPONENT_LINK_INFORMATION)//
+            .setNodeId(nodeIdEnt)//
+            .setNewUrl(newUrl)//
+            .build();
+    }
+
+    private static NodeEnt getNodeEntFromWorkflowSnapshotEnt(final WorkflowSnapshotEnt workflowSnapshotEnt,
+        final NodeIDEnt nodeIdEnt) {
+        return workflowSnapshotEnt//
+            .getWorkflow()//
+            .getNodes()//
+            .entrySet()//
+            .stream()//
+            .filter(entry -> entry.getKey().equals(nodeIdEnt.toString()))//
+            .findFirst()//
+            .map(Entry::getValue)//
+            .orElseThrow();
+    }
+
+    private static void assertComponentWithLink(final NodeEnt nodeEnt, final String expectedUrl) {
+        assertThat("The node is not a component", nodeEnt, new IsInstanceOf(ComponentNodeEnt.class));
+        var link = ((ComponentNodeEnt)nodeEnt).getLink();
+        if (expectedUrl == null) {
+            assertThat("There should not be a link", link, nullValue());
+        } else {
+            var actualUrl = ((ComponentNodeEnt)nodeEnt).getLink().getUrl();
+            assertThat("The links do not match", actualUrl, equalTo(expectedUrl));
+        }
     }
 }

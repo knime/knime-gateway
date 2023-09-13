@@ -63,14 +63,14 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public abstract class CommandSequence extends HigherOrderCommand {
+abstract class CommandSequence extends HigherOrderCommand {
 
     /** Not private so {@link Cut} command can access it */
     protected final List<WorkflowCommand> m_commands;
 
     private WorkflowKey m_wfKey;
 
-    protected CommandSequence(final List<WorkflowCommand> commands) {
+    CommandSequence(final List<WorkflowCommand> commands) {
         if (commands.isEmpty()) {
             throw new IllegalStateException("No commands given");
         }

@@ -73,10 +73,9 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.SetComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.api.webui.entity.UnlinkComponentCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
@@ -222,10 +221,8 @@ public final class WorkflowCommands {
             command = new UpdateProjectMetadata(ce);
         } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
             command = new AddBendpoint(ce);
-        } else if (commandEnt instanceof UnlinkComponentCommandEnt ce) {
-            command = new UnlinkComponent(ce);
-        } else if (commandEnt instanceof SetComponentLinkInformationCommandEnt ce) {
-            command = new SetComponentLinkInformation(ce);
+        } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
+            command = new UpdateComponentLinkInformation(ce);
         } else {
             if (m_workflowCommandToExecute != null) {
                 command = m_workflowCommandToExecute;

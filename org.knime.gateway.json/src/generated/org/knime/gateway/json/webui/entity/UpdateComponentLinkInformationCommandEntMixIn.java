@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.UnlinkComponentCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUnlinkComponentCommandEnt.DefaultUnlinkComponentCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt.DefaultUpdateComponentLinkInformationCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,10 +61,10 @@ import org.knime.gateway.impl.webui.entity.DefaultUnlinkComponentCommandEnt.Defa
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultUnlinkComponentCommandEntBuilder.class)
-@JsonSerialize(as=UnlinkComponentCommandEnt.class)
+@JsonDeserialize(builder=DefaultUpdateComponentLinkInformationCommandEntBuilder.class)
+@JsonSerialize(as=UpdateComponentLinkInformationCommandEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface UnlinkComponentCommandEntMixIn extends UnlinkComponentCommandEnt {
+public interface UpdateComponentLinkInformationCommandEntMixIn extends UpdateComponentLinkInformationCommandEnt {
 
     @Override
     @JsonIgnore
@@ -78,6 +78,10 @@ public interface UnlinkComponentCommandEntMixIn extends UnlinkComponentCommandEn
     @JsonProperty("nodeId")
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
+    @Override
+    @JsonProperty("newUrl")
+    public String getNewUrl();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -86,18 +90,22 @@ public interface UnlinkComponentCommandEntMixIn extends UnlinkComponentCommandEn
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface UnlinkComponentCommandEntMixInBuilder extends UnlinkComponentCommandEntBuilder {
+    public static interface UpdateComponentLinkInformationCommandEntMixInBuilder extends UpdateComponentLinkInformationCommandEntBuilder {
     
         @Override
-        public UnlinkComponentCommandEntMixIn build();
+        public UpdateComponentLinkInformationCommandEntMixIn build();
     
         @Override
         @JsonProperty("kind")
-        public UnlinkComponentCommandEntMixInBuilder setKind(final KindEnum kind);
+        public UpdateComponentLinkInformationCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("nodeId")
-        public UnlinkComponentCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        public UpdateComponentLinkInformationCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        
+        @Override
+        @JsonProperty("newUrl")
+        public UpdateComponentLinkInformationCommandEntMixInBuilder setNewUrl(final String newUrl);
         
     }
 

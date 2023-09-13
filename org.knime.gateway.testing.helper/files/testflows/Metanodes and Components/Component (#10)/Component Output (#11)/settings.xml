@@ -29,6 +29,7 @@
         <config key="port-descriptions">
             <entry key="array-size" type="xint" value="0"/>
         </config>
+        <entry key="allowOutputNodeToCompleteBeforeContent" type="xboolean" value="true"/>
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="EXECUTED"/>
@@ -54,6 +55,6 @@
     </config>
     <config key="filestores">
         <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-        <entry key="file_store_id" type="xstring" value="3f708d31-5afd-4d6f-9f40-610ed56a4bb0"/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
     </config>
 </config>
