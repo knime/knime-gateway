@@ -153,9 +153,11 @@ public class DefaultPortService implements PortService {
 
         var portViewManager = PortViewManager.getInstance();
         if ("initial_data".equals(serviceType)) {
-            return portViewManager.callInitialDataService(NodePortWrapper.of(nc, portIdx, viewIdx));
+            return portViewManager.getDataServiceManager()
+                .callInitialDataService(NodePortWrapper.of(nc, portIdx, viewIdx));
         } else if ("data".equals(serviceType)) {
-            return portViewManager.callRpcDataService(NodePortWrapper.of(nc, portIdx, viewIdx), body);
+            return portViewManager.getDataServiceManager().callRpcDataService(NodePortWrapper.of(nc, portIdx, viewIdx),
+                body);
         } else {
             throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
         }

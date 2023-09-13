@@ -231,9 +231,9 @@ public final class DefaultNodeService implements NodeService {
 
         final DataServiceManager<NodeWrapper> dataServiceManager;
         if ("view".equals(extensionType)) {
-            dataServiceManager = NodeViewManager.getInstance();
+            dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
         } else if ("dialog".equals(extensionType)) {
-            dataServiceManager = NodeDialogManager.getInstance();
+            dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
         } else {
             throw new InvalidRequestException("Unknown target for node data service: " + extensionType);
         }
