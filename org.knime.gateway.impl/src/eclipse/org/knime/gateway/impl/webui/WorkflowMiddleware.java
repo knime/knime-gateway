@@ -58,8 +58,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
@@ -270,29 +268,7 @@ public final class WorkflowMiddleware {
     }
 
     private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
-        return m_workflowStateCache.computeIfAbsent(wfKey, this::computeWorkflowStateAndEventuallyClearCache);
-    }
-
-    private WorkflowState computeWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey) {
-        var state = new WorkflowState(wfKey);
-        var wfm = state.m_wfm;
-        if (!wfm.isProject()) {
-            getParentWfm(wfm).addListener(e -> {
-                if (e.getType() == WorkflowEvent.Type.NODE_REMOVED && e.getID().equals(wfm.getID())) {
-                    m_workflowStateCache.remove(wfKey);
-                }
-            });
-        }
-        return state;
-
-    }
-
-    private static WorkflowManager getParentWfm(final WorkflowManager wfm) {
-        var ncParent = wfm.getDirectNCParent();
-        if (ncParent instanceof SubNodeContainer snc) {
-            return snc.getParent();
-        }
-        return (WorkflowManager)ncParent;
+        return m_workflowStateCache.computeIfAbsent(wfKey, WorkflowState::new);
     }
 
     private static class SnapshotIdGenerator implements Supplier<String> {
