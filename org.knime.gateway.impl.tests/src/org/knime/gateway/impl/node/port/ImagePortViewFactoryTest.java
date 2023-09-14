@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.node.port;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -128,13 +129,10 @@ public class ImagePortViewFactoryTest {
 
         var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
         var imageId = snc.getID().toString() + ":" + System.identityHashCode(portObject) + ".png";
-        assertThat(initialData, is("{\"result\":\"uiext/imageview/img/" + imageId + "\"}"));
-        assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.size(), is(1));
-        assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.get(imageId), is(pngImageData));
+        assertThat(initialData, containsString("\"imagePath\":\"uiext/imageview/img/" + imageId + "\""));
 
         var imgResource = page.getResource("img/" + imageId).get();
         assertThat(IOUtils.toByteArray(imgResource.getInputStream()), is(pngImageData));
-        assertThat(ImagePortViewFactory.IMAGE_DATA_MAP.isEmpty(), is(true));
     }
 
     private static ImagePortObject createImagePortObject(final byte[] pngImageData) {

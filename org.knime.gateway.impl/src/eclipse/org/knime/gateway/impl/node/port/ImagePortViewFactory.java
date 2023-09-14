@@ -48,24 +48,18 @@
  */
 package org.knime.gateway.impl.node.port;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.knime.core.data.image.ImageValue;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.ui.CoreUIPlugin;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
+import org.knime.core.webui.node.view.image.ImageViewUtil;
+import org.knime.core.webui.node.view.image.ImageViewViewSettings;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -75,33 +69,22 @@ import org.knime.core.webui.page.Page;
  */
 public final class ImagePortViewFactory implements PortViewFactory<ImagePortObject> {
 
-    /*
-     * This map is sort of a 'very short term cache'. It keeps image data for a certain image id. The image-id is returned
-     * via the initial data service (as part of a (relative) url). And as soon as the provided URL is 'used' in the FE
-     * (e.g. in an img-src attribute or via another fetch), the actual image data is fetched through the CEF's
-     * middleware service and immediately removed from this map, once it has been fetch.
-     */
-    static final Map<String, byte[]> IMAGE_DATA_MAP = new HashMap<>();
-
     /**
      * {@inheritDoc}
      */
     @Override
     public PortView createPortView(final ImagePortObject portObject) {
-        var imgValue = (ImageValue) portObject.toDataCell();
+        var imgValue = (ImageValue)portObject.toDataCell();
         // we append the object-hash to the imageId to make sure the FE re-renderes
         // the image whenever it changes (and not take it from the browser cache)
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
-        var imageId =
-            nc.getID().toString() + ":" + System.identityHashCode(portObject) + "." + imgValue.getImageExtension();
+        var imageId = nc.getID().toString() + ":" + System.identityHashCode(portObject);
         return new PortView() {
 
             @Override
             public Optional<InitialDataService> createInitialDataService() {
-                return Optional.of(InitialDataService.builder(() -> {
-                    IMAGE_DATA_MAP.put(imageId, getImageData(imgValue));
-                    return PageResourceManager.getPagePathPrefix(null) + "/imageview/img/" + imageId;
-                }).build());
+                return Optional.of(
+                    ImageViewUtil.createInitialDataService(() -> imgValue, () -> imageId, ImageViewViewSettings::new));
             }
 
             @Override
@@ -111,26 +94,10 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
 
             @Override
             public Page getPage() {
-                return Page.builder(CoreUIPlugin.class, "js-src/dist", "ImageView.umd.js") //
-                    // this is the name of the component used and already present in the frontend
-                    .markAsReusable("imageview")//
-                    .addResources(imageId -> new ByteArrayInputStream(IMAGE_DATA_MAP.remove(imageId)), "img", true)
-                    .build();
+                return ImageViewUtil.PAGE;
             }
 
         };
-    }
-
-    private static byte[] getImageData(final ImageValue imgValue) {
-        var imageContent = imgValue.getImageContent();
-        try (var baos = new ByteArrayOutputStream()) {
-            imageContent.save(baos);
-            return baos.toByteArray();
-        } catch (IOException ex) {
-            NodeLogger.getLogger(ImagePortViewFactory.class)
-                .error("Image content couldn't be extracted from image port", ex);
-            return new byte[0];
-        }
     }
 
 }
