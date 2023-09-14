@@ -1461,8 +1461,27 @@ public final class WorkflowEntityFactory {
         return builder(TemplateLinkEntBuilder.class) //
             .setUrl(getTemplateLink(nct))//
             .setUpdateStatus(updateStatus) //
-            .setIsLinkTypeChangable(false) // TODO: NXT-2021, Always hide for now
+            .setIsLinkTypeChangable(isLinkTypeChangable(nct)) //
             .build();
+    }
+
+    private static boolean isLinkTypeChangable(final NodeContainerTemplate nct) {
+        final Predicate<String> isLocalHost = host -> host.equals("LOCAL");
+        final Predicate<String> isRelativeLink = host -> host.startsWith("knime.");
+
+        final var parentContext = nct.getParent().getContextV2();
+        final var isParentInLocalSpace = parentContext.getMountpointURI()//
+            .map(parentUri -> {
+                final var parentHost = parentUri.getHost();
+                return isLocalHost.test(parentHost);
+            }) //
+            .orElse(false);
+
+        final var itemUri = nct.getTemplateInformation().getSourceURI();
+        final var itemHost = itemUri.getHost();
+        final var isSharedItemInLocalSpace = isLocalHost.or(isRelativeLink).test(itemHost);
+
+        return isParentInLocalSpace && isSharedItemInLocalSpace;
     }
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
