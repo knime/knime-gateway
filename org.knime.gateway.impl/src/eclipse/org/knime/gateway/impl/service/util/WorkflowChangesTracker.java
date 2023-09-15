@@ -75,7 +75,7 @@ public class WorkflowChangesTracker {
         NODES_COLLAPSED,
         /** Tracked whenever a metanode or a component have been expanded */
         NODE_EXPANDED,
-        /** Tracked whenever a component has been updated. */
+        /** Tracked whenever a node's port configuration has changed */
         NODE_PORTS_CHANGED,
         /** Tracked when a connection is added */
         CONNECTION_ADDED,

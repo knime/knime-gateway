@@ -70,7 +70,7 @@ abstract class CommandSequence extends HigherOrderCommand {
 
     private WorkflowKey m_wfKey;
 
-    CommandSequence(final List<WorkflowCommand> commands) {
+    protected CommandSequence(final List<WorkflowCommand> commands) {
         if (commands.isEmpty()) {
             throw new IllegalStateException("No commands given");
         }
