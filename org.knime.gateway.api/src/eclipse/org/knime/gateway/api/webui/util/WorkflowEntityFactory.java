@@ -1467,15 +1467,11 @@ public final class WorkflowEntityFactory {
 
     private static boolean isLinkTypeChangable(final NodeContainerTemplate nct) {
         final Predicate<String> isLocalHost = host -> host.equals("LOCAL");
+        // TODO this is very brittle, better to properly resolve the link type - see NXT-2046
         final Predicate<String> isRelativeLink = host -> host.startsWith("knime.");
 
         final var parentContext = nct.getParent().getContextV2();
-        final var isParentInLocalSpace = parentContext.getMountpointURI()//
-            .map(parentUri -> {
-                final var parentHost = parentUri.getHost();
-                return isLocalHost.test(parentHost);
-            }) //
-            .orElse(false);
+        final var isParentInLocalSpace = parentContext.getLocationType() == LocationType.LOCAL;
 
         final var itemUri = nct.getTemplateInformation().getSourceURI();
         final var itemHost = itemUri.getHost();
