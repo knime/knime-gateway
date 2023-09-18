@@ -60,6 +60,7 @@ import java.util.function.Predicate;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -145,6 +146,10 @@ public interface Space {
      */
     default List<Object> listJobsForWorkflow(final String workflowId) {
         return List.of();
+    }
+
+    default void deleteJobsForWorkflow(final String workflowId, final List<String> jobIds) throws ResourceAccessException {
+        throw new UnsupportedOperationException("Deletion of workflow jobs is not supported.");
     }
 
     /**

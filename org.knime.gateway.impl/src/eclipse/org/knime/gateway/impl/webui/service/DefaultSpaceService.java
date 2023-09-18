@@ -54,6 +54,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -137,6 +138,17 @@ public class DefaultSpaceService implements SpaceService {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).listJobsForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching jobs", e);
+        }
+    }
+
+    @Override
+    public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
+        final String jobId) throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
+        try {
+            space.deleteJobsForWorkflow(itemId, List.of(jobId));
+        } catch (final ResourceAccessException e) {
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 
