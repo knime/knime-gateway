@@ -81,6 +81,10 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
     @JsonProperty("isLinkTypeChangeable")
     public Boolean isLinkTypeChangeable();
     
+    @Override
+    @JsonProperty("isHubItemVersionChangeable")
+    public Object getIsHubItemVersionChangeable();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -105,6 +109,10 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
         @Override
         @JsonProperty("isLinkTypeChangeable")
         public TemplateLinkEntMixInBuilder setIsLinkTypeChangeable(final Boolean isLinkTypeChangeable);
+        
+        @Override
+        @JsonProperty("isHubItemVersionChangeable")
+        public TemplateLinkEntMixInBuilder setIsHubItemVersionChangeable(final Object isHubItemVersionChangeable);
         
     }
 

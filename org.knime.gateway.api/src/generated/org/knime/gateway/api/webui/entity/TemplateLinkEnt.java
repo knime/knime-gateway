@@ -104,6 +104,12 @@ public interface TemplateLinkEnt extends GatewayEntity {
    **/
   public Boolean isLinkTypeChangeable();
 
+  /**
+   * Whether this Hub item version can be changed. This can only be true for shared templates on a Hub.
+   * @return isHubItemVersionChangeable 
+   **/
+  public Object getIsHubItemVersionChangeable();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -112,6 +118,7 @@ public interface TemplateLinkEnt extends GatewayEntity {
       valueConsumer.accept("url", Pair.create(getUrl(), e.getUrl()));
       valueConsumer.accept("updateStatus", Pair.create(getUpdateStatus(), e.getUpdateStatus()));
       valueConsumer.accept("isLinkTypeChangeable", Pair.create(isLinkTypeChangeable(), e.isLinkTypeChangeable()));
+      valueConsumer.accept("isHubItemVersionChangeable", Pair.create(getIsHubItemVersionChangeable(), e.getIsHubItemVersionChangeable()));
   }
 
     /**
@@ -142,6 +149,14 @@ public interface TemplateLinkEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         TemplateLinkEntBuilder setIsLinkTypeChangeable(Boolean isLinkTypeChangeable);
+        
+        /**
+         * Whether this Hub item version can be changed. This can only be true for shared templates on a Hub.
+         * 
+         * @param isHubItemVersionChangeable the property value,  
+         * @return this entity builder for chaining
+         */
+        TemplateLinkEntBuilder setIsHubItemVersionChangeable(Object isHubItemVersionChangeable);
         
         
         /**

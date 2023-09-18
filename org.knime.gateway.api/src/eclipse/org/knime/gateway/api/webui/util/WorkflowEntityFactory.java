@@ -1462,6 +1462,7 @@ public final class WorkflowEntityFactory {
             .setUrl(getTemplateLink(nct))//
             .setUpdateStatus(updateStatus) //
             .setIsLinkTypeChangeable(isLinkTypeChangeable(nct)) //
+            .setIsHubItemVersionChangeable(isHubItemVersionChangeable(nct)) //
             .build();
     }
 
@@ -1478,6 +1479,15 @@ public final class WorkflowEntityFactory {
         final var isSharedItemInLocalSpace = isLocalHost.or(isRelativeLink).test(itemHost);
 
         return isParentInLocalSpace && isSharedItemInLocalSpace;
+    }
+
+    /**
+     * TODO: NXT-2038, Determine whether a Hub item version is changeable in advance
+     */
+    private static boolean isHubItemVersionChangeable(final NodeContainerTemplate nct) {
+        NodeLogger.getLogger(WorkflowEntityFactory.class)
+            .info("This should check whether this node container template is shared via a Hub: " + nct);
+        return false;
     }
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
