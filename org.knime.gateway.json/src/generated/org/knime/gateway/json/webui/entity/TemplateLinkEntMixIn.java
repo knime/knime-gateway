@@ -78,8 +78,8 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
     public UpdateStatusEnum getUpdateStatus();
     
     @Override
-    @JsonProperty("isLinkTypeChangable")
-    public Boolean isLinkTypeChangable();
+    @JsonProperty("isLinkTypeChangeable")
+    public Boolean isLinkTypeChangeable();
     
 
     /**
@@ -103,8 +103,8 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
         public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
         
         @Override
-        @JsonProperty("isLinkTypeChangable")
-        public TemplateLinkEntMixInBuilder setIsLinkTypeChangable(final Boolean isLinkTypeChangable);
+        @JsonProperty("isLinkTypeChangeable")
+        public TemplateLinkEntMixInBuilder setIsLinkTypeChangeable(final Boolean isLinkTypeChangeable);
         
     }
 
