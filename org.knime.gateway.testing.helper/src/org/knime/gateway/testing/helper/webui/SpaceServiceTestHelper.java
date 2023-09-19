@@ -431,6 +431,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             public boolean containsItemWithName(final String workflowGroupItemId, final String itemName) {
                 return false;
             }
+
+            @Override
+            public Optional<String> getItemIdByURI(final URI uri) {
+                return Optional.empty();
+            }
         };
     }
 

@@ -76,6 +76,8 @@ import org.knime.core.util.FileUtil;
 import org.knime.core.util.KnimeUrlType;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
+import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
@@ -528,6 +530,20 @@ public final class LocalWorkspace implements Space {
         if (matcher.find()) {
             throw new OperationNotAllowedException(
                     "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
+        }
+    }
+
+    @Override
+    public Optional<String> getItemIdByURI(final URI uri) {
+        if (KnimeUrlType.getType(uri).orElse(null) != KnimeUrlType.MOUNTPOINT_ABSOLUTE
+                || !"LOCAL".equals(uri.getAuthority())) {
+            return Optional.empty();
+        }
+        try {
+            final var path = ResolverUtil.resolveURItoLocalFile(uri).toPath().toAbsolutePath();
+            return Optional.of(m_spaceItemPathAndTypeCache.determineItemIdOrGetFromCache(path));
+        } catch (final ResourceAccessException e) {
+            throw new IllegalArgumentException("URI could not be resolved to local file", e);
         }
     }
 }

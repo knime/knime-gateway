@@ -54,9 +54,11 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
@@ -148,7 +150,29 @@ public interface Space {
         return List.of();
     }
 
-    default void deleteJobsForWorkflow(final String workflowId, final List<String> jobIds) throws ResourceAccessException {
+    /**
+     * Saves the provided job as a workflow on the same space under the given absolute workflow group path.
+     *
+     * @param workflowGroupPath absolute workflow group path
+     * @param workflowName name of the workflow to save under
+     * @param jobId id of the job to save
+     * @return the newly created space item
+     * @throws ResourceAccessException
+     */
+    default SpaceItemEnt saveJobAsWorkflow(final IPath workflowGroupPath, final String workflowName, final String jobId)
+            throws ResourceAccessException {
+        throw new UnsupportedOperationException("Saving job as workflow is not supported.");
+    }
+
+    /**
+     * Delets the given jobs.
+     *
+     * @param workflowId id of the workflow from which the jobs originated
+     * @param jobIds jobs to delete
+     * @throws ResourceAccessException if any job could not be deleted
+     */
+    default void deleteJobsForWorkflow(final String workflowId, final List<String> jobIds)
+            throws ResourceAccessException {
         throw new UnsupportedOperationException("Deletion of workflow jobs is not supported.");
     }
 
@@ -216,6 +240,14 @@ public interface Space {
      * @return the location info for the given item
      */
     LocationInfo getLocationInfo(String itemId);
+
+    /**
+     * Gets the space item ID given a URI
+     *
+     * @param uri uri to retrieve space item ID for
+     * @return item ID for the given URI or {@link Optional#empty()} if URI could not be resolved to an item ID
+     */
+    public Optional<String> getItemIdByURI(final URI uri);
 
     /**
      * Creates a mountpoint-absolute KNIME URL for the given space item.
