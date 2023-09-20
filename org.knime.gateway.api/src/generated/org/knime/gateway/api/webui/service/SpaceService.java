@@ -104,7 +104,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory  (workflow group).
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      * @param jobId The ID of the job to delete
      *
      * 

@@ -44,10 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import java.time.OffsetDateTime;
+import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -59,43 +60,104 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Metadata of a workflow project
+ * Update the metadata of a component.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetadataEnt {
+public interface UpdateComponentMetadataCommandEnt extends GatewayEntity, WorkflowCommandEnt, EditableProjectMetadataEnt {
+
+  /**
+   * Gets or Sets type
+   */
+  public enum TypeEnum {
+    SOURCE("Source"),
+    
+    SINK("Sink"),
+    
+    LEARNER("Learner"),
+    
+    PREDICTOR("Predictor"),
+    
+    MANIPULATOR("Manipulator"),
+    
+    VISUALIZER("Visualizer"),
+    
+    OTHER("Other");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * The date and time of the last change made to this workflow
-   * @return lastEdit 
+   * Get inPorts
+   * @return inPorts , never <code>null</code>
    **/
-  public OffsetDateTime getLastEdit();
+  public java.util.List<ComponentPortDescriptionEnt> getInPorts();
+
+  /**
+   * Get outPorts
+   * @return outPorts , never <code>null</code>
+   **/
+  public java.util.List<ComponentPortDescriptionEnt> getOutPorts();
+
+  /**
+   * The component icon, or null if the default icon should be used.
+   * @return icon 
+   **/
+  public String getIcon();
+
+  /**
+   * Get type
+   * @return type 
+   **/
+  public TypeEnum getType();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectMetadataEnt)other;
+      var e = (UpdateComponentMetadataCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
       valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
-      valueConsumer.accept("lastEdit", Pair.create(getLastEdit(), e.getLastEdit()));
+      valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
+      valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
+      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ProjectMetadataEntBuilder extends GatewayEntityBuilder<ProjectMetadataEnt> {
+    public interface UpdateComponentMetadataCommandEntBuilder extends GatewayEntityBuilder<UpdateComponentMetadataCommandEnt> {
 
+        /**
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        UpdateComponentMetadataCommandEntBuilder setKind(KindEnum kind);
+        
         /**
    		 * Set description
          * 
          * @param description the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setDescription(TypedTextEnt description);
+        UpdateComponentMetadataCommandEntBuilder setDescription(TypedTextEnt description);
         
         /**
          * A collection of tags the user chose to describe the workflow
@@ -103,7 +165,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
          * @param tags the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setTags(java.util.List<String> tags);
+        UpdateComponentMetadataCommandEntBuilder setTags(java.util.List<String> tags);
         
         /**
          * A collection of URLs attached to the workflow
@@ -111,15 +173,39 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
          * @param links the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);
+        UpdateComponentMetadataCommandEntBuilder setLinks(java.util.List<LinkEnt> links);
         
         /**
-         * The date and time of the last change made to this workflow
+   		 * Set inPorts
          * 
-         * @param lastEdit the property value,  
+         * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setLastEdit(OffsetDateTime lastEdit);
+        UpdateComponentMetadataCommandEntBuilder setInPorts(java.util.List<ComponentPortDescriptionEnt> inPorts);
+        
+        /**
+   		 * Set outPorts
+         * 
+         * @param outPorts the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        UpdateComponentMetadataCommandEntBuilder setOutPorts(java.util.List<ComponentPortDescriptionEnt> outPorts);
+        
+        /**
+         * The component icon, or null if the default icon should be used.
+         * 
+         * @param icon the property value,  
+         * @return this entity builder for chaining
+         */
+        UpdateComponentMetadataCommandEntBuilder setIcon(String icon);
+        
+        /**
+   		 * Set type
+         * 
+         * @param type the property value,  
+         * @return this entity builder for chaining
+         */
+        UpdateComponentMetadataCommandEntBuilder setType(TypeEnum type);
         
         
         /**
@@ -129,7 +215,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProjectMetadataEnt build();
+        UpdateComponentMetadataCommandEnt build();
     
     }
 

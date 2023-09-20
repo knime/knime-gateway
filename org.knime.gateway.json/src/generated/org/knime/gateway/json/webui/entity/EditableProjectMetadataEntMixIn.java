@@ -44,9 +44,8 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
-import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,8 +53,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNodeDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt.DefaultEditableProjectMetadataEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -63,30 +62,26 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNode
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodeDescriptionEntBuilder.class)
-@JsonSerialize(as=NodeDescriptionEnt.class)
+@JsonDeserialize(builder=DefaultEditableProjectMetadataEntBuilder.class)
+@JsonSerialize(as=EditableProjectMetadataEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeDescriptionEntMixIn extends NodeDescriptionEnt {
+public interface EditableProjectMetadataEntMixIn extends EditableProjectMetadataEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("options")
-    public java.util.List<NodeDialogOptionGroupEnt> getOptions();
+    @JsonProperty("description")
+    public TypedTextEnt getDescription();
     
     @Override
-    @JsonProperty("views")
-    public java.util.List<NodeViewDescriptionEnt> getViews();
+    @JsonProperty("tags")
+    public java.util.List<String> getTags();
     
     @Override
-    @JsonProperty("inPorts")
-    public java.util.List<NodePortDescriptionEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<NodePortDescriptionEnt> getOutPorts();
+    @JsonProperty("links")
+    public java.util.List<LinkEnt> getLinks();
     
 
     /**
@@ -96,26 +91,22 @@ public interface NodeDescriptionEntMixIn extends NodeDescriptionEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeDescriptionEntMixInBuilder extends NodeDescriptionEntBuilder {
+    public static interface EditableProjectMetadataEntMixInBuilder extends EditableProjectMetadataEntBuilder {
     
         @Override
-        public NodeDescriptionEntMixIn build();
+        public EditableProjectMetadataEntMixIn build();
     
         @Override
-        @JsonProperty("options")
-        public NodeDescriptionEntMixInBuilder setOptions(final java.util.List<NodeDialogOptionGroupEnt> options);
+        @JsonProperty("description")
+        public EditableProjectMetadataEntMixInBuilder setDescription(final TypedTextEnt description);
         
         @Override
-        @JsonProperty("views")
-        public NodeDescriptionEntMixInBuilder setViews(final java.util.List<NodeViewDescriptionEnt> views);
+        @JsonProperty("tags")
+        public EditableProjectMetadataEntMixInBuilder setTags(final java.util.List<String> tags);
         
         @Override
-        @JsonProperty("inPorts")
-        public NodeDescriptionEntMixInBuilder setInPorts(final java.util.List<NodePortDescriptionEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public NodeDescriptionEntMixInBuilder setOutPorts(final java.util.List<NodePortDescriptionEnt> outPorts);
+        @JsonProperty("links")
+        public EditableProjectMetadataEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
         
     }
 

@@ -47,17 +47,19 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.time.OffsetDateTime;
-
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 
 /**
- * Description of certain aspects of a component. This is static information for a component which remains the same even
- * if component is not part of a workflow.
+ * Description of certain aspects of a component. This is static information for a component which remains the same even if component is not part of a workflow.
  *
  * @param name
  * @param type
@@ -81,8 +83,11 @@ public record DefaultComponentNodeDescriptionEnt(
     java.util.List<NodeDialogOptionGroupEnt> options,
     java.util.List<NodeViewDescriptionEnt> views,
     java.util.List<NodePortDescriptionEnt> inPorts,
-    java.util.List<NodePortDescriptionEnt> outPorts, TypedTextEnt description, java.util.List<String> tags,
-    java.util.List<LinkEnt> links, OffsetDateTime lastEdit) implements ComponentNodeDescriptionEnt {
+    java.util.List<NodePortDescriptionEnt> outPorts,
+    TypedTextEnt description,
+    java.util.List<String> tags,
+    java.util.List<LinkEnt> links,
+    OffsetDateTime lastEdit) implements ComponentNodeDescriptionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -91,13 +96,13 @@ public record DefaultComponentNodeDescriptionEnt(
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
         }
-        if (description == null) {
+        if(description == null) {
             throw new IllegalArgumentException("<description> must not be null.");
         }
-        if (tags == null) {
+        if(tags == null) {
             throw new IllegalArgumentException("<tags> must not be null.");
         }
-        if (links == null) {
+        if(links == null) {
             throw new IllegalArgumentException("<links> must not be null.");
         }
     }
@@ -146,22 +151,22 @@ public record DefaultComponentNodeDescriptionEnt(
     public TypedTextEnt getDescription() {
         return description;
     }
-
+    
     @Override
     public java.util.List<String> getTags() {
         return tags;
     }
-
+    
     @Override
     public java.util.List<LinkEnt> getLinks() {
         return links;
     }
-
+    
     @Override
     public OffsetDateTime getLastEdit() {
         return lastEdit;
     }
-
+    
     /**
      * A builder for {@link DefaultComponentNodeDescriptionEnt}.
      */
@@ -236,35 +241,35 @@ public record DefaultComponentNodeDescriptionEnt(
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setDescription(TypedTextEnt description) {
-            if (description == null) {
-                throw new IllegalArgumentException("<description> must not be null.");
-            }
-            m_description = description;
-            return this;
+             if(description == null) {
+                 throw new IllegalArgumentException("<description> must not be null.");
+             }
+             m_description = description;
+             return this;
         }
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags) {
-            if (tags == null) {
-                throw new IllegalArgumentException("<tags> must not be null.");
-            }
-            m_tags = tags;
-            return this;
+             if(tags == null) {
+                 throw new IllegalArgumentException("<tags> must not be null.");
+             }
+             m_tags = tags;
+             return this;
         }
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links) {
-            if (links == null) {
-                throw new IllegalArgumentException("<links> must not be null.");
-            }
-            m_links = links;
-            return this;
+             if(links == null) {
+                 throw new IllegalArgumentException("<links> must not be null.");
+             }
+             m_links = links;
+             return this;
         }
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setLastEdit(OffsetDateTime lastEdit) {
-            m_lastEdit = lastEdit;
-            return this;
+             m_lastEdit = lastEdit;
+             return this;
         }
 
         @Override
@@ -276,7 +281,10 @@ public record DefaultComponentNodeDescriptionEnt(
                 immutable(m_options),
                 immutable(m_views),
                 immutable(m_inPorts),
-                immutable(m_outPorts), immutable(m_description), immutable(m_tags), immutable(m_links),
+                immutable(m_outPorts),
+                immutable(m_description),
+                immutable(m_tags),
+                immutable(m_links),
                 immutable(m_lastEdit));
         }
     

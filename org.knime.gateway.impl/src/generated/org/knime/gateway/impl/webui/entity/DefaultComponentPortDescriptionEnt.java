@@ -46,104 +46,69 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
-import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 
 /**
- * Node description properties that are common to all kinds of nodes. This is static information in the sense that it does not depend on a concrete node instance in a workflow.
+ * The (user-editable) description of a component&#39;s port. Asummed to be Plaintext.
  *
- * @param options
- * @param views
- * @param inPorts
- * @param outPorts
+ * @param name
+ * @param description
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultNodeDescriptionEnt(
-    java.util.List<NodeDialogOptionGroupEnt> options,
-    java.util.List<NodeViewDescriptionEnt> views,
-    java.util.List<NodePortDescriptionEnt> inPorts,
-    java.util.List<NodePortDescriptionEnt> outPorts) implements NodeDescriptionEnt {
+public record DefaultComponentPortDescriptionEnt(
+    String name,
+    String description) implements ComponentPortDescriptionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultNodeDescriptionEnt {
+    public DefaultComponentPortDescriptionEnt {
     }
 
     @Override
     public String getTypeID() {
-        return "NodeDescription";
+        return "ComponentPortDescription";
     }
   
     @Override
-    public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
-        return options;
+    public String getName() {
+        return name;
     }
     
     @Override
-    public java.util.List<NodeViewDescriptionEnt> getViews() {
-        return views;
-    }
-    
-    @Override
-    public java.util.List<NodePortDescriptionEnt> getInPorts() {
-        return inPorts;
-    }
-    
-    @Override
-    public java.util.List<NodePortDescriptionEnt> getOutPorts() {
-        return outPorts;
+    public String getDescription() {
+        return description;
     }
     
     /**
-     * A builder for {@link DefaultNodeDescriptionEnt}.
+     * A builder for {@link DefaultComponentPortDescriptionEnt}.
      */
-    public static class DefaultNodeDescriptionEntBuilder implements NodeDescriptionEntBuilder {
+    public static class DefaultComponentPortDescriptionEntBuilder implements ComponentPortDescriptionEntBuilder {
 
-        private java.util.List<NodeDialogOptionGroupEnt> m_options;
+        private String m_name;
 
-        private java.util.List<NodeViewDescriptionEnt> m_views;
-
-        private java.util.List<NodePortDescriptionEnt> m_inPorts;
-
-        private java.util.List<NodePortDescriptionEnt> m_outPorts;
+        private String m_description;
 
         @Override
-        public DefaultNodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionGroupEnt> options) {
-             m_options = options;
+        public DefaultComponentPortDescriptionEntBuilder setName(String name) {
+             m_name = name;
              return this;
         }
 
         @Override
-        public DefaultNodeDescriptionEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views) {
-             m_views = views;
+        public DefaultComponentPortDescriptionEntBuilder setDescription(String description) {
+             m_description = description;
              return this;
         }
 
         @Override
-        public DefaultNodeDescriptionEntBuilder setInPorts(java.util.List<NodePortDescriptionEnt> inPorts) {
-             m_inPorts = inPorts;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts) {
-             m_outPorts = outPorts;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeDescriptionEnt build() {
-            return new DefaultNodeDescriptionEnt(
-                immutable(m_options),
-                immutable(m_views),
-                immutable(m_inPorts),
-                immutable(m_outPorts));
+        public DefaultComponentPortDescriptionEnt build() {
+            return new DefaultComponentPortDescriptionEnt(
+                immutable(m_name),
+                immutable(m_description));
         }
     
     }

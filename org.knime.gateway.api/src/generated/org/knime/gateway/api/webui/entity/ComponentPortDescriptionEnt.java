@@ -44,10 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import java.time.OffsetDateTime;
-import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
-import org.knime.gateway.api.webui.entity.LinkEnt;
-import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 import java.util.function.BiConsumer;
 
@@ -59,67 +55,55 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Metadata of a workflow project
+ * The (user-editable) description of a component&#39;s port. Asummed to be Plaintext.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetadataEnt {
+public interface ComponentPortDescriptionEnt extends GatewayEntity {
 
 
   /**
-   * The date and time of the last change made to this workflow
-   * @return lastEdit 
+   * Get name
+   * @return name 
    **/
-  public OffsetDateTime getLastEdit();
+  public String getName();
+
+  /**
+   * Get description
+   * @return description 
+   **/
+  public String getDescription();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectMetadataEnt)other;
+      var e = (ComponentPortDescriptionEnt)other;
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
-      valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
-      valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
-      valueConsumer.accept("lastEdit", Pair.create(getLastEdit(), e.getLastEdit()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ProjectMetadataEntBuilder extends GatewayEntityBuilder<ProjectMetadataEnt> {
+    public interface ComponentPortDescriptionEntBuilder extends GatewayEntityBuilder<ComponentPortDescriptionEnt> {
 
+        /**
+   		 * Set name
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentPortDescriptionEntBuilder setName(String name);
+        
         /**
    		 * Set description
          * 
-         * @param description the property value, NOT <code>null</code>! 
+         * @param description the property value,  
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setDescription(TypedTextEnt description);
-        
-        /**
-         * A collection of tags the user chose to describe the workflow
-         * 
-         * @param tags the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ProjectMetadataEntBuilder setTags(java.util.List<String> tags);
-        
-        /**
-         * A collection of URLs attached to the workflow
-         * 
-         * @param links the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);
-        
-        /**
-         * The date and time of the last change made to this workflow
-         * 
-         * @param lastEdit the property value,  
-         * @return this entity builder for chaining
-         */
-        ProjectMetadataEntBuilder setLastEdit(OffsetDateTime lastEdit);
+        ComponentPortDescriptionEntBuilder setDescription(String description);
         
         
         /**
@@ -129,7 +113,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProjectMetadataEnt build();
+        ComponentPortDescriptionEnt build();
     
     }
 

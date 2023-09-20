@@ -45,19 +45,23 @@
 package org.knime.gateway.json.webui.entity;
 
 import java.time.OffsetDateTime;
-
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt.DefaultComponentNodeDescriptionEntBuilder;
+import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
+import org.knime.gateway.json.webui.entity.NodeDescriptionEntMixIn;
+import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt.DefaultComponentNodeDescriptionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -105,18 +109,19 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
     @Override
     @JsonProperty("description")
     public TypedTextEnt getDescription();
-
+    
     @Override
     @JsonProperty("tags")
     public java.util.List<String> getTags();
-
+    
     @Override
     @JsonProperty("links")
     public java.util.List<LinkEnt> getLinks();
-
+    
     @Override
     @JsonProperty("lastEdit")
     public OffsetDateTime getLastEdit();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -161,19 +166,19 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
         @Override
         @JsonProperty("description")
         public ComponentNodeDescriptionEntMixInBuilder setDescription(final TypedTextEnt description);
-
+        
         @Override
         @JsonProperty("tags")
         public ComponentNodeDescriptionEntMixInBuilder setTags(final java.util.List<String> tags);
-
+        
         @Override
         @JsonProperty("links")
         public ComponentNodeDescriptionEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
-
+        
         @Override
         @JsonProperty("lastEdit")
         public ComponentNodeDescriptionEntMixInBuilder setLastEdit(final OffsetDateTime lastEdit);
-
+        
     }
 
 

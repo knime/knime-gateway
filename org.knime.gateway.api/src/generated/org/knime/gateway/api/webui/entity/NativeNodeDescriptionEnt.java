@@ -44,11 +44,21 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
+import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Description of certain aspects of a native node.
@@ -66,10 +76,8 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
   public String getShortDescription();
 
   /**
-   * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML
-   * markup tags.
-   * 
-   * @return description
+   * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
+   * @return description 
    **/
   public String getDescription();
 
@@ -160,14 +168,13 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
         NativeNodeDescriptionEntBuilder setShortDescription(String shortDescription);
         
         /**
-         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May
-         * contain HTML markup tags.
+         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
          * 
-         * @param description the property value,
+         * @param description the property value,  
          * @return this entity builder for chaining
          */
         NativeNodeDescriptionEntBuilder setDescription(String description);
-
+        
         /**
    		 * Set dynamicInPortGroupDescriptions
          * 

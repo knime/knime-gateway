@@ -46,104 +46,105 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
-import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
 
 /**
- * Node description properties that are common to all kinds of nodes. This is static information in the sense that it does not depend on a concrete node instance in a workflow.
+ * Metadata properties of a workflow (project or component) that can be edited
  *
- * @param options
- * @param views
- * @param inPorts
- * @param outPorts
+ * @param description
+ * @param tags
+ * @param links
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultNodeDescriptionEnt(
-    java.util.List<NodeDialogOptionGroupEnt> options,
-    java.util.List<NodeViewDescriptionEnt> views,
-    java.util.List<NodePortDescriptionEnt> inPorts,
-    java.util.List<NodePortDescriptionEnt> outPorts) implements NodeDescriptionEnt {
+public record DefaultEditableProjectMetadataEnt(
+    TypedTextEnt description,
+    java.util.List<String> tags,
+    java.util.List<LinkEnt> links) implements EditableProjectMetadataEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultNodeDescriptionEnt {
+    public DefaultEditableProjectMetadataEnt {
+        if(description == null) {
+            throw new IllegalArgumentException("<description> must not be null.");
+        }
+        if(tags == null) {
+            throw new IllegalArgumentException("<tags> must not be null.");
+        }
+        if(links == null) {
+            throw new IllegalArgumentException("<links> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "NodeDescription";
+        return "EditableProjectMetadata";
     }
   
     @Override
-    public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
-        return options;
+    public TypedTextEnt getDescription() {
+        return description;
     }
     
     @Override
-    public java.util.List<NodeViewDescriptionEnt> getViews() {
-        return views;
+    public java.util.List<String> getTags() {
+        return tags;
     }
     
     @Override
-    public java.util.List<NodePortDescriptionEnt> getInPorts() {
-        return inPorts;
-    }
-    
-    @Override
-    public java.util.List<NodePortDescriptionEnt> getOutPorts() {
-        return outPorts;
+    public java.util.List<LinkEnt> getLinks() {
+        return links;
     }
     
     /**
-     * A builder for {@link DefaultNodeDescriptionEnt}.
+     * A builder for {@link DefaultEditableProjectMetadataEnt}.
      */
-    public static class DefaultNodeDescriptionEntBuilder implements NodeDescriptionEntBuilder {
+    public static class DefaultEditableProjectMetadataEntBuilder implements EditableProjectMetadataEntBuilder {
 
-        private java.util.List<NodeDialogOptionGroupEnt> m_options;
+        private TypedTextEnt m_description;
 
-        private java.util.List<NodeViewDescriptionEnt> m_views;
+        private java.util.List<String> m_tags = new java.util.ArrayList<>();
 
-        private java.util.List<NodePortDescriptionEnt> m_inPorts;
-
-        private java.util.List<NodePortDescriptionEnt> m_outPorts;
+        private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
 
         @Override
-        public DefaultNodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionGroupEnt> options) {
-             m_options = options;
+        public DefaultEditableProjectMetadataEntBuilder setDescription(TypedTextEnt description) {
+             if(description == null) {
+                 throw new IllegalArgumentException("<description> must not be null.");
+             }
+             m_description = description;
              return this;
         }
 
         @Override
-        public DefaultNodeDescriptionEntBuilder setViews(java.util.List<NodeViewDescriptionEnt> views) {
-             m_views = views;
+        public DefaultEditableProjectMetadataEntBuilder setTags(java.util.List<String> tags) {
+             if(tags == null) {
+                 throw new IllegalArgumentException("<tags> must not be null.");
+             }
+             m_tags = tags;
              return this;
         }
 
         @Override
-        public DefaultNodeDescriptionEntBuilder setInPorts(java.util.List<NodePortDescriptionEnt> inPorts) {
-             m_inPorts = inPorts;
+        public DefaultEditableProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links) {
+             if(links == null) {
+                 throw new IllegalArgumentException("<links> must not be null.");
+             }
+             m_links = links;
              return this;
         }
 
         @Override
-        public DefaultNodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts) {
-             m_outPorts = outPorts;
-             return this;
-        }
-
-        @Override
-        public DefaultNodeDescriptionEnt build() {
-            return new DefaultNodeDescriptionEnt(
-                immutable(m_options),
-                immutable(m_views),
-                immutable(m_inPorts),
-                immutable(m_outPorts));
+        public DefaultEditableProjectMetadataEnt build() {
+            return new DefaultEditableProjectMetadataEnt(
+                immutable(m_description),
+                immutable(m_tags),
+                immutable(m_links));
         }
     
     }

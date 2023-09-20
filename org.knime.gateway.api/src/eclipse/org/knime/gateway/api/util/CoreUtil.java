@@ -250,8 +250,9 @@ public final class CoreUtil {
         if (!CoreUtil.isComponentWFM(wfm)) {
             return Optional.empty();
         } else {
-            return Optional.ofNullable(wfm.getDirectNCParent()).filter(e -> e instanceof SubNodeContainer)
-                .map(e -> (SubNodeContainer)e);
+            return Optional.ofNullable(wfm.getDirectNCParent())//
+                .filter(SubNodeContainer.class::isInstance)//
+                .map(SubNodeContainer.class::cast);
         }
     }
 

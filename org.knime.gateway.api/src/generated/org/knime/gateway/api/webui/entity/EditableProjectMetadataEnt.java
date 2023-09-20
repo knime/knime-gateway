@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import java.time.OffsetDateTime;
-import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
@@ -59,35 +57,46 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Metadata of a workflow project
+ * Metadata properties of a workflow (project or component) that can be edited
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetadataEnt {
+public interface EditableProjectMetadataEnt extends GatewayEntity {
 
 
   /**
-   * The date and time of the last change made to this workflow
-   * @return lastEdit 
+   * Get description
+   * @return description , never <code>null</code>
    **/
-  public OffsetDateTime getLastEdit();
+  public TypedTextEnt getDescription();
+
+  /**
+   * A collection of tags the user chose to describe the workflow
+   * @return tags , never <code>null</code>
+   **/
+  public java.util.List<String> getTags();
+
+  /**
+   * A collection of URLs attached to the workflow
+   * @return links , never <code>null</code>
+   **/
+  public java.util.List<LinkEnt> getLinks();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectMetadataEnt)other;
+      var e = (EditableProjectMetadataEnt)other;
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
       valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
-      valueConsumer.accept("lastEdit", Pair.create(getLastEdit(), e.getLastEdit()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ProjectMetadataEntBuilder extends GatewayEntityBuilder<ProjectMetadataEnt> {
+    public interface EditableProjectMetadataEntBuilder extends GatewayEntityBuilder<EditableProjectMetadataEnt> {
 
         /**
    		 * Set description
@@ -95,7 +104,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
          * @param description the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setDescription(TypedTextEnt description);
+        EditableProjectMetadataEntBuilder setDescription(TypedTextEnt description);
         
         /**
          * A collection of tags the user chose to describe the workflow
@@ -103,7 +112,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
          * @param tags the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setTags(java.util.List<String> tags);
+        EditableProjectMetadataEntBuilder setTags(java.util.List<String> tags);
         
         /**
          * A collection of URLs attached to the workflow
@@ -111,15 +120,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
          * @param links the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);
-        
-        /**
-         * The date and time of the last change made to this workflow
-         * 
-         * @param lastEdit the property value,  
-         * @return this entity builder for chaining
-         */
-        ProjectMetadataEntBuilder setLastEdit(OffsetDateTime lastEdit);
+        EditableProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);
         
         
         /**
@@ -129,7 +130,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProjectMetadataEnt build();
+        EditableProjectMetadataEnt build();
     
     }
 

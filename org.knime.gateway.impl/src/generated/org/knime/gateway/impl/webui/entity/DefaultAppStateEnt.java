@@ -46,10 +46,11 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+
+import org.knime.gateway.api.webui.entity.AppStateEnt;
 
 /**
  * Represents the global application state.
@@ -117,7 +118,7 @@ public record DefaultAppStateEnt(
     public java.util.List<String> getAvailableComponentTypes() {
         return availableComponentTypes;
     }
-
+    
     @Override
     public Boolean hasNodeRecommendationsEnabled() {
         return hasNodeRecommendationsEnabled;
@@ -201,8 +202,8 @@ public record DefaultAppStateEnt(
 
         @Override
         public DefaultAppStateEntBuilder setAvailableComponentTypes(java.util.List<String> availableComponentTypes) {
-            m_availableComponentTypes = availableComponentTypes;
-            return this;
+             m_availableComponentTypes = availableComponentTypes;
+             return this;
         }
 
         @Override

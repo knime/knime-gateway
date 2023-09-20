@@ -44,11 +44,16 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Updates a components link information or unlinks a component
@@ -61,7 +66,6 @@ public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity,
 
   /**
    * Id of component which link information is to be updated
-   * 
    * @return nodeId , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
@@ -98,7 +102,7 @@ public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity,
         /**
          * Id of component which link information is to be updated
          * 
-         * @param nodeId the property value, NOT <code>null</code>!
+         * @param nodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         UpdateComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);

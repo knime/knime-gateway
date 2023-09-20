@@ -46,16 +46,19 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
-import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeDescriptionEnt.DefaultNativeNodeDescriptionEntBuilder;
+import org.knime.gateway.json.webui.entity.NodeDescriptionEntMixIn;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNativeNodeDescriptionEnt.DefaultNativeNodeDescriptionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -95,7 +98,7 @@ public interface NativeNodeDescriptionEntMixIn extends NativeNodeDescriptionEnt 
     @Override
     @JsonProperty("description")
     public String getDescription();
-
+    
     @Override
     @JsonProperty("dynamicInPortGroupDescriptions")
     public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicInPortGroupDescriptions();
@@ -148,7 +151,7 @@ public interface NativeNodeDescriptionEntMixIn extends NativeNodeDescriptionEnt 
         @Override
         @JsonProperty("description")
         public NativeNodeDescriptionEntMixInBuilder setDescription(final String description);
-
+        
         @Override
         @JsonProperty("dynamicInPortGroupDescriptions")
         public NativeNodeDescriptionEntMixInBuilder setDynamicInPortGroupDescriptions(final java.util.List<DynamicPortGroupDescriptionEnt> dynamicInPortGroupDescriptions);

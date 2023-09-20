@@ -48,10 +48,12 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
-import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt;
+
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 
 /**
  * Description of certain aspects of a native node.
@@ -122,7 +124,7 @@ public record DefaultNativeNodeDescriptionEnt(
     public String getDescription() {
         return description;
     }
-
+    
     @Override
     public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicInPortGroupDescriptions() {
         return dynamicInPortGroupDescriptions;
@@ -200,8 +202,8 @@ public record DefaultNativeNodeDescriptionEnt(
 
         @Override
         public DefaultNativeNodeDescriptionEntBuilder setDescription(String description) {
-            m_description = description;
-            return this;
+             m_description = description;
+             return this;
         }
 
         @Override

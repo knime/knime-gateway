@@ -46,34 +46,46 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.time.OffsetDateTime;
+import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 
 /**
- * Metadata of a workflow project
+ * Update the metadata of a component.
  *
+ * @param kind
  * @param description
  * @param tags
  * @param links
- * @param lastEdit
+ * @param inPorts
+ * @param outPorts
+ * @param icon
+ * @param type
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultProjectMetadataEnt(
+public record DefaultUpdateComponentMetadataCommandEnt(
+    KindEnum kind,
     TypedTextEnt description,
     java.util.List<String> tags,
     java.util.List<LinkEnt> links,
-    OffsetDateTime lastEdit) implements ProjectMetadataEnt {
+    java.util.List<ComponentPortDescriptionEnt> inPorts,
+    java.util.List<ComponentPortDescriptionEnt> outPorts,
+    String icon,
+    TypeEnum type) implements UpdateComponentMetadataCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultProjectMetadataEnt {
+    public DefaultUpdateComponentMetadataCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
         if(description == null) {
             throw new IllegalArgumentException("<description> must not be null.");
         }
@@ -83,13 +95,24 @@ public record DefaultProjectMetadataEnt(
         if(links == null) {
             throw new IllegalArgumentException("<links> must not be null.");
         }
+        if(inPorts == null) {
+            throw new IllegalArgumentException("<inPorts> must not be null.");
+        }
+        if(outPorts == null) {
+            throw new IllegalArgumentException("<outPorts> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "ProjectMetadata";
+        return "UpdateComponentMetadataCommand";
     }
   
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
+    
     @Override
     public TypedTextEnt getDescription() {
         return description;
@@ -106,14 +129,31 @@ public record DefaultProjectMetadataEnt(
     }
     
     @Override
-    public OffsetDateTime getLastEdit() {
-        return lastEdit;
+    public java.util.List<ComponentPortDescriptionEnt> getInPorts() {
+        return inPorts;
+    }
+    
+    @Override
+    public java.util.List<ComponentPortDescriptionEnt> getOutPorts() {
+        return outPorts;
+    }
+    
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+    
+    @Override
+    public TypeEnum getType() {
+        return type;
     }
     
     /**
-     * A builder for {@link DefaultProjectMetadataEnt}.
+     * A builder for {@link DefaultUpdateComponentMetadataCommandEnt}.
      */
-    public static class DefaultProjectMetadataEntBuilder implements ProjectMetadataEntBuilder {
+    public static class DefaultUpdateComponentMetadataCommandEntBuilder implements UpdateComponentMetadataCommandEntBuilder {
+
+        private KindEnum m_kind;
 
         private TypedTextEnt m_description;
 
@@ -121,10 +161,25 @@ public record DefaultProjectMetadataEnt(
 
         private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
 
-        private OffsetDateTime m_lastEdit;
+        private java.util.List<ComponentPortDescriptionEnt> m_inPorts = new java.util.ArrayList<>();
+
+        private java.util.List<ComponentPortDescriptionEnt> m_outPorts = new java.util.ArrayList<>();
+
+        private String m_icon;
+
+        private TypeEnum m_type;
 
         @Override
-        public DefaultProjectMetadataEntBuilder setDescription(TypedTextEnt description) {
+        public DefaultUpdateComponentMetadataCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
+             }
+             m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateComponentMetadataCommandEntBuilder setDescription(TypedTextEnt description) {
              if(description == null) {
                  throw new IllegalArgumentException("<description> must not be null.");
              }
@@ -133,7 +188,7 @@ public record DefaultProjectMetadataEnt(
         }
 
         @Override
-        public DefaultProjectMetadataEntBuilder setTags(java.util.List<String> tags) {
+        public DefaultUpdateComponentMetadataCommandEntBuilder setTags(java.util.List<String> tags) {
              if(tags == null) {
                  throw new IllegalArgumentException("<tags> must not be null.");
              }
@@ -142,7 +197,7 @@ public record DefaultProjectMetadataEnt(
         }
 
         @Override
-        public DefaultProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links) {
+        public DefaultUpdateComponentMetadataCommandEntBuilder setLinks(java.util.List<LinkEnt> links) {
              if(links == null) {
                  throw new IllegalArgumentException("<links> must not be null.");
              }
@@ -151,18 +206,46 @@ public record DefaultProjectMetadataEnt(
         }
 
         @Override
-        public DefaultProjectMetadataEntBuilder setLastEdit(OffsetDateTime lastEdit) {
-             m_lastEdit = lastEdit;
+        public DefaultUpdateComponentMetadataCommandEntBuilder setInPorts(java.util.List<ComponentPortDescriptionEnt> inPorts) {
+             if(inPorts == null) {
+                 throw new IllegalArgumentException("<inPorts> must not be null.");
+             }
+             m_inPorts = inPorts;
              return this;
         }
 
         @Override
-        public DefaultProjectMetadataEnt build() {
-            return new DefaultProjectMetadataEnt(
+        public DefaultUpdateComponentMetadataCommandEntBuilder setOutPorts(java.util.List<ComponentPortDescriptionEnt> outPorts) {
+             if(outPorts == null) {
+                 throw new IllegalArgumentException("<outPorts> must not be null.");
+             }
+             m_outPorts = outPorts;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateComponentMetadataCommandEntBuilder setIcon(String icon) {
+             m_icon = icon;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateComponentMetadataCommandEntBuilder setType(TypeEnum type) {
+             m_type = type;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateComponentMetadataCommandEnt build() {
+            return new DefaultUpdateComponentMetadataCommandEnt(
+                immutable(m_kind),
                 immutable(m_description),
                 immutable(m_tags),
                 immutable(m_links),
-                immutable(m_lastEdit));
+                immutable(m_inPorts),
+                immutable(m_outPorts),
+                immutable(m_icon),
+                immutable(m_type));
         }
     
     }

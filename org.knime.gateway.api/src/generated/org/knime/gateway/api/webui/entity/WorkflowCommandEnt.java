@@ -48,8 +48,11 @@ package org.knime.gateway.api.webui.entity;
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * A command that is executed to change a workflow.
@@ -103,8 +106,8 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     UPDATE_PROJECT_METADATA("update_project_metadata"),
     
-          UPDATE_COMPONENT_METADATA("update_component_metadata"),
-
+    UPDATE_COMPONENT_METADATA("update_component_metadata"),
+    
     ADD_BENDPOINT("add_bendpoint"),
     
     UPDATE_COMPONENT_LINK_INFORMATION("update_component_link_information");

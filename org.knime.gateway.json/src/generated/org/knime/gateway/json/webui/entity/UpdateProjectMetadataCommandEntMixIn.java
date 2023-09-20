@@ -46,13 +46,17 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt.DefaultUpdateProjectMetadataCommandEntBuilder;
+import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt.DefaultUpdateProjectMetadataCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.

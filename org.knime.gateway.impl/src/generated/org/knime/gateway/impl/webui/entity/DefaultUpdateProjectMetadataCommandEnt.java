@@ -48,6 +48,9 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 
 /**

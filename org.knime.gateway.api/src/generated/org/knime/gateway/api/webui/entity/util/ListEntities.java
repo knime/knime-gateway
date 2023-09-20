@@ -44,9 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
@@ -161,6 +158,10 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

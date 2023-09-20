@@ -44,9 +44,11 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
-import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,8 +56,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNodeDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentMetadataCommandEnt.DefaultUpdateComponentMetadataCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -63,30 +65,46 @@ import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNode
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNodeDescriptionEntBuilder.class)
-@JsonSerialize(as=NodeDescriptionEnt.class)
+@JsonDeserialize(builder=DefaultUpdateComponentMetadataCommandEntBuilder.class)
+@JsonSerialize(as=UpdateComponentMetadataCommandEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NodeDescriptionEntMixIn extends NodeDescriptionEnt {
+public interface UpdateComponentMetadataCommandEntMixIn extends UpdateComponentMetadataCommandEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("options")
-    public java.util.List<NodeDialogOptionGroupEnt> getOptions();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
     @Override
-    @JsonProperty("views")
-    public java.util.List<NodeViewDescriptionEnt> getViews();
+    @JsonProperty("description")
+    public TypedTextEnt getDescription();
+    
+    @Override
+    @JsonProperty("tags")
+    public java.util.List<String> getTags();
+    
+    @Override
+    @JsonProperty("links")
+    public java.util.List<LinkEnt> getLinks();
     
     @Override
     @JsonProperty("inPorts")
-    public java.util.List<NodePortDescriptionEnt> getInPorts();
+    public java.util.List<ComponentPortDescriptionEnt> getInPorts();
     
     @Override
     @JsonProperty("outPorts")
-    public java.util.List<NodePortDescriptionEnt> getOutPorts();
+    public java.util.List<ComponentPortDescriptionEnt> getOutPorts();
+    
+    @Override
+    @JsonProperty("icon")
+    public String getIcon();
+    
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
     
 
     /**
@@ -96,26 +114,42 @@ public interface NodeDescriptionEntMixIn extends NodeDescriptionEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NodeDescriptionEntMixInBuilder extends NodeDescriptionEntBuilder {
+    public static interface UpdateComponentMetadataCommandEntMixInBuilder extends UpdateComponentMetadataCommandEntBuilder {
     
         @Override
-        public NodeDescriptionEntMixIn build();
+        public UpdateComponentMetadataCommandEntMixIn build();
     
         @Override
-        @JsonProperty("options")
-        public NodeDescriptionEntMixInBuilder setOptions(final java.util.List<NodeDialogOptionGroupEnt> options);
+        @JsonProperty("kind")
+        public UpdateComponentMetadataCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("views")
-        public NodeDescriptionEntMixInBuilder setViews(final java.util.List<NodeViewDescriptionEnt> views);
+        @JsonProperty("description")
+        public UpdateComponentMetadataCommandEntMixInBuilder setDescription(final TypedTextEnt description);
+        
+        @Override
+        @JsonProperty("tags")
+        public UpdateComponentMetadataCommandEntMixInBuilder setTags(final java.util.List<String> tags);
+        
+        @Override
+        @JsonProperty("links")
+        public UpdateComponentMetadataCommandEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
         
         @Override
         @JsonProperty("inPorts")
-        public NodeDescriptionEntMixInBuilder setInPorts(final java.util.List<NodePortDescriptionEnt> inPorts);
+        public UpdateComponentMetadataCommandEntMixInBuilder setInPorts(final java.util.List<ComponentPortDescriptionEnt> inPorts);
         
         @Override
         @JsonProperty("outPorts")
-        public NodeDescriptionEntMixInBuilder setOutPorts(final java.util.List<NodePortDescriptionEnt> outPorts);
+        public UpdateComponentMetadataCommandEntMixInBuilder setOutPorts(final java.util.List<ComponentPortDescriptionEnt> outPorts);
+        
+        @Override
+        @JsonProperty("icon")
+        public UpdateComponentMetadataCommandEntMixInBuilder setIcon(final String icon);
+        
+        @Override
+        @JsonProperty("type")
+        public UpdateComponentMetadataCommandEntMixInBuilder setType(final TypeEnum type);
         
     }
 
