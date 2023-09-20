@@ -81,9 +81,9 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             @SuppressWarnings({"rawtypes", "unchecked"})
             public Optional<InitialDataService> createInitialDataService() {
                 var settings = new TableViewViewSettings(table.getDataTableSpec());
-                settings.m_showTitle = false;
                 settings.m_publishSelection = false;
                 settings.m_subscribeToSelection = false;
+                settings.m_title = "";
                 settings.m_enablePagination = false;
                 settings.m_compactMode = true;
                 settings.m_showRowIndices = true;

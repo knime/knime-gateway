@@ -105,8 +105,8 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
      */
     static TableViewViewSettings getSettingsForDataTable(final DataTableSpec tableSpec) {
         var settings = new TableViewViewSettings(tableSpec);
-        settings.m_showTitle = false;
         settings.m_enableGlobalSearch = false;
+        settings.m_title = "";
         settings.m_enableSortingByHeader = false;
         settings.m_enableColumnSearch = false;
         settings.m_compactMode = true;

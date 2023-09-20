@@ -188,9 +188,9 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
      */
     static TableViewViewSettings getSettingsForDataTable(final DataTableSpec tableSpec, final int numColumns) {
         var settings = new TableViewViewSettings(tableSpec);
-        settings.m_showTitle = false;
         settings.m_enableGlobalSearch = false;
         settings.m_enableSortingByHeader = false;
+        settings.m_title = "";
         settings.m_enableColumnSearch = false;
         settings.m_compactMode = true;
         settings.m_subscribeToSelection = false;

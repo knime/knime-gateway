@@ -188,8 +188,8 @@ final class TestingUtilities {
      * @throws AssertionError If values do not match.
      */
     static void assertViewSettings(final JsonNode actual, final TableViewViewSettings expected) throws AssertionError {
-        assertThat(actual.get("showTitle").asBoolean(), is(expected.m_showTitle));
         assertThat(actual.get("publishSelection").asBoolean(), is(expected.m_publishSelection));
+        assertThat(actual.get("title").asText(), is(expected.m_title));
         assertThat(actual.get("subscribeToSelection").asBoolean(), is(expected.m_subscribeToSelection));
         assertThat(actual.get("enablePagination").asBoolean(), is(expected.m_enablePagination));
         assertThat(actual.get("compactMode").asBoolean(), is(expected.m_compactMode));

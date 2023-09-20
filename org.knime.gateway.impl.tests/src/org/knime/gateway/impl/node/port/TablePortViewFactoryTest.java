@@ -133,7 +133,7 @@ public class TablePortViewFactoryTest {
             assertThat(initialData, containsString("\"settings\":{"));
             var initialDataTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
             var settings = initialDataTree.get("result").get("settings");
-            assertThat(settings.get("showTitle").asBoolean(), is(false));
+            assertThat(settings.get("title").asText(), is(""));
             assertThat(settings.get("publishSelection").asBoolean(), is(false));
             assertThat(settings.get("subscribeToSelection").asBoolean(), is(false));
             assertThat(settings.get("enablePagination").asBoolean(), is(false));

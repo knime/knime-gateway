@@ -182,7 +182,6 @@ public class DirectAccessTableDataService {
 
     private static TableViewViewSettings getSettingsForDataTable(final DataTableSpec tableSpec, final int numRows) {
         var settings = new TableViewViewSettings(tableSpec);
-        settings.m_showTitle = false;
         settings.m_enableGlobalSearch = false;
         settings.m_enableSortingByHeader = false;
         settings.m_enableColumnSearch = false;
@@ -190,6 +189,7 @@ public class DirectAccessTableDataService {
         settings.m_subscribeToSelection = false;
         settings.m_publishSelection = false;
         settings.m_showColumnDataType = true;
+        settings.m_title = "";
         // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
         // BUT: set the page-size to the 'maximum' such that the 'paging-buttons' actually don't show up
         settings.m_enablePagination = true;
