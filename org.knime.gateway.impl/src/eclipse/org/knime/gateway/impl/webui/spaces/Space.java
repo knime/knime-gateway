@@ -351,6 +351,15 @@ public interface Space {
     }
 
     /**
+     * Opens the Remote Execution dialog for Server items only.
+     *
+     * @param itemId The item to get the dialog for
+     */
+    default void openRemoteExecution(final String itemId) {
+        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other then 'ServerSpaces'.");
+    }
+
+    /**
      * Generates unique space item names, preserves file extensions.
      *
      * @param taken predicate for determining whether a name is already taken in a space
