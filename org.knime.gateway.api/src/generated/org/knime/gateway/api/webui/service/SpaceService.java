@@ -114,6 +114,20 @@ public interface SpaceService extends GatewayService {
     void deleteJobsForWorkflow(String spaceId, String spaceProviderId, String itemId, String jobId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
         
     /**
+     * Deletes schedule from the space.
+     *
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param spaceProviderId Identifies a space-provider.
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param scheduleId The ID of the schedule to delete
+     *
+     * 
+     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+        
+    /**
      * Mainly returns the spaces provided by this space-provider.
      *
      * @param spaceProviderId Identifies a space-provider.
