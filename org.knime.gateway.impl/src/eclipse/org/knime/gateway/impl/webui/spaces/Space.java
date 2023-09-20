@@ -189,6 +189,18 @@ public interface Space {
     }
 
     /**
+     * Edit the info of a scheduled job.
+     *
+     * @param workflowId ID of workflow from which the schedule originated
+     * @param scheduleId ID of the scheduled job to edit
+     * @return the ID of the scheduled job if it was changed or {@code null} if nothing was changed
+     * @throws ResourceAccessException if an exception occured while saving the edited job
+     */
+    default String editScheduleInfo(final String workflowId, final String scheduleId) throws ResourceAccessException {
+        throw new UnsupportedOperationException("Editing schedules is not supported.");
+    }
+
+    /**
      * Deletes the given schedules.
      * @param workflowId id of the workflow from which the schedule originated
      * @param scheduleIds schedules to delete
@@ -397,4 +409,5 @@ public interface Space {
             return newName + fileExtension;
         }
     }
+
 }
