@@ -128,9 +128,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Object> listJobsForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
         throws InvalidRequestException {
@@ -143,7 +140,7 @@ public class DefaultSpaceService implements SpaceService {
 
     @Override
     public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
-        final String jobId) throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+            final String jobId) throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
         final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
         try {
             space.deleteJobsForWorkflow(itemId, List.of(jobId));
@@ -152,9 +149,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
         throws InvalidRequestException {
@@ -162,6 +156,18 @@ public class DefaultSpaceService implements SpaceService {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).listSchedulesForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new InvalidRequestException("Problem fetching jobs", e);
+        }
+    }
+
+    @Override
+    public void deleteSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
+            final String scheduleId) throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException,
+            InvalidRequestException {
+        final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
+        try {
+            space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
+        } catch (final ResourceAccessException e) {
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }
 

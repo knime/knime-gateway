@@ -189,6 +189,17 @@ public interface Space {
     }
 
     /**
+     * Deletes the given schedules.
+     * @param workflowId id of the workflow from which the schedule originated
+     * @param scheduleIds schedules to delete
+     * @throws ResourceAccessException if any schedule could not be deleted
+     */
+    default void deleteSchedulesForWorkflow(final String workflowId, final List<String> scheduleIds)
+            throws ResourceAccessException {
+        throw new UnsupportedOperationException("Deletion of schedules is not supported.");
+    }
+
+    /**
      * Creates a new workflow.
      *
      * @param workflowGroupItemId The ID of the workflow group where to create the new workflow
