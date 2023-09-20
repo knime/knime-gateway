@@ -44,18 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
-import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Represents the global application state.
@@ -89,6 +82,13 @@ public interface AppStateEnt extends GatewayEntity {
    * @return suggestedPortTypeIds 
    **/
   public java.util.List<String> getSuggestedPortTypeIds();
+
+  /**
+   * Available component node types.
+   * 
+   * @return availableComponentTypes
+   **/
+  public java.util.List<String> getAvailableComponentTypes();
 
   /**
    * If true, node recommendation features can be used, otherwise they have to be disabled.
@@ -135,6 +135,8 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("exampleProjects", Pair.create(getExampleProjects(), e.getExampleProjects()));
       valueConsumer.accept("availablePortTypes", Pair.create(getAvailablePortTypes(), e.getAvailablePortTypes()));
       valueConsumer.accept("suggestedPortTypeIds", Pair.create(getSuggestedPortTypeIds(), e.getSuggestedPortTypeIds()));
+      valueConsumer.accept("availableComponentTypes",
+          Pair.create(getAvailableComponentTypes(), e.getAvailableComponentTypes()));
       valueConsumer.accept("hasNodeRecommendationsEnabled", Pair.create(hasNodeRecommendationsEnabled(), e.hasNodeRecommendationsEnabled()));
       valueConsumer.accept("featureFlags", Pair.create(getFeatureFlags(), e.getFeatureFlags()));
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
@@ -180,6 +182,14 @@ public interface AppStateEnt extends GatewayEntity {
          */
         AppStateEntBuilder setSuggestedPortTypeIds(java.util.List<String> suggestedPortTypeIds);
         
+        /**
+         * Available component node types.
+         * 
+         * @param availableComponentTypes the property value,
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setAvailableComponentTypes(java.util.List<String> availableComponentTypes);
+
         /**
          * If true, node recommendation features can be used, otherwise they have to be disabled.
          * 

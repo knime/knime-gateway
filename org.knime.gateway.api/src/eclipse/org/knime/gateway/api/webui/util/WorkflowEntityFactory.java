@@ -23,6 +23,7 @@ import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.util.EntityUtil.toLinkEnts;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NodeFactory;
@@ -71,7 +73,6 @@ import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.ComponentMetadata;
-import org.knime.core.node.workflow.ComponentMetadata.ComponentNodeType;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowScopeContext;
 import org.knime.core.node.workflow.FlowVariable;
@@ -202,6 +203,8 @@ public final class WorkflowEntityFactory {
     private static final int DEFAULT_NODE_ANNOTATION_BG_COLOR = 0xFFFFFF;
 
     private static final Map<Class<?>, Boolean> IS_STREAMABLE = new ConcurrentHashMap<>(0);
+
+    private static final String ICON_DATA_URL_PREFIX = "data:image/png;base64,";
 
     /**
      * Characterization of loop state for determining allowed actions.
@@ -495,12 +498,17 @@ public final class WorkflowEntityFactory {
     private ComponentNodeDescriptionEnt buildComponentNodeDescriptionEnt(final SubNodeContainer snc) {
         if (snc != null) {
             ComponentMetadata metadata = snc.getMetadata();
-            String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
+            var type =
+                metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
+            var description = metadata.getDescription().isEmpty() ? null
+                : EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType());
             return builder(ComponentNodeDescriptionEntBuilder.class)//
                 .setName(snc.getName())//
                 .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
-                .setType(type == null ? null : ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(type))//
-                .setDescription(metadata.getDescription().orElse(null))//
+                .setType(type) //
+                .setDescription(description)//
+                .setLinks(toLinkEnts(metadata.getLinks())).setTags(metadata.getTags()) //
+                .setLastEdit(metadata.getLastModified().toOffsetDateTime()) //
                 .setOptions(buildUngroupedDialogOptionGroupEnt(buildComponentDialogOptionsEnts(snc))) //
                 .setViews(buildComponentViewDescriptionEnts(snc))//
                 .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//
@@ -513,11 +521,12 @@ public final class WorkflowEntityFactory {
     private ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,
         final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         ComponentMetadata metadata = nc.getMetadata();
-        String type = metadata.getNodeType().map(ComponentNodeType::toString).orElse(null);
+        var type =
+            metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
         var hasDialog = NodeDialogManager.hasNodeDialog(nc) ? Boolean.TRUE : null;
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
-            .setType(type == null ? null : ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(type))//
+            .setType(type) //
             .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
             .setInPorts(buildNodePortEnts(nc, true, buildContext))//
@@ -1276,19 +1285,34 @@ public final class WorkflowEntityFactory {
         } else {
             return canRemoveContainerNodePort(nc, portIndex, isInputPort);
         }
-
     }
 
-    private String createIconDataURL(final byte[] iconData) {
+    /**
+     * Decode bytes from a given String
+     * 
+     * @param dataUrl A string containing a PNG encoded in a base64-data-url
+     * @return The decoded bytes
+     */
+    public static byte[] decodeIconDataURL(final String dataUrl) {
+        var withoutPrefix = StringUtils.removeStart(dataUrl, ICON_DATA_URL_PREFIX);
+        return java.util.Base64.getDecoder().decode(withoutPrefix.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Encode bytes into a data-url-string
+     * 
+     * @param iconData The data to encode
+     * @return The encoded string
+     */
+    public static String createIconDataURL(final byte[] iconData) {
         if (iconData != null) {
-            final var dataUrlPrefix = "data:image/png;base64,";
-            return dataUrlPrefix + new String(Base64.encodeBase64(iconData), StandardCharsets.UTF_8);
+            return ICON_DATA_URL_PREFIX + new String(Base64.encodeBase64(iconData), StandardCharsets.UTF_8);
         } else {
             return null;
         }
     }
 
-    String createIconDataURL(final NodeFactory<?> nodeFactory) {
+    static String createIconDataURL(final NodeFactory<?> nodeFactory) {
         try {
             return createIconDataURL(nodeFactory.getIcon());
         } catch (IOException ex) {
@@ -1298,7 +1322,7 @@ public final class WorkflowEntityFactory {
         }
     }
 
-    private String createIconDataURL(final URL url) throws IOException {
+    private static String createIconDataURL(final URL url) throws IOException {
         if (url != null) {
             try (InputStream in = url.openStream()) {
                 return createIconDataURL(IOUtils.toByteArray(in));

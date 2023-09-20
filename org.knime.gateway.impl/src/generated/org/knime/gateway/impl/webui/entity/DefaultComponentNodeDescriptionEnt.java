@@ -46,25 +46,30 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.time.OffsetDateTime;
+
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt;
-
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 /**
- * Description of certain aspects of a component. This is static information for a component which remains the same even if component is not part of a workflow.
+ * Description of certain aspects of a component. This is static information for a component which remains the same even
+ * if component is not part of a workflow.
  *
  * @param name
  * @param type
  * @param icon
- * @param description
  * @param options
  * @param views
  * @param inPorts
  * @param outPorts
+ * @param description
+ * @param tags
+ * @param links
+ * @param lastEdit
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -73,11 +78,11 @@ public record DefaultComponentNodeDescriptionEnt(
     String name,
     TypeEnum type,
     String icon,
-    String description,
     java.util.List<NodeDialogOptionGroupEnt> options,
     java.util.List<NodeViewDescriptionEnt> views,
     java.util.List<NodePortDescriptionEnt> inPorts,
-    java.util.List<NodePortDescriptionEnt> outPorts) implements ComponentNodeDescriptionEnt {
+    java.util.List<NodePortDescriptionEnt> outPorts, TypedTextEnt description, java.util.List<String> tags,
+    java.util.List<LinkEnt> links, OffsetDateTime lastEdit) implements ComponentNodeDescriptionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -85,6 +90,15 @@ public record DefaultComponentNodeDescriptionEnt(
     public DefaultComponentNodeDescriptionEnt {
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
+        }
+        if (description == null) {
+            throw new IllegalArgumentException("<description> must not be null.");
+        }
+        if (tags == null) {
+            throw new IllegalArgumentException("<tags> must not be null.");
+        }
+        if (links == null) {
+            throw new IllegalArgumentException("<links> must not be null.");
         }
     }
 
@@ -109,11 +123,6 @@ public record DefaultComponentNodeDescriptionEnt(
     }
     
     @Override
-    public String getDescription() {
-        return description;
-    }
-    
-    @Override
     public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
         return options;
     }
@@ -133,6 +142,26 @@ public record DefaultComponentNodeDescriptionEnt(
         return outPorts;
     }
     
+    @Override
+    public TypedTextEnt getDescription() {
+        return description;
+    }
+
+    @Override
+    public java.util.List<String> getTags() {
+        return tags;
+    }
+
+    @Override
+    public java.util.List<LinkEnt> getLinks() {
+        return links;
+    }
+
+    @Override
+    public OffsetDateTime getLastEdit() {
+        return lastEdit;
+    }
+
     /**
      * A builder for {@link DefaultComponentNodeDescriptionEnt}.
      */
@@ -144,8 +173,6 @@ public record DefaultComponentNodeDescriptionEnt(
 
         private String m_icon;
 
-        private String m_description;
-
         private java.util.List<NodeDialogOptionGroupEnt> m_options;
 
         private java.util.List<NodeViewDescriptionEnt> m_views;
@@ -153,6 +180,14 @@ public record DefaultComponentNodeDescriptionEnt(
         private java.util.List<NodePortDescriptionEnt> m_inPorts;
 
         private java.util.List<NodePortDescriptionEnt> m_outPorts;
+
+        private TypedTextEnt m_description;
+
+        private java.util.List<String> m_tags = new java.util.ArrayList<>();
+
+        private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
+
+        private OffsetDateTime m_lastEdit;
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setName(String name) {
@@ -172,12 +207,6 @@ public record DefaultComponentNodeDescriptionEnt(
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setIcon(String icon) {
              m_icon = icon;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeDescriptionEntBuilder setDescription(String description) {
-             m_description = description;
              return this;
         }
 
@@ -206,16 +235,49 @@ public record DefaultComponentNodeDescriptionEnt(
         }
 
         @Override
+        public DefaultComponentNodeDescriptionEntBuilder setDescription(TypedTextEnt description) {
+            if (description == null) {
+                throw new IllegalArgumentException("<description> must not be null.");
+            }
+            m_description = description;
+            return this;
+        }
+
+        @Override
+        public DefaultComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags) {
+            if (tags == null) {
+                throw new IllegalArgumentException("<tags> must not be null.");
+            }
+            m_tags = tags;
+            return this;
+        }
+
+        @Override
+        public DefaultComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links) {
+            if (links == null) {
+                throw new IllegalArgumentException("<links> must not be null.");
+            }
+            m_links = links;
+            return this;
+        }
+
+        @Override
+        public DefaultComponentNodeDescriptionEntBuilder setLastEdit(OffsetDateTime lastEdit) {
+            m_lastEdit = lastEdit;
+            return this;
+        }
+
+        @Override
         public DefaultComponentNodeDescriptionEnt build() {
             return new DefaultComponentNodeDescriptionEnt(
                 immutable(m_name),
                 immutable(m_type),
                 immutable(m_icon),
-                immutable(m_description),
                 immutable(m_options),
                 immutable(m_views),
                 immutable(m_inPorts),
-                immutable(m_outPorts));
+                immutable(m_outPorts), immutable(m_description), immutable(m_tags), immutable(m_links),
+                immutable(m_lastEdit));
         }
     
     }

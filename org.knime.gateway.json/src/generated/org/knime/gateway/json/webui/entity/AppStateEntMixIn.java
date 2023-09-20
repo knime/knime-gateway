@@ -44,18 +44,16 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-
+import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt.DefaultAppStateEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt.DefaultAppStateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -88,6 +86,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("suggestedPortTypeIds")
     public java.util.List<String> getSuggestedPortTypeIds();
     
+    @Override
+    @JsonProperty("availableComponentTypes")
+    public java.util.List<String> getAvailableComponentTypes();
+
     @Override
     @JsonProperty("hasNodeRecommendationsEnabled")
     public Boolean hasNodeRecommendationsEnabled();
@@ -141,6 +143,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @JsonProperty("suggestedPortTypeIds")
         public AppStateEntMixInBuilder setSuggestedPortTypeIds(final java.util.List<String> suggestedPortTypeIds);
         
+        @Override
+        @JsonProperty("availableComponentTypes")
+        public AppStateEntMixInBuilder setAvailableComponentTypes(final java.util.List<String> availableComponentTypes);
+
         @Override
         @JsonProperty("hasNodeRecommendationsEnabled")
         public AppStateEntMixInBuilder setHasNodeRecommendationsEnabled(final Boolean hasNodeRecommendationsEnabled);

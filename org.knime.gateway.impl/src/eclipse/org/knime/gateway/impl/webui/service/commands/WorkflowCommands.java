@@ -76,6 +76,7 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
@@ -219,6 +220,8 @@ public final class WorkflowCommands {
             command = new AddWorkflowAnnotation(ce);
         } else if (commandEnt instanceof UpdateProjectMetadataCommandEnt ce) {
             command = new UpdateProjectMetadata(ce);
+        } else if (commandEnt instanceof UpdateComponentMetadataCommandEnt ce) {
+            command = new UpdateComponentMetadata(ce);
         } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) { // For testing the command

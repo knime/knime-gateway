@@ -47,13 +47,13 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import java.time.OffsetDateTime;
+
 import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
-import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
-
 /**
- * The metadata for a workflow project, i.e. for the root-workflow.
+ * Metadata of a workflow project
  *
  * @param description
  * @param tags

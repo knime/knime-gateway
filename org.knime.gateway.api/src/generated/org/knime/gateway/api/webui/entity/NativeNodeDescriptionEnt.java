@@ -44,21 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
-import org.knime.gateway.api.webui.entity.LinkEnt;
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
-import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Description of certain aspects of a native node.
@@ -74,6 +64,14 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
    * @return shortDescription 
    **/
   public String getShortDescription();
+
+  /**
+   * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML
+   * markup tags.
+   * 
+   * @return description
+   **/
+  public String getDescription();
 
   /**
    * Get dynamicInPortGroupDescriptions
@@ -104,12 +102,12 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (NativeNodeDescriptionEnt)other;
-      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("options", Pair.create(getOptions(), e.getOptions()));
       valueConsumer.accept("views", Pair.create(getViews(), e.getViews()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
       valueConsumer.accept("shortDescription", Pair.create(getShortDescription(), e.getShortDescription()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("dynamicInPortGroupDescriptions", Pair.create(getDynamicInPortGroupDescriptions(), e.getDynamicInPortGroupDescriptions()));
       valueConsumer.accept("dynamicOutPortGroupDescriptions", Pair.create(getDynamicOutPortGroupDescriptions(), e.getDynamicOutPortGroupDescriptions()));
       valueConsumer.accept("interactiveView", Pair.create(getInteractiveView(), e.getInteractiveView()));
@@ -121,14 +119,6 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
      */
     public interface NativeNodeDescriptionEntBuilder extends GatewayEntityBuilder<NativeNodeDescriptionEnt> {
 
-        /**
-         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
-         * 
-         * @param description the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeDescriptionEntBuilder setDescription(String description);
-        
         /**
          * List of dialog option groups. In case the dialog options are actually ungrouped, this is a singleton list containing a group with no name or description.
          * 
@@ -169,6 +159,15 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
          */
         NativeNodeDescriptionEntBuilder setShortDescription(String shortDescription);
         
+        /**
+         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May
+         * contain HTML markup tags.
+         * 
+         * @param description the property value,
+         * @return this entity builder for chaining
+         */
+        NativeNodeDescriptionEntBuilder setDescription(String description);
+
         /**
    		 * Set dynamicInPortGroupDescriptions
          * 

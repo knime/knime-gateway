@@ -54,8 +54,10 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,6 +75,7 @@ import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.core.webui.WebUIUtil;
@@ -106,10 +109,16 @@ import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 public final class AppStateEntityFactory {
 
     private static final Set<PortType> AVAILABLE_PORT_TYPES =
-        PortTypeRegistry.getInstance().availablePortTypes().stream()//
-            .collect(Collectors.toSet());
+        new HashSet<>(PortTypeRegistry.getInstance().availablePortTypes());
 
     private static final Map<String, PortTypeEnt> AVAILABLE_PORT_TYPE_ENTS = getAvailablePortTypeEnts();
+
+    private static final List<String> AVAILABLE_COMPONENT_TYPES = getAvailableComponentTypes();
+
+    private static List<String> getAvailableComponentTypes() {
+        return Arrays.stream(ComponentMetadata.ComponentNodeType.values())
+            .map(ComponentMetadata.ComponentNodeType::getDisplayText).toList();
+    }
 
     /**
      * When the user is prompted to select a port type, this subset of types may be used as suggestions.
@@ -178,6 +187,7 @@ public final class AppStateEntityFactory {
             .setExampleProjects(exampleProjectEnts) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(SUGGESTED_PORT_TYPE_IDS) //
+            .setAvailableComponentTypes(AVAILABLE_COMPONENT_TYPES) //
             .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
             .setHasNodeCollectionActive(preferenceProvider.activeNodeCollection() != null) //
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //

@@ -48,22 +48,20 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt;
-
-import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 
 /**
  * Description of certain aspects of a native node.
  *
- * @param description
  * @param options
  * @param views
  * @param inPorts
  * @param outPorts
  * @param shortDescription
+ * @param description
  * @param dynamicInPortGroupDescriptions
  * @param dynamicOutPortGroupDescriptions
  * @param interactiveView
@@ -73,12 +71,12 @@ import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNativeNodeDescriptionEnt(
-    String description,
     java.util.List<NodeDialogOptionGroupEnt> options,
     java.util.List<NodeViewDescriptionEnt> views,
     java.util.List<NodePortDescriptionEnt> inPorts,
     java.util.List<NodePortDescriptionEnt> outPorts,
     String shortDescription,
+    String description,
     java.util.List<DynamicPortGroupDescriptionEnt> dynamicInPortGroupDescriptions,
     java.util.List<DynamicPortGroupDescriptionEnt> dynamicOutPortGroupDescriptions,
     NodeViewDescriptionEnt interactiveView,
@@ -95,11 +93,6 @@ public record DefaultNativeNodeDescriptionEnt(
         return "NativeNodeDescription";
     }
   
-    @Override
-    public String getDescription() {
-        return description;
-    }
-    
     @Override
     public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
         return options;
@@ -126,6 +119,11 @@ public record DefaultNativeNodeDescriptionEnt(
     }
     
     @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
     public java.util.List<DynamicPortGroupDescriptionEnt> getDynamicInPortGroupDescriptions() {
         return dynamicInPortGroupDescriptions;
     }
@@ -150,8 +148,6 @@ public record DefaultNativeNodeDescriptionEnt(
      */
     public static class DefaultNativeNodeDescriptionEntBuilder implements NativeNodeDescriptionEntBuilder {
 
-        private String m_description;
-
         private java.util.List<NodeDialogOptionGroupEnt> m_options;
 
         private java.util.List<NodeViewDescriptionEnt> m_views;
@@ -162,6 +158,8 @@ public record DefaultNativeNodeDescriptionEnt(
 
         private String m_shortDescription;
 
+        private String m_description;
+
         private java.util.List<DynamicPortGroupDescriptionEnt> m_dynamicInPortGroupDescriptions;
 
         private java.util.List<DynamicPortGroupDescriptionEnt> m_dynamicOutPortGroupDescriptions;
@@ -169,12 +167,6 @@ public record DefaultNativeNodeDescriptionEnt(
         private NodeViewDescriptionEnt m_interactiveView;
 
         private java.util.List<LinkEnt> m_links;
-
-        @Override
-        public DefaultNativeNodeDescriptionEntBuilder setDescription(String description) {
-             m_description = description;
-             return this;
-        }
 
         @Override
         public DefaultNativeNodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionGroupEnt> options) {
@@ -207,6 +199,12 @@ public record DefaultNativeNodeDescriptionEnt(
         }
 
         @Override
+        public DefaultNativeNodeDescriptionEntBuilder setDescription(String description) {
+            m_description = description;
+            return this;
+        }
+
+        @Override
         public DefaultNativeNodeDescriptionEntBuilder setDynamicInPortGroupDescriptions(java.util.List<DynamicPortGroupDescriptionEnt> dynamicInPortGroupDescriptions) {
              m_dynamicInPortGroupDescriptions = dynamicInPortGroupDescriptions;
              return this;
@@ -233,12 +231,12 @@ public record DefaultNativeNodeDescriptionEnt(
         @Override
         public DefaultNativeNodeDescriptionEnt build() {
             return new DefaultNativeNodeDescriptionEnt(
-                immutable(m_description),
                 immutable(m_options),
                 immutable(m_views),
                 immutable(m_inPorts),
                 immutable(m_outPorts),
                 immutable(m_shortDescription),
+                immutable(m_description),
                 immutable(m_dynamicInPortGroupDescriptions),
                 immutable(m_dynamicOutPortGroupDescriptions),
                 immutable(m_interactiveView),

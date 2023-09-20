@@ -44,18 +44,16 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-
+import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNodeDescriptionEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt.DefaultNodeDescriptionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -72,10 +70,6 @@ public interface NodeDescriptionEntMixIn extends NodeDescriptionEnt {
     @JsonIgnore
     public String getTypeID();
 
-    @Override
-    @JsonProperty("description")
-    public String getDescription();
-    
     @Override
     @JsonProperty("options")
     public java.util.List<NodeDialogOptionGroupEnt> getOptions();
@@ -105,10 +99,6 @@ public interface NodeDescriptionEntMixIn extends NodeDescriptionEnt {
         @Override
         public NodeDescriptionEntMixIn build();
     
-        @Override
-        @JsonProperty("description")
-        public NodeDescriptionEntMixInBuilder setDescription(final String description);
-        
         @Override
         @JsonProperty("options")
         public NodeDescriptionEntMixInBuilder setOptions(final java.util.List<NodeDialogOptionGroupEnt> options);

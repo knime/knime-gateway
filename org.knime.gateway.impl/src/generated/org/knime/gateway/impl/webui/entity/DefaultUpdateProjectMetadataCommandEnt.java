@@ -48,12 +48,10 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
-
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 
 /**
- * Updates a projects metadata. At least one property must be set.
+ * Update the metadata of a workflow project.
  *
  * @param kind
  * @param description

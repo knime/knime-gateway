@@ -44,20 +44,12 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
-import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-
+import java.time.OffsetDateTime;
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Description of certain aspects of a component. This is static information for a component which remains the same even if component is not part of a workflow.
@@ -65,7 +57,8 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNodeAndDescriptionEnt, NodeDescriptionEnt {
+public interface ComponentNodeDescriptionEnt
+    extends GatewayEntity, ComponentNodeAndDescriptionEnt, NodeDescriptionEnt, ProjectMetadataEnt {
 
 
 
@@ -76,11 +69,14 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
-      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("options", Pair.create(getOptions(), e.getOptions()));
       valueConsumer.accept("views", Pair.create(getViews(), e.getViews()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
+      valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
+      valueConsumer.accept("lastEdit", Pair.create(getLastEdit(), e.getLastEdit()));
   }
 
     /**
@@ -111,14 +107,6 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
          * @return this entity builder for chaining
          */
         ComponentNodeDescriptionEntBuilder setIcon(String icon);
-        
-        /**
-         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
-         * 
-         * @param description the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setDescription(String description);
         
         /**
          * List of dialog option groups. In case the dialog options are actually ungrouped, this is a singleton list containing a group with no name or description.
@@ -152,6 +140,37 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
          */
         ComponentNodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts);
         
+        /**
+         * Set description
+         * 
+         * @param description the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setDescription(TypedTextEnt description);
+
+        /**
+         * A collection of tags the user chose to describe the workflow
+         * 
+         * @param tags the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags);
+
+        /**
+         * A collection of URLs attached to the workflow
+         * 
+         * @param links the property value, NOT <code>null</code>!
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links);
+
+        /**
+         * The date and time of the last change made to this workflow
+         * 
+         * @param lastEdit the property value,
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setLastEdit(OffsetDateTime lastEdit);
         
         /**
         * Creates the entity from the builder.

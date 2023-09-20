@@ -44,45 +44,20 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LinkEnt;
-import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
+import org.knime.gateway.api.entity.GatewayEntity;
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
-
-import org.knime.gateway.api.entity.GatewayEntity;
-
 /**
- * Updates a projects metadata. At least one property must be set.
+ * Update the metadata of a workflow project.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, WorkflowCommandEnt {
+public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, WorkflowCommandEnt, EditableProjectMetadataEnt {
 
-
-  /**
-   * Get description
-   * @return description , never <code>null</code>
-   **/
-  public TypedTextEnt getDescription();
-
-  /**
-   * A collection of tags the user chose to describe the workflow
-   * @return tags , never <code>null</code>
-   **/
-  public java.util.List<String> getTags();
-
-  /**
-   * A collection of URLs attached to the workflow
-   * @return links , never <code>null</code>
-   **/
-  public java.util.List<LinkEnt> getLinks();
 
 
   @Override

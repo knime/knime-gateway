@@ -44,18 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
-import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
-import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Node description properties that are common to all kinds of nodes. This is static information in the sense that it does not depend on a concrete node instance in a workflow.
@@ -65,12 +58,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodeDescriptionEnt extends GatewayEntity {
 
-
-  /**
-   * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
-   * @return description 
-   **/
-  public String getDescription();
 
   /**
    * List of dialog option groups. In case the dialog options are actually ungrouped, this is a singleton list containing a group with no name or description.
@@ -101,7 +88,6 @@ public interface NodeDescriptionEnt extends GatewayEntity {
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (NodeDescriptionEnt)other;
-      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("options", Pair.create(getOptions(), e.getOptions()));
       valueConsumer.accept("views", Pair.create(getViews(), e.getViews()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
@@ -113,14 +99,6 @@ public interface NodeDescriptionEnt extends GatewayEntity {
      */
     public interface NodeDescriptionEntBuilder extends GatewayEntityBuilder<NodeDescriptionEnt> {
 
-        /**
-         * The freeform description text of the node. Sometimes also referred to as \&quot;intro text\&quot;. May contain HTML markup tags.
-         * 
-         * @param description the property value,  
-         * @return this entity builder for chaining
-         */
-        NodeDescriptionEntBuilder setDescription(String description);
-        
         /**
          * List of dialog option groups. In case the dialog options are actually ungrouped, this is a singleton list containing a group with no name or description.
          * 

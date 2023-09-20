@@ -44,6 +44,9 @@
  */
 package org.knime.gateway.api.webui.entity.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
@@ -67,6 +70,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
@@ -77,6 +81,7 @@ import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
@@ -139,6 +144,7 @@ import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
@@ -155,10 +161,6 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -202,6 +204,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEnt.class);
         res.add(ComponentNodeDescriptionEnt.class);
         res.add(ComponentNodeEnt.class);
+        res.add(ComponentPortDescriptionEnt.class);
         res.add(CompositeEventEnt.class);
         res.add(ConnectCommandEnt.class);
         res.add(ConnectionEnt.class);
@@ -212,6 +215,7 @@ public class ListEntities {
         res.add(CutCommandEnt.class);
         res.add(DeleteCommandEnt.class);
         res.add(DynamicPortGroupDescriptionEnt.class);
+        res.add(EditableProjectMetadataEnt.class);
         res.add(EventEnt.class);
         res.add(EventTypeEnt.class);
         res.add(ExampleProjectEnt.class);
@@ -274,6 +278,7 @@ public class ListEntities {
         res.add(UpdateAvailableEventEnt.class);
         res.add(UpdateAvailableEventTypeEnt.class);
         res.add(UpdateComponentLinkInformationCommandEnt.class);
+        res.add(UpdateComponentMetadataCommandEnt.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.class);
         res.add(UpdateInfoEnt.class);
         res.add(UpdateNodeLabelCommandEnt.class);
@@ -322,6 +327,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder.class);
         res.add(ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder.class);
         res.add(ComponentNodeEnt.ComponentNodeEntBuilder.class);
+        res.add(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class);
         res.add(CompositeEventEnt.CompositeEventEntBuilder.class);
         res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
@@ -332,6 +338,7 @@ public class ListEntities {
         res.add(CutCommandEnt.CutCommandEntBuilder.class);
         res.add(DeleteCommandEnt.DeleteCommandEntBuilder.class);
         res.add(DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder.class);
+        res.add(EditableProjectMetadataEnt.EditableProjectMetadataEntBuilder.class);
         res.add(EventEnt.EventEntBuilder.class);
         res.add(EventTypeEnt.EventTypeEntBuilder.class);
         res.add(ExampleProjectEnt.ExampleProjectEntBuilder.class);
@@ -394,6 +401,7 @@ public class ListEntities {
         res.add(UpdateAvailableEventEnt.UpdateAvailableEventEntBuilder.class);
         res.add(UpdateAvailableEventTypeEnt.UpdateAvailableEventTypeEntBuilder.class);
         res.add(UpdateComponentLinkInformationCommandEnt.UpdateComponentLinkInformationCommandEntBuilder.class);
+        res.add(UpdateComponentMetadataCommandEnt.UpdateComponentMetadataCommandEntBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder.class);
         res.add(UpdateInfoEnt.UpdateInfoEntBuilder.class);
         res.add(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class);

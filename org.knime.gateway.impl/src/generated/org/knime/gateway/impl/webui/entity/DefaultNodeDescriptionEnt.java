@@ -46,16 +46,14 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 
-import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
-
 /**
  * Node description properties that are common to all kinds of nodes. This is static information in the sense that it does not depend on a concrete node instance in a workflow.
  *
- * @param description
  * @param options
  * @param views
  * @param inPorts
@@ -65,7 +63,6 @@ import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeDescriptionEnt(
-    String description,
     java.util.List<NodeDialogOptionGroupEnt> options,
     java.util.List<NodeViewDescriptionEnt> views,
     java.util.List<NodePortDescriptionEnt> inPorts,
@@ -82,11 +79,6 @@ public record DefaultNodeDescriptionEnt(
         return "NodeDescription";
     }
   
-    @Override
-    public String getDescription() {
-        return description;
-    }
-    
     @Override
     public java.util.List<NodeDialogOptionGroupEnt> getOptions() {
         return options;
@@ -112,8 +104,6 @@ public record DefaultNodeDescriptionEnt(
      */
     public static class DefaultNodeDescriptionEntBuilder implements NodeDescriptionEntBuilder {
 
-        private String m_description;
-
         private java.util.List<NodeDialogOptionGroupEnt> m_options;
 
         private java.util.List<NodeViewDescriptionEnt> m_views;
@@ -121,12 +111,6 @@ public record DefaultNodeDescriptionEnt(
         private java.util.List<NodePortDescriptionEnt> m_inPorts;
 
         private java.util.List<NodePortDescriptionEnt> m_outPorts;
-
-        @Override
-        public DefaultNodeDescriptionEntBuilder setDescription(String description) {
-             m_description = description;
-             return this;
-        }
 
         @Override
         public DefaultNodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionGroupEnt> options) {
@@ -155,7 +139,6 @@ public record DefaultNodeDescriptionEnt(
         @Override
         public DefaultNodeDescriptionEnt build() {
             return new DefaultNodeDescriptionEnt(
-                immutable(m_description),
                 immutable(m_options),
                 immutable(m_views),
                 immutable(m_inPorts),

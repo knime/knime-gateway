@@ -44,6 +44,9 @@
  */
 package org.knime.gateway.json.webui.entity.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.knime.gateway.json.webui.entity.AddAnnotationResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddBendpointCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
@@ -67,6 +70,7 @@ import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
+import org.knime.gateway.json.webui.entity.ComponentPortDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.CompositeEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
@@ -77,6 +81,7 @@ import org.knime.gateway.json.webui.entity.CustomJobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.CutCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DeleteCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DynamicPortGroupDescriptionEntMixIn;
+import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.EventEntMixIn;
 import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.ExampleProjectEntMixIn;
@@ -139,6 +144,7 @@ import org.knime.gateway.json.webui.entity.TypedTextEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateAvailableEventEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateAvailableEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentLinkInformationCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.UpdateComponentMetadataCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateNodeLabelCommandEntMixIn;
@@ -155,9 +161,6 @@ import org.knime.gateway.json.webui.entity.WorkflowInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.XYEntMixIn;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -201,6 +204,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEntMixIn.class);
         res.add(ComponentNodeDescriptionEntMixIn.class);
         res.add(ComponentNodeEntMixIn.class);
+        res.add(ComponentPortDescriptionEntMixIn.class);
         res.add(CompositeEventEntMixIn.class);
         res.add(ConnectCommandEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
@@ -211,6 +215,7 @@ public class ListEntities {
         res.add(CutCommandEntMixIn.class);
         res.add(DeleteCommandEntMixIn.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.class);
+        res.add(EditableProjectMetadataEntMixIn.class);
         res.add(EventEntMixIn.class);
         res.add(EventTypeEntMixIn.class);
         res.add(ExampleProjectEntMixIn.class);
@@ -273,6 +278,7 @@ public class ListEntities {
         res.add(UpdateAvailableEventEntMixIn.class);
         res.add(UpdateAvailableEventTypeEntMixIn.class);
         res.add(UpdateComponentLinkInformationCommandEntMixIn.class);
+        res.add(UpdateComponentMetadataCommandEntMixIn.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
         res.add(UpdateInfoEntMixIn.class);
         res.add(UpdateNodeLabelCommandEntMixIn.class);
@@ -321,6 +327,7 @@ public class ListEntities {
         res.add(ComponentNodeAndDescriptionEntMixIn.ComponentNodeAndDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeDescriptionEntMixIn.ComponentNodeDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeEntMixIn.ComponentNodeEntMixInBuilder.class);
+        res.add(ComponentPortDescriptionEntMixIn.ComponentPortDescriptionEntMixInBuilder.class);
         res.add(CompositeEventEntMixIn.CompositeEventEntMixInBuilder.class);
         res.add(ConnectCommandEntMixIn.ConnectCommandEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
@@ -331,6 +338,7 @@ public class ListEntities {
         res.add(CutCommandEntMixIn.CutCommandEntMixInBuilder.class);
         res.add(DeleteCommandEntMixIn.DeleteCommandEntMixInBuilder.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.DynamicPortGroupDescriptionEntMixInBuilder.class);
+        res.add(EditableProjectMetadataEntMixIn.EditableProjectMetadataEntMixInBuilder.class);
         res.add(EventEntMixIn.EventEntMixInBuilder.class);
         res.add(EventTypeEntMixIn.EventTypeEntMixInBuilder.class);
         res.add(ExampleProjectEntMixIn.ExampleProjectEntMixInBuilder.class);
@@ -393,6 +401,7 @@ public class ListEntities {
         res.add(UpdateAvailableEventEntMixIn.UpdateAvailableEventEntMixInBuilder.class);
         res.add(UpdateAvailableEventTypeEntMixIn.UpdateAvailableEventTypeEntMixInBuilder.class);
         res.add(UpdateComponentLinkInformationCommandEntMixIn.UpdateComponentLinkInformationCommandEntMixInBuilder.class);
+        res.add(UpdateComponentMetadataCommandEntMixIn.UpdateComponentMetadataCommandEntMixInBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);
         res.add(UpdateInfoEntMixIn.UpdateInfoEntMixInBuilder.class);
         res.add(UpdateNodeLabelCommandEntMixIn.UpdateNodeLabelCommandEntMixInBuilder.class);

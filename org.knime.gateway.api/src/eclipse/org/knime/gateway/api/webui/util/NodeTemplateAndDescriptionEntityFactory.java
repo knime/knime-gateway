@@ -199,7 +199,7 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .setInPorts(buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
             .setOutPorts(
                 buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
-            .setIcon(EntityFactory.Workflow.createIconDataURL(factory))//
+            .setIcon(WorkflowEntityFactory.createIconDataURL(factory))//
             .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(factory)).build();
     }
 

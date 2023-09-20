@@ -242,6 +242,20 @@ public final class CoreUtil {
     }
 
     /**
+     * @param wfm A {@link WorkflowManager} instance
+     * @return The parenting {@link SubNodeContainer} of a component {@link WorkflowManager} or an empty optional if the
+     *         workflow manager does not correspond to a component
+     */
+    public static Optional<SubNodeContainer> getComponentSNC(final WorkflowManager wfm) {
+        if (!CoreUtil.isComponentWFM(wfm)) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(wfm.getDirectNCParent()).filter(e -> e instanceof SubNodeContainer)
+                .map(e -> (SubNodeContainer)e);
+        }
+    }
+
+    /**
      * Determines for the job manager whether it's the default job manager, i.e. {@link ThreadNodeExecutionJobManager},
      * or <code>null</code> (i.e. not set).
      *
@@ -678,13 +692,13 @@ public final class CoreUtil {
     /**
      * Helper class to convert {@link TypedTextEnt.ContentTypeEnum}s to the corresponding `knime-core` classes.
      */
-    static final class ContentTypeConverter {
+    public static final class ContentTypeConverter {
 
         private ContentTypeConverter() {
             // Utility class
         }
 
-        static NodeContainerMetadata.ContentType toNodeContainerMetadata(//
+        public static NodeContainerMetadata.ContentType toNodeContainerMetadata(//
             final TypedTextEnt.ContentTypeEnum contentType) {
             return switch (contentType) {
                 case PLAIN -> NodeContainerMetadata.ContentType.PLAIN;

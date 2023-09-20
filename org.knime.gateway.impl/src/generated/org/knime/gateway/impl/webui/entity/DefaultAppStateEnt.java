@@ -46,11 +46,10 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-
-import org.knime.gateway.api.webui.entity.AppStateEnt;
 
 /**
  * Represents the global application state.
@@ -59,6 +58,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param exampleProjects
  * @param availablePortTypes
  * @param suggestedPortTypeIds
+ * @param availableComponentTypes
  * @param hasNodeRecommendationsEnabled
  * @param featureFlags
  * @param scrollToZoomEnabled
@@ -74,6 +74,7 @@ public record DefaultAppStateEnt(
     java.util.List<ExampleProjectEnt> exampleProjects,
     java.util.Map<String, PortTypeEnt> availablePortTypes,
     java.util.List<String> suggestedPortTypeIds,
+    java.util.List<String> availableComponentTypes,
     Boolean hasNodeRecommendationsEnabled,
     java.util.Map<String, Object> featureFlags,
     Boolean scrollToZoomEnabled,
@@ -112,6 +113,11 @@ public record DefaultAppStateEnt(
         return suggestedPortTypeIds;
     }
     
+    @Override
+    public java.util.List<String> getAvailableComponentTypes() {
+        return availableComponentTypes;
+    }
+
     @Override
     public Boolean hasNodeRecommendationsEnabled() {
         return hasNodeRecommendationsEnabled;
@@ -155,6 +161,8 @@ public record DefaultAppStateEnt(
 
         private java.util.List<String> m_suggestedPortTypeIds;
 
+        private java.util.List<String> m_availableComponentTypes;
+
         private Boolean m_hasNodeRecommendationsEnabled;
 
         private java.util.Map<String, Object> m_featureFlags;
@@ -189,6 +197,12 @@ public record DefaultAppStateEnt(
         public DefaultAppStateEntBuilder setSuggestedPortTypeIds(java.util.List<String> suggestedPortTypeIds) {
              m_suggestedPortTypeIds = suggestedPortTypeIds;
              return this;
+        }
+
+        @Override
+        public DefaultAppStateEntBuilder setAvailableComponentTypes(java.util.List<String> availableComponentTypes) {
+            m_availableComponentTypes = availableComponentTypes;
+            return this;
         }
 
         @Override
@@ -234,6 +248,7 @@ public record DefaultAppStateEnt(
                 immutable(m_exampleProjects),
                 immutable(m_availablePortTypes),
                 immutable(m_suggestedPortTypeIds),
+                immutable(m_availableComponentTypes),
                 immutable(m_hasNodeRecommendationsEnabled),
                 immutable(m_featureFlags),
                 immutable(m_scrollToZoomEnabled),
