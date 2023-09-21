@@ -81,7 +81,10 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
@@ -114,7 +117,9 @@ import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
@@ -133,6 +138,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
@@ -151,6 +157,7 @@ import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt.UpdateComponentLinkInformationCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
@@ -189,7 +196,8 @@ import org.mockito.Mockito;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
-@SuppressWarnings("java:S112") // generic exceptions
+@SuppressWarnings({"java:S112", "java:S1192", "java:S3655", "java:S1874"})
+// generic exceptions, repeated string literals, Optional#get without presence check, deprecated classes
 public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
@@ -1293,9 +1301,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(newNodeId, equalTo(nodeEnt.getId()));
     }
 
-    private static void checkForConnection(final String message, final WorkflowSnapshotEnt wf,
-        final NodeIDEnt sourceNodeId, final Integer sourcePortIdx, final NodeIDEnt destNodeId,
-        final boolean isPresent) {
+    private static void checkForConnection(final WorkflowSnapshotEnt wf, final NodeIDEnt sourceNodeId,
+        final Integer sourcePortIdx, final NodeIDEnt destNodeId, final boolean isPresent) {
         var connections = wf.getWorkflow().getConnections();
         var numConnections = connections.values().stream()//
             .filter(c -> c.getSourceNode().equals(sourceNodeId))//
@@ -1308,7 +1315,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private static void checkForConnection(final WorkflowSnapshotEnt wf, final NodeIDEnt sourceNodeId,
         final Integer sourcePortIdx, final CommandResultEnt result, final boolean isPresent) {
         var destNodeId = ((AddNodeResultEnt)result).getNewNodeId();
-        checkForConnection("", wf, sourceNodeId, sourcePortIdx, destNodeId, isPresent);
+        checkForConnection(wf, sourceNodeId, sourcePortIdx, destNodeId, isPresent);
     }
 
     /**
@@ -2027,13 +2034,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteInsertNodeCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
         var command = buildInsertNodeCommand(new ConnectionIDEnt(new NodeIDEnt(2), 1),
             builder(XYEntBuilder.class).setX(0).setY(0).build(), null, new NodeIDEnt(183));
 
-        var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
-        var nodes = workflow.getNodes();
-        var node1Pos = nodes.get("root:1").getPosition();
         // execute command
         ws().executeWorkflowCommand(wfId, getRootID(), command);
 
@@ -2268,15 +2271,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             greaterThanOrEqualTo(2));
 
         // Bring bottom annotation forward
-        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_FORWARD, 0, 1);
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
         // Bring bottom annotation to front
-        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_TO_FRONT, 0,
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_TO_FRONT, 0,
             annotationCount - 1);
         // Send top annotation backward
-        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
             annotationCount - 2);
         // Send top annotation to back
-        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.SEND_TO_BACK, annotationCount - 1, 0);
 
         // Invalid annotation ID
         var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//
@@ -2301,11 +2304,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var annotationCount = annotationEnts.size();
         assertThat("Could not perform test since there are less than 2 workflow annotations present", annotationCount,
             greaterThanOrEqualTo(2));
-        assertReorderWorkflowAnnotationsCommand(projectId, workflowId, ActionEnum.BRING_FORWARD, 0, 1);
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
     }
 
-    private void assertReorderWorkflowAnnotationsCommand(final String projectId, final NodeIDEnt workflowId,
-        final ActionEnum action, final int initialIndex, final int finalIndex) throws Exception {
+    private void assertReorderWorkflowAnnotationsCommand(final String projectId, final ActionEnum action,
+        final int initialIndex, final int finalIndex) throws Exception {
         var annotationEnt =
             ws().getWorkflow(projectId, getRootID(), false).getWorkflow().getWorkflowAnnotations().get(initialIndex);
         var command = builder(ReorderWorkflowAnnotationsCommandEntBuilder.class)//
@@ -2563,6 +2566,77 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Test execute-undo-redo for updating component metadata from within a component workflow.
+     * 
+     * @throws Exception
+     */
+    public void testUpdateComponentMetadataFromWithin() throws Exception {
+        // we need to load a workflow corresponding to a Container/Subnode
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
+        var componentId = getRootID().appendNodeID(4);
+        // extract original properties to check against them later
+        var originalMetadata = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        // new properties to be sent with the command
+        var newDescription = EntityUtil.toTypedTextEnt("<p>bla bla bla</p>", ContentTypeEnum.HTML);
+        var newTags = List.of("foo", "bar");
+        var newLinks = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
+        var newIcon = "data:image/png;base64,"
+            + "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAPVJREFUOI2dk1FxwzAQRHddAoZgCmGgMCgEB0HCYCUGZZBAKIOMERRCHAZB4MuPPCPLkibT+zztrfaeRl+IJWl0zvXTNM1oVK7r1gOSInmV1LcMcl0XXT1JHwXnxu07HSUNJB8k3bIsT5J3MzuGEOZsuKjrSAoAzOxC8g/AQPJaiv6JbgdMkmtputbhJ2CrBpI8gCFGrYJlZXgg+UhaLzM75GCrCSKwHwC32OprwHYGkkYAI4CX9/5kZicAMwBXArozWJ9rrRDCzcyOAH5LQDcGCbi018dE3ygAZSLMwXkzm+LuqekG6OYzZdtcSN7zRGgA/Ve9ASTnd38pmtoyAAAAAElFTkSuQmCC";
+        var newType = UpdateComponentMetadataCommandEnt.TypeEnum.OTHER;
+        var newInPorts = List.of(builder(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class)
+            .setName("new in port 1 name").setDescription("new port 1 description").build());
+        var newOutPorts = List.of(builder(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class)
+            .setName("new out port 1 name").setDescription("new out port 1 description").build());
+        var command = buildUpdateComponentMetadataCommand(newDescription, newTags, newLinks, newIcon, newType,
+            newInPorts, newOutPorts);
+        // execute
+        ws().executeWorkflowCommand(projectId, componentId, command);
+        var modifiedMetadata = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        // assert result
+        assertProjectMetadata(modifiedMetadata, newDescription, newTags, newLinks);
+        assertComponentMetadata(modifiedMetadata, newIcon, newType, newInPorts, newOutPorts);
+        // undo
+        ws().undoWorkflowCommand(projectId, componentId);
+        var metadataUndo = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        assertProjectMetadata(metadataUndo, originalMetadata);
+        assertComponentMetadata(metadataUndo, originalMetadata);
+        // redo
+        ws().redoWorkflowCommand(projectId, componentId);
+        var metadataRedo = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        assertProjectMetadata(metadataRedo, newDescription, newTags, newLinks);
+        assertComponentMetadata(metadataRedo, newIcon, newType, newInPorts, newOutPorts);
+    }
+
+    /**
+     * Test that workflow was not modified if a component metadata update command requesting the exact same values is
+     * handled.
+     * 
+     * @throws Exception
+     */
+    public void testComponentMetadataNotUpdatedIfNoChange() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
+        var componentId = getRootID().appendNodeID(4);
+        var originalMetadata = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        var originalType = UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(originalMetadata.getType().name());
+        var originalInPorts = toComponentPortDescription(originalMetadata.getInPorts());
+        var originalOutPorts = toComponentPortDescription(originalMetadata.getOutPorts());
+        var command = buildUpdateComponentMetadataCommand(originalMetadata.getDescription(), originalMetadata.getTags(),
+            originalMetadata.getLinks(), originalMetadata.getIcon(), originalType, originalInPorts, originalOutPorts);
+        // execute
+        ws().executeWorkflowCommand(projectId, componentId, command);
+        WorkflowEnt workflow = ws().getWorkflow(projectId, componentId, false).getWorkflow();
+        assertThat("Workflow should not be dirty", !workflow.isDirty());
+    }
+
+    private List<ComponentPortDescriptionEnt>
+        toComponentPortDescription(final List<NodePortDescriptionEnt> nodePortDescriptions) {
+        return nodePortDescriptions.stream().map(nodePortDescription -> {
+            return builder(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class)
+                .setName(nodePortDescription.getName()).setDescription(nodePortDescription.getDescription()).build();
+        }).toList();
+    }
+
+    /**
      * Tests {@link UpdateProjectMetadataCommandEnt} using legacy workflow metadata format.
      *
      * @throws Exception
@@ -2642,6 +2716,41 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Unexpected tags", metadata.getTags(), is(tags));
     }
 
+    private static void assertProjectMetadata(final ProjectMetadataEnt actualMetadata,
+        final ProjectMetadataEnt expected) {
+        assertProjectMetadata(actualMetadata, expected.getDescription(), expected.getTags(), expected.getLinks());
+    }
+
+    private void assertComponentMetadata(ComponentNodeDescriptionEnt modifiedMetadata, String newIcon,
+        UpdateComponentMetadataCommandEnt.TypeEnum newType, List<ComponentPortDescriptionEnt> newInPorts,
+        List<ComponentPortDescriptionEnt> newOutPorts) {
+        assertThat("Unexpected icon", modifiedMetadata.getIcon(), is(newIcon));
+        assertThat("Unexpected type",
+            UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(modifiedMetadata.getType().name()), is(newType));
+
+        Consumer<Pair<NodePortDescriptionEnt, ComponentPortDescriptionEnt>> compareTitleAndDescription = p -> {
+            var actual = p.getFirst();
+            var expected = p.getSecond();
+            assertThat("Unexpected title", actual.getName(), is(expected.getName()));
+            assertThat("Unexpected description", actual.getDescription(), is(expected.getDescription()));
+        };
+        zip(modifiedMetadata.getInPorts(), newInPorts).forEach(compareTitleAndDescription);
+        zip(modifiedMetadata.getOutPorts(), newOutPorts).forEach(compareTitleAndDescription);
+    }
+
+    private void assertComponentMetadata(final ComponentNodeDescriptionEnt actualMetadata,
+        final ComponentNodeDescriptionEnt expectedMetadata) {
+        var type = UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(actualMetadata.getType().name());
+        var inPorts = toComponentPortDescription(actualMetadata.getInPorts());
+        var outPorts = toComponentPortDescription(actualMetadata.getOutPorts());
+        assertComponentMetadata(actualMetadata, expectedMetadata.getIcon(), type, inPorts, outPorts);
+    }
+
+    private <A, B> Stream<Pair<A, B>> zip(final List<A> a, final List<B> b) {
+        assertThat("Lists of different length", a.size(), is(b.size()));
+        return IntStream.range(0, Math.min(a.size(), b.size())).mapToObj(i -> Pair.create(a.get(i), b.get(i)));
+    }
+
     private static LinkEnt buildLinkEnt(final String url, final String text) {
         return builder(LinkEntBuilder.class)//
             .setUrl(url)//
@@ -2655,6 +2764,17 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setDescription(description)//
             .setTags(tags)//
             .setLinks(links)//
+            .build();
+    }
+
+    private static UpdateComponentMetadataCommandEnt buildUpdateComponentMetadataCommand(final TypedTextEnt description,
+        final List<String> tags, final List<LinkEnt> links, String icon,
+        UpdateComponentMetadataCommandEnt.TypeEnum type, List<ComponentPortDescriptionEnt> inPorts,
+        List<ComponentPortDescriptionEnt> outPorts) {
+        return builder(UpdateComponentMetadataCommandEnt.UpdateComponentMetadataCommandEntBuilder.class)
+            .setKind(KindEnum.UPDATE_COMPONENT_METADATA).setDescription(description).setTags(tags).setLinks(links)
+            .setIcon(icon).setType(type).setInPorts(inPorts) //
+            .setOutPorts(outPorts) //
             .build();
     }
 

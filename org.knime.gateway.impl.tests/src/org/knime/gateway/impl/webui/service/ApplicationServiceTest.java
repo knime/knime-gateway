@@ -180,6 +180,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
             .setOpenProjects(appStateEnt.getOpenProjects()) //
             .setExampleProjects(appStateEnt.getExampleProjects()) //
             .setAvailablePortTypes(availablePortTypes) //
+            .setAvailableComponentTypes(appStateEnt.getAvailableComponentTypes())
             .setSuggestedPortTypeIds(appStateEnt.getSuggestedPortTypeIds()) //
             .setFeatureFlags(appStateEnt.getFeatureFlags()) //
             .build();

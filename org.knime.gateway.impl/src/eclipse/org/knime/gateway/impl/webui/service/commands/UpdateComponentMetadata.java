@@ -89,14 +89,16 @@ public final class UpdateComponentMetadata
     UpdateComponentMetadataCommandEnt toEntity(final ComponentMetadata metadata) {
         var inPorts = metadata.getInPorts().stream().map(UpdateComponentMetadata::toPortDescriptionEnt).toList();
         var outPorts = metadata.getOutPorts().stream().map(UpdateComponentMetadata::toPortDescriptionEnt).toList();
+        var links = !metadata.getLinks().isEmpty() ? toLinkEnts(metadata.getLinks()) : null;
+        var tags = !metadata.getTags().isEmpty() ? metadata.getTags() : null;
         var type =
             metadata.getNodeType().map(t -> UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(t.name())).orElse(null);
         var icon = metadata.getIcon().map(WorkflowEntityFactory::createIconDataURL);
         return builder(UpdateComponentMetadataCommandEnt.UpdateComponentMetadataCommandEntBuilder.class)
             .setDescription(metadata.getDescription().isEmpty() ? null
                 : EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType()))
-            .setLinks(toLinkEnts(metadata.getLinks())) //
-            .setTags(metadata.getTags()) //
+            .setLinks(links) //
+            .setTags(tags) //
             .setIcon(icon.orElse(null)) //
             .setInPorts(inPorts) //
             .setOutPorts(outPorts) //

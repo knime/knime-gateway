@@ -64,16 +64,19 @@ public final class UpdateProjectMetadata
     }
 
     @Override
-    WorkflowMetadata toMetadata(UpdateProjectMetadataCommandEnt commandEnt) {
+    WorkflowMetadata toMetadata(final UpdateProjectMetadataCommandEnt commandEnt) {
         return setProjectMetadata(WorkflowMetadata.fluentBuilder(), commandEnt).build();
     }
 
     @Override
-    UpdateProjectMetadataCommandEnt toEntity(WorkflowMetadata metadata) {
+    UpdateProjectMetadataCommandEnt toEntity(final WorkflowMetadata metadata) {
+        var links = !metadata.getLinks().isEmpty() ? toLinkEnts(metadata.getLinks()) : null;
+        var tags = !metadata.getTags().isEmpty() ? metadata.getTags() : null;
         return builder(UpdateProjectMetadataCommandEnt.UpdateProjectMetadataCommandEntBuilder.class)
             .setDescription(
-                EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType()))
-            .setLinks(toLinkEnts(metadata.getLinks())).setTags(metadata.getTags())
+                EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType())) //
+            .setLinks(links) //
+            .setTags(tags) //
             .setKind(WorkflowCommandEnt.KindEnum.UPDATE_PROJECT_METADATA).build();
     }
 
@@ -83,7 +86,7 @@ public final class UpdateProjectMetadata
     }
 
     @Override
-    void apply(WorkflowMetadata metadata) {
+    void apply(final WorkflowMetadata metadata) {
         getWorkflowManager().setContainerMetadata(metadata);
     }
 }

@@ -1,4 +1,5 @@
 {
+  "availableComponentTypes" : [ "Learner", "Manipulator", "Predictor", "Sink", "Source", "Visualizer", "Other" ],
   "availablePortTypes" : {
     "org.knime.core.node.BufferedDataTable" : {
       "color" : "#000000",

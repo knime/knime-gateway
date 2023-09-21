@@ -137,8 +137,12 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
             .withDescription(editableMetadata.getDescription().getValue())
             // non-editable properties that are always preserved
             .withAuthor(getOriginal().getAuthor().orElse(null)).withCreated(getOriginal().getCreated().orElse(null));
-        editableMetadata.getTags().forEach(metadataBuilder::addTag);
-        editableMetadata.getLinks().forEach(link -> metadataBuilder.addLink(link.getUrl(), link.getText()));
+        if (editableMetadata.getTags() != null) {
+            editableMetadata.getTags().forEach(metadataBuilder::addTag);
+        }
+        if (editableMetadata.getLinks() != null) {
+            editableMetadata.getLinks().forEach(link -> metadataBuilder.addLink(link.getUrl(), link.getText()));
+        }
         return metadataBuilder;
     }
 
