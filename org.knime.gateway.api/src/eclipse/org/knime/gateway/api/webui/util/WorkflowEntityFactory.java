@@ -1297,7 +1297,7 @@ public final class WorkflowEntityFactory {
      */
     public static byte[] decodeIconDataURL(final String dataUrl) {
         var withoutPrefix = StringUtils.removeStart(dataUrl, ICON_DATA_URL_PREFIX);
-        return java.util.Base64.getDecoder().decode(withoutPrefix.getBytes(StandardCharsets.UTF_8));
+        return Base64.decodeBase64(withoutPrefix.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
