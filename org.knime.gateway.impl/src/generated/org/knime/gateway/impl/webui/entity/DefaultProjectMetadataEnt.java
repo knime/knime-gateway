@@ -74,15 +74,6 @@ public record DefaultProjectMetadataEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultProjectMetadataEnt {
-        if(description == null) {
-            throw new IllegalArgumentException("<description> must not be null.");
-        }
-        if(tags == null) {
-            throw new IllegalArgumentException("<tags> must not be null.");
-        }
-        if(links == null) {
-            throw new IllegalArgumentException("<links> must not be null.");
-        }
     }
 
     @Override
@@ -117,35 +108,26 @@ public record DefaultProjectMetadataEnt(
 
         private TypedTextEnt m_description;
 
-        private java.util.List<String> m_tags = new java.util.ArrayList<>();
+        private java.util.List<String> m_tags;
 
-        private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
+        private java.util.List<LinkEnt> m_links;
 
         private OffsetDateTime m_lastEdit;
 
         @Override
         public DefaultProjectMetadataEntBuilder setDescription(TypedTextEnt description) {
-             if(description == null) {
-                 throw new IllegalArgumentException("<description> must not be null.");
-             }
              m_description = description;
              return this;
         }
 
         @Override
         public DefaultProjectMetadataEntBuilder setTags(java.util.List<String> tags) {
-             if(tags == null) {
-                 throw new IllegalArgumentException("<tags> must not be null.");
-             }
              m_tags = tags;
              return this;
         }
 
         @Override
         public DefaultProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links) {
-             if(links == null) {
-                 throw new IllegalArgumentException("<links> must not be null.");
-             }
              m_links = links;
              return this;
         }

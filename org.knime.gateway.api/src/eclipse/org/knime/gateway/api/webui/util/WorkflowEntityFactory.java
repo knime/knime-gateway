@@ -502,13 +502,15 @@ public final class WorkflowEntityFactory {
                 metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
             var description = metadata.getDescription().isEmpty() ? null
                 : EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType());
+            var links = metadata.getLinks().isEmpty() ? null : toLinkEnts(metadata.getLinks());
+            var tags = metadata.getTags().isEmpty() ? null : metadata.getTags();
             return builder(ComponentNodeDescriptionEntBuilder.class)//
                 .setName(snc.getName())//
                 .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
                 .setType(type) //
                 .setDescription(description)//
-                .setLinks(toLinkEnts(metadata.getLinks())).setTags(metadata.getTags()) //
-                .setLastEdit(metadata.getLastModified().toOffsetDateTime()) //
+                .setLinks(links) //
+                .setTags(tags) //
                 .setOptions(buildUngroupedDialogOptionGroupEnt(buildComponentDialogOptionsEnts(snc))) //
                 .setViews(buildComponentViewDescriptionEnts(snc))//
                 .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//

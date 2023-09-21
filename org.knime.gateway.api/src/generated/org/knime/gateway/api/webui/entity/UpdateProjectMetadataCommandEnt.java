@@ -94,7 +94,7 @@ public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, Workflow
         /**
    		 * Set description
          * 
-         * @param description the property value, NOT <code>null</code>! 
+         * @param description the property value,  
          * @return this entity builder for chaining
          */
         UpdateProjectMetadataCommandEntBuilder setDescription(TypedTextEnt description);
@@ -102,7 +102,7 @@ public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, Workflow
         /**
          * A collection of tags the user chose to describe the workflow
          * 
-         * @param tags the property value, NOT <code>null</code>! 
+         * @param tags the property value,  
          * @return this entity builder for chaining
          */
         UpdateProjectMetadataCommandEntBuilder setTags(java.util.List<String> tags);
@@ -110,7 +110,7 @@ public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, Workflow
         /**
          * A collection of URLs attached to the workflow
          * 
-         * @param links the property value, NOT <code>null</code>! 
+         * @param links the property value,  
          * @return this entity builder for chaining
          */
         UpdateProjectMetadataCommandEntBuilder setLinks(java.util.List<LinkEnt> links);

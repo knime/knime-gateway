@@ -86,15 +86,6 @@ public record DefaultUpdateComponentMetadataCommandEnt(
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if(description == null) {
-            throw new IllegalArgumentException("<description> must not be null.");
-        }
-        if(tags == null) {
-            throw new IllegalArgumentException("<tags> must not be null.");
-        }
-        if(links == null) {
-            throw new IllegalArgumentException("<links> must not be null.");
-        }
         if(inPorts == null) {
             throw new IllegalArgumentException("<inPorts> must not be null.");
         }
@@ -157,9 +148,9 @@ public record DefaultUpdateComponentMetadataCommandEnt(
 
         private TypedTextEnt m_description;
 
-        private java.util.List<String> m_tags = new java.util.ArrayList<>();
+        private java.util.List<String> m_tags;
 
-        private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
+        private java.util.List<LinkEnt> m_links;
 
         private java.util.List<ComponentPortDescriptionEnt> m_inPorts = new java.util.ArrayList<>();
 
@@ -180,27 +171,18 @@ public record DefaultUpdateComponentMetadataCommandEnt(
 
         @Override
         public DefaultUpdateComponentMetadataCommandEntBuilder setDescription(TypedTextEnt description) {
-             if(description == null) {
-                 throw new IllegalArgumentException("<description> must not be null.");
-             }
              m_description = description;
              return this;
         }
 
         @Override
         public DefaultUpdateComponentMetadataCommandEntBuilder setTags(java.util.List<String> tags) {
-             if(tags == null) {
-                 throw new IllegalArgumentException("<tags> must not be null.");
-             }
              m_tags = tags;
              return this;
         }
 
         @Override
         public DefaultUpdateComponentMetadataCommandEntBuilder setLinks(java.util.List<LinkEnt> links) {
-             if(links == null) {
-                 throw new IllegalArgumentException("<links> must not be null.");
-             }
              m_links = links;
              return this;
         }

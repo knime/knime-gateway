@@ -77,15 +77,6 @@ public record DefaultUpdateProjectMetadataCommandEnt(
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
-        if(description == null) {
-            throw new IllegalArgumentException("<description> must not be null.");
-        }
-        if(tags == null) {
-            throw new IllegalArgumentException("<tags> must not be null.");
-        }
-        if(links == null) {
-            throw new IllegalArgumentException("<links> must not be null.");
-        }
     }
 
     @Override
@@ -122,9 +113,9 @@ public record DefaultUpdateProjectMetadataCommandEnt(
 
         private TypedTextEnt m_description;
 
-        private java.util.List<String> m_tags = new java.util.ArrayList<>();
+        private java.util.List<String> m_tags;
 
-        private java.util.List<LinkEnt> m_links = new java.util.ArrayList<>();
+        private java.util.List<LinkEnt> m_links;
 
         @Override
         public DefaultUpdateProjectMetadataCommandEntBuilder setKind(KindEnum kind) {
@@ -137,27 +128,18 @@ public record DefaultUpdateProjectMetadataCommandEnt(
 
         @Override
         public DefaultUpdateProjectMetadataCommandEntBuilder setDescription(TypedTextEnt description) {
-             if(description == null) {
-                 throw new IllegalArgumentException("<description> must not be null.");
-             }
              m_description = description;
              return this;
         }
 
         @Override
         public DefaultUpdateProjectMetadataCommandEntBuilder setTags(java.util.List<String> tags) {
-             if(tags == null) {
-                 throw new IllegalArgumentException("<tags> must not be null.");
-             }
              m_tags = tags;
              return this;
         }
 
         @Override
         public DefaultUpdateProjectMetadataCommandEntBuilder setLinks(java.util.List<LinkEnt> links) {
-             if(links == null) {
-                 throw new IllegalArgumentException("<links> must not be null.");
-             }
              m_links = links;
              return this;
         }

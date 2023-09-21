@@ -1,5 +1,8 @@
 {
-  "description" : "Some component description",
+  "description" : {
+    "contentType" : "text/plain",
+    "value" : "Some component description"
+  },
   "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAPVJREFUOI2dk1FxwzAQRHddAoZgCmGgMCgEB0HCYCUGZZBAKIOMERRCHAZB4MuPPCPLkibT+zztrfaeRl+IJWl0zvXTNM1oVK7r1gOSInmV1LcMcl0XXT1JHwXnxu07HSUNJB8k3bIsT5J3MzuGEOZsuKjrSAoAzOxC8g/AQPJaiv6JbgdMkmtputbhJ2CrBpI8gCFGrYJlZXgg+UhaLzM75GCrCSKwHwC32OprwHYGkkYAI4CX9/5kZicAMwBXArozWJ9rrRDCzcyOAH5LQDcGCbi018dE3ygAZSLMwXkzm+LuqekG6OYzZdtcSN7zRGgA/Ve9ASTnd38pmtoyAAAAAElFTkSuQmCC",
   "inPorts" : [ {
     "description" : "test port desc 1",

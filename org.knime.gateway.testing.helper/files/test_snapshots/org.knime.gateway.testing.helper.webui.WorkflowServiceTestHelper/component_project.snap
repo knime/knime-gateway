@@ -7,7 +7,10 @@
     "canUndo" : false
   },
   "componentMetadata" : {
-    "description" : "The component description",
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : "The component description"
+    },
     "inPorts" : [ {
       "name" : "Port 1",
       "optional" : false,
