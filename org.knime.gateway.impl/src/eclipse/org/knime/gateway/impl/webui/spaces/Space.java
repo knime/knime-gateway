@@ -347,7 +347,7 @@ public interface Space {
      * @param itemId The item to get the dialog for
      */
     default void openPermissionsDialogForItem(final String itemId) {
-        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other then 'ServerSpaces'.");
+        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other than 'ServerSpaces'.");
     }
 
     /**
@@ -356,7 +356,7 @@ public interface Space {
      * @param itemId The item to get the dialog for
      */
     default void openRemoteExecution(final String itemId) {
-        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other then 'ServerSpaces'.");
+        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other than 'ServerSpaces'.");
     }
 
     /**
