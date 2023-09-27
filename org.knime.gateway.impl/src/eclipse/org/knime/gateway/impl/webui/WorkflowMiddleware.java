@@ -50,17 +50,25 @@ package org.knime.gateway.impl.webui;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -78,6 +86,9 @@ import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonToken;
 
 /**
  * Provides utility methods to operate on a workflow represented by a {@link WorkflowKey} where the methods require to
@@ -238,7 +249,8 @@ public final class WorkflowMiddleware {
         if (includeInteractionInfo) {
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
                 .canRedo(m_commands.canRedo(wfKey))//
-                .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
+                .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey))//
+                .setNodeWeightProvider(getNodeWeightProvider(wfKey.getProjectId()));
         }
         final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {
@@ -247,6 +259,11 @@ public final class WorkflowMiddleware {
         } else {
             return m_entityRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
         }
+    }
+
+    private Function<NodeID, Double> getNodeWeightProvider(final String projectId) {
+        var ws = getWorkflowState(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
+        return ws.getNodeWeights()::get;
     }
 
     /**
@@ -295,6 +312,8 @@ public final class WorkflowMiddleware {
 
         private WorkflowChangesListener m_changesListener;
 
+        private Map<NodeID, Double> m_nodeWeights;
+
         private WorkflowState(final WorkflowKey wfKey)  {
             m_wfKey = wfKey;
             m_wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
@@ -321,6 +340,77 @@ public final class WorkflowMiddleware {
             if (m_changesListener != null) {
                 m_changesListener.close();
             }
+        }
+
+        Map<NodeID, Double> getNodeWeights() {
+            if (!m_wfm.isProject()) {
+                throw new IllegalStateException();
+            }
+
+            if (m_nodeWeights == null) {
+                var workingDir = m_wfm.getWorkingDir().getFile();
+                var nodeWeightsFile = new File(workingDir, "node_weights.json");
+                if (nodeWeightsFile.exists()) {
+                    m_nodeWeights = readNodeWeights(nodeWeightsFile, m_wfm.getID());
+                } else {
+                    m_nodeWeights = Collections.emptyMap();
+                }
+            }
+            return m_nodeWeights;
+        }
+
+        private static Map<NodeID, Double> readNodeWeights(final File nodeWeightsFile, final NodeID wfmId) {
+            JsonFactory jfactory = new JsonFactory();
+            List<NodeID> ids = new ArrayList<>();
+            List<Integer> weights = new ArrayList<>();
+            int min = Integer.MAX_VALUE;
+            int max = Integer.MIN_VALUE;
+            try (var jParser = jfactory.createParser(nodeWeightsFile)) {
+                int openBrackets = 0;
+                do {
+                    var token = jParser.nextToken();
+                    if (token == JsonToken.START_OBJECT) {
+                        openBrackets++;
+                    } else if (token == JsonToken.END_OBJECT) {
+                        openBrackets--;
+                    }
+                    String fieldname = jParser.getCurrentName();
+                    if ("duration".equals(fieldname)) {
+                        jParser.nextToken();
+                        var duration = jParser.getIntValue();
+                        weights.add(duration);
+                        max = Math.max(max, duration);
+                        min = Math.min(min, duration);
+                    }
+
+                    if ("key".equals(fieldname)) {
+                        jParser.nextToken();
+                        var value = jParser.getText();
+                        if ("node-id".equals(value)) {
+                            while (jParser.nextToken() != JsonToken.END_OBJECT) {
+                                fieldname = jParser.getCurrentName();
+                                if ("value".equals(fieldname)) {
+                                    jParser.nextToken();
+                                    var nodeIdString = jParser.getText();
+                                    var nodeID = NodeIDSuffix.fromString(nodeIdString).prependParent(wfmId);
+                                    ids.add(nodeID);
+                                }
+                            }
+                            openBrackets--;
+                        }
+                    }
+                } while (openBrackets > 0);
+            } catch (IOException ex) {
+                // TODO
+                throw new RuntimeException(ex);
+            }
+            var nodeWeights = new HashMap<NodeID, Double>();
+            for (int i = 0; i < ids.size(); i++) {
+                double weight = weights.get(i);
+                weight = (weight - min) / (max - min);
+                nodeWeights.put(ids.get(i), weight);
+            }
+            return nodeWeights;
         }
 
     }

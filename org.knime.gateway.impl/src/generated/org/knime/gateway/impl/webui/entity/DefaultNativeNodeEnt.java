@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -70,6 +71,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param hasDialog
  * @param allowedActions
  * @param executionInfo
+ * @param weight
  * @param templateId
  * @param state
  * @param loopInfo
@@ -90,6 +92,7 @@ public record DefaultNativeNodeEnt(
     Boolean hasDialog,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
+    BigDecimal weight,
     String templateId,
     NodeStateEnt state,
     LoopInfoEnt loopInfo,
@@ -172,6 +175,11 @@ public record DefaultNativeNodeEnt(
     }
     
     @Override
+    public BigDecimal getWeight() {
+        return weight;
+    }
+    
+    @Override
     public String getTemplateId() {
         return templateId;
     }
@@ -223,6 +231,8 @@ public record DefaultNativeNodeEnt(
         private AllowedNodeActionsEnt m_allowedActions;
 
         private NodeExecutionInfoEnt m_executionInfo;
+
+        private BigDecimal m_weight;
 
         private String m_templateId;
 
@@ -306,6 +316,12 @@ public record DefaultNativeNodeEnt(
         }
 
         @Override
+        public DefaultNativeNodeEntBuilder setWeight(BigDecimal weight) {
+             m_weight = weight;
+             return this;
+        }
+
+        @Override
         public DefaultNativeNodeEntBuilder setTemplateId(String templateId) {
              if(templateId == null) {
                  throw new IllegalArgumentException("<templateId> must not be null.");
@@ -356,6 +372,7 @@ public record DefaultNativeNodeEnt(
                 immutable(m_hasDialog),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),
+                immutable(m_weight),
                 immutable(m_templateId),
                 immutable(m_state),
                 immutable(m_loopInfo),

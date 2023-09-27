@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
@@ -95,6 +96,8 @@ public final class WorkflowBuildContext {
 
     private Map<NodeID, ModifiablePortsConfiguration> m_portsConfigurations;
 
+    private Function<NodeID, Double> m_nodeWeightProvider;
+
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
         final DependentNodeProperties depNodeProps) {
@@ -105,6 +108,7 @@ public final class WorkflowBuildContext {
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
+        m_nodeWeightProvider = builder.m_nodeWeightProvider;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -125,6 +129,13 @@ public final class WorkflowBuildContext {
 
     DependentNodeProperties dependentNodeProperties() {
         return m_depNodeProps;
+    }
+
+    Double nodeWeight(final NodeID id) {
+        if (m_nodeWeightProvider == null) {
+            return null;
+        }
+        return m_nodeWeightProvider.apply(id);
     }
 
     boolean canUndo() {
@@ -214,6 +225,8 @@ public final class WorkflowBuildContext {
 
         private Supplier<DependentNodeProperties> m_depNodeProps;
 
+        private Function<NodeID, Double> m_nodeWeightProvider;
+
         private WorkflowBuildContextBuilder() {
             //
         }
@@ -263,6 +276,17 @@ public final class WorkflowBuildContext {
          */
         public WorkflowBuildContextBuilder setDependentNodeProperties(final Supplier<DependentNodeProperties> depNodeProps) {
             m_depNodeProps = depNodeProps;
+            return this;
+        }
+
+        /**
+         * TODO
+         *
+         * @param nodeWeightProvider
+         * @return
+         */
+        public WorkflowBuildContextBuilder setNodeWeightProvider(final Function<NodeID, Double> nodeWeightProvider) {
+            m_nodeWeightProvider = nodeWeightProvider;
             return this;
         }
 

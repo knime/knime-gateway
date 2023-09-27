@@ -92,7 +92,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
         /**
    		 * Set description
          * 
-         * @param description the property value,  
+         * @param description the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ProjectMetadataEntBuilder setDescription(TypedTextEnt description);
@@ -100,7 +100,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
         /**
          * A collection of tags the user chose to describe the workflow
          * 
-         * @param tags the property value,  
+         * @param tags the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ProjectMetadataEntBuilder setTags(java.util.List<String> tags);
@@ -108,7 +108,7 @@ public interface ProjectMetadataEnt extends GatewayEntity, EditableProjectMetada
         /**
          * A collection of URLs attached to the workflow
          * 
-         * @param links the property value,  
+         * @param links the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);

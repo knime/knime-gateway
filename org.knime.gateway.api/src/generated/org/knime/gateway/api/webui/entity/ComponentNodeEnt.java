@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -104,6 +105,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
       valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
+      valueConsumer.accept("weight", Pair.create(getWeight(), e.getWeight()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
@@ -188,6 +190,14 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
          * @return this entity builder for chaining
          */
         ComponentNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+   		 * Set weight
+         * 
+         * @param weight the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeEntBuilder setWeight(BigDecimal weight);
         
         /**
          * The component name.

@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
@@ -70,6 +71,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  * @param hasDialog
  * @param allowedActions
  * @param executionInfo
+ * @param weight
  * @param name
  * @param type
  * @param icon
@@ -90,6 +92,7 @@ public record DefaultComponentNodeEnt(
     Boolean hasDialog,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
+    BigDecimal weight,
     String name,
     TypeEnum type,
     String icon,
@@ -172,6 +175,11 @@ public record DefaultComponentNodeEnt(
     }
     
     @Override
+    public BigDecimal getWeight() {
+        return weight;
+    }
+    
+    @Override
     public String getName() {
         return name;
     }
@@ -223,6 +231,8 @@ public record DefaultComponentNodeEnt(
         private AllowedNodeActionsEnt m_allowedActions;
 
         private NodeExecutionInfoEnt m_executionInfo;
+
+        private BigDecimal m_weight;
 
         private String m_name;
 
@@ -306,6 +316,12 @@ public record DefaultComponentNodeEnt(
         }
 
         @Override
+        public DefaultComponentNodeEntBuilder setWeight(BigDecimal weight) {
+             m_weight = weight;
+             return this;
+        }
+
+        @Override
         public DefaultComponentNodeEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("<name> must not be null.");
@@ -356,6 +372,7 @@ public record DefaultComponentNodeEnt(
                 immutable(m_hasDialog),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),
+                immutable(m_weight),
                 immutable(m_name),
                 immutable(m_type),
                 immutable(m_icon),

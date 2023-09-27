@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
@@ -66,6 +67,7 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
  * @param hasDialog
  * @param allowedActions
  * @param executionInfo
+ * @param weight
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -79,7 +81,8 @@ public record DefaultNodeEnt(
     KindEnum kind,
     Boolean hasDialog,
     AllowedNodeActionsEnt allowedActions,
-    NodeExecutionInfoEnt executionInfo) implements NodeEnt {
+    NodeExecutionInfoEnt executionInfo,
+    BigDecimal weight) implements NodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -152,6 +155,11 @@ public record DefaultNodeEnt(
         return executionInfo;
     }
     
+    @Override
+    public BigDecimal getWeight() {
+        return weight;
+    }
+    
     /**
      * A builder for {@link DefaultNodeEnt}.
      */
@@ -174,6 +182,8 @@ public record DefaultNodeEnt(
         private AllowedNodeActionsEnt m_allowedActions;
 
         private NodeExecutionInfoEnt m_executionInfo;
+
+        private BigDecimal m_weight;
 
         @Override
         public DefaultNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -245,6 +255,12 @@ public record DefaultNodeEnt(
         }
 
         @Override
+        public DefaultNodeEntBuilder setWeight(BigDecimal weight) {
+             m_weight = weight;
+             return this;
+        }
+
+        @Override
         public DefaultNodeEnt build() {
             return new DefaultNodeEnt(
                 immutable(m_id),
@@ -255,7 +271,8 @@ public record DefaultNodeEnt(
                 immutable(m_kind),
                 immutable(m_hasDialog),
                 immutable(m_allowedActions),
-                immutable(m_executionInfo));
+                immutable(m_executionInfo),
+                immutable(m_weight));
         }
     
     }

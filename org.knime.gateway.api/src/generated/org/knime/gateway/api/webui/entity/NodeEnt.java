@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
@@ -145,6 +146,12 @@ public interface NodeEnt extends GatewayEntity {
    **/
   public NodeExecutionInfoEnt getExecutionInfo();
 
+  /**
+   * Get weight
+   * @return weight 
+   **/
+  public BigDecimal getWeight();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -159,6 +166,7 @@ public interface NodeEnt extends GatewayEntity {
       valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
+      valueConsumer.accept("weight", Pair.create(getWeight(), e.getWeight()));
   }
 
     /**
@@ -237,6 +245,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+   		 * Set weight
+         * 
+         * @param weight the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setWeight(BigDecimal weight);
         
         
         /**

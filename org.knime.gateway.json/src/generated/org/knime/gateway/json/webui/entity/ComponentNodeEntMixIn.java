@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
@@ -113,6 +114,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     @Override
     @JsonProperty("executionInfo")
     public NodeExecutionInfoEnt getExecutionInfo();
+    
+    @Override
+    @JsonProperty("weight")
+    public BigDecimal getWeight();
     
     @Override
     @JsonProperty("name")
@@ -186,6 +191,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("executionInfo")
         public ComponentNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
+        
+        @Override
+        @JsonProperty("weight")
+        public ComponentNodeEntMixInBuilder setWeight(final BigDecimal weight);
         
         @Override
         @JsonProperty("name")

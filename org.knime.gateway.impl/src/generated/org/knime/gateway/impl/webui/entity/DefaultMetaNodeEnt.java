@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
@@ -69,6 +70,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
  * @param hasDialog
  * @param allowedActions
  * @param executionInfo
+ * @param weight
  * @param name
  * @param state
  * @param link
@@ -87,6 +89,7 @@ public record DefaultMetaNodeEnt(
     Boolean hasDialog,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
+    BigDecimal weight,
     String name,
     MetaNodeStateEnt state,
     TemplateLinkEnt link,
@@ -170,6 +173,11 @@ public record DefaultMetaNodeEnt(
     }
     
     @Override
+    public BigDecimal getWeight() {
+        return weight;
+    }
+    
+    @Override
     public String getName() {
         return name;
     }
@@ -211,6 +219,8 @@ public record DefaultMetaNodeEnt(
         private AllowedNodeActionsEnt m_allowedActions;
 
         private NodeExecutionInfoEnt m_executionInfo;
+
+        private BigDecimal m_weight;
 
         private String m_name;
 
@@ -290,6 +300,12 @@ public record DefaultMetaNodeEnt(
         }
 
         @Override
+        public DefaultMetaNodeEntBuilder setWeight(BigDecimal weight) {
+             m_weight = weight;
+             return this;
+        }
+
+        @Override
         public DefaultMetaNodeEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("<name> must not be null.");
@@ -331,6 +347,7 @@ public record DefaultMetaNodeEnt(
                 immutable(m_hasDialog),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),
+                immutable(m_weight),
                 immutable(m_name),
                 immutable(m_state),
                 immutable(m_link),

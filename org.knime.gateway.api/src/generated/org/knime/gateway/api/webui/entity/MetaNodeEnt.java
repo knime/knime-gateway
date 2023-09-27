@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeStateEnt;
@@ -121,6 +122,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
+      valueConsumer.accept("weight", Pair.create(getWeight(), e.getWeight()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("link", Pair.create(getLink(), e.getLink()));
@@ -203,6 +205,14 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+   		 * Set weight
+         * 
+         * @param weight the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setWeight(BigDecimal weight);
         
         /**
    		 * Set name

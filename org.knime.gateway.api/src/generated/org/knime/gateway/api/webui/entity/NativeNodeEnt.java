@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import java.math.BigDecimal;
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
@@ -122,6 +123,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
+      valueConsumer.accept("weight", Pair.create(getWeight(), e.getWeight()));
       valueConsumer.accept("templateId", Pair.create(getTemplateId(), e.getTemplateId()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("loopInfo", Pair.create(getLoopInfo(), e.getLoopInfo()));
@@ -206,6 +208,14 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+   		 * Set weight
+         * 
+         * @param weight the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setWeight(BigDecimal weight);
         
         /**
          * The id of the node template this node is an instance of.

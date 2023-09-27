@@ -541,6 +541,7 @@ public final class WorkflowEntityFactory {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
             .setIsLocked(isLocked(nc)) //
+            .setWeight(getNodeWeight(nc.getID(), buildContext)) //
             .build();
     }
 
@@ -674,6 +675,7 @@ public final class WorkflowEntityFactory {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .setIsLocked(isLocked(wm)) //
+            .setWeight(getNodeWeight(wm.getID(), buildContext))//
             .build();
     }
 
@@ -760,7 +762,13 @@ public final class WorkflowEntityFactory {
             .setHasDialog(hasDialog)
             .setHasView(hasView)//
             .setIsReexecutable(isReexecutable)//
+            .setWeight(getNodeWeight(nnc.getID(), buildContext))//
             .build();
+    }
+
+    private static BigDecimal getNodeWeight(final NodeID id, final WorkflowBuildContext c) {
+        var weight = c.nodeWeight(id);
+        return weight == null ? null : new BigDecimal(weight);
     }
 
     private NativeNodeInvariantsEnt buildNativeNodeInvariantsEnt(final NativeNodeContainer nc) {
@@ -1291,7 +1299,7 @@ public final class WorkflowEntityFactory {
 
     /**
      * Decode bytes from a given String
-     * 
+     *
      * @param dataUrl A string containing a PNG encoded in a base64-data-url
      * @return The decoded bytes
      */
@@ -1302,7 +1310,7 @@ public final class WorkflowEntityFactory {
 
     /**
      * Encode bytes into a data-url-string
-     * 
+     *
      * @param iconData The data to encode
      * @return The encoded string
      */
