@@ -426,7 +426,7 @@ public final class LocalWorkspace implements Space {
             destPath = destPathParent.resolve(uniqueName);
         } else { // Overwrite in case of name collision
             destPath = destPathParent.resolve(workflowName);
-            FileUtil.deleteRecursively(destPath.toFile()); // Delete the existing space item first
+            deleteItems(List.of(getItemId(destPath))); // Delete the existing space item first
         }
 
         if (Files.exists(destPath)) {
