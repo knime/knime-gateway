@@ -57,6 +57,7 @@ import org.junit.Test;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.statistics.UnivariateStatistics;
 import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
@@ -91,18 +92,19 @@ public class StatisticsPortViewFactoryTest {
     }
 
     /**
-     * Checks the {@link InitialDataService} of the {@link PortView} created by the {@link StatisticsPortViewFactory}.
+     * Checks the {@link InitialDataService} and {@link RpcDataService} of the {@link PortView} created by the {@link StatisticsPortViewFactory}.
      *
      * @throws IOException
      */
     @Test
-    public void testInitialData() throws IOException {
+    public void testDataServices() throws IOException {
         var bdt = TestingUtilities.createTable(2);
         var port = TestingUtilities.createNodeOutPort(bdt);
         PortContext.pushContext(port.get());
         try {
+            final var portView = new StatisticsPortViewFactory().createPortView(bdt);
             var initialData =
-                new StatisticsPortViewFactory().createPortView(bdt).createInitialDataService().get().getInitialData();
+                    portView.createInitialDataService().get().getInitialData();
             assertThat(initialData, containsString("{\"result\":{"));
             assertThat(initialData, containsString("\"table\":{"));
 
@@ -124,6 +126,10 @@ public class StatisticsPortViewFactoryTest {
                 settings, //
                 StatisticsPortViewFactory.getSettingsForDataTable(new DataTableSpec(), bdt.getSpec().getNumColumns()) //
             );
+            var rpcDataService = portView.createRpcDataService().get();
+            var request = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getCurrentRowKeys\",\"params\":[]}";
+            var responseString = rpcDataService.handleRpcRequest(request);
+            assertThat(responseString, containsString("\"result\":[\"int\",\"string\",\"long\",\"double\",\"boolean\"]"));
         } finally {
             PortContext.removeLastContext();
             port.dispose();

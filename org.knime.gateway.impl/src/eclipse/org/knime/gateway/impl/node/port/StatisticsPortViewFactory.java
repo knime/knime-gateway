@@ -46,8 +46,9 @@
  */
 package org.knime.gateway.impl.node.port;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -82,49 +83,40 @@ import org.knime.core.webui.page.Page;
 @SuppressWarnings("restriction")
 public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTable> {
 
-    /**
-     * The most recent statistics computation.
-     */
-    private static StatisticsComputation mostRecent;
+    private static Map<String, Future<BufferedDataTable>> computations = new HashMap<>();
 
     /**
-     * Obtain a {@link CompletableFuture} for the statistics table, additionally managing any potentially current
-     * running computations:
-     * <ul>
-     * <li>If a computation for the given table is already running or was the last one to complete, do not start a new
-     * one and reuse that</li>
-     * <li>If a computation for a different table is running, cancel that and start one for the given table</li>
-     * </ul>
+     * Obtain a {@link CompletableFuture} for the statistics table. If a computation for the given table is already
+     * running or was the last one to complete, do not start a new one and reuse that.
      *
      * @param tableId The ID of the source table
      * @param task The task to compute
      * @return A {@link CompletableFuture} for {@code task}
      */
-    private static Future<BufferedDataTable> cancelOtherAndGetFutureFor(final String tableId,
+    private static Future<BufferedDataTable> getFutureFor(final String tableId,
         final Callable<BufferedDataTable> task) {
         if (hasFutureOf(tableId)) {
-            return mostRecent.future();
-        } else {
-            cancelCurrent();
+            return getExistingFutureFor(tableId);
         }
         var newFuture = KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(task);
-        mostRecent = new StatisticsComputation(tableId, newFuture);
+        computations.put(tableId, newFuture);
         return newFuture;
     }
 
-    private static boolean hasFutureOf(final String tableId) {
-        if (mostRecent == null) {
-            return false;
-        }
-        return Objects.equals(mostRecent.tableId(), tableId);
+    private static Future<BufferedDataTable> getExistingFutureFor(final String tableId) {
+        return computations.get(tableId);
     }
 
-    private static void cancelCurrent() {
-        if (mostRecent == null) {
-            return;
+    private static void cancelAndRemoveFutureFor(final String tableId) {
+        if (hasFutureOf(tableId)) {
+            final var computation = computations.get(tableId);
+            computation.cancel(true);
+            computations.remove(tableId);
         }
-        mostRecent.future().cancel(true);
-        mostRecent = null;
+    }
+
+    private static boolean hasFutureOf(final String tableId) {
+        return computations.containsKey(tableId);
     }
 
     @Override
@@ -139,8 +131,7 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         Supplier<BufferedDataTable> tableSupplier = () -> {
             var context = DataServiceContext.get().getExecutionContext();
             try {
-                return cancelOtherAndGetFutureFor(tableId,
-                    () -> computeStatisticsTable(table, selectedStatistics, context)).get();
+                return getFutureFor(tableId, () -> computeStatisticsTable(table, selectedStatistics, context)).get();
             } catch (CancellationException | ExecutionException | InterruptedException e) { // NOSONAR: expected
                 throw new DataServiceException("Statistics table computation aborted", e);
             }
@@ -158,18 +149,16 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
                 var settings = getSettingsForDataTable(UnivariateStatistics.getStatisticsTableSpec(selectedStatistics),
                     numColumns);
                 Runnable onDispose = () -> {
-                    if (hasFutureOf(tableId)) {
-                        cancelCurrent();
-                    }
+                    cancelAndRemoveFutureFor(tableId);
                 };
-                return Optional
-                    .of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, null, tableId,
-                        onDispose));
+                return Optional.of(
+                    TableViewUtil.createInitialDataService(() -> settings, tableSupplier, null, tableId, onDispose));
             }
 
             @Override
             public Optional<RpcDataService> createRpcDataService() {
-                return Optional.empty(); // Don't compute statistics twice
+                return Optional.of(TableViewUtil
+                    .createRpcDataService(TableViewUtil.createTableViewDataService(tableSupplier, tableId), tableId));
             }
         };
     }
@@ -204,12 +193,5 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         settings.m_showRowKeys = false;
         settings.m_showRowIndices = false;
         return settings;
-    }
-
-    /**
-     * @param tableId Identifies the source table
-     * @param future A Future that might still be in progress or be already completed
-     */
-    private record StatisticsComputation(String tableId, Future<BufferedDataTable> future) { // NOSONAR
     }
 }
