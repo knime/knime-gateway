@@ -281,6 +281,18 @@ public interface Space {
     URI toKnimeUrl(String itemId);
 
     /**
+     * Creates a mountpoint-absolute KNIME URL for the given space item.
+     * On KNIME Hub it uses path-based instead of ID-based addressing, and may issue a REST request.
+     *
+     * @param itemId item ID
+     * @return path-based KNIME URL
+     * @throws ResourceAccessException if there were problems resolving the item's path
+     */
+    default URI toPathBasedKnimeUrl(final String itemId) throws ResourceAccessException {
+        return toKnimeUrl(itemId);
+    }
+
+    /**
      * Deletes the items from the space.
      *
      * @param itemIds item IDs

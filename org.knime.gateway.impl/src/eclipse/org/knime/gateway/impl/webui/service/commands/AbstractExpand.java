@@ -48,6 +48,7 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -159,11 +160,14 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     }
 
     private Set<NodeID> getExpandedNodes() {
-        return Set.of(m_subNodeExpandResult.getExpandedCopyContent().getNodeIDs());
+        // Calling `Set#of(E...)` with an array may trigger the following error in Eclipse 2023-06 and 2023-09:
+        // Cannot invoke "org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding.constantPoolName()" because
+        // "this.superclass" is null
+        return Set.copyOf(Arrays.asList(m_subNodeExpandResult.getExpandedCopyContent().getNodeIDs()));
     }
 
     private Set<WorkflowAnnotationID> getExpandedAnnotations() {
-        return Set.of(m_subNodeExpandResult.getExpandedCopyContent().getAnnotationIDs());
+        return Set.copyOf(Arrays.asList(m_subNodeExpandResult.getExpandedCopyContent().getAnnotationIDs()));
     }
 
     @Override

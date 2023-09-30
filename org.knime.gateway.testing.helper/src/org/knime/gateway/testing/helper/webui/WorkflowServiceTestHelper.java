@@ -2176,7 +2176,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var space = mock(Space.class);
         when(spaceProvider.getSpace(eq("spaceId"))).thenReturn(space);
         when(spaceProviders.getProvidersMap()).thenReturn(Map.of("providerId", spaceProvider));
-        when(space.toKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
+        when(space.toPathBasedKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
 
         Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
             .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
@@ -2567,7 +2567,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test execute-undo-redo for updating component metadata from within a component workflow.
-     * 
+     *
      * @throws Exception
      */
     public void testUpdateComponentMetadataFromWithin() throws Exception {
@@ -2610,7 +2610,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Test that workflow was not modified if a component metadata update command requesting the exact same values is
      * handled.
-     * 
+     *
      * @throws Exception
      */
     public void testComponentMetadataNotUpdatedIfNoChange() throws Exception {
@@ -2721,9 +2721,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertProjectMetadata(actualMetadata, expected.getDescription(), expected.getTags(), expected.getLinks());
     }
 
-    private void assertComponentMetadata(ComponentNodeDescriptionEnt modifiedMetadata, String newIcon,
-        UpdateComponentMetadataCommandEnt.TypeEnum newType, List<ComponentPortDescriptionEnt> newInPorts,
-        List<ComponentPortDescriptionEnt> newOutPorts) {
+    private void assertComponentMetadata(final ComponentNodeDescriptionEnt modifiedMetadata, final String newIcon,
+        final UpdateComponentMetadataCommandEnt.TypeEnum newType, final List<ComponentPortDescriptionEnt> newInPorts,
+        final List<ComponentPortDescriptionEnt> newOutPorts) {
         assertThat("Unexpected icon", modifiedMetadata.getIcon(), is(newIcon));
         assertThat("Unexpected type",
             UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(modifiedMetadata.getType().name()), is(newType));
@@ -2768,9 +2768,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static UpdateComponentMetadataCommandEnt buildUpdateComponentMetadataCommand(final TypedTextEnt description,
-        final List<String> tags, final List<LinkEnt> links, String icon,
-        UpdateComponentMetadataCommandEnt.TypeEnum type, List<ComponentPortDescriptionEnt> inPorts,
-        List<ComponentPortDescriptionEnt> outPorts) {
+        final List<String> tags, final List<LinkEnt> links, final String icon,
+        final UpdateComponentMetadataCommandEnt.TypeEnum type, final List<ComponentPortDescriptionEnt> inPorts,
+        final List<ComponentPortDescriptionEnt> outPorts) {
         return builder(UpdateComponentMetadataCommandEnt.UpdateComponentMetadataCommandEntBuilder.class)
             .setKind(KindEnum.UPDATE_COMPONENT_METADATA).setDescription(description).setTags(tags).setLinks(links)
             .setIcon(icon).setType(type).setInPorts(inPorts) //
