@@ -2500,7 +2500,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var space = mock(Space.class);
         when(spaceProvider.getSpace(eq("spaceId"))).thenReturn(space);
         when(spaceProviders.getProvidersMap()).thenReturn(Map.of("providerId", spaceProvider));
-        when(space.toKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
+        when(space.toPathBasedKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
 
         Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
             .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
@@ -2890,6 +2890,77 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Test execute-undo-redo for updating component metadata from within a component workflow.
+     *
+     * @throws Exception
+     */
+    public void testUpdateComponentMetadataFromWithin() throws Exception {
+        // we need to load a workflow corresponding to a Container/Subnode
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
+        var componentId = getRootID().appendNodeID(4);
+        // extract original properties to check against them later
+        var originalMetadata = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        // new properties to be sent with the command
+        var newDescription = EntityUtil.toTypedTextEnt("<p>bla bla bla</p>", ContentTypeEnum.HTML);
+        var newTags = List.of("foo", "bar");
+        var newLinks = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
+        var newIcon = "data:image/png;base64,"
+            + "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAPVJREFUOI2dk1FxwzAQRHddAoZgCmGgMCgEB0HCYCUGZZBAKIOMERRCHAZB4MuPPCPLkibT+zztrfaeRl+IJWl0zvXTNM1oVK7r1gOSInmV1LcMcl0XXT1JHwXnxu07HSUNJB8k3bIsT5J3MzuGEOZsuKjrSAoAzOxC8g/AQPJaiv6JbgdMkmtputbhJ2CrBpI8gCFGrYJlZXgg+UhaLzM75GCrCSKwHwC32OprwHYGkkYAI4CX9/5kZicAMwBXArozWJ9rrRDCzcyOAH5LQDcGCbi018dE3ygAZSLMwXkzm+LuqekG6OYzZdtcSN7zRGgA/Ve9ASTnd38pmtoyAAAAAElFTkSuQmCC";
+        var newType = UpdateComponentMetadataCommandEnt.TypeEnum.OTHER;
+        var newInPorts = List.of(builder(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class)
+            .setName("new in port 1 name").setDescription("new port 1 description").build());
+        var newOutPorts = List.of(builder(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class)
+            .setName("new out port 1 name").setDescription("new out port 1 description").build());
+        var command = buildUpdateComponentMetadataCommand(newDescription, newTags, newLinks, newIcon, newType,
+            newInPorts, newOutPorts);
+        // execute
+        ws().executeWorkflowCommand(projectId, componentId, command);
+        var modifiedMetadata = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        // assert result
+        assertProjectMetadata(modifiedMetadata, newDescription, newTags, newLinks);
+        assertComponentMetadata(modifiedMetadata, newIcon, newType, newInPorts, newOutPorts);
+        // undo
+        ws().undoWorkflowCommand(projectId, componentId);
+        var metadataUndo = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        assertProjectMetadata(metadataUndo, originalMetadata);
+        assertComponentMetadata(metadataUndo, originalMetadata);
+        // redo
+        ws().redoWorkflowCommand(projectId, componentId);
+        var metadataRedo = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        assertProjectMetadata(metadataRedo, newDescription, newTags, newLinks);
+        assertComponentMetadata(metadataRedo, newIcon, newType, newInPorts, newOutPorts);
+    }
+
+    /**
+     * Test that workflow was not modified if a component metadata update command requesting the exact same values is
+     * handled.
+     *
+     * @throws Exception
+     */
+    public void testComponentMetadataNotUpdatedIfNoChange() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
+        var componentId = getRootID().appendNodeID(4);
+        var originalMetadata = ws().getWorkflow(projectId, componentId, false).getWorkflow().getComponentMetadata();
+        var originalType = UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(originalMetadata.getType().name());
+        var originalInPorts = toComponentPortDescription(originalMetadata.getInPorts());
+        var originalOutPorts = toComponentPortDescription(originalMetadata.getOutPorts());
+        var command = buildUpdateComponentMetadataCommand(originalMetadata.getDescription(), originalMetadata.getTags(),
+            originalMetadata.getLinks(), originalMetadata.getIcon(), originalType, originalInPorts, originalOutPorts);
+        // execute
+        ws().executeWorkflowCommand(projectId, componentId, command);
+        WorkflowEnt workflow = ws().getWorkflow(projectId, componentId, false).getWorkflow();
+        assertThat("Workflow should not be dirty", !workflow.isDirty());
+    }
+
+    private List<ComponentPortDescriptionEnt>
+        toComponentPortDescription(final List<NodePortDescriptionEnt> nodePortDescriptions) {
+        return nodePortDescriptions.stream().map(nodePortDescription -> {
+            return builder(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class)
+                .setName(nodePortDescription.getName()).setDescription(nodePortDescription.getDescription()).build();
+        }).toList();
+    }
+
+    /**
      * Tests {@link UpdateProjectMetadataCommandEnt} using legacy workflow metadata format.
      *
      * @throws Exception
@@ -2969,6 +3040,41 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Unexpected tags", metadata.getTags(), is(tags));
     }
 
+    private static void assertProjectMetadata(final ProjectMetadataEnt actualMetadata,
+        final ProjectMetadataEnt expected) {
+        assertProjectMetadata(actualMetadata, expected.getDescription(), expected.getTags(), expected.getLinks());
+    }
+
+    private void assertComponentMetadata(final ComponentNodeDescriptionEnt modifiedMetadata, final String newIcon,
+        final UpdateComponentMetadataCommandEnt.TypeEnum newType, final List<ComponentPortDescriptionEnt> newInPorts,
+        final List<ComponentPortDescriptionEnt> newOutPorts) {
+        assertThat("Unexpected icon", modifiedMetadata.getIcon(), is(newIcon));
+        assertThat("Unexpected type",
+            UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(modifiedMetadata.getType().name()), is(newType));
+
+        Consumer<Pair<NodePortDescriptionEnt, ComponentPortDescriptionEnt>> compareTitleAndDescription = p -> {
+            var actual = p.getFirst();
+            var expected = p.getSecond();
+            assertThat("Unexpected title", actual.getName(), is(expected.getName()));
+            assertThat("Unexpected description", actual.getDescription(), is(expected.getDescription()));
+        };
+        zip(modifiedMetadata.getInPorts(), newInPorts).forEach(compareTitleAndDescription);
+        zip(modifiedMetadata.getOutPorts(), newOutPorts).forEach(compareTitleAndDescription);
+    }
+
+    private void assertComponentMetadata(final ComponentNodeDescriptionEnt actualMetadata,
+        final ComponentNodeDescriptionEnt expectedMetadata) {
+        var type = UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(actualMetadata.getType().name());
+        var inPorts = toComponentPortDescription(actualMetadata.getInPorts());
+        var outPorts = toComponentPortDescription(actualMetadata.getOutPorts());
+        assertComponentMetadata(actualMetadata, expectedMetadata.getIcon(), type, inPorts, outPorts);
+    }
+
+    private <A, B> Stream<Pair<A, B>> zip(final List<A> a, final List<B> b) {
+        assertThat("Lists of different length", a.size(), is(b.size()));
+        return IntStream.range(0, Math.min(a.size(), b.size())).mapToObj(i -> Pair.create(a.get(i), b.get(i)));
+    }
+
     private static LinkEnt buildLinkEnt(final String url, final String text) {
         return builder(LinkEntBuilder.class)//
             .setUrl(url)//
@@ -2983,5 +3089,96 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setTags(tags)//
             .setLinks(links)//
             .build();
+    }
+
+    private static UpdateComponentMetadataCommandEnt buildUpdateComponentMetadataCommand(final TypedTextEnt description,
+        final List<String> tags, final List<LinkEnt> links, final String icon,
+        final UpdateComponentMetadataCommandEnt.TypeEnum type, final List<ComponentPortDescriptionEnt> inPorts,
+        final List<ComponentPortDescriptionEnt> outPorts) {
+        return builder(UpdateComponentMetadataCommandEnt.UpdateComponentMetadataCommandEntBuilder.class)
+            .setKind(KindEnum.UPDATE_COMPONENT_METADATA).setDescription(description).setTags(tags).setLinks(links)
+            .setIcon(icon).setType(type).setInPorts(inPorts) //
+            .setOutPorts(outPorts) //
+            .build();
+    }
+
+    /**
+     * Tests {@link UpdateComponentOrMetanodeNameCommandEnt}.
+     *
+     * @throws Exception
+     */
+    public void testUpdateComponentLinkInformation() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
+        var linkedComponent = new NodeIDEnt(1);
+        var notLinkedComponent = new NodeIDEnt(10);
+        var oldLink = "knime://LOCAL/Component/";
+        var newLink = "newUrl";
+
+        // Test happy path
+        var command1 = buildUpdateComponentLinkInformationCommand(linkedComponent, newLink);
+        var nodeBefore = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeBefore, oldLink);
+
+        ws().executeWorkflowCommand(projectId, getRootID(), command1);
+        var nodeAfter = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeAfter, newLink);
+
+        // Test undo command
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var nodeUndone = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeUndone, oldLink);
+
+        // Test not a component
+        var command2 = buildUpdateComponentLinkInformationCommand(new NodeIDEnt(99), newLink);
+        assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), command2));
+
+        // Test not a linked component
+        var command3 = buildUpdateComponentLinkInformationCommand(notLinkedComponent, newLink);
+        assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
+
+        // Test unlink a component
+        var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent, null);
+        ws().executeWorkflowCommand(projectId, getRootID(), command4);
+        var nodeUnlinked = getNodeEntFromWorkflowSnapshotEnt(
+            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE), linkedComponent);
+        assertComponentWithLink(nodeUnlinked, null);
+    }
+
+    private static UpdateComponentLinkInformationCommandEnt
+        buildUpdateComponentLinkInformationCommand(final NodeIDEnt nodeIdEnt, final String newUrl) {
+        return builder(UpdateComponentLinkInformationCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_COMPONENT_LINK_INFORMATION)//
+            .setNodeId(nodeIdEnt)//
+            .setNewUrl(newUrl)//
+            .build();
+    }
+
+    private static NodeEnt getNodeEntFromWorkflowSnapshotEnt(final WorkflowSnapshotEnt workflowSnapshotEnt,
+        final NodeIDEnt nodeIdEnt) {
+        return workflowSnapshotEnt//
+            .getWorkflow()//
+            .getNodes()//
+            .entrySet()//
+            .stream()//
+            .filter(entry -> entry.getKey().equals(nodeIdEnt.toString()))//
+            .findFirst()//
+            .map(Entry::getValue)//
+            .orElseThrow();
+    }
+
+    private static void assertComponentWithLink(final NodeEnt nodeEnt, final String expectedUrl) {
+        assertThat("The node is not a component", nodeEnt, new IsInstanceOf(ComponentNodeEnt.class));
+        var link = ((ComponentNodeEnt)nodeEnt).getLink();
+        if (expectedUrl == null) {
+            assertThat("There should not be a link", link, nullValue());
+        } else {
+            var actualUrl = ((ComponentNodeEnt)nodeEnt).getLink().getUrl();
+            assertThat("The links do not match", actualUrl, equalTo(expectedUrl));
+        }
     }
 }

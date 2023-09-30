@@ -62,6 +62,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.NodeCreationType;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
@@ -174,8 +175,10 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         final var itemId = spaceItemId.getItemId();
         try {
             var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
-            return space.toKnimeUrl(itemId).toURL();
-        } catch (MalformedURLException ex) {
+            return space.toPathBasedKnimeUrl(itemId).toURL();
+        } catch (MalformedURLException | ResourceAccessException ex) {
+            NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
+                + " to URL in " + spaceProviderId, ex);
             return null;
         }
     }
