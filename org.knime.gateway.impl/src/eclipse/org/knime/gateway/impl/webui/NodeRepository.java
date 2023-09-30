@@ -57,7 +57,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -147,12 +146,12 @@ public final class NodeRepository {
      * @param fullTemplateInfo whether to innclude the full node template information or not
      * @return a new map instance containing newly created entity instances
      */
-    public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds,
+    public Map<String, NodeTemplateEnt> getNodeTemplates(final Collection<String> templateIds,
         final boolean fullTemplateInfo) {
         loadAllNodesAndNodeSets();
         return templateIds.stream().map(this::getNodeIncludeAdditionalNodes)//
             .filter(Objects::nonNull)//
-            .map(n -> getNodeTemplate(n.templateId, fullTemplateInfo))//
+            .map(n -> getNodeTemplate(n, fullTemplateInfo))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toMap(NodeTemplateEnt::getId, t -> t));
     }
@@ -166,11 +165,15 @@ public final class NodeRepository {
      * @return the template entity or {@code null} if there is none for the given id
      */
     public NodeTemplateEnt getNodeTemplate(final String templateId, final boolean fullTemplateInfo) {
+        return getNodeTemplate(getNodeIncludeAdditionalNodes(templateId), fullTemplateInfo);
+    }
+
+    private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
         if (fullTemplateInfo) {
-            return m_fullInfoNodeTemplateEntCache.computeIfAbsent(templateId,
-                k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(getNode(templateId).factory));
+            return m_fullInfoNodeTemplateEntCache.computeIfAbsent(n.templateId,
+                k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory));
         } else {
-            return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(getNode(templateId).factory);
+            return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory);
         }
     }
 
