@@ -71,6 +71,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSetFactory;
@@ -118,6 +119,9 @@ public final class NodeRepository {
 
     private Map<String, Node> m_deprecatedNodes;
 
+    private final Map<String, NodeTemplateEnt> m_fullInfoNodeTemplateEntCache =
+        Collections.synchronizedMap(new HashMap<>());
+
     /**
      * Create a new node repository without a collection. All nodes are included.
      */
@@ -140,17 +144,34 @@ public final class NodeRepository {
      * the given template ids. Template ids that aren't found are omitted.
      *
      * @param templateIds the ids to create the entities for
+     * @param fullTemplateInfo whether to innclude the full node template information or not
      * @return a new map instance containing newly created entity instances
      */
-    public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds) {
+    public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds,
+        final boolean fullTemplateInfo) {
         loadAllNodesAndNodeSets();
-        // note: we could cache the already created node template entities here (which also contain, e.g., the icon)
-        // but we expect the frontend to do it already
         return templateIds.stream().map(this::getNodeIncludeAdditionalNodes)//
             .filter(Objects::nonNull)//
-            .map(n -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory))//
+            .map(n -> getNodeTemplate(n.templateId, fullTemplateInfo))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toMap(NodeTemplateEnt::getId, t -> t));
+    }
+
+    /**
+     * Builds the {@link NodeTemplateEnt} with all properties set (including the node/component icon etc.) for the given
+     * template id.
+     *
+     * @param templateId the id to create the entity for
+     * @param fullTemplateInfo whether to innclude the full node template information or not
+     * @return the template entity or {@code null} if there is none for the given id
+     */
+    public NodeTemplateEnt getNodeTemplate(final String templateId, final boolean fullTemplateInfo) {
+        if (fullTemplateInfo) {
+            return m_fullInfoNodeTemplateEntCache.computeIfAbsent(templateId,
+                k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(getNode(templateId).factory));
+        } else {
+            return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(getNode(templateId).factory);
+        }
     }
 
     /**
@@ -404,7 +425,7 @@ public final class NodeRepository {
         /**
          * The node's factory instance.
          */
-        final NodeFactory<? extends NodeModel> factory;
+        private final NodeFactory<? extends NodeModel> factory;
 
         /**
          * A weight used for sorting nodes if no other sort criteria is available (such as the search score). The weight
@@ -423,6 +444,10 @@ public final class NodeRepository {
             } catch (ConcurrentException ex) {
                 throw new IllegalStateException(ex);
             }
+        }
+
+        NodeType getType() {
+            return factory.getType();
         }
 
         /**

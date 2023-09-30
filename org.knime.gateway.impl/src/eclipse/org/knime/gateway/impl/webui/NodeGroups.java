@@ -71,7 +71,6 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
@@ -125,7 +124,7 @@ public final class NodeGroups {
             .skip(tagsOffset == null ? 0 : tagsOffset)//
             .limit(tagsLimit == null ? Integer.MAX_VALUE : tagsLimit)//
             .map(p -> buildNodeGroupEnt(nodesPerCategory.get(p.getFirst()), p.getSecond(), numNodesPerTag,
-                fullTemplateInfo))//
+                fullTemplateInfo, m_nodeRepo))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());
         return builder(NodeGroupsEntBuilder.class).setGroups(groups).setTotalNumGroups(nodesPerCategory.size()).build();
@@ -196,15 +195,13 @@ public final class NodeGroups {
     }
 
     private static NodeGroupEnt buildNodeGroupEnt(final List<Node> nodesPerCategory, final String name,
-        final Integer numNodesPerTag, final Boolean fullTemplateInfo) {
+        final Integer numNodesPerTag, final Boolean fullTemplateInfo, final NodeRepository nodeRepo) {
         if (nodesPerCategory == null || nodesPerCategory.isEmpty()) {
             return null;
         }
         List<NodeTemplateEnt> res = nodesPerCategory.stream()//
             .limit(numNodesPerTag == null ? Integer.MAX_VALUE : numNodesPerTag)//
-            .map(n -> Boolean.TRUE.equals(fullTemplateInfo)
-                ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
-                : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
+            .map(n -> nodeRepo.getNodeTemplate(n.templateId, Boolean.TRUE.equals(fullTemplateInfo)))//
             .filter(Objects::nonNull)//
             .collect(Collectors.toList());
         return builder(NodeGroupEntBuilder.class).setNodes(res).setTag(name).build();

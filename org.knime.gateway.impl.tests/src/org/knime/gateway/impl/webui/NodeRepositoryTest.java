@@ -99,7 +99,7 @@ public class NodeRepositoryTest {
 
         NodeTemplateEnt nodeFromSearch = res.getNodes().get(0);
         List<String> ids = asList(nodeFromSearch.getId());
-        Map<String, NodeTemplateEnt> templates = repo.getNodeTemplates(ids);
+        Map<String, NodeTemplateEnt> templates = repo.getNodeTemplates(ids, true);
         NodeTemplateEnt nodeFromRepo = templates.get(ids.get(0));
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
         assertThat("unexpected name", nodeFromRepo.getName(), is("Column Filter"));
@@ -125,12 +125,12 @@ public class NodeRepositoryTest {
         NodeTemplateEnt nodeFromSearch =
             search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, "IN_COLLECTION", null).getNodes().get(0);
         NodeTemplateEnt nodeFromRepo =
-            repo.getNodeTemplates(asList(nodeFromSearch.getId())).get(nodeFromSearch.getId());
+            repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
 
         nodeFromSearch =
             search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, "IN_COLLECTION", null).getNodes().get(0);
-        nodeFromRepo = repo.getNodeTemplates(asList(nodeFromSearch.getId())).get(nodeFromSearch.getId());
+        nodeFromRepo = repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
         assertThat(nodeFromRepo.getName(), containsString("deprecated"));
     }

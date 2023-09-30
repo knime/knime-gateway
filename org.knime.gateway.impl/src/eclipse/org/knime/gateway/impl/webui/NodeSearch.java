@@ -77,7 +77,6 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
@@ -178,15 +177,15 @@ public class NodeSearch {
         }
 
         final var searchQuery = new SearchQuery(q, tagList, Boolean.TRUE.equals(allTagsMatch), partition, portType);
+
+
         final var normalizer = Normalizer.DEFAULT_NORMALIZATION.compose(fn);
         final var foundNodes =
             m_foundNodesCache.computeIfAbsent(searchQuery, query -> searchNodes(allNodes, query, normalizer));
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
-            .map(n -> Boolean.TRUE.equals(fullTemplateInfo)
-                ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory)
-                : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory))//
+            .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, Boolean.TRUE.equals(fullTemplateInfo)))//
             .filter(Objects::nonNull)//
             .skip(offset == null ? 0 : offset)//
             .limit(limit == null ? Long.MAX_VALUE : limit)//
@@ -215,6 +214,7 @@ public class NodeSearch {
         final var normalizedSearchTerm = normalizer.normalizeSearchTerm(searchQuery.searchTerm());
         if (normalizedSearchTerm == null) {
             assert searchQuery.portType() == null;
+
             // Case 1: no filter, no ranking
             if (tags == null || tags.isEmpty()) {
                 return Collections.unmodifiableList(new ArrayList<>(nodes));

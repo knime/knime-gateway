@@ -67,7 +67,6 @@ import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -141,7 +140,7 @@ public class NodeRecommendations {
         Predicate<NodeInfo> isSourceNode = nodeInfo -> {
             var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
                 nodeRepo::getNodeIncludeAdditionalNodes, true);
-            return node != null && node.factory.getType() == NodeType.Source;
+            return node != null && node.getType() == NodeType.Source;
         };
         Function<NodeInfo, Optional<String>> getNameFromRepository = nodeInfo -> {
             var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
@@ -185,10 +184,8 @@ public class NodeRecommendations {
                 m_nodeRepo::getNode, true))//
             .filter(Objects::nonNull)// `NodeTemplateId.callWithNodeTemplateIdVariants(...)` could return null
             .filter(n -> sourcePortType == null || n.isCompatibleWith(sourcePortType))
-            .map(n -> n.factory)//
             .limit(limit)// Limit the number of results after filtering by port type compatibility
-            .map(f -> fullInfo ? EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(f)
-                : EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(f))//
+            .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, fullInfo))//
             .filter(Objects::nonNull)// `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
             .collect(Collectors.toList());
     }
