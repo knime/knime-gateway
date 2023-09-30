@@ -131,7 +131,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds) {
-        return m_nodeRepo.getNodeTemplates(templateIds);
+        return m_nodeRepo.getNodeTemplates(templateIds, true);
     }
 
     /**

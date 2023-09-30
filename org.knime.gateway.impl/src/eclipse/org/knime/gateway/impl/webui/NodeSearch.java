@@ -160,21 +160,21 @@ public class NodeSearch {
         final Collection<Node> allNodes;
         if (q != null && q.endsWith("//hidden")) {
             fn = t -> t.replace("//hidden", "");
-            allNodes = getAllNodes(m_nodeRepo::getHiddenNodes, portType);
+            allNodes = getAllNodes(m_nodeRepo::getHiddenNodes);
         } else if (q != null && q.endsWith("//deprecated")) {
             fn = t -> t.replace("//deprecated", "");
-            allNodes = getAllNodes(m_nodeRepo::getDeprecatedNodes, portType);
+            allNodes = getAllNodes(m_nodeRepo::getDeprecatedNodes);
         } else if (partition == NodePartition.IN_COLLECTION) {
             // Only consider the nodes that are part of the collection
-            allNodes = getAllNodes(m_nodeRepo::getNodes, portType);
+            allNodes = getAllNodes(m_nodeRepo::getNodes);
         } else if (partition == NodePartition.NOT_IN_COLLECTION) {
             // Only consider the nodes that are NOT part of the collection
-            allNodes = getAllNodes(m_nodeRepo::getAdditionalNodes, portType);
+            allNodes = getAllNodes(m_nodeRepo::getAdditionalNodes);
         } else {
             // Consider all nodes regardless their collection membership
             Supplier<Collection<Node>> supplier =
                 () -> CollectionUtils.union(m_nodeRepo.getNodes(), m_nodeRepo.getAdditionalNodes());
-            allNodes = getAllNodes(supplier, portType);
+            allNodes = getAllNodes(supplier);
         }
 
         final var searchQuery = new SearchQuery(q, tagList, Boolean.TRUE.equals(allTagsMatch), partition, portType);
@@ -214,6 +214,7 @@ public class NodeSearch {
         final Predicate<Node> tagFilter = n -> filterByTags(n, tags, allTagsMatch);
         final var normalizedSearchTerm = normalizer.normalizeSearchTerm(searchQuery.searchTerm());
         if (normalizedSearchTerm == null) {
+            assert searchQuery.portType() == null;
             // Case 1: no filter, no ranking
             if (tags == null || tags.isEmpty()) {
                 return Collections.unmodifiableList(new ArrayList<>(nodes));
@@ -226,11 +227,13 @@ public class NodeSearch {
                 .collect(Collectors.toList());
         }
         // Case 3: filter by tags, rank by similarity to search term
+        var portType = searchQuery.portType();
         return nodes.stream().filter(tagFilter)//
             .map(n -> new FoundNode(n, //
                 StringUtils.containsIgnoreCase(n.name, normalizedSearchTerm), //
                 SCORING_FN.applyAsDouble(n.getFuzzySearchable(), normalizedSearchTerm)))//
             .filter(n -> n.m_substringMatch || n.m_score >= SIMILARITY_THRESHOLD)//
+            .filter(n -> portType == null ? true : n.m_node.isCompatibleWith(portType))//
             .sorted(//
                 // 1) exact substring matches (only based on names)
                 Comparator.<FoundNode> comparingInt(n -> n.m_substringMatch ? 0 : 1)//
@@ -254,16 +257,9 @@ public class NodeSearch {
         return tags.stream().anyMatch(n.tags::contains);
     }
 
-    private static Collection<Node> getAllNodes(final Supplier<Collection<Node>> nodeSupplier,
-        final PortType portType) {
+    private static Collection<Node> getAllNodes(final Supplier<Collection<Node>> nodeSupplier) {
         var nodes = nodeSupplier.get();
-        if (portType == null) {
-            return nodes;
-        } else {
-            return nodes.stream()//
-                .filter(node -> node.isCompatibleWith(portType))//
-                .collect(Collectors.toList());
-        }
+        return nodes;
     }
 
     private static NodePartition verifyNodePartition(final String nodePartition) throws InvalidRequestException {
