@@ -173,7 +173,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         } catch (NoSuchElementException | IOException ex) {
             throw new OperationNotAllowedException(ex.getMessage(), ex);
         }
-        var result = wfm.replaceNode(targetNodeId, null, nodeFactory);
+        var result = wfm.replaceNode(targetNodeId, null, nodeFactory, false);
         return new InternalReplaceNodeResult() {
 
             @Override
