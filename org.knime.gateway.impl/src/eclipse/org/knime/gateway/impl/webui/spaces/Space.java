@@ -274,7 +274,10 @@ public interface Space {
 
     /**
      * Creates a mountpoint-absolute KNIME URL for the given space item.
+     * The URL may be either path- or ID-based. ID-based KNIME URLs can only be used to reference the item itself
+     * and carry no information about the position of the item in the Space's folder hierarchy.
      *
+     * @see this#toPathBasedKnimeUrl(String) 
      * @param itemId item ID
      * @return KNIME URL
      */
@@ -282,7 +285,7 @@ public interface Space {
 
     /**
      * Creates a mountpoint-absolute KNIME URL for the given space item.
-     * On KNIME Hub it uses path-based instead of ID-based addressing, and may issue a REST request.
+     * The resulting KNIME-URL is guaranteed to be path-based. May come with additional cost such as additional requests.
      *
      * @param itemId item ID
      * @return path-based KNIME URL
