@@ -62,6 +62,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -294,22 +295,41 @@ public final class LocalWorkspace implements Space {
         }
     }
 
+    /**
+     * @see this#resolveWithNameCollisions(Path, String, NameCollisionHandling, Supplier)
+     */
+    private Path resolveWithNameCollisions(final String parentId, final Path filePath, final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
+        var parentWorkflowGroupPath = getAbsolutePath(parentId);
+        var fileName = filePath.getFileName().toString();
+        return resolveWithNameCollisions(parentWorkflowGroupPath, fileName, requestedStrategy, uniqueName);
+    }
+
+    /**
+     * Resolve the given {@code fileName} against the given {@code parentPath}, resolving name collisions as according
+     * to {@code requestedStrategy}
+     */
+    private Path resolveWithNameCollisions(final Path parentPath, final String fileName, final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
+        return switch(requestedStrategy) {
+            case NOOP -> parentPath.resolve(fileName);
+            case AUTORENAME -> {
+                yield parentPath.resolve(uniqueName.get());
+            }
+            case OVERWRITE -> {
+                var destination = parentPath.resolve(fileName);
+                deleteItems(List.of(getItemId(destination)));
+                yield destination;
+            }
+        };
+    }
+
     @Override
     public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
             final NameCollisionHandling collisionHandling, final IProgressMonitor progress) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var fileName = srcPath.getFileName().toString();
+        Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, false);
+        var destPath = resolveWithNameCollisions(workflowGroupItemId, srcPath, collisionHandling, uniqueName);
 
-        Path destPath;
-        if (collisionHandling == Space.NameCollisionHandling.NOOP) {
-            destPath = parentWorkflowGroupPath.resolve(fileName);
-        } else if (collisionHandling == Space.NameCollisionHandling.AUTORENAME) {
-            var uniqueName = generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, false);
-            destPath = parentWorkflowGroupPath.resolve(uniqueName);
-        } else {
-            destPath = parentWorkflowGroupPath.resolve(fileName);
-            FileUtil.deleteRecursively(destPath.toFile()); // Delete the existing space item first
-        }
         FileUtil.copy(srcPath.toFile(), destPath.toFile());
 
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
@@ -320,22 +340,14 @@ public final class LocalWorkspace implements Space {
             final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
             final IProgressMonitor progressMonitor) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
-
         var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
         FileUtil.unzip(srcPath.toFile(), tmpDir);
         var tmpSrcPath = tmpDir.listFiles()[0].toPath();
         var fileName = tmpSrcPath.getFileName().toString();
 
-        Path destPath;
-        if (collisionHandling == Space.NameCollisionHandling.NOOP) {
-            destPath = parentWorkflowGroupPath.resolve(fileName);
-        } else if (collisionHandling == Space.NameCollisionHandling.AUTORENAME) {
-            var uniqueName = generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
-            destPath = parentWorkflowGroupPath.resolve(uniqueName);
-        } else {
-            destPath = parentWorkflowGroupPath.resolve(fileName);
-            FileUtil.deleteRecursively(destPath.toFile()); // Delete the existing space item first
-        }
+        Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
+        var destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
+
         FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
         createMetaInfoFileFor.accept(destPath);
 
@@ -378,17 +390,11 @@ public final class LocalWorkspace implements Space {
         var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(srcPath);
         var fileName = srcPath.getFileName().toString();
 
-        Path destPath;
-        if (collisionHandling == Space.NameCollisionHandling.NOOP) { // Assume no name collisions
-            destPath = destPathParent.resolve(fileName);
-        } else if (collisionHandling == Space.NameCollisionHandling.AUTORENAME) { // Auto-rename in case of name collisions
+        Supplier<String> uniqueName = () -> {
             var isWorkflowOrWorkflowGroup = type == TypeEnum.WORKFLOW || type == TypeEnum.WORKFLOWGROUP;
-            var uniqueName = generateUniqueSpaceItemName(destPathParent, fileName, isWorkflowOrWorkflowGroup);
-            destPath = destPathParent.resolve(uniqueName);
-        } else { // Overwrite in case of name collision
-            destPath = destPathParent.resolve(fileName);
-            FileUtil.deleteRecursively(destPath.toFile()); // Delete the existing space item first
-        }
+            return generateUniqueSpaceItemName(destPathParent, fileName, isWorkflowOrWorkflowGroup);
+        };
+        var destPath = resolveWithNameCollisions(destPathParent, srcPath.getFileName().toString(), collisionHandling, uniqueName);
 
         if (Files.exists(destPath)) {
             throw new IOException(
@@ -416,16 +422,9 @@ public final class LocalWorkspace implements Space {
     public Path createWorkflowDir(final String workflowGroupItemId, final String workflowName,
             final Space.NameCollisionHandling collisionHandling) throws IOException {
         var destPathParent = getAbsolutePath(workflowGroupItemId);
-        Path destPath;
-        if (collisionHandling == Space.NameCollisionHandling.NOOP) { // Assume no name collisions
-            destPath = destPathParent.resolve(workflowName);
-        } else if (collisionHandling == Space.NameCollisionHandling.AUTORENAME) { // Auto-rename in case of collisions
-            final var uniqueName = generateUniqueSpaceItemName(destPathParent, workflowName, true);
-            destPath = destPathParent.resolve(uniqueName);
-        } else { // Overwrite in case of name collision
-            destPath = destPathParent.resolve(workflowName);
-            deleteItems(List.of(getItemId(destPath))); // Delete the existing space item first
-        }
+
+        Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(destPathParent, workflowName, true);
+        var destPath = resolveWithNameCollisions(getAbsolutePath(workflowGroupItemId), workflowName, collisionHandling, uniqueName);
 
         if (Files.exists(destPath)) {
             throw new IOException(String.format("Attempting to overwrite <%s>, name collision handling went wrong.",

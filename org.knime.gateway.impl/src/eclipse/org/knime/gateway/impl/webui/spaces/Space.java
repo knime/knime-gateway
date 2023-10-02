@@ -99,17 +99,17 @@ public interface Space {
     String DEFAULT_WORKFLOW_GROUP_NAME = "Folder";
 
     /**
-     * Name collision handling options.
+     * Describe the operation that should be applied to space items to resolve a potential name collision.
      */
     enum NameCollisionHandling {
 
-            /** Nothing needs to be done */
+            /** Do nothing */
             NOOP,
 
-            /** Automatically rename items with identical names */
+            /** Rename the items */
             AUTORENAME,
 
-            /** Overwrite items with identical names */
+            /** Overwrite any existing items with the same identifier */
             OVERWRITE;
 
     }
