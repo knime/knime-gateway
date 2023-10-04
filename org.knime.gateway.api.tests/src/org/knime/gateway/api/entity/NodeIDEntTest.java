@@ -45,8 +45,10 @@
  */
 package org.knime.gateway.api.entity;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeID;
@@ -91,6 +93,16 @@ public class NodeIDEntTest {
         //from
         assertThat(new NodeIDEnt(s), is(new NodeIDEnt(3, 4, 1)));
         assertThat(new NodeIDEnt("root"), is(NodeIDEnt.getRootID()));
+    }
+
+    @Test
+    public void testIsEqualOrParentOf() {
+        assertTrue(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3")));
+        assertTrue(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4")));
+        assertFalse(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2")));
+        assertFalse(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4")));
+        assertTrue(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4")));
+        assertTrue(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root")));
     }
 
 }
