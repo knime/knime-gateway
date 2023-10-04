@@ -83,7 +83,7 @@ import org.knime.core.webui.page.Page;
 @SuppressWarnings("restriction")
 public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTable> {
 
-    private static Map<String, Future<BufferedDataTable>> computations = new HashMap<>();
+    private static final Map<String, Future<BufferedDataTable>> computations = new HashMap<>();
 
     /**
      * Obtain a {@link CompletableFuture} for the statistics table. If a computation for the given table is already
@@ -107,16 +107,30 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         return computations.get(tableId);
     }
 
-    private static void cancelAndRemoveFutureFor(final String tableId) {
+    private static void cancelAndRemoveFuture(final String tableId) {
         if (hasFutureOf(tableId)) {
-            final var computation = computations.get(tableId);
-            computation.cancel(true);
-            computations.remove(tableId);
+            cancelAndRemoveExistingFuture(tableId);
         }
+    }
+
+    private static void cancelAndRemoveFutureIfRunning(final String tableId) {
+        if (hasRunningFutureOf(tableId)) {
+            cancelAndRemoveExistingFuture(tableId);
+        }
+    }
+
+    private static void cancelAndRemoveExistingFuture(final String tableId) {
+        final var computation = computations.get(tableId);
+        computation.cancel(true);
+        computations.remove(tableId);
     }
 
     private static boolean hasFutureOf(final String tableId) {
         return computations.containsKey(tableId);
+    }
+
+    private static boolean hasRunningFutureOf(final String tableId) {
+        return hasFutureOf(tableId) && !computations.get(tableId).isDone();
     }
 
     @Override
@@ -148,11 +162,10 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
             public Optional<InitialDataService> createInitialDataService() {
                 var settings = getSettingsForDataTable(UnivariateStatistics.getStatisticsTableSpec(selectedStatistics),
                     numColumns);
-                Runnable onDispose = () -> {
-                    cancelAndRemoveFutureFor(tableId);
-                };
-                return Optional.of(
-                    TableViewUtil.createInitialDataService(() -> settings, tableSupplier, null, tableId, onDispose));
+                Runnable onDeactivate = () -> cancelAndRemoveFutureIfRunning(tableId);
+                Runnable onDispose = () -> cancelAndRemoveFuture(tableId);
+                return Optional.of(TableViewUtil.createInitialDataService(() -> settings, tableSupplier, null, tableId,
+                    onDeactivate, onDispose));
             }
 
             @Override
