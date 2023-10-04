@@ -105,7 +105,7 @@ public final class WorkflowMiddleware {
 
     private final EntityRepository<WorkflowKey, WorkflowEnt> m_entityRepo;
 
-    private final Map<WorkflowKey, WorkflowState> m_workflowStateCache;
+    final Map<WorkflowKey, WorkflowState> m_workflowStateCache;
 
     private final WorkflowCommands m_commands;
 
