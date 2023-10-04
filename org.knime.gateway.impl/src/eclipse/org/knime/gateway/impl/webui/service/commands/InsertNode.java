@@ -117,7 +117,7 @@ final class InsertNode extends AbstractWorkflowCommand {
             var nodeContainer = wfm.getNodeContainer(m_insertedNode);
             var originalPosition = nodeContainer.getUIInformation().getBounds();
             var delta = Geometry.Delta.of(Geometry.Point.of(targetPosition), Geometry.Point.of(originalPosition));
-            Translate.translateNodes(Set.of(nodeContainer), delta);
+            Translate.translateNodes(wfm, Set.of(nodeContainer), delta);
             new NodeConnector(wfm, m_insertedNode).connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort)
                 .trackCreation().connect();
         } else if (nodeFactoryEnt != null) { // New node

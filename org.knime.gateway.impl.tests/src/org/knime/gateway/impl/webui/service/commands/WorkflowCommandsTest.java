@@ -325,12 +325,12 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             Matchers.hasItem("/allowedActions/canUndo"));
     }
 
-    private static void disposeWorkflowProject(final WorkflowProject wp) {
+    static void disposeWorkflowProject(final WorkflowProject wp) {
         WorkflowProjectManager.getInstance().removeWorkflowProject(wp.getID());
         WorkflowManager.ROOT.removeProject(wp.openProject().getID());
     }
 
-    private static WorkflowProject createEmptyWorkflowProject() throws IOException {
+    static WorkflowProject createEmptyWorkflowProject() throws IOException {
         File dir = FileUtil.createTempDir("workflow");
         File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
         if (workflowFile.createNewFile()) {

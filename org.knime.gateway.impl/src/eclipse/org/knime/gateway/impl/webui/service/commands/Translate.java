@@ -105,7 +105,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final Map<ConnectionID, List<Integer>> bendpoints,
         final Delta delta) {
-        translateNodes(nodes, delta);
+        translateNodes(wfm, nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateSomeBendpoints(wfm, bendpoints, delta);
     }
@@ -131,7 +131,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
      */
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final Delta delta) {
-        translateNodes(nodes, delta);
+        translateNodes(wfm ,nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateAllBendpoints(wfm, nodes, delta);
     }
@@ -155,10 +155,12 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         }
     }
 
-    static void translateNodes(final Set<NodeContainer> selectedNodes, final Delta delta) {
+    static void translateNodes(final WorkflowManager wfm, final Set<NodeContainer> selectedNodes, final Delta delta) {
         for (NodeContainer nc : selectedNodes) {
             NodeUIInformation.moveNodeBy(nc, delta.toArray());
-            nc.setDirty(); // will propagate upwards
+        }
+        if (!selectedNodes.isEmpty()) {
+            wfm.setDirty();
         }
     }
 
