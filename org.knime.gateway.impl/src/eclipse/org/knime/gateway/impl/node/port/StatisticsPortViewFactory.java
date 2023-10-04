@@ -206,6 +206,7 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         settings.m_enableRendererSelection = false;
         settings.m_showRowKeys = false;
         settings.m_showRowIndices = false;
+        settings.m_showOnlySelectedRowsConfigurable = false;
         return settings;
     }
 }

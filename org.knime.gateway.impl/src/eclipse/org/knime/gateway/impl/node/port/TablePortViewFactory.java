@@ -135,6 +135,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             settings.m_enablePagination = false;
             setRowHeight(settings, spec);
             settings.m_showRowIndices = true;
+            settings.m_showOnlySelectedRowsConfigurable = false;
             settings.m_skipRemainingColumns = true;
             return Optional.of(
                 TableViewUtil.createInitialDataService(() -> settings, () -> m_table, m_selectionSupplier, m_tableId));

@@ -209,6 +209,7 @@ final class TestingUtilities {
         assertThat(actual.get("enableColumnSearch").asBoolean(), is(expected.m_enableColumnSearch));
         assertThat(actual.get("enableSortingByHeader").asBoolean(), is(expected.m_enableSortingByHeader));
         assertThat(actual.get("enableRendererSelection").asBoolean(), is(expected.m_enableRendererSelection));
+        assertThat(actual.get("showOnlySelectedRowsConfigurable").asBoolean(), is(expected.m_showOnlySelectedRowsConfigurable));
     }
 
     interface Disposable<T> {

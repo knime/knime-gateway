@@ -198,6 +198,7 @@ public class DirectAccessTableDataService {
         settings.m_enableRendererSelection = false;
         settings.m_showRowKeys = true;
         settings.m_showRowIndices = true;
+        settings.m_showOnlySelectedRowsConfigurable = false;
         // Hide table size/dimension because this is 're-added' by the component (DeferredTableView) that wraps the orginal table view.
         // The 're-added' table dimensions allow one to select the number of rows to display.
         settings.m_showTableSize = false;
