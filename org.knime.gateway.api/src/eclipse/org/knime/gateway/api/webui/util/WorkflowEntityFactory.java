@@ -1498,14 +1498,14 @@ public final class WorkflowEntityFactory {
         // TODO this is very brittle, better to properly resolve the link type - see NXT-2046
         final Predicate<String> isRelativeLink = host -> host != null && host.startsWith("knime.");
 
-        final var parentContext = nct.getParent().getProjectWFM().getContextV2();
-        final var isParentInLocalSpace = parentContext.getLocationType() == LocationType.LOCAL;
+        final var projectContext = nct.getParent().getProjectWFM().getContextV2();
+        final var isProjectInLocalSpace = projectContext.getLocationType() == LocationType.LOCAL;
 
         final var itemUri = nct.getTemplateInformation().getSourceURI();
         final var itemHost = itemUri.getHost();
         final var isSharedItemInLocalSpace = isLocalHost.or(isRelativeLink).test(itemHost);
 
-        return isParentInLocalSpace && isSharedItemInLocalSpace;
+        return isProjectInLocalSpace && isSharedItemInLocalSpace;
     }
 
     /**
