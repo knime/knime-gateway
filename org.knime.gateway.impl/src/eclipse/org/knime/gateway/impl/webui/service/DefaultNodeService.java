@@ -61,6 +61,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
@@ -70,6 +71,7 @@ import org.knime.gateway.api.entity.NodeDialogEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -86,6 +88,7 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  * The default implementation of the {@link NodeService}-interface.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
  */
 public final class DefaultNodeService implements NodeService {
 
@@ -304,6 +307,13 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public void dispose() {
         m_nodeDescriptionCache.clear();
+    }
+
+    @Override
+    public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+        final var snc = getNC(projectId, workflowId, nodeId, SubNodeContainer.class);
+        return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
     }
 
 }

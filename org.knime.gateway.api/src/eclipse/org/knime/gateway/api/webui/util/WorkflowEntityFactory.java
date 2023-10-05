@@ -346,7 +346,6 @@ public final class WorkflowEntityFactory {
      * Builds a new {@link WorkflowEnt} instance.
      *
      * @param wfm the workflow manager to build the workflow entity for
-     *
      * @param buildContextBuilder contextual information required to build the {@link WorkflowEnt} instance
      * @return the newly created entity
      */
@@ -496,7 +495,13 @@ public final class WorkflowEntityFactory {
         return res;
     }
 
-    private ComponentNodeDescriptionEnt buildComponentNodeDescriptionEnt(final SubNodeContainer snc) {
+    /**
+     * Builds a new {@link ComponentNodeDescriptionEnt} instance.
+     *
+     * @param snc The sub node container to get the description for
+     * @return The newly created entity
+     */
+    public ComponentNodeDescriptionEnt buildComponentNodeDescriptionEnt(final SubNodeContainer snc) {
         if (snc != null) {
             ComponentMetadata metadata = snc.getMetadata();
             var type =

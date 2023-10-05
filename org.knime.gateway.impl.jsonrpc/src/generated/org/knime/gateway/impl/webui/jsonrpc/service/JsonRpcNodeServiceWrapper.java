@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
@@ -115,6 +116,21 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     })
     public void changeNodeStates(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeIds") java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
         m_service.get().changeNodeStates(projectId, workflowId, nodeIds, action);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getComponentDescription")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+    })
+    public ComponentNodeDescriptionEnt getComponentDescription(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().getComponentDescription(projectId, workflowId, nodeId);    
     }
 
 	/**
