@@ -187,6 +187,28 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests change node state of a streamed component.
+     *
+     * @throws Exception
+     */
+    public void testChangeNodeStateOfStreamedComponent() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.STREAMING_EXECUTION);
+        ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
+        Awaitility.await().untilAsserted(() -> {
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+                .get("root:5");
+            assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTING));
+        });
+
+        ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "cancel");
+        Awaitility.await().untilAsserted(() -> {
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+                .get("root:5");
+            assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
+        });
+    }
+
+    /**
      * Tests the change of the loop execution state (step, pause, resume).
      *
      * @throws Exception
