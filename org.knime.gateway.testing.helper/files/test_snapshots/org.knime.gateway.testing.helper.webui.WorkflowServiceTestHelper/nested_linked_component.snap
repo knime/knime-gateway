@@ -1,0 +1,190 @@
+{
+  "allowedActions" : {
+    "canCancel" : false,
+    "canExecute" : true,
+    "canRedo" : false,
+    "canReset" : false,
+    "canUndo" : false
+  },
+  "componentMetadata" : {
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "name" : "Nested-Linked-Component"
+  },
+  "connections" : { },
+  "dirty" : false,
+  "info" : {
+    "containerId" : "root:2",
+    "containerType" : "component",
+    "linked" : true,
+    "name" : "Nested-Linked-Component",
+    "providerType" : "LOCAL"
+  },
+  "nodeTemplates" : {
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component+Input" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+      "name" : "Component Input",
+      "nodeFactory" : {
+        "className" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory",
+        "settings" : "PLACEHOLDER_FOR_FACTORY_SETTINGS"
+      },
+      "type" : "VirtualIn"
+    },
+    "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component+Output" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
+      "name" : "Component Output",
+      "nodeFactory" : {
+        "className" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory",
+        "settings" : "PLACEHOLDER_FOR_FACTORY_SETTINGS"
+      },
+      "type" : "VirtualOut"
+    }
+  },
+  "nodes" : {
+    "root:2:0:1" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canCollapse" : "true",
+        "canDelete" : true,
+        "canExecute" : false,
+        "canExpand" : "true",
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "styleRanges" : [ ],
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : ""
+        },
+        "textAlign" : "center"
+      },
+      "id" : "root:2:0:1",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Port 1",
+        "optional" : false,
+        "typeId" : "org.knime.core.node.BufferedDataTable"
+      } ],
+      "kind" : "component",
+      "link" : {
+        "isHubItemVersionChangeable" : false,
+        "isLinkTypeChangeable" : true,
+        "updateStatus" : "UP_TO_DATE",
+        "url" : "knime://LOCAL/Component/"
+      },
+      "name" : "Component",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Port 1",
+        "typeId" : "org.knime.core.node.BufferedDataTable"
+      } ],
+      "position" : {
+        "x" : -320,
+        "y" : 30
+      },
+      "state" : {
+        "executionState" : "IDLE"
+      }
+    },
+    "root:2:0:2" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canCollapse" : "true",
+        "canDelete" : false,
+        "canExecute" : true,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "id" : "root:2:0:2",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "position" : {
+        "x" : -420,
+        "y" : 30
+      },
+      "state" : {
+        "executionState" : "CONFIGURED"
+      },
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component+Input"
+    },
+    "root:2:0:3" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canCollapse" : "true",
+        "canDelete" : false,
+        "canExecute" : true,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "id" : "root:2:0:3",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "position" : {
+        "x" : -220,
+        "y" : 30
+      },
+      "state" : {
+        "executionState" : "CONFIGURED"
+      },
+      "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory#Component+Output"
+    }
+  },
+  "parents" : [ {
+    "containerId" : "root",
+    "containerType" : "project",
+    "name" : "nested_linked_components",
+    "providerType" : "LOCAL"
+  } ],
+  "workflowAnnotations" : [ ]
+}

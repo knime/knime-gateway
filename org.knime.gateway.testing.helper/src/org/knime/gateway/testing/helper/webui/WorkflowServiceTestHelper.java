@@ -196,7 +196,7 @@ import org.mockito.Mockito;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
-@SuppressWarnings({"java:S112", "java:S1192", "java:S3655", "java:S1874"})
+@SuppressWarnings({"java:S112", "java:S1192", "java:S3655", "java:S1874", "javadoc"})
 // generic exceptions, repeated string literals, Optional#get without presence check, deprecated classes
 public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
@@ -213,8 +213,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests to get the workflow.
-     *
-     * @throws Exception
      */
     public void testGetWorkflow() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -243,8 +241,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests to get a workflow of a component workflow.
-     *
-     * @throws Exception
      */
     public void testGetComponentProjectWorkflow() throws Exception {
         String wfId = loadComponent(TestWorkflowCollection.COMPONENT_PROJECT);
@@ -260,9 +256,16 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Test construction of the workflow entity of a project containing nested linked components
+     */
+    public void testGetNestedLinkedComponentsProject() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.NESTED_LINKED_COMPONENT_PROJECT);
+        WorkflowEnt workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), Boolean.TRUE).getWorkflow();
+        cr(workflow, "nested_linked_component");
+    }
+
+    /**
      * Tests the correct mapping of the node execution states.
-     *
-     * @throws Exception
      */
     public void testNodeExecutionStates() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
@@ -297,8 +300,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests the {@link WorkflowEnt#getAllowedActions()} property in partcular.
-     *
-     * @throws Exception
      */
     public void testGetAllowedActionsInfo() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -316,8 +317,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests the metadata of the project workflow and components.
-     *
-     * @throws Exception
      */
     public void testWorkflowAndComponentMetadata() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.METADATA);
@@ -339,42 +338,34 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
 
-    @SuppressWarnings("javadoc")
     public void testCollapseConfiguredToMetanode() throws Exception {
         testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
-    @SuppressWarnings("javadoc")
     public void testCollapseConfiguredToComponent() throws Exception {
         testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
-    @SuppressWarnings("javadoc")
     public void testCollapseExecutingToMetanode() throws Exception {
         testCollapseExecuting(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
-    @SuppressWarnings("javadoc")
     public void testCollapseExecutingToComponent() throws Exception {
         testCollapseExecuting(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
-    @SuppressWarnings("javadoc")
     public void testCollapseResettableToMetanode() throws Exception {
         testCollapseResettable(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
-    @SuppressWarnings("javadoc")
     public void testCollapseResettableToComponent() throws Exception {
         testCollapseResettable(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
 
-    @SuppressWarnings("javadoc")
     public void testCollapseResultMetanode() throws Exception {
         testCollapseResult(CollapseCommandEnt.ContainerTypeEnum.METANODE);
     }
 
-    @SuppressWarnings("javadoc")
     public void testCollapseResultComponent() throws Exception {
         testCollapseResult(CollapseCommandEnt.ContainerTypeEnum.COMPONENT);
     }
@@ -382,8 +373,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Tests that the case of collapsing 'nothing' (i.e. no nodes nor workflow annotations given) into a metanode is
      * handled properly.
-     *
-     * @throws Exception
      */
     public void testCollapseNothingIntoMetanode() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
@@ -560,7 +549,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @param wfId The workflow to operate in
      * @param toWaitFor the node to wait it's executing
-     * @throws Exception
      */
     private void executeAndWaitUntilExecuting(final String wfId, final int toWaitFor) throws Exception {
         executeWorkflowAsync(wfId);
@@ -576,7 +564,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * between workflow snapshots and command results or correctness of other contents of the result.
      *
      * @param containerType The kind of container node to test
-     * @throws Exception
      */
     private void testCollapseResult(final CollapseCommandEnt.ContainerTypeEnum containerType) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
@@ -617,9 +604,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Test that the command result of the expand command contains the required fields. Does not test synchronisation
      * between workflow snapshots and command results or correctness of other contents of the result.
-     *
-     * @param containerType
-     * @throws Exception
      */
     private void testExpandResult(final int nodeToExpand) throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
@@ -821,8 +805,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link DeleteCommandEnt}.
-     *
-     * @throws Exception
      */
     public void testExecuteDeleteCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -941,8 +923,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link ConnectCommandEnt}.
-     *
-     * @throws Exception
      */
     public void testExecuteConnectCommand() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -1022,8 +1002,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link AddNodeCommandEnt}.
-     *
-     * @throws Exception
      */
     public void testExecuteAddNodeCommand() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -1090,8 +1068,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link AddNodeCommandEnt} that also automatically connects a node.
-     *
-     * @throws Exception
      */
     public void testExecuteAddAndConnectCommand() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -1144,8 +1120,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link AddNodeCommandEnt} that also auto connects nodes without a given source port.
-     *
-     * @throws Exception
      */
     public void testExecuteAddAndConnectCommandAutoGuessSourcePorts() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -1175,8 +1149,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link AddNodeCommandEnt} that also automatically connects a dynamic node.
-     *
-     * @throws Exception
      */
     public void testExecuteAddAndConnectCommandDynamicNode() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -1216,8 +1188,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called with {@link AddNodeCommandEnt} that also automatically connects with flow variable ports.
-     *
-     * @throws Exception
      */
     public void testExecuteAddAndConnectCommandFlowVariables() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -1280,8 +1250,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Check for the existence of a node with the given nodeFactory in the given x and y coordinates, throws exception
      * if nothing is found
-     *
-     * @throws Exception
      */
     private static NodeEnt checkForNode(final String message, final WorkflowSnapshotEnt wf, final String nodeFactory,
         final int x, final int y) {
@@ -1322,8 +1290,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called {@link UpdateComponentOrMetanodeNameCommandEnt}
-     *
-     * @throws Exception
      */
     public void testExecuteUpdateComponentOrMetanodeNameCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -1387,8 +1353,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
      * when called {@link UpdateLabelCommandEnt}
-     *
-     * @throws Exception
      */
     public void testExecuteUpdateNodeLabelCommand() throws Exception {
         final var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -1443,8 +1407,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test whether removing ports from native nodes is (not) allowed.
-     *
-     * @throws Exception
      */
     public void testCanRemovePortFromNative() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
@@ -1505,8 +1467,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test whether removing ports from container nodes is (not) allowed.
-     *
-     * @throws Exception
      */
     public void testCanRemovePortFromContainer() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
@@ -1569,8 +1529,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test whether adding ports to native nodes is (not) allowed
-     *
-     * @throws Exception
      */
     public void testCanAddPortToNative() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
@@ -1601,8 +1559,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test whether adding ports to native nodes with dynamic ports is (not) allowed.
-     *
-     * @throws Exception
      */
     public void testCanAddPortToNativeIsInteractive() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -1650,8 +1606,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Execute, undo and redo of adding an input port to a metanode. Add output port.
-     *
-     * @throws Exception
      */
     public void testAddPortToMetanode() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
@@ -1661,8 +1615,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Execute, undo and redo of adding an input port to a component. Add output port.
-     *
-     * @throws Exception
      */
     public void testAddPortToComponent() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
@@ -1750,8 +1702,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Execute, undo and redo of removing port from metanode.
-     *
-     * @throws Exception
      */
     public void testRemovePortFromMetanode() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
@@ -1761,8 +1711,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Execute, undo and redo of removing port from container.
-     *
-     * @throws Exception
      */
     public void testRemovePortFromComponent() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
@@ -1822,8 +1770,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Add ports to different port groups of native node, undo and redo.
-     *
-     * @throws Exception
      */
     public void testAddPortToNativeNode() throws Exception {
 
@@ -1866,8 +1812,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Remove ports from different port groups of native node, undo and redo.
-     *
-     * @throws Exception
      */
     public void testRemovePortFromNative() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
@@ -1901,8 +1845,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Some commands weren't working from within a component and metanode (NXT-1141). This is the test for it.
-     *
-     * @throws Exception
      */
     public void testExecuteCommandsWithinMetanode() throws Exception {
         testExecuteCommandsWithinComponentAndMetanode(ContainerTypeEnum.METANODE);
@@ -1910,8 +1852,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Some commands weren't working from within a component and metanode (NXT-1141). This is the test for it.
-     *
-     * @throws Exception
      */
     public void testExecuteCommandsWithinComponent() throws Exception {
         testExecuteCommandsWithinComponentAndMetanode(ContainerTypeEnum.COMPONENT);
@@ -1951,8 +1891,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test Replace Node command with a node from repository
-     *
-     * @throws Exception
      */
     public void testExecuteReplaceNodeCommandFromRepo() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -1980,8 +1918,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test Replace Node command with an existing node
-     *
-     * @throws Exception
      */
     public void testExecuteReplaceNodeCommandFromExistingNode() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2029,8 +1965,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test Insert Node command with existing Node
-     *
-     * @throws Exception
      */
     public void testExecuteInsertNodeCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2058,8 +1992,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test Insert Node command with node from repository
-     *
-     * @throws Exception
      */
     public void testExecuteInsertNodeCommandRepository() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2096,8 +2028,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test Insert Node command inside metanode
-     *
-     * @throws Exception
      */
     public void testExecuteInsertNodeMetanode() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2143,8 +2073,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests the {@link AddNodeCommandEnt} with {@link AddNodeCommandEnt#getUrl()} set.
-     *
-     * @throws Exception
      */
     public void testAddNodeCommandFromURI() throws Exception {
         var nodeFactoryProvider = mock(NodeFactoryProvider.class);
@@ -2166,8 +2094,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests the {@link AddNodeCommandEnt} with {@link AddNodeCommandEnt#getSpaceItemId()} set.
-     *
-     * @throws Exception
      */
     public void testAddNodeCommandFromSpaceItemId() throws Exception {
         var nodeFactoryProvider = mock(NodeFactoryProvider.class);
@@ -2200,8 +2126,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link TransformWorkflowAnnotationCommandEnt}.
-     *
-     * @throws Exception
      */
     public void testTransformWorkflowAnnotationCommand() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2259,8 +2183,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link ReorderWorkflowAnnotationsCommandEnt} with a single annotation selected.
-     *
-     * @throws Exception
      */
     public void testReorderWorkflowAnnotationsCommandWithSingleAnnotation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2294,8 +2216,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Tests {@link ReorderWorkflowAnnotationsCommandEnt} within a metanode. This test doesn't cover all the cases, its
      * purpose is to assert the command logic also works within workflows that aren't the root workflow.
-     *
-     * @throws Exception
      */
     public void testReorderWorkflowAnnotationsCommandWithinMetanode() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2330,8 +2250,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link ReorderWorkflowAnnotationCommandEnt} with a multiple annotation selected.
-     *
-     * @throws Exception
      */
     public void testReorderWorkflowAnnotationsCommandWithMultipleAnnotations() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2388,8 +2306,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link UpdateWorkflowAnnotationCommandEnt} with only text to update.
-     *
-     * @throws Exception
      */
     public void testUpdateWorkflowAnnotationText() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2449,8 +2365,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link AddWorkflowAnnotationCommandEnt}.
-     *
-     * @throws Exception
      */
     public void testAddWorkflowAnnotation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -2499,8 +2413,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link UpdateWorkflowAnnotationCommandEnt} with only the color to update.
-     *
-     * @throws Exception
      */
     public void testUpdateWorkflowAnnotationColor() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -2540,8 +2452,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link UpdateWorkflowAnnotationCommandEnt} with text and color to update.
-     *
-     * @throw Exception
      */
     public void testUpdateWorkflowAnnotationTextAndColor() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.ANNOTATIONS);
@@ -2567,8 +2477,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test execute-undo-redo for updating component metadata from within a component workflow.
-     *
-     * @throws Exception
      */
     public void testUpdateComponentMetadataFromWithin() throws Exception {
         // we need to load a workflow corresponding to a Container/Subnode
@@ -2610,8 +2518,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Test that workflow was not modified if a component metadata update command requesting the exact same values is
      * handled.
-     *
-     * @throws Exception
      */
     public void testComponentMetadataNotUpdatedIfNoChange() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
@@ -2638,8 +2544,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link UpdateProjectMetadataCommandEnt} using legacy workflow metadata format.
-     *
-     * @throws Exception
      */
     public void testUpdateProjectMetadata() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA); // This uses the legacy workflow metadata format
@@ -2679,8 +2583,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link UpdateProjectMetadataCommandEnt} using new workflow metadata format.
-     *
-     * @throws Exception
      */
     public void testUpdateProjectMetadataNewFormat() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA2); // This uses the new workflow metadata format
@@ -2780,8 +2682,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Tests {@link UpdateComponentOrMetanodeNameCommandEnt}.
-     *
-     * @throws Exception
      */
     public void testUpdateComponentLinkInformation() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);

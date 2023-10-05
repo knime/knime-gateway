@@ -70,6 +70,11 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     METANODES_COMPONENTS("/files/testflows/Metanodes and Components", "metanodes_components"),
 
     /**
+     * Contains nested linked components.
+     */
+    NESTED_LINKED_COMPONENT_PROJECT("/files/testflows/Nested-Linked-Components/Project", "nested_linked_components"),
+
+    /**
      * Contains a node with the new node message properties.
      */
     NODE_MESSAGE("/files/testflows/Node Message", "node_message"),
