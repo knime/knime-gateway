@@ -53,6 +53,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -114,7 +115,7 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .setId(createTemplateId(factory))//
             .setName(factory.getNodeName())//
             .setComponent(false)//
-            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase()));
+            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase(Locale.ROOT)));
         return builder.build();
     }
 
@@ -195,7 +196,7 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .setId(createTemplateId(factory))//
             .setName(factory.getNodeName())//
             .setComponent(false)//
-            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase()))//
+            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase(Locale.ROOT)))//
             .setInPorts(buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
             .setOutPorts(
                 buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//

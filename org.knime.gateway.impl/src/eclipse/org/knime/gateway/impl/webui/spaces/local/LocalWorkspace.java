@@ -58,6 +58,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -178,7 +179,7 @@ public final class LocalWorkspace implements Space {
         try {
             return new URIBuilder(itemRelUri) //
                 .setScheme(KnimeUrlType.SCHEME) //
-                .setHost(LOCAL_WORKSPACE_ID.toUpperCase()) //
+                .setHost(LOCAL_WORKSPACE_ID.toUpperCase(Locale.ROOT)) //
                 .build();
         } catch (URISyntaxException ex) {
             throw new IllegalStateException(ex);

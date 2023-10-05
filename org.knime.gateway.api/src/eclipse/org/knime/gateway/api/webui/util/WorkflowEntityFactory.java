@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -765,7 +766,7 @@ public final class WorkflowEntityFactory {
 
     private NativeNodeInvariantsEnt buildNativeNodeInvariantsEnt(final NativeNodeContainer nc) {
         NativeNodeInvariantsEntBuilder builder = builder(NativeNodeInvariantsEntBuilder.class)
-            .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase()));
+            .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase(Locale.ROOT)));
         if (nc.getType() != NodeType.Missing) {
             var factory = nc.getNode().getFactory();
             builder.setName(nc.getName()).setIcon(createIconDataURL(factory))
@@ -1291,7 +1292,7 @@ public final class WorkflowEntityFactory {
 
     /**
      * Decode bytes from a given String
-     * 
+     *
      * @param dataUrl A string containing a PNG encoded in a base64-data-url
      * @return The decoded bytes
      */
@@ -1302,7 +1303,7 @@ public final class WorkflowEntityFactory {
 
     /**
      * Encode bytes into a data-url-string
-     * 
+     *
      * @param iconData The data to encode
      * @return The encoded string
      */

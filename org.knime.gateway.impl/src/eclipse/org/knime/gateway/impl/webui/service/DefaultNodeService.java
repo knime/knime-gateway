@@ -48,6 +48,7 @@ package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.collections4.map.LRUMap;
@@ -264,7 +265,7 @@ public final class DefaultNodeService implements NodeService {
         final NodeIDEnt nodeId, final String mode, final List<String> selection) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
 
-        final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase());
+        final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase(Locale.ROOT));
         var nc = (NativeNodeContainer)DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
         try {
             var rowKeys = NodeViewManager.getInstance().callSelectionTranslationService(nc, selection);

@@ -56,6 +56,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -295,7 +296,7 @@ public class NodeSearch {
      */
     interface Normalizer extends UnaryOperator<String> {
 
-        static final Normalizer DEFAULT_NORMALIZATION = t -> t.strip().toUpperCase();
+        static final Normalizer DEFAULT_NORMALIZATION = t -> t.strip().toUpperCase(Locale.ROOT);
 
         static Normalizer identity() {
             return s -> s;
