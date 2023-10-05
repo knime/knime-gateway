@@ -270,21 +270,8 @@ public final class WorkflowMiddleware {
         final var state = new WorkflowState(wfKey);
         final var wfm = state.m_wfm;
         if (!wfm.isProject()) {
-            var nc = getNodeContainerOf(wfm);
-            var parent = nc.getParent();
-            WorkflowListener listener = new WorkflowListener() {
-
-                @Override
-                public void workflowChanged(final WorkflowEvent e) {
-                    if (e.getType() == WorkflowEvent.Type.NODE_REMOVED && nc == e.getOldValue()) {
-                        clearWorkflowState(k -> wfKey.getProjectId().equals(k.getProjectId())
-                            && wfKey.getWorkflowId().isEqualOrParentOf(k.getWorkflowId()));
-                        parent.removeListener(this);
-                    }
-
-                }
-            };
-            parent.addListener(listener);
+            var nc = getNodeContainerOf(wfm); // component or metanode
+            nc.getParent().addListener(new NodeRemovedListenerToClearWorkflowState(wfKey, nc));
         }
         return state;
     }
@@ -390,5 +377,34 @@ public final class WorkflowMiddleware {
             m_wfChangesListener.removeWorkflowChangesTracker(m_tracker);
         }
     }
+
+    /**
+     * A workflow listener that clears the workflow state of a removed sub-workflow (component or metanode) within the
+     * workflow it is attached to. It listens for the 'node_removed' event of this particular node (i.e. component or
+     * metanode the given wfKey refers to). It also removes the workflow state for all sub-workflows contained in the
+     * respective component/metanode (if there is anything cached). And it finally removes itself from the workflow it
+     * is attached to.
+     */
+    private class NodeRemovedListenerToClearWorkflowState implements WorkflowListener {
+
+        private final WorkflowKey m_wfKey;
+
+        private final NodeContainer m_metanodeOrComponent;
+
+        NodeRemovedListenerToClearWorkflowState(final WorkflowKey wfKey, final NodeContainer metanodeOrComponent) {
+            m_wfKey = wfKey;
+            m_metanodeOrComponent = metanodeOrComponent;
+        }
+
+        @Override
+        public void workflowChanged(final WorkflowEvent e) {
+            if (e.getType() == WorkflowEvent.Type.NODE_REMOVED && m_metanodeOrComponent == e.getOldValue()) {
+                clearWorkflowState(k -> m_wfKey.getProjectId().equals(k.getProjectId())
+                    && m_wfKey.getWorkflowId().isEqualOrParentOf(k.getWorkflowId()));
+                m_metanodeOrComponent.getParent().removeListener(this);
+            }
+
+        }
+    };
 
 }
