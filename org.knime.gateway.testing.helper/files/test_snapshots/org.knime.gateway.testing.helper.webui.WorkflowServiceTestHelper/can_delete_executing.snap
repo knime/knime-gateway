@@ -189,7 +189,7 @@
       },
       "state" : {
         "executionState" : "EXECUTING",
-        "progressMessage" : "Waiting for 600 seconds"
+        "progressMessages" : [ "Waiting for 600 seconds" ]
       },
       "templateId" : "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"
     },

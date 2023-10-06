@@ -106,10 +106,10 @@ public interface NodeStateEnt extends GatewayEntity {
   public BigDecimal getProgress();
 
   /**
-   * Get progressMessage
-   * @return progressMessage 
+   * Get progressMessages
+   * @return progressMessages 
    **/
-  public String getProgressMessage();
+  public java.util.List<String> getProgressMessages();
 
   /**
    * Get error
@@ -142,7 +142,7 @@ public interface NodeStateEnt extends GatewayEntity {
       var e = (NodeStateEnt)other;
       valueConsumer.accept("executionState", Pair.create(getExecutionState(), e.getExecutionState()));
       valueConsumer.accept("progress", Pair.create(getProgress(), e.getProgress()));
-      valueConsumer.accept("progressMessage", Pair.create(getProgressMessage(), e.getProgressMessage()));
+      valueConsumer.accept("progressMessages", Pair.create(getProgressMessages(), e.getProgressMessages()));
       valueConsumer.accept("error", Pair.create(getError(), e.getError()));
       valueConsumer.accept("warning", Pair.create(getWarning(), e.getWarning()));
       valueConsumer.accept("issue", Pair.create(getIssue(), e.getIssue()));
@@ -171,12 +171,12 @@ public interface NodeStateEnt extends GatewayEntity {
         NodeStateEntBuilder setProgress(BigDecimal progress);
         
         /**
-   		 * Set progressMessage
+   		 * Set progressMessages
          * 
-         * @param progressMessage the property value,  
+         * @param progressMessages the property value,  
          * @return this entity builder for chaining
          */
-        NodeStateEntBuilder setProgressMessage(String progressMessage);
+        NodeStateEntBuilder setProgressMessages(java.util.List<String> progressMessages);
         
         /**
    		 * Set error

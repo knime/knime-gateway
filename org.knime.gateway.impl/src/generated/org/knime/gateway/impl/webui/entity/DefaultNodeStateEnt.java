@@ -55,7 +55,7 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
  *
  * @param executionState
  * @param progress
- * @param progressMessage
+ * @param progressMessages
  * @param error
  * @param warning
  * @param issue
@@ -67,7 +67,7 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt;
 public record DefaultNodeStateEnt(
     ExecutionStateEnum executionState,
     BigDecimal progress,
-    String progressMessage,
+    java.util.List<String> progressMessages,
     String error,
     String warning,
     String issue,
@@ -95,8 +95,8 @@ public record DefaultNodeStateEnt(
     }
     
     @Override
-    public String getProgressMessage() {
-        return progressMessage;
+    public java.util.List<String> getProgressMessages() {
+        return progressMessages;
     }
     
     @Override
@@ -128,7 +128,7 @@ public record DefaultNodeStateEnt(
 
         private BigDecimal m_progress;
 
-        private String m_progressMessage;
+        private java.util.List<String> m_progressMessages;
 
         private String m_error;
 
@@ -151,8 +151,8 @@ public record DefaultNodeStateEnt(
         }
 
         @Override
-        public DefaultNodeStateEntBuilder setProgressMessage(String progressMessage) {
-             m_progressMessage = progressMessage;
+        public DefaultNodeStateEntBuilder setProgressMessages(java.util.List<String> progressMessages) {
+             m_progressMessages = progressMessages;
              return this;
         }
 
@@ -185,7 +185,7 @@ public record DefaultNodeStateEnt(
             return new DefaultNodeStateEnt(
                 immutable(m_executionState),
                 immutable(m_progress),
-                immutable(m_progressMessage),
+                immutable(m_progressMessages),
                 immutable(m_error),
                 immutable(m_warning),
                 immutable(m_issue),

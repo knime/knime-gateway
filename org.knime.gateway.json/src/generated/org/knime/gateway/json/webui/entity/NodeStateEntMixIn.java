@@ -79,8 +79,8 @@ public interface NodeStateEntMixIn extends NodeStateEnt {
     public BigDecimal getProgress();
     
     @Override
-    @JsonProperty("progressMessage")
-    public String getProgressMessage();
+    @JsonProperty("progressMessages")
+    public java.util.List<String> getProgressMessages();
     
     @Override
     @JsonProperty("error")
@@ -120,8 +120,8 @@ public interface NodeStateEntMixIn extends NodeStateEnt {
         public NodeStateEntMixInBuilder setProgress(final BigDecimal progress);
         
         @Override
-        @JsonProperty("progressMessage")
-        public NodeStateEntMixInBuilder setProgressMessage(final String progressMessage);
+        @JsonProperty("progressMessages")
+        public NodeStateEntMixInBuilder setProgressMessages(final java.util.List<String> progressMessages);
         
         @Override
         @JsonProperty("error")

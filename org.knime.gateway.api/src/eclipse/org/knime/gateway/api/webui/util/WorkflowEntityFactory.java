@@ -999,7 +999,10 @@ public final class WorkflowEntityFactory {
             NodeProgressMonitor progressMonitor = nc.getProgressMonitor();
             Double progress = progressMonitor.getProgress();
             builder.setProgress(progress == null ? null : BigDecimal.valueOf(progress));
-            builder.setProgressMessage(progressMonitor.getMessage());
+            final var messages = progressMonitor.getMessages();
+            if (!messages.isEmpty()) {
+                builder.setProgressMessages(messages);
+            }
         }
         return builder.build();
     }
