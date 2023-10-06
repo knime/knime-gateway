@@ -47,7 +47,6 @@ package org.knime.gateway.impl.service.util;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -313,7 +312,8 @@ public final class DefaultServiceUtil {
 
     private static void cancel(final WorkflowManager wfm, final NodeID... nodeIDs) {
         if (nodeIDs == null || nodeIDs.length == 0) {
-            performActionOnWorkflow(wfm, (parent, nc) -> parent.cancelExecution(nc));
+            // Cancel the execution of the containing workflow manager -- required for properly handling components.
+            CoreUtil.cancel(wfm);
         } else {
             for (NodeID nodeID : nodeIDs) {
                 wfm.cancelExecution(wfm.getNodeContainer(nodeID));
@@ -323,19 +323,10 @@ public final class DefaultServiceUtil {
 
     private static void execute(final WorkflowManager wfm, final NodeID... nodeIDs) {
         if (nodeIDs == null || nodeIDs.length == 0) {
-            performActionOnWorkflow(wfm, (parent, nc) -> parent.executeUpToHere(nc.getID()));
+            // Trigger execution via the containing workflow manager -- required for properly handling components.
+            CoreUtil.execute(wfm);
         } else {
             wfm.executeUpToHere(nodeIDs);
-        }
-    }
-
-    private static void performActionOnWorkflow(final WorkflowManager wfm,
-        final BiConsumer<WorkflowManager, NodeContainer> action) {
-        var directNCParent = wfm.getDirectNCParent();
-        if (directNCParent instanceof SubNodeContainer snc) {
-            action.accept(snc.getParent(), snc);
-        } else {
-            action.accept(wfm.getParent(), wfm);
         }
     }
 

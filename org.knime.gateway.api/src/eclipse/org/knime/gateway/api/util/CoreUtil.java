@@ -61,6 +61,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -302,7 +303,7 @@ public final class CoreUtil {
      * @throws InterruptedException
      */
     public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) throws InterruptedException {
-        wfm.getNodeContainers().forEach(wfm::cancelExecution);
+        CoreUtil.cancel(wfm);
         if (wfm.getNodeContainerState().isExecutionInProgress()) {
             wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         }
@@ -317,6 +318,45 @@ public final class CoreUtil {
         } else {
             throw new IllegalArgumentException("The passed workflow ('" + wfm.getNameWithID()
                 + "' it neither a workflow project nor a component project.");
+        }
+    }
+
+    /**
+     * Cancel execution of the given workflow manager.
+     * 
+     * @param wfm The workflow manager to cancel
+     * @implNote This implementation affects the given workflow manager via its parent, which is required for safely
+     *           handling components.
+     */
+    public static void cancel(final WorkflowManager wfm) {
+        performActionOnWorkflow(wfm, (parent, nc) -> parent.cancelExecution(nc));
+    }
+
+    /**
+     * Execute the given workflow manager.
+     * 
+     * @param wfm The workflow manager to execute
+     * @implNote This implementation affects the given workflow manager via its parent, which is required for safely
+     *           handling components.
+     */
+    public static void execute(final WorkflowManager wfm) {
+        performActionOnWorkflow(wfm, (parent, nc) -> parent.executeUpToHere(nc.getID()));
+    }
+
+    /**
+     * Apply an action on the parent of {@code wfm} via the grandparent workflow manager, potentially having side
+     * effects on the child workflow manager such as e.g. executing or cancelling all of its nodes.
+     * 
+     * @param wfm The child workflow manager
+     * @param action The action to apply on the parent of the child
+     */
+    private static void performActionOnWorkflow(final WorkflowManager wfm,
+        final BiConsumer<WorkflowManager, NodeContainer> action) {
+        var directNCParent = wfm.getDirectNCParent();
+        if (directNCParent instanceof SubNodeContainer snc) {
+            action.accept(snc.getParent(), snc);
+        } else {
+            action.accept(wfm.getParent(), wfm);
         }
     }
 
