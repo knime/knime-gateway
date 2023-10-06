@@ -90,6 +90,13 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 public class WorkflowChangesListener implements Closeable {
 
+    /**
+     * The minimum time interval between two consecutive calls to the registered callbacks in order to throttle the
+     * number of callbacks to not overwhelm the consumer. If calling the callbacks takes longer than this amount, it
+     * won't be throttled any further.
+     */
+    private static final int MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS = 100;
+
     private final WorkflowManager m_wfm;
 
     private final WorkflowListener m_workflowListener;
@@ -393,10 +400,26 @@ public class WorkflowChangesListener implements Closeable {
         if (!m_callbackState.checkIsCallbackInProgressAndChangeState()) {
             m_executorService.execute(() -> {
                 do {
-                    m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
-                    m_postProcessCallbacks.forEach(Runnable::run);
+                    throttle(() -> {
+                        m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
+                        m_postProcessCallbacks.forEach(Runnable::run);
+                    });
                 } while (m_callbackState.checkIsCallbackAwaitingAndChangeState());
             });
+        }
+    }
+
+    private static void throttle(final Runnable run) {
+        var start = System.currentTimeMillis();
+        run.run();
+        var duration = System.currentTimeMillis() - start;
+        var waitTimeToThrottle = MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS - duration;
+        if (waitTimeToThrottle > 0) {
+            try {
+                Thread.sleep(waitTimeToThrottle);
+            } catch (InterruptedException ex) { // NOSONAR
+                // ignore
+            }
         }
     }
 
