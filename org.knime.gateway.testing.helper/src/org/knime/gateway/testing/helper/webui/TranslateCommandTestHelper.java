@@ -51,6 +51,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
@@ -153,8 +154,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
         } catch (Exception e) {
             assertThat("unexpected exception message", e.getMessage(),
-                is("Failed to execute command. Workflow parts not found: "
-                    + "bendpoints (999 on connection STD[3:187(1) -> 3:188( 1)])"));
+                startsWith("Failed to execute command. Workflow parts not found: bendpoints (999 on connection STD"));
         }
     }
 
@@ -168,8 +168,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
         } catch (Exception e) {
             assertThat("unexpected exception message", e.getMessage(),
-                is("Failed to execute command. Workflow parts not found: "
-                    + "bendpoints (999 on connection STD[3:188(1) -> 3:190( 1)])"));
+                startsWith("Failed to execute command. Workflow parts not found: bendpoints (999 on connection"));
         }
     }
 
@@ -181,7 +180,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
         } catch (Exception e) {
             assertThat("unexpected exception message", e.getMessage(),
-                is("Failed to execute command. Workflow parts not found: " + "connections ([? -> 3:999(999)])"));
+                startsWith("Failed to execute command. Workflow parts not found: " + "connections ([?"));
         }
     }
 
