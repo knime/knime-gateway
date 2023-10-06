@@ -99,7 +99,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private final WorkflowManager m_wfm;
 
-    private final WorkflowListener m_workflowListener;
+    private WorkflowListener m_workflowListener;
 
     private final NodeListenerMap<NodeStateChangeListener> m_nodeStateChangeListeners =
         new NodeListenerMap<>(NodeContainer::addNodeStateChangeListener, NodeContainer::removeNodeStateChangeListener);
@@ -163,8 +163,6 @@ public class WorkflowChangesListener implements Closeable {
 
         m_isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
         m_connectionProgressListeners = m_isInStreamingMode ? new HashMap<>() : null;
-
-        m_workflowListener = startListening();
     }
 
     /**
@@ -173,6 +171,9 @@ public class WorkflowChangesListener implements Closeable {
      * @param callback the callback to call if a change occurs in the workflow manager
      */
     public void addWorkflowChangeCallback(final Consumer<WorkflowManager> callback) {
+        if (m_workflowChangedCallbacks.isEmpty()) {
+            startListening();
+        }
         m_workflowChangedCallbacks.add(callback);
     }
 
@@ -183,6 +184,9 @@ public class WorkflowChangesListener implements Closeable {
      */
     public void removeCallback(final Consumer<WorkflowManager> callback) {
         m_workflowChangedCallbacks.remove(callback);
+        if (m_workflowChangedCallbacks.isEmpty()) {
+            stopListening();
+        }
     }
 
     /**
@@ -190,6 +194,9 @@ public class WorkflowChangesListener implements Closeable {
      */
     public void removeWorkflowChangesTracker(final WorkflowChangesTracker tracker) {
         m_workflowChangesTrackers.remove(tracker);
+        if (m_workflowChangesTrackers.isEmpty()) {
+            stopListening();
+        }
     }
 
     private void updateWorkflowChangesTrackers(final WorkflowChangesTracker.WorkflowChange workflowChange) {
@@ -215,6 +222,9 @@ public class WorkflowChangesListener implements Closeable {
      * @return a new instance of a {@link WorkflowChangesTracker} for the workflow referenced by the {@link WorkflowKey}
      */
     public WorkflowChangesTracker createWorkflowChangeTracker(final boolean setAllOccurred) {
+        if (m_workflowChangesTrackers.isEmpty()) {
+            startListening();
+        }
         var tracker = new WorkflowChangesTracker(setAllOccurred);
         m_workflowChangesTrackers.add(tracker);
         return tracker;
@@ -247,13 +257,17 @@ public class WorkflowChangesListener implements Closeable {
         m_postProcessCallbacks.remove(listener);
     }
 
-    private WorkflowListener startListening() {
-        WorkflowListener workflowListener = e -> {
+    private void startListening() {
+        if (isListening()) {
+            // already listening
+            return;
+        }
+        m_workflowListener = e -> {
             addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
             trackChange(e);
             callback();
         };
-        m_wfm.addListener(workflowListener);
+        m_wfm.addListener(m_workflowListener);
         m_wfm.getNodeContainers().forEach(this::addNodeListeners);
         m_wfm.getWorkflowAnnotations().forEach(this::addWorkflowAnnotationListener);
         Collection<ConnectionContainer> connectionContainers = m_wfm.getConnectionContainers();
@@ -261,7 +275,6 @@ public class WorkflowChangesListener implements Closeable {
             connectionContainers.forEach(this::addConnectionProgressListener);
         }
         connectionContainers.forEach(this::addConnectionUIInformationListener);
-        return workflowListener;
     }
 
     private void trackChange(final WorkflowEvent e) {
@@ -424,7 +437,12 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void stopListening() {
+        if(!isListening()) {
+            // already not listening
+            return;
+        }
         m_wfm.removeListener(m_workflowListener);
+        m_workflowListener = null;
         m_wfm.getNodeContainers().forEach(this::removeNodeListeners);
         m_wfm.getWorkflowAnnotations().forEach(this::removeWorkflowAnnotationListener);
         m_nodeMessageListeners.clear();
@@ -445,6 +463,13 @@ public class WorkflowChangesListener implements Closeable {
     public void close() {
         stopListening();
         m_executorService.shutdown();
+        m_workflowChangedCallbacks.clear();
+        m_workflowChangesTrackers.clear();
+        m_postProcessCallbacks.clear();
+    }
+
+    boolean isListening() {
+        return m_workflowListener != null;
     }
 
     /**
