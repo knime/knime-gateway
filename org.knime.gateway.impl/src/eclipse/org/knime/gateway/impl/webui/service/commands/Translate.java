@@ -98,10 +98,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
             wa.shiftPosition(delta[0], delta[1]);
         }
 
-        for (NodeContainer nc : nodes) {
-            nc.setDirty(); // will propagate upwards
-        }
-        if (!annotations.isEmpty()) {
+        if (!annotations.isEmpty() || !nodes.isEmpty()) {
             wfm.setDirty();
         }
     }
