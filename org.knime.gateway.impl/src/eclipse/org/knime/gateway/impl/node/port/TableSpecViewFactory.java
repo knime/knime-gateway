@@ -117,6 +117,7 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
         settings.m_enableRendererSelection = false;
         settings.m_showRowKeys = false;
         settings.m_showRowIndices = false;
+        settings.m_skipRemainingColumns = true;
         return settings;
     }
 
