@@ -117,6 +117,9 @@ public class WorkflowMiddlewareTest {
 
         wfm.removeNode(componentIDs[0]);
         await().untilAsserted(() -> assertThat(middleware.m_workflowStateCache.size(), is(1)));
+
+        WorkflowManagerUtil.disposeWorkflow(wfm);
+        WorkflowProjectManager.getInstance().removeWorkflowProject(projectId);
     }
 
     private static NodeID[] createNestedMetanodesOrComponents(final WorkflowManager wfm, final boolean createComponents)
