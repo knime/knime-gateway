@@ -140,7 +140,7 @@ public abstract class GatewayServiceTest {
      * @return the {@link EventConsumer} service dependency
      */
     protected EventConsumer createEventConsumer() {
-        return mock(EventConsumer.class);
+        return (name, event) -> {};
     }
 
     @SuppressWarnings("javadoc")
