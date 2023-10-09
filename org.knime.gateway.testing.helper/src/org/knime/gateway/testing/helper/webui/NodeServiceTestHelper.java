@@ -290,6 +290,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // pause execution
         ns().changeNodeStates(wfId, subWfId, singletonList(subWfId.appendNodeID(1)), "reset");
         ns().changeNodeStates(wfId, subWfId, emptyList(), "execute");
+        Thread.sleep(500);
         ns().changeLoopState(wfId, subWfId, n4, "pause");
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             NativeNodeEnt node = getNativeNodeEnt(wfId, subWfId, n4);
