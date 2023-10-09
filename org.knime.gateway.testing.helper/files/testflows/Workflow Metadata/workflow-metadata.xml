@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-metadata content-type="text/plain" xmlns="http://www.knime.org/core/node/workflow/metadata/v1.0">
+    <author>hornm</author>
+    <created>2020-10-19T12:00:01.000+02:00</created>
+    <last-modified>2023-10-09T10:37:43.235+02:00</last-modified>
+    <description>Workflow with metadata
+
+The workflow description</description>
+    <tags>
+        <tag>tag1</tag>
+        <tag>tag2</tag>
+    </tags>
+    <links>
+        <link href="http://blub.com">BLUB</link>
+    </links>
+</workflow-metadata>

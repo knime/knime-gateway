@@ -1,10 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?><met:KNIMEMetaInfo xmlns:met="http://www.knime.org/2.9/metainfo">
-<met:element form="text" read-only="false" name="Author">hornm</met:element>
-<met:element form="date" read-only="false" name="Creation Date">19/9/2020/12:00:01 +02:00</met:element>
-<met:element form="multiline" read-only="false" name="Comments">Workflow with metadata
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This file is auto-generated and is overwritten each time the workflow is saved.
+    The metadata have moved to the `workflow-metadata.xml` file.-->
+<KNIMEMetaInfo nrOfElements="4" xmlns="http://www.knime.org/2.9/metainfo">
+    <element form="text" name="Author" read-only="false">hornm</element>
+    <element form="date" name="Creation Date" read-only="false">19/9/2020/12:00:01 +02:00</element>
+    <element form="multiline" name="Comments" read-only="false">There has been no title set for this workflow's metadata.
+
+Workflow with metadata
 
 The workflow description
 
 URL: BLUB http://blub.com
-TAGS: tag1,tag2</met:element>
-</met:KNIMEMetaInfo>
+
+TAGS: tag1,tag2</element>
+    <element form="text" name="Last Edited" read-only="true">2023-10-09 10:37:43 +0200</element>
+</KNIMEMetaInfo>

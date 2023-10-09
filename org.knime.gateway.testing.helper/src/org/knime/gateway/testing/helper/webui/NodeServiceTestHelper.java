@@ -95,6 +95,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Test for the endpoints of the node service.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
  */
 public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
@@ -491,7 +492,44 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "nonsense", "data", ""))
                 .getMessage();
         assertThat(message, containsString("Unknown target"));
+    }
 
+    public void testGetComponentDescription() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
+
+        // New component
+        var componentNew = new NodeIDEnt(9);
+        var descNew = ns().getComponentDescription(projectId, getRootID(), componentNew);
+        cr(descNew, "component_description_new");
+
+        // Component with partial description
+        var componentPartial = new NodeIDEnt(4);
+        var descPartial = ns().getComponentDescription(projectId, getRootID(), componentPartial);
+        cr(descPartial, "component_description_partial");
+
+        // Component with full description
+        var componentFull = new NodeIDEnt(6);
+        var descFull = ns().getComponentDescription(projectId, getRootID(), componentFull);
+        cr(descFull, "component_description_full");
+
+        // Empty component
+        var componentEmpty = new NodeIDEnt(11);
+        var descEmpty = ns().getComponentDescription(projectId, getRootID(), componentEmpty);
+        cr(descEmpty, "component_description_empty");
+
+        // Metanode
+        var metanode = new NodeIDEnt(2);
+        assertThrows(InvalidRequestException.class,
+            () -> ns().getComponentDescription(projectId, getRootID(), metanode));
+
+        // Native node
+        var nativeNode = new NodeIDEnt(5);
+        assertThrows(InvalidRequestException.class,
+            () -> ns().getComponentDescription(projectId, getRootID(), nativeNode));
+
+        // Non-existing node
+        var nan = new NodeIDEnt(99);
+        assertThrows(NodeNotFoundException.class, () -> ns().getComponentDescription(projectId, getRootID(), nan));
     }
 
 }

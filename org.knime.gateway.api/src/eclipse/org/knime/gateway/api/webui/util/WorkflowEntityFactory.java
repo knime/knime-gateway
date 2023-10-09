@@ -502,28 +502,28 @@ public final class WorkflowEntityFactory {
      * @return The newly created entity
      */
     public ComponentNodeDescriptionEnt buildComponentNodeDescriptionEnt(final SubNodeContainer snc) {
-        if (snc != null) {
-            ComponentMetadata metadata = snc.getMetadata();
-            var type =
-                metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
-            var description = metadata.getDescription().isEmpty() ? null
-                : EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType());
-            var links = metadata.getLinks().isEmpty() ? null : toLinkEnts(metadata.getLinks());
-            var tags = metadata.getTags().isEmpty() ? null : metadata.getTags();
-            return builder(ComponentNodeDescriptionEntBuilder.class)//
-                .setName(snc.getName())//
-                .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
-                .setType(type) //
-                .setDescription(description)//
-                .setLinks(links) //
-                .setTags(tags) //
-                .setOptions(buildUngroupedDialogOptionGroupEnt(buildComponentDialogOptionsEnts(snc))) //
-                .setViews(buildComponentViewDescriptionEnts(snc))//
-                .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//
-                .setOutPorts(buildComponentOutNodePortDescriptionEnts(metadata, snc))//
-                .build();
+        if (snc == null) {
+            return null;
         }
-        return null;
+        final var metadata = snc.getMetadata();
+        final var type =
+            metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
+        final var description = metadata.getDescription().isEmpty() ? null
+            : EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType());
+        final var links = metadata.getLinks().isEmpty() ? null : toLinkEnts(metadata.getLinks());
+        final var tags = metadata.getTags().isEmpty() ? null : metadata.getTags();
+        return builder(ComponentNodeDescriptionEntBuilder.class)//
+            .setName(snc.getName())//
+            .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
+            .setType(type)//
+            .setDescription(description)//
+            .setLinks(links)//
+            .setTags(tags)//
+            .setOptions(buildUngroupedDialogOptionGroupEnt(buildComponentDialogOptionsEnts(snc)))//
+            .setViews(buildComponentViewDescriptionEnts(snc))//
+            .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//
+            .setOutPorts(buildComponentOutNodePortDescriptionEnts(metadata, snc))//
+            .build();
     }
 
     private ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,
