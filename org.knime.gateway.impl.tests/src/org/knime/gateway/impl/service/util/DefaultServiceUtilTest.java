@@ -84,6 +84,8 @@ public class DefaultServiceUtilTest {
 
     private WorkflowManager m_wfm;
 
+    private WorkflowManager m_rootWfm;
+
     private final WorkflowProjectManager m_wpm = WorkflowProjectManager.getInstance();
 
     private NodeID m_nodeID;
@@ -104,6 +106,9 @@ public class DefaultServiceUtilTest {
         doReturn(new NodeID(0)).when(m_wfm).getID();
         doReturn(m_wfm).when(m_nc).getParent();
         doReturn(m_nc).when(m_wfm).findNodeContainer(eq(m_nodeID));
+        m_rootWfm = createWorkflowManagerMock();
+        doReturn(m_rootWfm).when(m_wfm).getParent();
+        doReturn(null).when(m_wfm).getDirectNCParent();
 
         m_wfId = addWorkflowProject(m_wfm);
     }
@@ -147,9 +152,9 @@ public class DefaultServiceUtilTest {
         clearInvocations(m_wfm, m_nc);
         DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "execute");
         verify(m_wfm, never()).executeUpToHere(eq(new NodeID(0)));
-        verify(m_wfm, never()).getParent();
+        verify(m_wfm).getParent();
         verify(m_wfm, never()).findNodeContainer(any());
-        verify(m_wfm).executeAll();
+        verify(m_rootWfm).executeUpToHere(m_wfm.getID());
 
         // check exception if action is nonsense
         Assert.assertThrows("exception expected", IllegalStateException.class,
