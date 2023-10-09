@@ -323,30 +323,46 @@ public final class CoreUtil {
 
     /**
      * Cancel execution of the given workflow manager.
-     * 
+     *
      * @param wfm The workflow manager to cancel
      * @implNote This implementation affects the given workflow manager via its parent, which is required for safely
      *           handling components.
      */
     public static void cancel(final WorkflowManager wfm) {
-        performActionOnWorkflow(wfm, (parent, nc) -> parent.cancelExecution(nc));
+        if (isComponentProjectWorkflow(wfm)) {
+            // special handling since parent.cancelExecution doesn't work as expected for component projects
+            wfm.cancelExecution();
+        } else {
+            performActionOnWorkflow(wfm, (parent, nc) -> parent.cancelExecution(nc));
+        }
     }
 
     /**
      * Execute the given workflow manager.
-     * 
+     *
      * @param wfm The workflow manager to execute
      * @implNote This implementation affects the given workflow manager via its parent, which is required for safely
      *           handling components.
      */
     public static void execute(final WorkflowManager wfm) {
-        performActionOnWorkflow(wfm, (parent, nc) -> parent.executeUpToHere(nc.getID()));
+        if (isComponentProjectWorkflow(wfm)) {
+            // special handling since parent.executeUpToHere doesn't work as expected for component projects
+            wfm.executeAll();
+        } else {
+            performActionOnWorkflow(wfm, (parent, nc) -> {
+                parent.executeUpToHere(nc.getID());
+            });
+        }
+    }
+
+    private static boolean isComponentProjectWorkflow(final WorkflowManager wfm) {
+        return wfm.getDirectNCParent() instanceof SubNodeContainer snc && snc.isProject();
     }
 
     /**
      * Apply an action on the parent of {@code wfm} via the grandparent workflow manager, potentially having side
      * effects on the child workflow manager such as e.g. executing or cancelling all of its nodes.
-     * 
+     *
      * @param wfm The child workflow manager
      * @param action The action to apply on the parent of the child
      */

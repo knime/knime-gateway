@@ -172,16 +172,37 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // test execution on root level
         ns().changeNodeStates(wfId, getRootID(), emptyList(), "execute");
+        NodeIDEnt n6 = new NodeIDEnt(6);
         NodeIDEnt n7 = new NodeIDEnt(7);
+        NodeIDEnt n9 = new NodeIDEnt(9);
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt node = getNativeNodeEnt(wfId, getRootID(), n7);
+            NativeNodeEnt node = getNativeNodeEnt(wfId, getRootID(), n9);
+            assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTING));
+
+            node = getNativeNodeEnt(wfId, getRootID(), n6);
             assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
+
+            node = getNativeNodeEnt(wfId, getRootID(), n7);
+            assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.QUEUED));
+        });
+
+        // test cancellation on root level
+        ns().changeNodeStates(wfId, getRootID(), emptyList(), "cancel");
+        Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            NativeNodeEnt node = getNativeNodeEnt(wfId, getRootID(), n9);
+            assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
+
+            node = getNativeNodeEnt(wfId, getRootID(), n6);
+            assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
+
+            node = getNativeNodeEnt(wfId, getRootID(), n7);
+            assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         });
 
         // reset on root level
         ns().changeNodeStates(wfId, getRootID(), emptyList(), "reset");
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(10, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt node = getNativeNodeEnt(wfId, getRootID(), n7);
+            NativeNodeEnt node = getNativeNodeEnt(wfId, getRootID(), n6);
             assertThat(node.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         });
     }
