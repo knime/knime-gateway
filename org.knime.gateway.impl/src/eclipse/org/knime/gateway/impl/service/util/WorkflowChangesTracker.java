@@ -86,9 +86,9 @@ public class WorkflowChangesTracker {
         /** Tracked whenever a workflow annotation has been added */
         ANNOTATION_ADDED,
         /** Tracked whenever a workflow annotation has been removed */
-            ANNOTATION_REMOVED,
-            /** Whenever a connection bendpoint has been modified or added or removed **/
-            BENDPOINTS_MODIFIED
+        ANNOTATION_REMOVED,
+        /** Whenever a connection bendpoint has been modified or added or removed **/
+        BENDPOINTS_MODIFIED
     }
 
     /**
