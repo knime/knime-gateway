@@ -90,7 +90,8 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
             @SuppressWarnings({"rawtypes", "unchecked"})
             public Optional<InitialDataService> createInitialDataService() {
                 var settings = getSettingsForDataTable(tableSpec);
-                return Optional.of(TableViewUtil.createInitialDataService(() -> settings, emptyTableSupplier, tableId));
+                return Optional
+                    .of(TableViewUtil.createInitialDataService(() -> settings, emptyTableSupplier, null, tableId));
             }
 
             @Override

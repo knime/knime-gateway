@@ -269,10 +269,13 @@ public final class DefaultNodeService implements NodeService {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
 
         final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase(Locale.ROOT));
-        var nc = (NativeNodeContainer)DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
         try {
-            var rowKeys = NodeViewManager.getInstance().callSelectionTranslationService(nc, selection);
-            SelectionEventSource.processSelectionEvent(nc, selectionEventMode, true, rowKeys);
+            var nodeWrapper = NodeWrapper.of(nc);
+            var tableViewManager = NodeViewManager.getInstance().getTableViewManager();
+            var rowKeys = tableViewManager.callSelectionTranslationService(nodeWrapper, selection);
+            var hiLiteHandler = tableViewManager.getHiLiteHandler(nodeWrapper).orElseThrow();
+            SelectionEventSource.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
         } catch (IOException ex) {
             throw new IllegalStateException("Problem translating selection to row keys", ex);
         }

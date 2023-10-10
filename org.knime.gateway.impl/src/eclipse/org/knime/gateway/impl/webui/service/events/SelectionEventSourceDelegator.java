@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.service.events;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
@@ -68,14 +70,14 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  */
 public class SelectionEventSourceDelegator extends EventSource<SelectionEventTypeEnt, SelectionEvent> {
 
-    private final SelectionEventSource m_delegate;
+    private final SelectionEventSource<NodeWrapper> m_delegate;
 
     /**
      * @param eventConsumer
      */
     public SelectionEventSourceDelegator(final EventConsumer eventConsumer) {
         super(eventConsumer);
-        m_delegate = new SelectionEventSource(eventConsumer);
+        m_delegate = new SelectionEventSource<>(eventConsumer, NodeViewManager.getInstance().getTableViewManager());
     }
 
     /**
@@ -84,12 +86,12 @@ public class SelectionEventSourceDelegator extends EventSource<SelectionEventTyp
     @Override
     public Optional<SelectionEvent>
         addEventListenerAndGetInitialEventFor(final SelectionEventTypeEnt selectionEventType) {
-        return m_delegate.addEventListenerAndGetInitialEventFor(getNNC(selectionEventType));
+        return m_delegate.addEventListenerAndGetInitialEventFor(getNodeWrapper(selectionEventType));
     }
 
-    private static NativeNodeContainer getNNC(final SelectionEventTypeEnt selectionEventType) {
-        return (NativeNodeContainer)DefaultServiceUtil.getNodeContainer(selectionEventType.getProjectId(),
-            selectionEventType.getWorkflowId(), selectionEventType.getNodeId());
+    private static NodeWrapper getNodeWrapper(final SelectionEventTypeEnt selectionEventType) {
+        return NodeWrapper.of(DefaultServiceUtil.getNodeContainer(selectionEventType.getProjectId(),
+            selectionEventType.getWorkflowId(), selectionEventType.getNodeId()));
     }
 
     /**
@@ -97,7 +99,7 @@ public class SelectionEventSourceDelegator extends EventSource<SelectionEventTyp
      */
     @Override
     public void removeEventListener(final SelectionEventTypeEnt selectionEventType) {
-        m_delegate.removeEventListener(getNNC(selectionEventType));
+        m_delegate.removeEventListener(getNodeWrapper(selectionEventType));
     }
 
     /**

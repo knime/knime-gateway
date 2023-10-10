@@ -170,8 +170,8 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
 
             @Override
             public Optional<RpcDataService> createRpcDataService() {
-                return Optional.of(TableViewUtil
-                    .createRpcDataService(TableViewUtil.createTableViewDataService(tableSupplier, tableId), tableId));
+                return Optional.of(TableViewUtil.createRpcDataService(
+                    TableViewUtil.createTableViewDataService(tableSupplier, null, tableId), tableId));
             }
         };
     }
