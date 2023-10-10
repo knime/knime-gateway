@@ -414,7 +414,7 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void stopListening() {
-        if(!isListening()) {
+        if (!isListening()) {
             // already not listening
             return;
         }
