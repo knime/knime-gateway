@@ -62,6 +62,7 @@
     "svg" : "c3ZnIGZpbGUgY29udGVudCAy"
   } ],
   "featureFlags" : {
+    "org.knime.ui.feature.ai_assistant" : false,
     "org.knime.ui.feature.embedded_views_and_dialogs" : false
   },
   "openProjects" : [ {

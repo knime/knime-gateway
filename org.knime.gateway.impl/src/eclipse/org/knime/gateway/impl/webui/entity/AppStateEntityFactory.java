@@ -96,6 +96,7 @@ import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -191,7 +192,7 @@ public final class AppStateEntityFactory {
             .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
             .setHasNodeCollectionActive(preferenceProvider.activeNodeCollection() != null) //
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
-            .setFeatureFlags(getFeatureFlags()) //
+            .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setFileExtensionToNodeTemplateId(nodeFactoryProvider == null ? Collections.emptyMap()
                 : nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
@@ -291,17 +292,6 @@ public final class AppStateEntityFactory {
             .setSvg(svg) //
             .setOrigin(origin) //
             .build();
-    }
-
-    /**
-     * Access feature flags in system properties
-     *
-     * @return A map of feature flag keys and their values
-     */
-    private static Map<String, Object> getFeatureFlags() {
-        var featureFlagsPrefix = "org.knime.ui.feature.";
-        var f1 = featureFlagsPrefix + "embedded_views_and_dialogs";
-        return Map.of(f1, Boolean.getBoolean(f1));
     }
 
     private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
