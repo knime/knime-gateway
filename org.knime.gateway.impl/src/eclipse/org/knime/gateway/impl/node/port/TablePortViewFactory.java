@@ -48,15 +48,22 @@
  */
 package org.knime.gateway.impl.node.port;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
 
+import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.node.workflow.NodeOutPortWrapper;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
+import org.knime.core.webui.node.view.table.TableView;
+import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.page.Page;
@@ -71,38 +78,78 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
     @Override
     public PortView createPortView(final BufferedDataTable table) {
-        var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
-        var tableId = "table_" + TableViewUtil.toTableId(nc.getID()) + "_" + table.getBufferedTableId();
-        TableViewUtil.registerRendererRegistryCleanup(tableId, nc);
+        var nodePort = (NodeOutPort)PortContext.getContext().getNodePort();
+        var snc = nodePort.getConnectedNodeContainer();
+        var tableId = "table_" + TableViewUtil.toTableId(snc.getID()) + "_" + table.getBufferedTableId();
+        TableViewUtil.registerRendererRegistryCleanup(tableId, snc);
+        var portIndex = getPortIndex(nodePort);
+        var hiLiteHandler = TableViewManager.getOutHiLiteHandler(snc, portIndex - 1).orElse(null);
+        Supplier<Set<RowKey>> selectionSupplier;
+        if (hiLiteHandler == null) {
+            selectionSupplier = () -> Collections.emptySet();
+        } else {
+            selectionSupplier = () -> hiLiteHandler.getHiLitKeys();
+        }
+        return new TablePortView(table, tableId, selectionSupplier, portIndex);
+    }
 
-        return new PortView() { // NOSONAR
+    private static int getPortIndex(final NodeOutPort port) {
+        if (port instanceof NodeOutPortWrapper wrapper) {
+            return wrapper.getConnectedOutport().orElse(-1);
+        }
+        return port.getPortIndex();
+    }
 
-            @Override
-            @SuppressWarnings({"rawtypes", "unchecked"})
-            public Optional<InitialDataService> createInitialDataService() {
-                var settings = new TableViewViewSettings(table.getDataTableSpec());
-                settings.m_publishSelection = false;
-                settings.m_subscribeToSelection = false;
-                settings.m_title = "";
-                settings.m_enablePagination = false;
-                settings.m_compactMode = true;
-                settings.m_showRowIndices = true;
-                settings.m_skipRemainingColumns = true;
-                return Optional.of(TableViewUtil.createInitialDataService(() -> settings, () -> table, tableId));
-            }
+    private static class TablePortView implements PortView, TableView {
 
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                return Optional.of(TableViewUtil
-                    .createRpcDataService(TableViewUtil.createTableViewDataService(() -> table, tableId), tableId));
-            }
+        private final BufferedDataTable m_table;
 
-            @Override
-            public Page getPage() {
-                return TableViewUtil.PAGE;
-            }
+        private final String m_tableId;
 
-        };
+        private final Supplier<Set<RowKey>> m_selectionSupplier;
+
+        private final int m_portIndex;
+
+        TablePortView(final BufferedDataTable table, final String tableId,
+            final Supplier<Set<RowKey>> selectionSupplier, final int portIndex) {
+            m_table = table;
+            m_tableId = tableId;
+            m_selectionSupplier = selectionSupplier;
+            m_portIndex = portIndex;
+
+        }
+
+        @Override
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        public Optional<InitialDataService> createInitialDataService() {
+            var settings = new TableViewViewSettings(m_table.getDataTableSpec());
+            settings.m_publishSelection = true;
+            settings.m_subscribeToSelection = true;
+            settings.m_title = "";
+            settings.m_enablePagination = false;
+            settings.m_compactMode = true;
+            settings.m_showRowIndices = true;
+            settings.m_skipRemainingColumns = true;
+            return Optional.of(
+                TableViewUtil.createInitialDataService(() -> settings, () -> m_table, m_selectionSupplier, m_tableId));
+        }
+
+        @Override
+        public Optional<RpcDataService> createRpcDataService() {
+            return Optional.of(TableViewUtil.createRpcDataService(
+                TableViewUtil.createTableViewDataService(() -> m_table, m_selectionSupplier, m_tableId), m_tableId));
+        }
+
+        @Override
+        public Page getPage() {
+            return TableViewUtil.PAGE;
+        }
+
+        @Override
+        public int getPortIndex() {
+            return m_portIndex - 1;
+        }
+
     }
 
 }
