@@ -86,9 +86,9 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         var hiLiteHandler = TableViewManager.getOutHiLiteHandler(snc, portIndex - 1).orElse(null);
         Supplier<Set<RowKey>> selectionSupplier;
         if (hiLiteHandler == null) {
-            selectionSupplier = () -> Collections.emptySet();
+            selectionSupplier = Collections::emptySet;
         } else {
-            selectionSupplier = () -> hiLiteHandler.getHiLitKeys();
+            selectionSupplier = hiLiteHandler::getHiLitKeys;
         }
         return new TablePortView(table, tableId, selectionSupplier, portIndex);
     }
@@ -147,6 +147,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
         @Override
         public int getPortIndex() {
+            // -1 because m_portIndex accounts for the implicit flow variable port while getPortIndex doesn't
             return m_portIndex - 1;
         }
 
