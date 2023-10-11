@@ -65,6 +65,7 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettingsSerializer;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.data.DataType;
 import org.knime.core.webui.node.view.table.data.Table;
 import org.knime.core.webui.node.view.table.data.TableViewInitialData;
@@ -185,7 +186,7 @@ public class DirectAccessTableDataService {
         settings.m_enableGlobalSearch = false;
         settings.m_enableSortingByHeader = false;
         settings.m_enableColumnSearch = false;
-        settings.m_compactMode = true;
+        settings.m_rowHeightMode = RowHeightMode.COMPACT;
         settings.m_subscribeToSelection = false;
         settings.m_publishSelection = false;
         settings.m_showColumnDataType = true;

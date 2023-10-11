@@ -85,6 +85,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 
 /**
  * Tests {@link TablePortViewFactory}.
@@ -137,7 +138,7 @@ public class TablePortViewFactoryTest {
             assertThat(settings.get("publishSelection").asBoolean(), is(true));
             assertThat(settings.get("subscribeToSelection").asBoolean(), is(true));
             assertThat(settings.get("enablePagination").asBoolean(), is(false));
-            assertThat(settings.get("compactMode").asBoolean(), is(true));
+            assertThat(settings.get("rowHeightMode").asText(), is(RowHeightMode.COMPACT.toString()));
             assertThat(settings.get("showRowKeys").asBoolean(), is(true));
             assertThat(settings.get("showColumnDataType").asBoolean(), is(true));
             assertThat(settings.get("showRowIndices").asBoolean(), is(true));

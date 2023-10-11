@@ -66,6 +66,7 @@ import org.knime.core.webui.node.view.table.TableView;
 import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -127,7 +128,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             settings.m_subscribeToSelection = true;
             settings.m_title = "";
             settings.m_enablePagination = false;
-            settings.m_compactMode = true;
+            settings.m_rowHeightMode = RowHeightMode.COMPACT;
             settings.m_showRowIndices = true;
             settings.m_skipRemainingColumns = true;
             return Optional.of(

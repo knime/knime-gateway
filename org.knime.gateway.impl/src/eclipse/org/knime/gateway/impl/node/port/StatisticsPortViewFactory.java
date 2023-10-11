@@ -73,6 +73,7 @@ import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -194,7 +195,7 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         settings.m_enableSortingByHeader = false;
         settings.m_title = "";
         settings.m_enableColumnSearch = false;
-        settings.m_compactMode = true;
+        settings.m_rowHeightMode = RowHeightMode.COMPACT;
         settings.m_subscribeToSelection = false;
         settings.m_publishSelection = false;
         settings.m_showColumnDataType = false;

@@ -192,7 +192,7 @@ final class TestingUtilities {
         assertThat(actual.get("title").asText(), is(expected.m_title));
         assertThat(actual.get("subscribeToSelection").asBoolean(), is(expected.m_subscribeToSelection));
         assertThat(actual.get("enablePagination").asBoolean(), is(expected.m_enablePagination));
-        assertThat(actual.get("compactMode").asBoolean(), is(expected.m_compactMode));
+        assertThat(actual.get("rowHeightMode").asText(), is(expected.m_rowHeightMode.toString()));
         assertThat(actual.get("showRowKeys").asBoolean(), is(expected.m_showRowKeys));
         assertThat(actual.get("showColumnDataType").asBoolean(), is(expected.m_showColumnDataType));
         assertThat(actual.get("showRowIndices").asBoolean(), is(expected.m_showRowIndices));
