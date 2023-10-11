@@ -68,6 +68,7 @@ import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
@@ -196,8 +197,7 @@ public class StatisticsPortViewFactory implements PortViewFactory<BufferedDataTa
         settings.m_title = "";
         settings.m_enableColumnSearch = false;
         settings.m_rowHeightMode = RowHeightMode.COMPACT;
-        settings.m_subscribeToSelection = false;
-        settings.m_publishSelection = false;
+        settings.m_selectionMode = SelectionMode.OFF;
         settings.m_showColumnDataType = false;
         // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
         // BUT: set the page-size to the 'maximum' such that the 'paging-buttons' actually don't show up

@@ -54,6 +54,7 @@ import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortView;
@@ -112,8 +113,7 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
         settings.m_enableSortingByHeader = false;
         settings.m_enableColumnSearch = false;
         settings.m_rowHeightMode = RowHeightMode.COMPACT;
-        settings.m_subscribeToSelection = false;
-        settings.m_publishSelection = false;
+        settings.m_selectionMode = SelectionMode.OFF;
         // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
         settings.m_enablePagination = true;
         settings.m_enableRendererSelection = false;

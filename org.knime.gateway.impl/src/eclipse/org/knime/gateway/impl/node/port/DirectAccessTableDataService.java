@@ -64,6 +64,7 @@ import org.knime.core.data.DirectAccessTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.data.DataType;
@@ -187,8 +188,7 @@ public class DirectAccessTableDataService {
         settings.m_enableSortingByHeader = false;
         settings.m_enableColumnSearch = false;
         settings.m_rowHeightMode = RowHeightMode.COMPACT;
-        settings.m_subscribeToSelection = false;
-        settings.m_publishSelection = false;
+        settings.m_selectionMode = SelectionMode.OFF;
         settings.m_showColumnDataType = true;
         settings.m_title = "";
         // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE

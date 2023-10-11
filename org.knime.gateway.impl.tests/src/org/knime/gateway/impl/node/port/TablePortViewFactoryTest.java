@@ -83,6 +83,7 @@ import org.knime.core.node.workflow.virtual.parchunk.VirtualParallelizedChunkPor
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
@@ -135,8 +136,7 @@ public class TablePortViewFactoryTest {
             var initialDataTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
             var settings = initialDataTree.get("result").get("settings");
             assertThat(settings.get("title").asText(), is(""));
-            assertThat(settings.get("publishSelection").asBoolean(), is(true));
-            assertThat(settings.get("subscribeToSelection").asBoolean(), is(true));
+            assertThat(settings.get("selectionMode").asText(), is(SelectionMode.EDIT.toString()));
             assertThat(settings.get("enablePagination").asBoolean(), is(false));
             assertThat(settings.get("rowHeightMode").asText(), is(RowHeightMode.COMPACT.toString()));
             assertThat(settings.get("showRowKeys").asBoolean(), is(true));
