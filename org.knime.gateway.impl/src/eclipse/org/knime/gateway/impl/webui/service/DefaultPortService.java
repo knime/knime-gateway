@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.Collections;
+
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.NodeContainer;
@@ -124,7 +126,7 @@ public class DefaultPortService implements PortService {
 
         var wrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
         var portViewManager = PortViewManager.getInstance();
-        return new PortViewEnt(wrapper, portViewManager, null);
+        return new PortViewEnt(wrapper, portViewManager, Collections::emptyList);
 
     }
 
