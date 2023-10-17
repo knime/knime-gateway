@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.entity;
 
-import static java.util.stream.Collectors.toList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
@@ -87,6 +86,7 @@ import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt.ExampleProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
@@ -238,7 +238,7 @@ public final class AppStateEntityFactory {
             .filter(projectFilter) //
             .flatMap(id -> workflowProjectManager.getWorkflowProject(id).stream()) //
             .map(wp -> buildWorkflowProjectEnt(wp, isActiveProject, spaceProviders)) //
-            .collect(toList());
+            .toList();
     }
 
     private static Map<String, PortTypeEnt> getAvailablePortTypeEnts() {
@@ -252,7 +252,7 @@ public final class AppStateEntityFactory {
     private static List<String> getSuggestedPortTypeIds() {
         return SUGGESTED_PORT_TYPES.stream() //
             .map(CoreUtil::getPortTypeId) //
-            .collect(toList());
+            .toList();
     }
 
     private static List<ExampleProjectEnt> buildExampleProjects(final ExampleProjects exampleProjects) {
@@ -262,12 +262,11 @@ public final class AppStateEntityFactory {
             .filter(Files::exists) //
             .map(f -> buildExampleProject(f, localWorkspace)) //
             .filter(Objects::nonNull) //
-            .collect(Collectors.toList());
+            .toList();
     }
 
 
     private static ExampleProjectEnt buildExampleProject(final Path workflowDir, final LocalWorkspace localWorkspace) {
-        var name = workflowDir.getFileName().toString();
         var svgFile = workflowDir.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE);
         byte[] svg;
         try {
@@ -277,6 +276,7 @@ public final class AppStateEntityFactory {
                 .error("Svg for workflow '" + workflowDir + "' could not be read", ex);
             return null;
         }
+        var name = workflowDir.getFileName().toString();
         var svgEncoded = Base64.getEncoder().encodeToString(svg);
         var itemId = localWorkspace.getItemId(workflowDir);
         return buildExampleProject(name, svgEncoded, itemId);
@@ -286,6 +286,7 @@ public final class AppStateEntityFactory {
         var origin = builder(SpaceItemReferenceEntBuilder.class) //
             .setItemId(itemId) //
             .setSpaceId(LocalWorkspace.LOCAL_WORKSPACE_ID) //
+            .setProjectType(ProjectTypeEnum.WORKFLOW) //
             .setProviderId("local").build();
         return builder(ExampleProjectEntBuilder.class) //
             .setName(name) //
@@ -315,6 +316,7 @@ public final class AppStateEntityFactory {
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
+            .setProjectType(origin.getProjectType())
             .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }

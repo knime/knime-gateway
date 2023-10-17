@@ -60,11 +60,13 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -242,6 +244,18 @@ public final class WorkflowMiddleware {
         } else {
             return m_entityRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
         }
+    }
+
+    /**
+     * Builds an {@code AnnotationIDEnt} considering the {@code WorkflowBuildContext}.
+     *
+     * @param wa
+     * @param wfm
+     * @return The annotation ID entity
+     */
+    public static AnnotationIDEnt buildAnnotationIDEnt(final WorkflowAnnotation wa, final WorkflowManager wfm) {
+        final var buildContextBuilder = WorkflowBuildContext.builder().includeInteractionInfo(false);
+        return EntityFactory.Workflow.buildAnnotationIDEnt(wa, buildContextBuilder, wfm);
     }
 
     /**

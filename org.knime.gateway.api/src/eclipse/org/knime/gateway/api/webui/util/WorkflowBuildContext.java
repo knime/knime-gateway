@@ -58,7 +58,9 @@ import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
@@ -109,6 +111,10 @@ public final class WorkflowBuildContext {
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
         return new NodeIDEnt(nodeID, m_hasComponentProjectParent);
+    }
+
+    AnnotationIDEnt buildAnnotationIDEnt(final WorkflowAnnotationID annoID) {
+        return new AnnotationIDEnt(new NodeIDEnt(annoID.getNodeID(), m_hasComponentProjectParent), annoID.getIndex());
     }
 
     boolean isInStreamingMode() {

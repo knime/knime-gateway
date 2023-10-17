@@ -63,6 +63,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.impl.project.WorkflowProject;
 import org.knime.gateway.impl.project.WorkflowProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -187,6 +188,11 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             @Override
             public String getItemId() {
                 return "Item ID for testing";
+            }
+
+            @Override
+            public ProjectTypeEnum getProjectType() {
+                return ProjectTypeEnum.WORKFLOW;
             }
         };
     }

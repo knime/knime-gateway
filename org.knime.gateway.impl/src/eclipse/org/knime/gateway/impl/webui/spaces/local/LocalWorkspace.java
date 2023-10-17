@@ -80,9 +80,11 @@ import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.core.util.pathresolve.ResolverUtil;
+import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -545,5 +547,12 @@ public final class LocalWorkspace implements Space {
         } catch (final ResourceAccessException e) {
             throw new IllegalArgumentException("URI could not be resolved to local file", e);
         }
+    }
+
+    @Override
+    public Optional<ProjectTypeEnum> getProjectType(final String itemId) {
+        var path = toLocalAbsolutePath(null, itemId);
+        var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(path);
+        return EntityUtil.toProjectType(itemType);
     }
 }

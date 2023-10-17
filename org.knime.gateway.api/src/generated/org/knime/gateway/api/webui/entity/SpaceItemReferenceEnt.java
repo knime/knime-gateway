@@ -62,6 +62,27 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface SpaceItemReferenceEnt extends GatewayEntity {
 
+  /**
+   * Gets or Sets projectType
+   */
+  public enum ProjectTypeEnum {
+    WORKFLOW("Workflow"),
+    
+    COMPONENT("Component");
+
+    private String value;
+
+    ProjectTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Get providerId
@@ -82,6 +103,12 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
   public String getItemId();
 
   /**
+   * Get projectType
+   * @return projectType 
+   **/
+  public ProjectTypeEnum getProjectType();
+
+  /**
    * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
    * @return ancestorItemIds 
    **/
@@ -95,6 +122,7 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
       valueConsumer.accept("providerId", Pair.create(getProviderId(), e.getProviderId()));
       valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
       valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
+      valueConsumer.accept("projectType", Pair.create(getProjectType(), e.getProjectType()));
       valueConsumer.accept("ancestorItemIds", Pair.create(getAncestorItemIds(), e.getAncestorItemIds()));
   }
 
@@ -126,6 +154,14 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceItemReferenceEntBuilder setItemId(String itemId);
+        
+        /**
+   		 * Set projectType
+         * 
+         * @param projectType the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceItemReferenceEntBuilder setProjectType(ProjectTypeEnum projectType);
         
         /**
          * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.

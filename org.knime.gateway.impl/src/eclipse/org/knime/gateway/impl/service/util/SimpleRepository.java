@@ -66,7 +66,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  *
  * For workflow entity comparison (i.e. to create the diff), this implementation uses the javers-library.
  *
- * NOTE: not a thread-safe implementation
+ * TODO: NXT-526, not a thread-safe implementation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @param <K> the entity key
@@ -166,7 +166,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
      * {@inheritDoc}
      */
     @Override
-    public void disposeHistory(final Predicate<K> keyFilter) {
+    public synchronized void disposeHistory(final Predicate<K> keyFilter) {
         //remove all snapshots (and other map entries) for the given entity id
         List<String> snapshotIDs = m_snapshotsKeyMap.entrySet().stream().filter(e -> keyFilter.test(e.getValue()))
             .map(Entry::getKey).collect(Collectors.toList());

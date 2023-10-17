@@ -56,14 +56,14 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.AnnotationData;
-import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.gateway.api.entity.AnnotationIDEnt;
+import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt.AddAnnotationResultEntBuilder;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Workflow command to create a new workflow annotation
@@ -74,7 +74,7 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
 
     private final AddWorkflowAnnotationCommandEnt m_commandEnt;
 
-    private WorkflowAnnotationID m_workflowAnnotationID;
+    private WorkflowAnnotation m_workflowAnnotation;
 
     AddWorkflowAnnotation(final AddWorkflowAnnotationCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -92,8 +92,7 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
             ad -> ad.setBorderColor(borderColor), //
             ad -> ad.setDimension(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight()));
         final var annoData = AbstractWorkflowAnnotationCommand.getUpdatedAnnotationData(null, updatesToApply);
-        final var workflowAnnotation = wfm.addWorkflowAnnotation(annoData, -1);
-        m_workflowAnnotationID = workflowAnnotation.getID();
+        m_workflowAnnotation = wfm.addWorkflowAnnotation(annoData, -1);
         return true;
     }
 
@@ -103,8 +102,8 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        wfm.removeAnnotation(m_workflowAnnotationID);
-        m_workflowAnnotationID = null;
+        wfm.removeAnnotation(m_workflowAnnotation.getID());
+        m_workflowAnnotation = null;
     }
 
     /**
@@ -112,7 +111,8 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
      */
     @Override
     public AddAnnotationResultEnt buildEntity(final String snapshotId) {
-        final var newAnnotationId = new AnnotationIDEnt(m_workflowAnnotationID);
+        final var wfm = getWorkflowManager();
+        final var newAnnotationId = WorkflowMiddleware.buildAnnotationIDEnt(m_workflowAnnotation, wfm);
         return builder(AddAnnotationResultEntBuilder.class)//
             .setKind(KindEnum.ADDANNOTATIONRESULT)//
             .setSnapshotId(snapshotId)//

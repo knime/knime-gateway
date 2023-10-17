@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
  * @param providerId
  * @param spaceId
  * @param itemId
+ * @param projectType
  * @param ancestorItemIds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -64,6 +65,7 @@ public record DefaultSpaceItemReferenceEnt(
     String providerId,
     String spaceId,
     String itemId,
+    ProjectTypeEnum projectType,
     java.util.List<String> ancestorItemIds) implements SpaceItemReferenceEnt {
 
     /**
@@ -102,6 +104,11 @@ public record DefaultSpaceItemReferenceEnt(
     }
     
     @Override
+    public ProjectTypeEnum getProjectType() {
+        return projectType;
+    }
+    
+    @Override
     public java.util.List<String> getAncestorItemIds() {
         return ancestorItemIds;
     }
@@ -116,6 +123,8 @@ public record DefaultSpaceItemReferenceEnt(
         private String m_spaceId;
 
         private String m_itemId;
+
+        private ProjectTypeEnum m_projectType;
 
         private java.util.List<String> m_ancestorItemIds;
 
@@ -147,6 +156,12 @@ public record DefaultSpaceItemReferenceEnt(
         }
 
         @Override
+        public DefaultSpaceItemReferenceEntBuilder setProjectType(ProjectTypeEnum projectType) {
+             m_projectType = projectType;
+             return this;
+        }
+
+        @Override
         public DefaultSpaceItemReferenceEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds) {
              m_ancestorItemIds = ancestorItemIds;
              return this;
@@ -158,6 +173,7 @@ public record DefaultSpaceItemReferenceEnt(
                 immutable(m_providerId),
                 immutable(m_spaceId),
                 immutable(m_itemId),
+                immutable(m_projectType),
                 immutable(m_ancestorItemIds));
         }
     

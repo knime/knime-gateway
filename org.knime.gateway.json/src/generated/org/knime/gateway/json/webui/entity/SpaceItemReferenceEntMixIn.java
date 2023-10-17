@@ -82,6 +82,10 @@ public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
     public String getItemId();
     
     @Override
+    @JsonProperty("projectType")
+    public ProjectTypeEnum getProjectType();
+    
+    @Override
     @JsonProperty("ancestorItemIds")
     public java.util.List<String> getAncestorItemIds();
     
@@ -109,6 +113,10 @@ public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
         @Override
         @JsonProperty("itemId")
         public SpaceItemReferenceEntMixInBuilder setItemId(final String itemId);
+        
+        @Override
+        @JsonProperty("projectType")
+        public SpaceItemReferenceEntMixInBuilder setProjectType(final ProjectTypeEnum projectType);
         
         @Override
         @JsonProperty("ancestorItemIds")

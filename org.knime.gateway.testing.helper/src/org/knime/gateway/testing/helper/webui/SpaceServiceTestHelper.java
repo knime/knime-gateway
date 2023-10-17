@@ -80,6 +80,7 @@ import org.knime.core.util.Version;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -436,6 +437,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             public Optional<String> getItemIdByURI(final URI uri) {
                 return Optional.empty();
             }
+
+            @Override
+            public Optional<ProjectTypeEnum> getProjectType(final String itemId) {
+                return Optional.empty();
+            }
         };
     }
 
@@ -744,6 +750,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public String getItemId() {
                 return itemId;
+            }
+
+            @Override
+            public ProjectTypeEnum getProjectType() {
+                return ProjectTypeEnum.WORKFLOW;
             }
         };
         return new WorkflowProject() {

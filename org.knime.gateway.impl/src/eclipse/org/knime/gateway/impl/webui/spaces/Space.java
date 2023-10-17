@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
@@ -83,8 +84,8 @@ public interface Space {
      * broken by comparing the original strings. This guarantees that the order is consistent even if items are only
      * distinguished by case.
      */
-    static final Comparator<SpaceItemEnt> ITEM_COMPARATOR = Comparator.comparing(SpaceItemEnt::getType) //
-            .thenComparing(SpaceItemEnt::getName, SpaceItemNameComparator.INSTANCE);
+    Comparator<SpaceItemEnt> ITEM_COMPARATOR = Comparator.comparing(SpaceItemEnt::getType) //
+        .thenComparing(SpaceItemEnt::getName, SpaceItemNameComparator.INSTANCE);
 
     /**
      * Id of the root 'workflow group'.
@@ -270,14 +271,14 @@ public interface Space {
      * @param uri uri to retrieve space item ID for
      * @return item ID for the given URI or {@link Optional#empty()} if URI could not be resolved to an item ID
      */
-    public Optional<String> getItemIdByURI(final URI uri);
+    Optional<String> getItemIdByURI(final URI uri);
 
     /**
      * Creates a mountpoint-absolute KNIME URL for the given space item.
      * The URL may be either path- or ID-based. ID-based KNIME URLs can only be used to reference the item itself
      * and carry no information about the position of the item in the Space's folder hierarchy.
      *
-     * @see this#toPathBasedKnimeUrl(String) 
+     * @see this#toPathBasedKnimeUrl(String)
      * @param itemId item ID
      * @return KNIME URL
      */
@@ -371,6 +372,15 @@ public interface Space {
      * @throws NoSuchElementException If no such item is present
      */
     String getItemName(String itemId);
+
+    /**
+     * Returns the project type of a space item if it is a project.
+     *
+     * @param itemId The space item ID
+     * @return The optional project type of the space item, if it is a project.
+     * @throws NoSuchElementException If no such item is present
+     */
+    Optional<ProjectTypeEnum> getProjectType(final String itemId);
 
     /**
      * Creates a {@link SpaceEnt} for this space.

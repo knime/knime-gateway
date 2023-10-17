@@ -364,7 +364,7 @@ public final class WorkflowEntityFactory {
                 .map(cc -> buildConnectionEnt(buildConnectionIDEnt(cc, buildContext), cc, buildContext))
                 .collect(Collectors.toMap(c -> c.getId().toString(), c -> c)); // NOSONAR
             List<WorkflowAnnotationEnt> annotations = wfm.getWorkflowAnnotations().stream()
-                .map(this::buildWorkflowAnnotationEnt).collect(Collectors.toList());
+                .map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).collect(Collectors.toList());
             var info = buildWorkflowInfoEnt(wfm, buildContext);
             return builder(WorkflowEntBuilder.class).setInfo(info)//
                 .setNodes(nodes)//
@@ -1112,7 +1112,8 @@ public final class WorkflowEntityFactory {
             .build());
     }
 
-    private WorkflowAnnotationEnt buildWorkflowAnnotationEnt(final WorkflowAnnotation wa) {
+    private WorkflowAnnotationEnt buildWorkflowAnnotationEnt(final WorkflowAnnotation wa,
+        final WorkflowBuildContext buildContext) {
         BoundsEnt bounds = builder(BoundsEntBuilder.class).setX(wa.getX())//
             .setY(wa.getY())//
             .setWidth(wa.getWidth())//
@@ -1121,7 +1122,8 @@ public final class WorkflowEntityFactory {
         final var text = EntityUtil.toTypedTextEnt(wa.getText(), wa.getContentType());
         final var textAlignSupplier = getTextAlignSupplier(wa.getAlignment());
         final var styleRangesSupplier = getStyleRangesSupplier(wa.getStyleRanges());
-        return builder(WorkflowAnnotationEntBuilder.class).setId(new AnnotationIDEnt(wa.getID()))//
+        return builder(WorkflowAnnotationEntBuilder.class) //
+            .setId(buildContext.buildAnnotationIDEnt(wa.getID()))//
             .setText(text)//
             .setTextAlign(text.getContentType() == ContentTypeEnum.PLAIN ? textAlignSupplier.get() : null)//
             .setStyleRanges(text.getContentType() == ContentTypeEnum.PLAIN ? styleRangesSupplier.get() : null)//
@@ -1131,6 +1133,22 @@ public final class WorkflowEntityFactory {
             .setBounds(bounds)//
             .setDefaultFontSize(wa.getDefaultFontSize() > 0 ? wa.getDefaultFontSize() : null)//
             .build();
+    }
+
+    /**
+     * Builds an {@code AnnotationIDEnt} considering the {@code WorkflowBuildContext}.
+     *
+     * @param wa
+     * @param buildContextBuilder
+     * @param wfm
+     * @return The new add annotation ID entity
+     */
+    public AnnotationIDEnt buildAnnotationIDEnt(final WorkflowAnnotation wa,
+        final WorkflowBuildContextBuilder buildContextBuilder, final WorkflowManager wfm) {
+        try (WorkflowLock lock = wfm.lock()) {
+            WorkflowBuildContext buildContext = buildContextBuilder.build(wfm);
+            return buildContext.buildAnnotationIDEnt(wa.getID());
+        }
     }
 
     private WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm, final WorkflowBuildContext buildContext) {

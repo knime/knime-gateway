@@ -48,6 +48,7 @@ package org.knime.gateway.impl.project;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 
 /**
  * Represents a workflow project.
@@ -104,7 +105,7 @@ public interface WorkflowProject {
     /**
      * Identifies space and item from which this workflow project has been opened.
      */
-    public static interface Origin {
+    interface Origin {
         /**
          * @return The ID of the space provider containing the workflow project
          */
@@ -119,6 +120,11 @@ public interface WorkflowProject {
          * @return The item ID of the workflow project
          */
         String getItemId();
+
+        /**
+         * @return The project type of the space item
+         */
+        ProjectTypeEnum getProjectType();
 
         /**
          * @return the relative path of the original space item - usually only given for the local space

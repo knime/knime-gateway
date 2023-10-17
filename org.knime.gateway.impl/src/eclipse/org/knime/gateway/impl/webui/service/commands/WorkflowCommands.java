@@ -195,13 +195,13 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt ce) {
             command = new UpdateComponentOrMetanodeName(ce);
         } else if (commandEnt instanceof UpdateNodeLabelCommandEnt ce) {
-           command = new UpdateNodeLabel(ce);
+            command = new UpdateNodeLabel(ce);
         } else if (commandEnt instanceof CollapseCommandEnt ce) {
-           command = new Collapse(ce);
+            command = new Collapse(ce);
         } else if (commandEnt instanceof ExpandCommandEnt ce) {
             command = new Expand(ce);
         } else if (commandEnt instanceof AddPortCommandEnt ce) {
-          command = new AddPort(ce);
+            command = new AddPort(ce);
         } else if (commandEnt instanceof RemovePortCommandEnt ce) {
             command = new RemovePort(ce);
         } else if (commandEnt instanceof CopyCommandEnt ce) {

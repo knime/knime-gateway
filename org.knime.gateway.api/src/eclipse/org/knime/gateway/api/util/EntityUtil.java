@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeContainerMetadata;
@@ -61,6 +62,9 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.TypedTextEntBuilder;
@@ -70,7 +74,7 @@ import org.knime.shared.workflow.def.AnnotationDataDef;
  * Utility methods used by the default entity implementations, tests etc. and to deal with other entity related stuff.
  *
  * @author Martin Horn, University of Konstanz
- * @noreference This class is not intended to be referenced by clients.
+ * @author Kai Franze, KNIME GmbH, Germany
  */
 public final class EntityUtil {
 
@@ -204,4 +208,17 @@ public final class EntityUtil {
         return toTypedTextEnt(text, CoreUtil.ContentTypeConverter.fromAnnotationDataDef(contentType));
     }
 
+    /**
+     * Converts a {@code TypeEnt} to a {@code ProjectTypeEnt} if the item is a project.
+     *
+     * @param itemType
+     * @return The optional {@code ProjectTypeEnt}
+     */
+    public static Optional<SpaceItemReferenceEnt.ProjectTypeEnum> toProjectType(final SpaceItemEnt.TypeEnum itemType) {
+        return switch (itemType) {
+            case COMPONENT -> Optional.of(ProjectTypeEnum.COMPONENT);
+            case WORKFLOW -> Optional.of(ProjectTypeEnum.WORKFLOW);
+            default -> Optional.empty();
+        };
+    }
 }
