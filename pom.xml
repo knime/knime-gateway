@@ -19,6 +19,12 @@
         <feature-branch-extension.branchListProperty>git.branch</feature-branch-extension.branchListProperty>
         <feature-branch-extension.appendArtifactoryProperties>false</feature-branch-extension.appendArtifactoryProperties>
         <knime.sonar-env>Sonarcloud</knime.sonar-env>
+        <sonar.exclusions>
+            org.knime.gateway.api/src/generated/**/*,
+            org.knime.gateway.impl/src/generated/**/*,
+            org.knime.gateway.impl.jsonrpc/src/generated/**/*,
+            org.knime.gateway.json/src/generated/**/*
+        </sonar.exclusions>
     </properties>
 
     <profiles>
