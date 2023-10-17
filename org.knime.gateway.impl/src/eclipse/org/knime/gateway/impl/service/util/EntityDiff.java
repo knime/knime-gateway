@@ -94,7 +94,7 @@ final class EntityDiff {
             var second = entities.getSecond();
             if (!Objects.equals(first, second)) {
                 areEqual.set(false);
-                compareObjects(path + "/" + name, first, second, patchCreator);
+                compareObjects(path + "/" + encode(name), first, second, patchCreator);
             }
         });
         return areEqual.get();
@@ -150,9 +150,14 @@ final class EntityDiff {
             var o1 = m1.get(key);
             var o2 = m2.get(key);
             if (!Objects.equals(o1, o2)) {
-                compareObjects(path + "/" + key, m1.get(key), m2.get(key), patchCreator);
+                compareObjects(path + "/" + encode(key), m1.get(key), m2.get(key), patchCreator);
             }
         }
+    }
+
+    /* JSON pointer encoding according to RFC 6901 */
+    private static String encode(final String s) {
+        return s.replace("~", "~0").replace("/", "~1");
     }
 
 }
