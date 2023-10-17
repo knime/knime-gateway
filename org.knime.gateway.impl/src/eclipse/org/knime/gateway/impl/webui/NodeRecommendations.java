@@ -50,17 +50,13 @@ package org.knime.gateway.impl.webui;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.core.node.NodeInfo;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.ui.util.NodeTemplateId;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendation;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
@@ -137,17 +133,11 @@ public class NodeRecommendations {
      * @return Exit status of initialization
      */
     private static boolean initializeNodeRecommendationManager(final NodeRepository nodeRepo) {
-        Predicate<NodeInfo> isSourceNode = nodeInfo -> {
-            var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
-                nodeRepo::getNodeIncludeAdditionalNodes, true);
-            return node != null && node.getType() == NodeType.Source;
+        Function<String, NodeType> getNodeType = id -> {
+            var node = nodeRepo.getNodeIncludeAdditionalNodes(id);
+            return node == null ? null : node.getType();
         };
-        Function<NodeInfo, Optional<String>> getNameFromRepository = nodeInfo -> {
-            var node = NodeTemplateId.callWithNodeTemplateIdVariants(nodeInfo.getFactory(), nodeInfo.getName(),
-                nodeRepo::getNodeIncludeAdditionalNodes, true);
-            return node == null ? Optional.empty() : Optional.of(node.name);
-        };
-        return NodeRecommendationManager.getInstance().initialize(isSourceNode, getNameFromRepository);
+        return NodeRecommendationManager.getInstance().initialize(getNodeType);
     }
 
     private static NativeNodeContainer getNativeNodeContainer(final String projectId, final NodeIDEnt workflowId,
@@ -180,9 +170,8 @@ public class NodeRecommendations {
     private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final List<NodeRecommendation> recommendations,
         final PortType sourcePortType, final int limit, final boolean fullInfo) {
         return recommendations.stream()//
-            .map(r -> NodeTemplateId.callWithNodeTemplateIdVariants(r.getNodeFactoryClassName(), r.getNodeName(),
-                m_nodeRepo::getNode, true))//
-            .filter(Objects::nonNull)// `NodeTemplateId.callWithNodeTemplateIdVariants(...)` could return null
+            .map(r -> m_nodeRepo.getNode(r.getFactoryId()))//
+            .filter(Objects::nonNull)
             .filter(n -> sourcePortType == null || n.isCompatibleWith(sourcePortType))
             .limit(limit)// Limit the number of results after filtering by port type compatibility
             .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, fullInfo))//
