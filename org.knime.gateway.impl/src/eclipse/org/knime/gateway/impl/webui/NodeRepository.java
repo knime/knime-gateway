@@ -295,7 +295,7 @@ public final class NodeRepository {
                     continue;
                 }
                 Node n = new Node(factory);
-                n.templateId = EntityFactory.NodeTemplateAndDescription.createTemplateId(factory);
+                n.templateId = factory.getFactoryId();
                 n.path = normalizeCategoryPath(ext.getCategoryPath());
                 n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
                 nodes.put(n.templateId, n);
@@ -317,7 +317,7 @@ public final class NodeRepository {
                     continue;
                 }
                 Node n = new Node(factory);
-                n.templateId = EntityFactory.NodeTemplateAndDescription.createTemplateId(factory);
+                n.templateId = factory.getFactoryId();
                 n.path = normalizeCategoryPath(ext.getCategoryPath(factoryId));
                 n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
                 nodes.put(n.templateId, n);

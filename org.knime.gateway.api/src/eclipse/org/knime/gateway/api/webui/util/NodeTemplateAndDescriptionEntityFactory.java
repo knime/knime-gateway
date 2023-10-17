@@ -71,7 +71,6 @@ import org.knime.core.node.context.ports.ConfigurablePortGroup;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.port.PortType;
-import org.knime.core.ui.util.NodeTemplateId;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
@@ -112,7 +111,7 @@ public final class NodeTemplateAndDescriptionEntityFactory {
      */
     public NodeTemplateEnt buildMinimalNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
         NodeTemplateEntBuilder builder = builder(NodeTemplateEntBuilder.class)//
-            .setId(createTemplateId(factory))//
+            .setId(factory.getFactoryId())//
             .setName(factory.getNodeName())//
             .setComponent(false)//
             .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase(Locale.ROOT)));
@@ -193,7 +192,7 @@ public final class NodeTemplateAndDescriptionEntityFactory {
     public NodeTemplateEnt buildNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
         var node = CoreUtil.createNode(factory).orElse(null);
         return node == null ? null : builder(NodeTemplateEntBuilder.class)//
-            .setId(createTemplateId(factory))//
+            .setId(factory.getFactoryId())//
             .setName(factory.getNodeName())//
             .setComponent(false)//
             .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase(Locale.ROOT)))//
@@ -203,16 +202,6 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .setIcon(WorkflowEntityFactory.createIconDataURL(factory))//
             .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(factory)).build();
     }
-
-    /**
-     * Creates an id that uniquely represents a node factory (no matter if it's a normal one or a dynamic node factory).
-     *
-     * @param nodeFactory The node factory to create the id for
-     * @return The new node template id
-     */
-    public String createTemplateId(final NodeFactory<? extends NodeModel> nodeFactory) {
-        return NodeTemplateId.of(nodeFactory, true);
-     }
 
     private List<NodeDialogOptionDescriptionEnt> buildDialogOptionDescriptionEnts(final List<NodeDescription.DialogOption> opts) {
         return listMapOrNull(opts, o -> //

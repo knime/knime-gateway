@@ -759,7 +759,7 @@ public final class WorkflowEntityFactory {
             .setAnnotation(buildNodeAnnotationEnt(nnc.getNodeAnnotation()))//
             .setPosition(buildXYEnt(nnc.getUIInformation()))//
             .setState(buildNodeStateEnt(nnc))//
-            .setTemplateId(EntityFactory.NodeTemplateAndDescription.createTemplateId(nnc.getNode().getFactory()))//
+            .setTemplateId(nnc.getNode().getFactory().getFactoryId())//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nnc))//
             .setLoopInfo(buildLoopInfoEnt(nnc, buildContext))//
