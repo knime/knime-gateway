@@ -119,11 +119,11 @@
     "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
-    "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING+Variants2Proteins" : {
+    "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING Variants2Proteins" : {
       "name" : "Variants2Proteins",
       "type" : "Missing"
     },
-    "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory#MISSING+Input+File" : {
+    "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory#MISSING Input File" : {
       "name" : "Input File",
       "type" : "Missing"
     },
@@ -239,7 +239,7 @@
       },
       "type" : "Manipulator"
     },
-    "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory#J48+%283.7%29" : {
+    "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory#J48 (3.7)" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB90LDw0QO77W7DAAAAMlSURBVDjLbZNdaJt1FMZ//zdpsrXdtKapk2TpYtOPlY6ptLaythPRod5MBEER9Ga6XukQplCdsFKFTcXWwhx2n/iJWBUcm4gyykaNGxvWdTTpR7p2LK5puuV9uzR5m77v8SI26vDcnIvnnOc8POccxW0Rqqn1/nJioH+R4vbLSbtUbMve6FGJMtfyKV9V/RtA6vYeuru7AZgcufjx8V/jEtg/Y1f0pMXXtyi+vkXxfpiW4P4Z+/NwXCYuXegB6OzsBECtkIxFRs+99JNqilkecYil8pDkwb/TsnJIXdGcOvAYZ2rq6tsLBLHI7/0vfs2Oq5k1IALyT78g2GiUyXWSi0W4Sj2ESm9y8GnVG6p/YJe2pbXNNxgr2TE9rQmJBZi7BUkDEgvkZhcwrtzgce8sw/se4lrf/XRszhCbEglfXfMqcIe6NjPxY+PO6Db3qrVqRa+ZU2wOpHnl2RCPPriOIncJAMe+j/DN6T+ZiFssmVk590lDj3M2tbzFNm0FBiAUu5f59O0GWpuqEBGUyvOKCE6V44/oIg4lpLOWuhLXm53DozdWFdm3wBQypnDyaDt1IV/eYVXwGKUUY5MJtKX8IJcFlyLJoFOsHGR1RIPGKgcbq/3/WfGKisGhyxz6YgSXy5X33hKQcrRNNXfO54x5Ah6Tj/Zu4/mO43w1MFQgGI1Os+fdb3mu4wfcZFFLBpg6SwvzbKqrmNIC/rt+1nIJ0ZOzND/Sw9DZMXa/dYLiu3fyQe+XND38Pvf63UjmJmR1yOhg6pRoKdkQ8P6mbX/qmdffefNJlbquS6kjB1kDZ86gvMSJ1+Ohb992Dh0exC1pyBpgGlhpXbo7n1DeCv9eLRwOx7e2VR6uvEdTLBlgpsDUceQMdu86wtnT50kl5lBmfjKmQW3QpVqafb2AXrA5Go2cf/mF9xpj4wlxaErlb1QKZwxgWbbUNvjVgSOvnamprm0vAF1dXflnio0dPNY/IIG1bXaFo0V8q1vFt7pVvI4WCZZttT87+p1MTEb//5lWIrB+vefi8IU9k+PTzSPD45WaUjTcVz21IegPe8vXdQH6v+v/Am8abfD6D11oAAAAAElFTkSuQmCC",
       "name" : "J48 (3.7)",
       "nodeFactory" : {
@@ -323,7 +323,7 @@
       "state" : {
         "executionState" : "IDLE"
       },
-      "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory#J48+%283.7%29"
+      "templateId" : "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory#J48 (3.7)"
     },
     "root:11" : {
       "allowedActions" : {
@@ -689,7 +689,7 @@
         "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
-      "templateId" : "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory#MISSING+Input+File"
+      "templateId" : "missing.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory#MISSING Input File"
     },
     "root:18" : {
       "allowedActions" : {
@@ -795,7 +795,7 @@
         "resolutions" : [ ],
         "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
       },
-      "templateId" : "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING+Variants2Proteins"
+      "templateId" : "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING Variants2Proteins"
     },
     "root:183" : {
       "allowedActions" : {
