@@ -128,6 +128,13 @@ public final class WorkflowProjectManager {
     }
 
     /**
+     * @return the id of the WorkflowProject currently active
+     */
+    public Optional<String> getActiveWorkflowProjectId() {
+        return Optional.of(m_activeProjectId);
+    }
+
+    /**
      * @return the IDs of all registered workflow projects
      */
     public Set<String> getWorkflowProjectsIds() {

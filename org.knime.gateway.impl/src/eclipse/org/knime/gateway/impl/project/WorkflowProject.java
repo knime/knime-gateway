@@ -45,7 +45,9 @@
  */
 package org.knime.gateway.impl.project;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import org.knime.core.node.workflow.WorkflowManager;
 
@@ -81,6 +83,30 @@ public interface WorkflowProject {
      */
     default Optional<Origin> getOrigin() {
         return Optional.empty();
+    }
+
+    /**
+     * @return A list of the children project ids of this workflow project. e.g. the project ID of a component embedded
+     *         on this workflow; an empty list if there are no children
+     */
+    default Set<String> getChildrenId() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * Add a new child project
+     * @return true if the project was added successfully
+     */
+    default boolean addChildProjectID(final String projectId) {
+        return false;
+    }
+
+    /**
+     * remove a new child project
+     * @return true if the project was added successfully
+     */
+    default boolean removeChildProjectID(final String projectId) {
+        return false;
     }
 
     /**
