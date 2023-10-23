@@ -151,6 +151,16 @@ final class TestingUtilities {
     }
 
     /**
+     * Creates a new {@link BufferedDataTable} for testing purposes with zero rows and the given spec.
+     *
+     * @param spec of the table
+     * @return the new table instance
+     */
+    static BufferedDataTable createTable(final DataTableSpec spec) {
+        return createTable(spec, new DataRow[0]);
+    }
+
+    /**
      * Creates a new {@link BufferedDataTable} for testing purposes.
      *
      * @param spec the spec of the new table
