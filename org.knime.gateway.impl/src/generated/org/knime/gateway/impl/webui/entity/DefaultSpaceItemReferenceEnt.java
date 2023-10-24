@@ -50,7 +50,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 /**
- * Describes from where a workflow project originates.
+ * Describes from where a workflow or component project originates.
  *
  * @param providerId
  * @param spaceId

@@ -285,8 +285,8 @@ public interface Space {
     URI toKnimeUrl(String itemId);
 
     /**
-     * Creates a mountpoint-absolute KNIME URL for the given space item.
-     * The resulting KNIME-URL is guaranteed to be path-based. May come with additional cost such as additional requests.
+     * Creates a mountpoint-absolute KNIME URL for the given space item. The resulting KNIME-URL is guaranteed to be
+     * path-based. May come with additional cost such as additional requests.
      *
      * @param itemId item ID
      * @return path-based KNIME URL
@@ -380,7 +380,9 @@ public interface Space {
      * @return The optional project type of the space item, if it is a project.
      * @throws NoSuchElementException If no such item is present
      */
-    Optional<ProjectTypeEnum> getProjectType(final String itemId);
+    default Optional<ProjectTypeEnum> getProjectType(final String itemId) {
+        return Optional.empty();
+    }
 
     /**
      * Creates a {@link SpaceEnt} for this space.

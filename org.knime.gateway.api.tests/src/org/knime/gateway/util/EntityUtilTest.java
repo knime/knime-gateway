@@ -45,26 +45,30 @@
  */
 package org.knime.gateway.util;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 
 /**
  * Tests {@link EntityUtil}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
  */
 public class EntityUtilTest {
 
@@ -126,5 +130,18 @@ public class EntityUtilTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCreateAnnotationIDEntListException() {
         EntityUtil.createAnnotationIDEntList(new int[][]{{5, 6}, {}}, 4);
+    }
+
+    @Test
+    public void testToProjectType() {
+        final var result1 = EntityUtil.toProjectType(TypeEnum.WORKFLOW).orElseThrow();
+        assertThat("Not a workflow", result1, is(ProjectTypeEnum.WORKFLOW));
+        final var result2 = EntityUtil.toProjectType(TypeEnum.COMPONENT).orElseThrow();
+        assertThat("Not a component", result2, is(ProjectTypeEnum.COMPONENT));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testToProjectTypeException() {
+        EntityUtil.toProjectType(TypeEnum.DATA).orElseThrow();
     }
 }

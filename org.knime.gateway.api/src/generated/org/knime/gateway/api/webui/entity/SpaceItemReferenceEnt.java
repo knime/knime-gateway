@@ -55,7 +55,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Describes from where a workflow project originates.
+ * Describes from where a workflow or component project originates.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

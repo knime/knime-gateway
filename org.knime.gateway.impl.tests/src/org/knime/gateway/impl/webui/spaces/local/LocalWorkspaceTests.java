@@ -50,7 +50,7 @@ package org.knime.gateway.impl.webui.spaces.local;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -66,9 +66,10 @@ import org.junit.Test;
 import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.impl.webui.spaces.Space;
-import org.knime.gateway.impl.webui.spaces.SpaceItemPathAndTypeCache;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
+import org.knime.gateway.impl.webui.spaces.SpaceItemPathAndTypeCache;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
 /**
@@ -103,15 +104,15 @@ public final class LocalWorkspaceTests {
 
         var spaceItemsDir1 = workspace.listWorkflowGroup(spaceItemsRoot.get(0).getId()).getItems();
         assertThat(workspace.getAncestorItemIds(spaceItemsDir1.get(1).getId()),
-            is(List.of(spaceItemsRoot.get(0).getId())));
+            equalTo(List.of(spaceItemsRoot.get(0).getId())));
 
         var spaceItemsDir2 = workspace.listWorkflowGroup(spaceItemsDir1.get(0).getId()).getItems();
         assertThat(workspace.getAncestorItemIds(spaceItemsDir2.get(1).getId()),
-            is(List.of(spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
+            equalTo(List.of(spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
 
         var spaceItemsDir3 = workspace.listWorkflowGroup(spaceItemsDir2.get(0).getId()).getItems();
         assertThat(workspace.getAncestorItemIds(spaceItemsDir3.get(0).getId()),
-            is(List.of(spaceItemsDir2.get(0).getId(), spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
+            equalTo(List.of(spaceItemsDir2.get(0).getId(), spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
     }
 
     /**
@@ -219,9 +220,9 @@ public final class LocalWorkspaceTests {
         createWorkflow(workspace, workspaceFolder, workspace.getItemId(workspaceFolder), Space.DEFAULT_WORKFLOW_NAME);
 
         var items = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
-        assertThat(workspace.toKnimeUrl(items.get(0).getId()).toString(), is("knime://LOCAL/dir/"));
-        assertThat(workspace.toKnimeUrl(items.get(1).getId()).toString(), is("knime://LOCAL/KNIME_project/"));
-        assertThat(workspace.toKnimeUrl(items.get(2).getId()).toString(), is("knime://LOCAL/test.txt"));
+        assertThat(workspace.toKnimeUrl(items.get(0).getId()).toString(), equalTo("knime://LOCAL/dir/"));
+        assertThat(workspace.toKnimeUrl(items.get(1).getId()).toString(), equalTo("knime://LOCAL/KNIME_project/"));
+        assertThat(workspace.toKnimeUrl(items.get(2).getId()).toString(), equalTo("knime://LOCAL/test.txt"));
     }
 
     /**
@@ -276,6 +277,29 @@ public final class LocalWorkspaceTests {
     @Test
     public void testImportWorkflowGroupUpdatesCache() throws IOException {
         runTestImportWorkflowOrWorkflowGroupUpdatesCache("group.knar", "group", TypeEnum.WORKFLOWGROUP);
+    }
+
+    /**
+     * Tests {@link LocalWorkspace#getProjectType(String)}.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testGetProjectType() throws IOException {
+        var workspaceFolder = PathUtils.createTempDir("workspace");
+        var workspace = new LocalWorkspace(workspaceFolder);
+
+        createFile(workspaceFolder, "data.txt");
+        createWorkflow(workspace, workspaceFolder, workspace.getItemId(workspaceFolder), Space.DEFAULT_WORKFLOW_NAME);
+        var spaceItems = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
+
+        var workflowItem =
+            spaceItems.stream().filter(item -> item.getType() == TypeEnum.WORKFLOW).findFirst().orElseThrow();
+        assertThat("Not a workflow", workspace.getProjectType(workflowItem.getId()).orElseThrow(),
+            equalTo(ProjectTypeEnum.WORKFLOW));
+
+        var dataItem = spaceItems.stream().filter(item -> item.getType() == TypeEnum.DATA).findFirst().orElseThrow();
+        assertThat("Not null", workspace.getProjectType(dataItem.getId()).orElse(null), nullValue());
     }
 
     private static void runTestImportWorkflowOrWorkflowGroupUpdatesCache(final String archiveName,
