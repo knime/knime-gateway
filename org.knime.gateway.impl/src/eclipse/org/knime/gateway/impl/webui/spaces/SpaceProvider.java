@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
@@ -114,11 +115,12 @@ public interface SpaceProvider {
      * @param excludeDataInWorkflows data exclusion flag
      * @param progressMonitor monitor for aborting or receiving progress updates
      * @throws CoreException if errors occur during upload
+     * @throws IOException if I/O errors occur during upload
      * @throws UnsupportedOperationException for local space providers
      */
     default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri,
             final boolean deleteSource, final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
-            throws CoreException {
+            throws CoreException, IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -131,10 +133,11 @@ public interface SpaceProvider {
      * @param excludeDataInWorkflows data exclusion flag
      * @param progressMonitor monitor for aborting or receiving progress updates
      * @throws CoreException if errors occur during download
+     * @throws IOException if I/O errors occur during download
      * @throws UnsupportedOperationException for local space providers
      */
     default void syncDownloadWorkflow(final URI sourceUri, final URI targetUri, final boolean deleteSource,
-            final IProgressMonitor progressMonitor) throws CoreException {
+            final IProgressMonitor progressMonitor) throws CoreException, IOException {
         throw new UnsupportedOperationException();
     }
 
