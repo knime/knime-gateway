@@ -512,12 +512,12 @@ public final class CoreUtil {
      * @return True if compatible, false otherwise
      */
     public static boolean arePortTypesCompatible(final PortType sourceType, final PortType destType) {
+        // copied from workflow manager canAddConnection
         Class<? extends PortObject> sourceCl = sourceType.getPortObjectClass();
         Class<? extends PortObject> destCl = destType.getPortObjectClass();
-        if (BufferedDataTable.class.equals(sourceCl) && !BufferedDataTable.class.equals(destCl)) {
-            return false; // Do not connect table ports to generic ports
-        } else if (BufferedDataTable.class.equals(destCl) && !BufferedDataTable.class.equals(sourceCl)) {
-            return false; // Do not connect table ports to generic ports, the other way around
+        if (BufferedDataTable.class.equals(sourceCl) ^ BufferedDataTable.class.equals(destCl)) {
+            // BufferedDataTable only connects to BufferedDataTable
+            return false;
         } else {
             return destCl.isAssignableFrom(sourceCl) || sourceCl.isAssignableFrom(destCl);
         }

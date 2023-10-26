@@ -70,6 +70,7 @@ import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ConfigurablePortGroup;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.context.ports.PortGroupConfiguration;
+import org.knime.core.node.extension.NodeMetadata;
 import org.knime.core.node.port.PortType;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
@@ -185,22 +186,20 @@ public final class NodeTemplateAndDescriptionEntityFactory {
     /**
      * Builds a {@link NodeTemplateEnt}-instance.
      *
-     * @param factory the node factory to create the template entity from
+     * @param nodeMetadata the node factory and information about the node it creates
      * @return the new {@link NodeTemplateEnt}-instance, or {@code null} if it couldn't be created (see
      *         {@link CoreUtil#createNode(NodeFactory)})
      */
-    public NodeTemplateEnt buildNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
-        var node = CoreUtil.createNode(factory).orElse(null);
-        return node == null ? null : builder(NodeTemplateEntBuilder.class)//
-            .setId(factory.getFactoryId())//
-            .setName(factory.getNodeName())//
+    public NodeTemplateEnt buildNodeTemplateEnt(final NodeMetadata nodeMetadata) {
+        return builder(NodeTemplateEntBuilder.class)//
+            .setId(nodeMetadata.factory().getFactoryId())//
+            .setName(nodeMetadata.nodeProperties().metadata().nodeName())//
             .setComponent(false)//
-            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase(Locale.ROOT)))//
-            .setInPorts(buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
-            .setOutPorts(
-                buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
-            .setIcon(WorkflowEntityFactory.createIconDataURL(factory))//
-            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(factory)).build();
+            .setType(TypeEnum.valueOf(nodeMetadata.factory().getType().toString().toUpperCase(Locale.ROOT)))//
+            .setInPorts(buildNodePortTemplateEnts(nodeMetadata.nodeProperties().ports().getInputPortTypes()))//
+            .setOutPorts(buildNodePortTemplateEnts(nodeMetadata.nodeProperties().ports().getOutputPortTypes()))//
+            .setIcon(WorkflowEntityFactory.createIconDataURL(nodeMetadata.factory()))//
+            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(nodeMetadata.factory())).build();
     }
 
     private List<NodeDialogOptionDescriptionEnt> buildDialogOptionDescriptionEnts(final List<NodeDescription.DialogOption> opts) {
