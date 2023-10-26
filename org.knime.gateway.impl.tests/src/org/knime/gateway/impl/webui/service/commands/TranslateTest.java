@@ -56,7 +56,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.extension.NodeFactoryExtensionManager;
+import org.knime.core.node.extension.NodeFactoryProvider;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
@@ -84,8 +84,8 @@ public class TranslateTest {
     public void testThatNodeAreNotDirtyAfterTranslate() throws Exception {
         var wp = WorkflowCommandsTest.createEmptyWorkflowProject();
         var wfm = wp.openProject();
-        var nc = WorkflowManagerUtil.createAndAddNode(wfm, NodeFactoryExtensionManager.getInstance()
-            .createNodeFactory("org.knime.base.node.util.sampledata.SampleDataNodeFactory").get());
+        var nc = WorkflowManagerUtil.createAndAddNode(wfm, NodeFactoryProvider.getInstance() //
+            .getNodeFactory("org.knime.base.node.util.sampledata.SampleDataNodeFactory").get());
         nc.setUIInformation(NodeUIInformation.builder().setNodeLocation(0, 0, 0, 0).build());
         var path = wfm.getContextV2().getExecutorInfo().getLocalWorkflowPath();
         wfm.save(path.toFile(), new ExecutionMonitor(), true);

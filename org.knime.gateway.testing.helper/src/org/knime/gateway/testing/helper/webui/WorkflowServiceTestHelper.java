@@ -91,7 +91,6 @@ import org.hamcrest.Matchers;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
@@ -2076,8 +2075,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testAddNodeCommandFromURI() throws Exception {
         var nodeFactoryProvider = mock(NodeFactoryProvider.class);
-        Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
-            .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
+        Class nodeFactoryClass = org.knime.core.node.extension.NodeFactoryProvider.getInstance() // NOSONAR
+            .getNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
             .getClass();
         Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.endsWith("file.csv")))
             .thenReturn(nodeFactoryClass);
@@ -2104,8 +2103,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(spaceProviders.getProvidersMap()).thenReturn(Map.of("providerId", spaceProvider));
         when(space.toPathBasedKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
 
-        Class nodeFactoryClass = NodeFactoryExtensionManager.getInstance() // NOSONAR
-            .createNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
+        Class nodeFactoryClass = org.knime.core.node.extension.NodeFactoryProvider.getInstance() // NOSONAR
+            .getNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
             .getClass();
         Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.endsWith("test.csv")))
             .thenReturn(nodeFactoryClass);

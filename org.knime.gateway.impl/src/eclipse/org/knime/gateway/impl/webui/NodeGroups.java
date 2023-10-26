@@ -63,8 +63,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.extension.CategoryExtension;
-import org.knime.core.node.extension.CategoryExtensionManager;
 import org.knime.core.node.extension.NodeAndCategorySorter;
+import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
@@ -132,7 +132,8 @@ public final class NodeGroups {
 
     private synchronized void initCategories() {
         if (m_topLevelCats == null) {
-            Map<String, CategoryExtension> cats = CategoryExtensionManager.getInstance().getCategoryExtensions();
+            // TODO somehow exposed via NodeSpecs-class??
+            Map<String, CategoryExtension> cats = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
             List<Pair<String, String>> topLevelCats = getSortedCategoriesAtLevel("/", cats.values());
             Pair<String, String> uncat = Pair.create(UNCATEGORIZED_KEY, UNCATEGORIZED_NAME);
             if (!topLevelCats.contains(uncat)) {
@@ -171,7 +172,8 @@ public final class NodeGroups {
                 continue;
             }
             List<Node> nodes = allNodes.stream()//
-                .filter(n -> n.path.equals(catPath) || n.path.startsWith(catPath + "/"))//
+                .filter(n -> n.nodeSpec.metadata().categoryPath().equals(catPath)
+                    || n.nodeSpec.metadata().categoryPath().startsWith(catPath + "/"))//
                 .sorted(Comparator.<Node> comparingInt(n -> n.weight).reversed())//
                 .map(n -> {
                     categorized.add(n.templateId);

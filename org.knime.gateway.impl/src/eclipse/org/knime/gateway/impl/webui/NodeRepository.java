@@ -52,37 +52,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeSetFactory;
-import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
-import org.knime.core.node.context.ports.ConfigurablePortGroup;
-import org.knime.core.node.context.ports.PortGroupConfiguration;
-import org.knime.core.node.extension.CategoryExtension;
-import org.knime.core.node.extension.CategoryExtensionManager;
-import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
-import org.knime.core.node.extension.NodeFactoryExtension;
-import org.knime.core.node.extension.NodeFactoryExtensionManager;
-import org.knime.core.node.extension.NodeSetFactoryExtension;
+import org.knime.core.node.extension.NodeSpec;
+import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortType;
 import org.knime.core.ui.util.FuzzySearchable;
 import org.knime.gateway.api.util.CoreUtil;
@@ -97,12 +82,13 @@ import org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService;
  */
 public final class NodeRepository {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeRepository.class);
-
     private static final String NODE_USAGE_FILE = "/files/node_usage/node_usage.csv";
 
     private static final Pattern MULTIPLE_SLASHES = Pattern.compile("/{2,}");
 
+    /**
+     * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is, e.g., in the basic or advanced nodes
+     */
     private final Predicate<String> m_isInCollection;
 
     /**
@@ -118,8 +104,7 @@ public final class NodeRepository {
 
     private Map<String, Node> m_deprecatedNodes;
 
-    private final Map<String, NodeTemplateEnt> m_fullInfoNodeTemplateEntCache =
-        Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, NodeTemplateEnt> m_fullInfoNodeTemplateEntCache = new ConcurrentHashMap<>(2000);
 
     /**
      * Create a new node repository without a collection. All nodes are included.
@@ -131,7 +116,7 @@ public final class NodeRepository {
     /**
      * Create a new node repository with the active collection.
      *
-     * @param isInCollection defines which nodes should are included in the active collection by matching the templateId
+     * @param isInCollection defines which nodes should be included in the active collection by matching the templateId
      *            of the node. Can be <code>null</code> if no collection is active
      */
     public NodeRepository(final Predicate<String> isInCollection) {
@@ -171,9 +156,9 @@ public final class NodeRepository {
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
         if (fullTemplateInfo) {
             return m_fullInfoNodeTemplateEntCache.computeIfAbsent(n.templateId,
-                k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.factory));
+                k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.nodeSpec));
         } else {
-            return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.factory);
+            return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.nodeSpec);
         }
     }
 
@@ -234,10 +219,9 @@ public final class NodeRepository {
      */
     synchronized Collection<Node> getHiddenNodes() {
         if (m_hiddenNodes == null) {
-            Map<String, CategoryExtension> categories = CategoryExtensionManager.getInstance().getCategoryExtensions();
-            m_hiddenNodes = new HashMap<>();
-            loadNodes(categories, m_hiddenNodes, ext -> !ext.isHidden());
-            loadNodeSets(categories, m_hiddenNodes, ext -> false, set -> !set.isHidden(), fac -> false);
+            m_hiddenNodes = NodeSpecCollectionProvider.getInstance().getHiddenNodes().values().stream() //
+                .map(Node::new) //
+                .collect(Collectors.toMap(n -> n.templateId, n -> n));
         }
         return m_hiddenNodes.values();
     }
@@ -247,11 +231,9 @@ public final class NodeRepository {
      */
     synchronized Collection<Node> getDeprecatedNodes() {
         if (m_deprecatedNodes == null) {
-            Map<String, CategoryExtension> categories = CategoryExtensionManager.getInstance().getCategoryExtensions();
-            m_deprecatedNodes = new HashMap<>();
-            loadNodes(categories, m_deprecatedNodes, ext -> !ext.isDeprecated());
-            loadNodeSets(categories, m_deprecatedNodes, ext -> !ext.isDeprecated(), set -> false,
-                fac -> !fac.isDeprecated());
+            m_deprecatedNodes = NodeSpecCollectionProvider.getInstance().getDeprecatedNodes().values().stream() //
+                .map(Node::new) //
+                .collect(Collectors.toMap(n -> n.templateId, n -> n));
             addNodeWeights(m_deprecatedNodes);
         }
         return m_deprecatedNodes.values();
@@ -260,22 +242,20 @@ public final class NodeRepository {
     private synchronized void loadAllNodesAndNodeSets() {
         if (m_nodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
-            Map<String, CategoryExtension> categories = CategoryExtensionManager.getInstance().getCategoryExtensions();
-            HashMap<String, Node> allNodes = new HashMap<>();
-            loadNodes(categories, allNodes, ext -> ext.isDeprecated() || ext.isHidden());
-            loadNodeSets(categories, allNodes, NodeSetFactoryExtension::isDeprecated, NodeSetFactory::isHidden,
-                NodeFactory::isDeprecated);
-            addNodeWeights(allNodes);
+            var activeNodes = NodeSpecCollectionProvider.getInstance().getActiveNodes().values().stream() //
+                .collect(Collectors.toMap(ns -> ns.factory().id(), Node::new));
+            addNodeWeights(activeNodes);
 
             if (m_isInCollection == null) {
-                m_nodes = allNodes;
+                m_nodes = activeNodes;
                 m_additionalNodes = Collections.emptyMap();
             } else {
-                m_nodes = filterNodes(allNodes, m_isInCollection);
-                m_additionalNodes = filterNodes(allNodes, m_isInCollection.negate());
+                m_nodes = filterNodes(activeNodes, m_isInCollection);
+                m_additionalNodes = filterNodes(activeNodes, m_isInCollection.negate());
             }
         }
     }
+
 
     private static Map<String, Node> filterNodes(final Map<String, Node> nodes, final Predicate<String> filter) {
         return nodes.entrySet().stream() //
@@ -283,68 +263,9 @@ public final class NodeRepository {
             .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
-    private static void loadNodes(final Map<String, CategoryExtension> categories, final Map<String, Node> nodes,
-        final Predicate<NodeFactoryExtension> exclude) {
-        for (NodeFactoryExtension ext : NodeFactoryExtensionManager.getInstance().getNodeFactoryExtensions()) {
-            if (!exclude.test(ext)) {
-                NodeFactory<? extends NodeModel> factory;
-                try {
-                    factory = ext.getFactory();
-                } catch (InvalidNodeFactoryExtensionException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
-                    continue;
-                }
-                Node n = new Node(factory);
-                n.templateId = factory.getFactoryId();
-                n.path = normalizeCategoryPath(ext.getCategoryPath());
-                n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
-                nodes.put(n.templateId, n);
-            }
-        }
-    }
-
-    private static void loadNodeSets(final Map<String, CategoryExtension> categories, final Map<String, Node> nodes,
-        final Predicate<NodeSetFactoryExtension> excludeExt, final Predicate<NodeSetFactory> excludeSetFactory,
-        final Predicate<NodeFactory<? extends NodeModel>> excludeFactory) {
-        for (NodeSetFactoryExtension ext : NodeFactoryExtensionManager.getInstance().getNodeSetFactoryExtensions()) {
-            NodeSetFactory set = ext.getNodeSetFactory();
-            if (excludeExt.test(ext) || excludeSetFactory.test(set)) {
-                continue;
-            }
-            for (String factoryId : set.getNodeFactoryIds()) {
-                NodeFactory<? extends NodeModel> factory = ext.getNodeFactory(factoryId).orElse(null);
-                if (factory == null || excludeFactory.test(factory)) {
-                    continue;
-                }
-                Node n = new Node(factory);
-                n.templateId = factory.getFactoryId();
-                n.path = normalizeCategoryPath(ext.getCategoryPath(factoryId));
-                n.tags = getTagsFromCategoryPath(n.path, categories, n.name);
-                nodes.put(n.templateId, n);
-            }
-        }
-    }
-
-    private static Set<String> getTagsFromCategoryPath(final String catPath, final Map<String, CategoryExtension> cats,
-        final String nodeName) {
-        String path = catPath;
-        Set<String> tags = new HashSet<>();
-        while (!path.isEmpty() && !path.equals("/")) {
-            CategoryExtension cat = cats.get(path);
-            if (cat != null) {
-                tags.add(cat.getName());
-            } else {
-                LOGGER.warn(
-                    "No category registered for path '" + path + "'. Ignored as tag for node '" + nodeName + "'.");
-            }
-            path = path.substring(0, path.lastIndexOf('/'));
-        }
-        return tags;
-    }
-
     private static void addNodeWeights(final Map<String, Node> nodes) {
-        Map<Integer, Node> tmpMap = nodes.values().stream()
-            .collect(Collectors.toMap(n -> (n.factory.getClass().getName() + "#" + n.name).hashCode(), n -> n));
+        Map<Integer, Node> tmpMap = nodes.values().stream() //
+            .collect(Collectors.toMap(n -> (n.templateId).hashCode(), n -> n));
         try (Stream<int[]> lines = readNodeUsageFile()) {
             lines.forEach(l -> {
                 Node n = tmpMap.get(l[0]);
@@ -400,35 +321,15 @@ public final class NodeRepository {
             new LazyInitializer<FuzzySearchable>() {
                 @Override
                 protected FuzzySearchable initialize() throws ConcurrentException {
-                    return new FuzzySearchable(name, factory.getKeywords());
+                    return new FuzzySearchable(name, nodeSpec.metadata().keywords().toArray(String[]::new));
                 }
             };
 
-        /**
-         * The node name.
-         */
+        final String templateId;
+
         final String name;
 
-        /**
-         * The tags associated with this node (for nodes these are all the categories, i.e. their names, along the
-         * hierarchy).
-         */
-        Set<String> tags;
-
-        /**
-         * The node's id.
-         */
-        String templateId;
-
-        /**
-         * The actual category path of the node (as defined by the node extension point).
-         */
-        String path;
-
-        /**
-         * The node's factory instance.
-         */
-        private final NodeFactory<? extends NodeModel> factory;
+        final NodeSpec nodeSpec;
 
         /**
          * A weight used for sorting nodes if no other sort criteria is available (such as the search score). The weight
@@ -436,9 +337,11 @@ public final class NodeRepository {
          */
         int weight;
 
-        private Node(final NodeFactory<? extends NodeModel> f) {
-            this.factory = f;
-            this.name = f.getNodeName();
+
+        private Node(final NodeSpec s) {
+            templateId = s.factory().id();
+            name = s.metadata().nodeName();
+            nodeSpec = s;
         }
 
         FuzzySearchable getFuzzySearchable() {
@@ -449,32 +352,13 @@ public final class NodeRepository {
             }
         }
 
-        NodeType getType() {
-            return factory.getType();
-        }
-
         /**
          * Checks for compatible port types, considering existing ports and ports that can be added on.
          *
          * @return True if there exists a compatible port type, false otherwise.
          */
         boolean isCompatibleWith(final PortType portType) {
-            var node = CoreUtil.createNode(factory);
-            if (node.isEmpty()) {
-                return false;
-            }
-            var streamOfPresentPortTypes = IntStream.range(0, node.get().getNrInPorts()).mapToObj(node.get()::getInputType);
-            var streamOfSupportedPortTypes = CoreUtil.getCopyOfCreationConfig(factory)//
-                .flatMap(ModifiableNodeCreationConfiguration::getPortConfig)//
-                .map(portsConfig -> portsConfig.getPortGroupNames().stream()//
-                    .filter(portsConfig::isInteractive)//
-                    .map(portsConfig::getGroup)//
-                    .filter(PortGroupConfiguration::definesInputPorts)//
-                    .filter(ConfigurablePortGroup.class::isInstance)//
-                    .map(ConfigurablePortGroup.class::cast)//
-                    .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())))
-                .orElse(Stream.of());
-            return Stream.concat(streamOfPresentPortTypes, streamOfSupportedPortTypes)
+            return nodeSpec.ports().getSupportedInputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
     }

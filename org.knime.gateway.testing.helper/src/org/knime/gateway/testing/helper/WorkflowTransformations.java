@@ -61,7 +61,7 @@ import java.util.function.Consumer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
-import org.knime.core.node.extension.NodeFactoryExtensionManager;
+import org.knime.core.node.extension.NodeFactoryProvider;
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
@@ -134,8 +134,8 @@ public final class WorkflowTransformations {
                 "connection_removed"), //
             newTransformation(w -> w.removeNode(w.getID().createChild(18)), "node_removed"), newTransformation(w -> {
                 try {
-                    NodeID id = w.createAndAddNode(NodeFactoryExtensionManager.getInstance()
-                        .createNodeFactory("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory").get());
+                    NodeID id = w.createAndAddNode(NodeFactoryProvider.getInstance() //
+                        .getNodeFactory("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory").get());
                     w.getNodeContainer(id)
                         .setUIInformation(NodeUIInformation.builder().setNodeLocation(40, 50, 10, 10).build());
                 } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException ex) {

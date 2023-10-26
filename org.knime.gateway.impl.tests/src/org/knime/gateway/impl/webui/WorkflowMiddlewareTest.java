@@ -54,7 +54,6 @@ import static org.hamcrest.core.Is.is;
 
 import org.junit.Test;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
-import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -125,8 +124,8 @@ public class WorkflowMiddlewareTest {
     private static NodeID[] createNestedMetanodesOrComponents(final WorkflowManager wfm, final boolean createComponents)
         throws InstantiationException, IllegalAccessException, InvalidNodeFactoryExtensionException {
         var nodeId = WorkflowManagerUtil
-            .createAndAddNode(wfm, NodeFactoryExtensionManager.getInstance()
-                .createNodeFactory("org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory").get())
+            .createAndAddNode(wfm, org.knime.core.node.extension.NodeFactoryProvider.getInstance() //
+                .getNodeFactory("org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory").get())
             .getID();
         var metanodeID = wfm.collapseIntoMetaNode(new NodeID[]{nodeId}, new WorkflowAnnotationID[0], "Metanode")
             .getCollapsedMetanodeID();

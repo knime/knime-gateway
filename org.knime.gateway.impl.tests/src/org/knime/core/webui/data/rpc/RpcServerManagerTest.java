@@ -56,7 +56,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.extension.NodeFactoryExtensionManager;
+import org.knime.core.node.extension.NodeFactoryProvider;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowCreationHelper;
@@ -84,8 +84,8 @@ public class RpcServerManagerTest {
     @Test
     public void testDoNodeRpc() throws Exception {
         WorkflowManager wfm = createEmptyWorkflow();
-        NodeFactory<?> factory = NodeFactoryExtensionManager.getInstance()
-            .createNodeFactory(SingleRpcNodeFactory.class.getName()).orElse(null);
+        NodeFactory<?> factory = NodeFactoryProvider.getInstance() //
+                .getNodeFactory(SingleRpcNodeFactory.class.getName()).orElse(null);
         NodeID id = wfm.createAndAddNode(factory);
 
         String rpcReq = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"method\"}";

@@ -190,7 +190,7 @@ public class NodeSearch {
             .collect(Collectors.toList());
 
         // collect all tags from the templates and sort according to their frequency
-        Map<String, Long> tagFrequencies = foundNodes.stream().flatMap(n -> n.tags.stream())
+        Map<String, Long> tagFrequencies = foundNodes.stream().flatMap(n -> n.nodeSpec.metadata().tags().stream())
             .collect(Collectors.groupingBy(t -> t, HashMap::new, Collectors.counting()));
         List<String> resTags = tagFrequencies.entrySet().stream()//
             .sorted(Comparator.<Entry<String, Long>, Long> comparing(Entry::getValue).reversed())//
@@ -250,9 +250,9 @@ public class NodeSearch {
             return true;
         }
         if (allTagsMatch) {
-            return tags.stream().allMatch(n.tags::contains);
+            return tags.stream().allMatch(n.nodeSpec.metadata().tags()::contains);
         }
-        return tags.stream().anyMatch(n.tags::contains);
+        return tags.stream().anyMatch(n.nodeSpec.metadata().tags()::contains);
     }
 
     private static NodePartition verifyNodePartition(final String nodePartition) throws InvalidRequestException {

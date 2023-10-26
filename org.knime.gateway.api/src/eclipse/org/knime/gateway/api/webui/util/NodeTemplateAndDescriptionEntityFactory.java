@@ -66,13 +66,13 @@ import org.knime.core.node.Node;
 import org.knime.core.node.NodeAndBundleInformationPersistor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ConfigurablePortGroup;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.context.ports.PortGroupConfiguration;
+import org.knime.core.node.extension.NodeSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
+import org.knime.core.node.workflow.CoreToDefUtil;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ExtensionEnt;
@@ -114,15 +114,15 @@ public final class NodeTemplateAndDescriptionEntityFactory {
      * Builds {@link NodeTemplateEnt}-instance that only has a minimal set of properties set. I.e. omitting some
      * properties such as icon and port infos.
      *
-     * @param factory the node factory to create the template entity from
+     * @param nodeSpec the node specs to create the entity from
      * @return the new {@link NodeTemplateEnt}-instance
      */
-    public NodeTemplateEnt buildMinimalNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
+    public NodeTemplateEnt buildMinimalNodeTemplateEnt(final NodeSpec nodeSpec) {
         NodeTemplateEntBuilder builder = builder(NodeTemplateEntBuilder.class)//
-            .setId(factory.getFactoryId())//
-            .setName(factory.getNodeName())//
+            .setId(nodeSpec.factory().id())//
+            .setName(nodeSpec.metadata().nodeName())//
             .setComponent(false)//
-            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase(Locale.ROOT)));
+            .setType(TypeEnum.valueOf(nodeSpec.type().toString().toUpperCase(Locale.ROOT)));
         return builder.build();
     }
 
@@ -187,36 +187,35 @@ public final class NodeTemplateAndDescriptionEntityFactory {
         // links
         builder.setLinks(buildNodeDescriptionLinkEnts(nodeDescription.getLinks()));
 
-        builder.setExtension(buildExtensionEnt(NodeAndBundleInformationPersistor.create(coreNode)));
+        builder.setExtension(buildExtensionEnt(coreNode));
 
         return builder.build();
     }
 
+
     /**
      * Builds a {@link NodeTemplateEnt}-instance.
      *
-     * @param factory the node factory to create the template entity from
+     * @param nodeSpec the node factory and information about the node it creates
      * @return the new {@link NodeTemplateEnt}-instance, or {@code null} if it couldn't be created (see
      *         {@link CoreUtil#createNode(NodeFactory)})
      */
-    public NodeTemplateEnt buildNodeTemplateEnt(final NodeFactory<? extends NodeModel> factory) {
-        var node = CoreUtil.createNode(factory).orElse(null);
-        return node == null ? null : builder(NodeTemplateEntBuilder.class)//
-            .setId(factory.getFactoryId())//
-            .setName(factory.getNodeName())//
+    public NodeTemplateEnt buildNodeTemplateEnt(final NodeSpec nodeSpec) {
+        return builder(NodeTemplateEntBuilder.class)//
+            .setId(nodeSpec.factory().id())//
+            .setName(nodeSpec.metadata().nodeName())//
             .setComponent(false)//
-            .setType(TypeEnum.valueOf(factory.getType().toString().toUpperCase(Locale.ROOT)))//
-            .setInPorts(buildNodePortTemplateEnts(IntStream.range(1, node.getNrInPorts()).mapToObj(node::getInputType)))//
-            .setOutPorts(
-                buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
-            .setIcon(WorkflowEntityFactory.createIconDataURL(factory))//
-            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(factory))//
-            .setExtension(buildExtensionEnt(NodeAndBundleInformationPersistor.create(factory))).build();
+            .setType(TypeEnum.valueOf(nodeSpec.type().toString().toUpperCase(Locale.ROOT)))//
+            .setInPorts(buildNodePortTemplateEnts(nodeSpec.ports().getInputPortTypes()))//
+            .setOutPorts(buildNodePortTemplateEnts(nodeSpec.ports().getOutputPortTypes()))//
+            .setIcon(WorkflowEntityFactory.createIconDataURL(nodeSpec.icon()))//
+            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(nodeSpec.factory()))//
+            .setExtension(buildExtensionEnt(nodeSpec.metadata().vendor())).build();
     }
 
-    private ExtensionEnt buildExtensionEnt(final NodeAndBundleInformation nodeAndBundleInfo) {
-        var extensionName = nodeAndBundleInfo.getBundleName().orElse(null);
-        var vendorName = nodeAndBundleInfo.getBundleVendor().orElse(null);
+    private ExtensionEnt buildExtensionEnt(final NodeSpec.Metadata.Vendor vendorSpec) {
+        var extensionName = Optional.ofNullable(vendorSpec.feature().getName()).orElse(vendorSpec.bundle().getName());
+        var vendorName = Optional.ofNullable(vendorSpec.feature().getVendor()).orElse(vendorSpec.bundle().getVendor());
         if (extensionName == null && vendorName == null) {
             return null;
         }
@@ -226,31 +225,37 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .build();
     }
 
+    private ExtensionEnt buildExtensionEnt(final Node coreNode) {
+        var p = NodeAndBundleInformationPersistor.create(coreNode);
+        return buildExtensionEnt(
+            new NodeSpec.Metadata.Vendor(CoreToDefUtil.toFeatureVendorDef(p), CoreToDefUtil.toBundleVendorDef(p)));
+    }
+
     private VendorEnt buildVendorEnt(final String bundleVendorName) {
         return builder(VendorEntBuilder.class) //
             .setName(bundleVendorName) //
             .setIsKNIME(KNIME_VENDOR_NAME.equals(bundleVendorName) ? Boolean.TRUE : null).build();
     }
 
-    private List<NodeDialogOptionDescriptionEnt> buildDialogOptionDescriptionEnts(final List<NodeDescription.DialogOption> opts) {
+    private List<NodeDialogOptionDescriptionEnt>
+        buildDialogOptionDescriptionEnts(final List<NodeDescription.DialogOption> opts) {
         return listMapOrNull(opts, o -> //
-            builder(NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder.class) //
-                .setName(o.getName()) //
-                .setDescription(o.getDescription()) //
-                .setOptional(o.isOptional()) //
-                .build()
-        );
+        builder(NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder.class) //
+            .setName(o.getName()) //
+            .setDescription(o.getDescription()) //
+            .setOptional(o.isOptional()) //
+            .build());
     }
 
-    private List<NodeDialogOptionGroupEnt> buildDialogOptionGroupEnts(final List<NodeDescription.DialogOptionGroup> groups) {
+    private List<NodeDialogOptionGroupEnt>
+        buildDialogOptionGroupEnts(final List<NodeDescription.DialogOptionGroup> groups) {
         return listMapOrNull(groups, g -> //
-            builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
-                .setSectionName(g.getName().orElse(null)) //
-                .setSectionDescription(g.getDescription().orElse(null)) //
-                .setFields( //
-                    buildDialogOptionDescriptionEnts(g.getOptions()) //
-                ).build()
-        );
+        builder(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class) //
+            .setSectionName(g.getName().orElse(null)) //
+            .setSectionDescription(g.getDescription().orElse(null)) //
+            .setFields( //
+                buildDialogOptionDescriptionEnts(g.getOptions()) //
+            ).build());
     }
 
     private List<DynamicPortGroupDescriptionEnt> buildDynamicPortGroupDescriptions(
@@ -259,8 +264,7 @@ public final class NodeTemplateAndDescriptionEntityFactory {
         return listMapOrNull(portGroupDescriptions, pgd -> { // NOSONAR
             List<NodePortTemplateEnt> supportedPortTypes = portConfigs.map(pc -> {
                 PortGroupConfiguration group = pc.getGroup(pgd.getGroupIdentifier());
-                if (group instanceof ConfigurablePortGroup) {
-                    ConfigurablePortGroup configurableGroupConfig = (ConfigurablePortGroup)group;
+                if (group instanceof ConfigurablePortGroup configurableGroupConfig) {
                     return buildNodePortTemplateEnts(Arrays.stream(configurableGroupConfig.getSupportedPortTypes()));
                 } else {
                     return null; // map yields empty optional

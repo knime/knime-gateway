@@ -51,7 +51,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
@@ -63,6 +62,7 @@ import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
+import org.knime.core.node.extension.NodeSpec;
 import org.knime.core.node.interactive.ReExecutable;
 import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.MetaPortInfo;
@@ -622,19 +622,9 @@ public final class WorkflowEntityFactory {
         String name = factory == null ? jobManager.getID() : factory.getLabel();
         String icon = null;
         String iconForWorkflow = null;
-        try {
-            icon = createIconDataURL(jobManager.getIcon());
-        } catch (IOException ex) {
-            NodeLogger.getLogger(WorkflowEntityFactory.class)
-                .error(String.format("Icon for job manager '%s' couldn't be read", name), ex);
-        }
+        icon = createIconDataURL(jobManager.getIcon());
         if (jobManager instanceof AbstractNodeExecutionJobManager) {
-            try {
-                iconForWorkflow = createIconDataURL(((AbstractNodeExecutionJobManager)jobManager).getIconForWorkflow());
-            } catch (IOException ex) {
-                NodeLogger.getLogger(WorkflowEntityFactory.class)
-                    .error(String.format("Workflow icon for job manager '%s' couldn't be read", name), ex);
-            }
+            iconForWorkflow = createIconDataURL(((AbstractNodeExecutionJobManager)jobManager).getIconForWorkflow());
         }
         return builder(CustomJobManagerEntBuilder.class).setName(name).setIcon(icon).setWorkflowIcon(iconForWorkflow)
             .build();
@@ -775,7 +765,7 @@ public final class WorkflowEntityFactory {
         if (nc.getType() != NodeType.Missing) {
             var factory = nc.getNode().getFactory();
             builder.setName(nc.getName()).setIcon(createIconDataURL(factory))
-                .setNodeFactory(buildNodeFactoryKeyEnt(factory));
+                .setNodeFactory(buildNodeFactoryKeyEnt(NodeSpec.Factory.of(factory)));
         } else {
             NodeFactory<? extends NodeModel> factory = nc.getNode().getFactory();
             NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)factory).getNodeAndBundleInfo();
@@ -859,28 +849,21 @@ public final class WorkflowEntityFactory {
                 return null;
             }
         } else if (parentJobManager instanceof AbstractNodeExecutionJobManager) {
-            try {
-                return builder(NodeExecutionInfoEntBuilder.class)
-                    .setIcon(createIconDataURL(((AbstractNodeExecutionJobManager)parentJobManager).getIconForChild(nc)))
-                    .build();
-            } catch (IOException ex) {
-                NodeLogger.getLogger(WorkflowEntityFactory.class).error(String.format(
-                    "Problem reading icon for job manager '%s' and node '%s'.", parentJobManager.getID(), nc), ex);
-                return null;
-            }
+            return builder(NodeExecutionInfoEntBuilder.class)
+                .setIcon(createIconDataURL(((AbstractNodeExecutionJobManager)parentJobManager).getIconForChild(nc)))
+                .build();
         } else {
             return null;
         }
     }
 
-    NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeFactory<? extends NodeModel> factory) {
+    NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeSpec.Factory factorySpec) {
         NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class);
-        if (factory != null) {
-            nodeFactoryKeyBuilder.setClassName(factory.getClass().getName());
-            //only set settings in case of a dynamic node factory
-            if (DynamicNodeFactory.class.isAssignableFrom(factory.getClass())) {
+        if (factorySpec != null) {
+            nodeFactoryKeyBuilder.setClassName(factorySpec.className());
+            // only set settings in case of a dynamic node factory
+            if (factorySpec.factorySettings() != null) {
                 var settings = new NodeSettings("settings");
-                factory.saveAdditionalFactorySettings(settings);
                 nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
             }
         } else {
@@ -1342,19 +1325,17 @@ public final class WorkflowEntityFactory {
     }
 
     static String createIconDataURL(final NodeFactory<?> nodeFactory) {
-        try {
-            return createIconDataURL(nodeFactory.getIcon());
-        } catch (IOException ex) {
-            NodeLogger.getLogger(WorkflowEntityFactory.class)
-                .error(String.format("Icon for node '%s' couldn't be read", nodeFactory.getNodeName()), ex);
-            return null;
-        }
+        return createIconDataURL(nodeFactory.getIcon());
     }
 
-    private static String createIconDataURL(final URL url) throws IOException {
+    static String createIconDataURL(final URL url) {
         if (url != null) {
             try (InputStream in = url.openStream()) {
                 return createIconDataURL(IOUtils.toByteArray(in));
+            } catch (IOException ex) {
+                NodeLogger.getLogger(WorkflowEntityFactory.class).error(String.format("Icon for node couldn't be read"),
+                    ex);
+                return null;
             }
         } else {
             return null;
