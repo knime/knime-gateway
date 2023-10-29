@@ -213,6 +213,12 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         objToString.addException(ProjectMetadataEnt.class, "lastEdit",
             (v, gen, e) -> gen.writeString("DATE_TIME_PLACEHOLDER"));
 
+        /**
+         * Progress is usually not 'captured' at a fixed state.
+         */
+        objToString.addException(NodeStateEnt.class, "progress",
+            (v, gen, e) -> gen.writeString("PROGRESS_MESSAGE_PLACEHOLDER"));
+
         try {
             return new ResultChecker(objToString, CoreUtil.resolveToFile("/files/test_snapshots", testClass));
         } catch (IOException ex) {
