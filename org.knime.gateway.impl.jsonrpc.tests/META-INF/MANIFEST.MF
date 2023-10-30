@@ -4,22 +4,22 @@ Bundle-Name: Unit-Tests for org.knime.gateway.impl.jsonrpc
 Bundle-SymbolicName: org.knime.gateway.impl.jsonrpc.tests;singleton:=true
 Bundle-Version: 5.2.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Fragment-Host: org.knime.gateway.impl.jsonrpc;bundle-version="[5.0.0,6.0.0)"
-Require-Bundle: org.knime.gateway.testing.helper;bundle-version="[5.0.0,6.0.0)",
- org.knime.core;bundle-version="[5.0.0,6.0.0)",
- org.knime.testing;bundle-version="[5.0.0,6.0.0)",
+Fragment-Host: org.knime.gateway.impl.jsonrpc;bundle-version="[5.2.0,6.0.0)"
+Require-Bundle: org.knime.gateway.testing.helper;bundle-version="[5.2.0,6.0.0)",
+ org.knime.core;bundle-version="[5.2.0,6.0.0)",
+ org.knime.testing;bundle-version="[5.2.0,6.0.0)",
  org.hamcrest.library;bundle-version="[1.3.0,2.0.0)",
  org.mockito.mockito-core;bundle-version="[2.18.3,3.0.0)",
- org.knime.stats;bundle-version="[5.0.0,6.0.0)",
- org.knime.js.views;bundle-version="[5.0.0,6.0.0)",
- org.knime.ext.weka_3.7;bundle-version="[5.0.0,6.0.0)",
- org.knime.distmatrix;bundle-version="[5.0.0,6.0.0)",
+ org.knime.stats;bundle-version="[5.2.0,6.0.0)",
+ org.knime.js.views;bundle-version="[5.2.0,6.0.0)",
+ org.knime.ext.weka_3.7;bundle-version="[5.2.0,6.0.0)",
+ org.knime.distmatrix;bundle-version="[5.2.0,6.0.0)",
  org.junit;bundle-version="[4.13.0,5.0.0)",
  org.eclipse.jetty.servlet-api;bundle-version="[4.0.0,5.0.0)",
- org.knime.js.quickforms;bundle-version="[5.0.0,6.0.0)",
+ org.knime.js.quickforms;bundle-version="[5.2.0,6.0.0)",
  org.apache.commons.lang3;bundle-version="[3.9.0,4.0.0)",
  com.fasterxml.jackson.module.jackson-module-mrbean;bundle-version="[2.11.0,3.0.0)",
- org.knime.core.streaming;bundle-version="[5.0.0,6.0.0)",
- org.knime.base.views;bundle-version="[5.0.0,6.0.0)"
+ org.knime.core.streaming;bundle-version="[5.2.0,6.0.0)",
+ org.knime.base.views;bundle-version="[5.2.0,6.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.knime.gateway.impl.jsonrpc.tests
