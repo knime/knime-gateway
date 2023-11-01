@@ -91,8 +91,8 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferen
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
@@ -148,7 +148,7 @@ public final class AppStateEntityFactory {
      * @return a new entity instance
      */
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
-        final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
+        final ProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
         final NodeFactoryProvider nodeFactoryProvider) {
         return buildAppStateEnt(previousAppState, workflowProjectManager, preferenceProvider, exampleProjects,
@@ -166,12 +166,12 @@ public final class AppStateEntityFactory {
      *            all projects are to be included
      * @param isActiveProject determines the projects to be set to active (see
      *            {@link WorkflowProjectEnt#getActiveWorkflowId()}; if {@code null}
-     *            {@link WorkflowProjectManager#isActiveWorkflowProject(String)} is used
+     *            {@link ProjectManager#isActiveProject(String)} is used
      * @return a new entity instance
      */
     @SuppressWarnings("java:S107") // lots of parameters are okay because it's a builder helper method
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
-        final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
+        final ProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
         final NodeFactoryProvider nodeFactoryProvider, final Predicate<String> workflowProjectFilter,
         final Predicate<String> isActiveProject) {
@@ -182,7 +182,7 @@ public final class AppStateEntityFactory {
         }
         var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders,
             workflowProjectFilter == null ? id -> true : workflowProjectFilter, //
-            isActiveProject == null ? workflowProjectManager::isActiveWorkflowProject : isActiveProject);
+            isActiveProject == null ? workflowProjectManager::isActiveProject : isActiveProject);
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
             .setExampleProjects(exampleProjectEnts) //
@@ -231,12 +231,12 @@ public final class AppStateEntityFactory {
         }
     }
 
-    private static List<WorkflowProjectEnt> getProjectEnts(final WorkflowProjectManager workflowProjectManager,
+    private static List<WorkflowProjectEnt> getProjectEnts(final ProjectManager workflowProjectManager,
         final SpaceProviders spaceProviders, final Predicate<String> projectFilter,
         final Predicate<String> isActiveProject) {
-        return workflowProjectManager.getWorkflowProjectsIds().stream() //
+        return workflowProjectManager.getProjectIds().stream() //
             .filter(projectFilter) //
-            .flatMap(id -> workflowProjectManager.getWorkflowProject(id).stream()) //
+            .flatMap(id -> workflowProjectManager.getProject(id).stream()) //
             .map(wp -> buildWorkflowProjectEnt(wp, isActiveProject, spaceProviders)) //
             .toList();
     }
@@ -295,7 +295,7 @@ public final class AppStateEntityFactory {
             .build();
     }
 
-    private static WorkflowProjectEnt buildWorkflowProjectEnt(final WorkflowProject wp,
+    private static WorkflowProjectEnt buildWorkflowProjectEnt(final Project wp,
         final Predicate<String> isActiveProject, final SpaceProviders spaceProviders) {
         final WorkflowProjectEntBuilder projectEntBuilder =
             builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
@@ -310,7 +310,7 @@ public final class AppStateEntityFactory {
         return projectEntBuilder.build();
     }
 
-    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final WorkflowProject.Origin origin,
+    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
         final SpaceProviders spaceProviders) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class)
             .setProviderId(origin.getProviderId()) //
@@ -321,7 +321,7 @@ public final class AppStateEntityFactory {
             .build();
     }
 
-    private static List<String> getAncestorItemIds(final WorkflowProject.Origin origin,
+    private static List<String> getAncestorItemIds(final Project.Origin origin,
         final SpaceProviders spaceProviders) {
         return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId())
             .map(space -> space.getAncestorItemIds(origin.getItemId())) //

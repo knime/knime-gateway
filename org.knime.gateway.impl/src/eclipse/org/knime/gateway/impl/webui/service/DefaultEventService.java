@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -93,8 +93,8 @@ public final class DefaultEventService implements EventService {
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
-    private final WorkflowProjectManager m_workflowProjectManager =
-        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
+    private final ProjectManager m_workflowProjectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     private final UpdateStateProvider m_updateStateProvider =
         ServiceDependencies.getServiceDependency(UpdateStateProvider.class, false);

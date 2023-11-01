@@ -58,7 +58,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -79,7 +79,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
     private final AppStateUpdater m_appStateUpdater;
 
-    private final WorkflowProjectManager m_workflowProjectManager;
+    private final ProjectManager m_workflowProjectManager;
 
     /**
      * @param eventConsumer consumes the emitted events
@@ -89,7 +89,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
      * @param spaceProviders
      */
     public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateUpdater appStateUpdater,
-        final WorkflowProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
+        final ProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
         final SpaceProviders spaceProviders, final NodeFactoryProvider nodeFactoryProvider ) {
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;

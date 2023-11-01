@@ -72,7 +72,7 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChange
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.events.EventSource;
 import org.knime.gateway.impl.service.util.PatchCreator;
@@ -100,7 +100,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private final Map<WorkflowKey, WorkflowChangesTracker> m_trackers = new HashMap<>();
 
-    private final WorkflowProjectManager m_workflowProjectManager;
+    private final ProjectManager m_workflowProjectManager;
 
     /**
      * @param eventConsumer
@@ -108,7 +108,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      * @param workflowProjectManager
      */
     public WorkflowChangedEventSource(final EventConsumer eventConsumer, final WorkflowMiddleware workflowMiddleware,
-        final WorkflowProjectManager workflowProjectManager) {
+        final ProjectManager workflowProjectManager) {
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
         m_workflowProjectManager = workflowProjectManager;

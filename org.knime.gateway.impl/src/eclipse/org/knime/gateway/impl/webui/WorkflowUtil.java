@@ -51,13 +51,13 @@ package org.knime.gateway.impl.webui;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Utility methods to operate on a workflow represented by a {@link WorkflowKey}.
  *
- * The actual {@link WorkflowManager}-instance is accessed via the {@link WorkflowProjectManager}.
+ * The actual {@link WorkflowManager}-instance is accessed via the {@link ProjectManager}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

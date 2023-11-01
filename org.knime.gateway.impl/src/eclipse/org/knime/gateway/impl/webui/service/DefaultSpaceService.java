@@ -61,9 +61,9 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProject.Origin;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.Project.Origin;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -89,8 +89,8 @@ public class DefaultSpaceService implements SpaceService {
     private final SpaceProviders m_spaceProviders =
         ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
 
-    private final WorkflowProjectManager m_workflowProjectManager =
-            ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
+    private final ProjectManager m_workflowProjectManager =
+            ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     DefaultSpaceService() {
         //
@@ -261,9 +261,9 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private Stream<String> getOpenWorkflowIds() {
-        return m_workflowProjectManager.getWorkflowProjectsIds().stream()//
-            .flatMap(id -> m_workflowProjectManager.getWorkflowProject(id)//
-                .flatMap(WorkflowProject::getOrigin)//
+        return m_workflowProjectManager.getProjectIds().stream()//
+            .flatMap(id -> m_workflowProjectManager.getProject(id)//
+                .flatMap(Project::getOrigin)//
                 .map(Origin::getItemId)//
                 .stream());
     }

@@ -70,7 +70,7 @@ import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -94,8 +94,8 @@ public class ApplicationServiceTest extends GatewayServiceTest {
     public void testGetAppState() throws Exception {
         String workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
-        WorkflowProjectManager.getInstance().openAndCacheWorkflow(workflowProjectId);
-        WorkflowProjectManager.getInstance().setWorkflowProjectActive(workflowProjectId);
+        ProjectManager.getInstance().openAndCacheProject(workflowProjectId);
+        ProjectManager.getInstance().setProjectActive(workflowProjectId);
 
         var appService = DefaultApplicationService.getInstance();
 

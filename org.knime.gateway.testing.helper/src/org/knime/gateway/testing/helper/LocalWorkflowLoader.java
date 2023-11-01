@@ -64,8 +64,8 @@ import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -101,7 +101,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     }
 
     private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId) {
-        WorkflowProjectManager.getInstance().addWorkflowProject(projectId, new WorkflowProject() {
+        ProjectManager.getInstance().addProject(projectId, new Project() {
 
             @Override
             public WorkflowManager openProject() {
@@ -165,16 +165,16 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     public void disposeWorkflows() throws InterruptedException {
         for (String projectId : m_loadedWorkflows) {
-            WorkflowManager wfm = WorkflowProjectManager.getInstance().openAndCacheWorkflow(projectId).orElse(null);
+            WorkflowManager wfm = ProjectManager.getInstance().openAndCacheProject(projectId).orElse(null);
             if (wfm != null) {
                 CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
             }
-            WorkflowProjectManager.getInstance().removeWorkflowProject(projectId);
+            ProjectManager.getInstance().removeProject(projectId);
         }
     }
 
-    private static WorkflowProject.Origin createOriginForTesting() {
-        return new WorkflowProject.Origin() {
+    private static Project.Origin createOriginForTesting() {
+        return new Project.Origin() {
             @Override
             public String getProviderId() {
                 return "Provider ID for testing";

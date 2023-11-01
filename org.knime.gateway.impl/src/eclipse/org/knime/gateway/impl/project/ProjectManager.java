@@ -63,41 +63,41 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 
 /**
- * Manages workflow projects that are eventually used by the service implementations.
+ * Manages projects that are eventually used by the service implementations.
  *
  * @author Martin Horn, University of Konstanz
  * @noreference This class is not intended to be referenced by clients.
  */
-public final class WorkflowProjectManager {
+public final class ProjectManager {
 
-    private static final LazyInitializer<WorkflowProjectManager> INITIALIZER = new LazyInitializer<>() {
+    private static final LazyInitializer<ProjectManager> INITIALIZER = new LazyInitializer<>() {
 
         @Override
-        protected WorkflowProjectManager initialize() throws ConcurrentException {
-            return new WorkflowProjectManager();
+        protected ProjectManager initialize() throws ConcurrentException {
+            return new ProjectManager();
         }
 
     };
 
-    private final Map<String, WorkflowProject> m_workflowProjectMap = new LinkedHashMap<>();
+    private final Map<String, Project> m_projectsMap = new LinkedHashMap<>();
 
-    private final List<Consumer<String>> m_workflowRemovedListeners = new ArrayList<>();
+    private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
     /**
-     * Maps of already opened/loaded workflow projects.
+     * Maps of already opened/loaded projects.
      */
-    private final Map<String, WorkflowManager> m_chachedWorkflowsMap = new HashMap<>();
+    private final Map<String, WorkflowManager> m_cachedProjectsMap = new HashMap<>();
 
     private String m_activeProjectId;
 
-    private WorkflowProjectManager() {
+    private ProjectManager() {
         // singleton
     }
 
     /**
      * @return the singleton instance
      */
-    public static WorkflowProjectManager getInstance() {
+    public static ProjectManager getInstance() {
         try {
             return INITIALIZER.get();
         } catch (ConcurrentException ex) {
@@ -110,11 +110,11 @@ public final class WorkflowProjectManager {
      * All other opened projects are considered <b>not</b> active after this call.
      *
      * @param projectId the id to add
-     * @throws NoSuchElementException if there is no workflow open/loaded for the given project id
+     * @throws NoSuchElementException if there is no project open/loaded for the given project id
      */
-    public void setWorkflowProjectActive(final String projectId) {
-        if (getCachedWorkflow(projectId).isEmpty()) {
-            throw new NoSuchElementException("No loaded workflow for id " + projectId);
+    public void setProjectActive(final String projectId) {
+        if (getCachedProject(projectId).isEmpty()) {
+            throw new NoSuchElementException("No loaded project for id " + projectId);
         }
         m_activeProjectId = projectId;
     }
@@ -123,62 +123,62 @@ public final class WorkflowProjectManager {
      * @param projectId the id of the project to check
      * @return whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab).
      */
-    public boolean isActiveWorkflowProject(final String projectId) {
+    public boolean isActiveProject(final String projectId) {
         return m_activeProjectId != null && m_activeProjectId.equals(projectId);
     }
 
     /**
-     * @return the IDs of all registered workflow projects
+     * @return the IDs of all registered projects
      */
-    public Set<String> getWorkflowProjectsIds() {
-        return new LinkedHashSet<>(m_workflowProjectMap.keySet());
+    public Set<String> getProjectIds() {
+        return new LinkedHashSet<>(m_projectsMap.keySet());
     }
 
     /**
-     * Adds the workflow project with the id to the manager. If a workflow project with the given id already exists, it
+     * Adds the project with the id to the manager. If a project with the given id already exists, it
      * will be replaced.
      *
-     * @param workflowProjectID id of the project to be added
-     * @param project the actual workflow project to be added
+     * @param projectId id of the project to be added
+     * @param project the actual project to be added
      */
-    public void addWorkflowProject(final String workflowProjectID, final WorkflowProject project) {
-        m_workflowProjectMap.put(workflowProjectID, project);
+    public void addProject(final String projectId, final Project project) {
+        m_projectsMap.put(projectId, project);
     }
 
     /**
-     * If a workflow project for the given id exists it will be removed
+     * If a project for the given id exists it will be removed
      *
-     * @param workflowProjectID id of the project to be removed
+     * @param projectId id of the project to be removed
      */
-    public void removeWorkflowProject(final String workflowProjectID) {
-        m_workflowProjectMap.remove(workflowProjectID);
-        m_chachedWorkflowsMap.remove(workflowProjectID);
-        m_workflowRemovedListeners.stream().forEach(l -> l.accept(workflowProjectID));
-        if (m_activeProjectId != null && m_activeProjectId.equals(workflowProjectID)) {
+    public void removeProject(final String projectId) {
+        m_projectsMap.remove(projectId);
+        m_cachedProjectsMap.remove(projectId);
+        m_projectRemovedListeners.stream().forEach(l -> l.accept(projectId));
+        if (m_activeProjectId != null && m_activeProjectId.equals(projectId)) {
             m_activeProjectId = null;
         }
     }
 
     /**
-     * @param workflowProjectID
-     * @return the workflow project for the given id or an empty optional if doesn't exist
+     * @param projectId
+     * @return the project for the given id or an empty optional if doesn't exist
      */
-    public Optional<WorkflowProject> getWorkflowProject(final String workflowProjectID) {
-        return Optional.ofNullable(m_workflowProjectMap.get(workflowProjectID));
+    public Optional<Project> getProject(final String projectId) {
+        return Optional.ofNullable(m_projectsMap.get(projectId));
     }
 
     /**
-     * Opens and caches the workflow with the given workflow project ID. If the workflow has already been opened, it
+     * Opens and caches the project with the given project ID. If the project has already been opened, it
      * will be returned instead.
      *
-     * @param workflowProjectID
-     * @return the opened workflow or an empty optional if there is no workflow project with the given id or the project
+     * @param projectId
+     * @return the opened project or an empty optional if there is no project with the given id or the project
      *         couldn't be opened
      */
-    public Optional<WorkflowManager> openAndCacheWorkflow(final String workflowProjectID) {
-        WorkflowManager wfm = getCachedWorkflow(workflowProjectID).orElse(null);
+    public Optional<WorkflowManager> openAndCacheProject(final String projectId) {
+        WorkflowManager wfm = getCachedProject(projectId).orElse(null);
         if (wfm == null) {
-            WorkflowProject wp = getWorkflowProject(workflowProjectID).orElse(null);
+            Project wp = getProject(projectId).orElse(null);
             if (wp == null) {
                 return Optional.empty();
             }
@@ -186,40 +186,40 @@ public final class WorkflowProjectManager {
             if (wfm == null) {
                 return Optional.empty();
             }
-            cacheWorkflow(workflowProjectID, wfm);
+            cacheProject(projectId, wfm);
         }
         return Optional.of(wfm);
     }
 
     /**
-     * Callback when a workflow project with a certain ID has been removed.
+     * Callback when a project with a certain ID has been removed.
      *
      * @param listener the listener to be called
      */
-    public void addWorkflowProjectRemovedListener(final Consumer<String> listener) {
-        m_workflowRemovedListeners.add(listener);
+    public void addProjectRemovedListener(final Consumer<String> listener) {
+        m_projectRemovedListeners.add(listener);
     }
 
     /**
-     * @param workflowProjectID
-     * @return the cached workflow or an empty optional if none has been found for the given workflow project ID.
+     * @param projectId
+     * @return the cached project or an empty optional if none has been found for the given project ID.
      */
-    public Optional<WorkflowManager> getCachedWorkflow(final String workflowProjectID) {
-        return Optional.ofNullable(m_chachedWorkflowsMap.get(workflowProjectID));
+    public Optional<WorkflowManager> getCachedProject(final String projectId) {
+        return Optional.ofNullable(m_cachedProjectsMap.get(projectId));
     }
 
     /**
      * Determines whether the open projects are dirty ore not.
      *
-     * @return map from project ids to the dirty flag of the workflows
+     * @return map from project IDs to the dirty flag of the projects
      */
     public Map<String, Boolean> getDirtyProjectsMap() {
-        return getWorkflowProjectsIds().stream().map(projectId -> {
-            var cachedWorkflow = getCachedWorkflow(projectId);
-            if (cachedWorkflow.isEmpty()) {
+        return getProjectIds().stream().map(projectId -> {
+            var cachedProject = getCachedProject(projectId);
+            if (cachedProject.isEmpty()) {
                 return Pair.create(projectId, Boolean.FALSE);
             }
-            var isDirty = cachedWorkflow.get().isDirty();
+            var isDirty = cachedProject.get().isDirty();
             return Pair.create(projectId, isDirty);
         }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
@@ -230,7 +230,7 @@ public final class WorkflowProjectManager {
      *
      * @param wfm
      */
-    private void cacheWorkflow(final String workflowProjectID, final WorkflowManager wfm) {
-        m_chachedWorkflowsMap.put(workflowProjectID, wfm);
+    private void cacheProject(final String projectId, final WorkflowManager wfm) {
+        m_cachedProjectsMap.put(projectId, wfm);
     }
 }

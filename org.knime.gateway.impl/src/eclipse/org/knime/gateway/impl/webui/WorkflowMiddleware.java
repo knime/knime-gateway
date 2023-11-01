@@ -75,7 +75,7 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEn
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.PatchCreator;
@@ -89,7 +89,7 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
  * Provides utility methods to operate on a workflow represented by a {@link WorkflowKey} where the methods require to
  * keep a state per workflow (e.g. cached objects, undo & redo stack, entity history). The state per workflow is cleared
  * as soon as it's removed from memory (the actual {@link WorkflowManager}-instances are accessed via the
- * {@link WorkflowProjectManager}).
+ * {@link ProjectManager}).
  *
  * The purpose is to remove this complexity from the default service implementations.
  *
@@ -114,11 +114,11 @@ public final class WorkflowMiddleware {
     /**
      * @param workflowProjectManager
      */
-    public WorkflowMiddleware(final WorkflowProjectManager workflowProjectManager) {
+    public WorkflowMiddleware(final ProjectManager workflowProjectManager) {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
-        workflowProjectManager.addWorkflowProjectRemovedListener(
+        workflowProjectManager.addProjectRemovedListener(
             projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
     }
 

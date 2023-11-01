@@ -62,8 +62,8 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 
 /**
  * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
@@ -115,26 +115,26 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * Gets the workflow manager from the {@link WorkflowProjectManager} for a corresponding root workflow id.
+     * Gets the workflow manager from the {@link ProjectManager} for a corresponding root workflow id.
      *
      * @param rootWorkflowID the id to get the wfm for
      * @return the {@link WorkflowManager} instance
      * @throws NoSuchElementException if there is no workflow manager for the id registered
      */
     public static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) {
-        return WorkflowProjectManager.getInstance().openAndCacheWorkflow(rootWorkflowID).orElseThrow(
+        return ProjectManager.getInstance().openAndCacheProject(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
     }
 
     /**
-     * Gets the {@link WorkflowProject} from the {@link WorkflowProjectManager} for a corresponding workflow project id.
+     * Gets the {@link Project} from the {@link ProjectManager} for a corresponding workflow project id.
      *
      * @param workflowProjectID the id to get the project for
-     * @return the {@link WorkflowProject} instance
+     * @return the {@link Project} instance
      * @throws NoSuchElementException if there is no workflow project for the id registered
      */
-    public static WorkflowProject getWorkflowProject(final String workflowProjectID) {
-        return WorkflowProjectManager.getInstance().getWorkflowProject(workflowProjectID).orElseThrow(
+    public static Project getWorkflowProject(final String workflowProjectID) {
+        return ProjectManager.getInstance().getProject(workflowProjectID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + workflowProjectID + "\" not found."));
     }
 

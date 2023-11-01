@@ -71,8 +71,8 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.mockito.Mockito;
 
 /**
@@ -86,7 +86,7 @@ public class DefaultServiceUtilTest {
 
     private WorkflowManager m_rootWfm;
 
-    private final WorkflowProjectManager m_wpm = WorkflowProjectManager.getInstance();
+    private final ProjectManager m_wpm = ProjectManager.getInstance();
 
     private NodeID m_nodeID;
 
@@ -211,7 +211,7 @@ public class DefaultServiceUtilTest {
      */
     @After
     public void removeWorkflowProjects() {
-        m_wpm.getWorkflowProjectsIds().stream().forEach(m_wpm::removeWorkflowProject);
+        m_wpm.getProjectIds().stream().forEach(m_wpm::removeProject);
     }
 
     /*
@@ -228,7 +228,7 @@ public class DefaultServiceUtilTest {
 
     private static String addWorkflowProject(final WorkflowManager wfm) {
         String wfId = UUID.randomUUID().toString();
-        WorkflowProjectManager.getInstance().addWorkflowProject(wfId, new WorkflowProject() {
+        ProjectManager.getInstance().addProject(wfId, new Project() {
 
             @Override
             public WorkflowManager openProject() {

@@ -56,7 +56,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
  */
-public interface WorkflowProject {
+public interface Project {
 
     /**
      * @return the name of the workflow

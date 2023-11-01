@@ -57,8 +57,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
@@ -103,9 +103,9 @@ public abstract class GatewayServiceTest {
     public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+            new WorkflowMiddleware(ProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(EventConsumer.class, createEventConsumer());
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders());
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, createNodeFactoryProvider());
@@ -154,7 +154,7 @@ public abstract class GatewayServiceTest {
      *
      * @param wf the test workflow to load
      * @return the workflow id (to be provided to the default service implementations which in turn access the workflow
-     *         via the {@link WorkflowProjectManager}) and the workflow manager instance.
+     *         via the {@link ProjectManager}) and the workflow manager instance.
      * @throws Exception
      */
     protected Pair<UUID, WorkflowManager> loadWorkflow(final TestWorkflow wf) throws Exception {
@@ -172,8 +172,8 @@ public abstract class GatewayServiceTest {
      */
     protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String workflowProjectId) throws Exception {
         m_workflowLoader.loadWorkflow(wf, workflowProjectId);
-        WorkflowProject project =
-            WorkflowProjectManager.getInstance().getWorkflowProject(workflowProjectId).orElse(null);
+        Project project =
+            ProjectManager.getInstance().getProject(workflowProjectId).orElse(null);
         return project == null ? null : project.openProject();
     }
 
@@ -187,7 +187,7 @@ public abstract class GatewayServiceTest {
      */
     protected WorkflowManager loadComponent(final TestWorkflow wf, final String projectId) throws Exception {
         m_workflowLoader.loadComponent(wf, projectId);
-        WorkflowProject project = WorkflowProjectManager.getInstance().getWorkflowProject(projectId).orElse(null);
+        Project project = ProjectManager.getInstance().getProject(projectId).orElse(null);
         return project == null ? null : project.openProject();
     }
 

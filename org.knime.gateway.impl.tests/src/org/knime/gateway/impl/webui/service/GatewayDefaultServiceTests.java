@@ -62,7 +62,7 @@ import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -114,13 +114,13 @@ public class GatewayDefaultServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
+                ProjectManager.getInstance().openAndCacheProject(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                WorkflowProjectManager.getInstance().openAndCacheWorkflow(wfId)
+                ProjectManager.getInstance().openAndCacheProject(wfId)
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
                     .executeAllAndWaitUntilDone();
             }
@@ -191,9 +191,9 @@ public class GatewayDefaultServiceTests {
     @SuppressWarnings("javadoc")
     @Before
     public void setupServiceDependencies() {
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+            new WorkflowMiddleware(ProjectManager.getInstance()));
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, null);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
     }

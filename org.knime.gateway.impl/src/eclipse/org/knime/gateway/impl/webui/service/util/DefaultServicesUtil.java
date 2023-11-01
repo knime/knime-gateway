@@ -47,7 +47,7 @@
 package org.knime.gateway.impl.webui.service.util;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
@@ -86,7 +86,7 @@ public final class DefaultServicesUtil {
      * @param nodeFactoryProvider
      */
     public static void setDefaultServiceDependencies( // NOSONAR
-        final WorkflowProjectManager workflowProjectManager, //
+        final ProjectManager workflowProjectManager, //
         final WorkflowMiddleware workflowMiddleware, //
         final AppStateUpdater appStateUpdater, //
         final EventConsumer eventConsumer, //
@@ -99,7 +99,7 @@ public final class DefaultServicesUtil {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
             ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
-            ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, workflowProjectManager);
+            ServiceDependencies.setServiceDependency(ProjectManager.class, workflowProjectManager);
             ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
             ServiceDependencies.setServiceDependency(UpdateStateProvider.class, updateStateProvider);
             ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
@@ -126,7 +126,7 @@ public final class DefaultServicesUtil {
             AppStateEnt previousState = DefaultApplicationService.getInstance().getState();
             if (previousState != null) {
                 previousState.getOpenProjects().forEach(
-                    wfProjEnt -> WorkflowProjectManager.getInstance().removeWorkflowProject(wfProjEnt.getProjectId()));
+                    wfProjEnt -> ProjectManager.getInstance().removeProject(wfProjEnt.getProjectId()));
             }
         }
     }

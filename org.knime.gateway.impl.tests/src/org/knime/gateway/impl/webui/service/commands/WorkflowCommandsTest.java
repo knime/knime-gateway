@@ -106,8 +106,8 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -135,10 +135,10 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @Test
     public void testRedoCommandOrder() throws Exception {
-        WorkflowProject wp = createEmptyWorkflowProject();
+        Project wp = createEmptyWorkflowProject();
 
         WorkflowCommands commands = new WorkflowCommands(5);
-        WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(WorkflowProjectManager.getInstance());
+        WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance());
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
         var wfm = wp.openProject();
@@ -170,7 +170,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
      */
     @Test
     public void testUndoAndRedoStackSizes() throws Exception {
-        WorkflowProject wp = createEmptyWorkflowProject();
+        Project wp = createEmptyWorkflowProject();
 
         WorkflowCommands commands = new WorkflowCommands(5);
         TranslateCommandEnt commandEntity = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
@@ -295,8 +295,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+            new WorkflowMiddleware(ProjectManager.getInstance()));
+        ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
 
@@ -325,19 +325,19 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             Matchers.hasItem("/allowedActions/canUndo"));
     }
 
-    static void disposeWorkflowProject(final WorkflowProject wp) {
-        WorkflowProjectManager.getInstance().removeWorkflowProject(wp.getID());
+    static void disposeWorkflowProject(final Project wp) {
+        ProjectManager.getInstance().removeProject(wp.getID());
         WorkflowManager.ROOT.removeProject(wp.openProject().getID());
     }
 
-    static WorkflowProject createEmptyWorkflowProject() throws IOException {
+    static Project createEmptyWorkflowProject() throws IOException {
         File dir = FileUtil.createTempDir("workflow");
         File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
         if (workflowFile.createNewFile()) {
             WorkflowManager wfm = WorkflowManager.ROOT.createAndAddProject("workflow", new WorkflowCreationHelper(
                 WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null)));
             String id = "wfId";
-            WorkflowProject workflowProject = new WorkflowProject() {
+            Project workflowProject = new Project() {
 
                 @Override
                 public String getName() {
@@ -355,7 +355,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
                 }
 
             };
-            WorkflowProjectManager.getInstance().addWorkflowProject(id, workflowProject);
+            ProjectManager.getInstance().addProject(id, workflowProject);
             return workflowProject;
         } else {
             throw new IllegalStateException("Creating empty workflow failed");
@@ -412,9 +412,9 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW).getFirst().toString();
 
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-        var workflowMiddleware = new WorkflowMiddleware(WorkflowProjectManager.getInstance());
+        var workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance());
         var commands = workflowMiddleware.getCommands();
         var wfKey = new WorkflowKey(wfId, getRootID());
         AtomicInteger eventConsumerCalls = new AtomicInteger();
@@ -530,7 +530,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @Test
     public void testWaitForCommandResultReturnsLatestSnapshotId() throws Exception {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
-        ServiceDependencies.setServiceDependency(WorkflowProjectManager.class, WorkflowProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
 
@@ -539,7 +539,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(EventConsumer.class,
             (n, e) -> events.push((WorkflowChangedEventEnt)((CompositeEventEnt)e).getEvents().get(0)));
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(WorkflowProjectManager.getInstance()));
+            new WorkflowMiddleware(ProjectManager.getInstance()));
 
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI).getFirst().toString();
         var snapshotId = DefaultWorkflowService.getInstance().getWorkflow(projectId, getRootID(), true).getSnapshotId();

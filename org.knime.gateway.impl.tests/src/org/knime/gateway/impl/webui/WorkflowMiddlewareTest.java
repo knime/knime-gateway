@@ -61,8 +61,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -81,9 +81,9 @@ public class WorkflowMiddlewareTest {
     @Test
     public void testWorkflowStateCacheCleanUpOnSubWorkflowRemoval() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var wpm = WorkflowProjectManager.getInstance();
+        var wpm = ProjectManager.getInstance();
         var projectId = wfm.getNameWithID();
-        wpm.addWorkflowProject(wfm.getNameWithID(), new WorkflowProject() {
+        wpm.addProject(wfm.getNameWithID(), new Project() {
 
             @Override
             public String getName() {
@@ -119,7 +119,7 @@ public class WorkflowMiddlewareTest {
         await().untilAsserted(() -> assertThat(middleware.m_workflowStateCache.size(), is(1)));
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
-        WorkflowProjectManager.getInstance().removeWorkflowProject(projectId);
+        ProjectManager.getInstance().removeProject(projectId);
     }
 
     private static NodeID[] createNestedMetanodesOrComponents(final WorkflowManager wfm, final boolean createComponents)

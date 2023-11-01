@@ -88,9 +88,9 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.project.WorkflowProject;
-import org.knime.gateway.impl.project.WorkflowProject.Origin;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.Project.Origin;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -722,7 +722,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Add open project to workflow project manager
         var workflowProject = createWorkflowProject(providerId, spaceId, wfId);
-        WorkflowProjectManager.getInstance().addWorkflowProject("some_id", workflowProject);
+        ProjectManager.getInstance().addProject("some_id", workflowProject);
 
         try {
             // Try to move data file and open workflow
@@ -730,11 +730,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 () -> ss().moveItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
                     Space.NameCollisionHandling.NOOP.toString()));
         } finally {
-            WorkflowProjectManager.getInstance().removeWorkflowProject("some_id");
+            ProjectManager.getInstance().removeProject("some_id");
         }
     }
 
-    private static WorkflowProject createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
+    private static Project createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
         var origin = new Origin() {
 
             @Override
@@ -757,7 +757,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 return ProjectTypeEnum.WORKFLOW;
             }
         };
-        return new WorkflowProject() {
+        return new Project() {
 
             @Override
             public WorkflowManager openProject() {

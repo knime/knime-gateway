@@ -52,7 +52,7 @@ import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
-import org.knime.gateway.impl.project.WorkflowProjectManager;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -72,8 +72,8 @@ public final class DefaultApplicationService implements ApplicationService {
     private final AppStateUpdater m_appStateUpdater =
         ServiceDependencies.getServiceDependency(AppStateUpdater.class, false);
 
-    private final WorkflowProjectManager m_workflowProjectManager =
-        ServiceDependencies.getServiceDependency(WorkflowProjectManager.class, true);
+    private final ProjectManager m_workflowProjectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     private final PreferencesProvider m_preferencesProvider =
         ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
