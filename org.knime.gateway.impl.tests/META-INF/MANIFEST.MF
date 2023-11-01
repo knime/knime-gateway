@@ -21,4 +21,4 @@ Require-Bundle: org.knime.testing;bundle-version="[5.2.0,6.0.0)",
  org.knime.core.streaming;bundle-version="[5.2.0,6.0.0)",
  org.knime.core.ui;bundle-version="[5.2.0,6.0.0)",
  org.knime.core.ui.testing;bundle-version="[5.2.0,6.0.0)",
- org.knime.base.views;bundle-version="[5.0.0,6.0.0)"
+ org.knime.base.views;bundle-version="[5.2.0,6.0.0)"
