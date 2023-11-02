@@ -51,7 +51,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 
 /**
- * Represents a workflow project.
+ * Represents a workflow or component project.
  *
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
@@ -69,7 +69,7 @@ public interface Project {
     String getID();
 
     /**
-     * Opens/loads the actual workflow represented by this workflow project.
+     * Opens/loads the actual workflow represented by this workflow/component project.
      * If the workflow has already been opened before it will be opened/loaded again.
      *
      * @return the newly loaded workflow
@@ -77,8 +77,8 @@ public interface Project {
     WorkflowManager openProject();
 
     /**
-     * @return describes from where this workflow project originates, i.e. from where it has been created; an empty
-     *         optional if the origin in unknown
+     * @return describes from where this workflow/component project originates, i.e. from where it has been created; an
+     *         empty optional if the origin in unknown
      */
     default Optional<Origin> getOrigin() {
         return Optional.empty();
@@ -103,21 +103,21 @@ public interface Project {
     }
 
     /**
-     * Identifies space and item from which this workflow project has been opened.
+     * Identifies space and item from which this workflow/component project has been opened.
      */
     interface Origin {
         /**
-         * @return The ID of the space provider containing the workflow project
+         * @return The ID of the space provider containing the workflow/component project
          */
         String getProviderId();
 
         /**
-         * @return The space ID of the workflow project
+         * @return The space ID of the workflow/component project
          */
         String getSpaceId();
 
         /**
-         * @return The item ID of the workflow project
+         * @return The item ID of the workflow/component project
          */
         String getItemId();
 
