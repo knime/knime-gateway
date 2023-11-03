@@ -69,8 +69,10 @@ public final class FeatureFlags {
     public static Map<String, Object> getFeatureFlags() {
         var featureFlagsPrefix = "org.knime.ui.feature.";
         var f1 = featureFlagsPrefix + "embedded_views_and_dialogs";
-        var f2 = featureFlagsPrefix + "ai_assistant";
-        return Map.of(f1, Boolean.getBoolean(f1), f2, isAiAssistantBackendAvailable);
+        var f2 = featureFlagsPrefix + "promote_ai_assistant";
+        var f3 = featureFlagsPrefix + "ai_assistant_installed";
+        return Map.of(f1, Boolean.getBoolean(f1), f2, System.getProperty(f2) == null ? true : Boolean.getBoolean(f2),
+            f3, isAiAssistantBackendAvailable);
     }
 
     /**
