@@ -77,7 +77,6 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
     private MetaNodeTemplateInformation m_oldTemplateInfo;
 
     UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
-        // TODO
         m_componentId = wfmId -> ce.getNodeId().toNodeID(wfmId);
         final var newUrl = ce.getNewUrl();
         m_newURI = newUrl != null ? URI.create(newUrl) : null;

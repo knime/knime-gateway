@@ -101,10 +101,10 @@ public final class NodeConnector {
      * @param sourcePortIdx if {@code null} it will be automatically determined
      * @return this connector
      */
-    public NodeConnector connectFrom(final NodeIDEnt sourceNodeId, final Integer sourcePortIdx) {
-        return connectFrom(
-            sourceNodeId == null ? null : sourceNodeId.toNodeID(CoreUtil.getProjectWorkflowNodeID(m_wfm)),
-            sourcePortIdx);
+    public NodeConnector connectFrom(final NodeIDEnt sourceNodeIdEnt, final Integer sourcePortIdx) {
+        var projectWfId = CoreUtil.getProjectWorkflowNodeID(m_wfm);
+        var sourceNodeId = sourceNodeIdEnt == null ? null : sourceNodeIdEnt.toNodeID(projectWfId);
+        return connectFrom(sourceNodeId, sourcePortIdx);
     }
 
     /**
