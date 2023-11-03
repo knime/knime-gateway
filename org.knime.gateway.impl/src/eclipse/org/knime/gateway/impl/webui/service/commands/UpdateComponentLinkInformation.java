@@ -58,6 +58,7 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
@@ -76,6 +77,7 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
     private MetaNodeTemplateInformation m_oldTemplateInfo;
 
     UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
+        // TODO
         m_componentId = wfmId -> ce.getNodeId().toNodeID(wfmId);
         final var newUrl = ce.getNewUrl();
         m_newURI = newUrl != null ? URI.create(newUrl) : null;
@@ -100,7 +102,7 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
             throw new OperationNotAllowedException("Container is read-only.");
         }
 
-        final var componentId = m_componentId.apply(wfm.getProjectWFM().getID());
+        final var componentId = m_componentId.apply(CoreUtil.getProjectWorkflowNodeID(wfm));
         final var component = wfm.getNodeContainer(componentId, SubNodeContainer.class, false);
         if (component == null) {
             throw new OperationNotAllowedException("Not a component: " + m_componentId);

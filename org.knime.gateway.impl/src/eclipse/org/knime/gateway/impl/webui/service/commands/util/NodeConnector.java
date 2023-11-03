@@ -54,6 +54,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 
 /**
  * Helper to connect a node to a upstream and/or downstream node.
@@ -101,7 +102,8 @@ public final class NodeConnector {
      * @return this connector
      */
     public NodeConnector connectFrom(final NodeIDEnt sourceNodeId, final Integer sourcePortIdx) {
-        return connectFrom(sourceNodeId == null ? null : sourceNodeId.toNodeID(m_wfm.getProjectWFM().getID()),
+        return connectFrom(
+            sourceNodeId == null ? null : sourceNodeId.toNodeID(CoreUtil.getProjectWorkflowNodeID(m_wfm)),
             sourcePortIdx);
     }
 

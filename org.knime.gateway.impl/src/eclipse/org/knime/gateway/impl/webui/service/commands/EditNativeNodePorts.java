@@ -128,7 +128,7 @@ final class EditNativeNodePorts implements EditPorts {
     }
 
     private final NodeID getNodeId() {
-        return m_portCommandEnt.getNodeId().toNodeID(m_wfm.getProjectWFM().getID());
+        return m_portCommandEnt.getNodeId().toNodeID(CoreUtil.getProjectWorkflowNodeID(m_wfm));
     }
 
     private void executeInternal(final ModifiableNodeCreationConfiguration creationConfigCopy) {

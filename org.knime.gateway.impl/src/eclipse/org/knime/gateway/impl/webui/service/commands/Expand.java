@@ -59,7 +59,7 @@ final class Expand extends CommandIfElse {
 
     Expand(final ExpandCommandEnt commandEnt) {
         super(wfm -> {
-            var nodeId = commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID());
+            var nodeId = commandEnt.getNodeId().toNodeID(CoreUtil.getProjectWorkflowNodeID(wfm));
             var containerType = CoreUtil.getContainerType(nodeId, wfm).orElseThrow();
             return containerType == CoreUtil.ContainerType.METANODE;
         }, new ExpandMetanode(commandEnt), new ExpandComponent(commandEnt));

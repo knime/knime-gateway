@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.util.CoreUtil.getProjectWorkflowNodeID;
+
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
@@ -74,10 +76,10 @@ final class Connect extends AbstractWorkflowCommand {
     @Override
     public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        var projectWfm = wfm.getProjectWFM();
-        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(projectWfm.getID());
+        var rootID = getProjectWorkflowNodeID(wfm);
+        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(rootID);
         var sourcePortIdx = m_commandEnt.getSourcePortIdx();
-        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(projectWfm.getID());
+        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(rootID);
         var destPortIdx = m_commandEnt.getDestinationPortIdx();
 
         try {

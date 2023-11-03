@@ -258,6 +258,29 @@ public final class CoreUtil {
     }
 
     /**
+     * Determines the project workflow the node/component/metanode is part of. If either workflow project itself or the
+     * workflow of the component project (if it's a component project).
+     *
+     * @param nc
+     * @return the project workflow
+     */
+    public static WorkflowManager getProjectWorkflow(final NodeContainer nc) {
+        var wfm = nc instanceof WorkflowManager w ? w : nc.getParent();
+        return wfm.getProjectComponent().map(snc -> snc.getWorkflowManager()).orElse(wfm.getProjectWFM());
+    }
+
+    /**
+     * Determines the id of the project workflow the node/component/metanode is part of. If it's a workflow project,
+     * it's the id the project workflow. If it's a component project, it's the id of the component project workflow.
+     *
+     * @param nc
+     * @return the project workflow id
+     */
+    public static NodeID getProjectWorkflowNodeID(final NodeContainer nc) {
+        return getProjectWorkflow(nc).getID();
+    }
+
+    /**
      * Determines for the job manager whether it's the default job manager, i.e. {@link ThreadNodeExecutionJobManager},
      * or <code>null</code> (i.e. not set).
      *

@@ -141,7 +141,8 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     public boolean canRedo() {
         try {
             var wfm = getWorkflowManager();
-            checkCanExpandOrThrow(getWorkflowManager(), m_commandEnt.getNodeId().toNodeID(wfm.getProjectWFM().getID()));
+            checkCanExpandOrThrow(getWorkflowManager(),
+                m_commandEnt.getNodeId().toNodeID(CoreUtil.getProjectWorkflowNodeID(wfm)));
             return true;
         } catch (OperationNotAllowedException e) { // NOSONAR
             return false;
