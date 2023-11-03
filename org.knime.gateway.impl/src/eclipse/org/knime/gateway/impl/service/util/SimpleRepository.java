@@ -64,8 +64,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * Straightforward repository implementation that just keeps every single snapshot as is and sacrifices memory (and a
  * limited history) for speed.
  *
- * For workflow entity comparison (i.e. to create the diff), this implementation uses the javers-library.
- *
  * TODO: NXT-526, not a thread-safe implementation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
