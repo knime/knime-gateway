@@ -124,6 +124,8 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt.ExpandCommandEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt.ExpandResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
+import org.knime.gateway.api.webui.entity.FeatureMetadataEnt.FeatureMetadataEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultFeatureMetadataEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
@@ -413,6 +415,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ExpandResultEntBuilder.class) {
             return (B)new DefaultExpandResultEnt.DefaultExpandResultEntBuilder();
+        }        
+        if(clazz == FeatureMetadataEntBuilder.class) {
+            return (B)new DefaultFeatureMetadataEnt.DefaultFeatureMetadataEntBuilder();
         }        
         if(clazz == InsertNodeCommandEntBuilder.class) {
             return (B)new DefaultInsertNodeCommandEnt.DefaultInsertNodeCommandEntBuilder();

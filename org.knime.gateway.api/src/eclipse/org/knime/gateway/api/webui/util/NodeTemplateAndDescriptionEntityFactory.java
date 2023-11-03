@@ -74,6 +74,7 @@ import org.knime.core.node.extension.NodeMetadata;
 import org.knime.core.node.port.PortType;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.FeatureMetadataEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
@@ -90,6 +91,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.shared.workflow.def.VendorDef;
 
 /**
  * See {@link EntityFactory}.
@@ -199,7 +201,17 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .setInPorts(buildNodePortTemplateEnts(nodeMetadata.nodeProperties().ports().getInputPortTypes()))//
             .setOutPorts(buildNodePortTemplateEnts(nodeMetadata.nodeProperties().ports().getOutputPortTypes()))//
             .setIcon(WorkflowEntityFactory.createIconDataURL(nodeMetadata.factory()))//
-            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(nodeMetadata.factory())).build();
+            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(nodeMetadata.factory())) //
+            .setFeatureMetadata(buildFeatureMetadataEnt(nodeMetadata.nodeProperties().metadata().vendor().feature())) //
+            .build();
+    }
+
+
+    private FeatureMetadataEnt buildFeatureMetadataEnt(final VendorDef featureVendor) {
+        return builder(FeatureMetadataEnt.FeatureMetadataEntBuilder.class) //
+                .setName(featureVendor.getName()) //
+                .setVendor(featureVendor.getVendor()) //
+                .build();
     }
 
     private List<NodeDialogOptionDescriptionEnt> buildDialogOptionDescriptionEnts(final List<NodeDescription.DialogOption> opts) {

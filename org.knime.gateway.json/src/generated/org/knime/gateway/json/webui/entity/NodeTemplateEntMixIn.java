@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.FeatureMetadataEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.json.webui.entity.NativeNodeInvariantsEntMixIn;
@@ -89,6 +90,10 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
     public NodeFactoryKeyEnt getNodeFactory();
     
     @Override
+    @JsonProperty("featureMetadata")
+    public FeatureMetadataEnt getFeatureMetadata();
+    
+    @Override
     @JsonProperty("id")
     public String getId();
     
@@ -132,6 +137,10 @@ public interface NodeTemplateEntMixIn extends NodeTemplateEnt {
         @Override
         @JsonProperty("nodeFactory")
         public NodeTemplateEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
+        
+        @Override
+        @JsonProperty("featureMetadata")
+        public NodeTemplateEntMixInBuilder setFeatureMetadata(final FeatureMetadataEnt featureMetadata);
         
         @Override
         @JsonProperty("id")

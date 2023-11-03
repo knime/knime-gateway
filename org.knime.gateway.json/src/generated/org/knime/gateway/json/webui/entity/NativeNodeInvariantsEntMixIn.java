@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.FeatureMetadataEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 
@@ -86,6 +87,10 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
     @JsonProperty("nodeFactory")
     public NodeFactoryKeyEnt getNodeFactory();
     
+    @Override
+    @JsonProperty("featureMetadata")
+    public FeatureMetadataEnt getFeatureMetadata();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -114,6 +119,10 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
         @Override
         @JsonProperty("nodeFactory")
         public NativeNodeInvariantsEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
+        
+        @Override
+        @JsonProperty("featureMetadata")
+        public NativeNodeInvariantsEntMixInBuilder setFeatureMetadata(final FeatureMetadataEnt featureMetadata);
         
     }
 

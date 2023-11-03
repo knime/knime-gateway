@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.FeatureMetadataEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
@@ -57,6 +58,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
  * @param type
  * @param icon
  * @param nodeFactory
+ * @param featureMetadata
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -65,7 +67,8 @@ public record DefaultNativeNodeInvariantsEnt(
     String name,
     TypeEnum type,
     String icon,
-    NodeFactoryKeyEnt nodeFactory) implements NativeNodeInvariantsEnt {
+    NodeFactoryKeyEnt nodeFactory,
+    FeatureMetadataEnt featureMetadata) implements NativeNodeInvariantsEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -104,6 +107,11 @@ public record DefaultNativeNodeInvariantsEnt(
         return nodeFactory;
     }
     
+    @Override
+    public FeatureMetadataEnt getFeatureMetadata() {
+        return featureMetadata;
+    }
+    
     /**
      * A builder for {@link DefaultNativeNodeInvariantsEnt}.
      */
@@ -116,6 +124,8 @@ public record DefaultNativeNodeInvariantsEnt(
         private String m_icon;
 
         private NodeFactoryKeyEnt m_nodeFactory;
+
+        private FeatureMetadataEnt m_featureMetadata;
 
         @Override
         public DefaultNativeNodeInvariantsEntBuilder setName(String name) {
@@ -148,12 +158,19 @@ public record DefaultNativeNodeInvariantsEnt(
         }
 
         @Override
+        public DefaultNativeNodeInvariantsEntBuilder setFeatureMetadata(FeatureMetadataEnt featureMetadata) {
+             m_featureMetadata = featureMetadata;
+             return this;
+        }
+
+        @Override
         public DefaultNativeNodeInvariantsEnt build() {
             return new DefaultNativeNodeInvariantsEnt(
                 immutable(m_name),
                 immutable(m_type),
                 immutable(m_icon),
-                immutable(m_nodeFactory));
+                immutable(m_nodeFactory),
+                immutable(m_featureMetadata));
         }
     
     }

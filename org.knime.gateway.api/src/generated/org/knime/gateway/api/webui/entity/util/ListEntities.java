@@ -84,6 +84,7 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
+import org.knime.gateway.api.webui.entity.FeatureMetadataEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
@@ -222,6 +223,7 @@ public class ListEntities {
         res.add(ExampleProjectEnt.class);
         res.add(ExpandCommandEnt.class);
         res.add(ExpandResultEnt.class);
+        res.add(FeatureMetadataEnt.class);
         res.add(InsertNodeCommandEnt.class);
         res.add(JobManagerEnt.class);
         res.add(LinkEnt.class);
@@ -345,6 +347,7 @@ public class ListEntities {
         res.add(ExampleProjectEnt.ExampleProjectEntBuilder.class);
         res.add(ExpandCommandEnt.ExpandCommandEntBuilder.class);
         res.add(ExpandResultEnt.ExpandResultEntBuilder.class);
+        res.add(FeatureMetadataEnt.FeatureMetadataEntBuilder.class);
         res.add(InsertNodeCommandEnt.InsertNodeCommandEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
         res.add(LinkEnt.LinkEntBuilder.class);
