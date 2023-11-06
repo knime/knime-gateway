@@ -42,90 +42,81 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ExtensionEnt;
-import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.DefaultNativeNodeInvariantsEntBuilder;
+import org.knime.gateway.api.webui.entity.VendorEnt;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * The vendor of an extension.
+ *
+ * @param name
+ * @param isKNIME
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-
-@JsonDeserialize(builder=DefaultNativeNodeInvariantsEntBuilder.class)
-@JsonSerialize(as=NativeNodeInvariantsEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
-    
-    @Override
-    @JsonProperty("nodeFactory")
-    public NodeFactoryKeyEnt getNodeFactory();
-    
-    @Override
-    @JsonProperty("extension")
-    public ExtensionEnt getExtension();
-    
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultVendorEnt(
+    String name,
+    Boolean isKNIME) implements VendorEnt {
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * Validation for required parameters not being {@code null}.
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NativeNodeInvariantsEntMixInBuilder extends NativeNodeInvariantsEntBuilder {
-    
-        @Override
-        public NativeNodeInvariantsEntMixIn build();
-    
-        @Override
-        @JsonProperty("name")
-        public NativeNodeInvariantsEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("type")
-        public NativeNodeInvariantsEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("icon")
-        public NativeNodeInvariantsEntMixInBuilder setIcon(final String icon);
-        
-        @Override
-        @JsonProperty("nodeFactory")
-        public NativeNodeInvariantsEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
-        
-        @Override
-        @JsonProperty("extension")
-        public NativeNodeInvariantsEntMixInBuilder setExtension(final ExtensionEnt extension);
-        
+    public DefaultVendorEnt {
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
+        }
     }
 
+    @Override
+    public String getTypeID() {
+        return "Vendor";
+    }
+  
+    @Override
+    public String getName() {
+        return name;
+    }
+    
+    @Override
+    public Boolean isKNIME() {
+        return isKNIME;
+    }
+    
+    /**
+     * A builder for {@link DefaultVendorEnt}.
+     */
+    public static class DefaultVendorEntBuilder implements VendorEntBuilder {
+
+        private String m_name;
+
+        private Boolean m_isKNIME;
+
+        @Override
+        public DefaultVendorEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("<name> must not be null.");
+             }
+             m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultVendorEntBuilder setIsKNIME(Boolean isKNIME) {
+             m_isKNIME = isKNIME;
+             return this;
+        }
+
+        @Override
+        public DefaultVendorEnt build() {
+            return new DefaultVendorEnt(
+                immutable(m_name),
+                immutable(m_isKNIME));
+        }
+    
+    }
 
 }
-

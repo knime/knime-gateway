@@ -84,6 +84,7 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
@@ -147,6 +148,7 @@ import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.VendorEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
@@ -222,6 +224,7 @@ public class ListEntities {
         res.add(ExampleProjectEnt.class);
         res.add(ExpandCommandEnt.class);
         res.add(ExpandResultEnt.class);
+        res.add(ExtensionEnt.class);
         res.add(InsertNodeCommandEnt.class);
         res.add(JobManagerEnt.class);
         res.add(LinkEnt.class);
@@ -285,6 +288,7 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEnt.class);
         res.add(UpdateProjectMetadataCommandEnt.class);
         res.add(UpdateWorkflowAnnotationCommandEnt.class);
+        res.add(VendorEnt.class);
         res.add(WorkflowAnnotationCommandEnt.class);
         res.add(WorkflowAnnotationEnt.class);
         res.add(WorkflowChangedEventEnt.class);
@@ -345,6 +349,7 @@ public class ListEntities {
         res.add(ExampleProjectEnt.ExampleProjectEntBuilder.class);
         res.add(ExpandCommandEnt.ExpandCommandEntBuilder.class);
         res.add(ExpandResultEnt.ExpandResultEntBuilder.class);
+        res.add(ExtensionEnt.ExtensionEntBuilder.class);
         res.add(InsertNodeCommandEnt.InsertNodeCommandEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
         res.add(LinkEnt.LinkEntBuilder.class);
@@ -408,6 +413,7 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class);
         res.add(UpdateProjectMetadataCommandEnt.UpdateProjectMetadataCommandEntBuilder.class);
         res.add(UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder.class);
+        res.add(VendorEnt.VendorEntBuilder.class);
         res.add(WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);
         res.add(WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder.class);

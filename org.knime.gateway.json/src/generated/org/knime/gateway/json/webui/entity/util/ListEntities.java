@@ -84,6 +84,7 @@ import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.ExampleProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.ExpandCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ExpandResultEntMixIn;
+import org.knime.gateway.json.webui.entity.ExtensionEntMixIn;
 import org.knime.gateway.json.webui.entity.InsertNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.JobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
@@ -147,6 +148,7 @@ import org.knime.gateway.json.webui.entity.UpdateInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateNodeLabelCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateProjectMetadataCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateWorkflowAnnotationCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.VendorEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowChangedEventEntMixIn;
@@ -221,6 +223,7 @@ public class ListEntities {
         res.add(ExampleProjectEntMixIn.class);
         res.add(ExpandCommandEntMixIn.class);
         res.add(ExpandResultEntMixIn.class);
+        res.add(ExtensionEntMixIn.class);
         res.add(InsertNodeCommandEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
         res.add(LinkEntMixIn.class);
@@ -284,6 +287,7 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEntMixIn.class);
         res.add(UpdateProjectMetadataCommandEntMixIn.class);
         res.add(UpdateWorkflowAnnotationCommandEntMixIn.class);
+        res.add(VendorEntMixIn.class);
         res.add(WorkflowAnnotationCommandEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
         res.add(WorkflowChangedEventEntMixIn.class);
@@ -344,6 +348,7 @@ public class ListEntities {
         res.add(ExampleProjectEntMixIn.ExampleProjectEntMixInBuilder.class);
         res.add(ExpandCommandEntMixIn.ExpandCommandEntMixInBuilder.class);
         res.add(ExpandResultEntMixIn.ExpandResultEntMixInBuilder.class);
+        res.add(ExtensionEntMixIn.ExtensionEntMixInBuilder.class);
         res.add(InsertNodeCommandEntMixIn.InsertNodeCommandEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
@@ -407,6 +412,7 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEntMixIn.UpdateNodeLabelCommandEntMixInBuilder.class);
         res.add(UpdateProjectMetadataCommandEntMixIn.UpdateProjectMetadataCommandEntMixInBuilder.class);
         res.add(UpdateWorkflowAnnotationCommandEntMixIn.UpdateWorkflowAnnotationCommandEntMixInBuilder.class);
+        res.add(VendorEntMixIn.VendorEntMixInBuilder.class);
         res.add(WorkflowAnnotationCommandEntMixIn.WorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);
         res.add(WorkflowChangedEventEntMixIn.WorkflowChangedEventEntMixInBuilder.class);

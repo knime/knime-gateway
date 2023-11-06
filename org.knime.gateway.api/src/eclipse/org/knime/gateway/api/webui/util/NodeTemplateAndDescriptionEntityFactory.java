@@ -63,6 +63,7 @@ import java.util.stream.Stream;
 
 import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.Node;
+import org.knime.core.node.NodeAndBundleInformationPersistor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -71,8 +72,11 @@ import org.knime.core.node.context.ports.ConfigurablePortGroup;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.port.PortType;
+import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
+import org.knime.gateway.api.webui.entity.ExtensionEnt.ExtensionEntBuilder;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
@@ -88,6 +92,8 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.VendorEnt;
+import org.knime.gateway.api.webui.entity.VendorEnt.VendorEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
@@ -97,6 +103,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
  */
 @SuppressWarnings("static-method")
 public final class NodeTemplateAndDescriptionEntityFactory {
+
+    private static final String KNIME_VENDOR_NAME = "KNIME AG, Zurich, Switzerland";
 
     NodeTemplateAndDescriptionEntityFactory() {
         //
@@ -200,7 +208,26 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .setOutPorts(
                 buildNodePortTemplateEnts(IntStream.range(1, node.getNrOutPorts()).mapToObj(node::getOutputType)))//
             .setIcon(WorkflowEntityFactory.createIconDataURL(factory))//
-            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(factory)).build();
+            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(factory))//
+            .setExtension(buildExtensionEnt(NodeAndBundleInformationPersistor.create(factory))).build();
+    }
+
+    private ExtensionEnt buildExtensionEnt(final NodeAndBundleInformation nodeAndBundleInfo) {
+        var extensionName = nodeAndBundleInfo.getBundleName().orElse(null);
+        var vendorName = nodeAndBundleInfo.getBundleVendor().orElse(null);
+        if (extensionName == null && vendorName == null) {
+            return null;
+        }
+        return builder(ExtensionEntBuilder.class) //
+            .setName(extensionName) //
+            .setVendor(buildVendorEnt(vendorName)) //
+            .build();
+    }
+
+    private VendorEnt buildVendorEnt(final String bundleVendorName) {
+        return builder(VendorEntBuilder.class) //
+            .setName(bundleVendorName) //
+            .setIsKNIME(KNIME_VENDOR_NAME.equals(bundleVendorName) ? Boolean.TRUE : null).build();
     }
 
     private List<NodeDialogOptionDescriptionEnt> buildDialogOptionDescriptionEnts(final List<NodeDescription.DialogOption> opts) {

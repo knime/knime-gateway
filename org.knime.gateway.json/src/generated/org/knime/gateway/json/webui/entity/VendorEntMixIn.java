@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ExtensionEnt;
-import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.DefaultNativeNodeInvariantsEntBuilder;
+import org.knime.gateway.api.webui.entity.VendorEnt;
+import org.knime.gateway.impl.webui.entity.DefaultVendorEnt.DefaultVendorEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,10 +60,10 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.Defaul
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNativeNodeInvariantsEntBuilder.class)
-@JsonSerialize(as=NativeNodeInvariantsEnt.class)
+@JsonDeserialize(builder=DefaultVendorEntBuilder.class)
+@JsonSerialize(as=VendorEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
+public interface VendorEntMixIn extends VendorEnt {
 
     @Override
     @JsonIgnore
@@ -76,20 +74,8 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
     public String getName();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
-    
-    @Override
-    @JsonProperty("nodeFactory")
-    public NodeFactoryKeyEnt getNodeFactory();
-    
-    @Override
-    @JsonProperty("extension")
-    public ExtensionEnt getExtension();
+    @JsonProperty("isKNIME")
+    public Boolean isKNIME();
     
 
     /**
@@ -99,30 +85,18 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NativeNodeInvariantsEntMixInBuilder extends NativeNodeInvariantsEntBuilder {
+    public static interface VendorEntMixInBuilder extends VendorEntBuilder {
     
         @Override
-        public NativeNodeInvariantsEntMixIn build();
+        public VendorEntMixIn build();
     
         @Override
         @JsonProperty("name")
-        public NativeNodeInvariantsEntMixInBuilder setName(final String name);
+        public VendorEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("type")
-        public NativeNodeInvariantsEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("icon")
-        public NativeNodeInvariantsEntMixInBuilder setIcon(final String icon);
-        
-        @Override
-        @JsonProperty("nodeFactory")
-        public NativeNodeInvariantsEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
-        
-        @Override
-        @JsonProperty("extension")
-        public NativeNodeInvariantsEntMixInBuilder setExtension(final ExtensionEnt extension);
+        @JsonProperty("isKNIME")
+        public VendorEntMixInBuilder setIsKNIME(final Boolean isKNIME);
         
     }
 

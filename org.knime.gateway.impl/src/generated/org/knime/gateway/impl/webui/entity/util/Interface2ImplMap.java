@@ -124,6 +124,8 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt.ExpandCommandEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt.ExpandResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
+import org.knime.gateway.api.webui.entity.ExtensionEnt.ExtensionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultExtensionEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
@@ -250,6 +252,8 @@ import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt.Update
 import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.VendorEnt.VendorEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultVendorEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
@@ -413,6 +417,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ExpandResultEntBuilder.class) {
             return (B)new DefaultExpandResultEnt.DefaultExpandResultEntBuilder();
+        }        
+        if(clazz == ExtensionEntBuilder.class) {
+            return (B)new DefaultExtensionEnt.DefaultExtensionEntBuilder();
         }        
         if(clazz == InsertNodeCommandEntBuilder.class) {
             return (B)new DefaultInsertNodeCommandEnt.DefaultInsertNodeCommandEntBuilder();
@@ -602,6 +609,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == UpdateWorkflowAnnotationCommandEntBuilder.class) {
             return (B)new DefaultUpdateWorkflowAnnotationCommandEnt.DefaultUpdateWorkflowAnnotationCommandEntBuilder();
+        }        
+        if(clazz == VendorEntBuilder.class) {
+            return (B)new DefaultVendorEnt.DefaultVendorEntBuilder();
         }        
         if(clazz == WorkflowAnnotationCommandEntBuilder.class) {
             return (B)new DefaultWorkflowAnnotationCommandEnt.DefaultWorkflowAnnotationCommandEntBuilder();

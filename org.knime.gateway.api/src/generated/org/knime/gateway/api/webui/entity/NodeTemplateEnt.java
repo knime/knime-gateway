@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
@@ -99,6 +100,7 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
       valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
+      valueConsumer.accept("extension", Pair.create(getExtension(), e.getExtension()));
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("component", Pair.create(isComponent(), e.isComponent()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
@@ -141,6 +143,14 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
          * @return this entity builder for chaining
          */
         NodeTemplateEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
+        
+        /**
+   		 * Set extension
+         * 
+         * @param extension the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeTemplateEntBuilder setExtension(ExtensionEnt extension);
         
         /**
          * A unique identifier for this template.

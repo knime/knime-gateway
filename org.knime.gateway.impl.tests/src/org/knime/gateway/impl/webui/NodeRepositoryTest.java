@@ -103,6 +103,9 @@ public class NodeRepositoryTest {
         NodeTemplateEnt nodeFromRepo = templates.get(ids.get(0));
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
         assertThat("unexpected name", nodeFromRepo.getName(), is("Column Filter"));
+        assertThat(nodeFromRepo.getExtension().getName(), is("KNIME Base Nodes"));
+        assertThat(nodeFromRepo.getExtension().getVendor().getName(), is("KNIME AG, Zurich, Switzerland"));
+        assertThat(nodeFromRepo.getExtension().getVendor().isKNIME(), is(true));
         NodePortTemplateEnt nodeInPort = nodeFromRepo.getInPorts().get(0);
         assertThat("optional inport", nodeInPort.isOptional(), is(false));
         assertThat("no port name expected", nodeInPort.getName(), is(nullValue()));

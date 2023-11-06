@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 
 import java.util.function.BiConsumer;
@@ -145,6 +146,12 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
    **/
   public NodeFactoryKeyEnt getNodeFactory();
 
+  /**
+   * Get extension
+   * @return extension 
+   **/
+  public ExtensionEnt getExtension();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -154,6 +161,7 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
       valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
+      valueConsumer.accept("extension", Pair.create(getExtension(), e.getExtension()));
   }
 
     /**
@@ -192,6 +200,14 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NativeNodeInvariantsEntBuilder setNodeFactory(NodeFactoryKeyEnt nodeFactory);
+        
+        /**
+   		 * Set extension
+         * 
+         * @param extension the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeInvariantsEntBuilder setExtension(ExtensionEnt extension);
         
         
         /**

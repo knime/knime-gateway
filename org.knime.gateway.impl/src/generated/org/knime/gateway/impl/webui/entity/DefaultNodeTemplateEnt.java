@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt;
@@ -59,6 +60,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
  * @param type
  * @param icon
  * @param nodeFactory
+ * @param extension
  * @param id
  * @param component
  * @param inPorts
@@ -72,6 +74,7 @@ public record DefaultNodeTemplateEnt(
     TypeEnum type,
     String icon,
     NodeFactoryKeyEnt nodeFactory,
+    ExtensionEnt extension,
     String id,
     Boolean component,
     java.util.List<NodePortTemplateEnt> inPorts,
@@ -118,6 +121,11 @@ public record DefaultNodeTemplateEnt(
     }
     
     @Override
+    public ExtensionEnt getExtension() {
+        return extension;
+    }
+    
+    @Override
     public String getId() {
         return id;
     }
@@ -149,6 +157,8 @@ public record DefaultNodeTemplateEnt(
         private String m_icon;
 
         private NodeFactoryKeyEnt m_nodeFactory;
+
+        private ExtensionEnt m_extension;
 
         private String m_id;
 
@@ -189,6 +199,12 @@ public record DefaultNodeTemplateEnt(
         }
 
         @Override
+        public DefaultNodeTemplateEntBuilder setExtension(ExtensionEnt extension) {
+             m_extension = extension;
+             return this;
+        }
+
+        @Override
         public DefaultNodeTemplateEntBuilder setId(String id) {
              if(id == null) {
                  throw new IllegalArgumentException("<id> must not be null.");
@@ -222,6 +238,7 @@ public record DefaultNodeTemplateEnt(
                 immutable(m_type),
                 immutable(m_icon),
                 immutable(m_nodeFactory),
+                immutable(m_extension),
                 immutable(m_id),
                 immutable(m_component),
                 immutable(m_inPorts),

@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ExtensionEnt;
-import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.VendorEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.DefaultNativeNodeInvariantsEntBuilder;
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultExtensionEnt.DefaultExtensionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,10 +61,10 @@ import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt.Defaul
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultNativeNodeInvariantsEntBuilder.class)
-@JsonSerialize(as=NativeNodeInvariantsEnt.class)
+@JsonDeserialize(builder=DefaultExtensionEntBuilder.class)
+@JsonSerialize(as=ExtensionEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
+public interface ExtensionEntMixIn extends ExtensionEnt {
 
     @Override
     @JsonIgnore
@@ -76,20 +75,8 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
     public String getName();
     
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
-    
-    @Override
-    @JsonProperty("nodeFactory")
-    public NodeFactoryKeyEnt getNodeFactory();
-    
-    @Override
-    @JsonProperty("extension")
-    public ExtensionEnt getExtension();
+    @JsonProperty("vendor")
+    public VendorEnt getVendor();
     
 
     /**
@@ -99,30 +86,18 @@ public interface NativeNodeInvariantsEntMixIn extends NativeNodeInvariantsEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface NativeNodeInvariantsEntMixInBuilder extends NativeNodeInvariantsEntBuilder {
+    public static interface ExtensionEntMixInBuilder extends ExtensionEntBuilder {
     
         @Override
-        public NativeNodeInvariantsEntMixIn build();
+        public ExtensionEntMixIn build();
     
         @Override
         @JsonProperty("name")
-        public NativeNodeInvariantsEntMixInBuilder setName(final String name);
+        public ExtensionEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("type")
-        public NativeNodeInvariantsEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("icon")
-        public NativeNodeInvariantsEntMixInBuilder setIcon(final String icon);
-        
-        @Override
-        @JsonProperty("nodeFactory")
-        public NativeNodeInvariantsEntMixInBuilder setNodeFactory(final NodeFactoryKeyEnt nodeFactory);
-        
-        @Override
-        @JsonProperty("extension")
-        public NativeNodeInvariantsEntMixInBuilder setExtension(final ExtensionEnt extension);
+        @JsonProperty("vendor")
+        public ExtensionEntMixInBuilder setVendor(final VendorEnt vendor);
         
     }
 
