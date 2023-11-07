@@ -306,18 +306,18 @@ public interface Space {
     void deleteItems(List<String> itemIds) throws IOException;
 
     /**
-     * Moves the items to the new location within the space.
+     * Moves or copies the items to the new location within the space.
      *
      * @param itemIds The item IDs
      * @param destWorkflowGroupItemId The ID of the new parent item
      * @param collisionHandling How to handle name collisions
-     * @param progressMonitor progress monitor
+     * @param copy copy items instead of move
      * @throws IOException If there was a problem moving the items
      * @throws NoSuchElementException If one of the given item IDs does not exist
      * @throws IllegalArgumentException
      */
-    void moveItems(List<String> itemIds, String destWorkflowGroupItemId, Space.NameCollisionHandling collisionHandling)
-        throws IOException;
+    void moveOrCopyItems(List<String> itemIds, String destWorkflowGroupItemId,
+        Space.NameCollisionHandling collisionHandling, boolean copy) throws IOException;
 
     /**
      * Imports a data file to a workflow group.

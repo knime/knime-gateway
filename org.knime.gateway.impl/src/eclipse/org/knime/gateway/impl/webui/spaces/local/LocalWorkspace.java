@@ -245,7 +245,6 @@ public final class LocalWorkspace implements Space {
             var oldName = sourcePath.getFileName().toString();
             return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
         }
-        var sourceFile = sourcePath.toFile();
         var destinationFile = destinationPath.toFile();
 
         if (destinationFile.exists()) {
@@ -253,6 +252,7 @@ public final class LocalWorkspace implements Space {
         }
 
         try {
+            var sourceFile = sourcePath.toFile();
             var renamingSucceeded = sourceFile.renameTo(destinationFile);
             if (!renamingSucceeded) {
                 throw new IOException("Could not rename item");
@@ -267,8 +267,8 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public void moveItems(final List<String> itemIds, final String destItemId,
-            final Space.NameCollisionHandling collisionHandling) throws IOException {
+    public void moveOrCopyItems(final List<String> itemIds, final String destItemId,
+            final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
         if (itemIds.contains(Space.ROOT_ITEM_ID)) {
             throw new IllegalArgumentException("The root of the space cannot be moved.");
         }
@@ -276,7 +276,7 @@ public final class LocalWorkspace implements Space {
             throw new IllegalArgumentException("Cannot move a space item to itself");
         }
         assertAllItemIdsExistOrElseThrow(
-            Stream.concat(itemIds.stream(), Stream.of(destItemId)).collect(Collectors.toList()));
+            Stream.concat(itemIds.stream(), Stream.of(destItemId)).toList());
         var destPathParent = getAbsolutePath(destItemId);
         if (m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(destPathParent) != TypeEnum.WORKFLOWGROUP) {
             throw new IllegalArgumentException(
@@ -287,7 +287,7 @@ public final class LocalWorkspace implements Space {
         try {
             for (var itemId : itemIds) {
                 var srcPath = m_spaceItemPathAndTypeCache.getPath(itemId);
-                var destPath = moveItem(srcPath, destPathParent, collisionHandling);
+                var destPath = moveItem(srcPath, destPathParent, collisionHandling, copy);
                 newItemIdToPathMap.put(itemId, Pair.create(srcPath, destPath)); // Keep the ones that actually moved
             }
         } finally { // Update map for all the items that were actually moved
@@ -303,7 +303,8 @@ public final class LocalWorkspace implements Space {
     /**
      * @see this#resolveWithNameCollisions(Path, String, NameCollisionHandling, Supplier)
      */
-    private Path resolveWithNameCollisions(final String parentId, final Path filePath, final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
+    private Path resolveWithNameCollisions(final String parentId, final Path filePath,
+            final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(parentId);
         var fileName = filePath.getFileName().toString();
         return resolveWithNameCollisions(parentWorkflowGroupPath, fileName, requestedStrategy, uniqueName);
@@ -313,12 +314,11 @@ public final class LocalWorkspace implements Space {
      * Resolve the given {@code fileName} against the given {@code parentPath}, resolving name collisions as according
      * to {@code requestedStrategy}
      */
-    private Path resolveWithNameCollisions(final Path parentPath, final String fileName, final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
+    private Path resolveWithNameCollisions(final Path parentPath, final String fileName,
+            final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
         return switch(requestedStrategy) {
             case NOOP -> parentPath.resolve(fileName);
-            case AUTORENAME -> {
-                yield parentPath.resolve(uniqueName.get());
-            }
+            case AUTORENAME -> parentPath.resolve(uniqueName.get());
             case OVERWRITE -> {
                 var destination = parentPath.resolve(fileName);
                 deleteItems(List.of(getItemId(destination)));
@@ -388,27 +388,35 @@ public final class LocalWorkspace implements Space {
     }
 
     /**
-     * @return The items path after it was moved.
+     * @return The item's path after it was moved.
      */
     private Path moveItem(final Path srcPath, final Path destPathParent,
-            final Space.NameCollisionHandling collisionHandling) throws IOException {
-        var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(srcPath);
-        var fileName = srcPath.getFileName().toString();
+            final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
+        final var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(srcPath);
+        final var fileName = srcPath.getFileName().toString();
 
-        Supplier<String> uniqueName = () -> {
+        final Supplier<String> uniqueName = () -> {
             var isWorkflowOrWorkflowGroup = type == TypeEnum.WORKFLOW || type == TypeEnum.WORKFLOWGROUP;
             return generateUniqueSpaceItemName(destPathParent, fileName, isWorkflowOrWorkflowGroup);
         };
-        var destPath = resolveWithNameCollisions(destPathParent, srcPath.getFileName().toString(), collisionHandling, uniqueName);
+        final var destPath = resolveWithNameCollisions(destPathParent, srcPath.getFileName().toString(),
+            collisionHandling, uniqueName);
 
         if (Files.exists(destPath)) {
             throw new IOException(
                 String.format("Attempting to overwrite <%s>, name collision handling went wrong.", destPath));
         }
 
-        try { // Moving within the same file system, simple move can be applied
+        if (copy) {
+            FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
+            return destPath;
+        }
+
+        try {
+            // Moving within the same file system, simple move can be applied
             return Files.move(srcPath, destPath, StandardCopyOption.ATOMIC_MOVE);
-        } catch (AtomicMoveNotSupportedException e) { // Moving across different file systems, simple move isn't possible
+        } catch (final AtomicMoveNotSupportedException e) { // NOSONAR no need to log or rethrow
+            // Moving across different file systems, simple move isn't possible
             FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
             FileUtil.deleteRecursively(srcPath.toFile()); // Delete the remaining space item
             return destPath;
@@ -429,7 +437,8 @@ public final class LocalWorkspace implements Space {
         var destPathParent = getAbsolutePath(workflowGroupItemId);
 
         Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(destPathParent, workflowName, true);
-        var destPath = resolveWithNameCollisions(getAbsolutePath(workflowGroupItemId), workflowName, collisionHandling, uniqueName);
+        var destPath = resolveWithNameCollisions(getAbsolutePath(workflowGroupItemId), workflowName, collisionHandling,
+            uniqueName);
 
         if (Files.exists(destPath)) {
             throw new IOException(String.format("Attempting to overwrite <%s>, name collision handling went wrong.",

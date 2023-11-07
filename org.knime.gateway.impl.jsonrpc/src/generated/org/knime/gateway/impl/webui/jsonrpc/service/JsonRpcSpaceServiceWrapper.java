@@ -206,15 +206,15 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "moveItems")
+    @JsonRpcMethod(value = "moveOrCopyItems")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
             data = "IOException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public void moveItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds, @JsonRpcParam(value="destWorkflowGroupItemId") String destWorkflowGroupItemId, @JsonRpcParam(value="collisionHandling") String collisionHandling)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
-        m_service.get().moveItems(spaceId, spaceProviderId, itemIds, destWorkflowGroupItemId, collisionHandling);    
+    public void moveOrCopyItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds, @JsonRpcParam(value="destWorkflowGroupItemId") String destWorkflowGroupItemId, @JsonRpcParam(value="collisionHandling") String collisionHandling, @JsonRpcParam(value="copy") Boolean copy)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+        m_service.get().moveOrCopyItems(spaceId, spaceProviderId, itemIds, destWorkflowGroupItemId, collisionHandling, copy);    
     }
 
 	/**

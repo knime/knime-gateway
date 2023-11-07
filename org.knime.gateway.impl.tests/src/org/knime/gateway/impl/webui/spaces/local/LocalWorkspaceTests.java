@@ -193,8 +193,8 @@ public final class LocalWorkspaceTests {
             workflowGroup);
 
         // Move file and workflow
-        workspace.moveItems(List.of(fileToBeMovedId, workflowInRootToBeMovedId), workflowGroupId,
-            Space.NameCollisionHandling.NOOP);
+        workspace.moveOrCopyItems(List.of(fileToBeMovedId, workflowInRootToBeMovedId), workflowGroupId,
+            Space.NameCollisionHandling.NOOP, false);
 
         // Assert paths are updated
         var newfilePath = workspace.m_spaceItemPathAndTypeCache.getPath(fileToBeMovedId);

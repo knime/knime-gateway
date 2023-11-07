@@ -218,12 +218,9 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void moveItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
-        final String destWorkflowGroupItemId, final String collisionHandling)
+    public void moveOrCopyItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
+        final String destWorkflowGroupItemId, final String collisionHandling, final Boolean copy)
         throws ServiceExceptions.IOException, InvalidRequestException {
         try {
             var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
@@ -235,7 +232,8 @@ public class DefaultSpaceService implements SpaceService {
                             + workflowsToClose);
                 }
             }
-            space.moveItems(itemIds, destWorkflowGroupItemId, NameCollisionHandling.valueOf(collisionHandling));
+            space.moveOrCopyItems(itemIds, destWorkflowGroupItemId, NameCollisionHandling.valueOf(collisionHandling),
+                copy);
         } catch (NoSuchElementException | IllegalArgumentException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
