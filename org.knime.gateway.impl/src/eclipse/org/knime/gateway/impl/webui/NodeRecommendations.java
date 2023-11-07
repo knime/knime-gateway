@@ -51,7 +51,6 @@ package org.knime.gateway.impl.webui;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.knime.core.node.NodeFactory.NodeType;
@@ -79,7 +78,7 @@ public class NodeRecommendations {
 
     private final NodeRepository m_nodeRepo;
 
-    private boolean m_nodeRecommendationManagerIsInitialized = false;
+    private boolean m_nodeRecommendationManagerIsInitialized;
 
     /**
      * Creates a new instance
@@ -103,7 +102,8 @@ public class NodeRecommendations {
      * @throws OperationNotAllowedException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo) throws OperationNotAllowedException {
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
+        throws OperationNotAllowedException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }
@@ -127,7 +127,7 @@ public class NodeRecommendations {
     }
 
     /**
-     * Initializes the {@link NodeRecommendationManager} using the {@link NodeRepository} to build the predicates needed
+     * Initializes the {@link NodeRecommendationManager} using the {@link NodeRepository} to build the function needed
      *
      * @param nodeRepo The node repository
      * @return Exit status of initialization
@@ -143,8 +143,8 @@ public class NodeRecommendations {
     private static NativeNodeContainer getNativeNodeContainer(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId) throws OperationNotAllowedException {
         var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        if (nc instanceof NativeNodeContainer) {
-            return (NativeNodeContainer)nc;
+        if (nc instanceof NativeNodeContainer nnc) {
+            return nnc;
         } else {
             throw new OperationNotAllowedException(
                 "Node recommendations for metanodes or components aren't supported yet");
@@ -160,22 +160,25 @@ public class NodeRecommendations {
     }
 
     private static List<NodeRecommendation> getFlatListOfRecommendations(final NativeNodeContainer nnc) {
-        var recommendations = nnc == null ? NodeRecommendationManager.getInstance().getNodeRecommendationFor()
+        var recommendations = nnc == null //
+            ? NodeRecommendationManager.getInstance().getNodeRecommendationFor() //
             : NodeRecommendationManager.getInstance().getNodeRecommendationFor(NativeNodeContainerWrapper.wrap(nnc));
         var recommendationsWithoutDups =
             NodeRecommendationManager.joinRecommendationsWithoutDuplications(recommendations);
-        return recommendationsWithoutDups.stream().map(ObjectUtils::firstNonNull).collect(Collectors.toList());
+        return recommendationsWithoutDups.stream() //
+            .map(ObjectUtils::firstNonNull) //
+            .toList();
     }
 
     private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final List<NodeRecommendation> recommendations,
         final PortType sourcePortType, final int limit, final boolean fullInfo) {
-        return recommendations.stream()//
-            .map(r -> m_nodeRepo.getNode(r.getFactoryId()))//
-            .filter(Objects::nonNull)
-            .filter(n -> sourcePortType == null || n.isCompatibleWith(sourcePortType))
-            .limit(limit)// Limit the number of results after filtering by port type compatibility
-            .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, fullInfo))//
-            .filter(Objects::nonNull)// `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
-            .collect(Collectors.toList());
+        return recommendations.stream() //
+            .map(r -> m_nodeRepo.getNode(r.getFactoryId())) //
+            .filter(Objects::nonNull) //
+            .filter(n -> sourcePortType == null || n.isCompatibleWith(sourcePortType)) //
+            .limit(limit) // Limit the number of results after filtering by port type compatibility
+            .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, fullInfo)) //
+            .filter(Objects::nonNull) // `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
+            .toList();
     }
 }

@@ -75,7 +75,7 @@ public final class DefaultServicesUtil {
     /**
      * Set all dependencies required by the default service implementations
      *
-     * @param workflowProjectManager
+     * @param projectManager
      * @param workflowMiddleware
      * @param appStateUpdater The application state updater
      * @param eventConsumer The event consumer
@@ -85,8 +85,8 @@ public final class DefaultServicesUtil {
      * @param exampleProjects
      * @param nodeFactoryProvider
      */
-    public static void setDefaultServiceDependencies( // NOSONAR
-        final ProjectManager workflowProjectManager, //
+    public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
+        final ProjectManager projectManager, //
         final WorkflowMiddleware workflowMiddleware, //
         final AppStateUpdater appStateUpdater, //
         final EventConsumer eventConsumer, //
@@ -99,7 +99,7 @@ public final class DefaultServicesUtil {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
             ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
-            ServiceDependencies.setServiceDependency(ProjectManager.class, workflowProjectManager);
+            ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
             ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
             ServiceDependencies.setServiceDependency(UpdateStateProvider.class, updateStateProvider);
             ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
@@ -108,7 +108,8 @@ public final class DefaultServicesUtil {
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "
-                    + "Maybe you already started a Web UI within the AP and have now tried to launch another instance in a browser, or vice versa?");
+                    + "Maybe you already started a Web UI within the AP and have now tried to launch "
+                    + "another instance in a browser, or vice versa?");
         }
     }
 
