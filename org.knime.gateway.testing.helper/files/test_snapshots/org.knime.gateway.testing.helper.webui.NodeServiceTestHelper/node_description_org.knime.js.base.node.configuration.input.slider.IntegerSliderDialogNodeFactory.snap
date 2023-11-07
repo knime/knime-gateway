@@ -1,5 +1,12 @@
 {
   "description" : "Outputs an integer flow variable with a set value from a component's dialog.",
+  "extension" : {
+    "name" : "KNIME Quick Form Nodes",
+    "vendor" : {
+      "isKNIME" : true,
+      "name" : "KNIME AG, Zurich, Switzerland"
+    }
+  },
   "inPorts" : [ {
     "description" : "Input table which contains at least one integer\n\t\t\tcolumn with\tdomain values set, which can be used to control the\n\t\t\tminimum and\tmaximum values of the slider.\n\t\t",
     "name" : "Table Input with applicable domain values",

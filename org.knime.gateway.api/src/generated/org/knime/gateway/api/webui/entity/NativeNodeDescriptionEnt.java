@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
@@ -105,6 +106,12 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
    **/
   public java.util.List<LinkEnt> getLinks();
 
+  /**
+   * Get extension
+   * @return extension 
+   **/
+  public ExtensionEnt getExtension();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -120,6 +127,7 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
       valueConsumer.accept("dynamicOutPortGroupDescriptions", Pair.create(getDynamicOutPortGroupDescriptions(), e.getDynamicOutPortGroupDescriptions()));
       valueConsumer.accept("interactiveView", Pair.create(getInteractiveView(), e.getInteractiveView()));
       valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
+      valueConsumer.accept("extension", Pair.create(getExtension(), e.getExtension()));
   }
 
     /**
@@ -206,6 +214,14 @@ public interface NativeNodeDescriptionEnt extends GatewayEntity, NodeDescription
          * @return this entity builder for chaining
          */
         NativeNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links);
+        
+        /**
+   		 * Set extension
+         * 
+         * @param extension the property value,  
+         * @return this entity builder for chaining
+         */
+        NativeNodeDescriptionEntBuilder setExtension(ExtensionEnt extension);
         
         
         /**

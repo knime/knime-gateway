@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
@@ -115,6 +116,10 @@ public interface NativeNodeDescriptionEntMixIn extends NativeNodeDescriptionEnt 
     @JsonProperty("links")
     public java.util.List<LinkEnt> getLinks();
     
+    @Override
+    @JsonProperty("extension")
+    public ExtensionEnt getExtension();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -167,6 +172,10 @@ public interface NativeNodeDescriptionEntMixIn extends NativeNodeDescriptionEnt 
         @Override
         @JsonProperty("links")
         public NativeNodeDescriptionEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
+        
+        @Override
+        @JsonProperty("extension")
+        public NativeNodeDescriptionEntMixInBuilder setExtension(final ExtensionEnt extension);
         
     }
 

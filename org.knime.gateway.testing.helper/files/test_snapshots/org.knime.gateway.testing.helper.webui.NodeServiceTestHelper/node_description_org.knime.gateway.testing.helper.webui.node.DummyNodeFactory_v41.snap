@@ -14,6 +14,13 @@
     "identifier" : "dynamic out port group one group identifier",
     "name" : "dynamic out port group one name"
   } ],
+  "extension" : {
+    "name" : "Helper for testing gateway API implementation",
+    "vendor" : {
+      "isKNIME" : true,
+      "name" : "KNIME AG, Zurich, Switzerland"
+    }
+  },
   "inPorts" : [ {
     "description" : "static in port one description",
     "name" : "static in port one name",

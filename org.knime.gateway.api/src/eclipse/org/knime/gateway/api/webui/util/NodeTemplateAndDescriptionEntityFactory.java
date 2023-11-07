@@ -187,6 +187,8 @@ public final class NodeTemplateAndDescriptionEntityFactory {
         // links
         builder.setLinks(buildNodeDescriptionLinkEnts(nodeDescription.getLinks()));
 
+        builder.setExtension(buildExtensionEnt(NodeAndBundleInformationPersistor.create(coreNode)));
+
         return builder.build();
     }
 

@@ -1,5 +1,12 @@
 {
   "description" : "\n\t\t\t<p>A bar chart based on the NVD3 library.</p>\n\t\t\t<p>\n            The node supports custom CSS styling. \n            You can simply put CSS rules into a single string and set it as a flow variable 'customCSS' \n            in the node configuration dialog. \n            You will find the list of available classes and their description on our <a href=\"https://knime.com/css-styling\">documentation page</a>.\n            </p>\n\t\t",
+  "extension" : {
+    "name" : "D3 Samples for KNIME Dynamic JavaScript Node Generation",
+    "vendor" : {
+      "isKNIME" : true,
+      "name" : "KNIME AG, Zurich, Switzerland"
+    }
+  },
   "inPorts" : [ {
     "description" : "\n\t\t\tData table containing the categories and values to be plotted in a bar\n\t\t\tchart.\n\t\t",
     "name" : "Display data",

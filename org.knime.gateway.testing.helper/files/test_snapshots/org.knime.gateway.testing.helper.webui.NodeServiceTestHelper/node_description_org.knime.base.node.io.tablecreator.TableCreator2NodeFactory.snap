@@ -1,5 +1,12 @@
 {
   "description" : "\n            Allows the manual creation of a data table. The data can entered \n            in a spreadsheet like table.\n        ",
+  "extension" : {
+    "name" : "KNIME Base Nodes",
+    "vendor" : {
+      "isKNIME" : true,
+      "name" : "KNIME AG, Zurich, Switzerland"
+    }
+  },
   "options" : [ {
     "fields" : [ {
       "description" : "\n        <b>Name</b> and <b>type</b> can be changed. A pattern can be entered \n        that will cause a <b>missing cell</b>. Additionally, possible values of \n        the column domain can be updated by selecting <b>Domain</b>. And, \n        you can choose to <b>skip this column</b> entirely, i.e. it will \n        not be included in the output table then.\n        ",

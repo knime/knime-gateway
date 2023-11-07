@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
@@ -68,6 +69,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
  * @param dynamicOutPortGroupDescriptions
  * @param interactiveView
  * @param links
+ * @param extension
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -82,7 +84,8 @@ public record DefaultNativeNodeDescriptionEnt(
     java.util.List<DynamicPortGroupDescriptionEnt> dynamicInPortGroupDescriptions,
     java.util.List<DynamicPortGroupDescriptionEnt> dynamicOutPortGroupDescriptions,
     NodeViewDescriptionEnt interactiveView,
-    java.util.List<LinkEnt> links) implements NativeNodeDescriptionEnt {
+    java.util.List<LinkEnt> links,
+    ExtensionEnt extension) implements NativeNodeDescriptionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -145,6 +148,11 @@ public record DefaultNativeNodeDescriptionEnt(
         return links;
     }
     
+    @Override
+    public ExtensionEnt getExtension() {
+        return extension;
+    }
+    
     /**
      * A builder for {@link DefaultNativeNodeDescriptionEnt}.
      */
@@ -169,6 +177,8 @@ public record DefaultNativeNodeDescriptionEnt(
         private NodeViewDescriptionEnt m_interactiveView;
 
         private java.util.List<LinkEnt> m_links;
+
+        private ExtensionEnt m_extension;
 
         @Override
         public DefaultNativeNodeDescriptionEntBuilder setOptions(java.util.List<NodeDialogOptionGroupEnt> options) {
@@ -231,6 +241,12 @@ public record DefaultNativeNodeDescriptionEnt(
         }
 
         @Override
+        public DefaultNativeNodeDescriptionEntBuilder setExtension(ExtensionEnt extension) {
+             m_extension = extension;
+             return this;
+        }
+
+        @Override
         public DefaultNativeNodeDescriptionEnt build() {
             return new DefaultNativeNodeDescriptionEnt(
                 immutable(m_options),
@@ -242,7 +258,8 @@ public record DefaultNativeNodeDescriptionEnt(
                 immutable(m_dynamicInPortGroupDescriptions),
                 immutable(m_dynamicOutPortGroupDescriptions),
                 immutable(m_interactiveView),
-                immutable(m_links));
+                immutable(m_links),
+                immutable(m_extension));
         }
     
     }

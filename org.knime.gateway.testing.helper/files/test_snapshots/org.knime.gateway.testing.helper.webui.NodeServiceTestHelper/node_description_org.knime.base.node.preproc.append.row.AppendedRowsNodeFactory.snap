@@ -9,6 +9,13 @@
       "typeId" : "org.knime.core.node.BufferedDataTable"
     } ]
   } ],
+  "extension" : {
+    "name" : "KNIME Base Nodes",
+    "vendor" : {
+      "isKNIME" : true,
+      "name" : "KNIME AG, Zurich, Switzerland"
+    }
+  },
   "inPorts" : [ {
     "description" : "Table contributing the rows of the first part of the output table.",
     "name" : "First table to concatenate",
