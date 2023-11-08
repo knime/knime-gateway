@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
 import java.util.function.BiConsumer;
@@ -65,10 +66,10 @@ public interface MetaPortsEnt extends GatewayEntity {
 
 
   /**
-   * The horizontal position of the ports(-bar).
-   * @return xPos 
+   * Get bounds
+   * @return bounds 
    **/
-  public Integer getXPos();
+  public BoundsEnt getBounds();
 
   /**
    * Get ports
@@ -81,7 +82,7 @@ public interface MetaPortsEnt extends GatewayEntity {
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (MetaPortsEnt)other;
-      valueConsumer.accept("xPos", Pair.create(getXPos(), e.getXPos()));
+      valueConsumer.accept("bounds", Pair.create(getBounds(), e.getBounds()));
       valueConsumer.accept("ports", Pair.create(getPorts(), e.getPorts()));
   }
 
@@ -91,12 +92,12 @@ public interface MetaPortsEnt extends GatewayEntity {
     public interface MetaPortsEntBuilder extends GatewayEntityBuilder<MetaPortsEnt> {
 
         /**
-         * The horizontal position of the ports(-bar).
+   		 * Set bounds
          * 
-         * @param xPos the property value,  
+         * @param bounds the property value,  
          * @return this entity builder for chaining
          */
-        MetaPortsEntBuilder setXPos(Integer xPos);
+        MetaPortsEntBuilder setBounds(BoundsEnt bounds);
         
         /**
    		 * Set ports

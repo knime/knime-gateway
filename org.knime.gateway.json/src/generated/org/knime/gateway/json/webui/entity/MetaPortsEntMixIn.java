@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
 
@@ -71,8 +72,8 @@ public interface MetaPortsEntMixIn extends MetaPortsEnt {
     public String getTypeID();
 
     @Override
-    @JsonProperty("xPos")
-    public Integer getXPos();
+    @JsonProperty("bounds")
+    public BoundsEnt getBounds();
     
     @Override
     @JsonProperty("ports")
@@ -92,8 +93,8 @@ public interface MetaPortsEntMixIn extends MetaPortsEnt {
         public MetaPortsEntMixIn build();
     
         @Override
-        @JsonProperty("xPos")
-        public MetaPortsEntMixInBuilder setXPos(final Integer xPos);
+        @JsonProperty("bounds")
+        public MetaPortsEntMixInBuilder setBounds(final BoundsEnt bounds);
         
         @Override
         @JsonProperty("ports")

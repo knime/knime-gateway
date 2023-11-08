@@ -63,6 +63,12 @@
     } ]
   },
   "metaOutPorts" : {
+    "bounds" : {
+      "height" : 321,
+      "width" : 50,
+      "x" : 780,
+      "y" : 0
+    },
     "ports" : [ {
       "canRemove" : false,
       "connectedVia" : "[ root:6_0 ]",
@@ -81,8 +87,7 @@
       "index" : 2,
       "name" : "Inport 2",
       "typeId" : "org.knime.core.node.BufferedDataTable"
-    } ],
-    "xPos" : 780
+    } ]
   },
   "nodeTemplates" : {
     "org.knime.base.node.preproc.filter.row.RowFilter2PortNodeFactory" : {

@@ -720,7 +720,9 @@ public final class WorkflowEntityFactory {
 
         NodeUIInformation barUIInfo = incoming ? wfm.getInPortsBarUIInfo() : wfm.getOutPortsBarUIInfo();
         if (barUIInfo != null) {
-            builder.setXPos(barUIInfo.getBounds()[0]);
+            var bounds = barUIInfo.getBounds();
+            builder.setBounds(builder(BoundsEntBuilder.class).setX(bounds[0]).setY(bounds[1]).setWidth(bounds[2])
+                .setHeight(bounds[3]).build());
         }
         return builder.build();
     }

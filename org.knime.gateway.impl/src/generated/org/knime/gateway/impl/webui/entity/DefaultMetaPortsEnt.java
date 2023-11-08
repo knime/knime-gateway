@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
@@ -53,14 +54,14 @@ import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 /**
  * Describes the ports(-bar) leading into or leaving a metanode&#39;s workflow. Is not given if there aren&#39;t any metanode inputs/outputs or if it&#39;s not a metanode&#39;s workflow (but a component&#39;s workflow or the root).
  *
- * @param xPos
+ * @param bounds
  * @param ports
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultMetaPortsEnt(
-    Integer xPos,
+    BoundsEnt bounds,
     java.util.List<NodePortEnt> ports) implements MetaPortsEnt {
 
     /**
@@ -75,8 +76,8 @@ public record DefaultMetaPortsEnt(
     }
   
     @Override
-    public Integer getXPos() {
-        return xPos;
+    public BoundsEnt getBounds() {
+        return bounds;
     }
     
     @Override
@@ -89,13 +90,13 @@ public record DefaultMetaPortsEnt(
      */
     public static class DefaultMetaPortsEntBuilder implements MetaPortsEntBuilder {
 
-        private Integer m_xPos;
+        private BoundsEnt m_bounds;
 
         private java.util.List<NodePortEnt> m_ports;
 
         @Override
-        public DefaultMetaPortsEntBuilder setXPos(Integer xPos) {
-             m_xPos = xPos;
+        public DefaultMetaPortsEntBuilder setBounds(BoundsEnt bounds) {
+             m_bounds = bounds;
              return this;
         }
 
@@ -108,7 +109,7 @@ public record DefaultMetaPortsEnt(
         @Override
         public DefaultMetaPortsEnt build() {
             return new DefaultMetaPortsEnt(
-                immutable(m_xPos),
+                immutable(m_bounds),
                 immutable(m_ports));
         }
     
