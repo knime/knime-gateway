@@ -56,7 +56,6 @@ import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeProgressMonitor;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
@@ -863,8 +862,8 @@ public final class WorkflowEntityFactory {
             nodeFactoryKeyBuilder.setClassName(factorySpec.className());
             // only set settings in case of a dynamic node factory
             if (factorySpec.factorySettings() != null) {
-                var settings = new NodeSettings("settings");
-                nodeFactoryKeyBuilder.setSettings(JSONConfig.toJSONString(settings, WriterConfig.DEFAULT));
+                nodeFactoryKeyBuilder
+                    .setSettings(JSONConfig.toJSONString(factorySpec.factorySettings(), WriterConfig.DEFAULT));
             }
         } else {
             nodeFactoryKeyBuilder.setClassName("");
