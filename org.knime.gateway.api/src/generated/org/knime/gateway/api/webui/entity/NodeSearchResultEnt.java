@@ -77,6 +77,12 @@ public interface NodeSearchResultEnt extends GatewayEntity {
   public Integer getTotalNumNodes();
 
   /**
+   * The total number of founds nodes (depending on the actual search query) in the complementary partitions to the one currently selected
+   * @return totalNonPartitionNodes 
+   **/
+  public Integer getTotalNonPartitionNodes();
+
+  /**
    * The union of the tags of all the nodes in the search result (i.e. also including the nodes that might not be explicitly listed as part of this search result instance). The tags are sorted by their frequency of how many nodes nodes (in the search result) carry that particular tag.
    * @return tags , never <code>null</code>
    **/
@@ -89,6 +95,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
       var e = (NodeSearchResultEnt)other;
       valueConsumer.accept("nodes", Pair.create(getNodes(), e.getNodes()));
       valueConsumer.accept("totalNumNodes", Pair.create(getTotalNumNodes(), e.getTotalNumNodes()));
+      valueConsumer.accept("totalNonPartitionNodes", Pair.create(getTotalNonPartitionNodes(), e.getTotalNonPartitionNodes()));
       valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
   }
 
@@ -112,6 +119,14 @@ public interface NodeSearchResultEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeSearchResultEntBuilder setTotalNumNodes(Integer totalNumNodes);
+        
+        /**
+         * The total number of founds nodes (depending on the actual search query) in the complementary partitions to the one currently selected
+         * 
+         * @param totalNonPartitionNodes the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeSearchResultEntBuilder setTotalNonPartitionNodes(Integer totalNonPartitionNodes);
         
         /**
          * The union of the tags of all the nodes in the search result (i.e. also including the nodes that might not be explicitly listed as part of this search result instance). The tags are sorted by their frequency of how many nodes nodes (in the search result) carry that particular tag.

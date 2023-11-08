@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
  *
  * @param nodes
  * @param totalNumNodes
+ * @param totalNonPartitionNodes
  * @param tags
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -63,6 +64,7 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 public record DefaultNodeSearchResultEnt(
     java.util.List<NodeTemplateEnt> nodes,
     Integer totalNumNodes,
+    Integer totalNonPartitionNodes,
     java.util.List<String> tags) implements NodeSearchResultEnt {
 
     /**
@@ -96,6 +98,11 @@ public record DefaultNodeSearchResultEnt(
     }
     
     @Override
+    public Integer getTotalNonPartitionNodes() {
+        return totalNonPartitionNodes;
+    }
+    
+    @Override
     public java.util.List<String> getTags() {
         return tags;
     }
@@ -108,6 +115,8 @@ public record DefaultNodeSearchResultEnt(
         private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
 
         private Integer m_totalNumNodes;
+
+        private Integer m_totalNonPartitionNodes;
 
         private java.util.List<String> m_tags = new java.util.ArrayList<>();
 
@@ -130,6 +139,12 @@ public record DefaultNodeSearchResultEnt(
         }
 
         @Override
+        public DefaultNodeSearchResultEntBuilder setTotalNonPartitionNodes(Integer totalNonPartitionNodes) {
+             m_totalNonPartitionNodes = totalNonPartitionNodes;
+             return this;
+        }
+
+        @Override
         public DefaultNodeSearchResultEntBuilder setTags(java.util.List<String> tags) {
              if(tags == null) {
                  throw new IllegalArgumentException("<tags> must not be null.");
@@ -143,6 +158,7 @@ public record DefaultNodeSearchResultEnt(
             return new DefaultNodeSearchResultEnt(
                 immutable(m_nodes),
                 immutable(m_totalNumNodes),
+                immutable(m_totalNonPartitionNodes),
                 immutable(m_tags));
         }
     
