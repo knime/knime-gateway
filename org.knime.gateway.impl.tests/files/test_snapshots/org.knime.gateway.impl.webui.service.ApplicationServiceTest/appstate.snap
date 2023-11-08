@@ -64,9 +64,9 @@
     "svg" : "c3ZnIGZpbGUgY29udGVudCAy"
   } ],
   "featureFlags" : {
+    "org.knime.ui.feature.ai_assistant" : true,
     "org.knime.ui.feature.ai_assistant_installed" : false,
-    "org.knime.ui.feature.embedded_views_and_dialogs" : false,
-    "org.knime.ui.feature.promote_ai_assistant" : true
+    "org.knime.ui.feature.embedded_views_and_dialogs" : false
   },
   "openProjects" : [ {
     "activeWorkflowId" : "root",

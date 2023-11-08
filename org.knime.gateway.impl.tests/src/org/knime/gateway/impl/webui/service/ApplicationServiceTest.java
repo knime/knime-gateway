@@ -119,7 +119,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         var appService = DefaultApplicationService.getInstance();
 
         var featureFlagKeyF1 = "org.knime.ui.feature.embedded_views_and_dialogs";
-        var featureFlagKeyF2 = "org.knime.ui.feature.promote_ai_assistant";
+        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant";
         var featureFlagKeyF3 = "org.knime.ui.feature.ai_assistant_installed";
 
         var appStateEnt = appService.getState();
@@ -146,7 +146,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         var appService = DefaultApplicationService.getInstance();
 
         var featureFlagKeyF1 = "org.knime.ui.feature.embedded_views_and_dialogs";
-        var featureFlagKeyF2 = "org.knime.ui.feature.promote_ai_assistant";
+        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant";
         var featureFlagKeyF3 = "org.knime.ui.feature.ai_assistant_installed";
 
         System.setProperty(featureFlagKeyF1, "true");
