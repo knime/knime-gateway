@@ -78,7 +78,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
 
   /**
    * The total number of founds nodes (depending on the actual search query) in the complementary partitions to the one currently selected
-   * @return totalNonPartitionNodes 
+   * @return totalNonPartitionNodes , never <code>null</code>
    **/
   public Integer getTotalNonPartitionNodes();
 
@@ -123,7 +123,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
         /**
          * The total number of founds nodes (depending on the actual search query) in the complementary partitions to the one currently selected
          * 
-         * @param totalNonPartitionNodes the property value,  
+         * @param totalNonPartitionNodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodeSearchResultEntBuilder setTotalNonPartitionNodes(Integer totalNonPartitionNodes);

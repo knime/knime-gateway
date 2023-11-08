@@ -77,6 +77,9 @@ public record DefaultNodeSearchResultEnt(
         if(totalNumNodes == null) {
             throw new IllegalArgumentException("<totalNumNodes> must not be null.");
         }
+        if(totalNonPartitionNodes == null) {
+            throw new IllegalArgumentException("<totalNonPartitionNodes> must not be null.");
+        }
         if(tags == null) {
             throw new IllegalArgumentException("<tags> must not be null.");
         }
@@ -140,6 +143,9 @@ public record DefaultNodeSearchResultEnt(
 
         @Override
         public DefaultNodeSearchResultEntBuilder setTotalNonPartitionNodes(Integer totalNonPartitionNodes) {
+             if(totalNonPartitionNodes == null) {
+                 throw new IllegalArgumentException("<totalNonPartitionNodes> must not be null.");
+             }
              m_totalNonPartitionNodes = totalNonPartitionNodes;
              return this;
         }
