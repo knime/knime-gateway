@@ -66,6 +66,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param hasNodeCollectionActive
  * @param devMode
  * @param fileExtensionToNodeTemplateId
+ * @param nodeRepositoryLoaded
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -81,7 +82,8 @@ public record DefaultAppStateEnt(
     Boolean scrollToZoomEnabled,
     Boolean hasNodeCollectionActive,
     Boolean devMode,
-    java.util.Map<String, String> fileExtensionToNodeTemplateId) implements AppStateEnt {
+    java.util.Map<String, String> fileExtensionToNodeTemplateId,
+    Boolean nodeRepositoryLoaded) implements AppStateEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -149,6 +151,11 @@ public record DefaultAppStateEnt(
         return fileExtensionToNodeTemplateId;
     }
     
+    @Override
+    public Boolean isNodeRepositoryLoaded() {
+        return nodeRepositoryLoaded;
+    }
+    
     /**
      * A builder for {@link DefaultAppStateEnt}.
      */
@@ -175,6 +182,8 @@ public record DefaultAppStateEnt(
         private Boolean m_devMode;
 
         private java.util.Map<String, String> m_fileExtensionToNodeTemplateId;
+
+        private Boolean m_nodeRepositoryLoaded;
 
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects) {
@@ -243,6 +252,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setNodeRepositoryLoaded(Boolean nodeRepositoryLoaded) {
+             m_nodeRepositoryLoaded = nodeRepositoryLoaded;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
                 immutable(m_openProjects),
@@ -255,7 +270,8 @@ public record DefaultAppStateEnt(
                 immutable(m_scrollToZoomEnabled),
                 immutable(m_hasNodeCollectionActive),
                 immutable(m_devMode),
-                immutable(m_fileExtensionToNodeTemplateId));
+                immutable(m_fileExtensionToNodeTemplateId),
+                immutable(m_nodeRepositoryLoaded));
         }
     
     }

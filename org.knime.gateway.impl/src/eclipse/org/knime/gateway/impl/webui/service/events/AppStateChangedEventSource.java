@@ -49,6 +49,8 @@ package org.knime.gateway.impl.webui.service.events;
 import java.util.List;
 import java.util.Optional;
 
+import org.knime.core.node.extension.NodeSpecCollectionProvider;
+import org.knime.core.node.extension.NodeSpecCollectionProvider.Progress.ProgressEvent;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt.AppStateChangedEventEntBuilder;
@@ -114,6 +116,10 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
         m_appStateUpdater.addAppStateChangedListener(m_callback);
 
+        if (!NodeSpecCollectionProvider.Progress.isDone()) {
+            NodeSpecCollectionProvider.Progress.addListener(this::handleProgressEvent);
+        }
+
         if (m_workflowProjectManager.getDirtyProjectsMap().size() > 0) {
             var appStateEvent = EntityBuilderManager.builder(AppStateChangedEventEntBuilder.class)
                 .setAppState(EntityBuilderManager.builder(AppStateEntBuilder.class).build()).build();
@@ -125,6 +131,12 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
             return Optional.of(compositeEvent);
         } else {
             return Optional.empty();
+        }
+    }
+
+    private void handleProgressEvent(final ProgressEvent progressEvent) {
+        if (progressEvent.isDone()) {
+            m_callback.run();
         }
     }
 

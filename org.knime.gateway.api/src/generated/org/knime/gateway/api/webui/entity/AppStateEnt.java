@@ -132,6 +132,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public java.util.Map<String, String> getFileExtensionToNodeTemplateId();
 
+  /**
+   * Whether the node repository is loaded (and ready to be used) or not.
+   * @return nodeRepositoryLoaded 
+   **/
+  public Boolean isNodeRepositoryLoaded();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -148,6 +154,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
       valueConsumer.accept("fileExtensionToNodeTemplateId", Pair.create(getFileExtensionToNodeTemplateId(), e.getFileExtensionToNodeTemplateId()));
+      valueConsumer.accept("nodeRepositoryLoaded", Pair.create(isNodeRepositoryLoaded(), e.isNodeRepositoryLoaded()));
   }
 
     /**
@@ -242,6 +249,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setFileExtensionToNodeTemplateId(java.util.Map<String, String> fileExtensionToNodeTemplateId);
+        
+        /**
+         * Whether the node repository is loaded (and ready to be used) or not.
+         * 
+         * @param nodeRepositoryLoaded the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setNodeRepositoryLoaded(Boolean nodeRepositoryLoaded);
         
         
         /**

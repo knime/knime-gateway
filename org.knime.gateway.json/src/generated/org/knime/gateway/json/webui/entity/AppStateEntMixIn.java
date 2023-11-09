@@ -116,6 +116,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("fileExtensionToNodeTemplateId")
     public java.util.Map<String, String> getFileExtensionToNodeTemplateId();
     
+    @Override
+    @JsonProperty("nodeRepositoryLoaded")
+    public Boolean isNodeRepositoryLoaded();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -172,6 +176,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("fileExtensionToNodeTemplateId")
         public AppStateEntMixInBuilder setFileExtensionToNodeTemplateId(final java.util.Map<String, String> fileExtensionToNodeTemplateId);
+        
+        @Override
+        @JsonProperty("nodeRepositoryLoaded")
+        public AppStateEntMixInBuilder setNodeRepositoryLoaded(final Boolean nodeRepositoryLoaded);
         
     }
 

@@ -68,6 +68,7 @@ import java.util.stream.Collectors;
 
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
@@ -196,6 +197,7 @@ public final class AppStateEntityFactory {
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setFileExtensionToNodeTemplateId(nodeFactoryProvider == null ? Collections.emptyMap()
                 : nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
+            .setNodeRepositoryLoaded(NodeSpecCollectionProvider.Progress.isDone()) //
             .build();
 
     }
@@ -218,6 +220,8 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeRecommendationsEnabled,
                 builder::setHasNodeRecommendationsEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isScrollToZoomEnabled, builder::setScrollToZoomEnabled);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
+                builder::setNodeRepositoryLoaded);
             return builder.build();
         }
     }
