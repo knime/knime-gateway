@@ -173,7 +173,7 @@ public interface SpaceProvider {
     /**
      * Represents a connection of a space provider to its remote location (e.g. a Hub).
      */
-    public interface SpaceProviderConnection {
+    interface SpaceProviderConnection {
 
         /**
          * @return the user that is connected
@@ -186,5 +186,23 @@ public interface SpaceProvider {
         void disconnect();
 
     }
+
+    /**
+     * Resolves the space item and its containing space given an absolute KNIME URI.
+     *
+     * @param uri uri of item to resolve
+     * @return resolved item or {@link Optional#empty()} if item could not be resolved by this space provider
+     */
+    default Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) {
+        return Optional.empty();
+    }
+
+    /**
+     * Location of a space item in the context of this space provider.
+     *
+     * @param spaceId ID of the space containing the item
+     * @param itemId ID of the item itself
+     */
+    public record SpaceAndItemId(String spaceId, String itemId) {}
 
 }
