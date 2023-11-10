@@ -157,7 +157,7 @@ public class NodeSearch {
 
         var fn = Normalizer.identity();
         final Collection<Node> allNodes;
-        Collection<Node> complementSetNodes = Collections.emptySet();
+        boolean hasMoreNodes = false;
         if (q != null && q.endsWith("//hidden")) {
             fn = t -> t.replace("//hidden", "");
             allNodes = m_nodeRepo.getHiddenNodes();
@@ -167,11 +167,11 @@ public class NodeSearch {
         } else if (partition == NodePartition.IN_COLLECTION) {
             // Only consider the nodes that are part of the collection
             allNodes = m_nodeRepo.getNodes();
-            complementSetNodes = m_nodeRepo.getAdditionalNodes();
+            hasMoreNodes = true;
         } else if (partition == NodePartition.NOT_IN_COLLECTION) {
             // Only consider the nodes that are NOT part of the collection
             allNodes = m_nodeRepo.getAdditionalNodes();
-            complementSetNodes = m_nodeRepo.getNodes();
+            hasMoreNodes = true;
         } else {
             // Consider all nodes regardless their collection membership
             allNodes = CollectionUtils.union(m_nodeRepo.getNodes(), m_nodeRepo.getAdditionalNodes());
@@ -183,7 +183,6 @@ public class NodeSearch {
         final var normalizer = Normalizer.DEFAULT_NORMALIZATION.compose(fn);
         final var foundNodes =
             m_foundNodesCache.computeIfAbsent(searchQuery, query -> searchNodes(allNodes, query, normalizer));
-        final var nonPartitionNodes = searchNodes(complementSetNodes, searchQuery, normalizer);
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
@@ -201,11 +200,18 @@ public class NodeSearch {
             .map(Entry::getKey)//
             .collect(Collectors.toList());
 
+        Integer numFilteredNodesFound = null;
+        if (foundNodes.isEmpty() && hasMoreNodes) {
+            var complementSetNodes =
+                partition == NodePartition.IN_COLLECTION ? m_nodeRepo.getAdditionalNodes() : m_nodeRepo.getNodes();
+            numFilteredNodesFound = searchNodes(complementSetNodes, searchQuery, normalizer).size();
+        }
+
         return builder(NodeSearchResultEntBuilder.class)//
             .setNodes(templates)//
             .setTags(resTags)//
-            .setTotalNumNodes(foundNodes.size())//
-            .setTotalNonPartitionNodes(nonPartitionNodes.size())//
+            .setTotalNumNodesFound(foundNodes.size())//
+            .setTotalNumFilteredNodesFound(numFilteredNodesFound)//
             .build();
     }
 

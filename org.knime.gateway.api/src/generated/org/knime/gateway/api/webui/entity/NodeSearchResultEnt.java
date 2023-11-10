@@ -72,15 +72,15 @@ public interface NodeSearchResultEnt extends GatewayEntity {
 
   /**
    * The total number of found nodes (depending on the actual search query). Not all nodes might be included because of used offsets or limits (pagination) used for the search.
-   * @return totalNumNodes , never <code>null</code>
+   * @return totalNumNodesFound , never <code>null</code>
    **/
-  public Integer getTotalNumNodes();
+  public Integer getTotalNumNodesFound();
 
   /**
-   * The total number of founds nodes (depending on the actual search query) in the complementary partitions to the one currently selected
-   * @return totalNonPartitionNodes , never <code>null</code>
+   * The total number of nodes that match the search criteria but were filtered out by the requested partion. Not given, if totalNumNodesFound &gt; 0!
+   * @return totalNumFilteredNodesFound 
    **/
-  public Integer getTotalNonPartitionNodes();
+  public Integer getTotalNumFilteredNodesFound();
 
   /**
    * The union of the tags of all the nodes in the search result (i.e. also including the nodes that might not be explicitly listed as part of this search result instance). The tags are sorted by their frequency of how many nodes nodes (in the search result) carry that particular tag.
@@ -94,8 +94,8 @@ public interface NodeSearchResultEnt extends GatewayEntity {
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (NodeSearchResultEnt)other;
       valueConsumer.accept("nodes", Pair.create(getNodes(), e.getNodes()));
-      valueConsumer.accept("totalNumNodes", Pair.create(getTotalNumNodes(), e.getTotalNumNodes()));
-      valueConsumer.accept("totalNonPartitionNodes", Pair.create(getTotalNonPartitionNodes(), e.getTotalNonPartitionNodes()));
+      valueConsumer.accept("totalNumNodesFound", Pair.create(getTotalNumNodesFound(), e.getTotalNumNodesFound()));
+      valueConsumer.accept("totalNumFilteredNodesFound", Pair.create(getTotalNumFilteredNodesFound(), e.getTotalNumFilteredNodesFound()));
       valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
   }
 
@@ -115,18 +115,18 @@ public interface NodeSearchResultEnt extends GatewayEntity {
         /**
          * The total number of found nodes (depending on the actual search query). Not all nodes might be included because of used offsets or limits (pagination) used for the search.
          * 
-         * @param totalNumNodes the property value, NOT <code>null</code>! 
+         * @param totalNumNodesFound the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeSearchResultEntBuilder setTotalNumNodes(Integer totalNumNodes);
+        NodeSearchResultEntBuilder setTotalNumNodesFound(Integer totalNumNodesFound);
         
         /**
-         * The total number of founds nodes (depending on the actual search query) in the complementary partitions to the one currently selected
+         * The total number of nodes that match the search criteria but were filtered out by the requested partion. Not given, if totalNumNodesFound &gt; 0!
          * 
-         * @param totalNonPartitionNodes the property value, NOT <code>null</code>! 
+         * @param totalNumFilteredNodesFound the property value,  
          * @return this entity builder for chaining
          */
-        NodeSearchResultEntBuilder setTotalNonPartitionNodes(Integer totalNonPartitionNodes);
+        NodeSearchResultEntBuilder setTotalNumFilteredNodesFound(Integer totalNumFilteredNodesFound);
         
         /**
          * The union of the tags of all the nodes in the search result (i.e. also including the nodes that might not be explicitly listed as part of this search result instance). The tags are sorted by their frequency of how many nodes nodes (in the search result) carry that particular tag.

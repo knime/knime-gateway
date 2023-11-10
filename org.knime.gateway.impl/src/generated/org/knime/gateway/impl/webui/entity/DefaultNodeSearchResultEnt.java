@@ -54,8 +54,8 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
  * Represents the result of a node/component search in the node repository.
  *
  * @param nodes
- * @param totalNumNodes
- * @param totalNonPartitionNodes
+ * @param totalNumNodesFound
+ * @param totalNumFilteredNodesFound
  * @param tags
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -63,8 +63,8 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultNodeSearchResultEnt(
     java.util.List<NodeTemplateEnt> nodes,
-    Integer totalNumNodes,
-    Integer totalNonPartitionNodes,
+    Integer totalNumNodesFound,
+    Integer totalNumFilteredNodesFound,
     java.util.List<String> tags) implements NodeSearchResultEnt {
 
     /**
@@ -74,11 +74,8 @@ public record DefaultNodeSearchResultEnt(
         if(nodes == null) {
             throw new IllegalArgumentException("<nodes> must not be null.");
         }
-        if(totalNumNodes == null) {
-            throw new IllegalArgumentException("<totalNumNodes> must not be null.");
-        }
-        if(totalNonPartitionNodes == null) {
-            throw new IllegalArgumentException("<totalNonPartitionNodes> must not be null.");
+        if(totalNumNodesFound == null) {
+            throw new IllegalArgumentException("<totalNumNodesFound> must not be null.");
         }
         if(tags == null) {
             throw new IllegalArgumentException("<tags> must not be null.");
@@ -96,13 +93,13 @@ public record DefaultNodeSearchResultEnt(
     }
     
     @Override
-    public Integer getTotalNumNodes() {
-        return totalNumNodes;
+    public Integer getTotalNumNodesFound() {
+        return totalNumNodesFound;
     }
     
     @Override
-    public Integer getTotalNonPartitionNodes() {
-        return totalNonPartitionNodes;
+    public Integer getTotalNumFilteredNodesFound() {
+        return totalNumFilteredNodesFound;
     }
     
     @Override
@@ -117,9 +114,9 @@ public record DefaultNodeSearchResultEnt(
 
         private java.util.List<NodeTemplateEnt> m_nodes = new java.util.ArrayList<>();
 
-        private Integer m_totalNumNodes;
+        private Integer m_totalNumNodesFound;
 
-        private Integer m_totalNonPartitionNodes;
+        private Integer m_totalNumFilteredNodesFound;
 
         private java.util.List<String> m_tags = new java.util.ArrayList<>();
 
@@ -133,20 +130,17 @@ public record DefaultNodeSearchResultEnt(
         }
 
         @Override
-        public DefaultNodeSearchResultEntBuilder setTotalNumNodes(Integer totalNumNodes) {
-             if(totalNumNodes == null) {
-                 throw new IllegalArgumentException("<totalNumNodes> must not be null.");
+        public DefaultNodeSearchResultEntBuilder setTotalNumNodesFound(Integer totalNumNodesFound) {
+             if(totalNumNodesFound == null) {
+                 throw new IllegalArgumentException("<totalNumNodesFound> must not be null.");
              }
-             m_totalNumNodes = totalNumNodes;
+             m_totalNumNodesFound = totalNumNodesFound;
              return this;
         }
 
         @Override
-        public DefaultNodeSearchResultEntBuilder setTotalNonPartitionNodes(Integer totalNonPartitionNodes) {
-             if(totalNonPartitionNodes == null) {
-                 throw new IllegalArgumentException("<totalNonPartitionNodes> must not be null.");
-             }
-             m_totalNonPartitionNodes = totalNonPartitionNodes;
+        public DefaultNodeSearchResultEntBuilder setTotalNumFilteredNodesFound(Integer totalNumFilteredNodesFound) {
+             m_totalNumFilteredNodesFound = totalNumFilteredNodesFound;
              return this;
         }
 
@@ -163,8 +157,8 @@ public record DefaultNodeSearchResultEnt(
         public DefaultNodeSearchResultEnt build() {
             return new DefaultNodeSearchResultEnt(
                 immutable(m_nodes),
-                immutable(m_totalNumNodes),
-                immutable(m_totalNonPartitionNodes),
+                immutable(m_totalNumNodesFound),
+                immutable(m_totalNumFilteredNodesFound),
                 immutable(m_tags));
         }
     

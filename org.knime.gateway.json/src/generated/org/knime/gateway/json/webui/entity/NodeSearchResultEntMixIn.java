@@ -75,12 +75,12 @@ public interface NodeSearchResultEntMixIn extends NodeSearchResultEnt {
     public java.util.List<NodeTemplateEnt> getNodes();
     
     @Override
-    @JsonProperty("totalNumNodes")
-    public Integer getTotalNumNodes();
+    @JsonProperty("totalNumNodesFound")
+    public Integer getTotalNumNodesFound();
     
     @Override
-    @JsonProperty("totalNonPartitionNodes")
-    public Integer getTotalNonPartitionNodes();
+    @JsonProperty("totalNumFilteredNodesFound")
+    public Integer getTotalNumFilteredNodesFound();
     
     @Override
     @JsonProperty("tags")
@@ -104,12 +104,12 @@ public interface NodeSearchResultEntMixIn extends NodeSearchResultEnt {
         public NodeSearchResultEntMixInBuilder setNodes(final java.util.List<NodeTemplateEnt> nodes);
         
         @Override
-        @JsonProperty("totalNumNodes")
-        public NodeSearchResultEntMixInBuilder setTotalNumNodes(final Integer totalNumNodes);
+        @JsonProperty("totalNumNodesFound")
+        public NodeSearchResultEntMixInBuilder setTotalNumNodesFound(final Integer totalNumNodesFound);
         
         @Override
-        @JsonProperty("totalNonPartitionNodes")
-        public NodeSearchResultEntMixInBuilder setTotalNonPartitionNodes(final Integer totalNonPartitionNodes);
+        @JsonProperty("totalNumFilteredNodesFound")
+        public NodeSearchResultEntMixInBuilder setTotalNumFilteredNodesFound(final Integer totalNumFilteredNodesFound);
         
         @Override
         @JsonProperty("tags")
