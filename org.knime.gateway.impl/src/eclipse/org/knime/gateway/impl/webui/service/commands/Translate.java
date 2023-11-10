@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.util.CoreUtil.isComponentWFM;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +66,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 
 /**
- * Workflow command to translate (i.e. change the position) of nodes and workflow annotations.
+ * Workflow command to translate (i.e. change the position) of nodes, workflow annotations and more.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -72,9 +74,12 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
 
     private final Delta m_delta;
 
+    private final MetanodePortsBars m_metanodePortsBars;
+
     Translate(final TranslateCommandEnt commandEnt) {
         super(commandEnt);
         m_delta = Delta.of(commandEnt.getTranslation());
+        m_metanodePortsBars = new MetanodePortsBars(commandEnt);
     }
 
     @Override
@@ -82,14 +87,19 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         if (m_delta.isZero()) {
             return false;
         }
-        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(), m_delta);
+        var wfm = getWorkflowManager();
+        if (m_metanodePortsBars.any()) {
+            checkCanMoveMetanodePortsBars(wfm, m_metanodePortsBars);
+        }
+        performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(),
+            m_metanodePortsBars, m_delta);
         return true;
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(),
-            m_delta.invert());
+            m_metanodePortsBars, m_delta.invert());
     }
 
     /**
@@ -105,9 +115,16 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final Map<ConnectionID, List<Integer>> bendpoints,
         final Delta delta) {
+        performTranslation(wfm, nodes, annotations, bendpoints, new MetanodePortsBars(false, false), delta);
+    }
+
+    private static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
+        final Set<WorkflowAnnotation> annotations, final Map<ConnectionID, List<Integer>> bendpoints,
+        final MetanodePortsBars metanodePortsBars, final Delta delta) {
         translateNodes(wfm, nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateSomeBendpoints(wfm, bendpoints, delta);
+        translateMetanodePortsBars(wfm, metanodePortsBars, delta);
     }
 
     private static void translateSomeBendpoints(final WorkflowManager wfm,
@@ -162,6 +179,54 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         if (!selectedNodes.isEmpty()) {
             wfm.setDirty();
         }
+    }
+
+    private static void checkCanMoveMetanodePortsBars(final WorkflowManager wfm,
+        final MetanodePortsBars metanodePortsBars) throws OperationNotAllowedException {
+        if (isComponentWFM(wfm)) {
+            throw new OperationNotAllowedException("Components don't have metanode-ports-bars to be moved.");
+        }
+        if (metanodePortsBars.in && wfm.getInPortsBarUIInfo() == null) {
+            throw new OperationNotAllowedException(
+                "Metanode in-ports-bar can't be moved. It doesn't have a position, yet.");
+        }
+        if (metanodePortsBars.out && wfm.getOutPortsBarUIInfo() == null) {
+            throw new OperationNotAllowedException(
+                "Metanode out-ports-bar can't be moved. It doesn't have a position, yet.");
+        }
+    }
+
+    private static void translateMetanodePortsBars(final WorkflowManager wfm, final MetanodePortsBars metanodePortsBars,
+        final Delta delta) {
+        if (metanodePortsBars.in) {
+            var uiInfo = wfm.getInPortsBarUIInfo();
+            assert uiInfo != null;
+            wfm.setInPortsBarUIInfo(translate(uiInfo, delta));
+        }
+        if (metanodePortsBars.out) {
+            var uiInfo = wfm.getOutPortsBarUIInfo();
+            assert uiInfo != null;
+            wfm.setOutPortsBarUIInfo(translate(uiInfo, delta));
+        }
+    }
+
+    private static NodeUIInformation translate(final NodeUIInformation uiInfo, final Delta delta) {
+        var bounds = uiInfo.getBounds();
+        return NodeUIInformation.builder(uiInfo)
+            .setNodeLocation(bounds[0] + delta.x(), bounds[1] + delta.y(), bounds[2], bounds[3]).build();
+    }
+
+    private record MetanodePortsBars(boolean in, boolean out) {
+
+        MetanodePortsBars(final TranslateCommandEnt command) {
+            this(Boolean.TRUE.equals(command.isMetanodeInPortsBar()),
+                Boolean.TRUE.equals(command.isMetanodeOutPortsBar()));
+        }
+
+        boolean any() {
+            return in || out;
+        }
+
     }
 
 }

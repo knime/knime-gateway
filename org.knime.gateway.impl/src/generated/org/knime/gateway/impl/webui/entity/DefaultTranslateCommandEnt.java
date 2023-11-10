@@ -59,6 +59,8 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
  * @param annotationIds
  * @param connectionBendpoints
  * @param translation
+ * @param metanodeInPortsBar
+ * @param metanodeOutPortsBar
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -68,7 +70,9 @@ public record DefaultTranslateCommandEnt(
     java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
     java.util.List<org.knime.gateway.api.entity.AnnotationIDEnt> annotationIds,
     java.util.Map<String, java.util.List<Integer>> connectionBendpoints,
-    XYEnt translation) implements TranslateCommandEnt {
+    XYEnt translation,
+    Boolean metanodeInPortsBar,
+    Boolean metanodeOutPortsBar) implements TranslateCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -118,6 +122,16 @@ public record DefaultTranslateCommandEnt(
         return translation;
     }
     
+    @Override
+    public Boolean isMetanodeInPortsBar() {
+        return metanodeInPortsBar;
+    }
+    
+    @Override
+    public Boolean isMetanodeOutPortsBar() {
+        return metanodeOutPortsBar;
+    }
+    
     /**
      * A builder for {@link DefaultTranslateCommandEnt}.
      */
@@ -132,6 +146,10 @@ public record DefaultTranslateCommandEnt(
         private java.util.Map<String, java.util.List<Integer>> m_connectionBendpoints;
 
         private XYEnt m_translation;
+
+        private Boolean m_metanodeInPortsBar;
+
+        private Boolean m_metanodeOutPortsBar;
 
         @Override
         public DefaultTranslateCommandEntBuilder setKind(KindEnum kind) {
@@ -176,13 +194,27 @@ public record DefaultTranslateCommandEnt(
         }
 
         @Override
+        public DefaultTranslateCommandEntBuilder setMetanodeInPortsBar(Boolean metanodeInPortsBar) {
+             m_metanodeInPortsBar = metanodeInPortsBar;
+             return this;
+        }
+
+        @Override
+        public DefaultTranslateCommandEntBuilder setMetanodeOutPortsBar(Boolean metanodeOutPortsBar) {
+             m_metanodeOutPortsBar = metanodeOutPortsBar;
+             return this;
+        }
+
+        @Override
         public DefaultTranslateCommandEnt build() {
             return new DefaultTranslateCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
                 immutable(m_annotationIds),
                 immutable(m_connectionBendpoints),
-                immutable(m_translation));
+                immutable(m_translation),
+                immutable(m_metanodeInPortsBar),
+                immutable(m_metanodeOutPortsBar));
         }
     
     }

@@ -70,6 +70,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -311,6 +312,43 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
                     + "nodes (0:9999), workflow-annotations (0:12345)"));
         }
 
+    }
+
+    public void testTranslateMetanodePortsBars() throws Exception {
+        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var metanodeId = new NodeIDEnt(6);
+        var outPortsBarBounds =
+            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+
+        var translateCommand = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
+            .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setMetanodeOutPortsBar(Boolean.TRUE)
+            .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
+        ws().executeWorkflowCommand(wfId, metanodeId, translateCommand);
+
+        var outPortsBarBoundsTranslated =
+            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+        assertThat(outPortsBarBoundsTranslated.getX(), is(outPortsBarBounds.getX() + 10));
+        assertThat(outPortsBarBoundsTranslated.getY(), is(outPortsBarBounds.getY() + 10));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, metanodeId);
+        var outPortsBarBoundsTranslatedUndone =
+            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+        assertThat(outPortsBarBoundsTranslatedUndone.getX(), is(outPortsBarBounds.getX()));
+        assertThat(outPortsBarBoundsTranslatedUndone.getY(), is(outPortsBarBounds.getY()));
+
+        // try to execute command on a component
+        var message = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand)).getMessage();
+        assertThat(message, is("Components don't have metanode-ports-bars to be moved."));
+
+        // try to translate ports bar without a fixed position
+        var translateCommand2 = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
+            .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setMetanodeInPortsBar(Boolean.TRUE)
+            .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
+        message = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2)).getMessage();
+        assertThat(message, is("Metanode in-ports-bar can't be moved. It doesn't have a position, yet."));
     }
 
 }

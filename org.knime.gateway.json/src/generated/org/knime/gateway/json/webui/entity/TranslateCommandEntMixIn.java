@@ -91,6 +91,14 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
     @JsonProperty("translation")
     public XYEnt getTranslation();
     
+    @Override
+    @JsonProperty("metanodeInPortsBar")
+    public Boolean isMetanodeInPortsBar();
+    
+    @Override
+    @JsonProperty("metanodeOutPortsBar")
+    public Boolean isMetanodeOutPortsBar();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -123,6 +131,14 @@ public interface TranslateCommandEntMixIn extends TranslateCommandEnt {
         @Override
         @JsonProperty("translation")
         public TranslateCommandEntMixInBuilder setTranslation(final XYEnt translation);
+        
+        @Override
+        @JsonProperty("metanodeInPortsBar")
+        public TranslateCommandEntMixInBuilder setMetanodeInPortsBar(final Boolean metanodeInPortsBar);
+        
+        @Override
+        @JsonProperty("metanodeOutPortsBar")
+        public TranslateCommandEntMixInBuilder setMetanodeOutPortsBar(final Boolean metanodeOutPortsBar);
         
     }
 
