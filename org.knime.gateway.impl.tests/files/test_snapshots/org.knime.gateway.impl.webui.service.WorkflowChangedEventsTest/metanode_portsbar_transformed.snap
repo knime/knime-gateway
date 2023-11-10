@@ -1,0 +1,12 @@
+{
+  "ops" : [ {
+  "op" : "add",
+  "path" : "/metaInPorts/bounds",
+  "value" : {
+    "height" : 7,
+    "width" : 6,
+    "x" : 4,
+    "y" : 5
+  }
+} ]
+}

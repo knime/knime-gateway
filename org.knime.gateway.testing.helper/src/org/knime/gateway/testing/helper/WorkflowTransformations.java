@@ -113,6 +113,8 @@ public final class WorkflowTransformations {
                 return createTransformationsForGeneral();
             case STREAMING_EXECUTION:
                 return createTransformationsForStreamingExecution();
+            case METANODES_COMPONENTS:
+                return createTransformationsForMetanode();
             default:
                 //
         }
@@ -122,6 +124,8 @@ public final class WorkflowTransformations {
     private static NodeIDEnt getWorkflowIdFor(final TestWorkflowCollection testWorkflow) {
         if (testWorkflow == TestWorkflowCollection.STREAMING_EXECUTION) {
             return new NodeIDEnt(3);
+        } else if (testWorkflow == TestWorkflowCollection.METANODES_COMPONENTS) {
+            return new NodeIDEnt(24);
         } else {
             return NodeIDEnt.getRootID();
         }
@@ -185,6 +189,16 @@ public final class WorkflowTransformations {
                 var ncs2 = wfm.getNodeContainer(wfm.getID().createChild(5)).getNodeContainerState();
                 return ncs1.isExecuted() && ncs2.isExecutionInProgress() && !ncs2.isWaitingToBeExecuted();
             })));
+    }
+
+    private static List<WorkflowTransformation> createTransformationsForMetanode() {
+        return List.of(newTransformation(w -> {
+            var metanode = (WorkflowManager)w.getNodeContainer(w.getID().createChild(24));
+            metanode.setDirty();
+        }, "set_dirty"), newTransformation(w -> {
+            var metanode = (WorkflowManager)w.getNodeContainer(w.getID().createChild(24));
+            metanode.setInPortsBarUIInfo(NodeUIInformation.builder().setNodeLocation(4, 5, 6, 7).build());
+        }, "metanode_portsbar_transformed"));
     }
 
     private static WorkflowTransformation newTransformation(final Consumer<WorkflowManager> workflowTransformation,
