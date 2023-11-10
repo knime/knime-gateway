@@ -77,6 +77,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentMetadataCommand
 import org.knime.gateway.impl.webui.entity.DefaultPasteCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultTransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
@@ -143,6 +144,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
+,
+  @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_portsbar")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -217,6 +220,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
+,
+  @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_portsbar")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

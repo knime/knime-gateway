@@ -89,7 +89,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         }
         var wfm = getWorkflowManager();
         if (m_metanodePortsBars.any()) {
-            checkCanMoveMetanodePortsBars(wfm, m_metanodePortsBars);
+            assertCanMoveMetanodePortsBars(wfm, m_metanodePortsBars);
         }
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(),
             m_metanodePortsBars, m_delta);
@@ -181,7 +181,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
         }
     }
 
-    private static void checkCanMoveMetanodePortsBars(final WorkflowManager wfm,
+    private static void assertCanMoveMetanodePortsBars(final WorkflowManager wfm,
         final MetanodePortsBars metanodePortsBars) throws OperationNotAllowedException {
         if (isComponentWFM(wfm)) {
             throw new OperationNotAllowedException("Components don't have metanode-ports-bars to be moved.");
@@ -212,8 +212,9 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
 
     private static NodeUIInformation translate(final NodeUIInformation uiInfo, final Delta delta) {
         var bounds = uiInfo.getBounds();
-        return NodeUIInformation.builder(uiInfo)
-            .setNodeLocation(bounds[0] + delta.x(), bounds[1] + delta.y(), bounds[2], bounds[3]).build();
+        return NodeUIInformation.builder(uiInfo) //
+            .setNodeLocation(bounds[0] + delta.x(), bounds[1] + delta.y(), bounds[2], bounds[3]) //
+            .build();
     }
 
     private record MetanodePortsBars(boolean in, boolean out) {

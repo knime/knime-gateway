@@ -232,6 +232,8 @@ import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt;
+import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt.TransformMetanodePortsBarCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultTransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
@@ -583,6 +585,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == TemplateLinkEntBuilder.class) {
             return (B)new DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder();
+        }        
+        if(clazz == TransformMetanodePortsBarCommandEntBuilder.class) {
+            return (B)new DefaultTransformMetanodePortsBarCommandEnt.DefaultTransformMetanodePortsBarCommandEntBuilder();
         }        
         if(clazz == TransformWorkflowAnnotationCommandEntBuilder.class) {
             return (B)new DefaultTransformWorkflowAnnotationCommandEnt.DefaultTransformWorkflowAnnotationCommandEntBuilder();

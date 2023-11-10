@@ -138,6 +138,7 @@ import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
+import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
@@ -280,6 +281,7 @@ public class ListEntities {
         res.add(SpaceProviderEnt.class);
         res.add(StyleRangeEnt.class);
         res.add(TemplateLinkEnt.class);
+        res.add(TransformMetanodePortsBarCommandEnt.class);
         res.add(TransformWorkflowAnnotationCommandEnt.class);
         res.add(TranslateCommandEnt.class);
         res.add(TypedTextEnt.class);
@@ -407,6 +409,7 @@ public class ListEntities {
         res.add(SpaceProviderEnt.SpaceProviderEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
         res.add(TemplateLinkEnt.TemplateLinkEntBuilder.class);
+        res.add(TransformMetanodePortsBarCommandEnt.TransformMetanodePortsBarCommandEntBuilder.class);
         res.add(TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder.class);
         res.add(TranslateCommandEnt.TranslateCommandEntBuilder.class);
         res.add(TypedTextEnt.TypedTextEntBuilder.class);

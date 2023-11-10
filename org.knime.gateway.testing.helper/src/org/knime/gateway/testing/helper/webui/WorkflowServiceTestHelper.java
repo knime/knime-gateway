@@ -150,6 +150,8 @@ import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.R
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
+import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt.TransformMetanodePortsBarCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
@@ -2755,5 +2757,42 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             var actualUrl = ((ComponentNodeEnt)nodeEnt).getLink().getUrl();
             assertThat("The links do not match", actualUrl, equalTo(expectedUrl));
         }
+    }
+
+    public void testTransformMetanodePortsBarCommand() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var metanodeId = new NodeIDEnt(6);
+        var originalMetaOutPortsBounds =
+            ws().getWorkflow(projectId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+
+        var bounds = builder(BoundsEntBuilder.class).setX(4).setY(5).setWidth(10).setHeight(11).build();
+
+        // metanode _in_ ports bar
+        var command1 = builder(TransformMetanodePortsBarCommandEntBuilder.class)
+            .setKind(KindEnum.TRANSFORM_METANODE_PORTSBAR).setType(TypeEnum.IN).setBounds(bounds).build();
+        ws().executeWorkflowCommand(projectId, metanodeId, command1);
+        var newBounds =
+            ws().getWorkflow(projectId, metanodeId, Boolean.FALSE).getWorkflow().getMetaInPorts().getBounds();
+        assertThat(newBounds, is(bounds));
+        ws().undoWorkflowCommand(projectId, metanodeId);
+        var undoneBounds =
+            ws().getWorkflow(projectId, metanodeId, Boolean.FALSE).getWorkflow().getMetaInPorts().getBounds();
+        assertThat(undoneBounds, is(nullValue()));
+
+        // metanode _out_ ports bar
+        var command2 = builder(TransformMetanodePortsBarCommandEntBuilder.class)
+            .setKind(KindEnum.TRANSFORM_METANODE_PORTSBAR).setType(TypeEnum.OUT).setBounds(bounds).build();
+        ws().executeWorkflowCommand(projectId, metanodeId, command2);
+        newBounds = ws().getWorkflow(projectId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+        assertThat(newBounds, is(bounds));
+        ws().undoWorkflowCommand(projectId, metanodeId);
+        undoneBounds =
+            ws().getWorkflow(projectId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+        assertThat(undoneBounds, is(originalMetaOutPortsBounds));
+
+        // try to execute the command for a component
+        var message = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1)).getMessage();
+        assertThat(message, is("Component don't have metanode ports bars. Can't be transformed."));
     }
 }

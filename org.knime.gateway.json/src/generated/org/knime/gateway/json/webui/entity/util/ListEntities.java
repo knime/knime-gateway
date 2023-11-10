@@ -138,6 +138,7 @@ import org.knime.gateway.json.webui.entity.SpacePathSegmentEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceProviderEntMixIn;
 import org.knime.gateway.json.webui.entity.StyleRangeEntMixIn;
 import org.knime.gateway.json.webui.entity.TemplateLinkEntMixIn;
+import org.knime.gateway.json.webui.entity.TransformMetanodePortsBarCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.TransformWorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.TranslateCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.TypedTextEntMixIn;
@@ -279,6 +280,7 @@ public class ListEntities {
         res.add(SpaceProviderEntMixIn.class);
         res.add(StyleRangeEntMixIn.class);
         res.add(TemplateLinkEntMixIn.class);
+        res.add(TransformMetanodePortsBarCommandEntMixIn.class);
         res.add(TransformWorkflowAnnotationCommandEntMixIn.class);
         res.add(TranslateCommandEntMixIn.class);
         res.add(TypedTextEntMixIn.class);
@@ -406,6 +408,7 @@ public class ListEntities {
         res.add(SpaceProviderEntMixIn.SpaceProviderEntMixInBuilder.class);
         res.add(StyleRangeEntMixIn.StyleRangeEntMixInBuilder.class);
         res.add(TemplateLinkEntMixIn.TemplateLinkEntMixInBuilder.class);
+        res.add(TransformMetanodePortsBarCommandEntMixIn.TransformMetanodePortsBarCommandEntMixInBuilder.class);
         res.add(TransformWorkflowAnnotationCommandEntMixIn.TransformWorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(TranslateCommandEntMixIn.TranslateCommandEntMixInBuilder.class);
         res.add(TypedTextEntMixIn.TypedTextEntMixInBuilder.class);
