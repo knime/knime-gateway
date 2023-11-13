@@ -112,7 +112,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     UPDATE_COMPONENT_LINK_INFORMATION("update_component_link_information"),
     
-    TRANSFORM_METANODE_PORTSBAR("transform_metanode_portsbar");
+    TRANSFORM_METANODE_PORTS_BAR("transform_metanode_ports_bar");
 
     private String value;
 

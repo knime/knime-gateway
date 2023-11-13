@@ -2769,7 +2769,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // metanode _in_ ports bar
         var command1 = builder(TransformMetanodePortsBarCommandEntBuilder.class)
-            .setKind(KindEnum.TRANSFORM_METANODE_PORTSBAR).setType(TypeEnum.IN).setBounds(bounds).build();
+            .setKind(KindEnum.TRANSFORM_METANODE_PORTS_BAR).setType(TypeEnum.IN).setBounds(bounds).build();
         ws().executeWorkflowCommand(projectId, metanodeId, command1);
         var newBounds =
             ws().getWorkflow(projectId, metanodeId, Boolean.FALSE).getWorkflow().getMetaInPorts().getBounds();
@@ -2781,7 +2781,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // metanode _out_ ports bar
         var command2 = builder(TransformMetanodePortsBarCommandEntBuilder.class)
-            .setKind(KindEnum.TRANSFORM_METANODE_PORTSBAR).setType(TypeEnum.OUT).setBounds(bounds).build();
+            .setKind(KindEnum.TRANSFORM_METANODE_PORTS_BAR).setType(TypeEnum.OUT).setBounds(bounds).build();
         ws().executeWorkflowCommand(projectId, metanodeId, command2);
         newBounds = ws().getWorkflow(projectId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
         assertThat(newBounds, is(bounds));

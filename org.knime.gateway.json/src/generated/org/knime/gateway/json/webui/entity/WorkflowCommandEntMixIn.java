@@ -145,7 +145,7 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
 ,
-  @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_portsbar")
+  @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -221,7 +221,7 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
 ,
-  @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_portsbar")
+  @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {
