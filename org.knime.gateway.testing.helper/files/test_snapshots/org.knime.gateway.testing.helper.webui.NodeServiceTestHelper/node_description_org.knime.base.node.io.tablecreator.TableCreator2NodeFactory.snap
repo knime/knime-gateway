@@ -13,8 +13,8 @@
       "name" : "Column Properties (context menu of the column header)",
       "optional" : false
     }, {
-      "description" : "\n        Use this to change the naming of all row IDs. The row IDs are built of\n        a consecutive number with a <b>prefix</b> and a <b>suffix</b>. Beside\n        the prefix and suffix you can specify the index of the first row.\n        ",
-      "name" : "Row ID Properties (context menu of the row header)",
+      "description" : "\n        Use this to change the naming of all RowIDs. The RowIDs are built of\n        a consecutive number with a <b>prefix</b> and a <b>suffix</b>. Beside\n        the prefix and suffix you can specify the index of the first row.\n        ",
+      "name" : "RowID Properties (context menu of the row header)",
       "optional" : false
     } ]
   } ],
