@@ -200,8 +200,8 @@ public class NodeSearch {
             .map(Entry::getKey)//
             .collect(Collectors.toList());
 
-        Integer numFilteredNodesFound = null;
-        if (foundNodes.isEmpty() && hasMoreNodes) {
+        int numFilteredNodesFound = 0;
+        if (hasMoreNodes) {
             var complementSetNodes =
                 partition == NodePartition.IN_COLLECTION ? m_nodeRepo.getAdditionalNodes() : m_nodeRepo.getNodes();
             numFilteredNodesFound = searchNodes(complementSetNodes, searchQuery, normalizer).size();
