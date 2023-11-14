@@ -205,7 +205,8 @@ public class DirectAccessTablePortViewFactoryTest {
                     "columnContentTypes" : [ "txt", "txt", "txt", "txt", "txt", "txt" ],
                     "columnFormatterDescriptions" : [ null, null, null, null, null, null ],
                     "totalSelected" : 0,
-                    "firstRowImageDimensions" : {}
+                    "firstRowImageDimensions" : {},
+                    "columnNamesColors": []
                   },
                   "settings" : {
                     "displayedColumns" : {

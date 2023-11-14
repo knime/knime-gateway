@@ -157,6 +157,11 @@ public class DirectAccessTableDataService {
                         return Map.of();
                     }
 
+                    @Override
+                    public String[] getColumnNamesColors() {
+                        return new String[0];
+                    }
+
                 };
             }
 
