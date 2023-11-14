@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service.events;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
@@ -101,7 +102,7 @@ public class NodeRepositoryLoadingProgressEventSource
 
     private void handleNodeSpecCollectionProviderProgressEvent(final ProgressEvent progressEvent) {
         var now = System.currentTimeMillis();
-        if (m_lastEventInfo == null || !m_lastEventInfo.extensionName.equals(progressEvent.extensionName())
+        if (m_lastEventInfo == null || !Objects.equals(m_lastEventInfo.extensionName, progressEvent.extensionName())
             || m_lastEventInfo.time + EVENT_INTERVAL_IN_MS < now) {
             sendEvent(builder(NodeRepositoryLoadingProgressEventEntBuilder.class)
                 .setProgress(BigDecimal.valueOf(progressEvent.overallProgress()))
