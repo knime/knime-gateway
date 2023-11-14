@@ -60,6 +60,7 @@ import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
@@ -95,6 +96,8 @@ import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
   @Type(value = DefaultAddPortResultEnt.class, name = "addPortResult")
 ,
   @Type(value = DefaultAddAnnotationResultEnt.class, name = "addAnnotationResult")
+,
+  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "updateLinkedComponentsResult")
 })
 @JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
 @JsonSerialize(as=CommandResultEnt.class)
@@ -143,6 +146,8 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
   @Type(value = DefaultAddPortResultEnt.class, name = "addPortResult")
 ,
   @Type(value = DefaultAddAnnotationResultEnt.class, name = "addAnnotationResult")
+,
+  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "updateLinkedComponentsResult")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {

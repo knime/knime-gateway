@@ -79,6 +79,7 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
@@ -227,8 +228,13 @@ public final class WorkflowCommands {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
             command = new UpdateComponentLinkInformation(ce);
+<<<<<<< HEAD
         } else if(commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
             command = new TransformMetanodePortsBar(ce);
+=======
+        } else if (commandEnt instanceof UpdateLinkedComponentsCommandEnt ce) {
+            command = new UpdateLinkedComponents(ce);
+>>>>>>> f1cc2627 (NXT-2150: Adding 1 Gateway API endpoint and 1 workflow command)
         } else {
             if (m_workflowCommandToExecute != null) {
                 command = m_workflowCommandToExecute;

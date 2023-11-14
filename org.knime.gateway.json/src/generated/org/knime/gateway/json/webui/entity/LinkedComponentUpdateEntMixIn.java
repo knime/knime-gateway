@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.JobManagerEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder;
+import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultLinkedComponentUpdateEnt.DefaultLinkedComponentUpdateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,42 +60,22 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt.DefaultWorkflo
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultWorkflowInfoEntBuilder.class)
-@JsonSerialize(as=WorkflowInfoEnt.class)
+@JsonDeserialize(builder=DefaultLinkedComponentUpdateEntBuilder.class)
+@JsonSerialize(as=LinkedComponentUpdateEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
+public interface LinkedComponentUpdateEntMixIn extends LinkedComponentUpdateEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("nodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
     @Override
-    @JsonProperty("containerId")
-    public org.knime.gateway.api.entity.NodeIDEnt getContainerId();
-    
-    @Override
-    @JsonProperty("containerType")
-    public ContainerTypeEnum getContainerType();
-    
-    @Override
-    @JsonProperty("linked")
-    public Boolean isLinked();
-    
-    @Override
-    @JsonProperty("numberOfLinks")
-    public Integer getNumberOfLinks();
-    
-    @Override
-    @JsonProperty("providerType")
-    public ProviderTypeEnum getProviderType();
-    
-    @Override
-    @JsonProperty("jobManager")
-    public JobManagerEnt getJobManager();
+    @JsonProperty("updateStatus")
+    public UpdateStatusEnum getUpdateStatus();
     
 
     /**
@@ -106,38 +85,18 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowInfoEntMixInBuilder extends WorkflowInfoEntBuilder {
+    public static interface LinkedComponentUpdateEntMixInBuilder extends LinkedComponentUpdateEntBuilder {
     
         @Override
-        public WorkflowInfoEntMixIn build();
+        public LinkedComponentUpdateEntMixIn build();
     
         @Override
-        @JsonProperty("name")
-        public WorkflowInfoEntMixInBuilder setName(final String name);
+        @JsonProperty("nodeId")
+        public LinkedComponentUpdateEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         @Override
-        @JsonProperty("containerId")
-        public WorkflowInfoEntMixInBuilder setContainerId(final org.knime.gateway.api.entity.NodeIDEnt containerId);
-        
-        @Override
-        @JsonProperty("containerType")
-        public WorkflowInfoEntMixInBuilder setContainerType(final ContainerTypeEnum containerType);
-        
-        @Override
-        @JsonProperty("linked")
-        public WorkflowInfoEntMixInBuilder setLinked(final Boolean linked);
-        
-        @Override
-        @JsonProperty("numberOfLinks")
-        public WorkflowInfoEntMixInBuilder setNumberOfLinks(final Integer numberOfLinks);
-        
-        @Override
-        @JsonProperty("providerType")
-        public WorkflowInfoEntMixInBuilder setProviderType(final ProviderTypeEnum providerType);
-        
-        @Override
-        @JsonProperty("jobManager")
-        public WorkflowInfoEntMixInBuilder setJobManager(final JobManagerEnt jobManager);
+        @JsonProperty("updateStatus")
+        public LinkedComponentUpdateEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
         
     }
 

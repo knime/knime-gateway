@@ -132,6 +132,8 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkEnt;
+import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt.LinkedComponentUpdateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultLinkedComponentUpdateEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
@@ -252,6 +254,10 @@ import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEn
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt.UpdateInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateInfoEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt.UpdateLinkedComponentsCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.UpdateLinkedComponentsResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt.UpdateProjectMetadataCommandEntBuilder;
@@ -436,6 +442,9 @@ public class Interface2ImplMap {
         if(clazz == LinkEntBuilder.class) {
             return (B)new DefaultLinkEnt.DefaultLinkEntBuilder();
         }        
+        if(clazz == LinkedComponentUpdateEntBuilder.class) {
+            return (B)new DefaultLinkedComponentUpdateEnt.DefaultLinkedComponentUpdateEntBuilder();
+        }        
         if(clazz == LoopInfoEntBuilder.class) {
             return (B)new DefaultLoopInfoEnt.DefaultLoopInfoEntBuilder();
         }        
@@ -615,6 +624,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == UpdateInfoEntBuilder.class) {
             return (B)new DefaultUpdateInfoEnt.DefaultUpdateInfoEntBuilder();
+        }        
+        if(clazz == UpdateLinkedComponentsCommandEntBuilder.class) {
+            return (B)new DefaultUpdateLinkedComponentsCommandEnt.DefaultUpdateLinkedComponentsCommandEntBuilder();
+        }        
+        if(clazz == UpdateLinkedComponentsResultEntBuilder.class) {
+            return (B)new DefaultUpdateLinkedComponentsResultEnt.DefaultUpdateLinkedComponentsResultEntBuilder();
         }        
         if(clazz == UpdateNodeLabelCommandEntBuilder.class) {
             return (B)new DefaultUpdateNodeLabelCommandEnt.DefaultUpdateNodeLabelCommandEntBuilder();

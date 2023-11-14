@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -55,90 +56,49 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * CommandResultEnt
+ * Updates all the linked component, returning a success state at the end.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface CommandResultEnt extends GatewayEntity {
-
-  /**
-   * Gets or Sets kind
-   */
-  public enum KindEnum {
-    COLLAPSERESULT("collapseResult"),
-    
-    EXPANDRESULT("expandResult"),
-    
-    CONVERTCONTAINERRESULT("convertContainerResult"),
-    
-    COPYRESULT("copyResult"),
-    
-    PASTERESULT("pasteResult"),
-    
-    ADDNODERESULT("addNodeResult"),
-    
-    ADDPORTRESULT("addPortResult"),
-    
-    ADDANNOTATIONRESULT("addAnnotationResult"),
-    
-    UPDATELINKEDCOMPONENTSRESULT("updateLinkedComponentsResult");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface UpdateLinkedComponentsCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
-   * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-   * @return snapshotId 
+   * The ids of the nodes referenced.
+   * @return nodeIds , never <code>null</code>
    **/
-  public String getSnapshotId();
-
-  /**
-   * Get kind
-   * @return kind 
-   **/
-  public KindEnum getKind();
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (CommandResultEnt)other;
-      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
+      var e = (UpdateLinkedComponentsCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface CommandResultEntBuilder extends GatewayEntityBuilder<CommandResultEnt> {
+    public interface UpdateLinkedComponentsCommandEntBuilder extends GatewayEntityBuilder<UpdateLinkedComponentsCommandEnt> {
 
         /**
-         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
          * 
-         * @param snapshotId the property value,  
+         * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setSnapshotId(String snapshotId);
+        UpdateLinkedComponentsCommandEntBuilder setKind(KindEnum kind);
         
         /**
-   		 * Set kind
+         * The ids of the nodes referenced.
          * 
-         * @param kind the property value,  
+         * @param nodeIds the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setKind(KindEnum kind);
+        UpdateLinkedComponentsCommandEntBuilder setNodeIds(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
         
         
         /**
@@ -148,7 +108,7 @@ public interface CommandResultEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        CommandResultEnt build();
+        UpdateLinkedComponentsCommandEnt build();
     
     }
 

@@ -131,6 +131,8 @@ import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
+import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
+import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt.LinkedComponentUpdateEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
@@ -197,6 +199,8 @@ import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContex
 @SuppressWarnings("static-method")
 public final class WorkflowEntityFactory {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowEntityFactory.class);
+
     /*
      * The default background color for node annotations which usually translates to opaque.
      */
@@ -216,7 +220,8 @@ public final class WorkflowEntityFactory {
         READY,
         /** Loop is currently performing "full" execution (not step) */
         RUNNING,
-        /** Loop is currently executing and will be paused after this iteration (e.g. due to step execution, or pause action) */
+        /** Loop is currently executing and will be paused after this iteration
+         * (e.g. due to step execution, or pause action) */
         PAUSE_PENDING,
         /** Loop is currently executing and is currently in paused state */
         PAUSED,
@@ -272,53 +277,54 @@ public final class WorkflowEntityFactory {
 
         /**
          * Determine the loop state of the given node, and based on it determine the allowed actions.
+         *
          * @param tail The node to consider
          * @param buildContext The current dependent node properties
          * @return The allowed actions for the given node
          */
-        static AllowedLoopActionsEnt getAllowedActions(final NativeNodeContainer tail, final WorkflowBuildContext buildContext) {
+        static AllowedLoopActionsEnt getAllowedActions(final NativeNodeContainer tail,
+            final WorkflowBuildContext buildContext) {
             var loopState = LoopState.get(tail, buildContext);
             boolean canPause;
             boolean canResume;
             boolean canStep;
 
-           switch (loopState) {
-               // Comments indicate state transitions triggered by the corresponding actions (cf. NXT-848).
-               case READY:
-                   // "execute" action is set by `buildAllowedNodeActionsEnt` -> RUNNING
-                   canPause = false;
-                   canResume = false;
-                   canStep = true;   // -> PAUSE_PENDING
-                   break;
-               case RUNNING:
-                   canPause = true;  // -> PAUSE_PENDING
-                   canStep = false;
-                   canResume = false;
-                   break;
-               case PAUSE_PENDING:
-                   // backend: -> PAUSED  or  -> DONE
-                   canPause = false;
-                   canStep = false;
-                   canResume = false;
-                   break;
-               case PAUSED:
-                   canPause = false;
-                   canStep = true;   // -> PAUSE_PENDING
-                   canResume = true; // -> RUNNING
-                   break;
-               default:  // NOSONAR: duplicate code block for readability
-                   // DONE or NONE
-                   canPause = false;
-                   canStep = false;
-                   canResume = false;
-                   break;
-           }
+            switch (loopState) {
+                // Comments indicate state transitions triggered by the corresponding actions (cf. NXT-848).
+                case READY:
+                    // "execute" action is set by `buildAllowedNodeActionsEnt` -> RUNNING
+                    canPause = false;
+                    canResume = false;
+                    canStep = true; // -> PAUSE_PENDING
+                    break;
+                case RUNNING:
+                    canPause = true; // -> PAUSE_PENDING
+                    canStep = false;
+                    canResume = false;
+                    break;
+                case PAUSE_PENDING:
+                    // backend: -> PAUSED  or  -> DONE
+                    canPause = false;
+                    canStep = false;
+                    canResume = false;
+                    break;
+                case PAUSED:
+                    canPause = false;
+                    canStep = true; // -> PAUSE_PENDING
+                    canResume = true; // -> RUNNING
+                    break;
+                default: // NOSONAR: duplicate code block for readability
+                    // DONE or NONE
+                    canPause = false;
+                    canStep = false;
+                    canResume = false;
+                    break;
+            }
 
-            return builder(AllowedLoopActionsEntBuilder.class)
-                    .setCanPause(canPause)
-                    .setCanResume(canResume)
-                    .setCanStep(canStep)
-                    .build();
+            return builder(AllowedLoopActionsEntBuilder.class)//
+                .setCanPause(canPause)//
+                .setCanResume(canResume)//
+                .setCanStep(canStep).build();
         }
     }
 
@@ -1136,19 +1142,18 @@ public final class WorkflowEntityFactory {
     }
 
     private WorkflowInfoEnt buildWorkflowInfoEnt(final WorkflowManager wfm, final WorkflowBuildContext buildContext) {
-        NodeContainerTemplate template;
-        if (wfm.getDirectNCParent() instanceof SubNodeContainer) {
-            template = (NodeContainerTemplate)wfm.getDirectNCParent();
-        } else {
-            template = wfm;
-        }
-        var locationType =
-            Optional.ofNullable(wfm.getContextV2()).map(WorkflowContextV2::getLocationType).orElse(LocationType.LOCAL);
+        final var template = wfm.getDirectNCParent() instanceof SubNodeContainer//
+            ? (NodeContainerTemplate)wfm.getDirectNCParent()//
+            : wfm;
+        final var locationType = Optional.ofNullable(wfm.getContextV2())//
+            .map(WorkflowContextV2::getLocationType)//
+            .orElse(LocationType.LOCAL);
         return builder(WorkflowInfoEntBuilder.class)//
             .setName(wfm.getName())//
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) != null ? Boolean.TRUE : null)//
+            .setNumberOfLinks(getNumberOfLinks(wfm))//
             .setProviderType(switch (locationType) {
                 case LOCAL -> ProviderTypeEnum.LOCAL;
                 case HUB_SPACE -> ProviderTypeEnum.HUB;
@@ -1157,11 +1162,31 @@ public final class WorkflowEntityFactory {
             .setJobManager(buildJobManagerEnt(wfm.findJobManager())).build();
     }
 
+    /**
+     * Builds a {@link LinkedComponentUpdateEnt}.
+     *
+     * @param nodeId
+     * @param updateStatus
+     * @return The new linked component update entity
+     */
+    public LinkedComponentUpdateEnt buildLinkedComponentUpdateEnt(final NodeID nodeId,
+        final LinkedComponentUpdateEnt.UpdateStatusEnum updateStatus) {
+        return builder(LinkedComponentUpdateEntBuilder.class)//
+            .setNodeId(new NodeIDEnt(nodeId))//
+            .setUpdateStatus(updateStatus)//
+            .build();
+    }
+
+    private Integer getNumberOfLinks(final WorkflowManager wfm) {
+        final var linkedComponents = CoreUtil.getAllLinkedComponents(wfm);
+        return linkedComponents.size();
+    }
+
     private XYEnt buildXYEnt(final NodeUIInformation uiInfo) {
         if (uiInfo == null) {
-            // This can happen when, e.g., components are added. In that case the component is added to the workflow first
-            // without any uiInfo (which already triggers workflow changed event). And then the uiInfo is set via NodeContainer.setUIInformation
-            // (which triggers another workflow changed event).
+            // This can happen when, e.g., components are added. In that case the component is added to the workflow
+            // first without any uiInfo (which already triggers workflow changed event). And then the uiInfo is set
+            // via `NodeContainer.setUIInformation` (which triggers another workflow changed event).
             return builder(XYEntBuilder.class).setX(0).setY(0).build();
         }
         int[] bounds = uiInfo.getBounds();
@@ -1520,8 +1545,7 @@ public final class WorkflowEntityFactory {
      * TODO: NXT-2038, Determine whether a Hub item version is changeable in advance
      */
     private static boolean isHubItemVersionChangeable(final NodeContainerTemplate nct) {
-        NodeLogger.getLogger(WorkflowEntityFactory.class)
-            .info("This should check whether this node container template is shared via a Hub: " + nct);
+        LOGGER.info("This should check whether this node container template is shared via a Hub: " + nct);
         return false;
     }
 

@@ -88,6 +88,7 @@ import org.knime.gateway.json.webui.entity.ExtensionEntMixIn;
 import org.knime.gateway.json.webui.entity.InsertNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.JobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
+import org.knime.gateway.json.webui.entity.LinkedComponentUpdateEntMixIn;
 import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodePortEntMixIn;
@@ -148,6 +149,8 @@ import org.knime.gateway.json.webui.entity.UpdateComponentLinkInformationCommand
 import org.knime.gateway.json.webui.entity.UpdateComponentMetadataCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateComponentOrMetanodeNameCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateInfoEntMixIn;
+import org.knime.gateway.json.webui.entity.UpdateLinkedComponentsCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.UpdateLinkedComponentsResultEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateNodeLabelCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateProjectMetadataCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateWorkflowAnnotationCommandEntMixIn;
@@ -230,6 +233,7 @@ public class ListEntities {
         res.add(InsertNodeCommandEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
         res.add(LinkEntMixIn.class);
+        res.add(LinkedComponentUpdateEntMixIn.class);
         res.add(LoopInfoEntMixIn.class);
         res.add(MetaNodeEntMixIn.class);
         res.add(MetaNodePortEntMixIn.class);
@@ -290,6 +294,8 @@ public class ListEntities {
         res.add(UpdateComponentMetadataCommandEntMixIn.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.class);
         res.add(UpdateInfoEntMixIn.class);
+        res.add(UpdateLinkedComponentsCommandEntMixIn.class);
+        res.add(UpdateLinkedComponentsResultEntMixIn.class);
         res.add(UpdateNodeLabelCommandEntMixIn.class);
         res.add(UpdateProjectMetadataCommandEntMixIn.class);
         res.add(UpdateWorkflowAnnotationCommandEntMixIn.class);
@@ -358,6 +364,7 @@ public class ListEntities {
         res.add(InsertNodeCommandEntMixIn.InsertNodeCommandEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
+        res.add(LinkedComponentUpdateEntMixIn.LinkedComponentUpdateEntMixInBuilder.class);
         res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
         res.add(MetaNodePortEntMixIn.MetaNodePortEntMixInBuilder.class);
@@ -418,6 +425,8 @@ public class ListEntities {
         res.add(UpdateComponentMetadataCommandEntMixIn.UpdateComponentMetadataCommandEntMixInBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEntMixIn.UpdateComponentOrMetanodeNameCommandEntMixInBuilder.class);
         res.add(UpdateInfoEntMixIn.UpdateInfoEntMixInBuilder.class);
+        res.add(UpdateLinkedComponentsCommandEntMixIn.UpdateLinkedComponentsCommandEntMixInBuilder.class);
+        res.add(UpdateLinkedComponentsResultEntMixIn.UpdateLinkedComponentsResultEntMixInBuilder.class);
         res.add(UpdateNodeLabelCommandEntMixIn.UpdateNodeLabelCommandEntMixInBuilder.class);
         res.add(UpdateProjectMetadataCommandEntMixIn.UpdateProjectMetadataCommandEntMixInBuilder.class);
         res.add(UpdateWorkflowAnnotationCommandEntMixIn.UpdateWorkflowAnnotationCommandEntMixInBuilder.class);

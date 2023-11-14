@@ -55,38 +55,26 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * CommandResultEnt
+ * LinkedComponentUpdateEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface CommandResultEnt extends GatewayEntity {
+public interface LinkedComponentUpdateEnt extends GatewayEntity {
 
   /**
-   * Gets or Sets kind
+   * The update status of the updatable component
    */
-  public enum KindEnum {
-    COLLAPSERESULT("collapseResult"),
+  public enum UpdateStatusEnum {
+    PENDING("pending"),
     
-    EXPANDRESULT("expandResult"),
+    SUCCESS("success"),
     
-    CONVERTCONTAINERRESULT("convertContainerResult"),
-    
-    COPYRESULT("copyResult"),
-    
-    PASTERESULT("pasteResult"),
-    
-    ADDNODERESULT("addNodeResult"),
-    
-    ADDPORTRESULT("addPortResult"),
-    
-    ADDANNOTATIONRESULT("addAnnotationResult"),
-    
-    UPDATELINKEDCOMPONENTSRESULT("updateLinkedComponentsResult");
+    ERROR("error");
 
     private String value;
 
-    KindEnum(String value) {
+    UpdateStatusEnum(String value) {
       this.value = value;
     }
 
@@ -99,46 +87,46 @@ public interface CommandResultEnt extends GatewayEntity {
 
 
   /**
-   * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-   * @return snapshotId 
+   * The node ID of the updatable component
+   * @return nodeId , never <code>null</code>
    **/
-  public String getSnapshotId();
+  public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
   /**
-   * Get kind
-   * @return kind 
+   * The update status of the updatable component
+   * @return updateStatus , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public UpdateStatusEnum getUpdateStatus();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (CommandResultEnt)other;
-      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      var e = (LinkedComponentUpdateEnt)other;
+      valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
+      valueConsumer.accept("updateStatus", Pair.create(getUpdateStatus(), e.getUpdateStatus()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface CommandResultEntBuilder extends GatewayEntityBuilder<CommandResultEnt> {
+    public interface LinkedComponentUpdateEntBuilder extends GatewayEntityBuilder<LinkedComponentUpdateEnt> {
 
         /**
-         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
+         * The node ID of the updatable component
          * 
-         * @param snapshotId the property value,  
+         * @param nodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setSnapshotId(String snapshotId);
+        LinkedComponentUpdateEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         /**
-   		 * Set kind
+         * The update status of the updatable component
          * 
-         * @param kind the property value,  
+         * @param updateStatus the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setKind(KindEnum kind);
+        LinkedComponentUpdateEntBuilder setUpdateStatus(UpdateStatusEnum updateStatus);
         
         
         /**
@@ -148,7 +136,7 @@ public interface CommandResultEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        CommandResultEnt build();
+        LinkedComponentUpdateEnt build();
     
     }
 

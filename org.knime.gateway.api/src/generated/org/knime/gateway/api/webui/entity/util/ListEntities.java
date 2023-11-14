@@ -88,6 +88,7 @@ import org.knime.gateway.api.webui.entity.ExtensionEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
+import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
@@ -148,6 +149,8 @@ import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandE
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateInfoEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
@@ -231,6 +234,7 @@ public class ListEntities {
         res.add(InsertNodeCommandEnt.class);
         res.add(JobManagerEnt.class);
         res.add(LinkEnt.class);
+        res.add(LinkedComponentUpdateEnt.class);
         res.add(LoopInfoEnt.class);
         res.add(MetaNodeEnt.class);
         res.add(MetaNodePortEnt.class);
@@ -291,6 +295,8 @@ public class ListEntities {
         res.add(UpdateComponentMetadataCommandEnt.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.class);
         res.add(UpdateInfoEnt.class);
+        res.add(UpdateLinkedComponentsCommandEnt.class);
+        res.add(UpdateLinkedComponentsResultEnt.class);
         res.add(UpdateNodeLabelCommandEnt.class);
         res.add(UpdateProjectMetadataCommandEnt.class);
         res.add(UpdateWorkflowAnnotationCommandEnt.class);
@@ -359,6 +365,7 @@ public class ListEntities {
         res.add(InsertNodeCommandEnt.InsertNodeCommandEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
         res.add(LinkEnt.LinkEntBuilder.class);
+        res.add(LinkedComponentUpdateEnt.LinkedComponentUpdateEntBuilder.class);
         res.add(LoopInfoEnt.LoopInfoEntBuilder.class);
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);
         res.add(MetaNodePortEnt.MetaNodePortEntBuilder.class);
@@ -419,6 +426,8 @@ public class ListEntities {
         res.add(UpdateComponentMetadataCommandEnt.UpdateComponentMetadataCommandEntBuilder.class);
         res.add(UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder.class);
         res.add(UpdateInfoEnt.UpdateInfoEntBuilder.class);
+        res.add(UpdateLinkedComponentsCommandEnt.UpdateLinkedComponentsCommandEntBuilder.class);
+        res.add(UpdateLinkedComponentsResultEnt.UpdateLinkedComponentsResultEntBuilder.class);
         res.add(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class);
         res.add(UpdateProjectMetadataCommandEnt.UpdateProjectMetadataCommandEntBuilder.class);
         res.add(UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder.class);

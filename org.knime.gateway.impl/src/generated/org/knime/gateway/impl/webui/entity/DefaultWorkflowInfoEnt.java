@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
  * @param containerId
  * @param containerType
  * @param linked
+ * @param numberOfLinks
  * @param providerType
  * @param jobManager
  *
@@ -68,6 +69,7 @@ public record DefaultWorkflowInfoEnt(
     org.knime.gateway.api.entity.NodeIDEnt containerId,
     ContainerTypeEnum containerType,
     Boolean linked,
+    Integer numberOfLinks,
     ProviderTypeEnum providerType,
     JobManagerEnt jobManager) implements WorkflowInfoEnt {
 
@@ -112,6 +114,11 @@ public record DefaultWorkflowInfoEnt(
     }
     
     @Override
+    public Integer getNumberOfLinks() {
+        return numberOfLinks;
+    }
+    
+    @Override
     public ProviderTypeEnum getProviderType() {
         return providerType;
     }
@@ -133,6 +140,8 @@ public record DefaultWorkflowInfoEnt(
         private ContainerTypeEnum m_containerType;
 
         private Boolean m_linked;
+
+        private Integer m_numberOfLinks;
 
         private ProviderTypeEnum m_providerType;
 
@@ -172,6 +181,12 @@ public record DefaultWorkflowInfoEnt(
         }
 
         @Override
+        public DefaultWorkflowInfoEntBuilder setNumberOfLinks(Integer numberOfLinks) {
+             m_numberOfLinks = numberOfLinks;
+             return this;
+        }
+
+        @Override
         public DefaultWorkflowInfoEntBuilder setProviderType(ProviderTypeEnum providerType) {
              m_providerType = providerType;
              return this;
@@ -190,6 +205,7 @@ public record DefaultWorkflowInfoEnt(
                 immutable(m_containerId),
                 immutable(m_containerType),
                 immutable(m_linked),
+                immutable(m_numberOfLinks),
                 immutable(m_providerType),
                 immutable(m_jobManager));
         }
