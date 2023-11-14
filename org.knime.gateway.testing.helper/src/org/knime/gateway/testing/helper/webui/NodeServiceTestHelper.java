@@ -471,6 +471,9 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
         executeWorkflow(projectId);
 
+        // preparation - populates the view settings
+        ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1));
+
         // initialData
         var initialData = ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "initial_data", "");
         var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
