@@ -52,6 +52,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
@@ -78,6 +79,8 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(UpdateLinkedComponents.class);
 
+    private static final Random RANDOM = new Random();
+
     final List<NodeIDEnt> m_nodeIdEnts;
 
     List<SubNodeContainer> m_components;
@@ -88,8 +91,12 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        LOGGER.info("Updating the following node ID entities: %s".formatted(m_nodeIdEnts));
+        if (m_nodeIdEnts.isEmpty()) {
+            throw new OperationNotAllowedException(
+                "There are no linked component updates available for <%s>".formatted(getWorkflowKey()));
+        }
 
+        LOGGER.info("Updating the following node ID entities: %s".formatted(m_nodeIdEnts));
         m_components = getComponents(m_nodeIdEnts, getWorkflowKey());
         LOGGER.info("Updating the following components: %s".formatted(m_components));
 
@@ -106,6 +113,15 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     @Override
     public UpdateLinkedComponentsResultEnt buildEntity(final String snapshotId) {
+        // Wait for a random while between 0 and 10 seconds
+        try {
+            final var milis = RANDOM.nextLong(10000);
+            Thread.sleep(milis);
+        } catch (IllegalArgumentException | InterruptedException e) {
+            LOGGER.error("Something went wrong with 'Thread.sleep(...)'", e);
+            Thread.currentThread().interrupt();
+        }
+
         return builder(UpdateLinkedComponentsResultEntBuilder.class)//
             .setKind(CommandResultEnt.KindEnum.UPDATELINKEDCOMPONENTSRESULT)//
             .setLinkedComponentUpdates(buildLinkedComponentUpdateEnts(m_components))//
@@ -127,13 +143,16 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     /**
-     * TODO: This also needs to capture failed updates
+     * TODO: Implement for real
      */
     private static List<LinkedComponentUpdateEnt>
         buildLinkedComponentUpdateEnts(final List<SubNodeContainer> components) {
         return components.stream()//
-            .map(component -> EntityFactory.Workflow.buildLinkedComponentUpdateEnt(component.getID(),
-                UpdateStatusEnum.SUCCESS))//
+            .map(component -> {
+                final var nodeId = component.getID();
+                final var updateStatus = RANDOM.nextBoolean() ? UpdateStatusEnum.ERROR : UpdateStatusEnum.SUCCESS;
+                return EntityFactory.Workflow.buildLinkedComponentUpdateEnt(nodeId, updateStatus);
+            })//
             .toList();
     }
 
