@@ -115,7 +115,8 @@ public class NodeSearch {
     /*
      * Maps a search query to the list of found nodes.
      */
-    private final Map<SearchQuery, List<Node>> m_foundNodesCache = Collections.synchronizedMap(new LRUMap<>(100));
+    private final Map<SearchQuery, SearchResult> m_nodeSearchResultCache =
+        Collections.synchronizedMap(new LRUMap<>(100));
 
     private final NodeRepository m_nodeRepo;
 
@@ -156,33 +157,36 @@ public class NodeSearch {
         List<String> tagList = tags == null ? Collections.emptyList() : tags;
 
         var fn = Normalizer.identity();
-        final Collection<Node> allNodes;
-        boolean hasMoreNodes = false;
+        final Collection<Node> nodes;
+        Collection<Node> filteredNodes;
         if (q != null && q.endsWith("//hidden")) {
             fn = t -> t.replace("//hidden", "");
-            allNodes = m_nodeRepo.getHiddenNodes();
+            nodes = m_nodeRepo.getHiddenNodes();
+            filteredNodes = null;
         } else if (q != null && q.endsWith("//deprecated")) {
             fn = t -> t.replace("//deprecated", "");
-            allNodes = m_nodeRepo.getDeprecatedNodes();
+            nodes = m_nodeRepo.getDeprecatedNodes();
+            filteredNodes = null;
         } else if (partition == NodePartition.IN_COLLECTION) {
             // Only consider the nodes that are part of the collection
-            allNodes = m_nodeRepo.getNodes();
-            hasMoreNodes = true;
+            nodes = m_nodeRepo.getNodes();
+            filteredNodes = m_nodeRepo.getAdditionalNodes();
         } else if (partition == NodePartition.NOT_IN_COLLECTION) {
             // Only consider the nodes that are NOT part of the collection
-            allNodes = m_nodeRepo.getAdditionalNodes();
-            hasMoreNodes = true;
+            nodes = m_nodeRepo.getAdditionalNodes();
+            filteredNodes = m_nodeRepo.getNodes();
         } else {
             // Consider all nodes regardless their collection membership
-            allNodes = CollectionUtils.union(m_nodeRepo.getNodes(), m_nodeRepo.getAdditionalNodes());
+            nodes = CollectionUtils.union(m_nodeRepo.getNodes(), m_nodeRepo.getAdditionalNodes());
+            filteredNodes = null;
         }
 
         final var searchQuery = new SearchQuery(q, tagList, Boolean.TRUE.equals(allTagsMatch), partition, portType);
 
-
         final var normalizer = Normalizer.DEFAULT_NORMALIZATION.compose(fn);
-        final var foundNodes =
-            m_foundNodesCache.computeIfAbsent(searchQuery, query -> searchNodes(allNodes, query, normalizer));
+        final var searchResult = m_nodeSearchResultCache.computeIfAbsent(searchQuery,
+            query -> searchNodes(nodes, filteredNodes, query, normalizer));
+        var foundNodes = searchResult.foundNodes;
 
         // map templates
         List<NodeTemplateEnt> templates = foundNodes.stream()
@@ -200,19 +204,24 @@ public class NodeSearch {
             .map(Entry::getKey)//
             .collect(Collectors.toList());
 
-        int numFilteredNodesFound = 0;
-        if (hasMoreNodes) {
-            var complementSetNodes =
-                partition == NodePartition.IN_COLLECTION ? m_nodeRepo.getAdditionalNodes() : m_nodeRepo.getNodes();
-            numFilteredNodesFound = searchNodes(complementSetNodes, searchQuery, normalizer).size();
-        }
-
         return builder(NodeSearchResultEntBuilder.class)//
             .setNodes(templates)//
             .setTags(resTags)//
             .setTotalNumNodesFound(foundNodes.size())//
-            .setTotalNumFilteredNodesFound(numFilteredNodesFound)//
+            .setTotalNumFilteredNodesFound(searchResult.numFilteredNodesFound)//
             .build();
+    }
+
+    private static SearchResult searchNodes(final Collection<Node> nodes, final Collection<Node> filteredNodes,
+        final SearchQuery searchQuery, final Normalizer normalizer) {
+        final var foundNodes = searchNodes(nodes, searchQuery, normalizer);
+
+        Integer numFilteredNodesFound = null;
+        if (filteredNodes != null) {
+            numFilteredNodesFound = searchNodes(filteredNodes, searchQuery, normalizer).size();
+        }
+
+        return new SearchResult(foundNodes, numFilteredNodesFound);
     }
 
     private static List<Node> searchNodes(final Collection<Node> nodes, final SearchQuery searchQuery,
@@ -344,13 +353,16 @@ public class NodeSearch {
         NodePartition nodePartition, PortType portType) {
     }
 
+    private record SearchResult(List<Node> foundNodes, Integer numFilteredNodesFound) {
+    }
+
     /**
      * For testing purposes only!
      *
      * @return the size of the 'found nodes' cache
      */
     int cacheSize() {
-        return m_foundNodesCache.size();
+        return m_nodeSearchResultCache.size();
     }
 
 }
