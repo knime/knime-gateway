@@ -59,13 +59,11 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt.UpdateStatusEnum;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.UpdateLinkedComponentsResultEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -113,6 +111,9 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     @Override
     public UpdateLinkedComponentsResultEnt buildEntity(final String snapshotId) {
+        // Determine status
+        final var status = RANDOM.nextBoolean() ? StatusEnum.SUCCESS : StatusEnum.ERROR;
+
         // Wait for a random while between 0 and 10 seconds
         try {
             final var milis = RANDOM.nextLong(10000);
@@ -124,7 +125,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
         return builder(UpdateLinkedComponentsResultEntBuilder.class)//
             .setKind(CommandResultEnt.KindEnum.UPDATELINKEDCOMPONENTSRESULT)//
-            .setLinkedComponentUpdates(buildLinkedComponentUpdateEnts(m_components))//
+            .setStatus(status)//
             .setSnapshotId(snapshotId)//
             .build();
     }
@@ -139,20 +140,6 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         return nodeIdEnts.stream()//
             .map(nodeIdEnt -> DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt))//
             .map(SubNodeContainer.class::cast)//
-            .toList();
-    }
-
-    /**
-     * TODO: Implement for real
-     */
-    private static List<LinkedComponentUpdateEnt>
-        buildLinkedComponentUpdateEnts(final List<SubNodeContainer> components) {
-        return components.stream()//
-            .map(component -> {
-                final var nodeId = component.getID();
-                final var updateStatus = RANDOM.nextBoolean() ? UpdateStatusEnum.ERROR : UpdateStatusEnum.SUCCESS;
-                return EntityFactory.Workflow.buildLinkedComponentUpdateEnt(nodeId, updateStatus);
-            })//
             .toList();
     }
 

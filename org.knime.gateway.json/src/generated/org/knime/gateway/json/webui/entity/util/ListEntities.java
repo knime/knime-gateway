@@ -88,7 +88,6 @@ import org.knime.gateway.json.webui.entity.ExtensionEntMixIn;
 import org.knime.gateway.json.webui.entity.InsertNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.JobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
-import org.knime.gateway.json.webui.entity.LinkedComponentUpdateEntMixIn;
 import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodePortEntMixIn;
@@ -233,7 +232,6 @@ public class ListEntities {
         res.add(InsertNodeCommandEntMixIn.class);
         res.add(JobManagerEntMixIn.class);
         res.add(LinkEntMixIn.class);
-        res.add(LinkedComponentUpdateEntMixIn.class);
         res.add(LoopInfoEntMixIn.class);
         res.add(MetaNodeEntMixIn.class);
         res.add(MetaNodePortEntMixIn.class);
@@ -364,7 +362,6 @@ public class ListEntities {
         res.add(InsertNodeCommandEntMixIn.InsertNodeCommandEntMixInBuilder.class);
         res.add(JobManagerEntMixIn.JobManagerEntMixInBuilder.class);
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
-        res.add(LinkedComponentUpdateEntMixIn.LinkedComponentUpdateEntMixInBuilder.class);
         res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
         res.add(MetaNodePortEntMixIn.MetaNodePortEntMixInBuilder.class);

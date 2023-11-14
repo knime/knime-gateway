@@ -132,8 +132,6 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkEnt;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt.LinkedComponentUpdateEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultLinkedComponentUpdateEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
@@ -441,9 +439,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == LinkEntBuilder.class) {
             return (B)new DefaultLinkEnt.DefaultLinkEntBuilder();
-        }        
-        if(clazz == LinkedComponentUpdateEntBuilder.class) {
-            return (B)new DefaultLinkedComponentUpdateEnt.DefaultLinkedComponentUpdateEntBuilder();
         }        
         if(clazz == LoopInfoEntBuilder.class) {
             return (B)new DefaultLoopInfoEnt.DefaultLoopInfoEntBuilder();

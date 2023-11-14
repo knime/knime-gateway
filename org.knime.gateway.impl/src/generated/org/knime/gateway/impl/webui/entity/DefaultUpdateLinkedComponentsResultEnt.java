@@ -46,7 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
@@ -56,7 +55,7 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
  *
  * @param snapshotId
  * @param kind
- * @param linkedComponentUpdates
+ * @param status
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -64,14 +63,14 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
 public record DefaultUpdateLinkedComponentsResultEnt(
     String snapshotId,
     KindEnum kind,
-    java.util.List<LinkedComponentUpdateEnt> linkedComponentUpdates) implements UpdateLinkedComponentsResultEnt {
+    StatusEnum status) implements UpdateLinkedComponentsResultEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
     public DefaultUpdateLinkedComponentsResultEnt {
-        if(linkedComponentUpdates == null) {
-            throw new IllegalArgumentException("<linkedComponentUpdates> must not be null.");
+        if(status == null) {
+            throw new IllegalArgumentException("<status> must not be null.");
         }
     }
 
@@ -91,8 +90,8 @@ public record DefaultUpdateLinkedComponentsResultEnt(
     }
     
     @Override
-    public java.util.List<LinkedComponentUpdateEnt> getLinkedComponentUpdates() {
-        return linkedComponentUpdates;
+    public StatusEnum getStatus() {
+        return status;
     }
     
     /**
@@ -104,7 +103,7 @@ public record DefaultUpdateLinkedComponentsResultEnt(
 
         private KindEnum m_kind;
 
-        private java.util.List<LinkedComponentUpdateEnt> m_linkedComponentUpdates = new java.util.ArrayList<>();
+        private StatusEnum m_status;
 
         @Override
         public DefaultUpdateLinkedComponentsResultEntBuilder setSnapshotId(String snapshotId) {
@@ -119,11 +118,11 @@ public record DefaultUpdateLinkedComponentsResultEnt(
         }
 
         @Override
-        public DefaultUpdateLinkedComponentsResultEntBuilder setLinkedComponentUpdates(java.util.List<LinkedComponentUpdateEnt> linkedComponentUpdates) {
-             if(linkedComponentUpdates == null) {
-                 throw new IllegalArgumentException("<linkedComponentUpdates> must not be null.");
+        public DefaultUpdateLinkedComponentsResultEntBuilder setStatus(StatusEnum status) {
+             if(status == null) {
+                 throw new IllegalArgumentException("<status> must not be null.");
              }
-             m_linkedComponentUpdates = linkedComponentUpdates;
+             m_status = status;
              return this;
         }
 
@@ -132,7 +131,7 @@ public record DefaultUpdateLinkedComponentsResultEnt(
             return new DefaultUpdateLinkedComponentsResultEnt(
                 immutable(m_snapshotId),
                 immutable(m_kind),
-                immutable(m_linkedComponentUpdates));
+                immutable(m_status));
         }
     
     }

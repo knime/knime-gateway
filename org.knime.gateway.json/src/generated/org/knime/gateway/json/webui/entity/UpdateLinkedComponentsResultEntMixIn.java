@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
 import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
@@ -80,8 +79,8 @@ public interface UpdateLinkedComponentsResultEntMixIn extends UpdateLinkedCompon
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("linkedComponentUpdates")
-    public java.util.List<LinkedComponentUpdateEnt> getLinkedComponentUpdates();
+    @JsonProperty("status")
+    public StatusEnum getStatus();
     
 
     /**
@@ -105,8 +104,8 @@ public interface UpdateLinkedComponentsResultEntMixIn extends UpdateLinkedCompon
         public UpdateLinkedComponentsResultEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("linkedComponentUpdates")
-        public UpdateLinkedComponentsResultEntMixInBuilder setLinkedComponentUpdates(final java.util.List<LinkedComponentUpdateEnt> linkedComponentUpdates);
+        @JsonProperty("status")
+        public UpdateLinkedComponentsResultEntMixInBuilder setStatus(final StatusEnum status);
         
     }
 

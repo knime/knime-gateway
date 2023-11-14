@@ -146,11 +146,9 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
 ,
-<<<<<<< HEAD
   @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
-=======
+,
   @Type(value = DefaultUpdateLinkedComponentsCommandEnt.class, name = "update_linked_components")
->>>>>>> f1cc2627 (NXT-2150: Adding 1 Gateway API endpoint and 1 workflow command)
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -226,11 +224,9 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
 ,
-<<<<<<< HEAD
   @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
-=======
+,
   @Type(value = DefaultUpdateLinkedComponentsCommandEnt.class, name = "update_linked_components")
->>>>>>> f1cc2627 (NXT-2150: Adding 1 Gateway API endpoint and 1 workflow command)
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

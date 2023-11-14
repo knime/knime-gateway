@@ -131,8 +131,6 @@ import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt.LinkedComponentUpdateEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
@@ -1160,21 +1158,6 @@ public final class WorkflowEntityFactory {
                 case SERVER_REPOSITORY -> ProviderTypeEnum.SERVER;
             })//
             .setJobManager(buildJobManagerEnt(wfm.findJobManager())).build();
-    }
-
-    /**
-     * Builds a {@link LinkedComponentUpdateEnt}.
-     *
-     * @param nodeId
-     * @param updateStatus
-     * @return The new linked component update entity
-     */
-    public LinkedComponentUpdateEnt buildLinkedComponentUpdateEnt(final NodeID nodeId,
-        final LinkedComponentUpdateEnt.UpdateStatusEnum updateStatus) {
-        return builder(LinkedComponentUpdateEntBuilder.class)//
-            .setNodeId(new NodeIDEnt(nodeId))//
-            .setUpdateStatus(updateStatus)//
-            .build();
     }
 
     private Integer getNumberOfLinks(final WorkflowManager wfm) {

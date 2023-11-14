@@ -112,11 +112,9 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     UPDATE_COMPONENT_LINK_INFORMATION("update_component_link_information"),
     
-<<<<<<< HEAD
-    TRANSFORM_METANODE_PORTS_BAR("transform_metanode_ports_bar");
-=======
+    TRANSFORM_METANODE_PORTS_BAR("transform_metanode_ports_bar"),
+    
     UPDATE_LINKED_COMPONENTS("update_linked_components");
->>>>>>> f1cc2627 (NXT-2150: Adding 1 Gateway API endpoint and 1 workflow command)
 
     private String value;
 

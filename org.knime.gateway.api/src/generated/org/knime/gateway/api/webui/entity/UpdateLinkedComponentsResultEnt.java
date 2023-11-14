@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
 
 import java.util.function.BiConsumer;
 
@@ -64,12 +63,33 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandResultEnt {
 
+  /**
+   * Whether the updated succeeded or on error occured and no component link was updated.
+   */
+  public enum StatusEnum {
+    SUCCESS("success"),
+    
+    ERROR("error");
+
+    private String value;
+
+    StatusEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
-   * Get linkedComponentUpdates
-   * @return linkedComponentUpdates , never <code>null</code>
+   * Whether the updated succeeded or on error occured and no component link was updated.
+   * @return status , never <code>null</code>
    **/
-  public java.util.List<LinkedComponentUpdateEnt> getLinkedComponentUpdates();
+  public StatusEnum getStatus();
 
 
   @Override
@@ -78,7 +98,7 @@ public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandR
       var e = (UpdateLinkedComponentsResultEnt)other;
       valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("linkedComponentUpdates", Pair.create(getLinkedComponentUpdates(), e.getLinkedComponentUpdates()));
+      valueConsumer.accept("status", Pair.create(getStatus(), e.getStatus()));
   }
 
     /**
@@ -103,12 +123,12 @@ public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandR
         UpdateLinkedComponentsResultEntBuilder setKind(KindEnum kind);
         
         /**
-   		 * Set linkedComponentUpdates
+         * Whether the updated succeeded or on error occured and no component link was updated.
          * 
-         * @param linkedComponentUpdates the property value, NOT <code>null</code>! 
+         * @param status the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        UpdateLinkedComponentsResultEntBuilder setLinkedComponentUpdates(java.util.List<LinkedComponentUpdateEnt> linkedComponentUpdates);
+        UpdateLinkedComponentsResultEntBuilder setStatus(StatusEnum status);
         
         
         /**

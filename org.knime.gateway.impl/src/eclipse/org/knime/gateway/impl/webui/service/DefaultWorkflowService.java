@@ -52,12 +52,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt;
-import org.knime.gateway.api.webui.entity.LinkedComponentUpdateEnt.UpdateStatusEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -65,7 +62,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -129,7 +125,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public List<LinkedComponentUpdateEnt> getLinkUpdates(final String projectId, final NodeIDEnt workflowId)
+    public List<NodeIDEnt> getLinkUpdates(final String projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);
@@ -137,16 +133,12 @@ public final class DefaultWorkflowService implements WorkflowService {
         try {
             final var nodesToUpdate = CoreUtil.getUpdatableLinkedComponents(wfm);
             return nodesToUpdate.stream()//
-                .map(DefaultWorkflowService::toLinkedComponentUpdateEnt)//
+                .map(NodeIDEnt::new)//
                 .toList();
         } catch (IOException e) {
             // This should not happen since it is only called for workflows containing linked components
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
         }
-    }
-
-    private static LinkedComponentUpdateEnt toLinkedComponentUpdateEnt(final NodeID nodeId) {
-        return EntityFactory.Workflow.buildLinkedComponentUpdateEnt(nodeId, UpdateStatusEnum.PENDING);
     }
 
     /**
