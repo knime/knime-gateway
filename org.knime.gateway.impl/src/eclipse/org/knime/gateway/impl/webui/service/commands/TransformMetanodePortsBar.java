@@ -48,18 +48,25 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
  * Changes the bounds of a metanode ports bar.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class TransformMetanodePortsBar extends AbstractWorkflowCommand {
+final class TransformMetanodePortsBar extends AbstractWorkflowCommand implements WithResult {
 
     private final TransformMetanodePortsBarCommandEnt m_command;
 
@@ -101,6 +108,16 @@ final class TransformMetanodePortsBar extends AbstractWorkflowCommand {
     public void undo() throws OperationNotAllowedException {
         m_undo.run();
         m_undo = null;
+    }
+
+    @Override
+    public CommandResultEnt buildEntity(final String snapshotId) {
+        return builder(CommandResultEnt.CommandResultEntBuilder.class).setSnapshotId(snapshotId).build();
+    }
+
+    @Override
+    public Set<WorkflowChange> getChangesToWaitFor() {
+        return Collections.singleton(WorkflowChange.PORTS_BAR_MOVED);
     }
 
 }

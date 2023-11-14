@@ -306,6 +306,8 @@ public class WorkflowChangesListener implements Closeable {
             case NODE_PORTS_CHANGED:
                 updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_PORTS_CHANGED);
                 break;
+            case PORTS_BAR_UI_INFO_CHANGED:
+                updateWorkflowChangesTrackers(WorkflowChange.PORTS_BAR_MOVED);
             default:
                 //
         }
