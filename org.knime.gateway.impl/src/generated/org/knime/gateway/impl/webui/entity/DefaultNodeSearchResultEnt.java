@@ -77,9 +77,6 @@ public record DefaultNodeSearchResultEnt(
         if(totalNumNodesFound == null) {
             throw new IllegalArgumentException("<totalNumNodesFound> must not be null.");
         }
-        if(totalNumFilteredNodesFound == null) {
-            throw new IllegalArgumentException("<totalNumFilteredNodesFound> must not be null.");
-        }
         if(tags == null) {
             throw new IllegalArgumentException("<tags> must not be null.");
         }
@@ -143,9 +140,6 @@ public record DefaultNodeSearchResultEnt(
 
         @Override
         public DefaultNodeSearchResultEntBuilder setTotalNumFilteredNodesFound(Integer totalNumFilteredNodesFound) {
-             if(totalNumFilteredNodesFound == null) {
-                 throw new IllegalArgumentException("<totalNumFilteredNodesFound> must not be null.");
-             }
              m_totalNumFilteredNodesFound = totalNumFilteredNodesFound;
              return this;
         }
