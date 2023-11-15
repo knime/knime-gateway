@@ -216,7 +216,7 @@ public class NodeSearch {
         final SearchQuery searchQuery, final Normalizer normalizer) {
         final var foundNodes = searchNodes(nodes, searchQuery, normalizer);
 
-        Integer numFilteredNodesFound = null;
+        int numFilteredNodesFound = 0;
         if (filteredNodes != null) {
             numFilteredNodesFound = searchNodes(filteredNodes, searchQuery, normalizer).size();
         }
