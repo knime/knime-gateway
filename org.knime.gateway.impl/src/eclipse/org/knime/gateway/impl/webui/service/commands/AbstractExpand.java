@@ -160,7 +160,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     @Override
     public CommandResultEnt buildEntity(final String snapshotId) {
         return builder(ExpandResultEnt.ExpandResultEntBuilder.class) //
-            .setKind(CommandResultEnt.KindEnum.EXPANDRESULT) //
+            .setKind(CommandResultEnt.KindEnum.EXPAND_RESULT) //
             .setSnapshotId(snapshotId) //
             .setExpandedNodeIds(getExpandedNodes().stream().map(NodeIDEnt::new).collect(Collectors.toList())) //
             .setExpandedAnnotationIds(

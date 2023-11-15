@@ -114,7 +114,7 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
     @Override
     public CopyResultEnt buildEntity(final String snapshotId) {
         return builder(CopyResultEnt.CopyResultEntBuilder.class)//
-            .setKind(CommandResultEnt.KindEnum.COPYRESULT)//
+            .setKind(CommandResultEnt.KindEnum.COPY_RESULT)//
             .setSnapshotId(snapshotId)//
             .setContent(m_content)//
             .build();

@@ -132,6 +132,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     public UpdateLinkedComponentsResultEnt buildEntity(final String snapshotId) {
         return builder(UpdateLinkedComponentsResultEntBuilder.class)//
             .setKind(CommandResultEnt.KindEnum.UPDATELINKEDCOMPONENTSRESULT)//
+            .setKind(CommandResultEnt.KindEnum.UPDATE_LINKED_COMPONENTS_RESULT)//
             .setSnapshotId(snapshotId)//
             .setStatus(Boolean.TRUE.equals(m_success) ? StatusEnum.SUCCESS : StatusEnum.ERROR)//
             .build();

@@ -66,23 +66,23 @@ public interface CommandResultEnt extends GatewayEntity {
    * Gets or Sets kind
    */
   public enum KindEnum {
-    COLLAPSERESULT("collapseResult"),
+    COLLAPSE_RESULT("collapse_result"),
     
-    EXPANDRESULT("expandResult"),
+    EXPAND_RESULT("expand_result"),
     
-    CONVERTCONTAINERRESULT("convertContainerResult"),
+    CONVERT_CONTAINER_RESULT("convert_container_result"),
     
-    COPYRESULT("copyResult"),
+    COPY_RESULT("copy_result"),
     
-    PASTERESULT("pasteResult"),
+    PASTE_RESULT("paste_result"),
     
-    ADDNODERESULT("addNodeResult"),
+    ADD_NODE_RESULT("add_node_result"),
     
-    ADDPORTRESULT("addPortResult"),
+    ADD_PORT_RESULT("add_port_result"),
     
-    ADDANNOTATIONRESULT("addAnnotationResult"),
+    ADD_ANNOTATION_RESULT("add_annotation_result"),
     
-    UPDATELINKEDCOMPONENTSRESULT("updateLinkedComponentsResult");
+    UPDATE_LINKED_COMPONENTS_RESULT("update_linked_components_result");
 
     private String value;
 

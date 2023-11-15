@@ -81,23 +81,23 @@ import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
 @JsonSubTypes({
     @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
 ,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
+  @Type(value = DefaultCollapseResultEnt.class, name = "collapse_result")
 ,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
+  @Type(value = DefaultExpandResultEnt.class, name = "expand_result")
 ,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
+  @Type(value = DefaultConvertContainerResultEnt.class, name = "convert_container_result")
 ,
-  @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
+  @Type(value = DefaultCopyResultEnt.class, name = "copy_result")
 ,
-  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
+  @Type(value = DefaultPasteResultEnt.class, name = "paste_result")
 ,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "addNodeResult")
+  @Type(value = DefaultAddNodeResultEnt.class, name = "add_node_result")
 ,
-  @Type(value = DefaultAddPortResultEnt.class, name = "addPortResult")
+  @Type(value = DefaultAddPortResultEnt.class, name = "add_port_result")
 ,
-  @Type(value = DefaultAddAnnotationResultEnt.class, name = "addAnnotationResult")
+  @Type(value = DefaultAddAnnotationResultEnt.class, name = "add_annotation_result")
 ,
-  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "updateLinkedComponentsResult")
+  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
 })
 @JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
 @JsonSerialize(as=CommandResultEnt.class)
@@ -131,23 +131,23 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
 @JsonSubTypes({
     @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
 ,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapseResult")
+  @Type(value = DefaultCollapseResultEnt.class, name = "collapse_result")
 ,
-  @Type(value = DefaultExpandResultEnt.class, name = "expandResult")
+  @Type(value = DefaultExpandResultEnt.class, name = "expand_result")
 ,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convertContainerResult")
+  @Type(value = DefaultConvertContainerResultEnt.class, name = "convert_container_result")
 ,
-  @Type(value = DefaultCopyResultEnt.class, name = "copyResult")
+  @Type(value = DefaultCopyResultEnt.class, name = "copy_result")
 ,
-  @Type(value = DefaultPasteResultEnt.class, name = "pasteResult")
+  @Type(value = DefaultPasteResultEnt.class, name = "paste_result")
 ,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "addNodeResult")
+  @Type(value = DefaultAddNodeResultEnt.class, name = "add_node_result")
 ,
-  @Type(value = DefaultAddPortResultEnt.class, name = "addPortResult")
+  @Type(value = DefaultAddPortResultEnt.class, name = "add_port_result")
 ,
-  @Type(value = DefaultAddAnnotationResultEnt.class, name = "addAnnotationResult")
+  @Type(value = DefaultAddAnnotationResultEnt.class, name = "add_annotation_result")
 ,
-  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "updateLinkedComponentsResult")
+  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {

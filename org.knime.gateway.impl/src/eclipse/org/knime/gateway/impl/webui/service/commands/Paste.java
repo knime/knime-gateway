@@ -147,7 +147,7 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
     @Override
     public PasteResultEnt buildEntity(final String snapshotId) {
         return builder(PasteResultEntBuilder.class) //
-            .setKind(KindEnum.PASTERESULT) //
+            .setKind(KindEnum.PASTE_RESULT) //
             .setNodeIds(
                 Arrays.stream(m_workflowCopyContent.getNodeIDs()).map(NodeIDEnt::new).collect(Collectors.toList())) //
             .setAnnotationIds(Arrays.stream(m_workflowCopyContent.getAnnotationIDs()).map(AnnotationIDEnt::new)

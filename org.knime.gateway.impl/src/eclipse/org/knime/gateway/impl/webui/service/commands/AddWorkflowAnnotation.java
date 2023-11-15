@@ -114,7 +114,7 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
         final var wfm = getWorkflowManager();
         final var newAnnotationId = WorkflowMiddleware.buildAnnotationIDEnt(m_workflowAnnotation, wfm);
         return builder(AddAnnotationResultEntBuilder.class)//
-            .setKind(KindEnum.ADDANNOTATIONRESULT)//
+            .setKind(KindEnum.ADD_ANNOTATION_RESULT)//
             .setSnapshotId(snapshotId)//
             .setNewAnnotationId(newAnnotationId)//
             .build();

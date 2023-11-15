@@ -88,7 +88,7 @@ class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResu
     @Override
     public AddPortResultEnt buildEntity(final String snapshotId) {
         return builder(AddPortResultEnt.AddPortResultEntBuilder.class)//
-            .setKind(CommandResultEnt.KindEnum.ADDPORTRESULT)//
+            .setKind(CommandResultEnt.KindEnum.ADD_PORT_RESULT)//
             .setSnapshotId(snapshotId)//
             .setNewPortIdx(m_newPortIdx)//
             .build();
