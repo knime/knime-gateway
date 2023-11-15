@@ -140,15 +140,17 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     private static void undoInternal(final UpdateLog log) {
         final var componentId = log.componentId;
-        final var wfm = log.wfm;
         final var persistor = log.persistor;
-        try {
-            final var nodeToBeDeleted = (NodeContainerTemplate)wfm.findNodeContainer(componentId);
-            final var parent = nodeToBeDeleted.getParent();
-            parent.removeNode(nodeToBeDeleted.getID());
-            parent.paste(persistor);
-        } catch (IllegalArgumentException e) {
-            LOGGER.error("Could not undo linked component update for <%s>".formatted(componentId), e);
+        if (componentId != null && persistor != null) {
+            try {
+                final var wfm = log.wfm;
+                final var nodeToBeDeleted = (NodeContainerTemplate)wfm.findNodeContainer(componentId);
+                final var parent = nodeToBeDeleted.getParent();
+                parent.removeNode(nodeToBeDeleted.getID());
+                parent.paste(persistor);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Could not undo linked component update for <%s>".formatted(componentId), e);
+            }
         }
     }
 
@@ -194,21 +196,21 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         final var wfm = component.getParent();
         final var nct = (NodeContainerTemplate)wfm.findNodeContainer(oldComponentId);
 
-        LOGGER.debug("Updating <%s> from <%s>"//
+        LOGGER.debug("Attempting to update <%s> from <%s>"//
             .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
 
         final var statusComputingFunction = getStatusComputingFunction(oldComponentId, wfm); // NOSONAR: Must be here
         final var exec = new ExecutionMonitor();
         final var loadHelper = new WorkflowLoadHelper(true, wfm.getContextV2());
 
-        // This will return an update result even if no update was necessary
+        // This will return an update result even if no update was necessary or possible
         final var updateResult = nct.getParent().updateMetaNodeLink(oldComponentId, exec, loadHelper);
-
         final var persistor = updateResult.getUndoPersistor();
-        final var template = updateResult.getNCTemplate();
 
-        if (template == null) { // If the updated component could not be found
-            return new UpdateLog(oldComponentId, wfm, persistor, StatusEnum.ERROR);
+        if (persistor == null) { // If the linked component to update to could not be found
+            LOGGER.debug("Could not update <%s> from <%s>"//
+                .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
+            return new UpdateLog(null, null, null, StatusEnum.ERROR);
         }
 
         final var componentId = updateResult.getNCTemplate().getID();
