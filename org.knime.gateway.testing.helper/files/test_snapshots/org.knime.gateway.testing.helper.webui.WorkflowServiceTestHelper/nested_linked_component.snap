@@ -18,6 +18,7 @@
   "info" : {
     "containerId" : "root:2",
     "containerType" : "component",
+    "containsLinkedComponents" : true,
     "linked" : true,
     "name" : "Nested-Linked-Component",
     "providerType" : "LOCAL"
@@ -183,6 +184,7 @@
   "parents" : [ {
     "containerId" : "root",
     "containerType" : "project",
+    "containsLinkedComponents" : true,
     "name" : "nested_linked_components",
     "providerType" : "LOCAL"
   } ],

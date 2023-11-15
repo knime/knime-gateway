@@ -311,6 +311,7 @@
   "info" : {
     "containerId" : "root",
     "containerType" : "project",
+    "containsLinkedComponents" : true,
     "name" : "general_web_ui",
     "providerType" : "LOCAL"
   },

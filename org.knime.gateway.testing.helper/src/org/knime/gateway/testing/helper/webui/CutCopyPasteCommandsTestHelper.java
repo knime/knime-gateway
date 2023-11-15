@@ -96,8 +96,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @SuppressWarnings("javadoc")
 public class CutCopyPasteCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 
-    public CutCopyPasteCommandsTestHelper(ResultChecker entityResultChecker, ServiceProvider serviceProvider,
-        WorkflowLoader workflowLoader, WorkflowExecutor workflowExecutor) {
+    public CutCopyPasteCommandsTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(CutCopyPasteCommandsTestHelper.class, entityResultChecker, serviceProvider, workflowLoader,
             workflowExecutor);
     }
@@ -189,7 +189,7 @@ public class CutCopyPasteCommandsTestHelper extends WebUIGatewayServiceTestHelpe
 
     /**
      * Test that paste command with a target position properly translates inserted elements after translation
-     * 
+     *
      * @throws Exception
      */
     public void testPasteCommandWithTranslation() throws Exception {
@@ -241,7 +241,7 @@ public class CutCopyPasteCommandsTestHelper extends WebUIGatewayServiceTestHelpe
             // execute command
             var commandResult = ws().executeWorkflowCommand(wfId, getRootID(), pasteCommand);
             assertThat(commandResult.getSnapshotId(), notNullValue());
-            assertThat(commandResult.getKind().toString(), is("pasteResult"));
+            assertThat(commandResult.getKind().toString(), is("paste_result"));
             var pasteResult = (PasteResultEnt)commandResult;
             assertThat(pasteResult.getNodeIds(), hasSize(2));
             assertThat(pasteResult.getAnnotationIds(), hasSize(2));
