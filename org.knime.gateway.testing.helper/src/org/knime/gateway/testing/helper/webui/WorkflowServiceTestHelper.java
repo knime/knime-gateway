@@ -2795,4 +2795,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1)).getMessage();
         assertThat(message, is("Component don't have metanode ports bars. Can't be transformed."));
     }
+
+    public void testGetLinkUpdates() throws Exception {
+        // TODO: NXT-2172
+    }
+
+    public void testUpdateLinkedComponentsCommand() throws Exception {
+        // TODO: NXT-2172
+    }
+
 }

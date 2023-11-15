@@ -132,14 +132,10 @@ public final class DefaultWorkflowService implements WorkflowService {
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         try {
             final var nodesToUpdate = CoreUtil.getUpdatableLinkedComponentsAndSetUpdateStatus(wfm);
-
-            // Re-trigger workflow entity build, so it updates the 'link.updateStatus' property of the linked components.
-
             return nodesToUpdate.stream()//
                 .map(NodeIDEnt::new)//
                 .toList();
         } catch (IOException e) {
-            // This should not happen since it is only called for workflows containing linked components
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
         }
     }

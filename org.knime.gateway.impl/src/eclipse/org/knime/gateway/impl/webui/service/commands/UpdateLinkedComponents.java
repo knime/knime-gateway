@@ -86,7 +86,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     private static final NodeLogger LOGGER = NodeLogger.getLogger(UpdateLinkedComponents.class);
 
     /**
-     * The list of node IDs to update
+     * The list of node ID entities to update
      */
     final List<NodeIDEnt> m_nodeIdEnts;
 
@@ -139,16 +139,16 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     private static void undoInternal(final UpdateLog log) {
-        final var newId = log.newId;
-        final var wfm = log.parent; // TODO: Could we simply do 'getWorkflowManager()' instead?
+        final var componentId = log.componentId;
+        final var wfm = log.wfm;
         final var persistor = log.persistor;
         try {
-            final var nodeToBeDeleted = (NodeContainerTemplate)wfm.findNodeContainer(newId);
+            final var nodeToBeDeleted = (NodeContainerTemplate)wfm.findNodeContainer(componentId);
             final var parent = nodeToBeDeleted.getParent();
             parent.removeNode(nodeToBeDeleted.getID());
             parent.paste(persistor);
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Could not undo linked component update for <%s>".formatted(newId), e);
+            LOGGER.error("Could not undo linked component update for <%s>".formatted(componentId), e);
         }
     }
 
@@ -178,27 +178,47 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             .allMatch(component -> component.getTemplateInformation().getRole() == Role.Link);
     }
 
-    private static UpdateLog updateLinkedComponent(final SubNodeContainer component) {
-        final var oldId = component.getID();
-        final var parent = component.getParent();
-        final var nct = (NodeContainerTemplate)parent.findNodeContainer(oldId);
-
-        LOGGER.info("Updating <%s> from <%s>"//
-            .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
-
-        final var statusComputingFunction = getStatusComputingFunction(oldId, parent);
-
-        // This will return an update result even if no update was necessary
-        final var exec = new ExecutionMonitor();
-        final var loadHelper = new WorkflowLoadHelper(true, parent.getContextV2());
-        final var updateResult = nct.getParent().updateMetaNodeLink(oldId, exec, loadHelper);
-
-        final var persistor = updateResult.getUndoPersistor();
-        final var newId = updateResult.getNCTemplate().getID();
-        final var status = statusComputingFunction.apply(updateResult.getType());
-        return new UpdateLog(oldId, newId, parent, persistor, status);
+    private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {
+        final var statusList = updateLogs.stream().map(UpdateLog::status).toList();
+        if (statusList.contains(StatusEnum.ERROR)) {
+            return StatusEnum.ERROR; // Because there was at least one error
+        }
+        if (statusList.contains(StatusEnum.SUCCESS)) {
+            return StatusEnum.SUCCESS; // Because there was no error and at least one success
+        }
+        return StatusEnum.UNCHANGED; // Otherwise nothing changed
     }
 
+    private static UpdateLog updateLinkedComponent(final SubNodeContainer component) {
+        final var oldComponentId = component.getID();
+        final var wfm = component.getParent();
+        final var nct = (NodeContainerTemplate)wfm.findNodeContainer(oldComponentId);
+
+        LOGGER.debug("Updating <%s> from <%s>"//
+            .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
+
+        final var statusComputingFunction = getStatusComputingFunction(oldComponentId, wfm); // NOSONAR: Must be here
+        final var exec = new ExecutionMonitor();
+        final var loadHelper = new WorkflowLoadHelper(true, wfm.getContextV2());
+
+        // This will return an update result even if no update was necessary
+        final var updateResult = nct.getParent().updateMetaNodeLink(oldComponentId, exec, loadHelper);
+
+        final var persistor = updateResult.getUndoPersistor();
+        final var template = updateResult.getNCTemplate();
+
+        if (template == null) { // If the updated component could not be found
+            return new UpdateLog(oldComponentId, wfm, persistor, StatusEnum.ERROR);
+        }
+
+        final var componentId = updateResult.getNCTemplate().getID();
+        final var status = statusComputingFunction.apply(updateResult.getType());
+        return new UpdateLog(componentId, wfm, persistor, status);
+    }
+
+    /**
+     * To delay execution once we actually got the {@link LoadResultEntryType}
+     */
     private static Function<LoadResultEntryType, StatusEnum> getStatusComputingFunction(final NodeID componentId,
         final WorkflowManager parent) {
         final var needsUpdate = needsUpdate(componentId, parent);
@@ -226,23 +246,9 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         return needsUpdate;
     }
 
-    private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {
-        final var statusList = updateLogs.stream().map(UpdateLog::status).toList();
-        if (statusList.contains(StatusEnum.ERROR)) {
-            return StatusEnum.ERROR; // Because there was at least one error
-        }
-        if (statusList.contains(StatusEnum.SUCCESS)) {
-            return StatusEnum.SUCCESS; // Because there was no error and at least one success
-        }
-        return StatusEnum.UNCHANGED; // Otherwise nothing changed
-    }
-
-    /**
-     * Internal update log to report success and enable undo
-     */
-    private static record UpdateLog(NodeID oldId, NodeID newId, WorkflowManager parent, WorkflowPersistor persistor,
+    private static record UpdateLog(NodeID componentId, WorkflowManager wfm, WorkflowPersistor persistor,
         StatusEnum status) {
-        // TODO: Do we need the workflow manager in here?
+        //
     }
 
 }
