@@ -56,9 +56,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -93,7 +92,6 @@ import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.FlowLoopContext;
 import org.knime.core.node.workflow.LoopStartNode;
-import org.knime.core.node.workflow.MetaNodeTemplateInformation.UpdateStatus;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerMetadata;
@@ -104,12 +102,10 @@ import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.TemplateUpdateUtil;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor.LoadResult;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.shared.workflow.def.AnnotationDataDef;
@@ -799,15 +795,20 @@ public final class CoreUtil {
      * @return The list of node IDs that have an update
      * @throws IOException
      */
-    public static List<NodeID> getUpdatableLinkedComponents(final WorkflowManager wfm) throws IOException {
-        final var nodesToCheck = getAllLinkedComponents(wfm);
+    public static Set<NodeID> getUpdatableLinkedComponentsAndSetUpdateStatus(final WorkflowManager wfm)
+        throws IOException {
+        final var componentsToCheck = getAllLinkedComponents(wfm);
         final var loadHelper = new WorkflowLoadHelper(true, wfm.getContextV2());
-        final var nodeIdToUpdateStatus = TemplateUpdateUtil.fillNodeUpdateStates(nodesToCheck, loadHelper,
-            new LoadResult("ignored"), new LinkedHashMap<>());
-        return nodeIdToUpdateStatus.entrySet().stream()//
-            .filter(entry -> entry.getValue() == UpdateStatus.HasUpdate)//
-            .map(Entry::getKey)//
-            .toList();
+
+        var componentsToUpdate = new HashSet<NodeID>();
+        for (var node : componentsToCheck) {
+            var nodeId = node.getID();
+            var parentWfm = wfm.findNodeContainer(nodeId).getParent();
+            if (parentWfm.checkUpdateMetaNodeLink(nodeId, loadHelper)) {
+                componentsToUpdate.add(nodeId);
+            }
+        }
+        return componentsToUpdate;
     }
 
     /**
