@@ -50,10 +50,6 @@ package org.knime.gateway.impl;
 
 import java.util.List;
 
-import org.knime.core.data.DirectAccessTable;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
@@ -77,8 +73,9 @@ public class GatewayImplPlugin implements BundleActivator {
     public void start(final BundleContext context) throws Exception {
         // Temporary solution to register port views with port types/objects.
         // To be removed once it's part of the PortObject/PortType API.
+        // NOTE: the port-object-class-names are used to avoid the initialization of the PortTypeRegistry at this point
 
-        PortViewManager.registerPortViews(BufferedDataTable.TYPE, //
+        PortViewManager.registerPortViews("org.knime.core.node.BufferedDataTable", //
             List.of( //
                 new PortViewDescriptor("Table", new TableSpecViewFactory()), //
                 new PortViewDescriptor("Table", new TablePortViewFactory()), //
@@ -88,7 +85,7 @@ public class GatewayImplPlugin implements BundleActivator {
             List.of(1, 2)//
         );
 
-        PortViewManager.registerPortViews(FlowVariablePortObject.TYPE, //
+        PortViewManager.registerPortViews("org.knime.core.node.port.flowvariable.FlowVariablePortObject", //
             List.of(//
                 new PortViewDescriptor("Flow variables", new FlowVariableSpecViewFactory()), //
                 new PortViewDescriptor("Flow variables", new FlowVariablePortViewFactory())), //
@@ -96,13 +93,13 @@ public class GatewayImplPlugin implements BundleActivator {
             List.of(1)//
         );
 
-        PortViewManager.registerPortViews(ImagePortObject.TYPE, //
+        PortViewManager.registerPortViews("org.knime.core.node.port.image.ImagePortObject", //
             List.of(new PortViewDescriptor("Image", new ImagePortViewFactory())), //
             List.of(), //
             List.of(0)//
         );
 
-        PortViewManager.registerPortViews(DirectAccessTable.class, //
+        PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
 
     }
