@@ -122,7 +122,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             .toList();
         m_status = determineAggregateStatus(m_updateLogs);
 
-        if (Boolean.FALSE.equals(m_status == StatusEnum.ERROR)) { // Undo everything if there was an error
+        if (m_status == StatusEnum.ERROR) { // Undo everything if there was an error
             m_updateLogs.forEach(UpdateLinkedComponents::undoInternal);
         }
 
