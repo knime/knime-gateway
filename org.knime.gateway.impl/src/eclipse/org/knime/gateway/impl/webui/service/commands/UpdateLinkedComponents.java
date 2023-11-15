@@ -88,17 +88,17 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     /**
      * The list of node ID entities to update
      */
-    final List<NodeIDEnt> m_nodeIdEnts;
+    private final List<NodeIDEnt> m_nodeIdEnts;
 
     /**
      * Combined information about how the component updates went and how to revert them
      */
-    List<UpdateLog> m_updateLogs;
+    private List<UpdateLog> m_updateLogs;
 
     /**
      * The aggregate status to return with the command result entity
      */
-    StatusEnum m_status;
+    private StatusEnum m_status;
 
     UpdateLinkedComponents(final UpdateLinkedComponentsCommandEnt commandEnt) {
         m_nodeIdEnts = commandEnt.getNodeIds();
@@ -108,7 +108,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         if (m_nodeIdEnts.isEmpty()) {
             throw new OperationNotAllowedException(
-                "There are no linked component updates available for <%s>".formatted(getWorkflowKey()));
+                "No component IDs passed for <%s>".formatted(getWorkflowKey()));
         }
 
         final var components = getComponents(m_nodeIdEnts, getWorkflowKey());
@@ -180,6 +180,9 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             .allMatch(component -> component.getTemplateInformation().getRole() == Role.Link);
     }
 
+    /**
+     * TODO: Simplify this using {@code Stream.reduce(...)}
+     */
     private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {
         final var statusList = updateLogs.stream().map(UpdateLog::status).toList();
         if (statusList.contains(StatusEnum.ERROR)) {
@@ -223,7 +226,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
      */
     private static Function<LoadResultEntryType, StatusEnum> getStatusComputingFunction(final NodeID componentId,
         final WorkflowManager parent) {
-        final var needsUpdate = needsUpdate(componentId, parent);
+        final var needsUpdate = isNodeContainerTemplate(componentId, parent);
         return type -> {
             if (!needsUpdate) {
                 return StatusEnum.UNCHANGED;
@@ -235,17 +238,15 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     /**
      * Copied from {@code UpdateMetaNodeTemplateRunnable}
      */
-    private static boolean needsUpdate(final NodeID componentId, final WorkflowManager parent) {
-        boolean needsUpdate;
+    private static boolean isNodeContainerTemplate(final NodeID componentId, final WorkflowManager parent) {
         try {
             // this line will fail with in IllegalArgumentException if the node already has been updated
             // basically a computationally cheaper option to WorkflowManager#checkUpdateMetaNodeLink
-            needsUpdate = parent.findNodeContainer(componentId) instanceof NodeContainerTemplate;
+            return parent.findNodeContainer(componentId) instanceof NodeContainerTemplate;
         } catch (IllegalArgumentException e) {
             LOGGER.debug("Node with ID <%s> unexpectedly doesn't need an update.".formatted(componentId), e);
-            needsUpdate = false;
+            return false;
         }
-        return needsUpdate;
     }
 
     private static record UpdateLog(NodeID componentId, WorkflowManager wfm, WorkflowPersistor persistor,
