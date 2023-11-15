@@ -1151,7 +1151,7 @@ public final class WorkflowEntityFactory {
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) != null ? Boolean.TRUE : null)//
-            .setNumberOfLinks(getNumberOfLinks(wfm))//
+            .setContainsLinkedComponents(getContainsLinkedComponents(wfm))
             .setProviderType(switch (locationType) {
                 case LOCAL -> ProviderTypeEnum.LOCAL;
                 case HUB_SPACE -> ProviderTypeEnum.HUB;
@@ -1160,9 +1160,9 @@ public final class WorkflowEntityFactory {
             .setJobManager(buildJobManagerEnt(wfm.findJobManager())).build();
     }
 
-    private Integer getNumberOfLinks(final WorkflowManager wfm) {
+    private Boolean getContainsLinkedComponents(final WorkflowManager wfm) {
         final var linkedComponents = CoreUtil.getAllLinkedComponents(wfm);
-        return linkedComponents.size();
+        return linkedComponents.isEmpty() ? null : true;
     }
 
     private XYEnt buildXYEnt(final NodeUIInformation uiInfo) {

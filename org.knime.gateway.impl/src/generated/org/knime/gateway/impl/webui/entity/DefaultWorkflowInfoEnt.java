@@ -57,7 +57,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
  * @param containerId
  * @param containerType
  * @param linked
- * @param numberOfLinks
+ * @param containsLinkedComponents
  * @param providerType
  * @param jobManager
  *
@@ -69,7 +69,7 @@ public record DefaultWorkflowInfoEnt(
     org.knime.gateway.api.entity.NodeIDEnt containerId,
     ContainerTypeEnum containerType,
     Boolean linked,
-    Integer numberOfLinks,
+    Boolean containsLinkedComponents,
     ProviderTypeEnum providerType,
     JobManagerEnt jobManager) implements WorkflowInfoEnt {
 
@@ -114,8 +114,8 @@ public record DefaultWorkflowInfoEnt(
     }
     
     @Override
-    public Integer getNumberOfLinks() {
-        return numberOfLinks;
+    public Boolean isContainsLinkedComponents() {
+        return containsLinkedComponents;
     }
     
     @Override
@@ -141,7 +141,7 @@ public record DefaultWorkflowInfoEnt(
 
         private Boolean m_linked;
 
-        private Integer m_numberOfLinks;
+        private Boolean m_containsLinkedComponents;
 
         private ProviderTypeEnum m_providerType;
 
@@ -181,8 +181,8 @@ public record DefaultWorkflowInfoEnt(
         }
 
         @Override
-        public DefaultWorkflowInfoEntBuilder setNumberOfLinks(Integer numberOfLinks) {
-             m_numberOfLinks = numberOfLinks;
+        public DefaultWorkflowInfoEntBuilder setContainsLinkedComponents(Boolean containsLinkedComponents) {
+             m_containsLinkedComponents = containsLinkedComponents;
              return this;
         }
 
@@ -205,7 +205,7 @@ public record DefaultWorkflowInfoEnt(
                 immutable(m_containerId),
                 immutable(m_containerType),
                 immutable(m_linked),
-                immutable(m_numberOfLinks),
+                immutable(m_containsLinkedComponents),
                 immutable(m_providerType),
                 immutable(m_jobManager));
         }

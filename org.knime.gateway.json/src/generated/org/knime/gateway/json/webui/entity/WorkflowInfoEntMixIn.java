@@ -87,8 +87,8 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
     public Boolean isLinked();
     
     @Override
-    @JsonProperty("numberOfLinks")
-    public Integer getNumberOfLinks();
+    @JsonProperty("containsLinkedComponents")
+    public Boolean isContainsLinkedComponents();
     
     @Override
     @JsonProperty("providerType")
@@ -128,8 +128,8 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
         public WorkflowInfoEntMixInBuilder setLinked(final Boolean linked);
         
         @Override
-        @JsonProperty("numberOfLinks")
-        public WorkflowInfoEntMixInBuilder setNumberOfLinks(final Integer numberOfLinks);
+        @JsonProperty("containsLinkedComponents")
+        public WorkflowInfoEntMixInBuilder setContainsLinkedComponents(final Boolean containsLinkedComponents);
         
         @Override
         @JsonProperty("providerType")

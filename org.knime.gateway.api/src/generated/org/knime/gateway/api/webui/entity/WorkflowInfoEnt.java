@@ -135,10 +135,10 @@ public interface WorkflowInfoEnt extends GatewayEntity {
   public Boolean isLinked();
 
   /**
-   * The number of updatable links within the project. Absent if there aren&#39;t any.
-   * @return numberOfLinks 
+   * True if the workflow contains (deeply nested) linked components. If not, this property is absent.
+   * @return containsLinkedComponents 
    **/
-  public Integer getNumberOfLinks();
+  public Boolean isContainsLinkedComponents();
 
   /**
    * Type of the surrounding space&#39;s provider.
@@ -161,7 +161,7 @@ public interface WorkflowInfoEnt extends GatewayEntity {
       valueConsumer.accept("containerId", Pair.create(getContainerId(), e.getContainerId()));
       valueConsumer.accept("containerType", Pair.create(getContainerType(), e.getContainerType()));
       valueConsumer.accept("linked", Pair.create(isLinked(), e.isLinked()));
-      valueConsumer.accept("numberOfLinks", Pair.create(getNumberOfLinks(), e.getNumberOfLinks()));
+      valueConsumer.accept("containsLinkedComponents", Pair.create(isContainsLinkedComponents(), e.isContainsLinkedComponents()));
       valueConsumer.accept("providerType", Pair.create(getProviderType(), e.getProviderType()));
       valueConsumer.accept("jobManager", Pair.create(getJobManager(), e.getJobManager()));
   }
@@ -204,12 +204,12 @@ public interface WorkflowInfoEnt extends GatewayEntity {
         WorkflowInfoEntBuilder setLinked(Boolean linked);
         
         /**
-         * The number of updatable links within the project. Absent if there aren&#39;t any.
+         * True if the workflow contains (deeply nested) linked components. If not, this property is absent.
          * 
-         * @param numberOfLinks the property value,  
+         * @param containsLinkedComponents the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowInfoEntBuilder setNumberOfLinks(Integer numberOfLinks);
+        WorkflowInfoEntBuilder setContainsLinkedComponents(Boolean containsLinkedComponents);
         
         /**
          * Type of the surrounding space&#39;s provider.

@@ -53,6 +53,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
@@ -84,11 +85,20 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(UpdateLinkedComponents.class);
 
+    /**
+     * The list of node IDs to update
+     */
     final List<NodeIDEnt> m_nodeIdEnts;
 
-    List<UpdateLog> m_updateLog;
+    /**
+     * Combined information about how the component updates went and how to revert them
+     */
+    List<UpdateLog> m_updateLogs;
 
-    Boolean m_success;
+    /**
+     * The aggregate status to return with the command result entity
+     */
+    StatusEnum m_status;
 
     UpdateLinkedComponents(final UpdateLinkedComponentsCommandEnt commandEnt) {
         m_nodeIdEnts = commandEnt.getNodeIds();
@@ -107,34 +117,47 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             throw new OperationNotAllowedException("Not all components are linked components");
         }
 
-        m_updateLog = components.stream()//
+        m_updateLogs = components.stream()//
             .map(UpdateLinkedComponents::updateLinkedComponent)//
             .toList();
-        m_success = m_updateLog.stream().anyMatch(log -> !log.success);
+        m_status = determineAggregateStatus(m_updateLogs);
 
-        if (Boolean.FALSE.equals(m_success)) { // Undo all the changes if something went wrong
-            m_updateLog.forEach(UpdateLinkedComponents::undoInternal);
+        if (Boolean.FALSE.equals(m_status == StatusEnum.ERROR)) { // Undo everything if there was an error
+            m_updateLogs.forEach(UpdateLinkedComponents::undoInternal);
         }
 
-        return m_success;
+        return m_status == StatusEnum.SUCCESS; // Only true if there really was a change
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        if (m_updateLog != null) {
-            m_updateLog.forEach(UpdateLinkedComponents::undoInternal);
+        if (m_updateLogs != null) {
+            m_updateLogs.forEach(UpdateLinkedComponents::undoInternal);
         }
-        m_updateLog = null;
-        m_success = null;
+        m_updateLogs = null;
+        m_status = null;
+    }
+
+    private static void undoInternal(final UpdateLog log) {
+        final var newId = log.newId;
+        final var wfm = log.parent; // TODO: Could we simply do 'getWorkflowManager()' instead?
+        final var persistor = log.persistor;
+        try {
+            final var nodeToBeDeleted = (NodeContainerTemplate)wfm.findNodeContainer(newId);
+            final var parent = nodeToBeDeleted.getParent();
+            parent.removeNode(nodeToBeDeleted.getID());
+            parent.paste(persistor);
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Could not undo linked component update for <%s>".formatted(newId), e);
+        }
     }
 
     @Override
     public UpdateLinkedComponentsResultEnt buildEntity(final String snapshotId) {
         return builder(UpdateLinkedComponentsResultEntBuilder.class)//
-            .setKind(CommandResultEnt.KindEnum.UPDATELINKEDCOMPONENTSRESULT)//
             .setKind(CommandResultEnt.KindEnum.UPDATE_LINKED_COMPONENTS_RESULT)//
             .setSnapshotId(snapshotId)//
-            .setStatus(Boolean.TRUE.equals(m_success) ? StatusEnum.SUCCESS : StatusEnum.ERROR)//
+            .setStatus(m_status)//
             .build();
     }
 
@@ -163,38 +186,62 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         LOGGER.info("Updating <%s> from <%s>"//
             .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
 
+        final var statusComputingFunction = getStatusComputingFunction(oldId, parent);
+
+        // This will return an update result even if no update was necessary
         final var exec = new ExecutionMonitor();
         final var loadHelper = new WorkflowLoadHelper(true, parent.getContextV2());
-
-        // TODO: Do we need to do some more checking before actually updating?
         final var updateResult = nct.getParent().updateMetaNodeLink(oldId, exec, loadHelper);
 
         final var persistor = updateResult.getUndoPersistor();
         final var newId = updateResult.getNCTemplate().getID();
-        final var success = updateResult.getType() == LoadResultEntryType.Ok;
-        return new UpdateLog(oldId, newId, parent, persistor, success);
+        final var status = statusComputingFunction.apply(updateResult.getType());
+        return new UpdateLog(oldId, newId, parent, persistor, status);
     }
 
-    private static void undoInternal(final UpdateLog log) {
-        final var newId = log.newId;
-        final var wfm = log.parent; // TODO: Could we simply do 'getWorkflowManager()' instead?
-        final var persistor = log.persistor;
+    private static Function<LoadResultEntryType, StatusEnum> getStatusComputingFunction(final NodeID componentId,
+        final WorkflowManager parent) {
+        final var needsUpdate = needsUpdate(componentId, parent);
+        return type -> {
+            if (!needsUpdate) {
+                return StatusEnum.UNCHANGED;
+            }
+            return type == LoadResultEntryType.Ok ? StatusEnum.SUCCESS : StatusEnum.ERROR;
+        };
+    }
+
+    /**
+     * Copied from {@code UpdateMetaNodeTemplateRunnable}
+     */
+    private static boolean needsUpdate(final NodeID componentId, final WorkflowManager parent) {
+        boolean needsUpdate;
         try {
-            final var nodeToBeDeleted = (NodeContainerTemplate)wfm.findNodeContainer(newId);
-            final var parent = nodeToBeDeleted.getParent();
-            parent.removeNode(nodeToBeDeleted.getID());
-            parent.paste(persistor);
+            // this line will fail with in IllegalArgumentException if the node already has been updated
+            // basically a computationally cheaper option to WorkflowManager#checkUpdateMetaNodeLink
+            needsUpdate = parent.findNodeContainer(componentId) instanceof NodeContainerTemplate;
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Could not undo linked component update for <%s>".formatted(newId), e);
+            LOGGER.debug("Node with ID <%s> unexpectedly doesn't need an update.".formatted(componentId), e);
+            needsUpdate = false;
         }
+        return needsUpdate;
+    }
+
+    private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {
+        final var statusList = updateLogs.stream().map(UpdateLog::status).toList();
+        if (statusList.contains(StatusEnum.ERROR)) {
+            return StatusEnum.ERROR; // Because there was at least one error
+        }
+        if (statusList.contains(StatusEnum.SUCCESS)) {
+            return StatusEnum.SUCCESS; // Because there was no error and at least one success
+        }
+        return StatusEnum.UNCHANGED; // Otherwise nothing changed
     }
 
     /**
      * Internal update log to report success and enable undo
-     *
      */
     private static record UpdateLog(NodeID oldId, NodeID newId, WorkflowManager parent, WorkflowPersistor persistor,
-        boolean success) {
+        StatusEnum status) {
         // TODO: Do we need the workflow manager in here?
     }
 
