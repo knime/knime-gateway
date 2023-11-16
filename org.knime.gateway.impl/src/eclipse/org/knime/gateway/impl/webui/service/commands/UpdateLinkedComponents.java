@@ -180,18 +180,18 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             .allMatch(component -> component.getTemplateInformation().getRole() == Role.Link);
     }
 
-    /**
-     * TODO: Simplify this using {@code Stream.reduce(...)}
-     */
     private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {
-        final var statusList = updateLogs.stream().map(UpdateLog::status).toList();
-        if (statusList.contains(StatusEnum.ERROR)) {
-            return StatusEnum.ERROR; // Because there was at least one error
-        }
-        if (statusList.contains(StatusEnum.SUCCESS)) {
-            return StatusEnum.SUCCESS; // Because there was no error and at least one success
-        }
-        return StatusEnum.UNCHANGED; // Otherwise nothing changed
+        return updateLogs.stream()//
+            .map(UpdateLog::status)//
+            .reduce(StatusEnum.UNCHANGED, (left, right) -> {
+                if (right == StatusEnum.ERROR) {
+                    return StatusEnum.ERROR; // Because there was at least one error
+                }
+                if (left != StatusEnum.ERROR && right == StatusEnum.SUCCESS) {
+                    return StatusEnum.SUCCESS; // Because there was no error and at least one success
+                }
+                return left; // Otherwise nothing changed
+            });
     }
 
     private static UpdateLog updateLinkedComponent(final SubNodeContainer component) {
