@@ -56,7 +56,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -97,14 +96,12 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerMetadata;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
-import org.knime.core.node.workflow.NodeContainerTemplate;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
@@ -777,38 +774,15 @@ public final class CoreUtil {
      * Get all linked components (recursively) for a given workflow
      *
      * @param wfm
-     * @return The list of linked components, can be empty too
+     * @return The list of linked components, never {@code null}
      */
-    public static List<NodeContainerTemplate> getAllLinkedComponents(final WorkflowManager wfm) {
+    public static List<NodeID> getAllLinkedComponents(final WorkflowManager wfm) {
         final var links = wfm.getLinkedMetaNodes(true);
         return links.stream() //
             .map(wfm::findNodeContainer) //
             .filter(SubNodeContainer.class::isInstance) // Only count linked sub node containers
-            .map(NodeContainerTemplate.class::cast) //
+            .map(NodeContainer::getID) //
             .toList();
-    }
-
-    /**
-     * Get all node IDs of linked components that have an update (recursively).
-     *
-     * @param wfm
-     * @return The list of node IDs that have an update
-     * @throws IOException
-     */
-    public static Set<NodeID> getUpdatableLinkedComponentsAndSetUpdateStatus(final WorkflowManager wfm)
-        throws IOException {
-        final var componentsToCheck = getAllLinkedComponents(wfm);
-        final var loadHelper = new WorkflowLoadHelper(true, wfm.getContextV2());
-
-        var componentsToUpdate = new HashSet<NodeID>();
-        for (var node : componentsToCheck) {
-            var nodeId = node.getID();
-            var parentWfm = wfm.findNodeContainer(nodeId).getParent();
-            if (parentWfm.checkUpdateMetaNodeLink(nodeId, loadHelper)) {
-                componentsToUpdate.add(nodeId);
-            }
-        }
-        return componentsToUpdate;
     }
 
     /**

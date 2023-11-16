@@ -48,10 +48,11 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
@@ -131,11 +132,12 @@ public final class DefaultWorkflowService implements WorkflowService {
         final var wfKey = new WorkflowKey(projectId, workflowId);
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         try {
-            final var nodesToUpdate = CoreUtil.getUpdatableLinkedComponentsAndSetUpdateStatus(wfm);
-            return nodesToUpdate.stream()//
+            var res = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(wfm,
+                "org.knime.gateway.impl", CoreUtil.getAllLinkedComponents(wfm), new NullProgressMonitor());
+            return res.updateList().stream()//
                 .map(NodeIDEnt::new)//
                 .toList();
-        } catch (IOException e) {
+        } catch (IllegalStateException | InterruptedException e) {
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
         }
     }
