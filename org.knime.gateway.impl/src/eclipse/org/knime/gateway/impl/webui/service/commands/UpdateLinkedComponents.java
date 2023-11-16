@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry.LoadResultEntryType;
+import org.knime.core.node.workflow.WorkflowPersistor.NodeContainerTemplateLinkUpdateResult;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
@@ -206,14 +207,17 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         final var exec = new ExecutionMonitor();
         final var loadHelper = new WorkflowLoadHelper(true, wfm.getContextV2());
 
-        // This will return an update result even if no update was necessary or possible
-        final var updateResult = nct.getParent().updateMetaNodeLink(oldComponentId, exec, loadHelper);
-        final var persistor = updateResult.getUndoPersistor();
+        final NodeContainerTemplateLinkUpdateResult updateResult;
+        try {
+            // This will return an update result even if no update was necessary or possible
+            updateResult = nct.getParent().updateMetaNodeLink(oldComponentId, exec, loadHelper);
+        } catch (Throwable e) {
+            return logErrorAndReturnEmptyUpdateLog(nct, e); // If f.e. the network is unreachable
+        }
 
-        if (persistor == null) { // If the linked component to update to could not be found
-            LOGGER.debug("Could not update <%s> from <%s>"//
-                .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
-            return new UpdateLog(null, null, null, StatusEnum.ERROR);
+        final var persistor = updateResult.getUndoPersistor();
+        if (persistor == null) {
+            return logErrorAndReturnEmptyUpdateLog(nct, null); // If f.e. the linked component could not be found
         }
 
         final var componentId = updateResult.getNCTemplate().getID();
@@ -247,6 +251,12 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             LOGGER.debug("Node with ID <%s> unexpectedly doesn't need an update.".formatted(componentId), e);
             return false;
         }
+    }
+
+    private static UpdateLog logErrorAndReturnEmptyUpdateLog(final NodeContainerTemplate nct, final Throwable t) {
+        LOGGER.error("Could not update <%s> from <%s>"//
+            .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()), t);
+        return new UpdateLog(null, null, null, StatusEnum.ERROR);
     }
 
     private static record UpdateLog(NodeID componentId, WorkflowManager wfm, WorkflowPersistor persistor,
