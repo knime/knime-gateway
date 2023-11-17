@@ -380,9 +380,7 @@ public interface Space {
      * @return The optional project type of the space item, if it is a project.
      * @throws NoSuchElementException If no such item is present
      */
-    default Optional<ProjectTypeEnum> getProjectType(final String itemId) {
-        return Optional.empty();
-    }
+    Optional<ProjectTypeEnum> getProjectType(final String itemId);
 
     /**
      * Creates a {@link SpaceEnt} for this space.
