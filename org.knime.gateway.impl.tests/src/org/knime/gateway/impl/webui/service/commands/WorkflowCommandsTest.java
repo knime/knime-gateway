@@ -106,6 +106,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
@@ -326,8 +327,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     }
 
     static void disposeWorkflowProject(final Project wp) {
-        ProjectManager.getInstance().removeProject(wp.getID());
-        WorkflowManager.ROOT.removeProject(wp.openProject().getID());
+        ProjectManager.getInstance().removeProject(wp.getID(), WorkflowManagerUtil::disposeWorkflow);
     }
 
     static Project createEmptyWorkflowProject() throws IOException {
@@ -337,25 +337,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             WorkflowManager wfm = WorkflowManager.ROOT.createAndAddProject("workflow", new WorkflowCreationHelper(
                 WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null)));
             String id = "wfId";
-            Project workflowProject = new Project() {
-
-                @Override
-                public String getName() {
-                    return "workflow";
-                }
-
-                @Override
-                public String getID() {
-                    return id;
-                }
-
-                @Override
-                public WorkflowManager openProject() {
-                    return wfm;
-                }
-
-            };
-            ProjectManager.getInstance().addProject(id, workflowProject);
+            Project workflowProject = DefaultProject.builder(wfm).setId(id).setName("workflow").build();
+            ProjectManager.getInstance().addProject(workflowProject);
             return workflowProject;
         } else {
             throw new IllegalStateException("Creating empty workflow failed");

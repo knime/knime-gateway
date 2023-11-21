@@ -60,7 +60,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -82,24 +82,7 @@ public class WorkflowMiddlewareTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var wpm = ProjectManager.getInstance();
         var projectId = wfm.getNameWithID();
-        wpm.addProject(wfm.getNameWithID(), new Project() {
-
-            @Override
-            public String getName() {
-                return wfm.getName();
-            }
-
-            @Override
-            public String getID() {
-                return projectId;
-            }
-
-            @Override
-            public WorkflowManager openProject() {
-                return wfm;
-            }
-
-        });
+        wpm.addProject(DefaultProject.builder(wfm).setId(projectId).build());
         var middleware = new WorkflowMiddleware(wpm);
         createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.PROJECT, wfm.getID());
 
@@ -117,8 +100,7 @@ public class WorkflowMiddlewareTest {
         wfm.removeNode(componentIDs[0]);
         await().untilAsserted(() -> assertThat(middleware.m_workflowStateCache.size(), is(1)));
 
-        WorkflowManagerUtil.disposeWorkflow(wfm);
-        ProjectManager.getInstance().removeProject(projectId);
+        ProjectManager.getInstance().removeProject(projectId, WorkflowManagerUtil::disposeWorkflow);
     }
 
     private static NodeID[] createNestedMetanodesOrComponents(final WorkflowManager wfm, final boolean createComponents)

@@ -48,12 +48,11 @@ package org.knime.gateway.impl.project;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -79,7 +78,8 @@ public final class ProjectManager {
 
     };
 
-    private final Map<String, Project> m_projectsMap = new LinkedHashMap<>();
+    private final Map<String, ProjectInternal> m_projectsMap = new LinkedHashMap<>();
+
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
@@ -106,8 +106,8 @@ public final class ProjectManager {
     }
 
     /**
-     * Marks the given project as being active (e.g., meaning that it's visible to the user in an opened tab).
-     * All other opened projects are considered <b>not</b> active after this call.
+     * Marks the given project as being active (e.g., meaning that it's visible to the user in an opened tab). All other
+     * opened projects are considered <b>not</b> active after this call.
      *
      * @param projectId the id to add
      * @throws NoSuchElementException if there is no project open/loaded for the given project id
@@ -115,6 +115,9 @@ public final class ProjectManager {
     public void setProjectActive(final String projectId) {
         if (getCachedProject(projectId).isEmpty()) {
             throw new NoSuchElementException("No loaded project for id " + projectId);
+        }
+        if (!m_projectsMap.get(projectId).hasUIConsumer) {
+            throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
         m_activeProjectId = projectId;
     }
@@ -130,41 +133,120 @@ public final class ProjectManager {
     /**
      * @return the IDs of all registered projects
      */
-    public Set<String> getProjectIds() {
-        return new LinkedHashSet<>(m_projectsMap.keySet());
+    public List<String> getProjectIds() {
+        return getProjectIds(ProjectConsumer.UI);
     }
 
     /**
-     * Adds the project with the id to the manager. If a project with the given id already exists, it
-     * will be replaced.
+     * @param consumer the type of {@link ProjectConsumer} to get the project ids for
+     * @return the ids of the registered projects
+     */
+    List<String> getProjectIds(final ProjectConsumer consumer) {
+        return m_projectsMap.entrySet().stream()
+            .filter(e -> consumer.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0))
+            .map(Entry::getKey).collect(Collectors.toList());
+    }
+
+    /**
+     * @return the list of all project ids regardless of the type of {@link ProjectConsumer}
+     */
+    public List<String> getAllProjectIds() {
+        return m_projectsMap.keySet().stream().toList();
+    }
+
+    /**
+     * Adds the project with the id to the manager. If a project with the given id already exists, it will be replaced.
      *
-     * @param projectId id of the project to be added
      * @param project the actual project to be added
      */
-    public void addProject(final String projectId, final Project project) {
-        m_projectsMap.put(projectId, project);
+    public void addProject(final Project project) {
+        addProject(project, ProjectConsumer.UI, true);
+    }
+
+    /**
+     * Adds the project with the id to the manager.
+     *
+     * @param project the actual project to be added
+     * @param consumer the type of {@link ProjectConsumer} this project is being added for
+     * @param replace whether to replace the project or not in case there is another project with the same id already
+     */
+    void addProject(final Project project, final ProjectConsumer consumer, final boolean replace) {
+        boolean hasUIConsumer = consumer.isUI();
+        int numNonUIConsumer = consumer.isUI() ? 0 : 1;
+        var projectInternal = m_projectsMap.get(project.getID());
+        if (projectInternal != null) {
+            hasUIConsumer = hasUIConsumer || projectInternal.hasUIConsumer;
+            numNonUIConsumer =
+                consumer.isUI() ? projectInternal.numNonUIConsumer : projectInternal.numNonUIConsumer + 1;
+        }
+
+        if (projectInternal == null || replace) {
+            projectInternal = new ProjectInternal(project, hasUIConsumer, numNonUIConsumer);
+            if (project instanceof DefaultProject) {
+                cacheProject(project.getID(), project.openProject());
+            }
+        } else {
+            projectInternal = new ProjectInternal(projectInternal.project, hasUIConsumer, numNonUIConsumer);
+        }
+
+        m_projectsMap.put(project.getID(), projectInternal);
     }
 
     /**
      * If a project for the given id exists it will be removed
      *
      * @param projectId id of the project to be removed
+     * @param disposeWfm the logic to also dispose the {@link WorkflowManager} which has been removed from the project
+     *            manager
      */
-    public void removeProject(final String projectId) {
-        m_projectsMap.remove(projectId);
-        m_cachedProjectsMap.remove(projectId);
-        m_projectRemovedListeners.stream().forEach(l -> l.accept(projectId));
-        if (m_activeProjectId != null && m_activeProjectId.equals(projectId)) {
-            m_activeProjectId = null;
+    public void removeProject(final String projectId, final Consumer<WorkflowManager> disposeWfm) {
+        removeProject(projectId, ProjectConsumer.UI, disposeWfm);
+    }
+
+    /**
+     * Removes the project for the given id. Note: the project might not be removed in case there are still other
+     * consumers that rely on this project.
+     *
+     * @param projectId the project id to remove
+     * @param consumer the type of {@link ProjectConsumer} to remove this project for
+     * @param disposeWfm the logic to also dispose the {@link WorkflowManager} which has been removed from the project
+     *            manager
+     */
+    void removeProject(final String projectId, final ProjectConsumer consumer,
+        final Consumer<WorkflowManager> disposeWfm) {
+        var projectInternal = m_projectsMap.get(projectId);
+        if (projectInternal == null) {
+            return;
+        }
+
+        if (consumer.isUI()) {
+            projectInternal = new ProjectInternal(projectInternal.project, false, projectInternal.numNonUIConsumer);
+        } else {
+            projectInternal = new ProjectInternal(projectInternal.project, projectInternal.hasUIConsumer,
+                projectInternal.numNonUIConsumer - 1);
+        }
+
+        if (!projectInternal.hasUIConsumer && projectInternal.numNonUIConsumer == 0) {
+            m_projectsMap.remove(projectId);
+            var wfm = m_cachedProjectsMap.remove(projectId);
+            if (wfm != null) {
+                disposeWfm.accept(wfm);
+            }
+            m_projectRemovedListeners.stream().forEach(l -> l.accept(projectId));
+            if (m_activeProjectId != null && m_activeProjectId.equals(projectId)) {
+                m_activeProjectId = null;
+            }
+        } else {
+            m_projectsMap.put(projectId, projectInternal);
         }
     }
 
     /**
      * @param projectId
-     * @return the project for the given id or an empty optional if doesn't exist
+     * @return the project for the given id or an empty optional if it doesn't exist
      */
     public Optional<Project> getProject(final String projectId) {
-        return Optional.ofNullable(m_projectsMap.get(projectId));
+        return Optional.ofNullable(m_projectsMap.get(projectId)).map(ProjectInternal::project);
     }
 
     /**
@@ -202,14 +284,14 @@ public final class ProjectManager {
 
     /**
      * @param projectId
-     * @return the cached project or an empty optional if none has been found for the given project ID.
+     * @return the cached project or an empty optional if none has been found for the given project ID
      */
     public Optional<WorkflowManager> getCachedProject(final String projectId) {
         return Optional.ofNullable(m_cachedProjectsMap.get(projectId));
     }
 
     /**
-     * Determines whether the open projects are dirty ore not.
+     * Determines whether the open projects are dirty or not.
      *
      * @return map from project IDs to the dirty flag of the projects
      */
@@ -233,4 +315,39 @@ public final class ProjectManager {
     private void cacheProject(final String projectId, final WorkflowManager wfm) {
         m_cachedProjectsMap.put(projectId, wfm);
     }
+
+    /**
+     * Clears the entire state. For testing purposes only.
+     */
+    void clearState() {
+        m_activeProjectId = null;
+        m_projectsMap.clear();
+        m_cachedProjectsMap.clear();
+        m_projectRemovedListeners.clear();
+    }
+
+    private record ProjectInternal(Project project, boolean hasUIConsumer, int numNonUIConsumer) {
+        //
+    }
+
+    /**
+     * A project can have multiple consumers of certain type. Essentially controls whether a project can be removed for
+     * real via {@link ProjectManager#removeProject(String, Consumer)}.
+     */
+    enum ProjectConsumer {
+
+            /**
+             * If a project is consumed by the UI. There can only be one UI-consumer.
+             */
+            UI,
+            /**
+             * If a project is consumed in order to execute a workflow called by a workflow service node.
+             */
+            WORKFLOW_SERVICE;
+
+        private boolean isUI() {
+            return this == UI;
+        }
+    }
+
 }

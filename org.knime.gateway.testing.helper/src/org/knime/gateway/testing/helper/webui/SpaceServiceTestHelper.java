@@ -100,6 +100,7 @@ import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Tests {@link SpaceService}-implementations.
@@ -735,7 +736,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Add open project to workflow project manager
         var workflowProject = createWorkflowProject(providerId, spaceId, wfId);
-        ProjectManager.getInstance().addProject("some_id", workflowProject);
+        ProjectManager.getInstance().addProject(workflowProject);
 
         try {
             // Try to move data file and open workflow
@@ -743,7 +744,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
                     Space.NameCollisionHandling.NOOP.toString(), false));
         } finally {
-            ProjectManager.getInstance().removeProject("some_id");
+            ProjectManager.getInstance().removeProject("some_id", WorkflowManagerUtil::disposeWorkflow);
         }
     }
 

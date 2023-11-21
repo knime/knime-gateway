@@ -101,7 +101,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     }
 
     private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId) {
-        ProjectManager.getInstance().addProject(projectId, new Project() {
+        ProjectManager.getInstance().addProject(new Project() {
 
             @Override
             public WorkflowManager openProject() {
@@ -169,7 +169,9 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             if (wfm != null) {
                 CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
             }
-            ProjectManager.getInstance().removeProject(projectId);
+            ProjectManager.getInstance().removeProject(projectId, w -> {
+                //
+            });
         }
     }
 
