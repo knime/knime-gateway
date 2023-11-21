@@ -97,7 +97,7 @@ public final class NodeConnector {
     /**
      * Connects an existing downstream node to this node.
      *
-     * @param sourceNodeId
+     * @param sourceNodeIdEnt
      * @param sourcePortIdx if {@code null} it will be automatically determined
      * @return this connector
      */
