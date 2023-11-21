@@ -626,8 +626,8 @@ public final class WorkflowEntityFactory {
         String icon = null;
         String iconForWorkflow = null;
         icon = createIconDataURL(jobManager.getIcon());
-        if (jobManager instanceof AbstractNodeExecutionJobManager) {
-            iconForWorkflow = createIconDataURL(((AbstractNodeExecutionJobManager)jobManager).getIconForWorkflow());
+        if (jobManager instanceof AbstractNodeExecutionJobManager nodeExecJobManager) {
+            iconForWorkflow = createIconDataURL(nodeExecJobManager.getIconForWorkflow());
         }
         return builder(CustomJobManagerEntBuilder.class).setName(name).setIcon(icon).setWorkflowIcon(iconForWorkflow)
             .build();
@@ -812,12 +812,12 @@ public final class WorkflowEntityFactory {
 
     private NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
         final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
-        if (nc instanceof NativeNodeContainer) {
-            return buildNativeNodeEnt(id, (NativeNodeContainer)nc, allowedActions, buildContext);
-        } else if (nc instanceof WorkflowManager) {
-            return buildMetaNodeEnt(id, (WorkflowManager)nc, allowedActions, buildContext);
-        } else if (nc instanceof SubNodeContainer) {
-            return buildComponentNodeEnt(id, (SubNodeContainer)nc, allowedActions, buildContext);
+        if (nc instanceof NativeNodeContainer nnc) {
+            return buildNativeNodeEnt(id, nnc, allowedActions, buildContext);
+        } else if (nc instanceof WorkflowManager wfm) {
+            return buildMetaNodeEnt(id, wfm, allowedActions, buildContext);
+        } else if (nc instanceof SubNodeContainer snc) {
+            return buildComponentNodeEnt(id, snc, allowedActions, buildContext);
         } else {
             throw new IllegalArgumentException(
                 "Node container " + nc.getClass().getName() + " cannot be mapped to a node entity.");
@@ -847,15 +847,14 @@ public final class WorkflowEntityFactory {
     private NodeExecutionInfoEnt buildNodeExecutionInfoEntFromParentJobManager(
         final NodeExecutionJobManager parentJobManager, final NodeContainer nc) {
         if (CoreUtil.isStreamingJobManager(parentJobManager)) {
-            if (nc instanceof NativeNodeContainer) {
-                return builder(NodeExecutionInfoEntBuilder.class).setStreamable(isStreamable((NativeNodeContainer)nc))
-                    .build();
+            if (nc instanceof NativeNodeContainer nnc) {
+                return builder(NodeExecutionInfoEntBuilder.class).setStreamable(isStreamable(nnc)).build();
             } else {
                 return null;
             }
-        } else if (parentJobManager instanceof AbstractNodeExecutionJobManager) {
+        } else if (parentJobManager instanceof AbstractNodeExecutionJobManager aneJobManager) {
             return builder(NodeExecutionInfoEntBuilder.class)
-                .setIcon(createIconDataURL(((AbstractNodeExecutionJobManager)parentJobManager).getIconForChild(nc)))
+                .setIcon(createIconDataURL(aneJobManager.getIconForChild(nc)))
                 .build();
         } else {
             return null;
@@ -887,8 +886,8 @@ public final class WorkflowEntityFactory {
     @SuppressWarnings("java:S107") // it's a 'builder'-method, so many parameters are ok
     private NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
         final int portIdx, final Boolean isOptional, final Boolean isInactive, final Boolean canRemovePort,
-        final Collection<ConnectionContainer> connections, final Integer portContentVersion, final String portGroupId,
-        final WorkflowBuildContext buildContext) {
+        final Boolean isReportPort, final Collection<ConnectionContainer> connections, final Integer portContentVersion,
+        final String portGroupId, final WorkflowBuildContext buildContext) {
         return builder(NodePortEntBuilder.class) //
             .setIndex(portIdx)//
             .setOptional(isOptional)//
@@ -901,6 +900,7 @@ public final class WorkflowEntityFactory {
             .setPortContentVersion(portContentVersion)//
             .setPortGroupId(portGroupId)//
             .setCanRemove(canRemovePort)//
+            .setIsComponentReportPort(isReportPort)//
             .build();
     }
 
@@ -916,8 +916,9 @@ public final class WorkflowEntityFactory {
                 NodeInPort inPort = nc.getInPort(i);
                 var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, true, buildContext);
                 var pt = inPort.getPortType();
+                final var isReportPort = isComponentReportPort(nc, i, isInputPorts);
                 res.add(buildNodePortEnt(pt, inPort.getPortName(), null, i, pt.isOptional(), null, canRemovePort,
-                    connections, null, portGroupId, buildContext));
+                    isReportPort, connections, null, portGroupId, buildContext));
             }
         } else {
             for (var i = 0; i < nc.getNrOutPorts(); i++) {
@@ -926,8 +927,9 @@ public final class WorkflowEntityFactory {
                 NodeOutPort outPort = nc.getOutPort(i);
                 var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, false, buildContext);
                 var pt = outPort.getPortType();
+                final var isReportPort = isComponentReportPort(nc, i, isInputPorts);
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
-                    outPort.isInactive() ? outPort.isInactive() : null, canRemovePort, connections,
+                    outPort.isInactive() ? outPort.isInactive() : null, canRemovePort, isReportPort, connections,
                     getPortContentVersion(outPort, buildContext), portGroupId, buildContext));
             }
         }
@@ -946,7 +948,7 @@ public final class WorkflowEntityFactory {
                 var isInactive = port.isInactive() ? Boolean.TRUE : null;
                 var portContentVersion = getPortContentVersion(port, buildContext);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
-                    isInactive, canRemovePort, connections, portContentVersion, null, buildContext));
+                    isInactive, canRemovePort, null, connections, portContentVersion, null, buildContext));
             }
         } else {
             int nrPorts = wfm.getNrWorkflowOutgoingPorts();
@@ -956,7 +958,7 @@ public final class WorkflowEntityFactory {
                 Collection<ConnectionContainer> connections = connection != null ? singleton(connection) : emptyList();
                 NodeInPort port = wfm.getWorkflowOutgoingPort(i);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), null, i, null, null, canRemovePort,
-                    connections, null, null, buildContext));
+                    null, connections, null, null, buildContext));
             }
         }
         return ports;
@@ -1300,12 +1302,16 @@ public final class WorkflowEntityFactory {
         if (!buildContext.includeInteractionInfo()) {
             return null; // NOSONAR
         }
-        if (nc instanceof NativeNodeContainer) {
-            var nnc = (NativeNodeContainer)nc;
+        if (nc instanceof NativeNodeContainer nnc) {
             return canRemoveNativeNodePort(nnc, portIndex, isInputPort, buildContext);
         } else {
             return canRemoveContainerNodePort(nc, portIndex, isInputPort);
         }
+    }
+
+    private static Boolean isComponentReportPort(final NodeContainer nc, final int portIndex,
+        final boolean isInputPort) {
+        return nc instanceof SubNodeContainer snc && snc.isReportPort(portIndex, isInputPort) ? Boolean.TRUE : null;
     }
 
     /**

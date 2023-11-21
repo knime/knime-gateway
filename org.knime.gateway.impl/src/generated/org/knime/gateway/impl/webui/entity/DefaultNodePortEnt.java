@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
  * @param portContentVersion
  * @param portGroupId
  * @param canRemove
+ * @param isComponentReportPort
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -77,7 +78,8 @@ public record DefaultNodePortEnt(
     Boolean inactive,
     Integer portContentVersion,
     String portGroupId,
-    Boolean canRemove) implements NodePortEnt {
+    Boolean canRemove,
+    Boolean isComponentReportPort) implements NodePortEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -146,6 +148,11 @@ public record DefaultNodePortEnt(
         return canRemove;
     }
     
+    @Override
+    public Boolean isComponentReportPort() {
+        return isComponentReportPort;
+    }
+    
     /**
      * A builder for {@link DefaultNodePortEnt}.
      */
@@ -170,6 +177,8 @@ public record DefaultNodePortEnt(
         private String m_portGroupId;
 
         private Boolean m_canRemove;
+
+        private Boolean m_isComponentReportPort;
 
         @Override
         public DefaultNodePortEntBuilder setName(String name) {
@@ -238,6 +247,12 @@ public record DefaultNodePortEnt(
         }
 
         @Override
+        public DefaultNodePortEntBuilder setIsComponentReportPort(Boolean isComponentReportPort) {
+             m_isComponentReportPort = isComponentReportPort;
+             return this;
+        }
+
+        @Override
         public DefaultNodePortEnt build() {
             return new DefaultNodePortEnt(
                 immutable(m_name),
@@ -249,7 +264,8 @@ public record DefaultNodePortEnt(
                 immutable(m_inactive),
                 immutable(m_portContentVersion),
                 immutable(m_portGroupId),
-                immutable(m_canRemove));
+                immutable(m_canRemove),
+                immutable(m_isComponentReportPort));
         }
     
     }

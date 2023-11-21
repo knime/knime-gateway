@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
  * @param portContentVersion
  * @param portGroupId
  * @param canRemove
+ * @param isComponentReportPort
  * @param nodeState
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -79,6 +80,7 @@ public record DefaultMetaNodePortEnt(
     Integer portContentVersion,
     String portGroupId,
     Boolean canRemove,
+    Boolean isComponentReportPort,
     NodeStateEnum nodeState) implements MetaNodePortEnt {
 
     /**
@@ -149,6 +151,11 @@ public record DefaultMetaNodePortEnt(
     }
     
     @Override
+    public Boolean isComponentReportPort() {
+        return isComponentReportPort;
+    }
+    
+    @Override
     public NodeStateEnum getNodeState() {
         return nodeState;
     }
@@ -177,6 +184,8 @@ public record DefaultMetaNodePortEnt(
         private String m_portGroupId;
 
         private Boolean m_canRemove;
+
+        private Boolean m_isComponentReportPort;
 
         private NodeStateEnum m_nodeState;
 
@@ -247,6 +256,12 @@ public record DefaultMetaNodePortEnt(
         }
 
         @Override
+        public DefaultMetaNodePortEntBuilder setIsComponentReportPort(Boolean isComponentReportPort) {
+             m_isComponentReportPort = isComponentReportPort;
+             return this;
+        }
+
+        @Override
         public DefaultMetaNodePortEntBuilder setNodeState(NodeStateEnum nodeState) {
              m_nodeState = nodeState;
              return this;
@@ -265,6 +280,7 @@ public record DefaultMetaNodePortEnt(
                 immutable(m_portContentVersion),
                 immutable(m_portGroupId),
                 immutable(m_canRemove),
+                immutable(m_isComponentReportPort),
                 immutable(m_nodeState));
         }
     

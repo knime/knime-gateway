@@ -106,6 +106,12 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
    **/
   public Boolean isCanRemove();
 
+  /**
+   * Flag for the magical ports on the outside of Components with reporting activated, absent if &#x60;false&#x60;.
+   * @return isComponentReportPort 
+   **/
+  public Boolean isComponentReportPort();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -121,6 +127,7 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
       valueConsumer.accept("portContentVersion", Pair.create(getPortContentVersion(), e.getPortContentVersion()));
       valueConsumer.accept("portGroupId", Pair.create(getPortGroupId(), e.getPortGroupId()));
       valueConsumer.accept("canRemove", Pair.create(isCanRemove(), e.isCanRemove()));
+      valueConsumer.accept("isComponentReportPort", Pair.create(isComponentReportPort(), e.isComponentReportPort()));
   }
 
     /**
@@ -207,6 +214,14 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setCanRemove(Boolean canRemove);
+        
+        /**
+         * Flag for the magical ports on the outside of Components with reporting activated, absent if &#x60;false&#x60;.
+         * 
+         * @param isComponentReportPort the property value,  
+         * @return this entity builder for chaining
+         */
+        NodePortEntBuilder setIsComponentReportPort(Boolean isComponentReportPort);
         
         
         /**

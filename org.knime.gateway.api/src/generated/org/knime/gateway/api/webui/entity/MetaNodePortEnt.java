@@ -114,6 +114,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
       valueConsumer.accept("portContentVersion", Pair.create(getPortContentVersion(), e.getPortContentVersion()));
       valueConsumer.accept("portGroupId", Pair.create(getPortGroupId(), e.getPortGroupId()));
       valueConsumer.accept("canRemove", Pair.create(isCanRemove(), e.isCanRemove()));
+      valueConsumer.accept("isComponentReportPort", Pair.create(isComponentReportPort(), e.isComponentReportPort()));
       valueConsumer.accept("nodeState", Pair.create(getNodeState(), e.getNodeState()));
   }
 
@@ -201,6 +202,14 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
          * @return this entity builder for chaining
          */
         MetaNodePortEntBuilder setCanRemove(Boolean canRemove);
+        
+        /**
+         * Flag for the magical ports on the outside of Components with reporting activated, absent if &#x60;false&#x60;.
+         * 
+         * @param isComponentReportPort the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodePortEntBuilder setIsComponentReportPort(Boolean isComponentReportPort);
         
         /**
          * The execution state of the node connected to this port if it&#39;s a out port. Otherwise not present.

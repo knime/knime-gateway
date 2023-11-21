@@ -111,6 +111,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
     public Boolean isCanRemove();
     
     @Override
+    @JsonProperty("isComponentReportPort")
+    public Boolean isComponentReportPort();
+    
+    @Override
     @JsonProperty("nodeState")
     public NodeStateEnum getNodeState();
     
@@ -166,6 +170,10 @@ public interface MetaNodePortEntMixIn extends MetaNodePortEnt {
         @Override
         @JsonProperty("canRemove")
         public MetaNodePortEntMixInBuilder setCanRemove(final Boolean canRemove);
+        
+        @Override
+        @JsonProperty("isComponentReportPort")
+        public MetaNodePortEntMixInBuilder setIsComponentReportPort(final Boolean isComponentReportPort);
         
         @Override
         @JsonProperty("nodeState")

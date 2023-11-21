@@ -110,6 +110,10 @@ public interface NodePortEntMixIn extends NodePortEnt {
     @JsonProperty("canRemove")
     public Boolean isCanRemove();
     
+    @Override
+    @JsonProperty("isComponentReportPort")
+    public Boolean isComponentReportPort();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -162,6 +166,10 @@ public interface NodePortEntMixIn extends NodePortEnt {
         @Override
         @JsonProperty("canRemove")
         public NodePortEntMixInBuilder setCanRemove(final Boolean canRemove);
+        
+        @Override
+        @JsonProperty("isComponentReportPort")
+        public NodePortEntMixInBuilder setIsComponentReportPort(final Boolean isComponentReportPort);
         
     }
 
