@@ -122,7 +122,7 @@ public final class WorkflowMiddleware {
             projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
     }
 
-    private void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
+    private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
         m_entityRepo.disposeHistory(keyFilter);
         m_commands.disposeUndoAndRedoStacks(keyFilter);
         m_workflowStateCache.entrySet().removeIf(e -> {
