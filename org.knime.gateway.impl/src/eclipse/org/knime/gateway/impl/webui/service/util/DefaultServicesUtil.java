@@ -46,7 +46,6 @@
  */
 package org.knime.gateway.impl.webui.service.util;
 
-import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -55,7 +54,6 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.service.DefaultApplicationService;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -110,25 +108,6 @@ public final class DefaultServicesUtil {
                 "Some services are already initialized. Service dependencies can't be set anymore. "
                     + "Maybe you already started a Web UI within the AP and have now tried to launch "
                     + "another instance in a browser, or vice versa?");
-        }
-    }
-
-    /**
-     * Remove the application service from the provided service dependencies, remove listeners and clear references to
-     * workflow projects.
-     */
-    public static void disposeDefaultServices() {
-        removeWorkflowProjects();
-        ServiceInstances.disposeAllServiceInstancesAndDependencies();
-    }
-
-    private static void removeWorkflowProjects() {
-        if (ServiceInstances.areServicesInitialized()) {
-            AppStateEnt previousState = DefaultApplicationService.getInstance().getState();
-            if (previousState != null) {
-                previousState.getOpenProjects().forEach(
-                    wfProjEnt -> ProjectManager.getInstance().removeProject(wfProjEnt.getProjectId()));
-            }
         }
     }
 
