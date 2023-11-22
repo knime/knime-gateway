@@ -69,6 +69,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.extension.NodeSpec;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.ui.util.FuzzySearchable;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -358,7 +359,7 @@ public final class NodeRepository {
          * @return True if there exists a compatible port type, false otherwise.
          */
         boolean isCompatibleWith(final PortType portType) {
-            return nodeSpec.ports().getSupportedInputPortTypes() //
+            return FlowVariablePortObject.TYPE.equals(portType) || nodeSpec.ports().getSupportedInputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
     }
