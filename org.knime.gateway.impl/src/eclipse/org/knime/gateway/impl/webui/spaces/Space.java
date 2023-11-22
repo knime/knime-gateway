@@ -250,7 +250,7 @@ public interface Space {
      *
      * @param monitor to report progress, progress messages and for cancellation
      * @param itemId ID if the item to resolve
-     * @return the local path of the item and (if available, otherwise {@code null}) its location info
+     * @return the local path of the item and if available, otherwise {@code null}
      */
     Path toLocalAbsolutePath(ExecutionMonitor monitor, String itemId);
 
@@ -281,6 +281,7 @@ public interface Space {
      * @see this#toPathBasedKnimeUrl(String)
      * @param itemId item ID
      * @return KNIME URL
+     * @throws IllegalStateException if there were problems determining the URI
      */
     URI toKnimeUrl(String itemId);
 
