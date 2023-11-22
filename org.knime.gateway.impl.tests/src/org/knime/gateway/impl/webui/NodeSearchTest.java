@@ -69,6 +69,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
@@ -91,6 +92,8 @@ public class NodeSearchTest {
     private static final String TABLE_PORT_TYPE_ID = CoreUtil.getPortTypeId(BufferedDataTable.TYPE);
 
     private static final String IMAGE_PORT_TYPE_ID = CoreUtil.getPortTypeId(ImagePortObject.TYPE);
+
+    private static final String FLOW_VARIABLE_PORT_TYPE_ID = CoreUtil.getPortTypeId(FlowVariablePortObject.TYPE);
 
     private NodeSearch m_search;
 
@@ -256,15 +259,26 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesDifferentPortTypes() throws Exception {
-        var res1 = m_search.searchNodes(null, null, null, null, null, null, null, null);
-        var res2 = m_search.searchNodes(TABLE_PORT_TYPE_ID, null, null, null, null, null, null, null);
-        assertThat("There should be less table port compatible nodes than all nodes", res1.getTotalNumNodesFound(),
-            is(greaterThan(res2.getTotalNumNodesFound())));
-        var res3 = m_search.searchNodes(IMAGE_PORT_TYPE_ID, null, null, null, null, null, null, null);
-        assertThat("There should be less image port compatible nodes than all nodes", res1.getTotalNumNodesFound(),
-            is(greaterThan(res3.getTotalNumNodesFound())));
-        assertThat("The set of image port compatible nodes must differ from the set of table port compatible nodes",
-            CollectionUtils.isEqualCollection(res2.getNodes(), res3.getNodes()), is(false));
+        var res1 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, TABLE_PORT_TYPE_ID);
+        assertThat(res1.getTotalNumNodesFound(), greaterThan(0));
+        assertThat("There should only be nodes with at least one compatible port type",
+            everyNodeHasInputPortOfType(res1.getNodes(), TABLE_PORT_TYPE_ID), is(true));
+
+        var res2 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, IMAGE_PORT_TYPE_ID);
+        assertThat(res2.getTotalNumNodesFound(), greaterThan(0));
+        assertThat("There should only be nodes with at least one compatible port type",
+            everyNodeHasInputPortOfType(res2.getNodes(), IMAGE_PORT_TYPE_ID), is(true));
+
+        var res3 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, FLOW_VARIABLE_PORT_TYPE_ID);
+        assertThat(res3.getTotalNumNodesFound(), greaterThan(0));
+        var res4 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, null); // no port type filter!
+        assertThat(
+            "Searching for nodes with a flow-variable-port filter is equivalent to searching for nodes without a port-type filter",
+            res3, is(res4));
+    }
+
+    private static boolean everyNodeHasInputPortOfType(final List<NodeTemplateEnt> nodes, final String portTypeId) {
+        return nodes.stream().anyMatch(n -> n.getInPorts().stream().anyMatch(p -> p.getTypeId().equals(portTypeId)));
     }
 
     private static List<String> getNodeFactoryNames(final List<NodeTemplateEnt> nodes) {
