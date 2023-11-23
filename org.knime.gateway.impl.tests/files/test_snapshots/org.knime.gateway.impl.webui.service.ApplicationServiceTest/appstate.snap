@@ -72,7 +72,6 @@
     "activeWorkflowId" : "root",
     "name" : "hollow",
     "origin" : {
-      "ancestorItemIds" : [ "ancestor 1", "ancestor 2" ],
       "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
       "projectType" : "Workflow",
       "providerId" : "Provider ID for testing",

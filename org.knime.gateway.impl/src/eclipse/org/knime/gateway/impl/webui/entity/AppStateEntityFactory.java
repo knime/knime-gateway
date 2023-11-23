@@ -325,15 +325,16 @@ public final class AppStateEntityFactory {
             .build();
     }
 
-    private static List<String> getAncestorItemIds(final Project.Origin origin,
-        final SpaceProviders spaceProviders) {
-        return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId())
+    private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders) {
+        return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
+            // ancestor item ids are only required for local projects because it's used to
+            // * mark folders that contain open projects
+            // * disallow folders to be moved if they contain opened local projects (because they can't be moved while open)
+            // ... in the space explorer.
+            // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
+            .filter(LocalWorkspace.class::isInstance) //
             .map(space -> space.getAncestorItemIds(origin.getItemId())) //
-            .orElseGet(() -> { //
-                NodeLogger.getLogger(AppStateEntityFactory.class).error(
-                    "Ancestor item-ids couldn't be determined for workflow project '" + origin.getItemId() + "'");
-                return List.of();
-            });
+            .orElse(null);
     }
 
 }

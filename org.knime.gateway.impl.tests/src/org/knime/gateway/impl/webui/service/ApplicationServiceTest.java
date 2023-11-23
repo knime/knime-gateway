@@ -167,7 +167,6 @@ public class ApplicationServiceTest extends GatewayServiceTest {
     @Override
     protected SpaceProviders createSpaceProviders() {
         var space = mock(Space.class);
-        when(space.getAncestorItemIds(any())).thenReturn(List.of("ancestor 1", "ancestor 2"));
         var spaceProvider = mock(SpaceProvider.class);
         when(spaceProvider.getSpace(any())).thenReturn(space);
         var spaceProviders = mock(SpaceProviders.class);
