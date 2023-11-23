@@ -165,17 +165,17 @@ public final class LocalWorkspace implements Space {
     }
 
     @Override
-    public Path toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+    public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
         var path = m_spaceItemPathAndTypeCache.getPath(itemId);
-        if (path == null || !Files.exists(path)) {
-            return null;
+        if (!Files.exists(path)) {
+            return Optional.empty();
         }
-        return path;
+        return Optional.ofNullable(path);
     }
 
     @Override
     public URI toKnimeUrl(final String itemId) {
-        var absolutePath = toLocalAbsolutePath(null, itemId);
+        var absolutePath = toLocalAbsolutePath(null, itemId).orElse(null);
         if (absolutePath == null) {
             throw new IllegalStateException("No item found for id " + itemId);
         }
@@ -242,7 +242,7 @@ public final class LocalWorkspace implements Space {
         var newName = queriedName.trim();
         assertValidItemNameOrThrow(newName);
 
-        var sourcePath = toLocalAbsolutePath(null, itemId);
+        var sourcePath = toLocalAbsolutePath(null, itemId).orElse(null);
         if (sourcePath == null) {
             throw new IOException("Unknown item ID");
         }
@@ -567,7 +567,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public Optional<ProjectTypeEnum> getProjectType(final String itemId) {
-        var path = toLocalAbsolutePath(null, itemId);
+        var path = toLocalAbsolutePath(null, itemId).orElse(null);
         if (path == null) {
             return Optional.empty();
         }

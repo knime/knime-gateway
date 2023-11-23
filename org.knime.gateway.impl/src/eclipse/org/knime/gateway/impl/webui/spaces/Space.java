@@ -250,9 +250,9 @@ public interface Space {
      *
      * @param monitor to report progress, progress messages and for cancellation
      * @param itemId ID if the item to resolve
-     * @return the local path of the item and if available, otherwise {@code null}
+     * @return the local path of the item and if available, empty if not available
      */
-    Path toLocalAbsolutePath(ExecutionMonitor monitor, String itemId);
+    Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId);
 
     /**
      * @return the local root path of the space

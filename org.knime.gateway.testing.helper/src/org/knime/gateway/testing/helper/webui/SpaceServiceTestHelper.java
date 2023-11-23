@@ -167,7 +167,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var originalItemEnt = group.getItems().stream() //
             .filter(itemEnt -> itemEnt.getType() == SpaceItemEnt.TypeEnum.WORKFLOW) //
             .findAny().orElseThrow();
-        var itemPathBeforeRename = space.toLocalAbsolutePath(null, originalItemEnt.getId());
+        var itemPathBeforeRename = space.toLocalAbsolutePath(null, originalItemEnt.getId()).orElse(null);
 
         // perform rename
         var newName = "newItemName";
@@ -364,8 +364,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public Path toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
-                return null;
+            public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+                return Optional.empty();
             }
 
             @Override
