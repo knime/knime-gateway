@@ -76,11 +76,9 @@ public class TableSpecViewFactory implements PortSpecViewFactory<DataTableSpec> 
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
         var nodeId = nc.getID();
         var tableId = "spec_" + TableViewUtil.toTableId(nodeId);
-        Supplier<BufferedDataTable> emptyTableSupplier = () -> {
-            var emptyTable = DataServiceContext.get().getExecutionContext().createDataContainer(tableSpec);
-            emptyTable.close();
-            return emptyTable.getTable();
-        };
+        Supplier<BufferedDataTable> emptyTableSupplier =
+            () -> DataServiceContext.get().getExecutionContext().createVoidTable(tableSpec);
+
         return new PortView() { // NOSONAR
 
             @Override
