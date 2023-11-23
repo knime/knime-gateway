@@ -158,7 +158,7 @@ public final class AppStateEntityFactory {
 
     /**
      * @param previousAppState the previously created app state, or {@code null} if there is none
-     * @param workflowProjectManager
+     * @param projectManager
      * @param preferenceProvider
      * @param exampleProjects if {@code null}, example projects will be taken from the previous app state
      * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
@@ -172,7 +172,7 @@ public final class AppStateEntityFactory {
      */
     @SuppressWarnings("java:S107") // lots of parameters are okay because it's a builder helper method
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
-        final ProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
+        final ProjectManager projectManager, final PreferencesProvider preferenceProvider,
         final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
         final NodeFactoryProvider nodeFactoryProvider, final Predicate<String> workflowProjectFilter,
         final Predicate<String> isActiveProject) {
@@ -181,9 +181,9 @@ public final class AppStateEntityFactory {
         if (exampleProjectEnts == null && previousAppState != null) {
             exampleProjectEnts = previousAppState.getExampleProjects();
         }
-        var projectEnts = getProjectEnts(workflowProjectManager, spaceProviders,
+        var projectEnts = getProjectEnts(projectManager, spaceProviders,
             workflowProjectFilter == null ? id -> true : workflowProjectFilter, //
-            isActiveProject == null ? workflowProjectManager::isActiveProject : isActiveProject);
+            isActiveProject == null ? projectManager::isActiveProject : isActiveProject);
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projectEnts) //
             .setExampleProjects(exampleProjectEnts) //
@@ -235,12 +235,12 @@ public final class AppStateEntityFactory {
         }
     }
 
-    private static List<WorkflowProjectEnt> getProjectEnts(final ProjectManager workflowProjectManager,
+    private static List<WorkflowProjectEnt> getProjectEnts(final ProjectManager projectManager,
         final SpaceProviders spaceProviders, final Predicate<String> projectFilter,
         final Predicate<String> isActiveProject) {
-        return workflowProjectManager.getProjectIds().stream() //
+        return projectManager.getProjectIds().stream() //
             .filter(projectFilter) //
-            .flatMap(id -> workflowProjectManager.getProject(id).stream()) //
+            .flatMap(id -> projectManager.getProject(id).stream()) //
             .map(wp -> buildWorkflowProjectEnt(wp, isActiveProject, spaceProviders)) //
             .toList();
     }
@@ -299,18 +299,21 @@ public final class AppStateEntityFactory {
             .build();
     }
 
-    private static WorkflowProjectEnt buildWorkflowProjectEnt(final Project wp,
-        final Predicate<String> isActiveProject, final SpaceProviders spaceProviders) {
-        final WorkflowProjectEntBuilder projectEntBuilder =
-            builder(WorkflowProjectEntBuilder.class).setName(wp.getName()).setProjectId(wp.getID());
+    private static WorkflowProjectEnt buildWorkflowProjectEnt(final Project p, final Predicate<String> isActiveProject,
+        final SpaceProviders spaceProviders) {
+        final WorkflowProjectEntBuilder projectEntBuilder = builder(WorkflowProjectEntBuilder.class) //
+            .setName(p.getName()) //
+            .setProjectId(p.getID());
 
         // optionally set an active workflow for this workflow project
-        if (isActiveProject.test(wp.getID())) {
+        if (isActiveProject.test(p.getID())) {
             projectEntBuilder.setActiveWorkflowId(NodeIDEnt.getRootID());
         }
 
-        wp.getOrigin()
-            .ifPresent(origin -> projectEntBuilder.setOrigin(buildSpaceItemReferenceEnt(origin, spaceProviders)));
+        p.getOrigin().ifPresent(origin -> {
+            var originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders);
+            projectEntBuilder.setOrigin(originEnt);
+        });
         return projectEntBuilder.build();
     }
 
@@ -329,7 +332,8 @@ public final class AppStateEntityFactory {
         return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
             // ancestor item ids are only required for local projects because it's used to
             // * mark folders that contain open projects
-            // * disallow folders to be moved if they contain opened local projects (because they can't be moved while open)
+            // * disallow folders to be moved if they contain opened local projects
+            //   (because they can't be moved while open)
             // ... in the space explorer.
             // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
             .filter(LocalWorkspace.class::isInstance) //
