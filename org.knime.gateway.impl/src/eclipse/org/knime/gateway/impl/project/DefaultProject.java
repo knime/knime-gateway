@@ -81,7 +81,7 @@ public final class DefaultProject implements Project {
     /**
      * @param builder
      */
-    public DefaultProject(final DefaultProjectBuilder builder) {
+    private DefaultProject(final DefaultProjectBuilder builder) {
         m_wfm = builder.m_wfm;
         m_id = builder.m_id;
         m_name = builder.m_name;
@@ -144,17 +144,9 @@ public final class DefaultProject implements Project {
     }
 
     /**
-     * @param project
-     * @return a builder for {@link DefaultProject}-instances, initialized with the properties of the passed project
-     */
-    public static DefaultProjectBuilder builder(final Project project) {
-        return new DefaultProjectBuilder(project);
-    }
-
-    /**
      * Builder for {@link DefaultProject}-instances.
      */
-    public static class DefaultProjectBuilder {
+    public static final class DefaultProjectBuilder {
 
         private final WorkflowManager m_wfm;
 
@@ -169,13 +161,6 @@ public final class DefaultProject implements Project {
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
             m_origin = null;
-        }
-
-        private DefaultProjectBuilder(final Project project) {
-            m_wfm = project.openProject();
-            m_name = project.getName();
-            m_id = project.getID();
-            m_origin = project.getOrigin().orElse(null);
         }
 
         /**

@@ -60,6 +60,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * Manages projects that are eventually used by the service implementations.
@@ -134,21 +135,21 @@ public final class ProjectManager {
      * @return the IDs of all registered projects
      */
     public List<String> getProjectIds() {
-        return getProjectIds(ProjectConsumer.UI);
+        return getProjectIds(ProjectConsumerType.UI);
     }
 
     /**
-     * @param consumer the type of {@link ProjectConsumer} to get the project ids for
+     * @param consumerType the {@link ProjectConsumerType} to get the project ids for
      * @return the ids of the registered projects
      */
-    List<String> getProjectIds(final ProjectConsumer consumer) {
+    List<String> getProjectIds(final ProjectConsumerType consumerType) {
         return m_projectsMap.entrySet().stream()
-            .filter(e -> consumer.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0))
-            .map(Entry::getKey).collect(Collectors.toList());
+            .filter(e -> consumerType.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0))
+            .map(Entry::getKey).toList();
     }
 
     /**
-     * @return the list of all project ids regardless of the type of {@link ProjectConsumer}
+     * @return the list of all project ids regardless of {@link ProjectConsumerType}
      */
     public List<String> getAllProjectIds() {
         return m_projectsMap.keySet().stream().toList();
@@ -160,24 +161,24 @@ public final class ProjectManager {
      * @param project the actual project to be added
      */
     public void addProject(final Project project) {
-        addProject(project, ProjectConsumer.UI, true);
+        addProject(project, ProjectConsumerType.UI, true);
     }
 
     /**
      * Adds the project with the id to the manager.
      *
      * @param project the actual project to be added
-     * @param consumer the type of {@link ProjectConsumer} this project is being added for
+     * @param consumerType the {@link ProjectConsumerType} this project is being added for
      * @param replace whether to replace the project or not in case there is another project with the same id already
      */
-    void addProject(final Project project, final ProjectConsumer consumer, final boolean replace) {
-        boolean hasUIConsumer = consumer.isUI();
-        int numNonUIConsumer = consumer.isUI() ? 0 : 1;
+    void addProject(final Project project, final ProjectConsumerType consumerType, final boolean replace) {
+        boolean hasUIConsumer = consumerType.isUI();
+        int numNonUIConsumer = consumerType.isUI() ? 0 : 1;
         var projectInternal = m_projectsMap.get(project.getID());
         if (projectInternal != null) {
             hasUIConsumer = hasUIConsumer || projectInternal.hasUIConsumer;
             numNonUIConsumer =
-                consumer.isUI() ? projectInternal.numNonUIConsumer : projectInternal.numNonUIConsumer + 1;
+                consumerType.isUI() ? projectInternal.numNonUIConsumer : (projectInternal.numNonUIConsumer + 1);
         }
 
         if (projectInternal == null || replace) {
@@ -200,7 +201,7 @@ public final class ProjectManager {
      *            manager
      */
     public void removeProject(final String projectId, final Consumer<WorkflowManager> disposeWfm) {
-        removeProject(projectId, ProjectConsumer.UI, disposeWfm);
+        removeProject(projectId, ProjectConsumerType.UI, disposeWfm);
     }
 
     /**
@@ -208,18 +209,18 @@ public final class ProjectManager {
      * consumers that rely on this project.
      *
      * @param projectId the project id to remove
-     * @param consumer the type of {@link ProjectConsumer} to remove this project for
+     * @param consumerType the {@link ProjectConsumerType} to remove this project for
      * @param disposeWfm the logic to also dispose the {@link WorkflowManager} which has been removed from the project
      *            manager
      */
-    void removeProject(final String projectId, final ProjectConsumer consumer,
+    void removeProject(final String projectId, final ProjectConsumerType consumerType,
         final Consumer<WorkflowManager> disposeWfm) {
         var projectInternal = m_projectsMap.get(projectId);
         if (projectInternal == null) {
             return;
         }
 
-        if (consumer.isUI()) {
+        if (consumerType.isUI()) {
             projectInternal = new ProjectInternal(projectInternal.project, false, projectInternal.numNonUIConsumer);
         } else {
             projectInternal = new ProjectInternal(projectInternal.project, projectInternal.hasUIConsumer,
@@ -326,6 +327,9 @@ public final class ProjectManager {
         m_projectRemovedListeners.clear();
     }
 
+    /**
+     * Wrapper around {@link Project} to additional track the {@link ConsumerType}s it is associated with.
+     */
     private record ProjectInternal(Project project, boolean hasUIConsumer, int numNonUIConsumer) {
         //
     }
@@ -334,7 +338,7 @@ public final class ProjectManager {
      * A project can have multiple consumers of certain type. Essentially controls whether a project can be removed for
      * real via {@link ProjectManager#removeProject(String, Consumer)}.
      */
-    enum ProjectConsumer {
+    enum ProjectConsumerType {
 
             /**
              * If a project is consumed by the UI. There can only be one UI-consumer.

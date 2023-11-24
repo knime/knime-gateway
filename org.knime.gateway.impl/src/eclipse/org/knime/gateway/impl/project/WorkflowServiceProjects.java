@@ -54,7 +54,7 @@ import java.util.Optional;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumer;
+import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
 
 /**
  * Utility methods to manage workflow projects loaded in order to locally execute workflows from other workflows (call
@@ -62,7 +62,11 @@ import org.knime.gateway.impl.project.ProjectManager.ProjectConsumer;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class WorkflowServiceProjects {
+public final class WorkflowServiceProjects {
+
+    private WorkflowServiceProjects() {
+        // utility
+    }
 
     /**
      * Registers a new project.
@@ -70,8 +74,8 @@ public class WorkflowServiceProjects {
      * @param wfm the workflow manager representing the project
      */
     public static void registerProject(final WorkflowManager wfm) {
-        ProjectManager.getInstance().addProject(DefaultProject.builder(wfm).build(), ProjectConsumer.WORKFLOW_SERVICE,
-            false);
+        ProjectManager.getInstance().addProject(DefaultProject.builder(wfm).build(),
+            ProjectConsumerType.WORKFLOW_SERVICE, false);
     }
 
     /**
@@ -80,7 +84,7 @@ public class WorkflowServiceProjects {
      */
     public static Optional<String> getProject(final Path absolutePath) {
         var pm = ProjectManager.getInstance();
-        for (var projectId : pm.getProjectIds(ProjectConsumer.WORKFLOW_SERVICE)) {
+        for (var projectId : pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE)) {
             var wfm = pm.getCachedProject(projectId).orElse(null);
             if (wfm != null && Optional.ofNullable(wfm.getContextV2()) //
                 .map(context -> context.getExecutorInfo().getLocalWorkflowPath()) //
@@ -100,7 +104,7 @@ public class WorkflowServiceProjects {
         var pm = ProjectManager.getInstance();
         var projectId = getProject(absolutePath).orElse(null);
         if (projectId != null) {
-            pm.removeProject(projectId, ProjectConsumer.WORKFLOW_SERVICE, wfm -> {
+            pm.removeProject(projectId, ProjectConsumerType.WORKFLOW_SERVICE, wfm -> {
                 try {
                     CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
                 } catch (InterruptedException e) { // NOSONAR

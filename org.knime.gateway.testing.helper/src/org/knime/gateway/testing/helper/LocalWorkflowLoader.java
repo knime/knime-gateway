@@ -51,7 +51,6 @@ package org.knime.gateway.testing.helper;
 import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,6 +63,7 @@ import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
+import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -101,29 +101,9 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     }
 
     private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId) {
-        ProjectManager.getInstance().addProject(new Project() {
-
-            @Override
-            public WorkflowManager openProject() {
-                wfm.setName(name);
-                return wfm;
-            }
-
-            @Override
-            public String getName() {
-                return name;
-            }
-
-            @Override
-            public String getID() {
-                return projectId;
-            }
-
-            @Override
-            public Optional<Origin> getOrigin() {
-                return Optional.of(createOriginForTesting());
-            }
-        });
+        wfm.setName(name);
+        ProjectManager.getInstance()
+            .addProject(DefaultProject.builder(wfm).setId(projectId).setOrigin(createOriginForTesting()).build());
         m_loadedWorkflows.add(projectId);
     }
 

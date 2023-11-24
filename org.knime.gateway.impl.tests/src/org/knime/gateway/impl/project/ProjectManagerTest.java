@@ -58,7 +58,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumer;
+import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
 
 /**
  * Test {@link ProjectManager}.
@@ -91,28 +91,28 @@ public class ProjectManagerTest {
         pm.addProject(proj1);
         assertThat(pm.getProject(proj1.getID()).get().getName(), is(proj1.getName()));
         assertThat(pm.getCachedProject(proj1.getID()).get(), sameInstance(wfm));
-        pm.addProject(proj1a, ProjectConsumer.WORKFLOW_SERVICE, false);
+        pm.addProject(proj1a, ProjectConsumerType.WORKFLOW_SERVICE, false);
         pm.addProject(proj2);
 
         // get project-ids
-        assertThat(pm.getProjectIds(), is(pm.getProjectIds(ProjectConsumer.UI)));
+        assertThat(pm.getProjectIds(), is(pm.getProjectIds(ProjectConsumerType.UI)));
         assertThat(pm.getProjectIds(), is(Set.of(proj1.getID(), proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumer.WORKFLOW_SERVICE), is(Set.of(proj1a.getID())));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(Set.of(proj1a.getID())));
 
         // replace project
         pm.addProject(proj1b);
         assertThat(pm.getProject(proj1.getID()).get().getName(), is("proj1b"));
-        pm.addProject(proj1, ProjectConsumer.UI, false);
+        pm.addProject(proj1, ProjectConsumerType.UI, false);
         assertThat(pm.getProject(proj1.getID()).get().getName(), is("proj1b"));
 
         // remove project
         pm.removeProject(proj1.getID(), w -> {}); // removes the ui-consumer
         assertThat(pm.getProjectIds(), is(Set.of(proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumer.WORKFLOW_SERVICE), is(Set.of(proj1a.getID())));
-        pm.removeProject(proj1a.getID(), ProjectConsumer.WORKFLOW_SERVICE, w -> {
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(Set.of(proj1a.getID())));
+        pm.removeProject(proj1a.getID(), ProjectConsumerType.WORKFLOW_SERVICE, w -> {
         });
         assertThat(pm.getProjectIds(), is(Set.of(proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumer.WORKFLOW_SERVICE), is(Set.of()));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(Set.of()));
     }
 
 }
