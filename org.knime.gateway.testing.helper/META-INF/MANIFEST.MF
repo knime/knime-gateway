@@ -6,6 +6,8 @@ Bundle-Version: 5.2.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.knime.gateway.testing.helper
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.knime.gateway.testing.helper.GatewayTestHelperPlugin
 Export-Package: org.knime.gateway.testing.helper,
  org.knime.gateway.testing.helper.rpc.node,
  org.knime.gateway.testing.helper.webui

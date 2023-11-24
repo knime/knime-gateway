@@ -187,7 +187,6 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-import org.knime.js.core.JSCorePlugin;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -246,12 +245,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testGetComponentProjectWorkflow() throws Exception {
         String wfId = loadComponent(TestWorkflowCollection.COMPONENT_PROJECT);
-
-        // makes sure the org.knime.js.core plugin is activated which in turn registers the
-        // DefaultConfigurationLayoutCreator osgi-service registered which in turn is required to create
-        // the component description (see SubNodeContainer#getDialogDescriptions and
-        // ConfigurationLayoutUtil#getConfigurationOrder)
-        JSCorePlugin.class.getName();
 
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
         cr(workflow, "component_project");

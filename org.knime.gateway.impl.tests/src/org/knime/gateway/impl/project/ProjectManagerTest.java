@@ -52,7 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 
-import java.util.Set;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -96,8 +96,8 @@ public class ProjectManagerTest {
 
         // get project-ids
         assertThat(pm.getProjectIds(), is(pm.getProjectIds(ProjectConsumerType.UI)));
-        assertThat(pm.getProjectIds(), is(Set.of(proj1.getID(), proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(Set.of(proj1a.getID())));
+        assertThat(pm.getProjectIds(), is(List.of(proj1.getID(), proj2.getID())));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of(proj1a.getID())));
 
         // replace project
         pm.addProject(proj1b);
@@ -107,12 +107,12 @@ public class ProjectManagerTest {
 
         // remove project
         pm.removeProject(proj1.getID(), w -> {}); // removes the ui-consumer
-        assertThat(pm.getProjectIds(), is(Set.of(proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(Set.of(proj1a.getID())));
+        assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of(proj1a.getID())));
         pm.removeProject(proj1a.getID(), ProjectConsumerType.WORKFLOW_SERVICE, w -> {
         });
-        assertThat(pm.getProjectIds(), is(Set.of(proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(Set.of()));
+        assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of()));
     }
 
 }
