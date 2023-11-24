@@ -64,6 +64,8 @@ import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
  */
 public final class WorkflowServiceProjects {
 
+    private static Runnable removeAllProjectsCallback;
+
     private WorkflowServiceProjects() {
         // utility
     }
@@ -112,6 +114,29 @@ public final class WorkflowServiceProjects {
                 }
             });
         }
+    }
+
+    /**
+     * Removes all workflow service projects from memory.
+     */
+    public static void removeAllProjects() {
+        if (removeAllProjectsCallback != null) {
+            removeAllProjectsCallback.run();
+        }
+    }
+
+    /**
+     * Callback registered by the LocalWorkflowBackend such that it can be informed when all workflow service projects
+     * are to be removed from memory.
+     *
+     * @param callback
+     */
+    public static void setOnRemoveAllProjectsCallback(final Runnable callback) {
+        if (removeAllProjectsCallback != null) {
+            throw new IllegalStateException(
+                "A WorkflowServiceProjects 'onRemoveAllProjects'-callback is already registered.");
+        }
+        removeAllProjectsCallback = callback;
     }
 
 }

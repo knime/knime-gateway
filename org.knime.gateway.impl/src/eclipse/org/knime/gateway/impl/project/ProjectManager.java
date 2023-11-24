@@ -149,13 +149,6 @@ public final class ProjectManager {
     }
 
     /**
-     * @return the list of all project ids regardless of {@link ProjectConsumerType}
-     */
-    public List<String> getAllProjectIds() {
-        return m_projectsMap.keySet().stream().toList();
-    }
-
-    /**
      * Adds the project with the id to the manager. If a project with the given id already exists, it will be replaced.
      *
      * @param project the actual project to be added
