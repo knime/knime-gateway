@@ -22,6 +22,7 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.1
  org.knime.testing;bundle-version="[5.2.0,6.0.0)",
  org.knime.gateway.json;bundle-version="[5.2.0,6.0.0)",
  org.knime.dynamic.js.base;bundle-version="[5.2.0,6.0.0)",
- org.knime.core.ui;bundle-version="[5.2.0,6.0.0)"
+ org.knime.core.ui;bundle-version="[5.2.0,6.0.0)",
+ org.knime.js.core;bundle-version="[5.2.0,6.0.0)"
 Bundle-ClassPath: .,
  libs/java-diff-utils.jar
