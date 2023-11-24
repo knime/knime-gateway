@@ -99,8 +99,16 @@ public final class DefaultProject implements Project {
     }
 
     @Override
-    public WorkflowManager openProject() {
+    public WorkflowManager loadWorkflowManager() {
         return m_wfm;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<WorkflowManager> getWorkflowManager() {
+        return Optional.of(m_wfm);
     }
 
     /**

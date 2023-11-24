@@ -174,7 +174,7 @@ public abstract class GatewayServiceTest {
         m_workflowLoader.loadWorkflow(wf, workflowProjectId);
         Project project =
             ProjectManager.getInstance().getProject(workflowProjectId).orElse(null);
-        return project == null ? null : project.openProject();
+        return project == null ? null : project.loadWorkflowManager();
     }
 
     /**
@@ -188,7 +188,7 @@ public abstract class GatewayServiceTest {
     protected WorkflowManager loadComponent(final TestWorkflow wf, final String projectId) throws Exception {
         m_workflowLoader.loadComponent(wf, projectId);
         Project project = ProjectManager.getInstance().getProject(projectId).orElse(null);
-        return project == null ? null : project.openProject();
+        return project == null ? null : project.loadWorkflowManager();
     }
 
     /**

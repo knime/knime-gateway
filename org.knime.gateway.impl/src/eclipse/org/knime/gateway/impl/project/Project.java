@@ -69,12 +69,25 @@ public interface Project {
     String getID();
 
     /**
-     * Opens/loads the actual workflow represented by this workflow/component project.
-     * If the workflow has already been opened before it will be opened/loaded again.
+     * Opens/loads the actual workflow represented by this workflow/component project. If the workflow has already been
+     * opened before it will be opened/loaded again.
+     *
+     * If the workflow manager is already available with the creation of this project instance,
+     * {@link #getWorkflowManager()} should be implemented, too.
      *
      * @return the newly loaded workflow
      */
-    WorkflowManager openProject();
+    WorkflowManager loadWorkflowManager();
+
+    /**
+     * This method only returns a workflow manager if it doesn't require to be loaded and is already available with the
+     * creation of this project instance. Otherwise {@link #loadWorkflowManager()} will load it.
+     *
+     * @return the workflow manager if already available, otherwise an empty optional
+     */
+    default Optional<WorkflowManager> getWorkflowManager() {
+        return Optional.empty();
+    }
 
     /**
      * @return describes from where this workflow/component project originates, i.e. from where it has been created; an

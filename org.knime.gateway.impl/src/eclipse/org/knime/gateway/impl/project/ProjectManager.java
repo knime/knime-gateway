@@ -183,9 +183,7 @@ public final class ProjectManager {
 
         if (projectInternal == null || replace) {
             projectInternal = new ProjectInternal(project, hasUIConsumer, numNonUIConsumer);
-            if (project instanceof DefaultProject) {
-                cacheProject(project.getID(), project.openProject());
-            }
+            project.getWorkflowManager().ifPresent(wfm -> cacheProject(project.getID(), wfm));
         } else {
             projectInternal = new ProjectInternal(projectInternal.project, hasUIConsumer, numNonUIConsumer);
         }
@@ -265,7 +263,7 @@ public final class ProjectManager {
             if (wp == null) {
                 return Optional.empty();
             }
-            wfm = wp.openProject();
+            wfm = wp.loadWorkflowManager();
             if (wfm == null) {
                 return Optional.empty();
             }

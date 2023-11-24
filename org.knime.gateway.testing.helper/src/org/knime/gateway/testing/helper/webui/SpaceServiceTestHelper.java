@@ -774,7 +774,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return new Project() {
 
             @Override
-            public WorkflowManager openProject() {
+            public WorkflowManager loadWorkflowManager() {
                 return null;
             }
 
