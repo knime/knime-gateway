@@ -327,9 +327,8 @@ public final class CoreUtil {
      * @throws InterruptedException
      */
     public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) throws InterruptedException {
-        // TODO use WorkflowManager.shutdown instead?
-        CoreUtil.cancel(wfm);
         if (wfm.getNodeContainerState().isExecutionInProgress()) {
+            CoreUtil.cancel(wfm);
             wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         }
         if (wfm.isComponentProjectWFM()) {
