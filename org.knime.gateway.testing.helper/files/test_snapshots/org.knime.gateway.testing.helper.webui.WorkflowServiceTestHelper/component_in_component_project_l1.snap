@@ -11,14 +11,14 @@
       "contentType" : "text/plain",
       "value" : ""
     },
-    "name" : "Component L1 (#5)"
+    "name" : "Component L1"
   },
   "connections" : { },
   "dirty" : true,
   "info" : {
     "containerId" : "root:5",
     "containerType" : "component",
-    "name" : "Component L1 (#5)",
+    "name" : "Component L1",
     "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
@@ -142,7 +142,7 @@
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
       "kind" : "component",
-      "name" : "Component L2 (#7)",
+      "name" : "Component L2",
       "outPorts" : [ {
         "canRemove" : false,
         "connectedVia" : "[  ]",

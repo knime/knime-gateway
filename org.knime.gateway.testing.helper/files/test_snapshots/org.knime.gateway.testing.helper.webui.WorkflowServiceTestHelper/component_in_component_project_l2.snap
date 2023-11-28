@@ -11,14 +11,14 @@
       "contentType" : "text/plain",
       "value" : ""
     },
-    "name" : "Component L2 (#7)"
+    "name" : "Component L2"
   },
   "connections" : { },
   "dirty" : true,
   "info" : {
     "containerId" : "root:5:0:7",
     "containerType" : "component",
-    "name" : "Component L2 (#7)",
+    "name" : "Component L2",
     "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
@@ -181,7 +181,7 @@
   }, {
     "containerId" : "root:5",
     "containerType" : "component",
-    "name" : "Component L1 (#5)",
+    "name" : "Component L1",
     "providerType" : "LOCAL"
   } ],
   "workflowAnnotations" : [ ]
