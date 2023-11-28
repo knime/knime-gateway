@@ -218,6 +218,8 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeComma
 import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.ShowToastEventEnt.ShowToastEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
@@ -568,6 +570,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == SelectionEventTypeEntBuilder.class) {
             return (B)new DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder();
+        }        
+        if(clazz == ShowToastEventEntBuilder.class) {
+            return (B)new DefaultShowToastEventEnt.DefaultShowToastEventEntBuilder();
         }        
         if(clazz == SpaceEntBuilder.class) {
             return (B)new DefaultSpaceEnt.DefaultSpaceEntBuilder();

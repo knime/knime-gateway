@@ -131,6 +131,7 @@ import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationsCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReplaceNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventTypeEntMixIn;
+import org.knime.gateway.json.webui.entity.ShowToastEventEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemReferenceEntMixIn;
@@ -275,6 +276,7 @@ public class ListEntities {
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.class);
         res.add(ReplaceNodeCommandEntMixIn.class);
         res.add(SelectionEventTypeEntMixIn.class);
+        res.add(ShowToastEventEntMixIn.class);
         res.add(SpaceEntMixIn.class);
         res.add(SpaceItemEntMixIn.class);
         res.add(SpaceItemReferenceEntMixIn.class);
@@ -405,6 +407,7 @@ public class ListEntities {
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.ReorderWorkflowAnnotationsCommandEntMixInBuilder.class);
         res.add(ReplaceNodeCommandEntMixIn.ReplaceNodeCommandEntMixInBuilder.class);
         res.add(SelectionEventTypeEntMixIn.SelectionEventTypeEntMixInBuilder.class);
+        res.add(ShowToastEventEntMixIn.ShowToastEventEntMixInBuilder.class);
         res.add(SpaceEntMixIn.SpaceEntMixInBuilder.class);
         res.add(SpaceItemEntMixIn.SpaceItemEntMixInBuilder.class);
         res.add(SpaceItemReferenceEntMixIn.SpaceItemReferenceEntMixInBuilder.class);

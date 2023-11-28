@@ -68,7 +68,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 public interface SpaceProvider {
 
     /**
-     * @return remote location or {Optional#empty} for local spaces
+     * @return the space provider type
      */
     default TypeEnum getType() {
         return TypeEnum.LOCAL;
