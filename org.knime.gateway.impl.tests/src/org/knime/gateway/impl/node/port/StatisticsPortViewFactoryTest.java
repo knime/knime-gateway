@@ -124,7 +124,7 @@ public class StatisticsPortViewFactoryTest {
             var settings = mapper.readTree(initialData).get("result").get("settings");
             TestingUtilities.assertViewSettings( //
                 settings, //
-                StatisticsPortViewFactory.getSettingsForDataTable(new DataTableSpec(), bdt.getSpec().getNumColumns()) //
+                StatisticsPortViewFactory.getSettingsForDataTable(new DataTableSpec()) //
             );
             var rpcDataService = portView.createRpcDataService().get();
             var request = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getCurrentRowKeys\",\"params\":[]}";
