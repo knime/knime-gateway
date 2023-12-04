@@ -61,7 +61,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowProjectEnt extends GatewayEntity {
+public interface ProjectEnt extends GatewayEntity {
 
 
   /**
@@ -92,7 +92,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (WorkflowProjectEnt)other;
+      var e = (ProjectEnt)other;
       valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
       valueConsumer.accept("origin", Pair.create(getOrigin(), e.getOrigin()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
@@ -102,7 +102,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface WorkflowProjectEntBuilder extends GatewayEntityBuilder<WorkflowProjectEnt> {
+    public interface ProjectEntBuilder extends GatewayEntityBuilder<ProjectEnt> {
 
         /**
    		 * Set projectId
@@ -110,7 +110,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
          * @param projectId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setProjectId(String projectId);
+        ProjectEntBuilder setProjectId(String projectId);
         
         /**
    		 * Set origin
@@ -118,7 +118,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
          * @param origin the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin);
+        ProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin);
         
         /**
    		 * Set name
@@ -126,7 +126,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
          * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setName(String name);
+        ProjectEntBuilder setName(String name);
         
         /**
          * If this workflow project is active, it provides the node id of the active workflow (e.g. the root workflow or a sub-workflow (component/metanode)).
@@ -134,7 +134,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
          * @param activeWorkflowId the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowProjectEntBuilder setActiveWorkflowId(org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
+        ProjectEntBuilder setActiveWorkflowId(org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
         
         
         /**
@@ -144,7 +144,7 @@ public interface WorkflowProjectEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowProjectEnt build();
+        ProjectEnt build();
     
     }
 

@@ -46,7 +46,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.ProjectEnt;
 
 import java.util.function.BiConsumer;
 
@@ -70,7 +70,7 @@ public interface AppStateEnt extends GatewayEntity {
    * List of all opened workflow projects.
    * @return openProjects 
    **/
-  public java.util.List<WorkflowProjectEnt> getOpenProjects();
+  public java.util.List<ProjectEnt> getOpenProjects();
 
   /**
    * List of example projects, e.g., to be shown on and opened from the &#39;get started&#39; page.
@@ -168,7 +168,7 @@ public interface AppStateEnt extends GatewayEntity {
          * @param openProjects the property value,  
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects);
+        AppStateEntBuilder setOpenProjects(java.util.List<ProjectEnt> openProjects);
         
         /**
          * List of example projects, e.g., to be shown on and opened from the &#39;get started&#39; page.

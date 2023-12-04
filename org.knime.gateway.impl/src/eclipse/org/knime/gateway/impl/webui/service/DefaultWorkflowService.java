@@ -126,13 +126,13 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public List<NodeIDEnt> getLinkUpdates(final String projectId, final NodeIDEnt workflowId)
+    public List<NodeIDEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         try {
-            var res = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(wfm,
+            final var res = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(wfm,
                 "org.knime.gateway.impl", CoreUtil.getAllLinkedComponents(wfm), new NullProgressMonitor());
             return res.updateList().stream()//
                 .map(NodeIDEnt::new)//

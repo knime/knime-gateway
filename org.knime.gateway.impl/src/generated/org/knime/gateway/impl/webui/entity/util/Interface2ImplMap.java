@@ -208,6 +208,8 @@ import org.knime.gateway.api.webui.entity.PortViewsEnt.PortViewsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortViewsEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectDirtyStateEventEnt;
+import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
@@ -282,8 +284,6 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupC
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -556,6 +556,9 @@ public class Interface2ImplMap {
         if(clazz == ProjectDirtyStateEventEntBuilder.class) {
             return (B)new DefaultProjectDirtyStateEventEnt.DefaultProjectDirtyStateEventEntBuilder();
         }        
+        if(clazz == ProjectEntBuilder.class) {
+            return (B)new DefaultProjectEnt.DefaultProjectEntBuilder();
+        }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
         }        
@@ -666,9 +669,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowInfoEntBuilder.class) {
             return (B)new DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder();
-        }        
-        if(clazz == WorkflowProjectEntBuilder.class) {
-            return (B)new DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder();
         }        
         if(clazz == WorkflowSnapshotEntBuilder.class) {
             return (B)new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();

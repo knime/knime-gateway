@@ -46,7 +46,7 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.ProjectEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -74,7 +74,7 @@ public interface AppStateEntMixIn extends AppStateEnt {
 
     @Override
     @JsonProperty("openProjects")
-    public java.util.List<WorkflowProjectEnt> getOpenProjects();
+    public java.util.List<ProjectEnt> getOpenProjects();
     
     @Override
     @JsonProperty("exampleProjects")
@@ -135,7 +135,7 @@ public interface AppStateEntMixIn extends AppStateEnt {
     
         @Override
         @JsonProperty("openProjects")
-        public AppStateEntMixInBuilder setOpenProjects(final java.util.List<WorkflowProjectEnt> openProjects);
+        public AppStateEntMixInBuilder setOpenProjects(final java.util.List<ProjectEnt> openProjects);
         
         @Override
         @JsonProperty("exampleProjects")

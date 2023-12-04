@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt.DefaultWorkflowProjectEntBuilder;
+import org.knime.gateway.api.webui.entity.ProjectEnt;
+import org.knime.gateway.impl.webui.entity.DefaultProjectEnt.DefaultProjectEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,10 +61,10 @@ import org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt.DefaultWork
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultWorkflowProjectEntBuilder.class)
-@JsonSerialize(as=WorkflowProjectEnt.class)
+@JsonDeserialize(builder=DefaultProjectEntBuilder.class)
+@JsonSerialize(as=ProjectEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
+public interface ProjectEntMixIn extends ProjectEnt {
 
     @Override
     @JsonIgnore
@@ -94,26 +94,26 @@ public interface WorkflowProjectEntMixIn extends WorkflowProjectEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface WorkflowProjectEntMixInBuilder extends WorkflowProjectEntBuilder {
+    public static interface ProjectEntMixInBuilder extends ProjectEntBuilder {
     
         @Override
-        public WorkflowProjectEntMixIn build();
+        public ProjectEntMixIn build();
     
         @Override
         @JsonProperty("projectId")
-        public WorkflowProjectEntMixInBuilder setProjectId(final String projectId);
+        public ProjectEntMixInBuilder setProjectId(final String projectId);
         
         @Override
         @JsonProperty("origin")
-        public WorkflowProjectEntMixInBuilder setOrigin(final SpaceItemReferenceEnt origin);
+        public ProjectEntMixInBuilder setOrigin(final SpaceItemReferenceEnt origin);
         
         @Override
         @JsonProperty("name")
-        public WorkflowProjectEntMixInBuilder setName(final String name);
+        public ProjectEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("activeWorkflowId")
-        public WorkflowProjectEntMixInBuilder setActiveWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
+        public ProjectEntMixInBuilder setActiveWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
         
     }
 

@@ -1158,18 +1158,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowProjectEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt">
-        <filter id="337768515">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowProjectEnt"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="DefaultWorkflowProjectEnt(String, SpaceItemReferenceEnt, String, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowSnapshotEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt">
         <filter id="337768515">
             <message_arguments>

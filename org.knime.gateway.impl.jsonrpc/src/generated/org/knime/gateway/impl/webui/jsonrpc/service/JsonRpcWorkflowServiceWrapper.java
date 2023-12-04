@@ -94,7 +94,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "getLinkUpdates")
+    @JsonRpcMethod(value = "getUpdatableLinkedComponents")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
             data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
@@ -103,8 +103,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getLinkUpdates(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
-        return m_service.get().getLinkUpdates(projectId, workflowId);    
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getUpdatableLinkedComponents(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+        return m_service.get().getUpdatableLinkedComponents(projectId, workflowId);    
     }
 
 	/**

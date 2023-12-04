@@ -86,11 +86,11 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt.ExampleProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.api.webui.entity.ProjectEnt;
+import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt.WorkflowProjectEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -235,7 +235,7 @@ public final class AppStateEntityFactory {
         }
     }
 
-    private static List<WorkflowProjectEnt> getProjectEnts(final ProjectManager projectManager,
+    private static List<ProjectEnt> getProjectEnts(final ProjectManager projectManager,
         final SpaceProviders spaceProviders, final Predicate<String> projectFilter,
         final Predicate<String> isActiveProject) {
         return projectManager.getProjectIds().stream() //
@@ -299,9 +299,9 @@ public final class AppStateEntityFactory {
             .build();
     }
 
-    private static WorkflowProjectEnt buildWorkflowProjectEnt(final Project p, final Predicate<String> isActiveProject,
+    private static ProjectEnt buildWorkflowProjectEnt(final Project p, final Predicate<String> isActiveProject,
         final SpaceProviders spaceProviders) {
-        final WorkflowProjectEntBuilder projectEntBuilder = builder(WorkflowProjectEntBuilder.class) //
+        final var projectEntBuilder = builder(ProjectEntBuilder.class) //
             .setName(p.getName()) //
             .setProjectId(p.getID());
 

@@ -126,6 +126,7 @@ import org.knime.gateway.api.webui.entity.PortViewDescriptorEnt;
 import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
 import org.knime.gateway.api.webui.entity.PortViewsEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
+import org.knime.gateway.api.webui.entity.ProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
@@ -163,7 +164,6 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -272,6 +272,7 @@ public class ListEntities {
         res.add(PortViewDescriptorMappingEnt.class);
         res.add(PortViewsEnt.class);
         res.add(ProjectDirtyStateEventEnt.class);
+        res.add(ProjectEnt.class);
         res.add(ProjectMetadataEnt.class);
         res.add(RemovePortCommandEnt.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.class);
@@ -309,7 +310,6 @@ public class ListEntities {
         res.add(WorkflowEnt.class);
         res.add(WorkflowGroupContentEnt.class);
         res.add(WorkflowInfoEnt.class);
-        res.add(WorkflowProjectEnt.class);
         res.add(WorkflowSnapshotEnt.class);
         res.add(XYEnt.class);
         return res;
@@ -403,6 +403,7 @@ public class ListEntities {
         res.add(PortViewDescriptorMappingEnt.PortViewDescriptorMappingEntBuilder.class);
         res.add(PortViewsEnt.PortViewsEntBuilder.class);
         res.add(ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder.class);
+        res.add(ProjectEnt.ProjectEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder.class);
@@ -440,7 +441,6 @@ public class ListEntities {
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
         res.add(WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder.class);
         res.add(WorkflowInfoEnt.WorkflowInfoEntBuilder.class);
-        res.add(WorkflowProjectEnt.WorkflowProjectEntBuilder.class);
         res.add(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class);
         res.add(XYEnt.XYEntBuilder.class);
         return res;

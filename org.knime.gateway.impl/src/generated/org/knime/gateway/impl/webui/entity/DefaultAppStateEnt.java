@@ -48,7 +48,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
+import org.knime.gateway.api.webui.entity.ProjectEnt;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 
@@ -72,7 +72,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAppStateEnt(
-    java.util.List<WorkflowProjectEnt> openProjects,
+    java.util.List<ProjectEnt> openProjects,
     java.util.List<ExampleProjectEnt> exampleProjects,
     java.util.Map<String, PortTypeEnt> availablePortTypes,
     java.util.List<String> suggestedPortTypeIds,
@@ -97,7 +97,7 @@ public record DefaultAppStateEnt(
     }
   
     @Override
-    public java.util.List<WorkflowProjectEnt> getOpenProjects() {
+    public java.util.List<ProjectEnt> getOpenProjects() {
         return openProjects;
     }
     
@@ -161,7 +161,7 @@ public record DefaultAppStateEnt(
      */
     public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
 
-        private java.util.List<WorkflowProjectEnt> m_openProjects;
+        private java.util.List<ProjectEnt> m_openProjects;
 
         private java.util.List<ExampleProjectEnt> m_exampleProjects;
 
@@ -186,7 +186,7 @@ public record DefaultAppStateEnt(
         private Boolean m_nodeRepositoryLoaded;
 
         @Override
-        public DefaultAppStateEntBuilder setOpenProjects(java.util.List<WorkflowProjectEnt> openProjects) {
+        public DefaultAppStateEntBuilder setOpenProjects(java.util.List<ProjectEnt> openProjects) {
              m_openProjects = openProjects;
              return this;
         }
