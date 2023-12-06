@@ -50,10 +50,10 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
@@ -108,14 +108,14 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         if (m_nodeIdEnts.isEmpty()) {
-            throw new OperationNotAllowedException(
-                "No component IDs passed for <%s>".formatted(getWorkflowKey()));
+            throw new OperationNotAllowedException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
         }
 
-        final var components = getComponents(m_nodeIdEnts, getWorkflowKey());
+        final var components = getLinkedComponents(m_nodeIdEnts, getWorkflowKey());
 
-        if (!allComponentsAreLinks(components)) {
-            throw new OperationNotAllowedException("Not all components are linked components");
+        if (components.size() != m_nodeIdEnts.size()) {
+            throw new OperationNotAllowedException(
+                "Not all of the nodes <%s> are linked components".formatted(m_nodeIdEnts));
         }
 
         m_updateLogs = components.stream()//
@@ -169,16 +169,14 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         return Collections.emptySet(); // Assumption: There is no change to wait for
     }
 
-    private static List<SubNodeContainer> getComponents(final List<NodeIDEnt> nodeIdEnts, final WorkflowKey wfKey) {
-        return nodeIdEnts.stream()//
-            .map(nodeIdEnt -> DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt))//
-            .map(SubNodeContainer.class::cast)//
+    private static List<SubNodeContainer> getLinkedComponents(final List<NodeIDEnt> nodeIdEnts,
+        final WorkflowKey wfKey) {
+        return nodeIdEnts.stream() //
+            .map(nodeIdEnt -> DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt)) //
+            .filter(SubNodeContainer.class::isInstance) // Only components
+            .map(SubNodeContainer.class::cast) //
+            .filter(component -> component.getTemplateInformation().getRole() == Role.Link) // Only linked components
             .toList();
-    }
-
-    private static boolean allComponentsAreLinks(final List<SubNodeContainer> components) {
-        return components.stream()//
-            .allMatch(component -> component.getTemplateInformation().getRole() == Role.Link);
     }
 
     private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {
@@ -203,12 +201,14 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         LOGGER.debug("Attempting to update <%s> from <%s>"//
             .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
 
-        final var statusComputingFunction = getStatusComputingFunction(oldComponentId, wfm); // NOSONAR: Must be here
-        final var exec = new ExecutionMonitor();
-        final var loadHelper = new WorkflowLoadHelper(true, wfm.getContextV2());
+        if (!needsUpdate(oldComponentId, wfm)) {
+            return new UpdateLog(oldComponentId, wfm, null, StatusEnum.UNCHANGED);
+        }
 
         final NodeContainerTemplateLinkUpdateResult updateResult;
         try {
+            final var exec = new ExecutionMonitor();
+            final var loadHelper = new WorkflowLoadHelper(true, wfm.getContextV2());
             // This will return an update result even if no update was necessary or possible
             updateResult = nct.getParent().updateMetaNodeLink(oldComponentId, exec, loadHelper);
         } catch (Throwable e) {
@@ -221,33 +221,14 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         }
 
         final var componentId = updateResult.getNCTemplate().getID();
-        final var status = statusComputingFunction.apply(updateResult.getType());
+        var status = updateResult.getType() == LoadResultEntryType.Ok ? StatusEnum.SUCCESS : StatusEnum.ERROR;
         return new UpdateLog(componentId, wfm, persistor, status);
     }
 
-    /**
-     * To delay execution once we actually got the {@link LoadResultEntryType}
-     */
-    private static Function<LoadResultEntryType, StatusEnum> getStatusComputingFunction(final NodeID componentId,
-        final WorkflowManager parent) {
-        final var needsUpdate = isNodeContainerTemplate(componentId, parent);
-        return type -> {
-            if (!needsUpdate) {
-                return StatusEnum.UNCHANGED;
-            }
-            return type == LoadResultEntryType.Ok ? StatusEnum.SUCCESS : StatusEnum.ERROR;
-        };
-    }
-
-    /**
-     * Copied from {@code UpdateMetaNodeTemplateRunnable}
-     */
-    private static boolean isNodeContainerTemplate(final NodeID componentId, final WorkflowManager parent) {
+    private static boolean needsUpdate(final NodeID componentId, final WorkflowManager parent) {
         try {
-            // this line will fail with in IllegalArgumentException if the node already has been updated
-            // basically a computationally cheaper option to WorkflowManager#checkUpdateMetaNodeLink
-            return parent.findNodeContainer(componentId) instanceof NodeContainerTemplate;
-        } catch (IllegalArgumentException e) {
+            return parent.checkUpdateMetaNodeLink(componentId, new WorkflowLoadHelper(true, parent.getContextV2()));
+        } catch (IOException e) {
             LOGGER.debug("Node with ID <%s> unexpectedly doesn't need an update.".formatted(componentId), e);
             return false;
         }
