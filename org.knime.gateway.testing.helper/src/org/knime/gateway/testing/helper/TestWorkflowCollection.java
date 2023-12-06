@@ -87,7 +87,17 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * To test operations on bendpoints.
      */
-    BENDPOINTS("/files/testflows/Bendpoints", "bendpoints");
+    BENDPOINTS("/files/testflows/Bendpoints", "bendpoints"),
+
+    /**
+     * To test updating linked components.
+     */
+    UPDATE_LINKED_COMPONENTS("/files/testflows/Update Linked Components", "update_linked_components"),
+
+    /**
+     * Linked component (!) needed to mock URL to file resolver.
+     */
+    LINKED_COMPONENT("/files/testflows/Linked Component", "linked_component");
 
     private final String m_workflowDir;
 

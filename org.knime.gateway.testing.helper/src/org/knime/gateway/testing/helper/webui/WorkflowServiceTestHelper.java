@@ -68,6 +68,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -80,6 +81,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -98,6 +100,7 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeAnnotationData;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.core.util.Pair;
+import org.knime.core.util.pathresolve.URIToFileResolve;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -164,6 +167,10 @@ import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandE
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt.UpdateLinkedComponentsCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
+import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt.UpdateProjectMetadataCommandEntBuilder;
@@ -190,6 +197,7 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.knime.testing.util.URIToFileResolveTestUtil;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -2887,14 +2895,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Undo
         ws().undoWorkflowCommand(projectId, getRootID());
-        var componentsAndStateAfterUndo = ws().getUpdatableLinkedComponents(projectId, getRootID());
-        var cc2 = componentsAndStateAfterUndo.stream().map(NodeIdAndIsExecutedEnt::getId).toList();
-        assertThat("List of updatable nodes unexpected", Set.copyOf(cc2), is(updatableComponents));
+        var componentsAfterUndo = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        assertThat("List of updatable nodes unexpected", Set.copyOf(componentsAfterUndo), is(updatableComponents));
 
         // Redo
         ws().redoWorkflowCommand(projectId, getRootID());
-        var componentsAndStateAfterRedo = ws().getUpdatableLinkedComponents(projectId, getRootID());
-        assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAndStateAfterRedo),
+        var componentsAfterRedo = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAfterRedo),
             is(Collections.emptySet()));
 
         // Try updating again, shouldn't change anything
@@ -2918,8 +2925,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         URIToFileResolveTestUtil.replaceURIToFileResolveService(oldResolver);
     }
 
-    public void testUpdateLinkedComponentsCommand() throws Exception {
-        // TODO: NXT-2172
+    private static UpdateLinkedComponentsCommandEnt buildUpdateLinkedComponentsCommand(final List<NodeIDEnt> nodeIds) {
+        return builder(UpdateLinkedComponentsCommandEntBuilder.class)//
+            .setKind(KindEnum.UPDATE_LINKED_COMPONENTS)//
+            .setNodeIds(nodeIds)//
+            .build();
     }
 
 }
