@@ -233,15 +233,7 @@ public final class DefaultNodeService implements NodeService {
 
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
 
-        final DataServiceManager<NodeWrapper> dataServiceManager;
-        if ("view".equals(extensionType)) {
-            dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
-        } else if ("dialog".equals(extensionType)) {
-            dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
-        } else {
-            throw new InvalidRequestException("Unknown target for node data service: " + extensionType);
-        }
-
+        final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
         if ("initial_data".equals(serviceType)) {
             return dataServiceManager.callInitialDataService(nncWrapper);
@@ -258,6 +250,31 @@ public final class DefaultNodeService implements NodeService {
         } else {
             throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final String extensionType) throws NodeNotFoundException, InvalidRequestException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        var nc = getNC(projectId, workflowId, nodeId, NodeContainer.class);
+        var dataServiceManager = getDataServiceManager(extensionType);
+        dataServiceManager.deactivateDataServices(NodeWrapper.of(nc));
+    }
+
+    private static DataServiceManager<NodeWrapper> getDataServiceManager(final String extensionType)
+        throws InvalidRequestException {
+        final DataServiceManager<NodeWrapper> dataServiceManager;
+        if ("view".equals(extensionType)) {
+            dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
+        } else if ("dialog".equals(extensionType)) {
+            dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
+        } else {
+            throw new InvalidRequestException("Unknown target for node data service: " + extensionType);
+        }
+        return dataServiceManager;
     }
 
     /**

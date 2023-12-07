@@ -104,6 +104,20 @@ public interface NodeService extends GatewayService {
     void changeNodeStates(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
         
     /**
+     * De-activates all the data service associated with the specified ui-extension.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param extensionType The node ui-extension-type, i.e. dialog or view.
+     *
+     * 
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    void deactivateNodeDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+        
+    /**
      * Get a components description, will only work for component nodes.
      *
      * @param projectId ID of the workflow-project.

@@ -74,6 +74,21 @@ public interface PortService extends GatewayService {
     String callPortDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx, String serviceType, String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
+     * De-activates all data services associated with the port view.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param portIdx The port index to be used.
+     * @param viewIdx The index of the specific port view to obtain
+     *
+     * 
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     */
+    void deactivatePortDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+        
+    /**
      * Returns all the information on a port view required to render it.
      *
      * @param projectId ID of the workflow-project.

@@ -93,13 +93,7 @@ public class DefaultPortService implements PortService {
     public Object getPortView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final Integer portIdx, final Integer viewIdx)
         throws NodeNotFoundException, InvalidRequestException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
+        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
 
         var outPort = nc.getOutPort(portIdx);
         if (outPort.getPortObject() == InactiveBranchPortObject.INSTANCE) {
@@ -145,13 +139,7 @@ public class DefaultPortService implements PortService {
     public String callPortDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final Integer portIdx, final Integer viewIdx, final String serviceType, final String body)
         throws NodeNotFoundException, InvalidRequestException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
+        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
 
         var portViewManager = PortViewManager.getInstance();
         if ("initial_data".equals(serviceType)) {
@@ -163,6 +151,29 @@ public class DefaultPortService implements PortService {
         } else {
             throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deactivatePortDataServices(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Integer portIdx, final Integer viewIdx) throws NodeNotFoundException, InvalidRequestException {
+        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        PortViewManager.getInstance().getDataServiceManager()
+            .deactivateDataServices(NodePortWrapper.of(nc, portIdx, viewIdx));
+    }
+
+    private static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws NodeNotFoundException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        NodeContainer nc;
+        try {
+            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        } catch (IllegalArgumentException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
+        return nc;
     }
 
 }
