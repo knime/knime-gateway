@@ -95,7 +95,7 @@ public final class DefaultEventService implements EventService {
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
-    private final ProjectManager m_workflowProjectManager =
+    private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     private final UpdateStateProvider m_updateStateProvider =
@@ -132,11 +132,11 @@ public final class DefaultEventService implements EventService {
         EventSource eventSource;
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_workflowProjectManager));
+                t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_projectManager));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                    t -> new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, m_workflowProjectManager,
+                    t -> new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, m_projectManager,
                         m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider));
             } else {
                 NodeLogger.getLogger(getClass()).warn(

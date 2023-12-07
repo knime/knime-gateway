@@ -72,7 +72,7 @@ public final class DefaultApplicationService implements ApplicationService {
     private final AppStateUpdater m_appStateUpdater =
         ServiceDependencies.getServiceDependency(AppStateUpdater.class, false);
 
-    private final ProjectManager m_workflowProjectManager =
+    private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     private final PreferencesProvider m_preferencesProvider =
@@ -119,7 +119,7 @@ public final class DefaultApplicationService implements ApplicationService {
             DefaultServiceContext.getWorkflowProjectId().<Predicate<String>> map(id -> id::equals).orElse(null);
         Predicate<String> isActiveProject = workflowProjectFilter == null ? null : id -> true;
 
-        var appState = AppStateEntityFactory.buildAppStateEnt(null, m_workflowProjectManager, m_preferencesProvider,
+        var appState = AppStateEntityFactory.buildAppStateEnt(null, m_projectManager, m_preferencesProvider,
             m_exampleProjects, m_spaceProviders, m_nodeFactoryProvider, workflowProjectFilter, isActiveProject);
         if (m_appStateUpdater != null) {
             m_appStateUpdater.setLastAppState(appState);

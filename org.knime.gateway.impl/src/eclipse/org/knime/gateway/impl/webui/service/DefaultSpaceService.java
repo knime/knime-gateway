@@ -89,7 +89,7 @@ public class DefaultSpaceService implements SpaceService {
     private final SpaceProviders m_spaceProviders =
         ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
 
-    private final ProjectManager m_workflowProjectManager =
+    private final ProjectManager m_projectManager =
             ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     DefaultSpaceService() {
@@ -259,8 +259,8 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private Stream<String> getOpenWorkflowIds() {
-        return m_workflowProjectManager.getProjectIds().stream()//
-            .flatMap(id -> m_workflowProjectManager.getProject(id)//
+        return m_projectManager.getProjectIds().stream()//
+            .flatMap(id -> m_projectManager.getProject(id)//
                 .flatMap(Project::getOrigin)//
                 .map(Origin::getItemId)//
                 .stream());
