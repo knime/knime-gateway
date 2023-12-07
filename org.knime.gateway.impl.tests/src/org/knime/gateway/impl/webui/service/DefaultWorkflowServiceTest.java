@@ -76,7 +76,7 @@ import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class WorkflowServiceTest extends GatewayServiceTest {
+public class DefaultWorkflowServiceTest extends GatewayServiceTest {
 
     /**
      * Tests that returned workflow entities are NOT cached (and a different instance is returned) if the workflow

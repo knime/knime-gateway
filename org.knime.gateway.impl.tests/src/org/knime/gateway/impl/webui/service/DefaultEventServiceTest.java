@@ -85,7 +85,7 @@ import org.knime.gateway.testing.helper.WorkflowTransformations;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class EventServiceTest extends GatewayServiceTest {
+public class DefaultEventServiceTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 

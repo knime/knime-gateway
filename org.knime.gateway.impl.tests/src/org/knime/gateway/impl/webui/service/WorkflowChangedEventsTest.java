@@ -132,7 +132,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
     public void testWorkflowChangedEvents() throws Exception {
         Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(m_transformations.getTestWorkflowProject());
         WorkflowChangedEventTypeEnt eventType =
-            EventServiceTest.registerWorkflowChangedEventListener(idAndWfm.getFirst().toString(), m_transformations.getWorkflowId());
+            DefaultEventServiceTest.registerWorkflowChangedEventListener(idAndWfm.getFirst().toString(), m_transformations.getWorkflowId());
 
         // set callback for testing
         DefaultEventService es = DefaultEventService.getInstance();

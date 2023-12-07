@@ -84,7 +84,7 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class ApplicationServiceTest extends GatewayServiceTest {
+public class DefaultApplicationServiceTest extends GatewayServiceTest {
 
     /**
      * Test to get the app state.
