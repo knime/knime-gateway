@@ -1,0 +1,235 @@
+/*
+ * ------------------------------------------------------------------------
+ *
+ *  Copyright by KNIME AG, Zurich, Switzerland
+ *  Website: http://www.knime.org; Email: contact@knime.org
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License, Version 3, as
+ *  published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>.
+ *
+ *  Additional permission under GNU GPL version 3 section 7:
+ *
+ *  KNIME interoperates with ECLIPSE solely via ECLIPSE's plug-in APIs.
+ *  Hence, KNIME and ECLIPSE are both independent programs and are not
+ *  derived from each other. Should, however, the interpretation of the
+ *  GNU GPL Version 3 ("License") under any applicable laws result in
+ *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
+ *  you the additional permission to use and propagate KNIME together with
+ *  ECLIPSE with only the license terms in place for ECLIPSE applying to
+ *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
+ *  license terms of ECLIPSE themselves allow for the respective use and
+ *  propagation of ECLIPSE together with KNIME.
+ *
+ *  Additional permission relating to nodes for KNIME that extend the Node
+ *  Extension (and in particular that are based on subclasses of NodeModel,
+ *  NodeDialog, and NodeView) and that only interoperate with KNIME through
+ *  standard APIs ("Nodes"):
+ *  Nodes are deemed to be separate and independent programs and to not be
+ *  covered works.  Notwithstanding anything to the contrary in the
+ *  License, the License does not apply to Nodes, you are not required to
+ *  license Nodes under the License, and you are granted a license to
+ *  prepare and propagate Nodes, in each case even if such Nodes are
+ *  propagated with or for interoperation with KNIME.  The owner of a Node
+ *  may freely choose the license terms applicable to such Node, including
+ *  when such Node is propagated with or for interoperation with KNIME.
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Dec 8, 2023 (hornm): created
+ */
+package org.knime.gateway.impl.webui.service;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.junit.Test;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NodeView;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.port.PortSpecViewFactory;
+import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.port.PortViewManager;
+import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
+import org.knime.core.webui.page.Page;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.service.PortService;
+import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.testing.helper.webui.PortServiceTestHelper;
+import org.knime.testing.util.WorkflowManagerUtil;
+
+/**
+ * Tests methods in {@link DefaultPortService} which can't be covered by {@link PortServiceTestHelper}.
+ *
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ */
+public class DefaultPortServiceTest {
+
+    /**
+     * Tests
+     * {@link PortService#deactivatePortDataServices(String, org.knime.gateway.api.entity.NodeIDEnt, org.knime.gateway.api.entity.NodeIDEnt, Integer, Integer)}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDeactivatePortDataService() throws Exception {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var nc = createNodeWithTableOutputPort(wfm);
+        var project = DefaultProject.builder(wfm).build();
+        var projectId = project.getID();
+        var nodeIdEnt = new NodeIDEnt(nc.getID());
+        ProjectManager.getInstance().addProject(project);
+
+        var deactivateRunnablesCalled = new boolean[2];
+        var portView = createPortView(deactivateRunnablesCalled);
+        PortSpecViewFactory<DataTableSpec> portViewFactory = p -> portView;
+
+        var originalPortViews = PortViewManager.getPortViews(BufferedDataTable.TYPE);
+        PortViewManager.registerPortViews(BufferedDataTable.TYPE,
+            List.of(new PortViewDescriptor("Test table view", portViewFactory)), List.of(0), List.of());
+
+        var portService = DefaultPortService.getInstance();
+
+        // 'use' port view
+        portService.getPortView(projectId, NodeIDEnt.getRootID(), nodeIdEnt, 1, 0);
+        portService.callPortDataService(projectId, NodeIDEnt.getRootID(), nodeIdEnt, 1, 0, "data", "foo");
+
+        // the actual check
+        portService.deactivatePortDataServices(projectId, NodeIDEnt.getRootID(), nodeIdEnt, 1, 0);
+        assertThat(deactivateRunnablesCalled, is(new boolean[]{true, true}));
+
+        // clean up
+        PortViewManager.registerPortViews(BufferedDataTable.TYPE, originalPortViews.viewDescriptors(),
+            originalPortViews.configuredIndices(), originalPortViews.executedIndices());
+        WorkflowManagerUtil.disposeWorkflow(wfm);
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
+    }
+
+    private static NativeNodeContainer createNodeWithTableOutputPort(final WorkflowManager wfm) {
+        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeFactory<NodeModel>() {
+
+            @Override
+            public NodeModel createNodeModel() {
+                return new NodeModel(0, 1) {
+
+                    @Override
+                    protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
+                        return new DataTableSpec[]{new DataTableSpec()};
+                    }
+
+                    @Override
+                    protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
+                        throws Exception {
+                        return null;
+                    }
+
+                    @Override
+                    protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                        //
+                    }
+
+                    @Override
+                    protected void saveSettingsTo(final NodeSettingsWO settings) {
+                        //
+                    }
+
+                    @Override
+                    protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+                        throws IOException, CanceledExecutionException {
+                        //
+                    }
+
+                    @Override
+                    protected void reset() {
+                        //
+                    }
+
+                    @Override
+                    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+                        throws InvalidSettingsException {
+                        //
+                    }
+
+                    @Override
+                    protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+                        throws IOException, CanceledExecutionException {
+                        //
+                    }
+                };
+            }
+
+            @Override
+            protected int getNrNodeViews() {
+                return 0;
+            }
+
+            @Override
+            public NodeView<NodeModel> createNodeView(final int viewIndex, final NodeModel nodeModel) {
+                return null;
+            }
+
+            @Override
+            protected boolean hasDialog() {
+                return false;
+            }
+
+            @Override
+            protected NodeDialogPane createNodeDialogPane() {
+                return null;
+            }
+        });
+        return nc;
+    }
+
+    private static PortView createPortView(final boolean[] deactivateRunnablesCalled) {
+        var portView = new PortView() {
+
+            @Override
+            public Page getPage() {
+                return Page.builder(() -> "blub", "index.html").build();
+            }
+
+            @Override
+            public Optional<InitialDataService<String>> createInitialDataService() {
+                return Optional.of(InitialDataService.builder(() -> "initial data")
+                    .onDeactivate(() -> deactivateRunnablesCalled[0] = true).build());
+            }
+
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.of(RpcDataService.<Supplier<String>> builder(() -> "bar")
+                    .onDeactivate(() -> deactivateRunnablesCalled[1] = true).build());
+            }
+        };
+        return portView;
+    }
+
+}
