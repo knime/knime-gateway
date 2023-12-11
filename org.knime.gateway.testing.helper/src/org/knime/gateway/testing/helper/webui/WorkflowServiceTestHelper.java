@@ -541,7 +541,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
         var exceptionMessage = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)).getMessage();
-        assertThat(exceptionMessage, containsString("Cannot move executed nodes"));
+        assertThat(exceptionMessage, containsString("Cannot move all selected nodes (successor executing?)."));
     }
 
     private static List<AllowedNodeActionsEnt> getAllowedActionsOfNodes(final List<NodeIDEnt> nodes,
