@@ -80,12 +80,32 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
     }
 
     /**
+     * New instance.
+     *
+     * @param customJsonRpcServices
+     */
+    public DefaultJsonRpcRequestHandler(final GatewayService... customJsonRpcServices) {
+        super(ObjectMapperUtil.getInstance().getObjectMapper(),
+            combine(wrapWithJsonRpcServices(getDefaultServiceImpls()), customJsonRpcServices),
+            new DefaultExceptionToJsonRpcErrorTranslator());
+    }
+
+    /**
      * For testing purposes only.
      */
     DefaultJsonRpcRequestHandler(
         final Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> serviceImpls) {
         super(ObjectMapperUtil.getInstance().getObjectMapper(), wrapWithJsonRpcServices(serviceImpls),
             new DefaultExceptionToJsonRpcErrorTranslator());
+    }
+
+    private static Map<String, GatewayService> combine(final Map<String, GatewayService> defaultServices,
+        final GatewayService... customJsonRpcServices) {
+        var res = new HashMap<String, GatewayService>(defaultServices);
+        for (var service : customJsonRpcServices) {
+            res.put(service.getClass().getName(), service);
+        }
+        return res;
     }
 
     private static Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> getDefaultServiceImpls() {
