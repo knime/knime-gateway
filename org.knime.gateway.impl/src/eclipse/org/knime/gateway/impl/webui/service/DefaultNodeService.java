@@ -80,9 +80,9 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.service.events.SelectionEventSource;
-import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.service.events.SelectionEventSource;
+import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 
 /**
  * The default implementation of the {@link NodeService}-interface.

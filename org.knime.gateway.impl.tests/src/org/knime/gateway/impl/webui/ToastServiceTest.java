@@ -55,7 +55,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt.ShowToastEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt.TypeEnum;
-import org.knime.gateway.impl.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
 
 /**
  * Tests {@link ToastService}.

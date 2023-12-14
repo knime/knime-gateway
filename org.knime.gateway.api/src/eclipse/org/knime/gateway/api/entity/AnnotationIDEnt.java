@@ -45,61 +45,90 @@
  */
 package org.knime.gateway.api.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Objects;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowAnnotationID;
 
 /**
- * Tests {@link NodeIDEnt}.
+ * Represents a (workflow) annotation id as used by gateway entities and services. Equivalent to the core's
+ * {@link org.knime.core.node.workflow.WorkflowAnnotationID}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
-public class NodeIDEntTest {
+public final class AnnotationIDEnt {
 
-    @Test
-    public void testAppendNodeID() {
-        assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
-        assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
-    }
+    private NodeIDEnt m_nodeId;
 
-    @Test
-    public void testToAndFromNodeID() {
-        //to
-        NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
+    private int m_index;
 
-        //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
-        assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
+    /**
+     * Creates a new annotation id entity from a node id entity and an index.
+     *
+     * @param nodeId the node id of the workflow annotation is part of
+     * @param index
+     */
+    public AnnotationIDEnt(final NodeIDEnt nodeId, final int index) {
+        m_nodeId = nodeId;
+        m_index = index;
     }
 
     /**
-     * Tests 'toString' and create from string via constructor.
+     * Creates a new annotation id entity from a {@link WorkflowAnnotationID}.
+     *
+     * @param id
      */
-    @Test
-    public void testToAndFromString() {
-        //to
-        String s = new NodeIDEnt(3, 4, 1).toString();
-        assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
-
-        //from
-        assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
-        assertThat(new NodeIDEnt("root")).isEqualTo(NodeIDEnt.getRootID());
+    public AnnotationIDEnt(final WorkflowAnnotationID id) {
+        this(new NodeIDEnt(id.getNodeID()), id.getIndex());
     }
 
-    @Test
-    public void testIsEqualOrParentOf() {
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isFalse();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isTrue();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root"))).isTrue();
+    /**
+     * Deserialization constructor.
+     *
+     * @param s string representation as returned by {@link #toString()}
+     */
+    public AnnotationIDEnt(final String s) {
+        String[] split = s.split("_");
+        m_nodeId = new NodeIDEnt(split[0]);
+        m_index = Integer.parseInt(split[1]);
+    }
+
+    @Override
+    public String toString() {
+        return m_nodeId.toString() + "_" + m_index;
+    }
+
+    /**
+     * @return the id of the node the workflow annotation is part of
+     */
+    public NodeIDEnt getNodeIDEnt() {
+        return m_nodeId;
+    }
+
+    /**
+     * @return its index in that workflow
+     */
+    public int getIndex() {
+        return m_index;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_nodeId.hashCode(), m_index);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        AnnotationIDEnt ent = (AnnotationIDEnt)o;
+        return Objects.equals(m_nodeId, ent.m_nodeId) && m_index == ent.m_index;
     }
 
 }

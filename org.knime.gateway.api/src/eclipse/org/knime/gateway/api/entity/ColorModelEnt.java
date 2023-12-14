@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -42,64 +43,60 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Mar 27, 2023 (Paul Bärnreuther): created
  */
 package org.knime.gateway.api.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.data.property.ColorModel;
+import org.knime.core.data.property.ColorModelNominal;
+import org.knime.core.data.property.ColorModelRange;
 
 /**
- * Tests {@link NodeIDEnt}.
+ * A representation of a {@link ColorModel} which is used by the frontend to handle colors. For a nominal color column,
+ * we provide a map from string values to colors. For numeric columns, we provide a {@link NumericColorModelEnt}.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-@SuppressWarnings("javadoc")
-public class NodeIDEntTest {
+public final class ColorModelEnt {
 
-    @Test
-    public void testAppendNodeID() {
-        assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
-        assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
+    private enum Type {
+            NOMINAL, NUMERIC
     }
 
-    @Test
-    public void testToAndFromNodeID() {
-        //to
-        NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
+    private final Type m_type;
 
-        //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
-        assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
+    private final Object m_model;
+
+    ColorModelEnt(final ColorModel colorModel) {
+        if (colorModel instanceof ColorModelNominal) {
+            m_type = Type.NOMINAL;
+            m_model = getNominalValueToColorMap((ColorModelNominal)colorModel);
+        } else {
+            m_type = Type.NUMERIC;
+            m_model = new NumericColorModelEnt((ColorModelRange)colorModel);
+        }
     }
 
-    /**
-     * Tests 'toString' and create from string via constructor.
-     */
-    @Test
-    public void testToAndFromString() {
-        //to
-        String s = new NodeIDEnt(3, 4, 1).toString();
-        assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
-
-        //from
-        assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
-        assertThat(new NodeIDEnt("root")).isEqualTo(NodeIDEnt.getRootID());
+    private static Map<String, String> getNominalValueToColorMap(final ColorModelNominal colorModel) {
+        final Map<String, String> nominalValueToColorMap = new HashMap<>();
+        for (var entry : colorModel.getColorToValueMap().entrySet()) {
+            final var color = entry.getKey();
+            final var values = entry.getValue();
+            values.forEach(value -> nominalValueToColorMap.put(value, color));
+        }
+        return nominalValueToColorMap;
     }
 
-    @Test
-    public void testIsEqualOrParentOf() {
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isFalse();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isTrue();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root"))).isTrue();
+    public Type getType() {
+        return m_type;
+    }
+
+    public Object getModel() {
+        return m_model;
     }
 
 }

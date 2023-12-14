@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -42,64 +43,80 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 13, 2021 (hornm): created
  */
 package org.knime.gateway.api.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.webui.page.Resource;
 
 /**
- * Tests {@link NodeIDEnt}.
+ * Information around the web resource (e.g. html or javascript document) representing a node view.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
-public class NodeIDEntTest {
+public final class ResourceInfoEnt {
 
-    @Test
-    public void testAppendNodeID() {
-        assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
-        assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
-    }
+    private final String m_baseUrl;
 
-    @Test
-    public void testToAndFromNodeID() {
-        //to
-        NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
+    private final String m_debugUrl;
 
-        //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
-        assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
+    private final String m_path;
+
+    private final String m_contentType;
+
+    private final String m_id;
+
+
+    ResourceInfoEnt(final String id, final String baseUrl, final String debugUrl, final String path,
+        final Resource.ContentType resourceContentType) {
+        m_baseUrl = baseUrl;
+        m_debugUrl = debugUrl;
+        m_path = path;
+        m_contentType = resourceContentType.toString();
+        m_id = id;
     }
 
     /**
-     * Tests 'toString' and create from string via constructor.
+     * A globally unique resource id.
+     *
+     * @return the id
      */
-    @Test
-    public void testToAndFromString() {
-        //to
-        String s = new NodeIDEnt(3, 4, 1).toString();
-        assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
-
-        //from
-        assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
-        assertThat(new NodeIDEnt("root")).isEqualTo(NodeIDEnt.getRootID());
+    public String getId() {
+        return m_id;
     }
 
-    @Test
-    public void testIsEqualOrParentOf() {
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isFalse();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isTrue();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root"))).isTrue();
+    /**
+     * The relative path to the resource.
+     *
+     * @return the relative path
+     */
+    public String getPath() {
+        return m_path;
+    }
+
+    /**
+     * The resource base url. I.e., if the base url is given, then the complete resource url determined by combining the
+     * base url with the path ({@link #getPath()}). Might not be given (needs to be determined on the client-side then).
+     *
+     * @return the url or <code>null</code> if not given
+     */
+    public String getBaseUrl() {
+        return m_baseUrl;
+    }
+
+    /**
+     * @return a complete url pointing to the resource; only available for debugging
+     */
+    public String getDebugUrl() {
+        return m_debugUrl;
+    }
+
+    /**
+     * @return the resource type
+     */
+    public String getType() {
+        return m_contentType;
     }
 
 }

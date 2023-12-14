@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -42,64 +43,23 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Feb 8, 2022 (hornm): created
  */
-package org.knime.gateway.api.entity;
+package org.knime.gateway.impl.webui.service.events;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.api.entity.NodeViewEnt;
 
 /**
- * Tests {@link NodeIDEnt}.
+ * An event that signals a node view to update itself.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
-public class NodeIDEntTest {
-
-    @Test
-    public void testAppendNodeID() {
-        assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
-        assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
-    }
-
-    @Test
-    public void testToAndFromNodeID() {
-        //to
-        NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
-
-        //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
-        assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
-    }
+public interface NodeViewStateEvent {
 
     /**
-     * Tests 'toString' and create from string via constructor.
+     * @return the updated/changed node view entity
      */
-    @Test
-    public void testToAndFromString() {
-        //to
-        String s = new NodeIDEnt(3, 4, 1).toString();
-        assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
-
-        //from
-        assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
-        assertThat(new NodeIDEnt("root")).isEqualTo(NodeIDEnt.getRootID());
-    }
-
-    @Test
-    public void testIsEqualOrParentOf() {
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isFalse();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isTrue();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root"))).isTrue();
-    }
+    NodeViewEnt getNodeView();
 
 }

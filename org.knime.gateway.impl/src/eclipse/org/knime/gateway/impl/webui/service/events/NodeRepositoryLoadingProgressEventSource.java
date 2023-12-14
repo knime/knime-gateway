@@ -61,8 +61,6 @@ import org.knime.core.node.extension.NodeSpecCollectionProvider.Progress.Progres
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventEnt.NodeRepositoryLoadingProgressEventEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
-import org.knime.gateway.impl.service.events.EventConsumer;
-import org.knime.gateway.impl.service.events.EventSource;
 
 /**
  * Event source emitting {@link NodeRepositoryLoadingProgressEventEnt}s.

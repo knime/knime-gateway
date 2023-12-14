@@ -45,9 +45,8 @@
  */
 package org.knime.gateway.util;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -75,35 +74,39 @@ public class EntityUtilTest {
     @Test
 	public void testImmutable() {
 		Object o = null;
-		assertThat("failed to return null", EntityUtil.immutable(o), is(nullValue()));
+		assertThat(EntityUtil.immutable(o)).as("failed to return null").isNull();
 
 		o = new Object();
-		assertThat("not the same object returned", EntityUtil.immutable(o), is(o));
+		assertThat(EntityUtil.immutable(o)).as("not the same object returned").isEqualTo(o);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testImmutableMap() {
-		Map<String, String> m = new HashMap<>();
-		Map<String, String> im = EntityUtil.immutable(m);
-		m.put("key", "value");
-		assertThat("map not immutable", im.size(), is(0));
-		im.put("key", "value");
-	}
+    @Test
+    public void testImmutableMap() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            Map<String, String> m = new HashMap<>();
+            Map<String, String> im = EntityUtil.immutable(m);
+            m.put("key", "value");
+            assertThat(im.size()).as("map not immutable").isZero();
+            im.put("key", "value");
+        });
+    }
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testImmutableList() {
-		List<String> l = new ArrayList<String>();
-		List<String> il = EntityUtil.immutable(l);
-		l.add("value");
-		assertThat("map not immutable", il.size(), is(0));
-		il.add("value");
-	}
+    @Test
+    public void testImmutableList() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            List<String> l = new ArrayList<String>();
+            List<String> il = EntityUtil.immutable(l);
+            l.add("value");
+            assertThat(il.size()).as("map not immutable").isZero();
+            il.add("value");
+        });
+    }
 
 	@Test
     public void testCreateNodeIDEntList() {
         List<NodeIDEnt> list = EntityUtil.createNodeIDEntList(new int[][]{{4, 3, 1}, {0}, {}});
         List<NodeIDEnt> expectedList = Arrays.asList(new NodeIDEnt(4, 3, 1), new NodeIDEnt(0), NodeIDEnt.getRootID());
-        assertThat("unexpected result list", list, is(expectedList));
+        assertThat(list).as("unexpected result list").isEqualTo(expectedList);
     }
 
     @Test
@@ -111,12 +114,14 @@ public class EntityUtilTest {
         List<ConnectionIDEnt> list = EntityUtil.createConnectionIDEntList(new int[][]{{5, 6}, {}}, 4, 5);
         List<ConnectionIDEnt> expectedList =
             Arrays.asList(new ConnectionIDEnt(new NodeIDEnt(5, 6), 4), new ConnectionIDEnt(NodeIDEnt.getRootID(), 5));
-        assertThat("unexpected result list", list, is(expectedList));
+        assertThat(list).as("unexpected result list").isEqualTo(expectedList);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCreateConnectionIDEntListException() {
-        EntityUtil.createConnectionIDEntList(new int[][]{{5, 6}, {}}, 4);
+        assertThrows(IllegalArgumentException.class, () -> {
+            EntityUtil.createConnectionIDEntList(new int[][]{{5, 6}, {}}, 4);
+        });
     }
 
     @Test
@@ -124,24 +129,28 @@ public class EntityUtilTest {
         List<AnnotationIDEnt> list = EntityUtil.createAnnotationIDEntList(new int[][]{{5, 6}, {}}, 4, 5);
         List<AnnotationIDEnt> expectedList =
             Arrays.asList(new AnnotationIDEnt(new NodeIDEnt(5, 6), 4), new AnnotationIDEnt(NodeIDEnt.getRootID(), 5));
-        assertThat("unexpected result list", list, is(expectedList));
+        assertThat(list).as("unexpected result list").isEqualTo(expectedList);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCreateAnnotationIDEntListException() {
-        EntityUtil.createAnnotationIDEntList(new int[][]{{5, 6}, {}}, 4);
+        assertThrows(IllegalArgumentException.class, () -> {
+            EntityUtil.createAnnotationIDEntList(new int[][]{{5, 6}, {}}, 4);
+        });
     }
 
     @Test
     public void testToProjectType() {
         final var result1 = EntityUtil.toProjectType(TypeEnum.WORKFLOW).orElseThrow();
-        assertThat("Not a workflow", result1, is(ProjectTypeEnum.WORKFLOW));
+        assertThat(result1).as("Not a workflow").isEqualTo(ProjectTypeEnum.WORKFLOW);
         final var result2 = EntityUtil.toProjectType(TypeEnum.COMPONENT).orElseThrow();
-        assertThat("Not a component", result2, is(ProjectTypeEnum.COMPONENT));
+        assertThat(result2).as("Not a component").isEqualTo(ProjectTypeEnum.COMPONENT);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testToProjectTypeException() {
-        EntityUtil.toProjectType(TypeEnum.DATA).orElseThrow();
+        assertThrows(NoSuchElementException.class, () -> {
+            EntityUtil.toProjectType(TypeEnum.DATA).orElseThrow();
+        });
     }
 }

@@ -52,7 +52,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt.ShowToastEventEntBuilder;
-import org.knime.gateway.impl.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
 
 /**
  * A helper that allows one to show toasts in the UI.

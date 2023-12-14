@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,64 +44,86 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 15, 2022 (kai): created
+ *   Feb 8, 2022 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.events;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
-import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
-import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.webui.UpdateStateProvider;
-import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.gateway.api.entity.NodeViewEnt;
 
 /**
- * Event source that emits event at the beginning of the application life cycle if there where available updates
- * discovered
+ * Emits {@link NodeViewStateEvent NodeViewStateEvents} which signal a node view to update itself (depending on the
+ * underlying node state).
  *
- * @author Kai Franze, KNIME GmbH
+ * Implementation only covers 'single node views' so far and should eventually be extended to composite views, too (see
+ * UIEXT-143).
+ *
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class UpdateAvailableEventSource
-    extends EventSource<UpdateAvailableEventTypeEnt, UpdateAvailableEventEnt> {
+public class NodeViewStateEventSource extends EventSource<NativeNodeContainer, NodeViewStateEvent> {
 
-    private final Consumer<UpdateState> m_callback;
+    private NodeStateChangeListener m_nodeStateChangeListener;
 
-    private final UpdateStateProvider m_updateStateProvider;
+    private NativeNodeContainer m_nnc;
+
+    private final Supplier<List<String>> m_initialSelectionSupplier;
+
+    private final Runnable m_preEventCreationCallback;
 
     /**
-     * @param eventConsumer Consumes the emitted events
-     * @param updateStateProvider Provides the update state
+     * @param eventConsumer all emitted events are passed to this consumer
+     * @param preEventCreationCallback called right before a new event is created (and passed to the consumer)
+     * @param initialSelectionSupplier supplier for the initial selection required to create a
+     *            {@link NodeViewEnt}-instance
      */
-    public UpdateAvailableEventSource(final EventConsumer eventConsumer,
-        final UpdateStateProvider updateStateProvider) {
+    public NodeViewStateEventSource(final BiConsumer<String, Object> eventConsumer,
+        final Runnable preEventCreationCallback, final Supplier<List<String>> initialSelectionSupplier) {
         super(eventConsumer);
-        m_updateStateProvider = updateStateProvider;
-        m_callback = updateState -> sendEvent(EntityFactory.UpdateState
-            .buildEventEnt(updateState.getNewReleases(), updateState.getBugfixes()));
+        m_preEventCreationCallback = preEventCreationCallback;
+        m_initialSelectionSupplier = initialSelectionSupplier;
     }
 
     @Override
-    public Optional<UpdateAvailableEventEnt>
-        addEventListenerAndGetInitialEventFor(final UpdateAvailableEventTypeEnt eventTypeEnt) {
-        m_updateStateProvider.addUpdateStateChangedListener(m_callback);
-        return Optional.empty(); // Will be set before update check is triggered, so there will never be an event to emit
+    public Optional<NodeViewStateEvent> addEventListenerAndGetInitialEventFor(final NativeNodeContainer nnc) {
+        m_nnc = nnc;
+        m_nodeStateChangeListener = e -> {
+            m_preEventCreationCallback.run();
+            var nodeViewStateEvent = createEvent(m_nnc, m_initialSelectionSupplier);
+            sendEvent(nodeViewStateEvent);
+        };
+        nnc.addNodeStateChangeListener(m_nodeStateChangeListener);
+        return Optional.empty();
+    }
+
+    private static NodeViewStateEvent createEvent(final NativeNodeContainer nnc,
+        final Supplier<List<String>> initialSelectionSupplier) {
+        var nodeViewEnt = NodeViewEnt.create(nnc, initialSelectionSupplier);
+        return () -> nodeViewEnt;
     }
 
     @Override
-    public void removeEventListener(final UpdateAvailableEventTypeEnt eventTypeEnt) {
-        m_updateStateProvider.removeUpdateStateChangedListener(m_callback);
+    public void removeEventListener(final NativeNodeContainer nnc) {
+        if (nnc.removeNodeStateChangeListener(m_nodeStateChangeListener)) {
+            m_nodeStateChangeListener = null;
+            m_nnc = null;
+        }
     }
 
     @Override
     public void removeAllEventListeners() {
-        removeEventListener(null);
+        removeEventListener(m_nnc);
+        m_nnc = null;
     }
 
     @Override
     protected String getName() {
-        return "UpdateAvailableEvent";
+        return "NodeViewStateEvent";
     }
 
 }

@@ -47,7 +47,6 @@
 package org.knime.gateway.impl.webui.service.util;
 
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -56,6 +55,7 @@ import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
