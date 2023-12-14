@@ -44,18 +44,16 @@
  */
 package org.knime.gateway.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -74,7 +72,7 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
     WorkflowManager m_wfm;
 
 	@SuppressWarnings("javadoc")
-    @Before
+    @BeforeEach
     public void loadWorkflow() throws Exception {
         m_wfm = WorkflowManagerUtil.loadWorkflow(CoreUtil.resolveToFile(
             "/files/testflows/enhNXT264_AlternativeDeterminationOfDependentNodeProperties", this.getClass()));
@@ -116,7 +114,7 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 		// execute 'Wait ...' nodes
 		m_wfm.executeUpToHere(wait_203, wait_195);
 		await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-			assertTrue(m_wfm.getNodeContainerState().isExecutionInProgress());
+			assertThat(m_wfm.getNodeContainerState().isExecutionInProgress()).isTrue();
 		});
 		checkCanExecuteAndCanResetFlagsForAllNodes(m_wfm);
 		checkCanExecuteAndCanResetFlagsForAllNodes(metanode_209);
@@ -125,7 +123,7 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 		// cancel 'Wait...' node again
 		m_wfm.cancelExecution(m_wfm.getNodeContainer(wait_216));
 		await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-			assertTrue(m_wfm.getNodeContainer(wait_216).getNodeContainerState().isConfigured());
+			assertThat(m_wfm.getNodeContainer(wait_216).getNodeContainerState().isConfigured()).isTrue();
 		});
 		checkCanExecuteAndCanResetFlagsForAllNodes(m_wfm);
 		checkCanExecuteAndCanResetFlagsForAllNodes(metanode_209);
@@ -155,19 +153,19 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
         m_wfm.executeUpToHere(wait_225);
         var metanode_224 = m_wfm.getNodeContainer(parentId.createChild(224));
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            assertTrue(metanode_224.getNodeContainerState().isExecuted());
+            assertThat(metanode_224.getNodeContainerState().isExecuted()).isTrue();
         });
         checkCanExecuteAndCanResetFlagsForAllNodes(metanode_224_23);
 
 		// test absence of node id
         DependentNodeProperties props = DependentNodeProperties.determineDependentNodeProperties(metanode_25);
-        assertThat(props.canExecuteNode(new NodeID(9999)), is(false));
-        assertThat(props.canResetNode(new NodeID(9999)), is(false));
+        assertThat(props.canExecuteNode(new NodeID(9999))).isFalse();
+        assertThat(props.canResetNode(new NodeID(9999))).isFalse();
 
 	}
 
 	@SuppressWarnings("javadoc")
-    @After
+    @AfterEach
     public void cancelWorkflow() throws InterruptedException {
         CoreUtil.cancelAndCloseLoadedWorkflow(m_wfm);
     }
@@ -182,8 +180,9 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 
 		for (int i = 0; i < nodes.size(); i++) {
 			NodeID id = nodes.get(i);
-			assertThat("'canExecute' flag differs for node " + id, props.canExecuteNode(id), is(canExecute.get(i)));
-			assertThat("'canReset' flag differs for node " + id, props.canResetNode(id), is(canReset.get(i)));
+            assertThat(props.canExecuteNode(id)).as("'canExecute' flag differs for node " + id)
+                .isEqualTo(canExecute.get(i));
+            assertThat(props.canResetNode(id)).as("'canReset' flag differs for node " + id).isEqualTo(canReset.get(i));
 		}
 	}
 }

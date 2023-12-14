@@ -74,9 +74,9 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowCh
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.service.events.EventConsumer;
-import org.knime.gateway.impl.service.events.SelectionEvent;
-import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.service.events.SelectionEvent;
+import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 

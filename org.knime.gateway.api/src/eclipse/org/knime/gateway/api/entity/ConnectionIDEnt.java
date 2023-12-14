@@ -45,61 +45,86 @@
  */
 package org.knime.gateway.api.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Objects;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.ConnectionID;
 
 /**
- * Tests {@link NodeIDEnt}.
+ * Represents a connection id as used by gateway entities and services. Equivalent to the core's
+ * {@link org.knime.core.node.workflow.ConnectionID}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
-public class NodeIDEntTest {
+public final class ConnectionIDEnt {
 
-    @Test
-    public void testAppendNodeID() {
-        assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
-        assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
-    }
+    private NodeIDEnt m_destNodeID;
+    private int m_destPortIdx;
 
-    @Test
-    public void testToAndFromNodeID() {
-        //to
-        NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
-
-        //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
-        assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
+    /**
+     * @param destNodeID the destination node id of the connection
+     * @param destPortIdx the destination port index
+     */
+    public ConnectionIDEnt(final NodeIDEnt destNodeID, final int destPortIdx) {
+        m_destNodeID = destNodeID;
+        m_destPortIdx = destPortIdx;
     }
 
     /**
-     * Tests 'toString' and create from string via constructor.
+     * Creates a new connection id entity from a {@link ConnectionID}.
+     *
+     * @param connectionId
      */
-    @Test
-    public void testToAndFromString() {
-        //to
-        String s = new NodeIDEnt(3, 4, 1).toString();
-        assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
-
-        //from
-        assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
-        assertThat(new NodeIDEnt("root")).isEqualTo(NodeIDEnt.getRootID());
+    public ConnectionIDEnt(final ConnectionID connectionId) {
+        this(new NodeIDEnt(connectionId.getDestinationNode()), connectionId.getDestinationPort());
     }
 
-    @Test
-    public void testIsEqualOrParentOf() {
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isFalse();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isTrue();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root"))).isTrue();
+    /**
+     * Deserialization constructor.
+     *
+     * @param s string representation as returned by {@link #toString()}
+     */
+    public ConnectionIDEnt(final String s) {
+        String[] split = s.split("_");
+        m_destNodeID = new NodeIDEnt(split[0]);
+        m_destPortIdx = Integer.parseInt(split[1]);
     }
 
+    /**
+     * @return the destination node id entity
+     */
+    public NodeIDEnt getDestNodeIDEnt() {
+        return m_destNodeID;
+    }
+
+    /**
+     * @return the destination port index
+     */
+    public int getDestPortIdx() {
+        return m_destPortIdx;
+    }
+
+    @Override
+    public String toString() {
+        return m_destNodeID.toString() + "_" + m_destPortIdx;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_destNodeID.hashCode(), m_destNodeID);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        ConnectionIDEnt ent = (ConnectionIDEnt)o;
+        return Objects.equals(m_destNodeID, ent.m_destNodeID) && m_destPortIdx == ent.m_destPortIdx;
+    }
 }

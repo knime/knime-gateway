@@ -65,9 +65,9 @@ import org.junit.Test;
 import org.knime.core.eclipseUtil.UpdateChecker.UpdateInfo;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider.UpdateState;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 
 /**

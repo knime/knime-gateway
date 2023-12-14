@@ -45,12 +45,9 @@
  */
 package org.knime.gateway.api.entity;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.knime.gateway.api.entity.ConnectionIDEnt;
-import org.knime.gateway.api.entity.NodeIDEnt;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@link ConnectionIDEnt}.
@@ -65,10 +62,10 @@ public class ConnectionIDEntTest {
     @Test
     public void testToAndFromString() {
         //to
-        assertThat(new ConnectionIDEnt(new NodeIDEnt(4,3), 4).toString(), is("root:4:3_4"));
+        assertThat(new ConnectionIDEnt(new NodeIDEnt(4,3), 4).toString()).isEqualTo("root:4:3_4");
 
         //from
-        assertThat(new ConnectionIDEnt("root_3"), is(new ConnectionIDEnt(NodeIDEnt.getRootID(), 3)));
+        assertThat(new ConnectionIDEnt("root_3")).isEqualTo(new ConnectionIDEnt(NodeIDEnt.getRootID(), 3));
     }
 
 }

@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -42,64 +43,60 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Jul 18, 2022 (hornm): created
  */
 package org.knime.gateway.api.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
+import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.webui.node.NodePortWrapper;
+import org.knime.core.webui.node.PageResourceManager.PageType;
+import org.knime.core.webui.node.port.PortViewManager;
 
 /**
- * Tests {@link NodeIDEnt}.
+ * Port view entity containing the info required by the UI (i.e. frontend) to be able to display a port view.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
-public class NodeIDEntTest {
+public class PortViewEnt extends UIExtensionEnt<NodePortWrapper> {
 
-    @Test
-    public void testAppendNodeID() {
-        assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
-        assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
-    }
+    private final NodeInfoEnt m_info;
 
-    @Test
-    public void testToAndFromNodeID() {
-        //to
-        NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
+    private final List<String> m_initialSelection;
 
-        //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
-        assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
+    /**
+     * @param wrapper
+     * @param manager
+     * @param initialSelectionSupplier supplies the initial selection; can be {@code null} if selection is not supported
+     *            by the port view
+     */
+    public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager,
+        final Supplier<List<String>> initialSelectionSupplier) {
+        super(wrapper, manager.getPageResourceManager(), manager.getDataServiceManager(), PageType.PORT);
+        m_info = new NodeInfoEnt(wrapper.get());
+        m_initialSelection = initialSelectionSupplier == null ? null : initialSelectionSupplier.get();
     }
 
     /**
-     * Tests 'toString' and create from string via constructor.
+     * @return custom styling of the iframe that displays the port view's page
      */
-    @Test
-    public void testToAndFromString() {
-        //to
-        String s = new NodeIDEnt(3, 4, 1).toString();
-        assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
-
-        //from
-        assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
-        assertThat(new NodeIDEnt("root")).isEqualTo(NodeIDEnt.getRootID());
+    public String getIFrameStyle() {
+        return "border: none; width: 100%; height: 100%;";
     }
 
-    @Test
-    public void testIsEqualOrParentOf() {
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isFalse();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isTrue();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root"))).isTrue();
+    /**
+     * @return additional info for the node providing the view
+     */
+    public NodeInfoEnt getNodeInfo() {
+        return m_info;
     }
 
+    /**
+     * @return the initial selection (e.g. a list of row keys)
+     */
+    public List<String> getInitialSelection() {
+        return m_initialSelection;
+    }
 }

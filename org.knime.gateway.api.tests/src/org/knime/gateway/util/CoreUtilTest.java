@@ -46,14 +46,11 @@
  */
 package org.knime.gateway.util;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.workflow.NodeID;
@@ -88,12 +85,13 @@ public class CoreUtilTest {
         var emptyComponentId = wfm.getID().createChild(3);
         var someNativeNode = wfm.getID().createChild(4);
 
-        assertThat(CoreUtil.getContainerType(emptyMetanodeId, wfm).orElseThrow(), is(CoreUtil.ContainerType.METANODE));
+        assertThat(CoreUtil.getContainerType(emptyMetanodeId, wfm).orElseThrow())
+            .isEqualTo(CoreUtil.ContainerType.METANODE);
 
-        assertThat(CoreUtil.getContainerType(emptyComponentId, wfm).orElseThrow(),
-            is(CoreUtil.ContainerType.COMPONENT));
+        assertThat(CoreUtil.getContainerType(emptyComponentId, wfm).orElseThrow())
+            .isEqualTo(CoreUtil.ContainerType.COMPONENT);
 
-        assertFalse(CoreUtil.getContainerType(someNativeNode, wfm).isPresent());
+        assertThat(CoreUtil.getContainerType(someNativeNode, wfm)).isPresent();
 
         CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
     }
@@ -109,9 +107,9 @@ public class CoreUtilTest {
         var emptyComponentId = wfm.getID().createChild(3);
         var someNativeNode = wfm.getID().createChild(4);
 
-        assertTrue(CoreUtil.getContainedWfm(emptyMetanodeId, wfm).isPresent());
-        assertTrue(CoreUtil.getContainedWfm(emptyComponentId, wfm).isPresent());
-        assertFalse(CoreUtil.getContainedWfm(someNativeNode, wfm).isPresent());
+        assertThat(CoreUtil.getContainedWfm(emptyMetanodeId, wfm)).isPresent();
+        assertThat(CoreUtil.getContainedWfm(emptyComponentId, wfm)).isPresent();
+        assertThat(CoreUtil.getContainedWfm(someNativeNode, wfm)).isPresent();
 
         CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
     }

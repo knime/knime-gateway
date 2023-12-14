@@ -1,5 +1,6 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
  *  Website: http://www.knime.com; Email: contact@knime.com
  *
@@ -30,7 +31,7 @@
  *
  *  Additional permission relating to nodes for KNIME that extend the Node
  *  Extension (and in particular that are based on subclasses of NodeModel,
- *  NodeDialog, and NodeView) and that only interoperate with KNIME through
+ *  NodeDialog, and NodeDialog) and that only interoperate with KNIME through
  *  standard APIs ("Nodes"):
  *  Nodes are deemed to be separate and independent programs and to not be
  *  covered works.  Notwithstanding anything to the contrary in the
@@ -42,64 +43,54 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   Oct 15, 2021 (hornm): created
  */
 package org.knime.gateway.api.entity;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.util.CheckUtils;
+import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.PageResourceManager.PageType;
+import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.view.NodeViewManager;
 
 /**
- * Tests {@link NodeIDEnt}.
+ * Node dialog entity containing the info required by the UI (i.e. frontend) to be able to display a node dialog.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
-public class NodeIDEntTest {
+public class NodeDialogEnt extends UIExtensionEnt<NodeWrapper> {
 
-    @Test
-    public void testAppendNodeID() {
-        assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
-        assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
-    }
+    private final boolean m_hasNodeView;
 
-    @Test
-    public void testToAndFromNodeID() {
-        //to
-        NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
+    private final boolean m_isWriteProtected;
 
-        //from
-        assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
-        assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
+    /**
+     * @param nc
+     */
+    public NodeDialogEnt(final SingleNodeContainer nc) {
+        super(NodeWrapper.of(nc), NodeDialogManager.getInstance().getPageResourceManager(),
+            NodeDialogManager.getInstance().getDataServiceManager(), PageType.DIALOG);
+        CheckUtils.checkArgument(NodeDialogManager.hasNodeDialog(nc), "The provided node doesn't have a node dialog");
+        NodeViewManager.getInstance();
+        m_hasNodeView = NodeViewManager.hasNodeView(nc);
+        m_isWriteProtected = nc.getParent().isWriteProtected();
     }
 
     /**
-     * Tests 'toString' and create from string via constructor.
+     * @return {@code true} if the node this dialog belongs to also has a node view, otherwise {@code false}
      */
-    @Test
-    public void testToAndFromString() {
-        //to
-        String s = new NodeIDEnt(3, 4, 1).toString();
-        assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
-
-        //from
-        assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
-        assertThat(new NodeIDEnt("root")).isEqualTo(NodeIDEnt.getRootID());
+    public boolean getHasNodeView() { // NOSONAR won't be serialized otherwise
+        return m_hasNodeView;
     }
 
-    @Test
-    public void testIsEqualOrParentOf() {
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();
-        assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isFalse();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root:1:2:4"))).isTrue();
-        assertThat(new NodeIDEnt("root").isEqualOrParentOf(new NodeIDEnt("root"))).isTrue();
+    /**
+     * @return {@code true} if the dialog settings can't be saved (e.g. meaning that the OK-button is disabled);
+     *         otherwise {@code false}
+     */
+    public boolean isWriteProtected() {
+        return m_isWriteProtected;
     }
 
 }
