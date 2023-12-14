@@ -85,8 +85,7 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
      * @param customJsonRpcServices
      */
     public DefaultJsonRpcRequestHandler(final GatewayService... customJsonRpcServices) {
-        super(ObjectMapperUtil.getInstance().getObjectMapper(),
-            combine(wrapWithJsonRpcServices(getDefaultServiceImpls()), customJsonRpcServices),
+        super(ObjectMapperUtil.getInstance().getObjectMapper(), appendToDefaultServices(customJsonRpcServices),
             new DefaultExceptionToJsonRpcErrorTranslator());
     }
 
@@ -99,13 +98,16 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
             new DefaultExceptionToJsonRpcErrorTranslator());
     }
 
-    private static Map<String, GatewayService> combine(final Map<String, GatewayService> defaultServices,
-        final GatewayService... customJsonRpcServices) {
-        var res = new HashMap<String, GatewayService>(defaultServices);
+    /**
+     * TODO: Do we need to wrap the appended services with JSON RPC services as well?
+     */
+    private static Map<String, GatewayService> appendToDefaultServices(final GatewayService... customJsonRpcServices) {
+        final var defaultServices = wrapWithJsonRpcServices(getDefaultServiceImpls());
+        final var map = new HashMap<String, GatewayService>(defaultServices);
         for (var service : customJsonRpcServices) {
-            res.put(service.getClass().getName(), service);
+            map.put(service.getClass().getName(), service);
         }
-        return res;
+        return map;
     }
 
     private static Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> getDefaultServiceImpls() {
