@@ -101,6 +101,8 @@ import org.knime.gateway.impl.webui.spaces.Space;
  */
 public final class LocalWorkspace implements Space {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalWorkspace.class);
+
     /**
      * ID of the local workspace.
      */
@@ -328,7 +330,13 @@ public final class LocalWorkspace implements Space {
             case AUTORENAME -> parentPath.resolve(uniqueName.get());
             case OVERWRITE -> {
                 var destination = parentPath.resolve(fileName);
-                deleteItems(List.of(getItemId(destination)));
+                try {
+                    deleteItems(List.of(getItemId(destination)));
+                } catch (Exception ex) {
+                    LOGGER.error(ex);
+                    throw new IOException(
+                        "Check that the file is not currently in use in your local file system and try again.", ex);
+                }
                 yield destination;
             }
         };
