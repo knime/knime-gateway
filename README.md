@@ -1,3 +1,12 @@
+# KNIME® Gateway
+
+[![Jenkins](https://jenkins.knime.com/buildStatus/icon?job=knime-gateway%2Fmaster)](https://jenkins.knime.com/job/knime-gateway/job/master/)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=KNIME_knime-gateway&metric=alert_status&token=55129ac721eacd76417f57921368ed587ad8339d)](https://sonarcloud.io/summary/new_code?id=KNIME_knime-gateway)
+
+This repository is maintained by the [KNIME UI Development Team](mailto:team-ap-next@knime.com).
+
+It's the gateway between the KNIME UI and the KNIME Core.
+
 # KNIME Gateway API definition and related projects
 
 **IMPORTANT NOTE: though it's called API none of the interfaces or classes of these projects are meant to be public API. They can change any time.**
