@@ -93,17 +93,21 @@ import org.knime.testing.util.WorkflowManagerUtil;
 public class DefaultNodeServiceTest {
 
     private WorkflowManager m_wfm;
+    private String m_projectId;
 
     @SuppressWarnings("javadoc")
     @Before
     public void createEmptyWorkflow() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var project = DefaultProject.builder(m_wfm).build();
+        m_projectId = project.getID();
+        ProjectManager.getInstance().addProject(project);
     }
 
     @SuppressWarnings("javadoc")
     @After
     public void tearDownWorkflow() {
-        WorkflowManagerUtil.disposeWorkflow(m_wfm);
+        ProjectManager.getInstance().removeProject(m_projectId, WorkflowManagerUtil::disposeWorkflow);
     }
 
     @SuppressWarnings("javadoc")
@@ -123,20 +127,17 @@ public class DefaultNodeServiceTest {
     public void testDeactivateNodeDataServicesForNodeView() throws Exception {
         var deactivateRunnablesCalled = new boolean[2];
         var nc = createNodeWithView(m_wfm, deactivateRunnablesCalled);
-        var project = DefaultProject.builder(m_wfm).build();
-        var projectId = project.getID();
         var nodeIdEnt = new NodeIDEnt(nc.getID());
-        ProjectManager.getInstance().addProject(project);
         m_wfm.executeAllAndWaitUntilDone();
 
         var nodeService = DefaultNodeService.getInstance();
 
         // 'use' the node view
-        nodeService.getNodeView(projectId, NodeIDEnt.getRootID(), nodeIdEnt);
-        nodeService.callNodeDataService(projectId, NodeIDEnt.getRootID(), nodeIdEnt, "view", "data", "foo");
+        nodeService.getNodeView(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt);
+        nodeService.callNodeDataService(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "view", "data", "foo");
 
         // the actual check
-        nodeService.deactivateNodeDataServices(projectId, NodeIDEnt.getRootID(), nodeIdEnt, "view");
+        nodeService.deactivateNodeDataServices(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "view");
         assertThat(deactivateRunnablesCalled, is(new boolean[]{true, true}));
     }
 
@@ -191,23 +192,19 @@ public class DefaultNodeServiceTest {
      */
     @Test
     public void testDeactivateNodeDataServicesForNodeDialog() throws Exception {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var deactivateRunnableCalled = new AtomicBoolean();
 
-        var nc = createNodeWithDialog(wfm, deactivateRunnableCalled);
-        var project = DefaultProject.builder(wfm).build();
-        var projectId = project.getID();
+        var nc = createNodeWithDialog(m_wfm, deactivateRunnableCalled);
         var nodeIdEnt = new NodeIDEnt(nc.getID());
-        ProjectManager.getInstance().addProject(project);
 
         var nodeService = DefaultNodeService.getInstance();
 
         // 'use' the node view
-        nodeService.getNodeDialog(projectId, NodeIDEnt.getRootID(), nodeIdEnt);
-        nodeService.callNodeDataService(projectId, NodeIDEnt.getRootID(), nodeIdEnt, "dialog", "data", "foo");
+        nodeService.getNodeDialog(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt);
+        nodeService.callNodeDataService(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "dialog", "data", "foo");
 
         // the actual check
-        nodeService.deactivateNodeDataServices(projectId, NodeIDEnt.getRootID(), nodeIdEnt, "dialog");
+        nodeService.deactivateNodeDataServices(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "dialog");
         assertThat(deactivateRunnableCalled.get(), is(true));
     }
 

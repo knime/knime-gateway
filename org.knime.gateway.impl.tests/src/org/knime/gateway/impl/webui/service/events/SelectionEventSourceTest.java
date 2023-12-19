@@ -54,6 +54,7 @@ import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -100,13 +101,16 @@ import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeViewEnt;
-import org.knime.gateway.impl.webui.entity.UIExtensionEntFactory;
+import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.testing.node.SourceNodeTestFactory;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
 import org.knime.testing.util.WorkflowManagerUtil;
 import org.mockito.Mockito;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests {@link SelectionEventSource}.
@@ -125,6 +129,8 @@ public class SelectionEventSourceTest {
 
     private static final List<String> ROWKEYS_1_2 = List.of("Row01", "Row02");
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     private WorkflowManager m_wfm;
 
     private NativeNodeContainer m_nnc;
@@ -136,7 +142,7 @@ public class SelectionEventSourceTest {
 
             @Override
             public Page getPage() {
-                return Page.builder(() -> "foo", "bar").build();
+                return Page.builder(() -> "foo", "bar.html").build();
             }
 
             @Override
@@ -176,7 +182,9 @@ public class SelectionEventSourceTest {
     public void setup() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
         m_nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(1, 0, viewCreator));
+        SourceNodeTestFactory.connectSourceNodeToInputPort(m_wfm, m_nnc, 0);
         m_hlh = m_nnc.getNodeModel().getInHiLiteHandler(0);
+        m_wfm.executeAllAndWaitUntilDone();
     }
 
     @After
@@ -259,7 +267,7 @@ public class SelectionEventSourceTest {
         SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REMOVE, true, rowKeys);
         SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REPLACE, true, rowKeys);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> assertThat(hiLiteListener.m_callerThreadName, is(not(null))));
+            .untilAsserted(() -> assertThat(hiLiteListener.m_callerThreadName, is(not(nullValue()))));
         assertThat(hiLiteListener.m_callerThreadName, is(not("INVALID")));
         assertThat(hiLiteListener.m_callerThreadName, is(not(Thread.currentThread().getName())));
         hiLiteListener.m_callerThreadName = null;
@@ -498,7 +506,7 @@ public class SelectionEventSourceTest {
 
         /* assert that the selection event source is properly set up */
         var eventSource =
-            UIExtensionEntFactory.createNodeViewEntAndEventSources(nnc, eventConsumer, false).getSecond()[0];
+            UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, eventConsumer, false).getSecond()[0];
         fireHiLiteEvent(hlh, "test");
         verify(eventConsumer).accept(eq("SelectionEvent"),
             argThat(se -> verifySelectionEvent((SelectionEvent)se, "test")));
@@ -514,7 +522,7 @@ public class SelectionEventSourceTest {
         /* test the selection event source in combination with the node view state event source */
         // test selection events
         wfm.executeAllAndWaitUntilDone();
-        UIExtensionEntFactory.createNodeViewEntAndEventSources(nnc, eventConsumer, true);
+        UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, eventConsumer, true);
         fireHiLiteEvent(hlh, "test3");
         verify(eventConsumer).accept(eq("SelectionEvent"),
             argThat(se -> verifySelectionEvent((SelectionEvent)se, "test3")));
@@ -545,7 +553,18 @@ public class SelectionEventSourceTest {
     private static boolean verifyNodeViewStateEvent(final NodeViewStateEvent e, final String state,
         final String initialData) {
         return e.getNodeView().getNodeInfo().getNodeState().equals(state)
-            && Objects.equals(e.getNodeView().getInitialData(), initialData);
+            && Objects.equals(getInitialDataResult(e.getNodeView().getInitialData()), initialData);
+    }
+
+    private static String getInitialDataResult(final String initialData) {
+        if (initialData == null) {
+            return null;
+        }
+        try {
+            return MAPPER.readTree(initialData).get("result").asText();
+        } catch (JsonProcessingException ex) {
+            throw new AssertionError(ex);
+        }
     }
 
     private static void fireHiLiteEvent(final HiLiteHandler hlh, final String rowKey) {

@@ -63,7 +63,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
 /**
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public class CoreUtilTest {
+class CoreUtilTest {
 
     private static final String BASE_PATH = "/files/testflows/";
 
@@ -79,7 +79,7 @@ public class CoreUtilTest {
      * @throws Exception
      */
     @Test
-    public void testGetContainerType() throws Exception {
+    void testGetContainerType() throws Exception {
         var wfm = getWorkflowManager(CONTAINER_NODES_WF);
         var emptyMetanodeId = wfm.getID().createChild(2);
         var emptyComponentId = wfm.getID().createChild(3);
@@ -91,7 +91,7 @@ public class CoreUtilTest {
         assertThat(CoreUtil.getContainerType(emptyComponentId, wfm).orElseThrow())
             .isEqualTo(CoreUtil.ContainerType.COMPONENT);
 
-        assertThat(CoreUtil.getContainerType(someNativeNode, wfm)).isPresent();
+        assertThat(CoreUtil.getContainerType(someNativeNode, wfm)).isEmpty();
 
         CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
     }
@@ -101,7 +101,7 @@ public class CoreUtilTest {
      * @throws Exception
      */
     @Test
-    public void testGetContainedWfm() throws Exception {
+    void testGetContainedWfm() throws Exception {
         var wfm = getWorkflowManager(CONTAINER_NODES_WF);
         var emptyMetanodeId = wfm.getID().createChild(2);
         var emptyComponentId = wfm.getID().createChild(3);
@@ -109,7 +109,7 @@ public class CoreUtilTest {
 
         assertThat(CoreUtil.getContainedWfm(emptyMetanodeId, wfm)).isPresent();
         assertThat(CoreUtil.getContainedWfm(emptyComponentId, wfm)).isPresent();
-        assertThat(CoreUtil.getContainedWfm(someNativeNode, wfm)).isPresent();
+        assertThat(CoreUtil.getContainedWfm(someNativeNode, wfm)).isEmpty();
 
         CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
     }

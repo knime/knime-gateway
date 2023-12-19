@@ -109,6 +109,8 @@ import org.knime.testing.node.view.NodeViewNodeModel;
 import org.knime.testing.node.view.NodeViewTestUtil;
 import org.knime.testing.util.WorkflowManagerUtil;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Tests {@link NodeViewEnt}.
  *
@@ -204,7 +206,7 @@ class NodeViewEntTest {
 
         // a node view as a 'component' without initial data
         nodeViewCreator = m -> {
-            Page p = Page.builder("org.knime.core.ui.tests", "files", "component.umd.js").build();
+            Page p = Page.builder("org.knime.gateway.api.tests", "files", "component.umd.js").build();
             return NodeViewTestUtil.createNodeView(p);
         };
         nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
@@ -364,8 +366,9 @@ class NodeViewEntTest {
     private static void checkViewSettings(final NodeViewEnt ent, final String expectedSettingValue)
         throws IOException, InvalidSettingsException {
         var settingsWithOverwrittenFlowVariable = new NodeSettings("");
-        // TODO parse result
-        JSONConfig.readJSON(settingsWithOverwrittenFlowVariable, new StringReader(ent.getInitialData()));
+        var mapper = new ObjectMapper();
+        var result = mapper.readTree(ent.getInitialData()).get("result").toString();
+        JSONConfig.readJSON(settingsWithOverwrittenFlowVariable, new StringReader(result));
         assertThat(settingsWithOverwrittenFlowVariable.getString("view setting key")).isEqualTo(expectedSettingValue);
     }
 
