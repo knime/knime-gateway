@@ -105,7 +105,7 @@ public class DefaultJsonRpcRequestHandler extends JsonRpcRequestHandler {
         final var defaultServices = wrapWithJsonRpcServices(getDefaultServiceImpls());
         final var map = new HashMap<String, GatewayService>(defaultServices);
         for (var service : customJsonRpcServices) {
-            map.put(service.getClass().getName(), service);
+            map.put(service.getClass().getSimpleName(), service);
         }
         return map;
     }
