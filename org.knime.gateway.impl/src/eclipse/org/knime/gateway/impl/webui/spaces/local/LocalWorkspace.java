@@ -487,8 +487,7 @@ public final class LocalWorkspace implements Space {
                 && !WorkflowPersistor.METAINFO_FILE.equals(filename) //
                 && !filename.equals(".metadata");
         } catch (IOException ex) {
-            NodeLogger.getLogger(WorkflowEntityFactory.class)
-                .warnWithFormat("Failed to evaluate 'isHidden' on path %s. Path ignored.", ex);
+            LOGGER.warnWithFormat("Failed to evaluate 'isHidden' on path %s. Path ignored.", ex);
             return false;
         }
     }
