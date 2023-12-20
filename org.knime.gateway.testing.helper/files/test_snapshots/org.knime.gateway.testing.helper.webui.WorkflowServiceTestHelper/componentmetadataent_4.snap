@@ -12,12 +12,6 @@
     "typeName" : "Table"
   } ],
   "name" : "Component",
-  "options" : [ {
-    "fields" : [ {
-      "description" : "... and its description",
-      "name" : "A config option"
-    } ]
-  } ],
   "outPorts" : [ {
     "description" : "test port desc 2",
     "name" : "test port name 2",
@@ -25,10 +19,5 @@
     "typeId" : "org.knime.core.node.BufferedDataTable",
     "typeName" : "Table"
   } ],
-  "type" : "Manipulator",
-  "views" : [ {
-    "name" : "Line Plot"
-  }, {
-    "name" : "JavaScript Table View"
-  } ]
+  "type" : "Manipulator"
 }

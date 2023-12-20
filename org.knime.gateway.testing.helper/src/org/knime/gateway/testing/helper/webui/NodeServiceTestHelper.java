@@ -337,7 +337,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testNodeDescriptionSnapshot("org.knime.base.node.io.tablecreator.TableCreator2NodeFactory");
 
         // optional input port
-        testNodeDescriptionSnapshot("org.knime.js.base.node.configuration.input.slider.IntegerSliderDialogNodeFactory");
+        testNodeDescriptionSnapshot("org.knime.base.node.mine.decisiontree2.image.DecTreeToImageNodeFactory");
 
         // example for dynamic port groups: "Concatenate"
         testNodeDescriptionSnapshot("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory");
@@ -349,11 +349,6 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // note that "correct" behaviour is that a single dialog option is produced
         // see also org.knime.distance.util.DistanceMeasureDescriptionFactory, works similarly.
         testNodeDescriptionSnapshot("org.knime.base.node.preproc.pmml.missingval.compute.MissingValueHandlerNodeFactory");
-
-        // dynamic JS node -- have their own schema
-        testNodeDescriptionSnapshot("org.knime.dynamic.js.v30.DynamicJSNodeFactory",
-                "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:barChart\"}}}",
-                "barChart");
     }
 
     private void testNodeDescriptionSnapshot(final String classname) throws NodeNotFoundException, NodeDescriptionNotAvailableException {
@@ -377,16 +372,11 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetNodeDialog() throws Exception {
-        // needs to be set for {@link SubNodeContainerDialogFactory} to return the JS based node dialog
-        var key = "org.knime.component.ui.mode";
-        var componentUiMode = System.setProperty(key, "js");
-
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
 
         var workflow = ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow();
         assertThat(((NativeNodeEnt)workflow.getNodes().get("root:1")).hasDialog(), is(Boolean.TRUE));
         assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).hasDialog(), is(nullValue()));
-        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:17")).hasDialog(), is(Boolean.TRUE));
 
         // dialog of a native node
         var dialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(1));
@@ -402,29 +392,13 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
 
         var message = assertThrows(InvalidRequestException.class,
-            () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
+            () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(2))).getMessage();
         assertThat(message, containsString("doesn't have a dialog"));
 
         // request dialog of a component without any configuration nodes
         message = assertThrows(InvalidRequestException.class,
             () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(14))).getMessage();
         assertThat(message, containsString("doesn't have a dialog"));
-
-        // request dialog of a component with a configuration node
-        var componentDialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(17));
-        nodeDialogJsonNode =
-            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(componentDialogEnt, JsonNode.class);
-        assertThat(nodeDialogJsonNode.get("extensionType").textValue(), is("dialog"));
-        assertThat(nodeDialogJsonNode.get("initialData").textValue(), notNullValue());
-        resourceInfo = nodeDialogJsonNode.get("resourceInfo");
-        assertThat(resourceInfo.get("id").textValue(), is("defaultdialog"));
-        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
-
-        if (componentUiMode == null) {
-            System.clearProperty(key);
-        } else {
-            System.setProperty(key, componentUiMode);
-        }
     }
 
     /**
@@ -458,7 +432,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(resourceInfo.get("type").textValue(), is("HTML"));
 
         message = assertThrows(InvalidRequestException.class,
-            () -> ns().getNodeView(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
+            () -> ns().getNodeView(projectId, getRootID(), new NodeIDEnt(12))).getMessage();
         assertThat(message, containsString("doesn't have a view"));
     }
 

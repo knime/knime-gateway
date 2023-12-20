@@ -16,9 +16,6 @@
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable",
       "typeName" : "Table"
-    } ],
-    "views" : [ {
-      "name" : "JavaScript Table View"
     } ]
   },
   "connections" : {
@@ -33,7 +30,7 @@
       "destNode" : "root:23:0:9",
       "destPort" : 1,
       "id" : "root:23:0:9_1",
-      "sourceNode" : "root:23:0:10",
+      "sourceNode" : "root:23:0:8",
       "sourcePort" : 1
     }
   },
@@ -45,6 +42,14 @@
     "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
+    "org.knime.base.views.node.tableview.TableViewNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABKSURBVHgB7dGhDQAgDATAhzRhJhCwCOOxCGOhIBUYHH2D4ERFRdNvAZLLKU4QREuvAxalBXiQ6AGyVzHTI55uenQE+o0/whMRWAsXAq5xGUMxaQAAAABJRU5ErkJggg==",
+      "name" : "Table View",
+      "nodeFactory" : {
+        "className" : "org.knime.base.views.node.tableview.TableViewNodeFactory"
+      },
+      "type" : "Visualizer"
+    },
     "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input" : {
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3gMNDwYK7Pl8VwAAAN1JREFUOMvVkj0KwkAQhb9ZNQb8gYA5goUnECy9ggew9AiexdJ72FiJnZ1gYZELKBJko5ixMCYK/kRSOc3ug7cz770dUVWKVDkPSZZCs9pERFBVDtEB7Wr+BnWnTr/dxyk5nC4nZpvZZwUi8oRbixZ+zU+xG7kpx3x7/JJlXmQgIwEPGCQED3Ry89lYNQj2ARVT4RyfsY7lHn5mwQOGQBWIgGk2JTyGzLdzDIaYGGttpiCVPAY6j8llV+29/2pDwTKqmvphDWyTM/x1kXaJbwPECc6zZEVXuXgG/9/gCm3SQpkbJEazAAAAAElFTkSuQmCC",
       "name" : "Component Input",
@@ -62,18 +67,12 @@
         "settings" : "PLACEHOLDER_FOR_FACTORY_SETTINGS"
       },
       "type" : "VirtualOut"
-    },
-    "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory" : {
-      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPklEQVQ4je2RMQoAIBRCX13Mo3s024I//4agBBdBER1AaGB2zBcFJNm0jaSiJUEStot2rkEHgxM3/g2e32ABBL1vm0aW6zoAAAAASUVORK5CYII=",
-      "name" : "Table View (JavaScript)",
-      "nodeFactory" : {
-        "className" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
-      },
-      "type" : "Visualizer"
     }
   },
   "nodes" : {
     "root:23:0:10" : {
+      "hasDialog" : true,
+      "hasView" : true,
       "id" : "root:23:0:10",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -84,31 +83,25 @@
       }, {
         "connectedVia" : "[ root:23:0:10_1 ]",
         "index" : 1,
-        "name" : "Input to display",
+        "name" : "Input Table",
         "optional" : false,
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
-      "isReexecutable" : false,
       "kind" : "node",
       "outPorts" : [ {
         "connectedVia" : "[  ]",
         "index" : 0,
         "name" : "Variable Outport",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
-      }, {
-        "connectedVia" : "[ root:23:0:9_1 ]",
-        "index" : 1,
-        "name" : "Input data and view selection",
-        "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
       "position" : {
         "x" : 150,
-        "y" : 126
+        "y" : 55
       },
       "state" : {
         "executionState" : "IDLE"
       },
-      "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
+      "templateId" : "org.knime.base.views.node.tableview.TableViewNodeFactory"
     },
     "root:23:0:8" : {
       "id" : "root:23:0:8",
@@ -126,7 +119,7 @@
         "name" : "Variable Outport",
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       }, {
-        "connectedVia" : "[ root:23:0:10_1 ]",
+        "connectedVia" : "[ root:23:0:10_1, root:23:0:9_1 ]",
         "index" : 1,
         "name" : "Delegated Component Input 0",
         "typeId" : "org.knime.core.node.BufferedDataTable"
