@@ -19,12 +19,6 @@
     "url" : "https://www.alteryx.com/"
   } ],
   "name" : "Full Component",
-  "options" : [ {
-    "fields" : [ {
-      "description" : "... and its description",
-      "name" : "A config option"
-    } ]
-  } ],
   "outPorts" : [ {
     "description" : "test port desc 2",
     "name" : "test port name 2",
@@ -33,10 +27,5 @@
     "typeName" : "Table"
   } ],
   "tags" : [ "tag1", "tag2" ],
-  "type" : "Manipulator",
-  "views" : [ {
-    "name" : "Line Plot"
-  }, {
-    "name" : "JavaScript Table View"
-  } ]
+  "type" : "Manipulator"
 }

@@ -428,11 +428,11 @@
       },
       "type" : "Visualizer"
     },
-    "org.knime.base.node.viz.table.TableNodeFactory" : {
-      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTdERkZENzY4REYzMTFFNTg5RTI4N0E0OTUxQ0FFOEIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NEUxRUM2NjQ4REYzMTFFNTg5RTI4N0E0OTUxQ0FFOEIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxODk4MzkyNDM3OTkxMUU1QUEwNEEzNDQxMEQ0QjlGNiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxODk4MzkyNTM3OTkxMUU1QUEwNEEzNDQxMEQ0QjlGNiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PmHY10EAAABRSURBVHjaYmBABSwsLHi4QMAIxB8nWzMQB/hzjzIxkAhI14DpSjyAJMVInv7//z+Cz8iIn0t7DQysrKz/kQAbGxseLlDxcPA06aFEavIGCDAAnLhmdX9SqhAAAAAASUVORK5CYII=",
-      "name" : "Interactive Table (legacy)",
+    "org.knime.base.views.node.tableview.TableViewNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABKSURBVHgB7dGhDQAgDATAhzRhJhCwCOOxCGOhIBUYHH2D4ERFRdNvAZLLKU4QREuvAxalBXiQ6AGyVzHTI55uenQE+o0/whMRWAsXAq5xGUMxaQAAAABJRU5ErkJggg==",
+      "name" : "Table View",
       "nodeFactory" : {
-        "className" : "org.knime.base.node.viz.table.TableNodeFactory"
+        "className" : "org.knime.base.views.node.tableview.TableViewNodeFactory"
       },
       "type" : "Visualizer"
     },
@@ -1562,7 +1562,7 @@
         "styleRanges" : [ ],
         "text" : {
           "contentType" : "text/plain",
-          "value" : "with JS view inside\n(i.e. with composite view)"
+          "value" : "with view inside\n(i.e. with composite view)"
         },
         "textAlign" : "center"
       },
@@ -1831,9 +1831,12 @@
         "canDelete" : true,
         "canExecute" : true,
         "canOpenDialog" : true,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canOpenView" : false,
         "canReset" : false
       },
+      "hasDialog" : true,
+      "hasView" : true,
       "id" : "root:4",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1846,7 +1849,7 @@
         "canRemove" : false,
         "connectedVia" : "[ root:4_1 ]",
         "index" : 1,
-        "name" : "Input to display",
+        "name" : "Input Table",
         "optional" : false,
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
@@ -1866,7 +1869,7 @@
       "state" : {
         "executionState" : "CONFIGURED"
       },
-      "templateId" : "org.knime.base.node.viz.table.TableNodeFactory"
+      "templateId" : "org.knime.base.views.node.tableview.TableViewNodeFactory"
     },
     "root:5" : {
       "allowedActions" : {

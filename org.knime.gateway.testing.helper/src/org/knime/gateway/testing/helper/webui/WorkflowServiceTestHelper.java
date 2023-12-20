@@ -991,11 +991,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // add a connection within a sub-workflow (e.g. within a component)
         var component23Id = new NodeIDEnt(23);
         var deleteCommand =
-            createDeleteCommandEnt(emptyList(), List.of(new ConnectionIDEnt(new NodeIDEnt(23, 0, 9), 1)), emptyList());
+            createDeleteCommandEnt(emptyList(), List.of(new ConnectionIDEnt(new NodeIDEnt(23, 0, 10), 1)), emptyList());
         ws().executeWorkflowCommand(wfId, component23Id, deleteCommand);
         var component23ConnectionRemoved = ws().getWorkflow(wfId, component23Id, false);
         assertThat(component23ConnectionRemoved.getWorkflow().getConnections().size(), is(1));
-        var command4 = buildConnectCommandEnt(new NodeIDEnt(23, 0, 10), 1, new NodeIDEnt(23, 0, 9), 1);
+        var command4 = buildConnectCommandEnt(new NodeIDEnt(23, 0, 8), 1, new NodeIDEnt(23, 0, 10), 1);
         ws().executeWorkflowCommand(wfId, component23Id, command4);
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             var component23ConnectionAdded = ws().getWorkflow(wfId, component23Id, false);
@@ -1056,12 +1056,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 is(2)));
 
         // add a dynamic node (i.e. with factory settings)
-        var jsNodeFactory = "org.knime.dynamic.js.v30.DynamicJSNodeFactory";
+        var jsNodeFactory = "org.knime.ext.weka37.classifier.WekaClassifierNodeFactory";
         var factorySettings =
-            "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
+            "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}";
         result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16, null, null));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + "#Box Plot (JavaScript)",
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + "#J48 (3.7)",
             15, 16, result);
 
         // add a node that doesn't exists
@@ -1993,7 +1993,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
         var nodes = workflow.getNodes();
         var targetNode = nodes.get("root:2").getPosition();
-        var connections = workflow.getConnections();
         // execute command
         ws().executeWorkflowCommand(wfId, getRootID(), command);
 
@@ -2001,7 +2000,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var replacementNodePos = workflow.getNodes().get("root:23").getPosition();
         assertThat("Move Metanode to the x location of target node", replacementNodePos.getX(), is(targetNode.getX()));
         assertThat("Move Metanode to the y location of target node", replacementNodePos.getY(), is(targetNode.getY()));
-        connections = workflow.getConnections();
+        var connections = workflow.getConnections();
         assertThat("Metanode is reconnected", connections.get("root:23_1").getSourceNode().toString(), is("root:1"));
         assertThat("Metanode is reconnected", connections.get("root:6_0").getSourceNode().toString(), is("root:23"));
         assertThat("Metanode is reconnected", connections.get("root:11_1").getSourceNode().toString(), is("root:23"));
