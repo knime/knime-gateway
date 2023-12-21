@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToNodeID;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -90,7 +88,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        var targetNodeId = entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getTargetNodeId());
+        var targetNodeId = m_commandEnt.getTargetNodeId().toNodeID(wfm);
 
         if (!wfm.canRemoveNode(targetNodeId)) {
             throw new OperationNotAllowedException(
@@ -106,7 +104,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
                 m_result = replaceNativeNodeWithNewNode(targetNodeId, nodeFactoryEnt, wfm);
             } else {
                 var replacementNodeId = replacementNodeEnt == null ? null
-                    : entityToNodeID(getWorkflowKey().getProjectId(), replacementNodeEnt);
+                    : replacementNodeEnt.toNodeID(wfm);
                 m_result = replaceNode(nodeFactoryEnt, replacementNodeId, targetNodeContainer, wfm);
             }
         } else {

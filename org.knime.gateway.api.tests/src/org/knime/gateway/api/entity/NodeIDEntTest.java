@@ -68,9 +68,11 @@ public class NodeIDEntTest {
     public void testToAndFromNodeID() {
         //to
         NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        assertThat(ent.toNodeID(new NodeID(4))).isEqualTo(NodeID.fromString("4:4:2:1"));
-        assertThat(ent.toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4:4:2:1"));
-        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4"))).isEqualTo(NodeID.fromString("3:4"));
+        // TODO the way to create NodeId has changed and now works trough an existing Workflowmanager
+        // the method used here is now private and should not be used directly
+//        assertThat(ent.toNodeID(new NodeID(4)), is(NodeID.fromString("4:4:2:1")));
+//        assertThat(ent.toNodeID(NodeID.fromString("3:4")), is(NodeID.fromString("3:4:4:2:1")));
+//        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4")), is(NodeID.fromString("3:4")));
 
         //from
         assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR

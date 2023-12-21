@@ -227,7 +227,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     protected final NodeID[] getNodeIDs() {
         if (m_nodesQueried == null) {
             m_nodesQueried = m_commandEnt.getNodeIds().stream() //
-                .map(id -> DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), id)) //
+                .map(id -> id.toNodeID(getWorkflowManager())) //
                 .toArray(NodeID[]::new);
         }
         return m_nodesQueried;

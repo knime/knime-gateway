@@ -129,8 +129,9 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var projectId = getWorkflowKey().getProjectId();
+        var wfm = getWorkflowManager();
         var nodeIds = m_commandEnt.getNodeIds().stream()//
-                .map(nodeId -> DefaultServiceUtil.entityToNodeID(projectId, nodeId))//
+                .map(id -> id.toNodeID(wfm))//
                 .toArray(NodeID[]::new);
         var annotationIDs = m_commandEnt.getAnnotationIds().stream()//
                 .map(annotationId -> DefaultServiceUtil.entityToAnnotationID(projectId, annotationId))//
@@ -140,7 +141,7 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
                 .setAnnotationIDs(annotationIDs)//
                 .build();
         // TODO: NXT-1168 Put a limit on the clipboard content size
-        var defClipboardContent = getWorkflowManager().copyToDef(workflowCopyContent, PasswordRedactor.asNull());
+        var defClipboardContent = wfm.copyToDef(workflowCopyContent, PasswordRedactor.asNull());
         var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
         try {
             var systemClipboardContent = SystemClipboardFormat.serialize(defClipboardContent);
