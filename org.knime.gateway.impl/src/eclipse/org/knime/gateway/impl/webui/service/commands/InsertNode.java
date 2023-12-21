@@ -110,7 +110,7 @@ final class InsertNode extends AbstractWorkflowCommand {
         var nodeEnt = m_commandEnt.getNodeId();
         var nodeFactoryEnt = m_commandEnt.getNodeFactory();
         if (nodeEnt != null) { // Move node
-            m_insertedNode = DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), nodeEnt);
+            m_insertedNode = nodeEnt.toNodeID(wfm);
             WorkflowCopyContent content = WorkflowCopyContent.builder().setNodeIDs(m_insertedNode).build();
             m_copy = wfm.copy(true, content);
 

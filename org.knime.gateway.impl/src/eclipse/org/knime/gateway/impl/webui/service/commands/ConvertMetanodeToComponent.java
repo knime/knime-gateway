@@ -54,7 +54,6 @@ import java.util.function.Supplier;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.action.MetaNodeToSubNodeResult;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
@@ -80,9 +79,10 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
     @Override
     protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
         try {
-            var nodeID = m_nodeToConvert.get().toNodeID(CoreUtil.getProjectWorkflowNodeID(getWorkflowManager()));
-            m_metaNodeToSubNodeResult = getWorkflowManager().convertMetaNodeToSubNode(nodeID);
-            var snc = getWorkflowManager().getNodeContainer(m_metaNodeToSubNodeResult.getConvertedNodeID(),
+            var wfm = getWorkflowManager();
+            var nodeID = m_nodeToConvert.get().toNodeID(wfm);
+            m_metaNodeToSubNodeResult = wfm.convertMetaNodeToSubNode(nodeID);
+            var snc = wfm.getNodeContainer(m_metaNodeToSubNodeResult.getConvertedNodeID(),
                 SubNodeContainer.class, true);
             if (snc.getName().equals(CollapseToMetanode.DEFAULT_METANODE_NAME)) {
                 snc.setName(ConvertMetanodeToComponent.DEFAULT_COMPONENT_NAME);

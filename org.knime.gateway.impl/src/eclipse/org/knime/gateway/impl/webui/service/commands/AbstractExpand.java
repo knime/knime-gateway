@@ -66,7 +66,6 @@ import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 
 /**
@@ -89,7 +88,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     @Override
     protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        var nodeToExpand = DefaultServiceUtil.entityToNodeID(getWorkflowKey().getProjectId(), m_commandEnt.getNodeId());
+        var nodeToExpand = m_commandEnt.getNodeId().toNodeID(wfm);
         if (wfm.canResetNode(nodeToExpand)) {
             wfm.resetAndConfigureNode(nodeToExpand);
         }
@@ -142,7 +141,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
         try {
             var wfm = getWorkflowManager();
             checkCanExpandOrThrow(getWorkflowManager(),
-                m_commandEnt.getNodeId().toNodeID(CoreUtil.getProjectWorkflowNodeID(wfm)));
+                m_commandEnt.getNodeId().toNodeID(wfm));
             return true;
         } catch (OperationNotAllowedException e) { // NOSONAR
             return false;

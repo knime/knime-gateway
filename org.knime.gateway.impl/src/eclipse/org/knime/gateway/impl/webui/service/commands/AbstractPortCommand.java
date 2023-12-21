@@ -88,7 +88,7 @@ abstract class AbstractPortCommand<T extends PortCommandEnt> extends AbstractWor
      */
     EditPorts instantiatePortEditor() {
         var wfm = getWorkflowManager();
-        var nodeId = m_portCommandEnt.getNodeId().toNodeID(CoreUtil.getProjectWorkflowNodeID(wfm));
+        var nodeId = m_portCommandEnt.getNodeId().toNodeID(wfm);
         var nodeIsContainer = CoreUtil.getContainerType(nodeId, wfm).isPresent();
         m_editor = nodeIsContainer ? new EditContainerNodePorts(wfm, m_portCommandEnt)
             : new EditNativeNodePorts(wfm, m_portCommandEnt);

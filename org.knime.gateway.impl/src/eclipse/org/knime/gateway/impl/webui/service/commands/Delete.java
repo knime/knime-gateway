@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToNodeID;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -146,7 +144,7 @@ final class Delete extends AbstractWorkflowCommand {
         var wfm = getWorkflowManager();
         String projectId = getWorkflowKey().getProjectId();
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()
-            .map(id -> entityToNodeID(projectId, id)).collect(Collectors.toSet());
+            .map(id -> id.toNodeID(wfm)).collect(Collectors.toSet());
         if (!canRemoveAllNodes(wfm, nodesToDelete)) {
             throw new OperationNotAllowedException(
                 "Some nodes can't be deleted or don't exist. Delete operation aborted.");
@@ -156,7 +154,8 @@ final class Delete extends AbstractWorkflowCommand {
         //   represented by pointing to the node ID of the parent metanode.
         // Filter connections from the command s.t. all connections are guaranteed to exist in this workflow manager.
         m_connectionsDeleted = m_connectionIdsQueried.stream()
-            .map(id -> new ConnectionID(entityToNodeID(projectId, id.getDestNodeIDEnt()), id.getDestPortIdx()))
+            .map(connectionId -> new ConnectionID(connectionId.getDestNodeIDEnt().toNodeID(wfm),
+                connectionId.getDestPortIdx()))
             .filter(id -> wfm.containsNodeContainer(id.getDestinationNode()) || wfm.getID().equals(id.getDestinationNode()))
             .map(wfm::getConnection)
             .collect(Collectors.toCollection(HashSet::new));

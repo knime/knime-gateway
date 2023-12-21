@@ -142,7 +142,7 @@ final class EditContainerNodePorts implements EditPorts {
     }
 
     private NodeID getNodeId() {
-        return m_portCommandEnt.getNodeId().toNodeID(CoreUtil.getProjectWorkflowNodeID(m_wfm));
+        return m_portCommandEnt.getNodeId().toNodeID(m_wfm);
     }
 
     private void executeChanges(final MetaPortInfo[] newPortInfos) {

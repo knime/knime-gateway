@@ -77,9 +77,9 @@ final class Connect extends AbstractWorkflowCommand {
     public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
         var rootID = getProjectWorkflowNodeID(wfm);
-        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(rootID);
+        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm);
         var sourcePortIdx = m_commandEnt.getSourcePortIdx();
-        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(rootID);
+        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(wfm);
         var destPortIdx = m_commandEnt.getDestinationPortIdx();
 
         try {

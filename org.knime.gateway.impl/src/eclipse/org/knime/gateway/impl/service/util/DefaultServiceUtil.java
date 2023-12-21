@@ -92,7 +92,7 @@ public final class DefaultServiceUtil {
         if (nodeID.equals(NodeIDEnt.getRootID())) {
             return wfm;
         } else {
-            return wfm.findNodeContainer(nodeID.toNodeID(wfm.getID()));
+            return wfm.findNodeContainer(nodeID.toNodeID(wfm));
         }
     }
 
@@ -111,7 +111,7 @@ public final class DefaultServiceUtil {
         final NodeIDEnt nodeID) {
         WorkflowManager wfm = getWorkflowManager(rootWorkflowID, workflowID);
         WorkflowManager rootWfm = getRootWorkflowManager(rootWorkflowID);
-        return wfm.getNodeContainer(nodeID.toNodeID(rootWfm.getID()));
+        return wfm.getNodeContainer(nodeID.toNodeID(rootWfm));
     }
 
     /**
@@ -194,7 +194,7 @@ public final class DefaultServiceUtil {
      * @return the {@link NodeID} instance
      */
     public static NodeID entityToNodeID(final String rootWorkflowID, final NodeIDEnt nodeID) {
-        return nodeID.toNodeID(getRootWorkflowManager(rootWorkflowID).getID());
+        return nodeID.toNodeID(getRootWorkflowManager(rootWorkflowID));
     }
 
     /**
@@ -244,12 +244,12 @@ public final class DefaultServiceUtil {
         NodeID[] nodeIDs = null;
         WorkflowManager wfm = getWorkflowManager(projectId, workflowId);
         if (nodeIdEnts != null && nodeIdEnts.length != 0) {
-            NodeID rootID = getRootWorkflowManager(projectId).getID();
+            WorkflowManager rootWfm = getRootWorkflowManager(projectId);
             nodeIDs = new NodeID[nodeIdEnts.length];
-            nodeIDs[0] = nodeIdEnts[0].toNodeID(rootID);
+            nodeIDs[0] = nodeIdEnts[0].toNodeID(rootWfm);
             NodeID prefix = nodeIDs[0].getPrefix();
             for (int i = 1; i < nodeIDs.length; i++) {
-                nodeIDs[i] = nodeIdEnts[i].toNodeID(rootID);
+                nodeIDs[i] = nodeIdEnts[i].toNodeID(rootWfm);
                 if (!nodeIDs[i].hasSamePrefix(prefix)) {
                     throw new IllegalArgumentException("Node ids don't have the same prefix.");
                 }

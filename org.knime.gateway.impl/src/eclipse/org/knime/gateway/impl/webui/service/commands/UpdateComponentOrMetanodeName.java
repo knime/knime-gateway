@@ -51,7 +51,6 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
@@ -87,7 +86,7 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
         var wfm = getWorkflowManager();
-        m_nodeId = m_commandEnt.getNodeId().toNodeID(CoreUtil.getProjectWorkflowNodeID(wfm));
+        m_nodeId = m_commandEnt.getNodeId().toNodeID(wfm);
         var container = wfm.getNodeContainer(m_nodeId);
         var newName = m_commandEnt.getName();
         if (newName.isBlank()) {
