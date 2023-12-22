@@ -46,6 +46,9 @@
 package org.knime.gateway.api.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.knime.gateway.api.tests.GatewayAPITest.CONTAINER_NODES_WF;
+import static org.knime.gateway.api.tests.GatewayAPITest.getWorkflowManager;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NodeID;
@@ -65,14 +68,16 @@ public class NodeIDEntTest {
     }
 
     @Test
-    public void testToAndFromNodeID() {
+    public void testToAndFromNodeID() throws Exception {
         //to
         NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        // TODO the way to create NodeId has changed and now works trough an existing Workflowmanager
-        // the method used here is now private and should not be used directly
-//        assertThat(ent.toNodeID(new NodeID(4)), is(NodeID.fromString("4:4:2:1")));
-//        assertThat(ent.toNodeID(NodeID.fromString("3:4")), is(NodeID.fromString("3:4:4:2:1")));
-//        assertThat(NodeIDEnt.getRootID().toNodeID(NodeID.fromString("3:4")), is(NodeID.fromString("3:4")));
+        var wfm = getWorkflowManager(CONTAINER_NODES_WF);
+        assertThat(NodeIDEnt.getRootID().toNodeID(wfm), is(NodeID.fromString("3")));
+        assertThat(ent.toNodeID(wfm), is(NodeID.fromString("3:4:2:1")));
+
+        var componentWfm = getWorkflowManager(CONTAINER_NODES_WF);
+        assertThat(NodeIDEnt.getRootID().toNodeID(componentWfm), is(NodeID.fromString("4")));
+        assertThat(ent.toNodeID(componentWfm), is(NodeID.fromString("4:4:2:1")));
 
         //from
         assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
