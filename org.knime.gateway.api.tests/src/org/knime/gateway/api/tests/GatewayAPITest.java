@@ -42,62 +42,36 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
  */
-package org.knime.gateway.util;
+package org.knime.gateway.api.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.knime.gateway.api.tests.GatewayAPITest.CONTAINER_NODES_WF;
-import static org.knime.gateway.api.tests.GatewayAPITest.getWorkflowManager;
+import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.LockFailedException;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
- * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ *
+ * @author baqueroj
  */
-class CoreUtilTest {
+public class GatewayAPITest {
 
-    /**
-     * @see CoreUtil#getContainerType(NodeID, WorkflowManager)
-     * @throws Exception
-     */
-    @Test
-    void testGetContainerType() throws Exception {
-        var wfm = getWorkflowManager(CONTAINER_NODES_WF);
-        var emptyMetanodeId = wfm.getID().createChild(2);
-        var emptyComponentId = wfm.getID().createChild(3);
-        var someNativeNode = wfm.getID().createChild(4);
+    private static final String BASE_PATH = "/files/testflows/";
 
-        assertThat(CoreUtil.getContainerType(emptyMetanodeId, wfm).orElseThrow())
-            .isEqualTo(CoreUtil.ContainerType.METANODE);
+    public static final String CONTAINER_NODES_WF = "ContainerNodes";
 
-        assertThat(CoreUtil.getContainerType(emptyComponentId, wfm).orElseThrow())
-            .isEqualTo(CoreUtil.ContainerType.COMPONENT);
+    public static final String EMPTY_COMPONENT = "Empty Component";
 
-        assertThat(CoreUtil.getContainerType(someNativeNode, wfm)).isEmpty();
+    public static final String NODE_DEPENDECY = "enhNXT264_AlternativeDeterminationOfDependentNodeProperties";
 
-        CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-    }
-
-    /**
-     * @see CoreUtil#getContainedWfm(NodeID, WorkflowManager)
-     * @throws Exception
-     */
-    @Test
-    void testGetContainedWfm() throws Exception {
-        var wfm = getWorkflowManager(CONTAINER_NODES_WF);
-        var emptyMetanodeId = wfm.getID().createChild(2);
-        var emptyComponentId = wfm.getID().createChild(3);
-        var someNativeNode = wfm.getID().createChild(4);
-
-        assertThat(CoreUtil.getContainedWfm(emptyMetanodeId, wfm)).isPresent();
-        assertThat(CoreUtil.getContainedWfm(emptyComponentId, wfm)).isPresent();
-        assertThat(CoreUtil.getContainedWfm(someNativeNode, wfm)).isEmpty();
-
-        CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
+    public static WorkflowManager getWorkflowManager(final String fileName) throws IOException, InvalidSettingsException,
+        CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
+        return WorkflowManagerUtil.loadWorkflow(CoreUtil.resolveToFile(BASE_PATH + fileName, GatewayAPITest.class));
     }
 
 }
