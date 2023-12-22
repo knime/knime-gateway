@@ -89,7 +89,6 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.spaces.Space;
 
 /**
@@ -335,7 +334,9 @@ public final class LocalWorkspace implements Space {
                 } catch (Exception ex) {
                     LOGGER.error(ex);
                     throw new IOException(
-                        "Check that the file is not currently in use in your local file system and try again.", ex);
+                        String.format("There was an error overwriting \"%s\". Check that it is not currently open.",
+                            fileName),
+                        ex);
                 }
                 yield destination;
             }
