@@ -46,6 +46,8 @@ package org.knime.gateway.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.knime.gateway.api.tests.GatewayAPITest.NODE_DEPENDECY;
+import static org.knime.gateway.api.tests.GatewayAPITest.getWorkflowManager;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +61,6 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
-import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Tests the correctness of the alternative way to determine node properties
@@ -74,8 +75,7 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 	@SuppressWarnings("javadoc")
     @BeforeEach
     public void loadWorkflow() throws Exception {
-        m_wfm = WorkflowManagerUtil.loadWorkflow(CoreUtil.resolveToFile(
-            "/files/testflows/enhNXT264_AlternativeDeterminationOfDependentNodeProperties", this.getClass()));
+        m_wfm = getWorkflowManager(NODE_DEPENDECY);
     }
 
 	/**
