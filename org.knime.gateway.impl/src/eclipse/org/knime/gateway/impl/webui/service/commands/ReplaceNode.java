@@ -278,13 +278,16 @@ final class ReplaceNode extends AbstractWorkflowCommand {
 
     /**
      * Sets the connection ui info including bendpoints
+     *
      * @param removedConnection the connection container carrying the information
      * @param newConnection the connection container to add the information to
      */
     private static void setConnectionUIInfo(final ConnectionContainer removedConnection,
         final ConnectionContainer newConnection) {
-        ConnectionUIInformation newInfo = ConnectionUIInformation.builder(removedConnection.getUIInfo()).build();
-        newConnection.setUIInfo(newInfo);
+        if (removedConnection.getUIInfo() != null) {
+            ConnectionUIInformation newInfo = ConnectionUIInformation.builder(removedConnection.getUIInfo()).build();
+            newConnection.setUIInfo(newInfo);
+        }
     }
 
     /**
