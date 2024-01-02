@@ -44,76 +44,32 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 14, 2021 (hornm): created
+ *   Jan 02, 2024 (carlwitt): created
  */
 package org.knime.gateway.impl.node.port;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import org.junit.Test;
 import org.knime.core.node.workflow.CredentialsStore;
-import org.knime.core.node.workflow.NodeID;
 
 /**
- * Represents a flow variable to be displayed as port of the flow variable port view.
+ * Tests {@link FlowVariable#create}.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Carl Witt, KNIME AG, Zurich, Switzerland
  */
-public interface FlowVariable {
+public class FlowVariableTest {
 
     /**
-     * @return the flow variable name
+     * AP-21680: Flow variable view should show the login instead of the flow variable name again
      */
-    String getName();
-
-    /**
-     * @return the flow var type
-     */
-    String getType();
-
-    /**
-     * @return the actual value
-     */
-    String getValue();
-
-    /**
-     * @return the id of the node that created the flow variable (can be <code>null</code>)
-     */
-    String getOwnerNodeId();
-
-    /**
-     * Helper to create a flow variable on the fly.
-     *
-     * @param v
-     * @return the new flow variable which retrieves the values from the passed 'core'-flow variable representation on
-     *         demand
-     */
-    static FlowVariable create(final org.knime.core.node.workflow.FlowVariable v) {
-        return new FlowVariable() { // NOSONAR, this is not an excessively big inner class
-
-            @Override
-            public String getValue() {
-                // AP-21680: Flow variable view should show the login instead of the flow variable name again
-                final var optCredentialProperties = CredentialsStore.CredentialsProperties.of(v);
-                if (optCredentialProperties.isPresent()) {
-                    return "Login: " + optCredentialProperties.get().login();
-                }
-                return v.getValueAsString();
-            }
-
-            @Override
-            public String getType() {
-                return v.getVariableType().getClass().getSimpleName();
-            }
-
-            @Override
-            public String getOwnerNodeId() {
-                NodeID owner = v.getOwner();
-                return owner != null && !owner.isRoot() ? owner.toString() : null;
-            }
-
-            @Override
-            public String getName() {
-                return v.getName();
-            }
-        };
+    @Test
+    public void credentialsFlowVariableShowsUserName() {
+        final var credentialsVar =
+            CredentialsStore.newCredentialsFlowVariable("variableName", "usern", "password", "secondFactor");
+        final var gatewayVar = FlowVariable.create(credentialsVar);
+        assertThat(gatewayVar.getName(), is("variableName"));
+        assertThat(gatewayVar.getValue(), is("Login: usern"));
     }
-
 }
