@@ -51,7 +51,6 @@ package org.knime.gateway.impl.node.port;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeOutPort;
@@ -79,8 +78,7 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
         var fos = port.getFlowObjectStack();
         List<FlowVariable> variables;
         if (fos != null) {
-            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create)
-                .collect(Collectors.toList());
+            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create).toList();
         } else {
             variables = Collections.emptyList();
         }
@@ -99,7 +97,8 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
             @Override
             public Page getPage() {
                 return Page.builder(CoreUIPlugin.class, "js-src/dist", "FlowVariableView.umd.js") //
-                    .markAsReusable("flowvariableview")//
+                    .addResourceFile("FlowVariableView.js") //
+                    .markAsReusable("flowvariableview") //
                     .build();
             }
 
