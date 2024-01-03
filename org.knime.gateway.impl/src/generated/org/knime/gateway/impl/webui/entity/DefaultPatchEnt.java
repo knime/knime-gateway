@@ -65,6 +65,9 @@ public record DefaultPatchEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultPatchEnt {
+        if(ops == null) {
+            throw new IllegalArgumentException("<ops> must not be null.");
+        }
     }
 
     @Override
@@ -82,10 +85,13 @@ public record DefaultPatchEnt(
      */
     public static class DefaultPatchEntBuilder implements PatchEntBuilder {
 
-        private java.util.List<PatchOpEnt> m_ops;
+        private java.util.List<PatchOpEnt> m_ops = new java.util.ArrayList<>();
 
         @Override
         public DefaultPatchEntBuilder setOps(java.util.List<PatchOpEnt> ops) {
+             if(ops == null) {
+                 throw new IllegalArgumentException("<ops> must not be null.");
+             }
              m_ops = ops;
              return this;
         }

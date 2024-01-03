@@ -78,7 +78,7 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
 
   /**
    * Get connectedVia
-   * @return connectedVia 
+   * @return connectedVia , never <code>null</code>
    **/
   public java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> getConnectedVia();
 
@@ -178,7 +178,7 @@ public interface NodePortEnt extends GatewayEntity, NodePortTemplateEnt {
         /**
    		 * Set connectedVia
          * 
-         * @param connectedVia the property value,  
+         * @param connectedVia the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         NodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);

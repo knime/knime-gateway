@@ -166,7 +166,7 @@ public interface MetaNodePortEnt extends GatewayEntity, NodePortEnt {
         /**
    		 * Set connectedVia
          * 
-         * @param connectedVia the property value,  
+         * @param connectedVia the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         MetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia);

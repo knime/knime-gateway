@@ -93,6 +93,9 @@ public record DefaultMetaNodePortEnt(
         if(index == null) {
             throw new IllegalArgumentException("<index> must not be null.");
         }
+        if(connectedVia == null) {
+            throw new IllegalArgumentException("<connectedVia> must not be null.");
+        }
     }
 
     @Override
@@ -175,7 +178,7 @@ public record DefaultMetaNodePortEnt(
 
         private Integer m_index;
 
-        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia;
+        private java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> m_connectedVia = new java.util.ArrayList<>();
 
         private Boolean m_inactive;
 
@@ -227,6 +230,9 @@ public record DefaultMetaNodePortEnt(
 
         @Override
         public DefaultMetaNodePortEntBuilder setConnectedVia(java.util.List<org.knime.gateway.api.entity.ConnectionIDEnt> connectedVia) {
+             if(connectedVia == null) {
+                 throw new IllegalArgumentException("<connectedVia> must not be null.");
+             }
              m_connectedVia = connectedVia;
              return this;
         }

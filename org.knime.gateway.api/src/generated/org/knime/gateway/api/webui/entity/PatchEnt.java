@@ -66,7 +66,7 @@ public interface PatchEnt extends GatewayEntity {
 
   /**
    * The operations that make up this patch.
-   * @return ops 
+   * @return ops , never <code>null</code>
    **/
   public java.util.List<PatchOpEnt> getOps();
 
@@ -86,7 +86,7 @@ public interface PatchEnt extends GatewayEntity {
         /**
          * The operations that make up this patch.
          * 
-         * @param ops the property value,  
+         * @param ops the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         PatchEntBuilder setOps(java.util.List<PatchOpEnt> ops);
