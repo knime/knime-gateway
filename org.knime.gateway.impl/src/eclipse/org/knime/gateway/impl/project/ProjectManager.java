@@ -45,6 +45,7 @@
  */
 package org.knime.gateway.impl.project;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -239,6 +240,26 @@ public final class ProjectManager {
      */
     public Optional<Project> getProject(final String projectId) {
         return Optional.ofNullable(m_projectsMap.get(projectId)).map(ProjectInternal::project);
+    }
+
+    /**
+     * @param absolutePath the absolute path to the workflow within the local workspace
+     * @return the project id or an empty optional if there is no project for the given path
+     */
+    public Optional<String> getProject(final Path absolutePath) {
+        return getProject(absolutePath, ProjectConsumerType.UI);
+    }
+
+    Optional<String> getProject(final Path absolutePath, final ProjectConsumerType projectConsumerType) {
+        for (var projectId : getProjectIds(projectConsumerType)) {
+            var wfm = getCachedProject(projectId).orElse(null);
+            if (wfm != null && Optional.ofNullable(wfm.getContextV2()) //
+                .map(context -> context.getExecutorInfo().getLocalWorkflowPath()) //
+                .map(wfPath -> wfPath.equals(absolutePath)).orElse(Boolean.FALSE)) {
+                return Optional.of(projectId);
+            }
+        }
+        return Optional.empty();
     }
 
     /**

@@ -85,16 +85,7 @@ public final class WorkflowServiceProjects {
      * @return the project id or an empty optional if there is no project for the given path
      */
     public static Optional<String> getProject(final Path absolutePath) {
-        var pm = ProjectManager.getInstance();
-        for (var projectId : pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE)) {
-            var wfm = pm.getCachedProject(projectId).orElse(null);
-            if (wfm != null && Optional.ofNullable(wfm.getContextV2()) //
-                .map(context -> context.getExecutorInfo().getLocalWorkflowPath()) //
-                .map(wfPath -> wfPath.equals(absolutePath)).orElse(Boolean.FALSE)) {
-                return Optional.of(projectId);
-            }
-        }
-        return Optional.empty();
+        return ProjectManager.getInstance().getProject(absolutePath, ProjectConsumerType.WORKFLOW_SERVICE);
     }
 
     /**
