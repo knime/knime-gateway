@@ -72,6 +72,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -103,6 +104,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
+import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt.AddBendpointCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
@@ -1896,25 +1898,77 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testExecuteReplaceNodeCommandFromRepo() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var rowFilterFactory = "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory";
-        var command = buildReplaceNodeCommand(new NodeIDEnt(1),
-            builder(NodeFactoryKeyEntBuilder.class).setClassName(rowFilterFactory).setSettings(null).build(), null);
         var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
         var nodes = workflow.getNodes();
-        var targetNode = nodes.get("root:1").getPosition();
+        // Replace a normal node
+        var targetNode = nodes.get("root:1");
+        var command = buildReplaceNodeCommand(targetNode.getId(),
+            builder(NodeFactoryKeyEntBuilder.class).setClassName(rowFilterFactory).setSettings(null).build(), null);
         // execute command
         ws().executeWorkflowCommand(wfId, getRootID(), command);
 
+        var targetNodePosition = targetNode.getPosition();
         checkForNode("Create new node in the location of the target node", ws().getWorkflow(wfId, getRootID(), false),
-            rowFilterFactory, targetNode.getX(), targetNode.getY());
+            rowFilterFactory, targetNodePosition.getX(), targetNodePosition.getY());
         var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         assertThat("connection still exists", connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
         checkForNode("Should restore old node", ws().getWorkflow(wfId, getRootID(), false),
-            "org.knime.base.node.util.sampledata.SampleDataNodeFactory", targetNode.getX(), targetNode.getY());
+            "org.knime.base.node.util.sampledata.SampleDataNodeFactory", targetNodePosition.getX(),
+            targetNodePosition.getY());
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         assertThat("connection still exists", connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+    }
+
+    /**
+     * Test Replace metanode command with a node from repository (metanodes have a slightly different port mapping)
+     */
+    public void testExecuteReplaceNodeCommandFromRepoOnMetanode() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var rowAgreggatorFactory = "org.knime.base.node.preproc.rowagg.RowAggregatorNodeFactory";
+        var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
+        var nodes = workflow.getNodes();
+        var connection = workflow.getConnections().get("root:5_1");
+        var position = builder(XYEnt.XYEntBuilder.class).setX(5).setY(6).build();
+        var addBendpointCmd = builder(AddBendpointCommandEntBuilder.class).setConnectionId(connection.getId())
+            .setKind(KindEnum.ADD_BENDPOINT).setPosition(position).setIndex(BigDecimal.valueOf(0)).build();
+        ws().executeWorkflowCommand(wfId, getRootID(), addBendpointCmd);
+
+        // Replace a metanode
+        var targetNode = nodes.get("root:6");
+        var command = buildReplaceNodeCommand(targetNode.getId(),
+            builder(NodeFactoryKeyEntBuilder.class).setClassName(rowAgreggatorFactory).setSettings(null).build(), null);
+        // execute command
+        ws().executeWorkflowCommand(wfId, getRootID(), command);
+
+        var targetNodePosition = targetNode.getPosition();
+        var newNode = checkForNode("Create new node in the location of the target node",
+            ws().getWorkflow(wfId, getRootID(), false), rowAgreggatorFactory, targetNodePosition.getX(),
+            targetNodePosition.getY());
+        var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        var newId = newNode.getId();
+        assertThat("Metanode is reconnected",
+            connections.get(String.format("%s_1", newId.toString())).getSourceNode().toString(), is("root:2"));
+        assertThat("Metanode is reconnected", connections.get("root:4_1").getSourceNode().toString(),
+            is(newId.toString()));
+        assertThat("Metanode is reconnected",
+            connections.get("root:5_1").getSourceNode().toString(), is(newId.toString()));
+        assertThat("Metanode connection has bendpoints",
+            connections.get("root:5_1").getBendpoints(), equalTo(List.of(position)));
+
+        // undo
+        ws().undoWorkflowCommand(wfId, getRootID());
+        connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
+        assertThat("Should restore all connections", connections.get("root:6_0").getSourceNode().toString(),
+            is("root:2"));
+        assertThat("Should restore all connections", connections.get("root:4_1").getSourceNode().toString(),
+            is("root:6"));
+        assertThat("Should restore all connections", connections.get("root:5_1").getSourceNode().toString(),
+            is("root:6"));
+        assertThat("Bendpoints are restored",
+            connections.get("root:5_1").getBendpoints(), equalTo(List.of(position)));
     }
 
     /**

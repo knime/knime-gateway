@@ -59,6 +59,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
@@ -158,7 +159,9 @@ final class ReplaceNode extends AbstractWorkflowCommand {
                 wfm.removeNode(replacementNodeContainer.getID());
                 wfm.paste(previousNodesPersistor);
                 for (ConnectionContainer cc : previousConnections) {
-                    wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
+                    var newConnection =
+                        wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
+                    setConnectionUIInfo(cc, newConnection);
                 }
             }
 
@@ -253,7 +256,9 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         final NodeID newId = replacementNode.getID();
         for (final ConnectionContainer c : incomingConnections) {
             if (wfm.canAddConnection(c.getSource(), c.getSourcePort(), newId, c.getDestPort() + inShift)) {
-                wfm.addConnection(c.getSource(), c.getSourcePort(), newId, c.getDestPort() + inShift);
+                var newConnection =
+                    wfm.addConnection(c.getSource(), c.getSourcePort(), newId, c.getDestPort() + inShift);
+                setConnectionUIInfo(c, newConnection);
             } else {
                 break;
             }
@@ -262,10 +267,26 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         // set outgoing connections
         for (final ConnectionContainer c : outgoingConnections) {
             if (wfm.canAddConnection(newId, c.getSourcePort() + outShift, c.getDest(), c.getDestPort())) {
-                wfm.addConnection(newId, c.getSourcePort() + outShift, c.getDest(), c.getDestPort());
+                var newConnection =
+                    wfm.addConnection(newId, c.getSourcePort() + outShift, c.getDest(), c.getDestPort());
+                setConnectionUIInfo(c, newConnection);
             } else {
                 break;
             }
+        }
+    }
+
+    /**
+     * Sets the connection ui info including bendpoints
+     *
+     * @param removedConnection the connection container carrying the information
+     * @param newConnection the connection container to add the information to
+     */
+    private static void setConnectionUIInfo(final ConnectionContainer removedConnection,
+        final ConnectionContainer newConnection) {
+        if (removedConnection.getUIInfo() != null) {
+            ConnectionUIInformation newInfo = ConnectionUIInformation.builder(removedConnection.getUIInfo()).build();
+            newConnection.setUIInfo(newInfo);
         }
     }
 
