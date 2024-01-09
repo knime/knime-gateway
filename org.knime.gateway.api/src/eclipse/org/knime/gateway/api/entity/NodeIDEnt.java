@@ -47,8 +47,10 @@ package org.knime.gateway.api.entity;
 
 import java.util.Arrays;
 
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
+import org.knime.gateway.api.util.CoreUtil;
 
 /**
  * Represents a node id as used by gateway entities and services (and the UI in general). Equivalent to the core's
@@ -139,11 +141,23 @@ public final class NodeIDEnt {
     }
 
     /**
-     * Converts the entity into a {@link NodeID} object.
+     * Converts a node id entity (as provided by gateway entities) to a {@link NodeID} instance.
      *
-     * @param rootID the root node id to be prepended
-     * @return the node id object
+     * @param nc the workflow/component project itself or any node/sub-workflow within the workflow/component project
+     *
+     * @return the {@link NodeID} instance
      */
+    public NodeID toNodeID(final NodeContainer nc) {
+        var project = CoreUtil.getProjectWorkflow(nc);
+        return toNodeID(project.getID());
+    }
+
+    /**
+     * @param rootID
+     * @return
+     * @deprecated use {@link #toNodeID(NodeContainer)} instead
+     */
+    @Deprecated(since = "5.3")
     public NodeID toNodeID(final NodeID rootID) {
         if (m_ids.length == 0) {
             return rootID;
