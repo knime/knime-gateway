@@ -48,10 +48,13 @@
  */
 package org.knime.gateway.impl.node.port;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.knime.core.node.workflow.CredentialsStore;
 
 /**
@@ -59,17 +62,29 @@ import org.knime.core.node.workflow.CredentialsStore;
  *
  * @author Carl Witt, KNIME AG, Zurich, Switzerland
  */
-public class FlowVariableTest {
+class FlowVariableTest {
 
     /**
      * AP-21680: Flow variable view should show the login instead of the flow variable name again
      */
-    @Test
-    public void credentialsFlowVariableShowsUserName() {
+    @ParameterizedTest
+    @MethodSource("expectedCredentialsVariableFormat")
+    void credentialsFlowVariableWithUserName(final String username, final String password, final String expected) {
+        // given a credentials variable
         final var credentialsVar =
-            CredentialsStore.newCredentialsFlowVariable("variableName", "usern", "password", "secondFactor");
+            CredentialsStore.newCredentialsFlowVariable("variableName", username, password, "fact");
         final var gatewayVar = FlowVariable.create(credentialsVar);
-        assertThat(gatewayVar.getName(), is("variableName"));
-        assertThat(gatewayVar.getValue(), is("Login: usern"));
+        // when extracting the value for display
+        String value = gatewayVar.getValue();
+        // then we get the expected format
+        assertThat(value).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> expectedCredentialsVariableFormat() {
+        return Stream.of( //
+            Arguments.of("usern", "passw", "Username: \"usern\", Password: ******"), //
+            Arguments.of("usern", null, "Username: \"usern\", Password: not provided"), //
+            Arguments.of("usern", "", "Username: \"usern\", Password: not provided"), //
+            Arguments.of("", "passs", "Username: \"\", Password: ******"));
     }
 }

@@ -93,7 +93,9 @@ public interface FlowVariable {
                 // AP-21680: Flow variable view should show the login instead of the flow variable name again
                 final var optCredentialProperties = CredentialsStore.CredentialsProperties.of(v);
                 if (optCredentialProperties.isPresent()) {
-                    return "Login: " + optCredentialProperties.get().login();
+                    final var credentials = optCredentialProperties.get();
+                    return "Username: \"%s\", Password: %s".formatted(credentials.login(),
+                        credentials.isPasswordSet() ? "******" : "not provided");
                 }
                 return v.getValueAsString();
             }
