@@ -47,12 +47,11 @@
 package org.knime.gateway.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.knime.gateway.api.tests.GatewayAPITest.CONTAINER_NODES_WF;
-import static org.knime.gateway.api.tests.GatewayAPITest.getWorkflowManager;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.tests.TestWorkflowCollection;
 import org.knime.gateway.api.util.CoreUtil;
 
 /**
@@ -66,7 +65,7 @@ class CoreUtilTest {
      */
     @Test
     void testGetContainerType() throws Exception {
-        var wfm = getWorkflowManager(CONTAINER_NODES_WF);
+        var wfm = TestWorkflowCollection.CONTAINER_NODES_WF.loadWorkflow();
         var emptyMetanodeId = wfm.getID().createChild(2);
         var emptyComponentId = wfm.getID().createChild(3);
         var someNativeNode = wfm.getID().createChild(4);
@@ -88,7 +87,7 @@ class CoreUtilTest {
      */
     @Test
     void testGetContainedWfm() throws Exception {
-        var wfm = getWorkflowManager(CONTAINER_NODES_WF);
+        var wfm = TestWorkflowCollection.CONTAINER_NODES_WF.loadWorkflow();
         var emptyMetanodeId = wfm.getID().createChild(2);
         var emptyComponentId = wfm.getID().createChild(3);
         var someNativeNode = wfm.getID().createChild(4);
