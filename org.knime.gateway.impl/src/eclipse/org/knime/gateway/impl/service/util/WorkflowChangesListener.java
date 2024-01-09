@@ -308,6 +308,7 @@ public class WorkflowChangesListener implements Closeable {
                 break;
             case PORTS_BAR_UI_INFO_CHANGED:
                 updateWorkflowChangesTrackers(WorkflowChange.PORTS_BAR_MOVED);
+                break;
             default:
                 //
         }
@@ -370,7 +371,7 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private static Optional<NativeNodeContainer> getNNC(final NodeContainer nc) {
-        return (nc instanceof NativeNodeContainer) ? Optional.of((NativeNodeContainer)nc) : Optional.empty();
+        return (nc instanceof NativeNodeContainer nnc) ? Optional.of(nnc) : Optional.empty();
     }
 
     private void addConnectionProgressListener(final ConnectionContainer cc) {

@@ -194,7 +194,7 @@ public class NodeSearch {
             .filter(Objects::nonNull)//
             .skip(offset == null ? 0 : offset)//
             .limit(limit == null ? Long.MAX_VALUE : limit)//
-            .collect(Collectors.toList());
+            .toList();
 
         // collect all tags from the templates and sort according to their frequency
         Map<String, Long> tagFrequencies = foundNodes.stream().flatMap(n -> n.nodeSpec.metadata().tags().stream())
@@ -202,7 +202,7 @@ public class NodeSearch {
         List<String> resTags = tagFrequencies.entrySet().stream()//
             .sorted(Comparator.<Entry<String, Long>, Long> comparing(Entry::getValue).reversed())//
             .map(Entry::getKey)//
-            .collect(Collectors.toList());
+            .toList();
 
         return builder(NodeSearchResultEntBuilder.class)//
             .setNodes(templates)//
@@ -242,7 +242,7 @@ public class NodeSearch {
                 .sorted(//
                     Comparator.<Node> comparingInt(n -> -n.weight)//
                         .thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))//
-                .collect(Collectors.toList());
+                .toList();
         }
         // Case 3: filter by tags, rank by similarity to search term
         var portType = searchQuery.portType();
@@ -262,7 +262,7 @@ public class NodeSearch {
                     // 4) tie-breaks
                     .thenComparing(n -> n.m_node.name, ALPHANUMERIC_COMPARATOR))//
             .map(wn -> wn.m_node)//
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static boolean filterByTags(final Node n, final List<String> tags, final boolean allTagsMatch) {
@@ -316,7 +316,7 @@ public class NodeSearch {
      */
     interface Normalizer extends UnaryOperator<String> {
 
-        static final Normalizer DEFAULT_NORMALIZATION = t -> t.strip().toUpperCase(Locale.ROOT);
+        Normalizer DEFAULT_NORMALIZATION = t -> t.strip().toUpperCase(Locale.ROOT);
 
         static Normalizer identity() {
             return s -> s;

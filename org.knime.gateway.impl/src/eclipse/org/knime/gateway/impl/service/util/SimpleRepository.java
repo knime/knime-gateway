@@ -55,7 +55,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.GatewayEntity;
@@ -132,7 +131,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     @Override
     public <P> Optional<P> getChangesAndCommit(final String snapshotID, final E entity,
         final PatchCreator<P> patchCreator) {
-        K key = m_snapshotsKeyMap.get(snapshotID);
+        var key = m_snapshotsKeyMap.get(snapshotID);
         LRUCache entityHistory = m_historyPerEntity.get(key);
         E snapshot = null;
         if (entityHistory != null) {
@@ -167,7 +166,7 @@ public class SimpleRepository<K, E extends GatewayEntity> implements EntityRepos
     public synchronized void disposeHistory(final Predicate<K> keyFilter) {
         //remove all snapshots (and other map entries) for the given entity id
         List<String> snapshotIDs = m_snapshotsKeyMap.entrySet().stream().filter(e -> keyFilter.test(e.getValue()))
-            .map(Entry::getKey).collect(Collectors.toList());
+            .map(Entry::getKey).toList();
         snapshotIDs.forEach(m_snapshotsKeyMap::remove);
         m_latestSnapshotPerEntity.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
         m_historyPerEntity.entrySet().removeIf(e -> keyFilter.test(e.getKey()));

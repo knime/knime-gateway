@@ -98,7 +98,8 @@ public final class WorkflowUtil {
      * @throws NodeNotFoundException
      * @throws NotASubWorkflowException
      */
-    public static void assertWorkflowExists(final WorkflowKey wfKey) throws NodeNotFoundException, NotASubWorkflowException {
+    public static void assertWorkflowExists(final WorkflowKey wfKey)
+        throws NodeNotFoundException, NotASubWorkflowException {
         getWorkflowManager(wfKey);
     }
 

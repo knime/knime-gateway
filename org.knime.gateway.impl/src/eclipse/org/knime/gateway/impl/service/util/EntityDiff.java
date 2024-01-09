@@ -122,7 +122,7 @@ final class EntityDiff {
         final PatchCreator<P> patchCreator) {
         var l1Size = l1.size();
         var l2Size = l2.size();
-        for (int i = 0; i < Math.max(l1Size, l2Size); i++) {
+        for (var i = 0; i < Math.max(l1Size, l2Size); i++) {
             var el1 = i < l1Size ? l1.get(i) : null;
             var el2 = i < l2Size ? l2.get(i) : null;
             if (!Objects.equals(el1, el2)) {

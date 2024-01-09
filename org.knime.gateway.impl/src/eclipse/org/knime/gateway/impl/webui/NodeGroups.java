@@ -126,7 +126,7 @@ public final class NodeGroups {
             .map(p -> buildNodeGroupEnt(nodesPerCategory.get(p.getFirst()), p.getSecond(), numNodesPerTag,
                 fullTemplateInfo, m_nodeRepo))//
             .filter(Objects::nonNull)//
-            .collect(Collectors.toList());
+            .toList();
         return builder(NodeGroupsEntBuilder.class).setGroups(groups).setTotalNumGroups(nodesPerCategory.size()).build();
     }
 
@@ -158,7 +158,7 @@ public final class NodeGroups {
                 return p == null || StringUtils.isBlank(p) || p.equals(levelId);
             }))//
             .map(c -> Pair.create(c.getCompletePath(), c.getName()))//
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static Map<String, List<Node>> categorizeNodes(final Collection<Node> allNodes,
@@ -179,7 +179,7 @@ public final class NodeGroups {
                     categorized.add(n.templateId);
                     return n;
                 })//
-                .collect(Collectors.toList());
+                .toList();
             if (!nodes.isEmpty()) {
                 res.put(catPath, nodes);
             }
@@ -189,7 +189,7 @@ public final class NodeGroups {
         // (e.g. because they are at root level '/' or don't have a category at all)
         List<Node> uncategorizedNodes = allNodes.stream() //
             .filter(n -> !categorized.contains(n.templateId)) //
-            .collect(Collectors.toList());
+            .toList();
         if (!uncategorizedNodes.isEmpty()) {
             res.put(UNCATEGORIZED_KEY, uncategorizedNodes);
         }
@@ -205,7 +205,7 @@ public final class NodeGroups {
             .limit(numNodesPerTag == null ? Integer.MAX_VALUE : numNodesPerTag)//
             .map(n -> nodeRepo.getNodeTemplate(n.templateId, Boolean.TRUE.equals(fullTemplateInfo)))//
             .filter(Objects::nonNull)//
-            .collect(Collectors.toList());
+            .toList();
         return builder(NodeGroupEntBuilder.class).setNodes(res).setTag(name).build();
     }
 }

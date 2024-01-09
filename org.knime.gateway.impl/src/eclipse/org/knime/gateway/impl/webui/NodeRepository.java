@@ -279,10 +279,10 @@ public final class NodeRepository {
 
     @SuppressWarnings("java:S1943")
     private static Stream<int[]> readNodeUsageFile() {
-        BufferedReader br = new BufferedReader(
+        var br = new BufferedReader(
             new InputStreamReader(DefaultNodeRepositoryService.class.getResourceAsStream(NODE_USAGE_FILE)));
         return br.lines().map(s -> s.split(",")).map(ar -> {
-            int[] res = new int[ar.length];
+            var res = new int[ar.length];
             res[0] = Integer.valueOf(ar[0]);
             res[1] = Integer.valueOf(ar[1]);
             return res;
@@ -293,23 +293,6 @@ public final class NodeRepository {
                 throw new UncheckedIOException(ex);
             }
         });
-    }
-
-    /**
-     * Makes sure a category path is always '/this/is/a/path' (i.e. with a leading '/', without a trailing '/' and
-     * without double slashes).
-     *
-     * @param path the path to normalize
-     */
-    private static String normalizeCategoryPath(final String path) {
-        String newPath = MULTIPLE_SLASHES.matcher(path).replaceAll("/");
-        if (!path.startsWith("/")) {
-            newPath = "/" + path; // NOSONAR
-        }
-        if (newPath.endsWith("/")) {
-            newPath = newPath.substring(0, newPath.length() - 1);
-        }
-        return newPath;
     }
 
     /**

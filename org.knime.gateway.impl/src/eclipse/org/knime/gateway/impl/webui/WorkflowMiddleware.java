@@ -158,13 +158,13 @@ public final class WorkflowMiddleware {
         final WorkflowBuildContextBuilder buildContextBuilder, final WorkflowChangesTracker tracker) {
         try (WorkflowLock lock = wfm.lock()) {
             var workflowChanged = tracker.invoke(t -> {
-                if (t.hasOccurredAtLeastOne(WorkflowChange.ANY)) {
+                if (Boolean.TRUE.equals(t.hasOccurredAtLeastOne(WorkflowChange.ANY))) {
                     t.reset();
-                    return true;
+                    return Boolean.TRUE;
                 } else {
-                    return false;
+                    return Boolean.FALSE;
                 }
-            });
+            }).booleanValue();
             return workflowChanged ? EntityFactory.Workflow.buildWorkflowEnt(wfm, buildContextBuilder) : null;
         }
     }
@@ -202,7 +202,7 @@ public final class WorkflowMiddleware {
      * @return the changes listener, never <code>null</code>
      */
     public WorkflowChangesListener getWorkflowChangesListener(final WorkflowKey wfKey) {
-        WorkflowState ws = getWorkflowState(wfKey);
+        var ws = getWorkflowState(wfKey);
         return ws.changesListener();
     }
 
