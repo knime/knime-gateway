@@ -61,6 +61,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.After;
@@ -109,7 +110,10 @@ public class DefaultServiceUtilTest {
         doReturn(m_nc).when(m_wfm).findNodeContainer(eq(m_nodeID));
         m_rootWfm = createWorkflowManagerMock();
         doReturn(m_rootWfm).when(m_wfm).getParent();
-        doReturn(null).when(m_wfm).getDirectNCParent();
+        doReturn(Optional.empty()).when(m_wfm).getProjectComponent();
+        doReturn(m_rootWfm).when(m_wfm).getProjectWFM();
+        doReturn(new NodeID(0)).when(m_rootWfm).getID();
+        doReturn(m_rootWfm).when(m_wfm).getDirectNCParent();
 
         m_wfId = addWorkflowProject(m_wfm);
     }
@@ -130,12 +134,13 @@ public class DefaultServiceUtilTest {
         verify(m_wfm).cancelExecution(any());
         verify(m_wfm, never()).findNodeContainer(m_nodeID);
         verify(m_nc, never()).getParent();
-        verify(m_wfm, times(3)).getID();
         verify(m_wfm, never()).getParent();
 
         // action for a node within a workflow
         WorkflowManager subWfm = createWorkflowManagerMock();
         doReturn(subWfm).when(m_wfm).findNodeContainer(eq(NodeID.fromString("0:2")));
+        doReturn(m_wfm).when(subWfm).getProjectWFM();
+        doReturn(Optional.empty()).when(subWfm).getProjectComponent();
         doReturn(m_nc).when(subWfm).findNodeContainer(eq(m_nodeID));
         DefaultServiceUtil.changeNodeStates(m_wfId, new NodeIDEnt(2), "execute", nodeIDEnt);
         verify(subWfm).executeUpToHere(m_nodeID);

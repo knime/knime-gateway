@@ -47,8 +47,8 @@ package org.knime.gateway.api.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.knime.gateway.api.tests.GatewayAPITest.CONTAINER_NODES_WF;
-import static org.knime.gateway.api.tests.GatewayAPITest.getWorkflowManager;
+import static org.knime.gateway.api.tests.GatewayAPITestflowsUtil.CONTAINER_NODES_WF;
+import static org.knime.gateway.api.tests.GatewayAPITestflowsUtil.getWorkflowManager;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NodeID;
@@ -59,16 +59,16 @@ import org.knime.core.node.workflow.NodeID;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("javadoc")
-public class NodeIDEntTest {
+class NodeIDEntTest {
 
     @Test
-    public void testAppendNodeID() {
+    void testAppendNodeID() {
         assertThat(new NodeIDEnt(5).appendNodeID(4)).isEqualTo(new NodeIDEnt(5, 4));
         assertThat(NodeIDEnt.getRootID().appendNodeID(5)).isEqualTo(new NodeIDEnt(5));
     }
 
     @Test
-    public void testToAndFromNodeID() throws Exception {
+    void testToAndFromNodeID() throws Exception {
         //to
         NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
         var wfm = getWorkflowManager(CONTAINER_NODES_WF);
@@ -88,11 +88,11 @@ public class NodeIDEntTest {
      * Tests 'toString' and create from string via constructor.
      */
     @Test
-    public void testToAndFromString() {
+    void testToAndFromString() {
         //to
         String s = new NodeIDEnt(3, 4, 1).toString();
         assertThat(s).isEqualTo("root:3:4:1");
-        assertThat(NodeIDEnt.getRootID().toString()).isEqualTo("root");
+        assertThat(NodeIDEnt.getRootID()).hasToString("root");
 
         //from
         assertThat(new NodeIDEnt(s)).isEqualTo(new NodeIDEnt(3, 4, 1));
@@ -100,7 +100,7 @@ public class NodeIDEntTest {
     }
 
     @Test
-    public void testIsEqualOrParentOf() {
+    void testIsEqualOrParentOf() {
         assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3"))).isTrue();
         assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2:3:4"))).isTrue();
         assertThat(new NodeIDEnt("root:1:2:3").isEqualOrParentOf(new NodeIDEnt("root:1:2"))).isFalse();

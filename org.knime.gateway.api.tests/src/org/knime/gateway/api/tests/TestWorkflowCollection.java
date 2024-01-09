@@ -56,22 +56,46 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
+ * Gives easy access to test workflows (located in the 'files/testflows'-directory).
  *
- * @author baqueroj
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class GatewayAPITest {
+public enum TestWorkflowCollection {
+
+        /**
+         * Workflow containing a component and a metanode.
+         */
+        CONTAINER_NODES_WF("ContainerNodes"),
+
+        /**
+         * Workflow to test the proper determination of can-execute, can-reset etc.
+         */
+        NODE_DEPENDECY("enhNXT264_AlternativeDeterminationOfDependentNodeProperties");
 
     private static final String BASE_PATH = "/files/testflows/";
 
-    public static final String CONTAINER_NODES_WF = "ContainerNodes";
+    private final String m_name;
 
-    public static final String EMPTY_COMPONENT = "Empty Component";
+    private TestWorkflowCollection(final String name) {
+        m_name = name;
 
-    public static final String NODE_DEPENDECY = "enhNXT264_AlternativeDeterminationOfDependentNodeProperties";
+    }
 
-    public static WorkflowManager getWorkflowManager(final String fileName) throws IOException, InvalidSettingsException,
-        CanceledExecutionException, UnsupportedWorkflowVersionException, LockFailedException {
-        return WorkflowManagerUtil.loadWorkflow(CoreUtil.resolveToFile(BASE_PATH + fileName, GatewayAPITest.class));
+    /**
+     * Loads the workflow.
+     *
+     * @return a new {@link WorkflowManager}-instance
+     *
+     * @throws IOException
+     * @throws InvalidSettingsException
+     * @throws CanceledExecutionException
+     * @throws UnsupportedWorkflowVersionException
+     * @throws LockFailedException
+     */
+    public WorkflowManager loadWorkflow() throws IOException, InvalidSettingsException, CanceledExecutionException,
+        UnsupportedWorkflowVersionException, LockFailedException {
+        return WorkflowManagerUtil
+            .loadWorkflow(CoreUtil.resolveToFile(BASE_PATH + m_name, TestWorkflowCollection.class));
     }
 
 }

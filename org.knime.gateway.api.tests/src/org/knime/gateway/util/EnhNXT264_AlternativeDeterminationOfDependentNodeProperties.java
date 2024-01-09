@@ -46,8 +46,6 @@ package org.knime.gateway.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.knime.gateway.api.tests.GatewayAPITest.NODE_DEPENDECY;
-import static org.knime.gateway.api.tests.GatewayAPITest.getWorkflowManager;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.tests.TestWorkflowCollection;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 
@@ -68,14 +67,14 @@ import org.knime.gateway.api.util.DependentNodeProperties;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
+class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 
     WorkflowManager m_wfm;
 
 	@SuppressWarnings("javadoc")
     @BeforeEach
     public void loadWorkflow() throws Exception {
-        m_wfm = getWorkflowManager(NODE_DEPENDECY);
+        m_wfm = TestWorkflowCollection.NODE_DEPENDECY.loadWorkflow();
     }
 
 	/**
@@ -89,7 +88,7 @@ public class EnhNXT264_AlternativeDeterminationOfDependentNodeProperties {
 	 * @throws Exception
 	 */
 	@Test
-	public void testCorrectnessOfDependentNodeProperties() throws Exception {
+	void testCorrectnessOfDependentNodeProperties() throws Exception {
 		NodeID parentId = m_wfm.getID();
 		var metanode_209 = (WorkflowManager) m_wfm.getNodeContainer(parentId.createChild(209));
         var metanode_219 = ((WorkflowManager)m_wfm.getNodeContainer(parentId.createChild(219)));

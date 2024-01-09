@@ -129,7 +129,7 @@ public class DefaultPortServiceTest {
         // clean up
         PortViewManager.registerPortViews(BufferedDataTable.TYPE, originalPortViews.viewDescriptors(),
             originalPortViews.configuredIndices(), originalPortViews.executedIndices());
-        WorkflowManagerUtil.disposeWorkflow(wfm);
+        ProjectManager.getInstance().removeProject(project.getID(), WorkflowManagerUtil::disposeWorkflow);
         ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 

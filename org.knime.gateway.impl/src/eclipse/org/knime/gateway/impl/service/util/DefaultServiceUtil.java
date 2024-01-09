@@ -242,14 +242,13 @@ public final class DefaultServiceUtil {
     public static void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final String action,
         final NodeIDEnt... nodeIdEnts) {
         NodeID[] nodeIDs = null;
-        WorkflowManager wfm = getWorkflowManager(projectId, workflowId);
+        var wfm = getWorkflowManager(projectId, workflowId);
         if (nodeIdEnts != null && nodeIdEnts.length != 0) {
-            WorkflowManager rootWfm = getRootWorkflowManager(projectId);
             nodeIDs = new NodeID[nodeIdEnts.length];
-            nodeIDs[0] = nodeIdEnts[0].toNodeID(rootWfm);
+            nodeIDs[0] = nodeIdEnts[0].toNodeID(wfm);
             NodeID prefix = nodeIDs[0].getPrefix();
-            for (int i = 1; i < nodeIDs.length; i++) {
-                nodeIDs[i] = nodeIdEnts[i].toNodeID(rootWfm);
+            for (var i = 1; i < nodeIDs.length; i++) {
+                nodeIDs[i] = nodeIdEnts[i].toNodeID(wfm);
                 if (!nodeIDs[i].hasSamePrefix(prefix)) {
                     throw new IllegalArgumentException("Node ids don't have the same prefix.");
                 }
