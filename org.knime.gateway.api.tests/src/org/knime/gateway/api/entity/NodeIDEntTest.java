@@ -46,12 +46,11 @@
 package org.knime.gateway.api.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.knime.gateway.api.tests.GatewayAPITestflowsUtil.CONTAINER_NODES_WF;
-import static org.knime.gateway.api.tests.GatewayAPITestflowsUtil.getWorkflowManager;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.api.tests.TestWorkflowCollection;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Tests {@link NodeIDEnt}.
@@ -71,17 +70,20 @@ class NodeIDEntTest {
     void testToAndFromNodeID() throws Exception {
         //to
         NodeIDEnt ent = new NodeIDEnt(4, 2, 1);
-        var wfm = getWorkflowManager(CONTAINER_NODES_WF);
-        assertThat(NodeIDEnt.getRootID().toNodeID(wfm), is(NodeID.fromString("3")));
-        assertThat(ent.toNodeID(wfm), is(NodeID.fromString("3:4:2:1")));
+        var wfm = TestWorkflowCollection.CONTAINER_NODES_WF.loadWorkflow();
+        assertThat(NodeIDEnt.getRootID().toNodeID(wfm)).isEqualTo(NodeID.fromString("3"));
+        assertThat(ent.toNodeID(wfm)).isEqualTo(NodeID.fromString("3:4:2:1"));
 
-        var componentWfm = getWorkflowManager(CONTAINER_NODES_WF);
-        assertThat(NodeIDEnt.getRootID().toNodeID(componentWfm), is(NodeID.fromString("4")));
-        assertThat(ent.toNodeID(componentWfm), is(NodeID.fromString("4:4:2:1")));
+        var componentWfm = TestWorkflowCollection.CONTAINER_NODES_WF.loadWorkflow();
+        assertThat(NodeIDEnt.getRootID().toNodeID(componentWfm)).isEqualTo(NodeID.fromString("4"));
+        assertThat(ent.toNodeID(componentWfm)).isEqualTo(NodeID.fromString("4:4:2:1"));
 
         //from
         assertThat(new NodeIDEnt(NodeID.fromString("3:4"))).isEqualTo(new NodeIDEnt(4)); // NOSONAR
         assertThat(new NodeIDEnt(new NodeID(2))).isEqualTo(NodeIDEnt.getRootID());
+
+        WorkflowManagerUtil.disposeWorkflow(wfm);
+        WorkflowManagerUtil.disposeWorkflow(componentWfm);
     }
 
     /**
