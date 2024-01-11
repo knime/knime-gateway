@@ -45,6 +45,7 @@
  */
 package org.knime.gateway.impl.project;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -59,6 +60,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.contextv2.ExecutorInfo;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.Pair;
 import org.osgi.annotation.versioning.ConsumerType;
 
@@ -239,6 +242,24 @@ public final class ProjectManager {
      */
     public Optional<Project> getProject(final String projectId) {
         return Optional.ofNullable(m_projectsMap.get(projectId)).map(ProjectInternal::project);
+    }
+
+    /**
+     * Get a project ID even if the project tab is present but the project has never been loaded before.
+     *
+     * @param absolutePath the absolute path to the project within the local workspace
+     * @return the project id or an empty optional if there is no project for the given path
+     */
+    public Optional<String> getProject(final Path absolutePath) {
+        return getProjectIds().stream()//
+            .filter(projectId -> getProject(projectId)//
+                .map(Project::loadWorkflowManager)//
+                .map(WorkflowManager::getContextV2)//
+                .map(WorkflowContextV2::getExecutorInfo)//
+                .map(ExecutorInfo::getLocalWorkflowPath)//
+                .filter(p -> p.equals(absolutePath))//
+                .isPresent())//
+            .findFirst();
     }
 
     /**
