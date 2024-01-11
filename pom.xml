@@ -129,16 +129,6 @@
                     <url>${knime.stats.p2}</url>
                 </repository>
                 <repository>
-                    <id>p2-knime-js-core</id>
-                    <layout>p2</layout>
-                    <url>${knime.js.core.p2}</url>
-                </repository>
-                <repository>
-                    <id>p2-knime-js-base</id>
-                    <layout>p2</layout>
-                    <url>${knime.js.base.p2}</url>
-                </repository>
-                <repository>
                     <id>p2-knime-streaming</id>
                     <layout>p2</layout>
                     <url>${knime.streaming.p2}</url>
