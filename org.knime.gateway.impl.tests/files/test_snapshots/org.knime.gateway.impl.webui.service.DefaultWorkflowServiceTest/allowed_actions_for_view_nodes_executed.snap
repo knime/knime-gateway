@@ -9,6 +9,16 @@
     "canOpenView" : true,
     "canReset" : true
   },
+  "root:11" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canExpand" : "resetRequired",
+    "canOpenDialog" : true,
+    "canOpenView" : true,
+    "canReset" : true
+  },
   "root:12" : {
     "canCancel" : false,
     "canCollapse" : "resetRequired",
@@ -37,6 +47,16 @@
     "canOpenView" : true,
     "canReset" : true
   },
+  "root:17" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canExpand" : "resetRequired",
+    "canOpenDialog" : true,
+    "canOpenLegacyFlowVariableDialog" : true,
+    "canReset" : true
+  },
   "root:2" : {
     "canCancel" : false,
     "canCollapse" : "resetRequired",
@@ -45,7 +65,35 @@
     "canOpenDialog" : true,
     "canReset" : true
   },
+  "root:3" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canOpenDialog" : true,
+    "canOpenView" : true,
+    "canReset" : true
+  },
+  "root:4" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canOpenDialog" : true,
+    "canOpenView" : true,
+    "canReset" : true
+  },
   "root:7" : {
+    "canCancel" : false,
+    "canCollapse" : "resetRequired",
+    "canDelete" : true,
+    "canExecute" : false,
+    "canExpand" : "resetRequired",
+    "canOpenDialog" : true,
+    "canOpenView" : true,
+    "canReset" : true
+  },
+  "root:8" : {
     "canCancel" : false,
     "canCollapse" : "resetRequired",
     "canDelete" : true,

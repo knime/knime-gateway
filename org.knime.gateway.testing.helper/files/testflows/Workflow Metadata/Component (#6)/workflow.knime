@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="workflow.knime">
-    <entry key="created_by" type="xstring" value="5.3.0.qualifier"/>
-    <entry key="created_by_nightly" type="xboolean" value="false"/>
+    <entry key="created_by" type="xstring" value="5.2.0.qualifier"/>
+    <entry key="created_by_nightly" type="xboolean" value="true"/>
     <entry key="version" type="xstring" value="5.1.0"/>
     <entry key="name" type="xstring" value="Full Component"/>
     <config key="authorInformation">
@@ -77,9 +77,25 @@
                 </config>
             </config>
         </config>
+        <config key="node_9">
+            <entry key="id" type="xint" value="9"/>
+            <entry key="node_settings_file" type="xstring" value="String Configuration (#9)/settings.xml"/>
+            <entry key="node_is_meta" type="xboolean" value="false"/>
+            <entry key="node_type" type="xstring" value="NativeNode"/>
+            <entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+            <config key="ui_settings">
+                <config key="extrainfo.node.bounds">
+                    <entry key="array-size" type="xint" value="4"/>
+                    <entry key="0" type="xint" value="159"/>
+                    <entry key="1" type="xint" value="27"/>
+                    <entry key="2" type="xint" value="106"/>
+                    <entry key="3" type="xint" value="103"/>
+                </config>
+            </config>
+        </config>
         <config key="node_10">
             <entry key="id" type="xint" value="10"/>
-            <entry key="node_settings_file" type="xstring" value="Line Plot (#10)/settings.xml"/>
+            <entry key="node_settings_file" type="xstring" value="Line Plot _JavaScript_ (#10)/settings.xml"/>
             <entry key="node_is_meta" type="xboolean" value="false"/>
             <entry key="node_type" type="xstring" value="NativeNode"/>
             <entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
@@ -95,7 +111,7 @@
         </config>
         <config key="node_11">
             <entry key="id" type="xint" value="11"/>
-            <entry key="node_settings_file" type="xstring" value="Table View (#11)/settings.xml"/>
+            <entry key="node_settings_file" type="xstring" value="Table View _JavaScript_ (#11)/settings.xml"/>
             <entry key="node_is_meta" type="xboolean" value="false"/>
             <entry key="node_type" type="xstring" value="NativeNode"/>
             <entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>

@@ -1290,7 +1290,7 @@
         "styleRanges" : [ ],
         "text" : {
           "contentType" : "text/plain",
-          "value" : "with view inside\n(i.e. with composite view)"
+          "value" : "with JS view inside\n(i.e. with composite view)"
         },
         "textAlign" : "center"
       },

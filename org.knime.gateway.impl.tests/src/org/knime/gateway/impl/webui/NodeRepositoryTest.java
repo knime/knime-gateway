@@ -121,24 +121,24 @@ public class NodeRepositoryTest {
         assertThat("no factory settings expected", nodeFromSearch.getNodeFactory().getSettings(), is(nullValue()));
 
         // dynamic node
-        res = search.searchNodes("J48", asList("Weka (3.7)"), null, 0, 1, Boolean.TRUE,
+        res = search.searchNodes("Bar Chart (Java Script)", asList("Views"), null, 0, 1, Boolean.TRUE,
             "IN_COLLECTION", null);
         nodeFromSearch = res.getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplate(nodeFromSearch.getId(), true);
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
-        assertThat("unexpected name", nodeFromRepo.getName(), is("J48 (3.7)"));
+        assertThat("unexpected name", nodeFromRepo.getName(), is("Bar Chart (JavaScript)"));
         assertThat(nodeFromRepo.getExtension().getVendor().getName(), is("KNIME AG, Zurich, Switzerland"));
         assertThat(nodeFromRepo.getExtension().getVendor().isKNIME(), is(true));
         assertThat(nodeFromRepo.getId(), is(nodeFromSearch.getId()));
-        assertThat(nodeFromRepo.getType(), is(NativeNodeInvariantsEnt.TypeEnum.LEARNER));
+        assertThat(nodeFromRepo.getType(), is(NativeNodeInvariantsEnt.TypeEnum.VISUALIZER));
         assertThat(nodeFromRepo.isComponent(), is(false));
         assertThat("icon property expected", nodeFromSearch.getIcon(), is(notNullValue()));
         assertThat("in-port property expected", nodeFromSearch.getInPorts(), is(not((empty()))));
         assertThat("out-port property expected", nodeFromSearch.getOutPorts(), is(not((empty()))));
         assertThat("factory class expected", nodeFromSearch.getNodeFactory().getClassName(),
-            is("org.knime.ext.weka37.classifier.WekaClassifierNodeFactory"));
+            is("org.knime.dynamic.js.v30.DynamicJSNodeFactory"));
         assertThat("factory settings expected", nodeFromSearch.getNodeFactory().getSettings(), is(
-            "{\"name\":\"settings\",\"value\":{\"weka-class\":{\"type\":\"string\",\"value\":\"weka.classifiers.trees.J48\"},\"weka-version\":{\"type\":\"string\",\"value\":\"3.7\"},\"weka_nodes_version\":{\"type\":\"string\",\"value\":\"V112015\"}}}"));
+            "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:barChart\"}}}"));
     }
 
     @Test
