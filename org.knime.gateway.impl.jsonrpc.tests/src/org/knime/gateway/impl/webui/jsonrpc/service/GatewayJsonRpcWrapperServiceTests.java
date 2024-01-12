@@ -86,6 +86,7 @@ import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.webui.GatewayTestCollection;
 import org.knime.gateway.testing.helper.webui.GatewayTestRunner;
 import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
+import org.knime.js.core.JSCorePlugin;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -118,6 +119,17 @@ public class GatewayJsonRpcWrapperServiceTests {
     private final WorkflowExecutor m_workflowExecutor;
 
     private final ServiceProvider m_serviceProvider;
+
+    /**
+     * Makes sure the org.knime.js.core plugin is activated which in turn registers the
+     * DefaultConfigurationLayoutCreator osgi-service registered which in turn is required to create the component
+     * description which is used by tests (see SubNodeContainer#getDialogDescriptions and
+     * ConfigurationLayoutUtil#getConfigurationOrder)
+     */
+    @BeforeClass
+    public static void activateJsCore() {
+        JSCorePlugin.class.getName();
+    }
 
     /**
      * @return all names of the tests of {@link GatewayTestCollection}
