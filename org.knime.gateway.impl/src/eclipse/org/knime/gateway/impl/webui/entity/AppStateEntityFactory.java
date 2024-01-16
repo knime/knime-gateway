@@ -98,6 +98,7 @@ import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -291,7 +292,8 @@ public final class AppStateEntityFactory {
             .setItemId(itemId) //
             .setSpaceId(LocalWorkspace.LOCAL_WORKSPACE_ID) //
             .setProjectType(ProjectTypeEnum.WORKFLOW) //
-            .setProviderId("local").build();
+            .setProviderId(SpaceProvider.LOCAL_SPACE_PROVIDER_ID) //
+            .build();
         return builder(ExampleProjectEntBuilder.class) //
             .setName(name) //
             .setSvg(svg) //
