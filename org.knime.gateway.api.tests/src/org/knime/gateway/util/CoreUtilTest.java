@@ -116,4 +116,25 @@ public class CoreUtilTest {
         CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
     }
 
+    /**
+     * @see CoreUtil#isWorkflowDirtyOrHasDirtyParent(WorkflowManager)
+     */
+    @Test
+    void testIsWorkflowDirtyOrHasDirtyParent() throws Exception {
+        var wfm = TestWorkflowCollection.CONTAINER_NODES_WF.loadWorkflow();
+        var emptyMetanodeId = wfm.getID().createChild(2);
+        var emptyComponentId = wfm.getID().createChild(3);
+        var metanodeWfm = wfm.getNodeContainer(emptyMetanodeId).getParent();
+        var compnentWfm = wfm.getNodeContainer(emptyComponentId).getParent();
+
+        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).isFalse();
+        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(metanodeWfm)).isFalse();
+        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(compnentWfm)).isFalse();
+
+        wfm.setDirty();
+
+        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).isTrue();
+        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(metanodeWfm)).isTrue();
+        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(compnentWfm)).isTrue();
+    }
 }

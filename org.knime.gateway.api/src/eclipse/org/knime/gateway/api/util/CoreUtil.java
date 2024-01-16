@@ -786,6 +786,33 @@ public final class CoreUtil {
     }
 
     /**
+     * Check if the given workflow is in a dirty state or if it has a parent that is dirty
+     * @param wfm
+     * @return True if its dirty or it has a parent that is dirty, false otherwise
+     */
+    public static boolean isWorkflowDirtyOrHasDirtyParent(final WorkflowManager wfm) {
+        var isDirty = wfm.isDirty();
+        if (!isDirty) {
+            if (wfm.isProject()) {
+                return isDirty;
+            }
+            var ncParent = wfm.getDirectNCParent();
+            WorkflowManager parentWfm;
+            if (ncParent instanceof SubNodeContainer snc) {
+                if (snc.isProject()) {
+                    return isDirty;
+                } else {
+                    parentWfm = snc.getParent();
+                }
+            } else {
+                parentWfm = wfm.getParent();
+            }
+            return isWorkflowDirtyOrHasDirtyParent(parentWfm);
+        }
+        return isDirty;
+    }
+
+    /**
      * Helper class to convert {@link TypedTextEnt.ContentTypeEnum}s to the corresponding `knime-core` classes.
      */
     public static final class ContentTypeConverter {
