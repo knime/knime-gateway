@@ -245,8 +245,7 @@ public final class ProjectManager {
     }
 
     /**
-     * Get the project ID of a local project even if the project tab is present but the project has never been loaded
-     * before.
+     * Get the project ID of a local project for workspace-relative path.
      *
      * @param relativePath the relative path to the project within the local workspace
      * @return the project id or an empty optional if there is no project for the given path

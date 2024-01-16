@@ -70,7 +70,7 @@ public interface SpaceProvider {
     /**
      * The ID of the local space provider
      */
-    public static final String LOCAL_SPACE_PROVIDER_ID = "local";
+    String LOCAL_SPACE_PROVIDER_ID = "local";
 
     /**
      * @return the space provider type
