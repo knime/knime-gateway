@@ -384,7 +384,7 @@ public final class WorkflowEntityFactory {
                 .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
                 .setComponentMetadata(
                     CoreUtil.isComponentWFM(wfm) ? buildComponentNodeDescriptionEnt(getParentComponent(wfm)) : null)//
-                .setDirty(wfm.isDirty()).build();
+                .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).build();
         }
     }
 
