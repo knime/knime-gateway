@@ -50,14 +50,19 @@ package org.knime.gateway.impl.project;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
+import org.knime.gateway.impl.project.Project.Origin;
 import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
 
 /**
@@ -113,6 +118,59 @@ public class ProjectManagerTest {
         });
         assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
         assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of()));
+    }
+
+
+    /**
+     * Tests {@link ProjectManager#getLocalProject(java.nio.file.Path)}.
+     */
+    @Test
+    public void testGetLocalProject() {
+        var wfm = WorkflowManager.ROOT;
+        var pm = ProjectManager.getInstance();
+        var proj1 = DefaultProject.builder(wfm).setId("1").build();
+        var proj2 =
+            DefaultProject.builder(wfm).setId("2").setOrigin(createOrigin("relative/path/to/file2", "local")).build();
+        var proj3 = DefaultProject.builder(wfm).setId("3")
+            .setOrigin(createOrigin("relative/path/to/file3", "non-local")).build();
+        pm.addProject(proj1);
+        pm.addProject(proj2);
+        pm.addProject(proj3);
+
+        var projId = pm.getLocalProject(Path.of("relative/path/to/file2")).orElse(null);
+        assertThat(projId, is("2"));
+        projId = pm.getLocalProject(Path.of("relative/path/to/file3")).orElse(null);
+        assertThat(projId, is(nullValue()));
+    }
+
+    private static Origin createOrigin(final String relPath, final String providerId) {
+        return new Origin() {
+
+            @Override
+            public Optional<String> getRelativePath() {
+                return Optional.ofNullable(relPath);
+            }
+
+            @Override
+            public String getSpaceId() {
+                return null;
+            }
+
+            @Override
+            public String getProviderId() {
+                return providerId;
+            }
+
+            @Override
+            public ProjectTypeEnum getProjectType() {
+                return null;
+            }
+
+            @Override
+            public String getItemId() {
+                return null;
+            }
+        };
     }
 
 }
