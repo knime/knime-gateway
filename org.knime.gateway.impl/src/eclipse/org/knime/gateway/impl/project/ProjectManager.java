@@ -60,9 +60,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.ExecutorInfo;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.Pair;
+import org.knime.gateway.impl.project.Project.Origin;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.osgi.annotation.versioning.ConsumerType;
 
 /**
@@ -245,19 +245,20 @@ public final class ProjectManager {
     }
 
     /**
-     * Get a project ID even if the project tab is present but the project has never been loaded before.
+     * Get the project ID of a local project even if the project tab is present but the project has never been loaded
+     * before.
      *
-     * @param absolutePath the absolute path to the project within the local workspace
+     * @param relativePath the relative path to the project within the local workspace
      * @return the project id or an empty optional if there is no project for the given path
      */
-    public Optional<String> getProject(final Path absolutePath) {
+    public Optional<String> getLocalProject(final Path relativePath) {
         return getProjectIds().stream()//
             .filter(projectId -> getProject(projectId)//
-                .map(Project::loadWorkflowManager)//
-                .map(WorkflowManager::getContextV2)//
-                .map(WorkflowContextV2::getExecutorInfo)//
-                .map(ExecutorInfo::getLocalWorkflowPath)//
-                .filter(p -> p.equals(absolutePath))//
+                .flatMap(Project::getOrigin)//
+                .filter(origin -> origin.getProviderId().equals(SpaceProvider.LOCAL_SPACE_PROVIDER_ID))//
+                .flatMap(Origin::getRelativePath)//
+                .map(Path::of)//
+                .filter(relativePath::equals)//
                 .isPresent())//
             .findFirst();
     }
