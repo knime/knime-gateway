@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
+import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
@@ -109,6 +110,12 @@ public interface AppStateEnt extends GatewayEntity {
   public java.util.Map<String, Object> getFeatureFlags();
 
   /**
+   * Get permissions
+   * @return permissions 
+   **/
+  public PermissionsEnt getPermissions();
+
+  /**
    * If true, scrolling in the workflow canvas will be interpreted as zooming
    * @return scrollToZoomEnabled 
    **/
@@ -150,6 +157,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("availableComponentTypes", Pair.create(getAvailableComponentTypes(), e.getAvailableComponentTypes()));
       valueConsumer.accept("hasNodeRecommendationsEnabled", Pair.create(hasNodeRecommendationsEnabled(), e.hasNodeRecommendationsEnabled()));
       valueConsumer.accept("featureFlags", Pair.create(getFeatureFlags(), e.getFeatureFlags()));
+      valueConsumer.accept("permissions", Pair.create(getPermissions(), e.getPermissions()));
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
@@ -217,6 +225,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags);
+        
+        /**
+   		 * Set permissions
+         * 
+         * @param permissions the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setPermissions(PermissionsEnt permissions);
         
         /**
          * If true, scrolling in the workflow canvas will be interpreted as zooming

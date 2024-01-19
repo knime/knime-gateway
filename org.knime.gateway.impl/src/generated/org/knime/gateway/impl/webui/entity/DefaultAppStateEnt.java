@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
+import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowProjectEnt;
 
@@ -62,6 +63,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param availableComponentTypes
  * @param hasNodeRecommendationsEnabled
  * @param featureFlags
+ * @param permissions
  * @param scrollToZoomEnabled
  * @param hasNodeCollectionActive
  * @param devMode
@@ -79,6 +81,7 @@ public record DefaultAppStateEnt(
     java.util.List<String> availableComponentTypes,
     Boolean hasNodeRecommendationsEnabled,
     java.util.Map<String, Object> featureFlags,
+    PermissionsEnt permissions,
     Boolean scrollToZoomEnabled,
     Boolean hasNodeCollectionActive,
     Boolean devMode,
@@ -132,6 +135,11 @@ public record DefaultAppStateEnt(
     }
     
     @Override
+    public PermissionsEnt getPermissions() {
+        return permissions;
+    }
+    
+    @Override
     public Boolean isScrollToZoomEnabled() {
         return scrollToZoomEnabled;
     }
@@ -174,6 +182,8 @@ public record DefaultAppStateEnt(
         private Boolean m_hasNodeRecommendationsEnabled;
 
         private java.util.Map<String, Object> m_featureFlags;
+
+        private PermissionsEnt m_permissions;
 
         private Boolean m_scrollToZoomEnabled;
 
@@ -228,6 +238,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setPermissions(PermissionsEnt permissions) {
+             m_permissions = permissions;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEntBuilder setScrollToZoomEnabled(Boolean scrollToZoomEnabled) {
              m_scrollToZoomEnabled = scrollToZoomEnabled;
              return this;
@@ -267,6 +283,7 @@ public record DefaultAppStateEnt(
                 immutable(m_availableComponentTypes),
                 immutable(m_hasNodeRecommendationsEnabled),
                 immutable(m_featureFlags),
+                immutable(m_permissions),
                 immutable(m_scrollToZoomEnabled),
                 immutable(m_hasNodeCollectionActive),
                 immutable(m_devMode),
