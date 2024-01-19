@@ -98,6 +98,7 @@ import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
+import org.knime.gateway.impl.webui.permissions.Permissions;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
@@ -195,6 +196,7 @@ public final class AppStateEntityFactory {
             .setHasNodeCollectionActive(preferenceProvider.activeNodeCollection() != null) //
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
+            .setPermissions(Permissions.getPermissions())//
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setFileExtensionToNodeTemplateId(nodeFactoryProvider == null ? Collections.emptyMap()
                 : nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
