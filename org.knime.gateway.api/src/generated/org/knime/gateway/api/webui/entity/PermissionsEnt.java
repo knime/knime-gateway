@@ -64,31 +64,31 @@ public interface PermissionsEnt extends GatewayEntity {
 
 
   /**
-   * Get canConfigureNodes
+   * Whether the current user is allowed to configure nodes
    * @return canConfigureNodes , never <code>null</code>
    **/
   public Boolean isCanConfigureNodes();
 
   /**
-   * Get canEditWorkflow
+   * Whether the current user is allowed to edit workflows,  this includes most operations including execution and editing meta data
    * @return canEditWorkflow , never <code>null</code>
    **/
   public Boolean isCanEditWorkflow();
 
   /**
-   * Get canAccessNodeRepository
+   * Whether the current user is allowed access to the node repository
    * @return canAccessNodeRepository , never <code>null</code>
    **/
   public Boolean isCanAccessNodeRepository();
 
   /**
-   * Get canAccessKAIPanel
+   * Whether the current user is allowed access to KAI
    * @return canAccessKAIPanel , never <code>null</code>
    **/
   public Boolean isCanAccessKAIPanel();
 
   /**
-   * Get canAccessSpaceExplorer
+   * Whether the current user is allowed to navigate in the space explorer
    * @return canAccessSpaceExplorer , never <code>null</code>
    **/
   public Boolean isCanAccessSpaceExplorer();
@@ -111,7 +111,7 @@ public interface PermissionsEnt extends GatewayEntity {
     public interface PermissionsEntBuilder extends GatewayEntityBuilder<PermissionsEnt> {
 
         /**
-   		 * Set canConfigureNodes
+         * Whether the current user is allowed to configure nodes
          * 
          * @param canConfigureNodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -119,7 +119,7 @@ public interface PermissionsEnt extends GatewayEntity {
         PermissionsEntBuilder setCanConfigureNodes(Boolean canConfigureNodes);
         
         /**
-   		 * Set canEditWorkflow
+         * Whether the current user is allowed to edit workflows,  this includes most operations including execution and editing meta data
          * 
          * @param canEditWorkflow the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -127,7 +127,7 @@ public interface PermissionsEnt extends GatewayEntity {
         PermissionsEntBuilder setCanEditWorkflow(Boolean canEditWorkflow);
         
         /**
-   		 * Set canAccessNodeRepository
+         * Whether the current user is allowed access to the node repository
          * 
          * @param canAccessNodeRepository the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -135,7 +135,7 @@ public interface PermissionsEnt extends GatewayEntity {
         PermissionsEntBuilder setCanAccessNodeRepository(Boolean canAccessNodeRepository);
         
         /**
-   		 * Set canAccessKAIPanel
+         * Whether the current user is allowed access to KAI
          * 
          * @param canAccessKAIPanel the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
@@ -143,7 +143,7 @@ public interface PermissionsEnt extends GatewayEntity {
         PermissionsEntBuilder setCanAccessKAIPanel(Boolean canAccessKAIPanel);
         
         /**
-   		 * Set canAccessSpaceExplorer
+         * Whether the current user is allowed to navigate in the space explorer
          * 
          * @param canAccessSpaceExplorer the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
