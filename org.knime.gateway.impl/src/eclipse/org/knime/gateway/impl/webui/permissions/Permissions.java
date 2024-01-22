@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.permissions;
 
-import javax.transaction.NotSupportedException;
-
 import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPermissionsEnt.DefaultPermissionsEntBuilder;
 
@@ -64,9 +62,10 @@ public final class Permissions {
         // utility
     }
 
+    private static final String JOB_VIEWER = "JOB-VIEWER";
+
     /**
-     * @return the available feature flags
-     * @throws NotSupportedException
+     * @return the available permissions
      */
     public static PermissionsEnt getPermissions() {
         var permissionsPrefix = "org.knime.ui.mode";
@@ -74,15 +73,15 @@ public final class Permissions {
 
         if (mode == null) {
             return new DefaultPermissionsEntBuilder() //
-                    .setCanAccessKAIPanel(true) //
-                    .setCanAccessNodeRepository(true) //
-                    .setCanAccessSpaceExplorer(true) //
-                    .setCanConfigureNodes(true) //
-                    .setCanEditWorkflow(true) //
-                    .build();
+                .setCanAccessKAIPanel(true) //
+                .setCanAccessNodeRepository(true) //
+                .setCanAccessSpaceExplorer(true) //
+                .setCanConfigureNodes(true) //
+                .setCanEditWorkflow(true) //
+                .build();
         }
 
-        if (mode.equals("JOB-VIEWER")) {
+        if (mode.equals(JOB_VIEWER)) {
             return new DefaultPermissionsEntBuilder() //
                 .setCanAccessKAIPanel(false) //
                 .setCanAccessNodeRepository(false) //
@@ -92,7 +91,8 @@ public final class Permissions {
                 .build();
         }
 
-        throw new IllegalStateException("The given " + permissionsPrefix + " system property has a not supported value!");
+        throw new IllegalStateException(
+            "The given " + permissionsPrefix + " system property has a not supported value!");
     }
 
 }

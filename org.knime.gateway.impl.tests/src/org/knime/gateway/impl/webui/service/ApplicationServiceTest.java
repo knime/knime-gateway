@@ -164,6 +164,52 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         System.clearProperty(featureFlagKeyF3);
     }
 
+    /**
+     * Makes sure that permissions applied by system properties are correctly added to the AppState.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetAppStateWithPermissionsDefault() throws Exception {
+        String workflowProjectId = "the_workflow_project_id";
+        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+
+        var appService = DefaultApplicationService.getInstance();
+
+        var appStateEnt = appService.getState();
+        assertThat(appStateEnt.getPermissions().isCanEditWorkflow(), is(true));
+        assertThat(appStateEnt.getPermissions().isCanConfigureNodes(), is(true));
+        assertThat(appStateEnt.getPermissions().isCanAccessSpaceExplorer(), is(true));
+        assertThat(appStateEnt.getPermissions().isCanAccessNodeRepository(), is(true));
+        assertThat(appStateEnt.getPermissions().isCanAccessKAIPanel(), is(true));
+    }
+
+    /**
+     * Makes sure that permissions related to the job viewer are applied correctly.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetAppStateWithPermissionsJobViewer() throws Exception {
+        String workflowProjectId = "the_workflow_project_id";
+        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+
+        var appService = DefaultApplicationService.getInstance();
+
+        var permissionsFlagKey = "org.knime.ui.mode";
+
+        System.setProperty(permissionsFlagKey, "JOB-VIEWER");
+
+        var appStateEnt = appService.getState();
+        assertThat(appStateEnt.getPermissions().isCanEditWorkflow(), is(false));
+        assertThat(appStateEnt.getPermissions().isCanConfigureNodes(), is(false));
+        assertThat(appStateEnt.getPermissions().isCanAccessSpaceExplorer(), is(false));
+        assertThat(appStateEnt.getPermissions().isCanAccessNodeRepository(), is(false));
+        assertThat(appStateEnt.getPermissions().isCanAccessKAIPanel(), is(false));
+
+        System.clearProperty(permissionsFlagKey);
+    }
+
     @Override
     protected SpaceProviders createSpaceProviders() {
         var space = mock(Space.class);
@@ -194,7 +240,7 @@ public class ApplicationServiceTest extends GatewayServiceTest {
         };
     }
 
-    private static LocalWorkspace mockLocalWorkspace() throws IOException  {
+    private static LocalWorkspace mockLocalWorkspace() throws IOException {
         var root = Files.createTempDirectory("application_service_test");
         var wfDir1 = root.resolve("wfDir1");
         Files.createDirectory(wfDir1);
