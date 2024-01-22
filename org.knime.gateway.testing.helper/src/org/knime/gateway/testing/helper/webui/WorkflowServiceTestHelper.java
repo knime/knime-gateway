@@ -142,6 +142,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
@@ -2880,7 +2881,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .thenReturn(Optional.of(TestWorkflowCollection.LINKED_COMPONENT.getWorkflowDir()));
 
         // Get updatable nodes
-        var components = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        var componentsAndState = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        var components = componentsAndState.stream().map(NodeIdAndIsExecutedEnt::getId).toList();
         assertThat("List of updatable nodes unexpected", Set.copyOf(components), is(updatableComponents));
 
         // Update the nodes

@@ -105,6 +105,7 @@ import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
@@ -251,6 +252,7 @@ public class ListEntities {
         res.add(NodeFactoryKeyEnt.class);
         res.add(NodeGroupEnt.class);
         res.add(NodeGroupsEnt.class);
+        res.add(NodeIdAndIsExecutedEnt.class);
         res.add(NodePortDescriptionEnt.class);
         res.add(NodePortEnt.class);
         res.add(NodePortTemplateEnt.class);
@@ -382,6 +384,7 @@ public class ListEntities {
         res.add(NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder.class);
         res.add(NodeGroupEnt.NodeGroupEntBuilder.class);
         res.add(NodeGroupsEnt.NodeGroupsEntBuilder.class);
+        res.add(NodeIdAndIsExecutedEnt.NodeIdAndIsExecutedEntBuilder.class);
         res.add(NodePortDescriptionEnt.NodePortDescriptionEntBuilder.class);
         res.add(NodePortEnt.NodePortEntBuilder.class);
         res.add(NodePortTemplateEnt.NodePortTemplateEntBuilder.class);

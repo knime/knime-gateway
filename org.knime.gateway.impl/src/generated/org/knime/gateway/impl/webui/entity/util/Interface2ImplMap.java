@@ -166,6 +166,8 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeGroupsEnt;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt.NodeIdAndIsExecutedEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt.NodePortEntBuilder;
@@ -492,6 +494,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeGroupsEntBuilder.class) {
             return (B)new DefaultNodeGroupsEnt.DefaultNodeGroupsEntBuilder();
+        }        
+        if(clazz == NodeIdAndIsExecutedEntBuilder.class) {
+            return (B)new DefaultNodeIdAndIsExecutedEnt.DefaultNodeIdAndIsExecutedEntBuilder();
         }        
         if(clazz == NodePortDescriptionEntBuilder.class) {
             return (B)new DefaultNodePortDescriptionEnt.DefaultNodePortDescriptionEntBuilder();

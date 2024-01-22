@@ -57,6 +57,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -771,18 +772,17 @@ public final class CoreUtil {
     }
 
     /**
-     * Get all linked components (recursively) for a given workflow
+     * Get all linked components (recursively) and their node container state for a given workflow
      *
      * @param wfm
-     * @return The list of linked components, never {@code null}
+     * @return A map of all the linked component IDs and their node container state, never {@code null}
      */
-    public static List<NodeID> getAllLinkedComponents(final WorkflowManager wfm) {
+    public static Map<NodeID, NodeContainerState> getLinkedComponentToStateMap(final WorkflowManager wfm) {
         final var links = wfm.getLinkedMetaNodes(true);
         return links.stream() //
             .map(wfm::findNodeContainer) //
             .filter(SubNodeContainer.class::isInstance) // Only count linked sub node containers
-            .map(NodeContainer::getID) //
-            .toList();
+            .collect(Collectors.toMap(NodeContainer::getID, NodeContainer::getNodeContainerState));
     }
 
     /**
