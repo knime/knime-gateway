@@ -139,6 +139,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
@@ -2850,8 +2851,70 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(message, is("Component don't have metanode ports bars. Can't be transformed."));
     }
 
-    public void testGetLinkUpdates() throws Exception {
-        // TODO: NXT-2172
+    /**
+     * Tests {@link WorkflowService#getUpdatableLinkedComponents(String, NodeIDEnt)} and
+     * {@link UpdateLinkedComponentsCommandEnt} command execution.
+     *
+     * @throws Exception
+     */
+    public void testUpdateLinkedComponents() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.UPDATE_LINKED_COMPONENTS);
+        var nativeNode = new NodeIDEnt(4);
+        var updatableComponent1 = new NodeIDEnt(7); // workflow relative link
+        var updatableComponent2 = new NodeIDEnt(10); // mount point relative link
+        var updatableComponent3 = new NodeIDEnt(11); // absolute link
+        var notLinkedComponent = new NodeIDEnt(9);
+        var updatableComponents = Set.of(updatableComponent1, updatableComponent2, updatableComponent3);
+
+        // Mock URI to file resolver
+        var mockedResolver = Mockito.mock(URIToFileResolve.class);
+        var oldResolver = URIToFileResolveTestUtil.replaceURIToFileResolveService(mockedResolver);
+        when(mockedResolver.resolveToLocalOrTempFileConditional(any(), any(), any()))
+            .thenReturn(Optional.of(TestWorkflowCollection.LINKED_COMPONENT.getWorkflowDir()));
+
+        // Get updatable nodes
+        var componentsAndState = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        var components = componentsAndState.stream().map(NodeIdAndIsExecutedEnt::getId).toList();
+        assertThat("List of updatable nodes unexpected", Set.copyOf(components), is(updatableComponents));
+
+        // Update the nodes
+        var command = buildUpdateLinkedComponentsCommand(components);
+        var result = (UpdateLinkedComponentsResultEnt)ws().executeWorkflowCommand(projectId, getRootID(), command);
+        assertThat("Component update status unexpected", result.getStatus(), is(StatusEnum.SUCCESS));
+        var componentsAfterUpdate = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAfterUpdate),
+            is(Collections.emptySet()));
+
+        // Undo
+        ws().undoWorkflowCommand(projectId, getRootID());
+        var componentsAfterUndo = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        assertThat("List of updatable nodes unexpected", Set.copyOf(componentsAfterUndo), is(updatableComponents));
+
+        // Redo
+        ws().redoWorkflowCommand(projectId, getRootID());
+        var componentsAfterRedo = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAfterRedo),
+            is(Collections.emptySet()));
+
+        // Try updating again, shouldn't change anything
+        var resultAfterSecondUpdate =
+            (UpdateLinkedComponentsResultEnt)ws().executeWorkflowCommand(projectId, getRootID(), command);
+        assertThat("Nothing should have changed", resultAfterSecondUpdate.getStatus(), is(StatusEnum.UNCHANGED));
+
+        // Operation not allowed
+        var commandEmpty = buildUpdateLinkedComponentsCommand(List.of());
+        assertThrows("Should not be allowed for emtpy lists", OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), commandEmpty));
+        var commandWithNativeNode = buildUpdateLinkedComponentsCommand(List.of(nativeNode, updatableComponent1));
+        assertThrows("Should not be allowed if list contains native nodes", OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), commandWithNativeNode));
+        var commandWithNotLinked = buildUpdateLinkedComponentsCommand(List.of(notLinkedComponent, updatableComponent1));
+        assertThrows("Should not be allowed if list contains components that are not links",
+            OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, getRootID(), commandWithNotLinked));
+
+        // Reset mocked resolver
+        URIToFileResolveTestUtil.replaceURIToFileResolveService(oldResolver);
     }
 
     public void testUpdateLinkedComponentsCommand() throws Exception {

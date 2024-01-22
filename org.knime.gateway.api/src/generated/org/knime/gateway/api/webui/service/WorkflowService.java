@@ -48,6 +48,7 @@ import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
@@ -84,7 +85,7 @@ public interface WorkflowService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getLinkUpdates(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Retrieves the complete structure (sub-)workflows.

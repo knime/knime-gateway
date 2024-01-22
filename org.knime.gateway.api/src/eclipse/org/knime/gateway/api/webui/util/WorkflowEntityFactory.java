@@ -158,6 +158,8 @@ import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt.NodeIdAndIsExecutedEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt.NodePortDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
@@ -1163,7 +1165,7 @@ public final class WorkflowEntityFactory {
     }
 
     private Boolean getContainsLinkedComponents(final WorkflowManager wfm) {
-        final var linkedComponents = CoreUtil.getAllLinkedComponents(wfm);
+        final var linkedComponents = CoreUtil.getLinkedComponentToStateMap(wfm);
         return linkedComponents.isEmpty() ? null : true;
     }
 
@@ -1191,6 +1193,23 @@ public final class WorkflowEntityFactory {
         }
 
         return AllowedNodeActionsEnt.CanCollapseEnum.TRUE;
+    }
+
+    /**
+     * Builds a new {@link NodeIdAndIsExecutedEnt} instance.
+     *
+     * @param nodeId The node ID to build the entity for
+     * @param ncState The node container state
+     * @return Combination of node ID and execution state
+     */
+    public NodeIdAndIsExecutedEnt buildNodeIdAndIsExecutedEnt(final NodeID nodeId, final NodeContainerState ncState) {
+        final var ncStateEnum = getNodeExecutionStateEnum(ncState);
+        final var isExecuted =
+            ncStateEnum == ExecutionStateEnum.EXECUTED || ncStateEnum == ExecutionStateEnum.EXECUTING;
+        return builder(NodeIdAndIsExecutedEntBuilder.class)//
+            .setId(new NodeIDEnt(nodeId))//
+            .setIsExecuted(isExecuted)//
+            .build();
     }
 
     private Boolean canDeleteNode(final NodeContainer nc, final NodeID nodeId,

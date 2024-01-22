@@ -49,13 +49,16 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
@@ -63,6 +66,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -126,16 +130,23 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public List<NodeIDEnt> getLinkUpdates(final String projectId, final NodeIDEnt workflowId)
+    public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         try {
-            var res = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(wfm,
-                "org.knime.gateway.impl", CoreUtil.getAllLinkedComponents(wfm), new NullProgressMonitor());
-            return res.updateList().stream()//
-                .map(NodeIDEnt::new)//
+            final var linkedComponentsToStateMap = CoreUtil.getLinkedComponentToStateMap(wfm);
+            final var candidateList = linkedComponentsToStateMap.entrySet().stream().map(Entry::getKey).toList();
+            final var componentUpdateResult = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(
+                wfm, "org.knime.gateway.impl", candidateList, new NullProgressMonitor());
+            return componentUpdateResult.updateList().stream()//
+                .map(wfm::findNodeContainer)//
+                .map(NodeContainer::getID)//
+                .map(nodeId -> {
+                    final var ncState = linkedComponentsToStateMap.get(nodeId);
+                    return EntityFactory.Workflow.buildNodeIdAndIsExecutedEnt(nodeId, ncState);
+                })//
                 .toList();
         } catch (IllegalStateException | InterruptedException e) {
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
