@@ -148,8 +148,7 @@ public final class DefaultEventService implements EventService {
                 t -> new SelectionEventSourceDelegator(m_eventConsumer));
         } else if (eventTypeEnt instanceof UpdateAvailableEventTypeEnt) {
             if (m_updateStateProvider == null) {
-                throw new InvalidRequestException(
-                    "Cannot register listener to update state changed events if no update state provider was declared.");
+                return;
             }
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new UpdateAvailableEventSource(m_eventConsumer, m_updateStateProvider));
