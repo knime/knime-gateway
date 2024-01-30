@@ -130,7 +130,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
+    public List<NodeIdAndIsExecutedEnt> getLinkUpdates(final String projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);

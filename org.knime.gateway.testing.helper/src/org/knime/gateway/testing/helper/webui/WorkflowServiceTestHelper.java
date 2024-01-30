@@ -2881,7 +2881,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .thenReturn(Optional.of(TestWorkflowCollection.LINKED_COMPONENT.getWorkflowDir()));
 
         // Get updatable nodes
-        var componentsAndState = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        var componentsAndState = ws().getLinkUpdates(projectId, getRootID());
         var cc1 = componentsAndState.stream().map(NodeIdAndIsExecutedEnt::getId).toList();
         assertThat("List of updatable nodes unexpected", Set.copyOf(cc1), is(updatableComponents));
 
@@ -2889,19 +2889,20 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var command = buildUpdateLinkedComponentsCommand(cc1);
         var result = (UpdateLinkedComponentsResultEnt)ws().executeWorkflowCommand(projectId, getRootID(), command);
         assertThat("Component update status unexpected", result.getStatus(), is(StatusEnum.SUCCESS));
-        var componentsAndStateAfterUpdate = ws().getUpdatableLinkedComponents(projectId, getRootID());
+        var componentsAndStateAfterUpdate = ws().getLinkUpdates(projectId, getRootID());
         assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAndStateAfterUpdate),
             is(Collections.emptySet()));
 
         // Undo
         ws().undoWorkflowCommand(projectId, getRootID());
-        var componentsAfterUndo = ws().getUpdatableLinkedComponents(projectId, getRootID());
-        assertThat("List of updatable nodes unexpected", Set.copyOf(componentsAfterUndo), is(updatableComponents));
+        var componentsAndStateAfterUndo = ws().getLinkUpdates(projectId, getRootID());
+        var cc2 = componentsAndStateAfterUndo.stream().map(NodeIdAndIsExecutedEnt::getId).toList();
+        assertThat("List of updatable nodes unexpected", Set.copyOf(cc2), is(updatableComponents));
 
         // Redo
         ws().redoWorkflowCommand(projectId, getRootID());
-        var componentsAfterRedo = ws().getUpdatableLinkedComponents(projectId, getRootID());
-        assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAfterRedo),
+        var componentsAndStateAfterRedo = ws().getLinkUpdates(projectId, getRootID());
+        assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAndStateAfterRedo),
             is(Collections.emptySet()));
 
         // Try updating again, shouldn't change anything
