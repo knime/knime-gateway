@@ -47,6 +47,7 @@ package org.knime.gateway.impl.service.util;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -299,14 +300,15 @@ public final class DefaultServiceUtil {
         if (nodeIDs != null && nodeIDs.length != 0) {
             // Reset given nodes
             toReset = Arrays.stream(nodeIDs);
+            toReset.forEach(wfm::resetAndConfigureNode);
         } else {
             // Reset all nodes that can be reset.
             // Only need to call on source nodes since `resetAndConfigure` will reset and configure all successors, too.
             toReset = CoreUtil.getSourceNodes(wfm).stream().map(NodeContainer::getID).filter(wfm::canResetNode);
+            toReset.forEach(id -> wfm.resetAndConfigureNode(id, true));
             // In case a selection is given, we do not need to filter because if not all nodes can be reset, the
             //    action is not available in the frontend.
         }
-        toReset.forEach(wfm::resetAndConfigureNode);
     }
 
     private static void cancel(final WorkflowManager wfm, final NodeID... nodeIDs) {
