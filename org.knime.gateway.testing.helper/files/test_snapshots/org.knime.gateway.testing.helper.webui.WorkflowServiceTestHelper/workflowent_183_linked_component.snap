@@ -28,7 +28,7 @@
     "type" : "Sink"
   },
   "connections" : { },
-  "dirty" : false,
+  "dirty" : true,
   "info" : {
     "containerId" : "root:183",
     "containerType" : "component",
