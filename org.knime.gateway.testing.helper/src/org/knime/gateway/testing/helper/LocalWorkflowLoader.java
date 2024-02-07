@@ -102,6 +102,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
 
     private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId) {
         wfm.setName(name);
+        wfm.getNodeContainerDirectory().setDirty(false);
         ProjectManager.getInstance()
             .addProject(DefaultProject.builder(wfm).setId(projectId).setOrigin(createOriginForTesting()).build());
         m_loadedWorkflows.add(projectId);
