@@ -118,23 +118,24 @@ public class CoreUtilTest {
 
     /**
      * @see CoreUtil#isWorkflowDirtyOrHasDirtyParent(WorkflowManager)
+     * @throws Exception
      */
     @Test
-    void testIsWorkflowDirtyOrHasDirtyParent() throws Exception {
-        var wfm = TestWorkflowCollection.CONTAINER_NODES_WF.loadWorkflow();
+    public void testIsWorkflowDirtyOrHasDirtyParent() throws Exception {
+        var wfm = getWorkflowManager(CONTAINER_NODES_WF);
         var emptyMetanodeId = wfm.getID().createChild(2);
         var emptyComponentId = wfm.getID().createChild(3);
         var metanodeWfm = wfm.getNodeContainer(emptyMetanodeId).getParent();
         var compnentWfm = wfm.getNodeContainer(emptyComponentId).getParent();
 
-        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).isFalse();
-        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(metanodeWfm)).isFalse();
-        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(compnentWfm)).isFalse();
+        assertFalse(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm));
+        assertFalse(CoreUtil.isWorkflowDirtyOrHasDirtyParent(metanodeWfm));
+        assertFalse(CoreUtil.isWorkflowDirtyOrHasDirtyParent(compnentWfm));
 
         wfm.setDirty();
 
-        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).isTrue();
-        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(metanodeWfm)).isTrue();
-        assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(compnentWfm)).isTrue();
+        assertTrue(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm));
+        assertTrue(CoreUtil.isWorkflowDirtyOrHasDirtyParent(metanodeWfm));
+        assertTrue(CoreUtil.isWorkflowDirtyOrHasDirtyParent(compnentWfm));
     }
 }

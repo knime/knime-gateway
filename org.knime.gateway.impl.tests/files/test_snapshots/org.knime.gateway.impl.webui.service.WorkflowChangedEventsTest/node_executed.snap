@@ -60,6 +60,10 @@
   "value" : true
 }, {
   "op" : "replace",
+  "path" : "/dirty",
+  "value" : true
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:1/allowedActions/canCollapse",
   "value" : "resetRequired"
 }, {
