@@ -47,7 +47,6 @@ package org.knime.gateway.impl.service.util;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -89,7 +88,7 @@ public final class DefaultServiceUtil {
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
     public static NodeContainer getNodeContainer(final String rootWorkflowID, final NodeIDEnt nodeID) {
-        WorkflowManager wfm = getRootWorkflowManager(rootWorkflowID);
+        var wfm = getRootWorkflowManager(rootWorkflowID);
         if (nodeID.equals(NodeIDEnt.getRootID())) {
             return wfm;
         } else {
@@ -110,8 +109,8 @@ public final class DefaultServiceUtil {
      */
     public static NodeContainer getNodeContainer(final String rootWorkflowID, final NodeIDEnt workflowID,
         final NodeIDEnt nodeID) {
-        WorkflowManager wfm = getWorkflowManager(rootWorkflowID, workflowID);
-        WorkflowManager rootWfm = getRootWorkflowManager(rootWorkflowID);
+        var wfm = getWorkflowManager(rootWorkflowID, workflowID);
+        var rootWfm = getRootWorkflowManager(rootWorkflowID);
         return wfm.getNodeContainer(nodeID.toNodeID(rootWfm));
     }
 
@@ -158,10 +157,10 @@ public final class DefaultServiceUtil {
             nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
         }
         WorkflowManager wfm;
-        if (nodeContainer instanceof SubNodeContainer) {
-            wfm = ((SubNodeContainer)nodeContainer).getWorkflowManager();
-        } else if (nodeContainer instanceof WorkflowManager) {
-            wfm = (WorkflowManager)nodeContainer;
+        if (nodeContainer instanceof SubNodeContainer subNodeContainer) {
+            wfm = subNodeContainer.getWorkflowManager();
+        } else if (nodeContainer instanceof WorkflowManager metanodeWfm) {
+            wfm = metanodeWfm;
         } else {
             throw new IllegalStateException("The node id '" + nodeID + "' doesn't reference a sub workflow.");
         }
@@ -269,10 +268,10 @@ public final class DefaultServiceUtil {
      */
     public static NodeContainer changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action) {
         NodeContainer nc = getNodeContainer(projectId, nodeId);
-        if (nc instanceof SubNodeContainer) {
-            doChangeNodeStates(((SubNodeContainer)nc).getWorkflowManager(), action);
-        } else if (nc instanceof WorkflowManager) {
-            doChangeNodeStates((WorkflowManager)nc, action);
+        if (nc instanceof SubNodeContainer subNodeContainer) {
+            doChangeNodeStates(subNodeContainer.getWorkflowManager(), action);
+        } else if (nc instanceof WorkflowManager metanodeWfm) {
+            doChangeNodeStates(metanodeWfm, action);
         } else {
             doChangeNodeStates(nc.getParent(), action, nc.getID());
         }
