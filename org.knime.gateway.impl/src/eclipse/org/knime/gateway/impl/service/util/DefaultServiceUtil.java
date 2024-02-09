@@ -46,8 +46,10 @@
 package org.knime.gateway.impl.service.util;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.workflow.ConnectionID;
@@ -296,14 +298,20 @@ public final class DefaultServiceUtil {
     }
 
     private static void reset(final WorkflowManager wfm, final NodeID... nodeIDs) {
-        Stream<NodeID> toReset;
+        Set<NodeID> toReset = new HashSet<>();
         if (nodeIDs != null && nodeIDs.length != 0) {
             // Reset given nodes
-            toReset = Arrays.stream(nodeIDs);
+            toReset.addAll(Arrays.asList(nodeIDs));
         } else {
             // Reset all nodes that can be reset.
             // Only need to call on source nodes since `resetAndConfigure` will reset and configure all successors, too.
-            toReset = CoreUtil.getSourceNodes(wfm).stream().map(NodeContainer::getID).filter(wfm::canResetNode);
+            var sourceNodes = CoreUtil.getSourceNodes(wfm).stream().map(NodeContainer::getID).filter(wfm::canResetNode)
+                .collect(Collectors.toSet());
+            toReset.addAll(sourceNodes);
+            // Directly trigger reset on metanodes in "Reset All" action to reset them *fully* (all contained nodes).
+            var metanodes = wfm.getNodeContainers().stream().filter(nc -> nc instanceof WorkflowManager)
+                .map(NodeContainer::getID).collect(Collectors.toSet());
+            toReset.addAll(metanodes);
             // In case a selection is given, we do not need to filter because if not all nodes can be reset, the
             //    action is not available in the frontend.
         }
