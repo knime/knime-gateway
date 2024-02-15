@@ -399,7 +399,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(nodeDialogJsonNode.get("initialData").textValue(), notNullValue());
         var resourceInfo = nodeDialogJsonNode.get("resourceInfo");
         assertThat(resourceInfo.get("id").textValue(), is("defaultdialog"));
-        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
+        assertThat(resourceInfo.get("type").textValue(), is("SHADOW_APP"));
 
         var message = assertThrows(InvalidRequestException.class,
             () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
@@ -418,7 +418,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(nodeDialogJsonNode.get("initialData").textValue(), notNullValue());
         resourceInfo = nodeDialogJsonNode.get("resourceInfo");
         assertThat(resourceInfo.get("id").textValue(), is("defaultdialog"));
-        assertThat(resourceInfo.get("type").textValue(), is("VUE_COMPONENT_LIB"));
+        assertThat(resourceInfo.get("type").textValue(), is("SHADOW_APP"));
 
         if (componentUiMode == null) {
             System.clearProperty(key);

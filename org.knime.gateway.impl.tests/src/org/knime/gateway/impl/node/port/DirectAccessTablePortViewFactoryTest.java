@@ -97,7 +97,7 @@ public class DirectAccessTablePortViewFactoryTest {
         try {
             var portView = new DirectAccessTablePortViewFactory().createPortView(directAccessTablePortObject);
             var page = portView.getPage();
-            assertThat(page.getContentType().toString(), is("VUE_COMPONENT_LIB"));
+            assertThat(page.getContentType().toString(), is("SHADOW_APP"));
             var pageId = page.getPageIdForReusablePage().orElse(null);
             assertThat(pageId, is("deferredtableview"));
         } finally {

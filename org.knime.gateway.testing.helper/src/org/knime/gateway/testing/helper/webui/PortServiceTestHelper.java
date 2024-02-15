@@ -105,25 +105,25 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // get flow variable 'spec' view 0
         var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 0);
-        assertPortView(portView, "root:1", "flowvariableview", "VUE_COMPONENT_LIB");
+        assertPortView(portView, "root:1", "flowvariableview", "SHADOW_APP");
 
         // get flow variable port view 1
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 1);
-        assertPortView(portView, "root:1", "flowvariableview", "VUE_COMPONENT_LIB");
+        assertPortView(portView, "root:1", "flowvariableview", "SHADOW_APP");
 
         // check table spec view (registered at index 0)
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0);
-        assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
+        assertPortView(portView, "root:1", "tableview", "SHADOW_APP");
 
         executeWorkflow(wfId);
 
         // get table port view 1 now that node is executed
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
-        assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
+        assertPortView(portView, "root:1", "tableview", "SHADOW_APP");
 
         // get table statistics  now that node is executed
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 2);
-        assertPortView(portView, "root:1", "tableview", "VUE_COMPONENT_LIB");
+        assertPortView(portView, "root:1", "tableview", "SHADOW_APP");
 
         // get data for an inactive port
         message =
@@ -156,11 +156,11 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // get port view for a component
         var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(23), 1, 1);
-        assertPortView(portView, "root:23", "tableview", "VUE_COMPONENT_LIB");
+        assertPortView(portView, "root:23", "tableview", "SHADOW_APP");
 
         // get port view for a metanode
         portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 1);
-        assertPortView(portView, "root:6", "tableview", "VUE_COMPONENT_LIB");
+        assertPortView(portView, "root:6", "tableview", "SHADOW_APP");
     }
 
     /**
@@ -175,11 +175,11 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var waitNodeId = new NodeIDEnt(waitNodeIdx);
 
         var portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 0);
-        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "VUE_COMPONENT_LIB",
+        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "SHADOW_APP",
             TestWorkflowCollection.EXECUTION_STATES);
 
         portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 1);
-        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "VUE_COMPONENT_LIB",
+        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "SHADOW_APP",
             TestWorkflowCollection.EXECUTION_STATES);
     }
 
