@@ -113,6 +113,15 @@ public class StreamingExecutionTestHelper extends WebUIGatewayServiceTestHelper 
                 && s2.getExecutionState() == ExecutionStateEnum.EXECUTING;
         });
 
+        // The streaming property is set based on connection progress events.
+        // Connection progress events are handled asynchronously (on different threads) in streaming execution:
+        // Do not proceed with test until this property has been set.
+        await().atMost(4, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
+            var connections = ws().getWorkflow(wfId, new NodeIDEnt(5), false).getWorkflow().getConnections();
+            return connections.get("root:5:0:5_1").isStreaming() != null
+                && connections.get("root:5:0:6_1").isStreaming() != null;
+        });
+
         WorkflowEnt componentWf3 = ws().getWorkflow(wfId, new NodeIDEnt(3), Boolean.FALSE).getWorkflow();
         cr(componentWf3.getConnections(), "streamed_connections_finished");
         cr(ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE).getWorkflow().getConnections(),
