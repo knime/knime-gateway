@@ -98,7 +98,7 @@ import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
-import org.knime.gateway.impl.webui.permissions.Permissions;
+import org.knime.gateway.impl.webui.modes.Permissions;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;

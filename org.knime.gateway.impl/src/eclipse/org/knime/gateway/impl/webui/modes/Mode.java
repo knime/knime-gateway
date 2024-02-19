@@ -44,55 +44,70 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 19, 2023 (Juan Baquero): created
+ *   Feb 19, 2024 (kai): created
  */
-package org.knime.gateway.impl.webui.permissions;
+package org.knime.gateway.impl.webui.modes;
 
-import org.knime.gateway.api.webui.entity.PermissionsEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPermissionsEnt.DefaultPermissionsEntBuilder;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
- * Determines and supplies the feature flags.
+ * Modes the Modern UI of the AP can be launched in
  *
- * @author Juan Baquero
+ * @author Kai Franze, KNIME GmbH, Germany
  */
-public final class Permissions {
-
-    private Permissions() {
-        // utility
-    }
-
-    private static final String JOB_VIEWER = "JOB-VIEWER";
+public enum Mode {
 
     /**
-     * @return the available permissions
+     * Special mode which to only read but not change or execute a workflow
      */
-    public static PermissionsEnt getPermissions() {
-        var permissionsPrefix = "org.knime.ui.mode";
-        var mode = System.getProperty(permissionsPrefix);
+    JOB_VIEWER("JOB-VIEWER"),
 
-        if (mode == null) {
-            return new DefaultPermissionsEntBuilder() //
-                .setCanAccessKAIPanel(true) //
-                .setCanAccessNodeRepository(true) //
-                .setCanAccessSpaceExplorer(true) //
-                .setCanConfigureNodes(true) //
-                .setCanEditWorkflow(true) //
-                .build();
+    /**
+     * The default mode
+     */
+    DEFAULT("DEFAULT");
+
+    /**
+     * Set of modes that do not need a node repository to be loaded.
+     */
+    private static final Set<Mode> WITHOUT_NODE_REPSITORY = EnumSet.of(JOB_VIEWER);
+
+    private static final String SYSTEM_PROPERTY_KEY = "org.knime.ui.mode";
+
+    private final String m_name;
+
+    Mode(final String name) {
+        m_name = name;
+    }
+
+    /**
+     * @param mode The mode to test
+     * @return If {@code true}, then the mode doesn't require a node repository; if {@code false} it does.
+     */
+    public static boolean isWithOutNodeRepository(final Mode mode) {
+        return WITHOUT_NODE_REPSITORY.contains(mode);
+    }
+
+    /**
+     * Reads the {@link Mode} from the run configuration
+     *
+     * @return The {@link Mode} if one was set, {@code Mode.DEFAULT} otherwise
+     * @throws IllegalStateException if no legal mode was set
+     */
+    public static Mode getModeFromRunConfiguration() {
+        final var prop = System.getProperty(SYSTEM_PROPERTY_KEY);
+
+        if (prop == null) {
+            return DEFAULT;
         }
 
-        if (mode.equals(JOB_VIEWER)) {
-            return new DefaultPermissionsEntBuilder() //
-                .setCanAccessKAIPanel(false) //
-                .setCanAccessNodeRepository(false) //
-                .setCanAccessSpaceExplorer(false) //
-                .setCanConfigureNodes(false) //
-                .setCanEditWorkflow(false) //
-                .build();
-        }
-
-        throw new IllegalStateException(
-            "The given " + permissionsPrefix + " system property has a not supported value!");
+        return Arrays.stream(values())//
+            .filter(mode -> mode.m_name.equals(prop)) //
+            .findFirst() //
+            .orElseThrow(() -> new IllegalStateException(
+                "The given <%s> system property contains a not supported value!".formatted(SYSTEM_PROPERTY_KEY)));
     }
 
 }
