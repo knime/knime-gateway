@@ -96,8 +96,7 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
 
             @Override
             public Page getPage() {
-                return Page.builder(CoreUIPlugin.class, "js-src/dist", "FlowVariableView.umd.js") //
-                    .addResourceFile("FlowVariableView.js") //
+                return Page.builder(CoreUIPlugin.class, "js-src/dist", "FlowVariableView.js") //
                     .markAsReusable("flowvariableview") //
                     .build();
             }

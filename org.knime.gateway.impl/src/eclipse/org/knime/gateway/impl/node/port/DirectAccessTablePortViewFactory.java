@@ -73,8 +73,7 @@ public class DirectAccessTablePortViewFactory implements PortViewFactory<PortObj
 
             @Override
             public Page getPage() {
-                return Page.builder(CoreUIPlugin.class, "js-src/dist", "DeferredTableView.umd.js") //
-                    .addResourceFile("DeferredTableView.js") //
+                return Page.builder(CoreUIPlugin.class, "js-src/dist", "DeferredTableView.js") //
                     .markAsReusable("deferredtableview").build();
             }
 
