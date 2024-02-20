@@ -100,6 +100,10 @@ import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2.LocationType;
+import org.knime.core.util.KnimeUrlType;
+import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.core.util.urlresolve.KnimeUrlResolver;
+import org.knime.core.util.urlresolve.URLResolverUtil;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.view.NodeViewManager;
@@ -1535,18 +1539,31 @@ public final class WorkflowEntityFactory {
     }
 
     private static boolean isLinkTypeChangeable(final NodeContainerTemplate nct) {
-        final Predicate<String> isLocalHost = host -> host != null && host.equals("LOCAL");
-        // TODO this is very brittle, better to properly resolve the link type - see NXT-2046
-        final Predicate<String> isRelativeLink = host -> host != null && host.startsWith("knime.");
+        final var templateInfo = nct.getTemplateInformation();
+        if (templateInfo.getRole() != Role.Link) {
+            return false;
+        }
 
+        final var templateUri = templateInfo.getSourceURI();
+        final var optLinkType = KnimeUrlType.getType(templateUri);
+        if (optLinkType.isEmpty()) {
+            return false;
+        }
+
+        final var linkType = optLinkType.get();
         final var projectContext = CoreUtil.getProjectWorkflow(nct.getParent()).getContextV2();
-        final var isProjectInLocalSpace = projectContext.getLocationType() == LocationType.LOCAL;
-
-        final var itemUri = nct.getTemplateInformation().getSourceURI();
-        final var itemHost = itemUri.getHost();
-        final var isSharedItemInLocalSpace = isLocalHost.or(isRelativeLink).test(itemHost);
-
-        return isProjectInLocalSpace && isSharedItemInLocalSpace;
+        try {
+            final var urls = KnimeUrlResolver.getResolver(projectContext) //
+                    .changeLinkType(URLResolverUtil.toURL(templateUri));
+            if (urls.size() > (urls.containsKey(linkType) ? 1 : 0)) {
+                // there are other options available
+                return true;
+            }
+        } catch (ResourceAccessException e) {
+            LOGGER.debug(
+                () -> "Cannot compute alternative KNIME URL types for '" + templateUri + "': " + e.getMessage(), e);
+        }
+        return false;
     }
 
     /**
@@ -1559,11 +1576,7 @@ public final class WorkflowEntityFactory {
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
         NodeContainerParent parent = wfm.getDirectNCParent();
-        if (parent instanceof SubNodeContainer) {
-            return ((SubNodeContainer)parent).getParent();
-        } else {
-            return (WorkflowManager)parent;
-        }
+        return parent instanceof SubNodeContainer snc ? snc.getParent() : (WorkflowManager)parent;
     }
 
     /*

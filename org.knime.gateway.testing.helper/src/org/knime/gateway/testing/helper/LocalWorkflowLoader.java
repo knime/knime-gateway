@@ -96,7 +96,9 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws Exception
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
-        WorkflowManager wfm = WorkflowManagerUtil.loadWorkflow(workflow.getWorkflowDir());
+        final var workflowDir = workflow.getWorkflowDir();
+        WorkflowManager wfm = WorkflowManagerUtil.loadWorkflowInWorkspace(workflowDir.toPath(),
+            workflowDir.getParentFile().toPath());
         addToProjectManager(wfm, workflow.getName(), projectId);
     }
 

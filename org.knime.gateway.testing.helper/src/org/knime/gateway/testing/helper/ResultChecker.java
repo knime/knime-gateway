@@ -108,7 +108,7 @@ public class ResultChecker {
             if (!actual.equals(expected)) {
                 // write debug file if snapshot doesn't match
                 Files.write(debugFile, actual.getBytes(StandardCharsets.UTF_8));
-                assertEquals(snapshotName, testClass, expected, actual);
+                assertEquals(snapshotName, testClass, expected.replace("\r", ""), actual.replace("\r", ""));
             } else if (Files.exists(debugFile)) {
                 // if snapshot matches, delete debug file (might not exist)
                 Files.delete(debugFile);
@@ -138,10 +138,10 @@ public class ResultChecker {
 
             @Override
             public void describeMismatch(final Object item, final Description description) {
-                if (item instanceof String) {
-                    Patch<String> diff = DiffUtils.diff(expected, (String)item, null);
+                if (item instanceof String str) {
+                    Patch<String> diff = DiffUtils.diff(expected, str, null);
                     description.appendText("there are differences");
-                    if (matchSorted(expected, (String)item)) {
+                    if (matchSorted(expected, str)) {
                         description.appendText(" (NOTE: snapshots match if their lines are sorted!)");
                     }
 

@@ -299,10 +299,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return w.getNodes().entrySet().stream().map(e -> { // NOSONAR
             ExecutionStateEnum state = null;
             NodeEnt n = e.getValue();
-            if (n instanceof NativeNodeEnt) {
-                state = ((NativeNodeEnt)n).getState().getExecutionState();
-            } else if (n instanceof ComponentNodeEnt) {
-                state = ((ComponentNodeEnt)n).getState().getExecutionState();
+            if (n instanceof NativeNodeEnt nativeEnt) {
+                state = nativeEnt.getState().getExecutionState();
+            } else if (n instanceof ComponentNodeEnt componentEnt) {
+                state = componentEnt.getState().getExecutionState();
             } else {
                 //
             }
