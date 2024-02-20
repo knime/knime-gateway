@@ -49,54 +49,49 @@
 package org.knime.gateway.impl.webui.modes;
 
 import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * Modes the Modern UI of the AP can be launched in
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
-public enum Mode {
+public enum WebUIMode {
 
-    /**
-     * Special mode which to only read but not change or execute a workflow
-     */
-    JOB_VIEWER("JOB-VIEWER"),
+        /**
+         * Special mode to only read but not change or execute a workflow
+         */
+        JOB_VIEWER("JOB-VIEWER", false),
 
-    /**
-     * The default mode
-     */
-    DEFAULT("DEFAULT");
-
-    /**
-     * Set of modes that do not need a node repository to be loaded.
-     */
-    private static final Set<Mode> WITHOUT_NODE_REPSITORY = EnumSet.of(JOB_VIEWER);
-
-    private static final String SYSTEM_PROPERTY_KEY = "org.knime.ui.mode";
+        /**
+         * The default mode
+         */
+        DEFAULT("DEFAULT", true);
 
     private final String m_name;
 
-    Mode(final String name) {
+    private final boolean m_needsToLoadNodeRepository;
+
+    private static final String SYSTEM_PROPERTY_KEY = "org.knime.ui.mode";
+
+    WebUIMode(final String name, final boolean needsToLoadNodeRepository) {
         m_name = name;
+        m_needsToLoadNodeRepository = needsToLoadNodeRepository;
     }
 
     /**
-     * @param mode The mode to test
-     * @return If {@code true}, then the mode doesn't require a node repository; if {@code false} it does.
+     * @return If {@code true}, then the mode requires a node repository; if {@code false} it does not.
      */
-    public static boolean isWithOutNodeRepository(final Mode mode) {
-        return WITHOUT_NODE_REPSITORY.contains(mode);
+    public boolean needsToLoadNodeRepository() {
+        return m_needsToLoadNodeRepository;
     }
 
     /**
-     * Reads the {@link Mode} from the run configuration
+     * Reads the {@link WebUIMode} from the system properties
      *
-     * @return The {@link Mode} if one was set, {@code Mode.DEFAULT} otherwise
+     * @return The {@link WebUIMode} if one was set, {@code Mode.DEFAULT} otherwise
      * @throws IllegalStateException if no legal mode was set
      */
-    public static Mode getModeFromRunConfiguration() {
+    public static WebUIMode getMode() {
         final var prop = System.getProperty(SYSTEM_PROPERTY_KEY);
 
         if (prop == null) {

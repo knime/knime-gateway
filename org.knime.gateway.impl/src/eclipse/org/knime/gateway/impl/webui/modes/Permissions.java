@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.modes;
 
+import java.util.function.Supplier;
+
 import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPermissionsEnt.DefaultPermissionsEntBuilder;
 
@@ -55,6 +57,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPermissionsEnt.DefaultPermissi
  * Permissions enable or disable certain aspects of the Modern UI.
  *
  * @author Juan Baquero
+ * @author Kai Franze, KNIME GmbH, Germany
  */
 public final class Permissions {
 
@@ -63,27 +66,28 @@ public final class Permissions {
     }
 
     /**
-     * Determine the available permissions based on the configured {@link Mode}.
+     * Determine the available permissions based on the configured {@link WebUIMode}.
      *
      * @return the available permissions
      */
     public static PermissionsEnt getPermissions() {
-        final var mode = Mode.getModeFromRunConfiguration();
-        return switch (mode) {
-            case JOB_VIEWER -> new DefaultPermissionsEntBuilder() //
-                .setCanAccessKAIPanel(false) //
-                .setCanAccessNodeRepository(false) //
-                .setCanAccessSpaceExplorer(false) //
-                .setCanConfigureNodes(false) //
-                .setCanEditWorkflow(false) //
-                .build();
-            case DEFAULT -> new DefaultPermissionsEntBuilder() //
-                .setCanAccessKAIPanel(true) //
-                .setCanAccessNodeRepository(true) //
-                .setCanAccessSpaceExplorer(true) //
-                .setCanConfigureNodes(true) //
-                .setCanEditWorkflow(true) //
-                .build();
+        final Supplier<PermissionsEnt> jobViewerSupplier = () -> new DefaultPermissionsEntBuilder() //
+            .setCanAccessKAIPanel(false) //
+            .setCanAccessNodeRepository(false) //
+            .setCanAccessSpaceExplorer(false) //
+            .setCanConfigureNodes(false) //
+            .setCanEditWorkflow(false) //
+            .build();
+        final Supplier<PermissionsEnt> defaultSupplier = () -> new DefaultPermissionsEntBuilder() //
+            .setCanAccessKAIPanel(true) //
+            .setCanAccessNodeRepository(true) //
+            .setCanAccessSpaceExplorer(true) //
+            .setCanConfigureNodes(true) //
+            .setCanEditWorkflow(true) //
+            .build();
+        return switch (WebUIMode.getMode()) {
+            case JOB_VIEWER -> jobViewerSupplier.get();
+            case DEFAULT -> defaultSupplier.get();
         };
     }
 
