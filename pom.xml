@@ -79,11 +79,6 @@
                     <layout>p2</layout>
                 </repository>
                 <repository>
-                    <id>p2-knime-workbench</id>
-                    <layout>p2</layout>
-                    <url>${knime.workbench.p2}</url>
-                </repository>
-                <repository>
                     <id>p2-knime-base</id>
                     <layout>p2</layout>
                     <url>${knime.base.p2}</url>
@@ -127,11 +122,6 @@
                     <id>p2-knime-stats</id>
                     <layout>p2</layout>
                     <url>${knime.stats.p2}</url>
-                </repository>
-                <repository>
-                    <id>p2-knime-js-core</id>
-                    <layout>p2</layout>
-                    <url>${knime.js.core.p2}</url>
                 </repository>
                 <repository>
                     <id>p2-knime-js-base</id>
