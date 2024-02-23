@@ -79,5 +79,5 @@
     },
     "projectId" : "the_workflow_project_id"
   } ],
-  "suggestedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable", "org.knime.database.port.DBDataPortObject", "org.knime.database.port.DBSessionPortObject", "org.knime.core.node.port.flowvariable.FlowVariablePortObject", "org.knime.core.node.port.PortObject", "org.knime.core.node.workflow.capture.WorkflowPortObject" ]
+  "suggestedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable", "org.knime.core.node.port.database.DatabaseConnectionPortObject", "org.knime.core.node.port.database.DatabasePortObject", "org.knime.core.node.port.flowvariable.FlowVariablePortObject", "org.knime.core.node.port.PortObject", "org.knime.core.node.workflow.capture.WorkflowPortObject" ]
 }

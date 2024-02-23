@@ -72,13 +72,13 @@ import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.port.database.DatabaseConnectionPortObject;
+import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.core.webui.WebUIUtil;
-import org.knime.database.port.DBDataPortObject;
-import org.knime.database.port.DBSessionPortObject;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -128,8 +128,8 @@ public final class AppStateEntityFactory {
      * When the user is prompted to select a port type, this subset of types may be used as suggestions.
      */
     private static final List<PortType> SUGGESTED_PORT_TYPES = List.of(BufferedDataTable.TYPE, // Data
-        DBDataPortObject.TYPE,
-        DBSessionPortObject.TYPE,
+        DatabaseConnectionPortObject.TYPE, // Database Connection, TODO: Update deprecated type here
+        DatabasePortObject.TYPE, // Database Query, TODO: Update deprecated type here, too
         FlowVariablePortObject.TYPE, // Flow Variable
         PortObject.TYPE, // Generic
         WorkflowPortObject.TYPE // Workflow
