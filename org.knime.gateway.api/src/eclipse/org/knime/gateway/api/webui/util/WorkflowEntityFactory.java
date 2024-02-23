@@ -363,6 +363,9 @@ public final class WorkflowEntityFactory {
             Map<String, NodeEnt> nodes = new LinkedHashMap<>();
             Map<String, NativeNodeInvariantsEnt> invariants = new HashMap<>();
             for (NodeContainer nc : nodeContainers) {
+                if (nc instanceof WorkflowManager metanode && metanode.isHiddenInUI()) {
+                    continue;
+                }
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
             Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()

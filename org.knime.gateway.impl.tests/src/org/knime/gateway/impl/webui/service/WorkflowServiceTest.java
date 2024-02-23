@@ -55,10 +55,12 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowCipherPrompt;
@@ -67,8 +69,13 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Test that can only be carried out directly on a {@link DefaultWorkflowService}instance (and can't be tested via the
@@ -181,6 +188,30 @@ public class WorkflowServiceTest extends GatewayServiceTest {
         component = (ComponentNodeEnt)nodes.get("root:28");
         assertThat(metanode.isLocked(), is(Boolean.FALSE));
         assertThat(component.isLocked(), is(Boolean.FALSE));
+    }
+
+    /**
+     * Makes sure that hidden metanodes (see {@link WorkflowManager#isHiddenInUI()} aren't communicated to the frontend.
+     *
+     * @throws IOException
+     * @throws NodeNotFoundException
+     * @throws NotASubWorkflowException
+     */
+    @Test
+    public void testGetWorkflowWithHiddenMetanode()
+        throws IOException, NotASubWorkflowException, NodeNotFoundException {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
+        var project = DefaultProject.builder(wfm).build();
+        ProjectManager.getInstance().addProject(project);
+
+        var workflowService = DefaultWorkflowService.getInstance();
+        var nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE).getWorkflow().getNodes();
+        assertThat(nodes.get("root:1").getKind().name(), is("METANODE"));
+
+        metanode.hideInUI();
+        nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE).getWorkflow().getNodes();
+        assertThat(nodes.isEmpty(), is(true));
     }
 
 }
