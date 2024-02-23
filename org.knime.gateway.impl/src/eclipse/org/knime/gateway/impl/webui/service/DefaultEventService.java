@@ -56,6 +56,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
+import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
@@ -71,6 +72,7 @@ import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
 import org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource;
+import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSourceDelegator;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
@@ -155,6 +157,9 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof NodeRepositoryLoadingProgressEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new NodeRepositoryLoadingProgressEventSource(m_eventConsumer));
+        } else if (eventTypeEnt instanceof ProjectDisposedEventTypeEnt) {
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new ProjectDisposedEventSource(m_eventConsumer, m_projectManager));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
