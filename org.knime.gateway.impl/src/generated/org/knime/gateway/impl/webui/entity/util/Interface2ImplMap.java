@@ -212,6 +212,10 @@ import org.knime.gateway.api.webui.entity.PortViewsEnt.PortViewsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortViewsEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectDirtyStateEventEnt;
+import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt.ProjectDisposedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProjectDisposedEventEnt;
+import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt.ProjectDisposedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProjectDisposedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
@@ -565,6 +569,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == ProjectDirtyStateEventEntBuilder.class) {
             return (B)new DefaultProjectDirtyStateEventEnt.DefaultProjectDirtyStateEventEntBuilder();
+        }        
+        if(clazz == ProjectDisposedEventEntBuilder.class) {
+            return (B)new DefaultProjectDisposedEventEnt.DefaultProjectDisposedEventEntBuilder();
+        }        
+        if(clazz == ProjectDisposedEventTypeEntBuilder.class) {
+            return (B)new DefaultProjectDisposedEventTypeEnt.DefaultProjectDisposedEventTypeEntBuilder();
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();

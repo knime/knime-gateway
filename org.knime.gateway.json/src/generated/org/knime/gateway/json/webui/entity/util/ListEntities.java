@@ -128,6 +128,8 @@ import org.knime.gateway.json.webui.entity.PortViewDescriptorEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewDescriptorMappingEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewsEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectDirtyStateEventEntMixIn;
+import org.knime.gateway.json.webui.entity.ProjectDisposedEventEntMixIn;
+import org.knime.gateway.json.webui.entity.ProjectDisposedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationsCommandEntMixIn;
@@ -275,6 +277,8 @@ public class ListEntities {
         res.add(PortViewDescriptorMappingEntMixIn.class);
         res.add(PortViewsEntMixIn.class);
         res.add(ProjectDirtyStateEventEntMixIn.class);
+        res.add(ProjectDisposedEventEntMixIn.class);
+        res.add(ProjectDisposedEventTypeEntMixIn.class);
         res.add(ProjectMetadataEntMixIn.class);
         res.add(RemovePortCommandEntMixIn.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.class);
@@ -408,6 +412,8 @@ public class ListEntities {
         res.add(PortViewDescriptorMappingEntMixIn.PortViewDescriptorMappingEntMixInBuilder.class);
         res.add(PortViewsEntMixIn.PortViewsEntMixInBuilder.class);
         res.add(ProjectDirtyStateEventEntMixIn.ProjectDirtyStateEventEntMixInBuilder.class);
+        res.add(ProjectDisposedEventEntMixIn.ProjectDisposedEventEntMixInBuilder.class);
+        res.add(ProjectDisposedEventTypeEntMixIn.ProjectDisposedEventTypeEntMixInBuilder.class);
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
         res.add(RemovePortCommandEntMixIn.RemovePortCommandEntMixInBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.ReorderWorkflowAnnotationsCommandEntMixInBuilder.class);
