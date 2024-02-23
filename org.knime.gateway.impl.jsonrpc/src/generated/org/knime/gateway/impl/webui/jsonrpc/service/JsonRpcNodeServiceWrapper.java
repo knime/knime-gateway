@@ -198,7 +198,11 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
      */
     @Override
     @JsonRpcMethod(value = "updateDataPointSelection")
-    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="mode") String mode, @JsonRpcParam(value="selections") java.util.List<String> selections)  {
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
+    })
+    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="mode") String mode, @JsonRpcParam(value="selections") java.util.List<String> selections)  throws ServiceExceptions.NodeNotFoundException {
         m_service.get().updateDataPointSelection(projectId, workflowId, nodeId, mode, selections);    
     }
 
