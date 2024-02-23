@@ -178,6 +178,6 @@ public interface NodeService extends GatewayService {
      *
      * 
      */
-    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, java.util.List<String> selections) ;
+    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, java.util.List<String> selections)  throws ServiceExceptions.NodeNotFoundException;
         
 }

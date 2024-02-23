@@ -115,4 +115,17 @@ public class JsonRpcPortServiceWrapper implements PortService {
         return m_service.get().getPortView(projectId, workflowId, nodeId, portIdx, viewIdx);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "updateDataPointSelection")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
+    })
+    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="viewIdx") Integer viewIdx, @JsonRpcParam(value="mode") String mode, @JsonRpcParam(value="selection") java.util.List<String> selection)  throws ServiceExceptions.NodeNotFoundException {
+        m_service.get().updateDataPointSelection(projectId, workflowId, nodeId, portIdx, viewIdx, mode, selection);    
+    }
+
 }

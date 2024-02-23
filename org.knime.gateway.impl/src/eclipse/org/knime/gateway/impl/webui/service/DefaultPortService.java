@@ -48,7 +48,10 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
@@ -65,6 +68,10 @@ import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.service.events.SelectionEventSource;
+import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 
 /**
  * Default implementation of the {@link PortService}-interface.
@@ -72,6 +79,8 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class DefaultPortService implements PortService {
+
+    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -120,7 +129,12 @@ public class DefaultPortService implements PortService {
 
         var wrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
         var portViewManager = PortViewManager.getInstance();
-        return new PortViewEnt(wrapper, portViewManager, Collections::emptyList);
+        if (m_eventConsumer == null) {
+            return new PortViewEnt(wrapper, portViewManager, Collections::emptyList);
+        } else {
+            return UIExtensionEntityFactory.createPortViewEntAndInitSelectionEventSource(wrapper, portViewManager,
+                m_eventConsumer);
+        }
 
     }
 
@@ -162,6 +176,26 @@ public class DefaultPortService implements PortService {
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
         PortViewManager.getInstance().getDataServiceManager()
             .deactivateDataServices(NodePortWrapper.of(nc, portIdx, viewIdx));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Integer portIdx, final Integer viewIdx, final String mode, final List<String> selection)
+        throws NodeNotFoundException {
+        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase(Locale.ROOT));
+        try {
+            var portWrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
+            var tableViewManager = PortViewManager.getInstance().getTableViewManager();
+            var rowKeys = tableViewManager.callSelectionTranslationService(portWrapper, selection);
+            var hiLiteHandler = tableViewManager.getHiLiteHandler(portWrapper).orElseThrow();
+            SelectionEventSource.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
+        } catch (IOException ex) {
+            throw new IllegalStateException("Problem translating selection to row keys", ex);
+        }
     }
 
     private static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
