@@ -207,26 +207,6 @@
             <layout>p2</layout>
             <url>${knime.svg.p2}</url>
         </repository>
-        <repository>
-            <id>p2-knime-database</id>
-            <layout>p2</layout>
-            <url>${knime.database.p2}</url>
-        </repository>
-        <repository>
-            <id>p2-knime-filehandling</id>
-            <layout>p2</layout>
-            <url>${knime.filehandling.p2}</url>
-        </repository>
-        <repository>
-            <id>p2-knime-workbench</id>
-            <layout>p2</layout>
-            <url>${knime.workbench.p2}</url>
-        </repository>
-        <repository>
-            <id>p2-knime-kerberos</id>
-            <layout>p2</layout>
-            <url>${knime.kerberos.p2}</url>
-        </repository>
     </repositories>
 
 </project><!-- vim: set shiftwidth=4 expandtab smarttab: -->
