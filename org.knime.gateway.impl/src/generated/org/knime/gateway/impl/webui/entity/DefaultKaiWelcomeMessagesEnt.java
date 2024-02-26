@@ -42,49 +42,87 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.service.GatewayService;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.knime.gateway.api.webui.entity.KaiWelcomeMessagesEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * The messages K-AI starts the conversations with.
+ *
+ * @param qa
+ * @param build
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultKaiWelcomeMessagesEnt(
+    String qa,
+    String build) implements KaiWelcomeMessagesEnt {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Validation for required parameters not being {@code null}.
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    public DefaultKaiWelcomeMessagesEnt {
+        if(qa == null) {
+            throw new IllegalArgumentException("<qa> must not be null.");
+        }
+        if(build == null) {
+            throw new IllegalArgumentException("<build> must not be null.");
+        }
     }
+
+    @Override
+    public String getTypeID() {
+        return "KaiWelcomeMessages";
+    }
+  
+    @Override
+    public String getQa() {
+        return qa;
+    }
+    
+    @Override
+    public String getBuild() {
+        return build;
+    }
+    
+    /**
+     * A builder for {@link DefaultKaiWelcomeMessagesEnt}.
+     */
+    public static class DefaultKaiWelcomeMessagesEntBuilder implements KaiWelcomeMessagesEntBuilder {
+
+        private String m_qa;
+
+        private String m_build;
+
+        @Override
+        public DefaultKaiWelcomeMessagesEntBuilder setQa(String qa) {
+             if(qa == null) {
+                 throw new IllegalArgumentException("<qa> must not be null.");
+             }
+             m_qa = qa;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiWelcomeMessagesEntBuilder setBuild(String build) {
+             if(build == null) {
+                 throw new IllegalArgumentException("<build> must not be null.");
+             }
+             m_build = build;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiWelcomeMessagesEnt build() {
+            return new DefaultKaiWelcomeMessagesEnt(
+                immutable(m_qa),
+                immutable(m_build));
+        }
+    
+    }
+
 }

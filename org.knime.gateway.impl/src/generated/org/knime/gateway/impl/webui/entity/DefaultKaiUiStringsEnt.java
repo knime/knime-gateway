@@ -42,49 +42,88 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.entity.KaiWelcomeMessagesEnt;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * DefaultKaiUiStringsEnt
+ *
+ * @param disclaimer
+ * @param welcomeMessages
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultKaiUiStringsEnt(
+    String disclaimer,
+    KaiWelcomeMessagesEnt welcomeMessages) implements KaiUiStringsEnt {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Validation for required parameters not being {@code null}.
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    public DefaultKaiUiStringsEnt {
+        if(disclaimer == null) {
+            throw new IllegalArgumentException("<disclaimer> must not be null.");
+        }
+        if(welcomeMessages == null) {
+            throw new IllegalArgumentException("<welcomeMessages> must not be null.");
+        }
     }
+
+    @Override
+    public String getTypeID() {
+        return "KaiUiStrings";
+    }
+  
+    @Override
+    public String getDisclaimer() {
+        return disclaimer;
+    }
+    
+    @Override
+    public KaiWelcomeMessagesEnt getWelcomeMessages() {
+        return welcomeMessages;
+    }
+    
+    /**
+     * A builder for {@link DefaultKaiUiStringsEnt}.
+     */
+    public static class DefaultKaiUiStringsEntBuilder implements KaiUiStringsEntBuilder {
+
+        private String m_disclaimer;
+
+        private KaiWelcomeMessagesEnt m_welcomeMessages;
+
+        @Override
+        public DefaultKaiUiStringsEntBuilder setDisclaimer(String disclaimer) {
+             if(disclaimer == null) {
+                 throw new IllegalArgumentException("<disclaimer> must not be null.");
+             }
+             m_disclaimer = disclaimer;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiUiStringsEntBuilder setWelcomeMessages(KaiWelcomeMessagesEnt welcomeMessages) {
+             if(welcomeMessages == null) {
+                 throw new IllegalArgumentException("<welcomeMessages> must not be null.");
+             }
+             m_welcomeMessages = welcomeMessages;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiUiStringsEnt build() {
+            return new DefaultKaiUiStringsEnt(
+                immutable(m_disclaimer),
+                immutable(m_welcomeMessages));
+        }
+    
+    }
+
 }

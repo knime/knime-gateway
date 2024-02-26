@@ -42,49 +42,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
 
-import org.knime.gateway.api.service.GatewayService;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import org.knime.gateway.api.webui.entity.KaiWelcomeMessagesEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt.DefaultKaiWelcomeMessagesEntBuilder;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
 
-    private ListServices() {
-        //utility class
-    }
+@JsonDeserialize(builder=DefaultKaiWelcomeMessagesEntBuilder.class)
+@JsonSerialize(as=KaiWelcomeMessagesEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface KaiWelcomeMessagesEntMixIn extends KaiWelcomeMessagesEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("qa")
+    public String getQa();
+    
+    @Override
+    @JsonProperty("build")
+    public String getBuild();
+    
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface KaiWelcomeMessagesEntMixInBuilder extends KaiWelcomeMessagesEntBuilder {
+    
+        @Override
+        public KaiWelcomeMessagesEntMixIn build();
+    
+        @Override
+        @JsonProperty("qa")
+        public KaiWelcomeMessagesEntMixInBuilder setQa(final String qa);
+        
+        @Override
+        @JsonProperty("build")
+        public KaiWelcomeMessagesEntMixInBuilder setBuild(final String build);
+        
     }
+
+
 }
+

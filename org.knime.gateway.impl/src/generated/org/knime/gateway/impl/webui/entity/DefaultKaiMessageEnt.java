@@ -42,49 +42,87 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.service.GatewayService;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.knime.gateway.api.webui.entity.KaiMessageEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * A message send to K-AI. Consists of the role (user or AI) and a message content.
+ *
+ * @param role
+ * @param content
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultKaiMessageEnt(
+    String role,
+    String content) implements KaiMessageEnt {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Validation for required parameters not being {@code null}.
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    public DefaultKaiMessageEnt {
+        if(role == null) {
+            throw new IllegalArgumentException("<role> must not be null.");
+        }
+        if(content == null) {
+            throw new IllegalArgumentException("<content> must not be null.");
+        }
     }
+
+    @Override
+    public String getTypeID() {
+        return "KaiMessage";
+    }
+  
+    @Override
+    public String getRole() {
+        return role;
+    }
+    
+    @Override
+    public String getContent() {
+        return content;
+    }
+    
+    /**
+     * A builder for {@link DefaultKaiMessageEnt}.
+     */
+    public static class DefaultKaiMessageEntBuilder implements KaiMessageEntBuilder {
+
+        private String m_role;
+
+        private String m_content;
+
+        @Override
+        public DefaultKaiMessageEntBuilder setRole(String role) {
+             if(role == null) {
+                 throw new IllegalArgumentException("<role> must not be null.");
+             }
+             m_role = role;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiMessageEntBuilder setContent(String content) {
+             if(content == null) {
+                 throw new IllegalArgumentException("<content> must not be null.");
+             }
+             m_content = content;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiMessageEnt build() {
+            return new DefaultKaiMessageEnt(
+                immutable(m_role),
+                immutable(m_content));
+        }
+    
+    }
+
 }

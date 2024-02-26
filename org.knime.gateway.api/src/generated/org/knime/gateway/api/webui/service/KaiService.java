@@ -42,49 +42,47 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
-
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+package org.knime.gateway.api.webui.service;
 
 import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.knime.gateway.api.webui.entity.KaiRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+public interface KaiService extends GatewayService {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Aborts the currently running request to the given chain.
+     *
+     * @param kaiChainId Id of a K-AI chain.
+     *
+     * 
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
-    }
+    void abortAiRequest(String kaiChainId) ;
+        
+    /**
+     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
+     *
+     *
+     * @return the result
+     */
+    KaiUiStringsEnt getUiStrings() ;
+        
+    /**
+     * Sends a request to a chain.
+     *
+     * @param kaiChainId Id of a K-AI chain.
+     * @param kaiRequestEnt 
+     *
+     * 
+     */
+    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequestEnt) ;
+        
 }

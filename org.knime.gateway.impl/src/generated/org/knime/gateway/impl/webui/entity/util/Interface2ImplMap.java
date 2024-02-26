@@ -130,6 +130,14 @@ import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommand
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
+import org.knime.gateway.api.webui.entity.KaiMessageEnt.KaiMessageEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
+import org.knime.gateway.api.webui.entity.KaiRequestEnt.KaiRequestEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiUiStringsEnt.KaiUiStringsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
+import org.knime.gateway.api.webui.entity.KaiWelcomeMessagesEnt.KaiWelcomeMessagesEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
@@ -446,6 +454,18 @@ public class Interface2ImplMap {
         }        
         if(clazz == JobManagerEntBuilder.class) {
             return (B)new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
+        }        
+        if(clazz == KaiMessageEntBuilder.class) {
+            return (B)new DefaultKaiMessageEnt.DefaultKaiMessageEntBuilder();
+        }        
+        if(clazz == KaiRequestEntBuilder.class) {
+            return (B)new DefaultKaiRequestEnt.DefaultKaiRequestEntBuilder();
+        }        
+        if(clazz == KaiUiStringsEntBuilder.class) {
+            return (B)new DefaultKaiUiStringsEnt.DefaultKaiUiStringsEntBuilder();
+        }        
+        if(clazz == KaiWelcomeMessagesEntBuilder.class) {
+            return (B)new DefaultKaiWelcomeMessagesEnt.DefaultKaiWelcomeMessagesEntBuilder();
         }        
         if(clazz == LinkEntBuilder.class) {
             return (B)new DefaultLinkEnt.DefaultLinkEntBuilder();

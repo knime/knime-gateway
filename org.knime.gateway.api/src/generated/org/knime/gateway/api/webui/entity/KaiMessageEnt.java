@@ -42,49 +42,79 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
 
-import org.knime.gateway.api.service.GatewayService;
+import java.util.function.BiConsumer;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.knime.core.util.Pair;
 
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
- *
+ * A message send to K-AI. Consists of the role (user or AI) and a message content.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+public interface KaiMessageEnt extends GatewayEntity {
 
-    private ListServices() {
-        //utility class
-    }
+
+  /**
+   * Role of the message sender.
+   * @return role , never <code>null</code>
+   **/
+  public String getRole();
+
+  /**
+   * Content of the message.
+   * @return content , never <code>null</code>
+   **/
+  public String getContent();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (KaiMessageEnt)other;
+      valueConsumer.accept("role", Pair.create(getRole(), e.getRole()));
+      valueConsumer.accept("content", Pair.create(getContent(), e.getContent()));
+  }
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * The builder for the entity.
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    public interface KaiMessageEntBuilder extends GatewayEntityBuilder<KaiMessageEnt> {
+
+        /**
+         * Role of the message sender.
+         * 
+         * @param role the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiMessageEntBuilder setRole(String role);
+        
+        /**
+         * Content of the message.
+         * 
+         * @param content the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiMessageEntBuilder setContent(String content);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        KaiMessageEnt build();
+    
     }
+
 }
