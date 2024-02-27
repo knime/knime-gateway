@@ -55,29 +55,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
-import org.knime.core.node.port.database.DatabaseConnectionPortObject;
-import org.knime.core.node.port.database.DatabasePortObject;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.WorkflowPersistor;
-import org.knime.core.node.workflow.capture.WorkflowPortObject;
 import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
@@ -112,30 +105,26 @@ import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
  */
 public final class AppStateEntityFactory {
 
-    private static final Set<PortType> AVAILABLE_PORT_TYPES =
-        new HashSet<>(PortTypeRegistry.getInstance().availablePortTypes());
+    private static final Collection<PortType> AVAILABLE_PORT_TYPES =
+        PortTypeRegistry.getInstance().availablePortTypes();
 
     private static final Map<String, PortTypeEnt> AVAILABLE_PORT_TYPE_ENTS = getAvailablePortTypeEnts();
 
     private static final List<String> AVAILABLE_COMPONENT_TYPES = getAvailableComponentTypes();
 
-    private static List<String> getAvailableComponentTypes() {
-        return Arrays.stream(ComponentMetadata.ComponentNodeType.values())
-            .map(ComponentMetadata.ComponentNodeType::getDisplayText).toList();
-    }
-
     /**
-     * When the user is prompted to select a port type, this subset of types may be used as suggestions.
+     * When the user is prompted to select a port type, this subset of types may be used as suggestions (if the
+     * respective port type is installed).
      */
-    private static final List<PortType> SUGGESTED_PORT_TYPES = List.of(BufferedDataTable.TYPE, // Data
-        DatabaseConnectionPortObject.TYPE, // Database Connection, TODO: Update deprecated type here
-        DatabasePortObject.TYPE, // Database Query, TODO: Update deprecated type here, too
-        FlowVariablePortObject.TYPE, // Flow Variable
-        PortObject.TYPE, // Generic
-        WorkflowPortObject.TYPE // Workflow
-    );
+    private static final List<String> SUGGESTED_PORT_TYPE_IDS = List.of( //
+        "org.knime.core.node.BufferedDataTable", //
+        "org.knime.database.port.DBDataPortObject", //
+        "org.knime.database.port.DBSessionPortObject", //
+        "org.knime.core.node.port.flowvariable.FlowVariablePortObject", //
+        "org.knime.core.node.port.PortObject", //
+        "org.knime.core.node.workflow.capture.WorkflowPortObject");
 
-    private static final List<String> SUGGESTED_PORT_TYPE_IDS = getSuggestedPortTypeIds();
+    private static final List<String> AVAILABLE_SUGGESTED_PORT_TYPE_IDS = getSuggestedPortTypeIds();
 
     private AppStateEntityFactory() {
         // utility class
@@ -190,7 +179,7 @@ public final class AppStateEntityFactory {
             .setOpenProjects(projectEnts) //
             .setExampleProjects(exampleProjectEnts) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
-            .setSuggestedPortTypeIds(SUGGESTED_PORT_TYPE_IDS) //
+            .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
             .setAvailableComponentTypes(AVAILABLE_COMPONENT_TYPES) //
             .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
             .setHasNodeCollectionActive(preferenceProvider.activeNodeCollection() != null) //
@@ -256,9 +245,16 @@ public final class AppStateEntityFactory {
             ));
     }
 
+    private static List<String> getAvailableComponentTypes() {
+        return Arrays.stream(ComponentMetadata.ComponentNodeType.values()) //
+            .map(ComponentMetadata.ComponentNodeType::getDisplayText) //
+            .toList();
+    }
+
     private static List<String> getSuggestedPortTypeIds() {
-        return SUGGESTED_PORT_TYPES.stream() //
-            .map(CoreUtil::getPortTypeId) //
+        var portTypeRegistry = PortTypeRegistry.getInstance();
+        return SUGGESTED_PORT_TYPE_IDS.stream() //
+            .filter(id -> !portTypeRegistry.getObjectClass(id).isEmpty()) //
             .toList();
     }
 
