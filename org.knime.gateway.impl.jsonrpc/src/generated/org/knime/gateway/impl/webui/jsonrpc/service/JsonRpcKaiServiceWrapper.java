@@ -95,8 +95,8 @@ public class JsonRpcKaiServiceWrapper implements KaiService {
      */
     @Override
     @JsonRpcMethod(value = "makeAiRequest")
-    public void makeAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId, @JsonRpcParam(value="kaiRequestEnt") KaiRequestEnt kaiRequestEnt)  {
-        m_service.get().makeAiRequest(kaiChainId, kaiRequestEnt);    
+    public void makeAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId, @JsonRpcParam(value="kaiRequest") KaiRequestEnt kaiRequest)  {
+        m_service.get().makeAiRequest(kaiChainId, kaiRequest);    
     }
 
 }

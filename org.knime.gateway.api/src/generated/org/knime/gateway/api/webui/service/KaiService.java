@@ -51,7 +51,7 @@ import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 
 /**
- * 
+ * Operations on K-AI.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -79,10 +79,10 @@ public interface KaiService extends GatewayService {
      * Sends a request to a chain.
      *
      * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequestEnt 
+     * @param kaiRequest 
      *
      * 
      */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequestEnt) ;
+    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
         
 }
