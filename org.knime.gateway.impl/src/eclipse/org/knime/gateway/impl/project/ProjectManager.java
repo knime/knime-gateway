@@ -63,7 +63,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.impl.project.Project.Origin;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * Manages projects that are eventually used by the service implementations.
@@ -340,7 +339,7 @@ public final class ProjectManager {
     }
 
     /**
-     * Wrapper around {@link Project} to additional track the {@link ConsumerType}s it is associated with.
+     * Wrapper around {@link Project} to additional track the {@link ProjectConsumerType}s it is associated with.
      */
     private record ProjectInternal(Project project, boolean hasUIConsumer, int numNonUIConsumer) {
         //
