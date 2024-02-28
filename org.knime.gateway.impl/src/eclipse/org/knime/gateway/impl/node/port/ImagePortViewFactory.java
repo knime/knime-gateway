@@ -78,7 +78,7 @@ public final class ImagePortViewFactory implements PortViewFactory<ImagePortObje
         // we append the object-hash to the imageId to make sure the FE re-renderes
         // the image whenever it changes (and not take it from the browser cache)
         var nc = ((NodeOutPort)PortContext.getContext().getNodePort()).getConnectedNodeContainer();
-        var imageId = nc.getID().toString() + ":" + System.identityHashCode(portObject);
+        var imageId = nc.getID().toString().replace(":", "_") + "_" + System.identityHashCode(portObject);
         return new PortView() {
 
             @Override
