@@ -55,14 +55,14 @@ import java.util.Optional;
  */
 public interface EntityBuilderFactory {
 
-    static final String EXT_POINT_ID = "org.knime.gateway.api.entity.EntityBuilderFactory";
+    String EXT_POINT_ID = "org.knime.gateway.api.entity.EntityBuilderFactory";
 
-    static final String EXT_POINT_ATTR = "EntityBuilderFactory";
+    String EXT_POINT_ATTR = "EntityBuilderFactory";
 
     /**
      * Normal priority, <code>0</code>.
      */
-    public static final int NORMAL_PRIORITY = 0;
+    int NORMAL_PRIORITY = 0;
 
     /**
      * @return the priority with what that entity builder will be used in case of multiple registered entity builders in

@@ -92,7 +92,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
      * in this session at least once, "hybrid mode").
      *
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
-     *         the command didn't do any change to the workflow
+     *         the command did not change the workflow
      *
      * @throws OperationNotAllowedException If the command could not be executed
      */
