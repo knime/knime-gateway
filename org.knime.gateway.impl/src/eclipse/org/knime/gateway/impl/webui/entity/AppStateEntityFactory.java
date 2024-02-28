@@ -67,6 +67,7 @@ import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ComponentMetadata;
@@ -113,13 +114,23 @@ public final class AppStateEntityFactory {
     private static final List<String> AVAILABLE_COMPONENT_TYPES = getAvailableComponentTypes();
 
     /**
+     * Type ID of the DB data {@link PortObject} type
+     */
+    public static final String DB_DATA_PORT_OBJECT_TYPE_ID = "org.knime.database.port.DBDataPortObject";
+
+    /**
+     * Type ID of the DB session {@link PortObject}
+     */
+    public static final String DB_SESSION_PORT_OBJECT_TYPE_ID = "org.knime.database.port.DBSessionPortObject";
+
+    /**
      * When the user is prompted to select a port type, this subset of types may be used as suggestions (if the
      * respective port type is installed).
      */
     private static final List<String> SUGGESTED_PORT_TYPE_IDS = List.of( //
         "org.knime.core.node.BufferedDataTable", //
-        "org.knime.database.port.DBDataPortObject", //
-        "org.knime.database.port.DBSessionPortObject", //
+        DB_DATA_PORT_OBJECT_TYPE_ID, //
+        DB_SESSION_PORT_OBJECT_TYPE_ID, //
         "org.knime.core.node.port.flowvariable.FlowVariablePortObject", //
         "org.knime.core.node.port.PortObject", //
         "org.knime.core.node.workflow.capture.WorkflowPortObject");

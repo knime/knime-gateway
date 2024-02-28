@@ -1,0 +1,83 @@
+{
+  "availableComponentTypes" : [ "Learner", "Manipulator", "Predictor", "Sink", "Source", "Visualizer", "Other" ],
+  "availablePortTypes" : {
+    "org.knime.core.node.BufferedDataTable" : {
+      "color" : "#000000",
+      "kind" : "table",
+      "name" : "Table",
+      "views" : {
+        "descriptorMapping" : {
+          "configured" : [ 0, 2 ],
+          "executed" : [ 1, 2 ]
+        },
+        "descriptors" : [ {
+          "isSpecView" : true,
+          "label" : "Table"
+        }, {
+          "label" : "Table"
+        }, {
+          "label" : "Statistics"
+        } ]
+      }
+    },
+    "org.knime.core.node.port.PortObject" : {
+      "color" : "#9B9B9B",
+      "kind" : "generic",
+      "name" : "Generic Port"
+    },
+    "org.knime.core.node.port.database.DatabaseConnectionPortObject" : {
+      "color" : "#FF4B4B",
+      "compatibleTypes" : [ "org.knime.core.node.port.database.DatabasePortObject" ],
+      "kind" : "other",
+      "name" : "Database Connection"
+    },
+    "org.knime.core.node.port.database.DatabasePortObject" : {
+      "color" : "#800000",
+      "compatibleTypes" : [ "org.knime.core.node.port.database.DatabaseConnectionPortObject" ],
+      "kind" : "other",
+      "name" : "Database Query"
+    },
+    "org.knime.core.node.port.viewproperty.ShapeHandlerPortObject" : {
+      "color" : "#1EB9DC",
+      "hidden" : true,
+      "kind" : "other",
+      "name" : "Shape"
+    }
+  },
+  "exampleProjects" : [ {
+    "name" : "wfDir1",
+    "origin" : {
+      "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
+      "projectType" : "Workflow",
+      "providerId" : "local",
+      "spaceId" : "local"
+    },
+    "svg" : "c3ZnIGZpbGUgY29udGVudA=="
+  }, {
+    "name" : "wfDir2",
+    "origin" : {
+      "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
+      "projectType" : "Workflow",
+      "providerId" : "local",
+      "spaceId" : "local"
+    },
+    "svg" : "c3ZnIGZpbGUgY29udGVudCAy"
+  } ],
+  "featureFlags" : {
+    "org.knime.ui.feature.ai_assistant" : true,
+    "org.knime.ui.feature.ai_assistant_installed" : false,
+    "org.knime.ui.feature.embedded_views_and_dialogs" : false
+  },
+  "openProjects" : [ {
+    "activeWorkflowId" : "root",
+    "name" : "hollow",
+    "origin" : {
+      "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
+      "projectType" : "Workflow",
+      "providerId" : "Provider ID for testing",
+      "spaceId" : "Space ID for testing"
+    },
+    "projectId" : "the_workflow_project_id"
+  } ],
+  "suggestedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable", "org.knime.core.node.port.flowvariable.FlowVariablePortObject", "org.knime.core.node.port.PortObject", "org.knime.core.node.workflow.capture.WorkflowPortObject" ]
+}

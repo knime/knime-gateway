@@ -65,6 +65,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
@@ -72,6 +73,7 @@ import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
+import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -103,7 +105,13 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         AppStateEnt appStateEnt = appService.getState();
         assertThat(appStateEnt.hasNodeRecommendationsEnabled(), not(is(nullValue())));
         AppStateEnt appStateEntStripped = stripAppState(appStateEnt);
-        cr(appStateEntStripped, "appstate");
+
+        // To account for 'org.knime.database.nodes' plug-in not being available to the Jenkins pipeline
+        if (areDatabasePortObjectTypesAvailable()) {
+            cr(appStateEntStripped, "appstate_with_db");
+        } else {
+            cr(appStateEntStripped, "appstate_without_db");
+        }
     }
 
     /**
@@ -266,5 +274,13 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
             .setSuggestedPortTypeIds(appStateEnt.getSuggestedPortTypeIds()) //
             .setFeatureFlags(appStateEnt.getFeatureFlags()) //
             .build();
+    }
+
+    private static boolean areDatabasePortObjectTypesAvailable() {
+        final var portTypeRegistry = PortTypeRegistry.getInstance();
+        final var portObjectTypeIds = List.of(AppStateEntityFactory.DB_DATA_PORT_OBJECT_TYPE_ID,
+            AppStateEntityFactory.DB_SESSION_PORT_OBJECT_TYPE_ID);
+        return portObjectTypeIds.stream() //
+            .allMatch(id -> !portTypeRegistry.getObjectClass(id).isEmpty());
     }
 }
