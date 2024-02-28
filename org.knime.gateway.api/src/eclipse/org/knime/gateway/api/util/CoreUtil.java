@@ -72,6 +72,7 @@ import org.eclipse.core.runtime.Path;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
@@ -657,7 +658,13 @@ public final class CoreUtil {
         var builder = connection.getUIInfo() == null ? ConnectionUIInformation.builder()
             : ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
         transformation.accept(builder);
-        connection.setUIInfo(builder.build()); // need to explicitly set to notify listeners
+        // Dispatch the workflow change, and consequently the notification of any event listeners
+        // to a separate thread. Event listeners might in turn hold or require locks and they should not be able to
+        // block the calling thread, potentially causing a deadlock.
+        // TODO consider replacing with virtual thread dispatch once available
+        KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(() -> {
+            connection.setUIInfo(builder.build());  // will notify event listeners
+        });
     }
 
     /**

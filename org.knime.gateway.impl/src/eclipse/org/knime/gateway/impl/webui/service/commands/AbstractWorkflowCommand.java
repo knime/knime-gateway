@@ -78,11 +78,18 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
     }
 
     /**
-     * Executes the command. {@link #getWorkflowManager()}, or {@link #getWorkflowKey()} to retrieve the data required
-     * to execute the command.
+     * Executes the command.
+     * <p>
+     * The call to this method is exactly surrounded by a {@link WorkflowLock} on the {@link WorkflowManager}
+     * to be modified. Implementing methods do not need to acquire a lock themselves.
+     * <p>
+     * Use {@link #getWorkflowManager()} or {@link #getWorkflowKey()} to retrieve the data
+     * required to execute the command.
      *
-     * The workflow is locked before this method is called (and released afterwards). I.e. implementing methods don't
-     * need to do that anymore.
+     * @implNote The thread calling this method will be holding a {@link WorkflowLock}. To avoid deadlocks, any change listeners
+     * that might in turn require a lock must be dispatched on a different thread. For example, this is the case
+     * for some listeners of the classic UI, which are active if the classic UI is initialized (i.e., it has been active
+     * in this session at least once, "hybrid mode").
      *
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command didn't do any change to the workflow
