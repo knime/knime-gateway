@@ -55,7 +55,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +66,6 @@ import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.WorkflowPersistor;
@@ -106,22 +103,9 @@ import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
  */
 public final class AppStateEntityFactory {
 
-    private static final Collection<PortType> AVAILABLE_PORT_TYPES =
-        PortTypeRegistry.getInstance().availablePortTypes();
-
     private static final Map<String, PortTypeEnt> AVAILABLE_PORT_TYPE_ENTS = getAvailablePortTypeEnts();
 
     private static final List<String> AVAILABLE_COMPONENT_TYPES = getAvailableComponentTypes();
-
-    /**
-     * Type ID of the DB data {@link PortObject} type
-     */
-    public static final String DB_DATA_PORT_OBJECT_TYPE_ID = "org.knime.database.port.DBDataPortObject";
-
-    /**
-     * Type ID of the DB session {@link PortObject}
-     */
-    public static final String DB_SESSION_PORT_OBJECT_TYPE_ID = "org.knime.database.port.DBSessionPortObject";
 
     /**
      * When the user is prompted to select a port type, this subset of types may be used as suggestions (if the
@@ -129,8 +113,8 @@ public final class AppStateEntityFactory {
      */
     private static final List<String> SUGGESTED_PORT_TYPE_IDS = List.of( //
         "org.knime.core.node.BufferedDataTable", //
-        DB_DATA_PORT_OBJECT_TYPE_ID, //
-        DB_SESSION_PORT_OBJECT_TYPE_ID, //
+        "org.knime.database.port.DBDataPortObject", //
+        "org.knime.database.port.DBSessionPortObject", //
         "org.knime.core.node.port.flowvariable.FlowVariablePortObject", //
         "org.knime.core.node.port.PortObject", //
         "org.knime.core.node.workflow.capture.WorkflowPortObject");
@@ -249,10 +233,11 @@ public final class AppStateEntityFactory {
     }
 
     private static Map<String, PortTypeEnt> getAvailablePortTypeEnts() {
-        return AVAILABLE_PORT_TYPES.stream() //
+        var availablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
+        return availablePortTypes.stream() //
             .collect(Collectors.toMap( //
                 CoreUtil::getPortTypeId, //
-                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, AVAILABLE_PORT_TYPES, true) //
+                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, availablePortTypes, true) //
             ));
     }
 
