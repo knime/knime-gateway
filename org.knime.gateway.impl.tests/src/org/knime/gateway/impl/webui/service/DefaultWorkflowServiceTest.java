@@ -212,6 +212,8 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         metanode.hideInUI();
         nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE).getWorkflow().getNodes();
         assertThat(nodes.isEmpty(), is(true));
+
+        ProjectManager.getInstance().removeProject(project.getID(), WorkflowManagerUtil::disposeWorkflow);
     }
 
 }
