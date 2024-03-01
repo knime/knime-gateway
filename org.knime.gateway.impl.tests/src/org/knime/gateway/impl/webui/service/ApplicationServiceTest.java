@@ -47,6 +47,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -65,6 +66,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
@@ -85,6 +87,17 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class ApplicationServiceTest extends GatewayServiceTest {
+
+    /**
+     * Type ID of the DB data {@link PortObject} type
+     */
+    private static final String DB_DATA_PORT_OBJECT_TYPE_ID = "org.knime.database.port.DBDataPortObject";
+
+    /**
+     * Type ID of the DB session {@link PortObject}
+     */
+    private static final String DB_SESSION_PORT_OBJECT_TYPE_ID = "org.knime.database.port.DBSessionPortObject";
+
 
     /**
      * Test to get the app state.
@@ -258,13 +271,28 @@ public class ApplicationServiceTest extends GatewayServiceTest {
                 || k.equals(DatabaseConnectionPortObject.class.getName())
                 || k.equals(DatabasePortObject.class.getName()) || k.equals(ShapeHandlerPortObject.class.getName());
         }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+        var suggestedPortTypeIds = appStateEnt.getSuggestedPortTypeIds();
+        if (areDatabasePortsAvailable()) {
+            assertThat(suggestedPortTypeIds, hasItems(DB_DATA_PORT_OBJECT_TYPE_ID, DB_SESSION_PORT_OBJECT_TYPE_ID));
+            suggestedPortTypeIds = suggestedPortTypeIds.stream().filter(id -> !id.equals(DB_DATA_PORT_OBJECT_TYPE_ID))
+                .filter(id -> !id.equals(DB_SESSION_PORT_OBJECT_TYPE_ID)).toList();
+        }
+
         return builder(AppStateEnt.AppStateEntBuilder.class) //
             .setOpenProjects(appStateEnt.getOpenProjects()) //
             .setExampleProjects(appStateEnt.getExampleProjects()) //
             .setAvailablePortTypes(availablePortTypes) //
             .setAvailableComponentTypes(appStateEnt.getAvailableComponentTypes())
-            .setSuggestedPortTypeIds(appStateEnt.getSuggestedPortTypeIds()) //
+            .setSuggestedPortTypeIds(suggestedPortTypeIds) //
             .setFeatureFlags(appStateEnt.getFeatureFlags()) //
             .build();
+    }
+
+    private static boolean areDatabasePortsAvailable() {
+        final var portTypeRegistry = PortTypeRegistry.getInstance();
+        final var portObjectTypeIds = List.of(DB_DATA_PORT_OBJECT_TYPE_ID, DB_SESSION_PORT_OBJECT_TYPE_ID);
+        return portObjectTypeIds.stream() //
+            .allMatch(id -> !portTypeRegistry.getObjectClass(id).isEmpty());
     }
 }

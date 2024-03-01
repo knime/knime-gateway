@@ -55,7 +55,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +66,6 @@ import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
-import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.WorkflowPersistor;
@@ -104,9 +102,6 @@ import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class AppStateEntityFactory {
-
-    private static final Collection<PortType> AVAILABLE_PORT_TYPES =
-        PortTypeRegistry.getInstance().availablePortTypes();
 
     private static final Map<String, PortTypeEnt> AVAILABLE_PORT_TYPE_ENTS = getAvailablePortTypeEnts();
 
@@ -238,10 +233,11 @@ public final class AppStateEntityFactory {
     }
 
     private static Map<String, PortTypeEnt> getAvailablePortTypeEnts() {
-        return AVAILABLE_PORT_TYPES.stream() //
+        var availablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
+        return availablePortTypes.stream() //
             .collect(Collectors.toMap( //
                 CoreUtil::getPortTypeId, //
-                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, AVAILABLE_PORT_TYPES, true) //
+                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, availablePortTypes, true) //
             ));
     }
 
