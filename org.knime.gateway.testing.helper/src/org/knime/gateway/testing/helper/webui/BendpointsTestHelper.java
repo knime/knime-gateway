@@ -202,12 +202,12 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
 
-    private void awaitTrue(final BooleanSupplier condition) {
+    private static void awaitTrue(final BooleanSupplier condition) {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> condition.getAsBoolean());
     }
 
-    private void awaitFalse(final BooleanSupplier condition) {
+    private static void awaitFalse(final BooleanSupplier condition) {
         awaitTrue(() -> !condition.getAsBoolean());
     }
 

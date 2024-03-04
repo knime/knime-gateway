@@ -181,7 +181,6 @@ public final class WorkflowCommands {
         final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders)
         throws OperationNotAllowedException {
         WorkflowCommand command;
-        // TODO: Replace by 'instanceof switch expressions' once they become available
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
         } else if (commandEnt instanceof DeleteCommandEnt ce) {

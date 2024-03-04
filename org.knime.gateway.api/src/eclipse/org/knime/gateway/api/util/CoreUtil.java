@@ -659,9 +659,8 @@ public final class CoreUtil {
             : ConnectionUIInformation.builder().copyFrom(connection.getUIInfo());
         transformation.accept(builder);
         // Dispatch the workflow change, and consequently the notification of any event listeners
-        // to a separate thread. Event listeners might in turn hold or require locks and they should not be able to
+        // to a separate thread. Event listeners might in turn hold or require locks, and they should not be able to
         // block the calling thread, potentially causing a deadlock.
-        // TODO consider replacing with virtual thread dispatch once available // NOSONAR
         KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(() -> //
             connection.setUIInfo(builder.build()) // will notify event listeners
         );
