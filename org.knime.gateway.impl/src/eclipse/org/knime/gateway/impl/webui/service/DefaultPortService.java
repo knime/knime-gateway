@@ -133,7 +133,9 @@ public class DefaultPortService implements PortService {
             return new PortViewEnt(wrapper, portViewManager, Collections::emptyList);
         } else {
             return UIExtensionEntityFactory.createPortViewEntAndInitSelectionEventSource(wrapper, portViewManager,
-                m_eventConsumer);
+                (n, e) -> {
+                    // TODO NXT-2471
+                });
         }
 
     }
