@@ -56,6 +56,7 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
@@ -64,6 +65,7 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 /**
@@ -97,6 +99,8 @@ public final class WorkflowBuildContext {
 
     private Map<NodeID, ModifiablePortsConfiguration> m_portsConfigurations;
 
+    private final Map<String, SpaceProviderEnt.TypeEnum> m_spaceProviderTypes;
+
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
         final DependentNodeProperties depNodeProps) {
@@ -107,6 +111,7 @@ public final class WorkflowBuildContext {
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
+        m_spaceProviderTypes = builder.m_spaceProviderTypes;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -139,6 +144,10 @@ public final class WorkflowBuildContext {
 
     boolean canRedo() {
         return m_canRedo;
+    }
+
+    Optional<SpaceProviderEnt.TypeEnum> getSpaceProviderType(final String providerId) {
+        return Optional.ofNullable(m_spaceProviderTypes.get(providerId));
     }
 
     /**
@@ -220,6 +229,8 @@ public final class WorkflowBuildContext {
 
         private Supplier<DependentNodeProperties> m_depNodeProps;
 
+        private Map<String, SpaceProviderEnt.TypeEnum> m_spaceProviderTypes = Map.of();
+
         private WorkflowBuildContextBuilder() {
             //
         }
@@ -267,8 +278,21 @@ public final class WorkflowBuildContext {
          * @param depNodeProps the pre-calculated dependent node properties
          * @return this builder instance
          */
-        public WorkflowBuildContextBuilder setDependentNodeProperties(final Supplier<DependentNodeProperties> depNodeProps) {
+        public WorkflowBuildContextBuilder setDependentNodeProperties(
+                final Supplier<DependentNodeProperties> depNodeProps) {
             m_depNodeProps = depNodeProps;
+            return this;
+        }
+
+        /**
+         * Sets the types of the currently available space providers.
+         *
+         * @param spaceProviderTypes mapping from provider ID to type, may no be {@code null}
+         * @return this builder instance
+         */
+        public WorkflowBuildContextBuilder setSpaceProviderTypes(
+                final Map<String, SpaceProviderEnt.TypeEnum> spaceProviderTypes) {
+            m_spaceProviderTypes = CheckUtils.checkArgumentNotNull(spaceProviderTypes);
             return this;
         }
 

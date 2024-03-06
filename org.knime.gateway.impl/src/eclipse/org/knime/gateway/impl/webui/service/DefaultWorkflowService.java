@@ -49,7 +49,9 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
@@ -89,7 +91,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final NodeFactoryProvider m_nodeFactoryProvider =
         ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
 
-    private final SpaceProviders m_spaceProvides =
+    private final SpaceProviders m_spaceProviders =
         ServiceDependencies.getServiceDependency(SpaceProviders.class, false);
 
     /**
@@ -118,7 +120,10 @@ public final class DefaultWorkflowService implements WorkflowService {
             var buildContext = WorkflowBuildContext.builder()//
                 .includeInteractionInfo(true)//
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
-                .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey));
+                .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
+                .setSpaceProviderTypes(m_spaceProviders == null ? Map.of()
+                    : m_spaceProviders.getProvidersMap().entrySet().stream() //
+                        .collect(Collectors.toUnmodifiableMap(Entry::getKey, e -> e.getValue().getType())));
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
             var buildConext = WorkflowBuildContext.builder().includeInteractionInfo(false);
@@ -162,7 +167,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
-            m_workflowMiddleware, m_nodeFactoryProvider, m_spaceProvides);
+            m_workflowMiddleware, m_nodeFactoryProvider, m_spaceProviders);
     }
 
     /**

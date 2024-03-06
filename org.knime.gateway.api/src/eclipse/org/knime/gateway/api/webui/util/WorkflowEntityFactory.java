@@ -28,6 +28,7 @@ import static org.knime.gateway.api.util.EntityUtil.toLinkEnts;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -103,6 +104,7 @@ import org.knime.core.node.workflow.contextv2.WorkflowContextV2.LocationType;
 import org.knime.core.util.KnimeUrlType;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.core.util.urlresolve.KnimeUrlResolver;
+import org.knime.core.util.urlresolve.KnimeUrlResolver.KnimeUrlVariant;
 import org.knime.core.util.urlresolve.URLResolverUtil;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
@@ -177,6 +179,7 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
@@ -471,10 +474,9 @@ public final class WorkflowEntityFactory {
         final Map<String, NativeNodeInvariantsEnt> invariants, final WorkflowBuildContext buildContext) {
         var nodeEnt = buildNodeEnt(id, nc, buildContext);
         nodes.put(nodeEnt.getId().toString(), nodeEnt);
-        if (nc instanceof NativeNodeContainer) {
+        if (nc instanceof NativeNodeContainer nnc) {
             String templateId = ((NativeNodeEnt)nodeEnt).getTemplateId();
-            invariants.computeIfAbsent(templateId,
-                tid -> buildOrGetFromCacheNativeNodeInvariantsEnt(templateId, (NativeNodeContainer)nc));
+            invariants.computeIfAbsent(templateId, tid -> buildOrGetFromCacheNativeNodeInvariantsEnt(templateId, nnc));
         }
     }
 
@@ -554,7 +556,7 @@ public final class WorkflowEntityFactory {
             .setState(buildNodeStateEnt(nc))//
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
-            .setLink(buildTemplateLinkEnt(nc))//
+            .setLink(buildTemplateLinkEnt(nc, buildContext))//
             .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
@@ -678,7 +680,7 @@ public final class WorkflowEntityFactory {
             .setPosition(buildXYEnt(wm.getUIInformation()))//
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
-            .setLink(buildTemplateLinkEnt(wm))//
+            .setLink(buildTemplateLinkEnt(wm, buildContext))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .setIsLocked(isLocked(wm)) //
@@ -1386,9 +1388,9 @@ public final class WorkflowEntityFactory {
     private NodeIDEnt getContainerId(final WorkflowManager wfm, final WorkflowBuildContext buildContext) {
         if (!wfm.isProject()) {
             NodeContainerParent ncParent = wfm.getDirectNCParent();
-            if (ncParent instanceof SubNodeContainer) {
+            if (ncParent instanceof SubNodeContainer snc) {
                 // it's a component's workflow
-                return buildContext.buildNodeIDEnt(((SubNodeContainer)ncParent).getID());
+                return buildContext.buildNodeIDEnt(snc.getID());
             }
         }
         // it's a project's or a metanode's workflow
@@ -1465,8 +1467,7 @@ public final class WorkflowEntityFactory {
     }
 
     private SubNodeContainer getParentComponent(final WorkflowManager wfm) {
-        NodeContainerParent ncParent = wfm.getDirectNCParent();
-        return ncParent instanceof SubNodeContainer ? (SubNodeContainer)ncParent : null;
+        return wfm.getDirectNCParent() instanceof SubNodeContainer snc ? snc : null;
     }
 
     /**
@@ -1474,8 +1475,7 @@ public final class WorkflowEntityFactory {
      */
     private String getPortGroupNameForDynamicNativeNodePort(final NodeContainer nc, final int portIndex,
         final boolean isInputPort, final WorkflowBuildContext buildContext) {
-        if (nc instanceof NativeNodeContainer) { // We are only interested in native nodes
-            var nnc = (NativeNodeContainer)nc;
+        if (nc instanceof NativeNodeContainer nnc) { // We are only interested in native nodes
             if (portIndex == 0) {
                 return null; // Flow variable ports are not interesting
             }
@@ -1516,49 +1516,58 @@ public final class WorkflowEntityFactory {
     }
 
     private String getTemplateLink(final NodeContainerTemplate nct) {
-        if (nct instanceof SubNodeContainer && ((SubNodeContainer)nct).isProject()) {
+        if (nct instanceof SubNodeContainer snc && snc.isProject()) {
             return null;
         }
         var sourceURI = nct.getTemplateInformation().getSourceURI();
         return sourceURI == null ? null : sourceURI.toString();
     }
 
-    private TemplateLinkEnt buildTemplateLinkEnt(final NodeContainerTemplate nct) {
-        var role = nct.getTemplateInformation().getRole();
-        if (role != Role.Link) { // Only works for linked components and metanodes
+    private TemplateLinkEnt buildTemplateLinkEnt(final NodeContainerTemplate nct,
+            final WorkflowBuildContext buildContext) {
+        final var templateInfo = nct.getTemplateInformation();
+        if (templateInfo.getRole() != Role.Link) { // Only works for linked components and metanodes
             return null;
         }
-        var updateStatus = switch (nct.getTemplateInformation().getUpdateStatus()) {
+
+        var updateStatus = switch (templateInfo.getUpdateStatus()) {
             case UpToDate -> UpdateStatusEnum.UP_TO_DATE;
             case HasUpdate -> UpdateStatusEnum.HAS_UPDATE;
             case Error -> UpdateStatusEnum.ERROR;
         };
+
+        final var linkUri = templateInfo.getSourceURI();
+        final var context = CoreUtil.getProjectWorkflow(nct.getParent()).getContextV2();
         return builder(TemplateLinkEntBuilder.class) //
             .setUrl(getTemplateLink(nct))//
             .setUpdateStatus(updateStatus) //
-            .setIsLinkTypeChangeable(isLinkTypeChangeable(nct)) //
-            .setIsHubItemVersionChangeable(isHubItemVersionChangeable(nct)) //
+            .setIsLinkTypeChangeable(isLinkTypeChangeable(linkUri, context, buildContext)) //
+            .setIsHubItemVersionChangeable(isHubItemVersionChangeable(linkUri, buildContext)) //
             .build();
     }
 
-    private static boolean isLinkTypeChangeable(final NodeContainerTemplate nct) {
-        final var templateInfo = nct.getTemplateInformation();
-        if (templateInfo.getRole() != Role.Link) {
+    private static boolean isLinkTypeChangeable(final URI templateUri, final WorkflowContextV2 projectContext,
+            final WorkflowBuildContext buildContext) {
+        final var optLinkVariant = KnimeUrlVariant.getVariant(templateUri);
+        if (optLinkVariant.isEmpty()) {
             return false;
         }
 
-        final var templateUri = templateInfo.getSourceURI();
-        final var optLinkType = KnimeUrlType.getType(templateUri);
-        if (optLinkType.isEmpty()) {
-            return false;
-        }
-
-        final var linkType = optLinkType.get();
-        final var projectContext = CoreUtil.getProjectWorkflow(nct.getParent()).getContextV2();
         try {
-            final var urls = KnimeUrlResolver.getResolver(projectContext) //
-                    .changeLinkType(URLResolverUtil.toURL(templateUri));
-            if (urls.size() > (urls.containsKey(linkType) ? 1 : 0)) {
+            final var resolver = KnimeUrlResolver.getResolver(projectContext);
+
+            // find the space provider ID by converting the URL to mountpoint-absolute
+            final var spaceProviderType = resolver.resolveToAbsolute(templateUri) //
+                    .flatMap(url -> buildContext.getSpaceProviderType(url.getAuthority())) //
+                    .orElse(null);
+            if (spaceProviderType == SpaceProviderEnt.TypeEnum.HUB) {
+                // can convert between ID-based and path-based URLs (not done here because it needs a REST call)
+                return true;
+            }
+
+            final var urls = resolver.changeLinkType(URLResolverUtil.toURL(templateUri), null);
+            final var linkVariant = optLinkVariant.get();
+            if (urls.size() > (urls.containsKey(linkVariant) ? 1 : 0)) {
                 // there are other options available
                 return true;
             }
@@ -1570,11 +1579,15 @@ public final class WorkflowEntityFactory {
     }
 
     /**
-     * TODO: NXT-2038, Determine whether a Hub item version is changeable in advance
+     * The version of a KNIME URL can be changed if it is an absolute URL to a Hub repository item.
+     *
+     * @param uri KNIME URL to check
+     * @param buildContext build context to determine whether the URL points to a Hub
+     * @return {@code true} if changing Hub versions is possible, {@code false} otherwise
      */
-    private static boolean isHubItemVersionChangeable(final NodeContainerTemplate nct) {
-        LOGGER.info("This should check whether this node container template is shared via a Hub: " + nct);
-        return false;
+    private static boolean isHubItemVersionChangeable(final URI uri, final WorkflowBuildContext buildContext) {
+        return KnimeUrlType.getType(uri).orElse(null) == KnimeUrlType.MOUNTPOINT_ABSOLUTE
+                && buildContext.getSpaceProviderType(uri.getAuthority()).orElse(null) == SpaceProviderEnt.TypeEnum.HUB;
     }
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {

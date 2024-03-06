@@ -83,7 +83,7 @@ public class WorkflowMiddlewareTest {
         var wpm = ProjectManager.getInstance();
         var projectId = wfm.getNameWithID();
         wpm.addProject(DefaultProject.builder(wfm).setId(projectId).build());
-        var middleware = new WorkflowMiddleware(wpm);
+        var middleware = new WorkflowMiddleware(wpm, null);
         createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.PROJECT, wfm.getID());
 
         var metanodeIDs = createNestedMetanodesOrComponents(wfm, false);

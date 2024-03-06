@@ -53,10 +53,12 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -84,6 +86,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Provides utility methods to operate on a workflow represented by a {@link WorkflowKey} where the methods require to
@@ -111,13 +114,17 @@ public final class WorkflowMiddleware {
 
     private final WorkflowCommands m_commands;
 
+    private final SpaceProviders m_spaceProviders;
+
     /**
      * @param workflowProjectManager
+     * @param spaceProviders
      */
-    public WorkflowMiddleware(final ProjectManager workflowProjectManager) {
+    public WorkflowMiddleware(final ProjectManager workflowProjectManager, final SpaceProviders spaceProviders) {
         m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
+        m_spaceProviders = spaceProviders;
         workflowProjectManager.addProjectRemovedListener(
             projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
     }
@@ -236,6 +243,10 @@ public final class WorkflowMiddleware {
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
                 .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
+        }
+        if (m_spaceProviders != null) {
+            buildContextBuilder.setSpaceProviderTypes(m_spaceProviders.getProvidersMap().entrySet().stream() //
+                .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType())));
         }
         final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {

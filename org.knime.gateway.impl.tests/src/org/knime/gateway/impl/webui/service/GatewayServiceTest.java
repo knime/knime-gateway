@@ -102,12 +102,14 @@ public abstract class GatewayServiceTest {
     @Before
     public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
+        final var projectManager = ProjectManager.getInstance();
+        final var spaceProviders = createSpaceProviders();
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(ProjectManager.getInstance()));
+            new WorkflowMiddleware(projectManager, spaceProviders));
         ServiceDependencies.setServiceDependency(EventConsumer.class, createEventConsumer());
-        ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders());
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, createNodeFactoryProvider());
         var exampleProjects = createExampleProjects();
         if (exampleProjects != null) {
