@@ -28,12 +28,14 @@
     "org.knime.core.node.port.database.DatabaseConnectionPortObject" : {
       "color" : "#FF4B4B",
       "compatibleTypes" : [ "org.knime.core.node.port.database.DatabasePortObject" ],
+      "hidden" : true,
       "kind" : "other",
       "name" : "Database Connection"
     },
     "org.knime.core.node.port.database.DatabasePortObject" : {
       "color" : "#800000",
       "compatibleTypes" : [ "org.knime.core.node.port.database.DatabaseConnectionPortObject" ],
+      "hidden" : true,
       "kind" : "other",
       "name" : "Database Query"
     },
