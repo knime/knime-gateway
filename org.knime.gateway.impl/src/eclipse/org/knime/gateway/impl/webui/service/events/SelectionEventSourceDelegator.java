@@ -52,40 +52,45 @@ import java.util.Optional;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
-import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * A event source that delegates to the actual {@link SelectionEventSource}-implementation (which is also used by other
  * projects and not just the gateway API implementation). With the delegation of the call it also turns a
- * {@link SelectionEventTypeEnt} into a {@link NativeNodeContainer} as required by the
- * {@link SelectionEventSource}-implementation.
+ * {@link SelectionEventTypeEnt} into a {@link NativeNodeContainer} and {@link SelectionEventTypeEnt} into
+ * {@link SelectionEventEnt} as required by the {@link SelectionEventSource}-implementation.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class SelectionEventSourceDelegator extends EventSource<SelectionEventTypeEnt, SelectionEvent> {
+// TODO naming
+public class SelectionEventSourceDelegator extends EventSource<SelectionEventTypeEnt, SelectionEventEnt> {
 
-    private final SelectionEventSource<NodeWrapper> m_delegate;
+    private final SelectionEventSource<? extends NodeWrapper> m_delegate;
 
     /**
      * @param eventConsumer
      */
-    public SelectionEventSourceDelegator(final EventConsumer eventConsumer) {
+    public SelectionEventSourceDelegator(final EventConsumer eventConsumer,
+        final SelectionEventSource<? extends NodeWrapper> delegate) {
         super(eventConsumer);
-        m_delegate = new SelectionEventSource<>(eventConsumer, NodeViewManager.getInstance().getTableViewManager());
+        m_delegate = delegate;
     }
 
     /**
      * {@inheritDoc}
      */
+    // TODO when to register the selection event listener?
     @Override
-    public Optional<SelectionEvent>
+    public Optional<SelectionEventEnt>
         addEventListenerAndGetInitialEventFor(final SelectionEventTypeEnt selectionEventType) {
+        // TODO associate event being sent to frontend with project id
         return m_delegate.addEventListenerAndGetInitialEventFor(getNodeWrapper(selectionEventType));
     }
 
     private static NodeWrapper getNodeWrapper(final SelectionEventTypeEnt selectionEventType) {
+        // TODO port!
         return NodeWrapper.of(DefaultServiceUtil.getNodeContainer(selectionEventType.getProjectId(),
             selectionEventType.getWorkflowId(), selectionEventType.getNodeId()));
     }

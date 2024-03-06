@@ -46,54 +46,120 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
-import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 
 /**
- * Event type to register for SelectionEvents.
+ * A selection (aka hiliting) event.
  *
- * @param typeId
+ * @param projectId
+ * @param workflowId
+ * @param nodeId
+ * @param portIndex
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultSelectionEventTypeEnt(
-    String typeId) implements SelectionEventTypeEnt {
+public record DefaultSelectionEventEnt(
+    String projectId,
+    org.knime.gateway.api.entity.NodeIDEnt workflowId,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId,
+    Integer portIndex) implements SelectionEventEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultSelectionEventTypeEnt {
+    public DefaultSelectionEventEnt {
+        if(projectId == null) {
+            throw new IllegalArgumentException("<projectId> must not be null.");
+        }
+        if(workflowId == null) {
+            throw new IllegalArgumentException("<workflowId> must not be null.");
+        }
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "SelectionEventType";
+        return "SelectionEvent";
     }
   
     @Override
-    public String getTypeId() {
-        return typeId;
+    public String getProjectId() {
+        return projectId;
+    }
+    
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId() {
+        return workflowId;
+    }
+    
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
+    }
+    
+    @Override
+    public Integer getPortIndex() {
+        return portIndex;
     }
     
     /**
-     * A builder for {@link DefaultSelectionEventTypeEnt}.
+     * A builder for {@link DefaultSelectionEventEnt}.
      */
-    public static class DefaultSelectionEventTypeEntBuilder implements SelectionEventTypeEntBuilder {
+    public static class DefaultSelectionEventEntBuilder implements SelectionEventEntBuilder {
 
-        private String m_typeId;
+        private String m_projectId;
+
+        private org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
+
+        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
+
+        private Integer m_portIndex;
 
         @Override
-        public DefaultSelectionEventTypeEntBuilder setTypeId(String typeId) {
-             m_typeId = typeId;
+        public DefaultSelectionEventEntBuilder setProjectId(String projectId) {
+             if(projectId == null) {
+                 throw new IllegalArgumentException("<projectId> must not be null.");
+             }
+             m_projectId = projectId;
              return this;
         }
 
         @Override
-        public DefaultSelectionEventTypeEnt build() {
-            return new DefaultSelectionEventTypeEnt(
-                immutable(m_typeId));
+        public DefaultSelectionEventEntBuilder setWorkflowId(org.knime.gateway.api.entity.NodeIDEnt workflowId) {
+             if(workflowId == null) {
+                 throw new IllegalArgumentException("<workflowId> must not be null.");
+             }
+             m_workflowId = workflowId;
+             return this;
+        }
+
+        @Override
+        public DefaultSelectionEventEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
+             if(nodeId == null) {
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
+             }
+             m_nodeId = nodeId;
+             return this;
+        }
+
+        @Override
+        public DefaultSelectionEventEntBuilder setPortIndex(Integer portIndex) {
+             m_portIndex = portIndex;
+             return this;
+        }
+
+        @Override
+        public DefaultSelectionEventEnt build() {
+            return new DefaultSelectionEventEnt(
+                immutable(m_projectId),
+                immutable(m_workflowId),
+                immutable(m_nodeId),
+                immutable(m_portIndex));
         }
     
     }

@@ -74,18 +74,6 @@ public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
     @JsonProperty("typeId")
     public String getTypeId();
     
-    @Override
-    @JsonProperty("projectId")
-    public String getProjectId();
-    
-    @Override
-    @JsonProperty("workflowId")
-    public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId();
-    
-    @Override
-    @JsonProperty("nodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -102,18 +90,6 @@ public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
         @Override
         @JsonProperty("typeId")
         public SelectionEventTypeEntMixInBuilder setTypeId(final String typeId);
-        
-        @Override
-        @JsonProperty("projectId")
-        public SelectionEventTypeEntMixInBuilder setProjectId(final String projectId);
-        
-        @Override
-        @JsonProperty("workflowId")
-        public SelectionEventTypeEntMixInBuilder setWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt workflowId);
-        
-        @Override
-        @JsonProperty("nodeId")
-        public SelectionEventTypeEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
     }
 

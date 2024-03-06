@@ -42,59 +42,81 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.EventTypeEnt;
-
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.json.webui.entity.EventEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSelectionEventEnt.DefaultSelectionEventEntBuilder;
 
 /**
- * Event type to register for SelectionEvents.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SelectionEventTypeEnt extends GatewayEntity, EventTypeEnt {
 
+@JsonDeserialize(builder=DefaultSelectionEventEntBuilder.class)
+@JsonSerialize(as=SelectionEventEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface SelectionEventEntMixIn extends SelectionEventEnt {
 
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (SelectionEventTypeEnt)other;
-      valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
-  }
+    @Override
+    @JsonProperty("projectId")
+    public String getProjectId();
+    
+    @Override
+    @JsonProperty("workflowId")
+    public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId();
+    
+    @Override
+    @JsonProperty("nodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
+    
+    @Override
+    @JsonProperty("portIndex")
+    public Integer getPortIndex();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface SelectionEventTypeEntBuilder extends GatewayEntityBuilder<SelectionEventTypeEnt> {
 
-        /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-         * 
-         * @param typeId the property value,  
-         * @return this entity builder for chaining
-         */
-        SelectionEventTypeEntBuilder setTypeId(String typeId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        SelectionEventTypeEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface SelectionEventEntMixInBuilder extends SelectionEventEntBuilder {
     
+        @Override
+        public SelectionEventEntMixIn build();
+    
+        @Override
+        @JsonProperty("projectId")
+        public SelectionEventEntMixInBuilder setProjectId(final String projectId);
+        
+        @Override
+        @JsonProperty("workflowId")
+        public SelectionEventEntMixInBuilder setWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt workflowId);
+        
+        @Override
+        @JsonProperty("nodeId")
+        public SelectionEventEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        
+        @Override
+        @JsonProperty("portIndex")
+        public SelectionEventEntMixInBuilder setPortIndex(final Integer portIndex);
+        
     }
 
+
 }
+

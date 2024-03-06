@@ -57,7 +57,9 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
+import org.apache.commons.lang3.Functions.FailableBiFunction;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.property.hilite.HiLiteHandler;
@@ -68,7 +70,6 @@ import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.NodeWrapper;
-import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
@@ -80,6 +81,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
  *
  * @since 4.5
  */
+// TODO naming?
 public final class SelectionEventSource<N extends NodeWrapper> extends EventSource<N, SelectionEvent> {
 
     /**
@@ -92,16 +94,21 @@ public final class SelectionEventSource<N extends NodeWrapper> extends EventSour
 
     private final Map<NodeID, Pair<HiLiteHandler, HiLiteListener>> m_hiLiteListeners = new HashMap<>();
 
-    private final TableViewManager<N> m_tableViewManager;
+    private final Function<N, HiLiteHandler> m_hiLiteHandlerProvider;
+
+    private final FailableBiFunction<N, Set<RowKey>, List<String>, IOException> m_selectionTranslator;
 
     /**
      * @param eventConsumer selection events will be forwarded to this consumer
-     * @param tableViewManager
+     * @param hiLiteHandlerProvider
+     * @param selectionTranslator
      */
     public SelectionEventSource(final BiConsumer<String, Object> eventConsumer,
-        final TableViewManager<N> tableViewManager) {
+        final Function<N, HiLiteHandler> hiLiteHandlerProvider,
+        final FailableBiFunction<N, Set<RowKey>, List<String>, IOException> selectionTranslator) {
         super(eventConsumer);
-        m_tableViewManager = tableViewManager;
+        m_hiLiteHandlerProvider = hiLiteHandlerProvider;
+        m_selectionTranslator = selectionTranslator;
     }
 
     /**
@@ -117,7 +124,7 @@ public final class SelectionEventSource<N extends NodeWrapper> extends EventSour
      */
     @Override
     public Optional<SelectionEvent> addEventListenerAndGetInitialEventFor(final N nw) {
-        var handler = m_tableViewManager.getHiLiteHandler(nw).orElse(null);
+        var handler = m_hiLiteHandlerProvider.apply(nw);
         if (handler == null) {
             return Optional.empty();
         }
@@ -142,8 +149,7 @@ public final class SelectionEventSource<N extends NodeWrapper> extends EventSour
 
     private SelectionTranslationResult translateSelections(final N nw, final Set<RowKey> rowKeys) {
         try {
-            return new SelectionTranslationResult(m_tableViewManager.callSelectionTranslationService(nw, rowKeys),
-                null);
+            return new SelectionTranslationResult(m_selectionTranslator.apply(nw, rowKeys), null);
         } catch (IOException ex) {
             NodeLogger.getLogger(this.getClass()).error("Selection event couldn't be created", ex);
             return new SelectionTranslationResult(null, ex.getMessage());
