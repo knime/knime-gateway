@@ -209,7 +209,9 @@ public final class DefaultNodeService implements NodeService {
         if (m_eventConsumer == null) {
             return NodeViewEnt.create(nnc);
         } else {
-            return UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, m_eventConsumer, false).getFirst();
+            return UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, (n, e) -> {
+                // TODO NXT-2471
+            }, false).getFirst();
         }
     }
 
