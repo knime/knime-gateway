@@ -125,6 +125,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("nodeRepositoryLoaded")
     public Boolean isNodeRepositoryLoaded();
     
+    @Override
+    @JsonProperty("analyticsPlatformDownloadURL")
+    public String getAnalyticsPlatformDownloadURL();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -189,6 +193,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("nodeRepositoryLoaded")
         public AppStateEntMixInBuilder setNodeRepositoryLoaded(final Boolean nodeRepositoryLoaded);
+        
+        @Override
+        @JsonProperty("analyticsPlatformDownloadURL")
+        public AppStateEntMixInBuilder setAnalyticsPlatformDownloadURL(final String analyticsPlatformDownloadURL);
         
     }
 

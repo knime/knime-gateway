@@ -185,8 +185,8 @@ public final class AppStateEntityFactory {
             .setFileExtensionToNodeTemplateId(nodeFactoryProvider == null ? Collections.emptyMap()
                 : nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
             .setNodeRepositoryLoaded(NodeSpecCollectionProvider.Progress.isDone()) //
+            .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .build();
-
     }
 
     /**
@@ -335,6 +335,14 @@ public final class AppStateEntityFactory {
             .filter(LocalWorkspace.class::isInstance) //
             .map(space -> space.getAncestorItemIds(origin.getItemId())) //
             .orElse(null);
+    }
+
+    /**
+     * @return Web URL to send the user to to download the desktop edition of the Analytics Platform, or null if not
+     * configured.
+     */
+    private static String getAnalyticsPlatformDownloadURL() {
+        return System.getProperty("org.knime.ui.analytics_platform_download_url");
     }
 
 }

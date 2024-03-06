@@ -145,6 +145,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public Boolean isNodeRepositoryLoaded();
 
+  /**
+   * Web URL to send the user to to download the desktop edition of the AP.
+   * @return analyticsPlatformDownloadURL 
+   **/
+  public String getAnalyticsPlatformDownloadURL();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -163,6 +169,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
       valueConsumer.accept("fileExtensionToNodeTemplateId", Pair.create(getFileExtensionToNodeTemplateId(), e.getFileExtensionToNodeTemplateId()));
       valueConsumer.accept("nodeRepositoryLoaded", Pair.create(isNodeRepositoryLoaded(), e.isNodeRepositoryLoaded()));
+      valueConsumer.accept("analyticsPlatformDownloadURL", Pair.create(getAnalyticsPlatformDownloadURL(), e.getAnalyticsPlatformDownloadURL()));
   }
 
     /**
@@ -273,6 +280,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setNodeRepositoryLoaded(Boolean nodeRepositoryLoaded);
+        
+        /**
+         * Web URL to send the user to to download the desktop edition of the AP.
+         * 
+         * @param analyticsPlatformDownloadURL the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setAnalyticsPlatformDownloadURL(String analyticsPlatformDownloadURL);
         
         
         /**

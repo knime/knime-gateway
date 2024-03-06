@@ -69,6 +69,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param devMode
  * @param fileExtensionToNodeTemplateId
  * @param nodeRepositoryLoaded
+ * @param analyticsPlatformDownloadURL
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -86,7 +87,8 @@ public record DefaultAppStateEnt(
     Boolean hasNodeCollectionActive,
     Boolean devMode,
     java.util.Map<String, String> fileExtensionToNodeTemplateId,
-    Boolean nodeRepositoryLoaded) implements AppStateEnt {
+    Boolean nodeRepositoryLoaded,
+    String analyticsPlatformDownloadURL) implements AppStateEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -164,6 +166,11 @@ public record DefaultAppStateEnt(
         return nodeRepositoryLoaded;
     }
     
+    @Override
+    public String getAnalyticsPlatformDownloadURL() {
+        return analyticsPlatformDownloadURL;
+    }
+    
     /**
      * A builder for {@link DefaultAppStateEnt}.
      */
@@ -194,6 +201,8 @@ public record DefaultAppStateEnt(
         private java.util.Map<String, String> m_fileExtensionToNodeTemplateId;
 
         private Boolean m_nodeRepositoryLoaded;
+
+        private String m_analyticsPlatformDownloadURL;
 
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<ProjectEnt> openProjects) {
@@ -274,6 +283,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setAnalyticsPlatformDownloadURL(String analyticsPlatformDownloadURL) {
+             m_analyticsPlatformDownloadURL = analyticsPlatformDownloadURL;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
                 immutable(m_openProjects),
@@ -288,7 +303,8 @@ public record DefaultAppStateEnt(
                 immutable(m_hasNodeCollectionActive),
                 immutable(m_devMode),
                 immutable(m_fileExtensionToNodeTemplateId),
-                immutable(m_nodeRepositoryLoaded));
+                immutable(m_nodeRepositoryLoaded),
+                immutable(m_analyticsPlatformDownloadURL));
         }
     
     }
