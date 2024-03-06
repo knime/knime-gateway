@@ -62,12 +62,33 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface KaiMessageEnt extends GatewayEntity {
 
+  /**
+   * Role of the message sender.
+   */
+  public enum RoleEnum {
+    ASSISTANT("assistant"),
+    
+    USER("user");
+
+    private String value;
+
+    RoleEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Role of the message sender.
    * @return role , never <code>null</code>
    **/
-  public String getRole();
+  public RoleEnum getRole();
 
   /**
    * Content of the message.
@@ -95,7 +116,7 @@ public interface KaiMessageEnt extends GatewayEntity {
          * @param role the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        KaiMessageEntBuilder setRole(String role);
+        KaiMessageEntBuilder setRole(RoleEnum role);
         
         /**
          * Content of the message.

@@ -59,7 +59,7 @@ import org.knime.gateway.api.webui.entity.KaiMessageEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultKaiMessageEnt(
-    String role,
+    RoleEnum role,
     String content) implements KaiMessageEnt {
 
     /**
@@ -80,7 +80,7 @@ public record DefaultKaiMessageEnt(
     }
   
     @Override
-    public String getRole() {
+    public RoleEnum getRole() {
         return role;
     }
     
@@ -94,12 +94,12 @@ public record DefaultKaiMessageEnt(
      */
     public static class DefaultKaiMessageEntBuilder implements KaiMessageEntBuilder {
 
-        private String m_role;
+        private RoleEnum m_role;
 
         private String m_content;
 
         @Override
-        public DefaultKaiMessageEntBuilder setRole(String role) {
+        public DefaultKaiMessageEntBuilder setRole(RoleEnum role) {
              if(role == null) {
                  throw new IllegalArgumentException("<role> must not be null.");
              }

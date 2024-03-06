@@ -53,11 +53,13 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.service.KaiService;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
+import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Role;
 import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.UiStrings;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 
@@ -147,7 +149,28 @@ public final class DefaultKaiService implements KaiService {
          * @param role who the message is from
          * @param content of the message
          */
-        record Message(String role, String content) {
+        record Message(Role role, String content) {
+        }
+
+        /**
+         * Role of the sender of the message.
+         *
+         * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+         */
+        enum Role {
+            USER("user"),
+            ASSISTANT("assistant");
+
+            private String m_toString;
+
+            Role(final String toString) {
+                m_toString = toString;
+            }
+
+            @Override
+            public String toString() {
+                return m_toString;
+            }
         }
 
         /**
@@ -190,10 +213,18 @@ public final class DefaultKaiService implements KaiService {
     @Override
     public void makeAiRequest(final String kaiChainId, final KaiRequestEnt kaiRequestEnt) {
         var messages = kaiRequestEnt.getMessages().stream()//
-            .map(m -> new KaiGatewayListener.Message(m.getRole(), m.getContent())).toList();
+            .map(m -> new KaiGatewayListener.Message(fromRoleEnum(m.getRole()), m.getContent())).toList();
         var request = new KaiGatewayListener.Request(kaiRequestEnt.getConversationId(), kaiChainId,
             kaiRequestEnt.getProjectId(), kaiRequestEnt.getWorkflowId(), kaiRequestEnt.getSelectedNodes(), messages);
         getListener().ifPresent(l -> l.onNewRequest(request));
+    }
+
+    private static KaiGatewayListener.Role fromRoleEnum(final RoleEnum role) {
+        return switch (role) {
+            case ASSISTANT -> Role.ASSISTANT;
+            case USER -> Role.USER;
+            default -> throw new IllegalArgumentException("Unknown role: " + role);
+        };
     }
 
     /**

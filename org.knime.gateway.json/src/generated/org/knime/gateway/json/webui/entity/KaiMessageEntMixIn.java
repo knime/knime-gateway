@@ -71,7 +71,7 @@ public interface KaiMessageEntMixIn extends KaiMessageEnt {
 
     @Override
     @JsonProperty("role")
-    public String getRole();
+    public RoleEnum getRole();
     
     @Override
     @JsonProperty("content")
@@ -92,7 +92,7 @@ public interface KaiMessageEntMixIn extends KaiMessageEnt {
     
         @Override
         @JsonProperty("role")
-        public KaiMessageEntMixInBuilder setRole(final String role);
+        public KaiMessageEntMixInBuilder setRole(final RoleEnum role);
         
         @Override
         @JsonProperty("content")

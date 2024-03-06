@@ -58,11 +58,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
 import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener;
 import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Message;
 import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Request;
+import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Role;
 import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.UiStrings;
 import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.WelcomeMessages;
 import org.mockito.Mock;
@@ -119,12 +121,12 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testMakeAiRequest() throws Exception {
-        DefaultKaiMessageEnt message = new DefaultKaiMessageEnt("user", "Hello there");
+        DefaultKaiMessageEnt message = new DefaultKaiMessageEnt(RoleEnum.USER, "Hello there");
         List<String> selectedNodes = List.of("bli", "bla", "blub");
         var request = new DefaultKaiRequestEnt("foo", "bar", "baz", selectedNodes, List.of(message));
 
         var expectedRequest =
-            new Request("foo", "qa", "bar", "baz", selectedNodes, List.of(new Message("user", "Hello there")));
+            new Request("foo", "qa", "bar", "baz", selectedNodes, List.of(new Message(Role.USER, "Hello there")));
         DefaultKaiService.getInstance().makeAiRequest("qa", request);
         Mockito.verify(m_listener)//
             .onNewRequest(expectedRequest);
