@@ -174,10 +174,10 @@ public interface NodeService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param mode Whether to add, remove or replace the data point selection.
-     * @param selections A list of strings that are translated to the row keys affected by the data point selection modification.
+     * @param selection A list of strings that are translated to the row keys affected by the data point selection modification.
      *
      * 
      */
-    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, java.util.List<String> selections)  throws ServiceExceptions.NodeNotFoundException;
+    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String mode, java.util.List<String> selection)  throws ServiceExceptions.NodeNotFoundException;
         
 }

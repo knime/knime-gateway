@@ -81,6 +81,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSource;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 
@@ -91,6 +93,8 @@ import org.knime.gateway.impl.webui.service.events.SelectionEventSource.Selectio
  * @author Kai Franze, KNIME GmbH, Germany
  */
 public final class DefaultNodeService implements NodeService {
+
+    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, false);
 
     static final LRUMap<NodeFactoryKeyEnt, NativeNodeDescriptionEnt> m_nodeDescriptionCache = new LRUMap<>(100);
 
@@ -202,7 +206,11 @@ public final class DefaultNodeService implements NodeService {
             throw new InvalidRequestException(
                 "Node view can't be requested. The node " + nnc.getNameWithID() + " is not executed.");
         }
-        return NodeViewEnt.create(nnc);
+        if (m_eventConsumer == null) {
+            return NodeViewEnt.create(nnc);
+        } else {
+            return UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, m_eventConsumer, false).getFirst();
+        }
     }
 
     private static <T> T getNC(final String projectId, final NodeIDEnt workflowId,
