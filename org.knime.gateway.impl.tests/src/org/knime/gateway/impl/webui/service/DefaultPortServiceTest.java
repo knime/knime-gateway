@@ -49,7 +49,9 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,9 +82,11 @@ import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.PortServiceTestHelper;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -91,7 +95,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultPortServiceTest {
+public class DefaultPortServiceTest extends GatewayServiceTest {
 
     /**
      * Tests
@@ -230,6 +234,25 @@ public class DefaultPortServiceTest {
             }
         };
         return portView;
+    }
+
+    /**
+     * Makes sure that {@link PortService#getPortView(String, NodeIDEnt, NodeIDEnt, Integer, Integer)} returns the
+     * initial selection.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void getPortViewWithInitialSelection() throws Exception {
+        String wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
+        wfm.executeAllAndWaitUntilDone();
+
+        var ps = DefaultPortService.getInstance();
+        ps.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(2), 1, 1, "add", List.of("Row2", "Row5"));
+
+        var portView = (PortViewEnt)ps.getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
+        assertThat(portView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
     }
 
 }
