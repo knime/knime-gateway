@@ -48,9 +48,8 @@
  */
 package org.knime.gateway.impl.webui.modes;
 
-import java.util.function.Supplier;
-
 import org.knime.gateway.api.webui.entity.PermissionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPermissionsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPermissionsEnt.DefaultPermissionsEntBuilder;
 
 /**
@@ -71,24 +70,41 @@ public final class Permissions {
      * @return the available permissions
      */
     public static PermissionsEnt getPermissions() {
-        final Supplier<PermissionsEnt> jobViewerSupplier = () -> new DefaultPermissionsEntBuilder() //
-            .setCanAccessKAIPanel(false) //
-            .setCanAccessNodeRepository(false) //
-            .setCanAccessSpaceExplorer(false) //
-            .setCanConfigureNodes(false) //
-            .setCanEditWorkflow(false) //
-            .build();
-        final Supplier<PermissionsEnt> defaultSupplier = () -> new DefaultPermissionsEntBuilder() //
+        return switch (WebUIMode.getMode()) {
+            case JOB_VIEWER -> getJobViewerPermissions();
+            case PLAYGROUND -> getPlaygroundPermissions();
+            case DEFAULT -> getDefaultPermissions();
+        };
+    }
+
+    private static DefaultPermissionsEnt getDefaultPermissions() {
+        return new DefaultPermissionsEntBuilder() //
             .setCanAccessKAIPanel(true) //
             .setCanAccessNodeRepository(true) //
             .setCanAccessSpaceExplorer(true) //
             .setCanConfigureNodes(true) //
             .setCanEditWorkflow(true) //
             .build();
-        return switch (WebUIMode.getMode()) {
-            case JOB_VIEWER -> jobViewerSupplier.get();
-            case DEFAULT -> defaultSupplier.get();
-        };
+    }
+
+    private static DefaultPermissionsEnt getPlaygroundPermissions() {
+        return new DefaultPermissionsEntBuilder() //
+            .setCanAccessKAIPanel(true) //
+            .setCanAccessNodeRepository(true) //
+            .setCanAccessSpaceExplorer(false) //
+            .setCanConfigureNodes(true) //
+            .setCanEditWorkflow(true) //
+            .build();
+    }
+
+    private static DefaultPermissionsEnt getJobViewerPermissions() {
+        return new DefaultPermissionsEntBuilder() //
+            .setCanAccessKAIPanel(false) //
+            .setCanAccessNodeRepository(false) //
+            .setCanAccessSpaceExplorer(false) //
+            .setCanConfigureNodes(false) //
+            .setCanEditWorkflow(false) //
+            .build();
     }
 
 }

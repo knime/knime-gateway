@@ -63,6 +63,11 @@ public enum WebUIMode {
         JOB_VIEWER("JOB-VIEWER", false),
 
         /**
+         * Limited functionality edition of the Modern UI for use as preview.
+         */
+        PLAYGROUND("PLAYGROUND", true),
+
+        /**
          * The default mode
          */
         DEFAULT("DEFAULT", true);
