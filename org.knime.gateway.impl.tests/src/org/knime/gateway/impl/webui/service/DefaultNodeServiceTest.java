@@ -49,9 +49,12 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -77,9 +80,11 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.NodeServiceTestHelper;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeFactory;
@@ -90,7 +95,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultNodeServiceTest {
+public class DefaultNodeServiceTest extends GatewayServiceTest {
 
     private WorkflowManager m_wfm;
     private String m_projectId;
@@ -110,6 +115,7 @@ public class DefaultNodeServiceTest {
         ProjectManager.getInstance().removeProject(m_projectId, WorkflowManagerUtil::disposeWorkflow);
     }
 
+    @Override
     @SuppressWarnings("javadoc")
     @After
     public void disposeServices() {
@@ -250,6 +256,24 @@ public class DefaultNodeServiceTest {
             };
         }));
         return nc;
+    }
+
+    /**
+     * Makes sure that {@link NodeService#getNodeView(String, NodeIDEnt, NodeIDEnt)} returns the initial selection.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void getNodeViewWithInitialSelection() throws Exception {
+        String wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, wfId);
+        wfm.executeAllAndWaitUntilDone();
+
+        var ns = DefaultNodeService.getInstance();
+        ns.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(15), "add", List.of("Row2", "Row5"));
+
+        var nodeView = (NodeViewEnt)ns.getNodeView(wfId, getRootID(), new NodeIDEnt(1));
+        assertThat(nodeView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
     }
 
 }
