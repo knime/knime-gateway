@@ -58,7 +58,7 @@ import java.util.function.Predicate;
 public interface PreferencesProvider {
 
     /**
-     * @return a predicate that is true for nodes that are part of the active node collection. <code>null</code> if no
+     * @return A predicate that is true for nodes that are part of the active node collection. <code>null</code> if no
      *         collection is active.
      */
     Predicate<String> activeNodeCollection();

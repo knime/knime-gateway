@@ -112,8 +112,6 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     @Override
     public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
         final Integer tagsLimit, final Boolean fullTemplateInfo) {
-//        return EntityBuilderManager.builder(NodeGroupsEntBuilder.class).setGroups(List.of()).setTotalNumGroups(0)
-//            .build();
         return m_nodeGroups.getNodesGroupedByTags(numNodesPerTag, tagsOffset, tagsLimit, fullTemplateInfo);
     }
 
