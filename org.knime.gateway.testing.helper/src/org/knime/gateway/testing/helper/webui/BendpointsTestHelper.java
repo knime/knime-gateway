@@ -46,18 +46,13 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
-import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
@@ -73,8 +68,9 @@ import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
- * Tests bendpoint-related commands (e.g. the AddBendpoint-command and the Delete-command when being used to delete
- * bendpoints).
+ * Tests bendpoint-related commands (e.g., the AddBendpoint-command and the Delete-command when being used to delete
+ * bendpoints). Because updates to connections are processed asynchronously, the condition under test cannot be
+ * evaluated right away, but we have to wait whether it eventually becomes true.
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
@@ -122,25 +118,22 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         var insertionIndex = 0;
         var connection = modifiedConnection.toString();
 
-        var modifiedWf = executeWorkflowCommand(
-            addEndPoints(modifiedConnection, insertionIndex, somePosition), wfId);
-        awaitTrue(() -> bendpointPresentAt(modifiedWf, connection, insertionIndex, somePosition));
+        executeWorkflowCommand(addBendpoint(modifiedConnection, insertionIndex, somePosition), wfId);
+        awaitBendpointPresentAt(wfId, connection, insertionIndex, somePosition);
 
-        var undoneWorkflow = undoWorkflowCommand(wfId);
-        awaitFalse(() -> bendpointPresentAt(undoneWorkflow, connection, insertionIndex, somePosition));
+        undoWorkflowCommand(wfId);
+        awaitNoBendpointPresentAt(wfId, connection, insertionIndex, somePosition);
 
-        var redoneWorkflow = redoWorkflowCommand(wfId);
-        awaitFalse(() -> bendpointPresentAt(redoneWorkflow, connection, insertionIndex, somePosition));
+        redoWorkflowCommand(wfId);
+        awaitNoBendpointPresentAt(wfId, connection, insertionIndex, somePosition);
     }
-
 
     public void testBendpointIsAddedBetweenExisting() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var insertionIndex = 1;
-        var modifiedWf = executeWorkflowCommand(
-            addEndPoints(connectionWithTwoBendpoints, insertionIndex, somePosition), wfId);
-        awaitTrue(() -> bendpointPresentAt( //
-            modifiedWf, //
+        executeWorkflowCommand(addBendpoint(connectionWithTwoBendpoints, insertionIndex, somePosition), wfId);
+        awaitTrue(wfId, modifiedWorkflow -> bendpointPresentAt( //
+            modifiedWorkflow, //
             connectionWithTwoBendpoints.toString(), //
             insertionIndex, //
             somePosition //
@@ -153,25 +146,25 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         var connection = connectionWithTwoBendpoints.toString();
         var removedBendpointPosition = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
             .getConnections().get(connection).getBendpoints().get(removalIndex);
-        var modifiedWf = executeWorkflowCommand( //
-            deleteEndpoints(connectionWithTwoBendpoints, removalIndex), //
+        executeWorkflowCommand( //
+            deleteBendpoint(connectionWithTwoBendpoints, removalIndex), //
             wfId //
         );
         // a succeeding bendpoint will now be at that index, so all we can do is compare positions
-        awaitFalse(() -> bendpointPresentAt(modifiedWf, connection, removalIndex, removedBendpointPosition));
+        awaitNoBendpointPresentAt(wfId, connection, removalIndex, removedBendpointPosition);
 
-        var undoneWorkflow = undoWorkflowCommand(wfId);
-        assertTrue(bendpointPresentAt(undoneWorkflow, connection, removalIndex, removedBendpointPosition));
+        undoWorkflowCommand(wfId);
+        awaitBendpointPresentAt(wfId, connection, removalIndex, removedBendpointPosition);
 
-        var redoneWorkflow = redoWorkflowCommand(wfId);
-        assertFalse(bendpointPresentAt(redoneWorkflow, connection, removalIndex, removedBendpointPosition));
+        redoWorkflowCommand(wfId);
+        awaitNoBendpointPresentAt(wfId, connection, removalIndex, removedBendpointPosition);
     }
 
     public void testRemoveMultipleBendpoints() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
-        var modifiedWf = executeWorkflowCommand(deleteEndpoints(connectionWithTwoBendpoints, 0, 1), wfId);
-        awaitTrue(() -> {
-            var bendpoints = modifiedWf.getConnections().get(connectionWithTwoBendpoints.toString()).getBendpoints();
+        executeWorkflowCommand(deleteBendpoint(connectionWithTwoBendpoints, 0, 1), wfId);
+        awaitTrue(wfId, wf -> {
+            var bendpoints = wf.getConnections().get(connectionWithTwoBendpoints.toString()).getBendpoints();
             return bendpoints == null;
         });
     }
@@ -179,36 +172,35 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
     public void testBendpointIsRemovedWithNoneRemaining() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var removalIndex = 0;
-        var modifiedWf = executeWorkflowCommand(deleteEndpoints(connectionWithOneBendpoint, removalIndex), wfId);
-        awaitTrue(() -> {
-            var bendpoints = modifiedWf.getConnections().get(connectionWithOneBendpoint.toString()).getBendpoints();
+        executeWorkflowCommand(deleteBendpoint(connectionWithOneBendpoint, removalIndex), wfId);
+        awaitTrue(wfId, wf -> {
+            var bendpoints = wf.getConnections().get(connectionWithOneBendpoint.toString()).getBendpoints();
             return bendpoints == null;
         });
     }
 
-    private static AddBendpointCommandEnt addEndPoints(final ConnectionIDEnt connection,
+    private static AddBendpointCommandEnt addBendpoint(final ConnectionIDEnt connection,
         final int index, final XYEnt position) {
         return builder(AddBendpointCommandEnt.AddBendpointCommandEntBuilder.class)
             .setKind(WorkflowCommandEnt.KindEnum.ADD_BENDPOINT).setConnectionId(connection)
             .setIndex(BigDecimal.valueOf(index)).setPosition(position).build();
     }
 
-    private static DeleteCommandEnt deleteEndpoints(final ConnectionIDEnt connectionIDEnt,
+    private static DeleteCommandEnt deleteBendpoint(final ConnectionIDEnt connectionIDEnt,
         final int... indices) {
         return builder(DeleteCommandEntBuilder.class).setKind(WorkflowCommandEnt.KindEnum.DELETE)
             .setConnectionBendpoints(
-                Map.of(connectionIDEnt.toString(), Arrays.stream(indices).mapToObj(Integer::valueOf).toList()))
+                Map.of(connectionIDEnt.toString(), Arrays.stream(indices).boxed().toList()))
             .build();
     }
 
-
-    private static void awaitTrue(final BooleanSupplier condition) {
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> condition.getAsBoolean());
+    private void awaitBendpointPresentAt(String wfId, String connection, int insertionIndex, XYEnt position) {
+        awaitTrue(wfId, wf -> bendpointPresentAt(wf, connection, insertionIndex, position));
     }
 
-    private static void awaitFalse(final BooleanSupplier condition) {
-        awaitTrue(() -> !condition.getAsBoolean());
+    private void awaitNoBendpointPresentAt(String wfId, String connection, int insertionIndex, XYEnt position) {
+        awaitFalse(wfId, wf -> bendpointPresentAt(wf, connection, insertionIndex, position));
     }
+
 
 }

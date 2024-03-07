@@ -55,6 +55,8 @@ import static org.junit.Assert.assertEquals;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -85,8 +87,6 @@ import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVer
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
 import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Tests the implementations of {@link org.knime.gateway.impl.webui.service.commands.Cut},
@@ -201,24 +201,23 @@ public class CutCopyPasteCommandsTestHelper extends WebUIGatewayServiceTestHelpe
         var posY = 32;
         var pasteCommand = buildPasteCommand(clipboardContent, List.of(posX, posY));
         ws().executeWorkflowCommand(wfId, getRootID(), pasteCommand);
-        var modifiedWorkflow = ws().getWorkflow(wfId, getRootID(), false);
-        // only pasting nodes, do not have to check for annotations
-        var nodes = modifiedWorkflow.getWorkflow().getNodes().values();
-        var minNodeX = nodes.stream().map(nodeEnt -> nodeEnt.getPosition().getX()).min(Comparator.comparingInt(a -> a))
-            .orElseThrow();
-        var minNodeY = nodes.stream().map(nodeEnt -> nodeEnt.getPosition().getY()).min(Comparator.comparingInt(a -> a))
-            .orElseThrow();
-        var bendpoints =
-            modifiedWorkflow.getWorkflow().getConnections().values().stream().map(ConnectionEnt::getBendpoints) //
+        awaitTrue(wfId, modifiedWorkflow -> {  // NOSONAR size of lambda
+            // only pasting nodes, do not have to check for annotations
+            var nodes = modifiedWorkflow.getNodes().values();
+            var minNodeX = nodes.stream().map(nodeEnt -> nodeEnt.getPosition().getX())
+                .min(Comparator.comparingInt(a -> a)).orElseThrow();
+            var minNodeY = nodes.stream().map(nodeEnt -> nodeEnt.getPosition().getY())
+                .min(Comparator.comparingInt(a -> a)).orElseThrow();
+            var bendpoints = modifiedWorkflow.getConnections().values().stream().map(ConnectionEnt::getBendpoints) //
                 .filter(Objects::nonNull) // null if no bendpoints on connection
                 .flatMap(Collection::stream) // flatten
                 .collect(Collectors.toSet());
-        var minBendpointX = bendpoints.stream().map(XYEnt::getX).min(Comparator.comparingInt(x -> x)).orElseThrow();
-        var minBendpointY = bendpoints.stream().map(XYEnt::getY).min(Comparator.comparingInt(y -> y)).orElseThrow();
-        var minX = Math.min(minNodeX, minBendpointX);
-        var minY = Math.min(minNodeY, minBendpointY);
-        assertEquals(posX, minX);
-        assertEquals(posY, minY);
+            var minBendpointX = bendpoints.stream().map(XYEnt::getX).min(Comparator.comparingInt(x -> x)).orElseThrow();
+            var minBendpointY = bendpoints.stream().map(XYEnt::getY).min(Comparator.comparingInt(y -> y)).orElseThrow();
+            var minX = Math.min(minNodeX, minBendpointX);
+            var minY = Math.min(minNodeY, minBendpointY);
+            return posX == minX && posY == minY;
+        });
     }
 
     /**

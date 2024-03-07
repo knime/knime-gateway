@@ -104,12 +104,12 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(delta[0]).setY(delta[1]).build()).build();
     }
 
-    private static void assertMoved(final Function<WorkflowEnt, XYEnt> accessor, final int[] delta,
+
+    private static boolean objectMoved(final Function<WorkflowEnt, XYEnt> accessor, final int[] delta,
         final WorkflowEnt originalWorkflow, final WorkflowEnt modifiedWorkflow) {
         var before = accessor.apply(originalWorkflow);
         var after = accessor.apply(modifiedWorkflow);
-        assertThat(before.getX() + delta[0], is(after.getX()));
-        assertThat(before.getY() + delta[1], is(after.getY()));
+        return (before.getX() + delta[0] == after.getX()) && (before.getY() + delta[1] == after.getY());
     }
 
     private static Function<WorkflowEnt, XYEnt> bendpointAccessor(final String connectionId, final int bendpointIndex) {
@@ -123,12 +123,12 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var bendpointIndex = 1;
         Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connection, bendpointIndex);
         var command = translateCommand(delta, List.of(), Map.of(connection, List.of(bendpointIndex)));
-        var modifiedWorkflow = executeWorkflowCommand(command, wfId);
-        assertMoved(bendpoint, delta, originalWfEnt, modifiedWorkflow);
-        var undoneWorkflow = undoWorkflowCommand(wfId);
-        assertMoved(bendpoint, new int[]{0, 0}, originalWfEnt, undoneWorkflow);
-        var redoneWorkflow = redoWorkflowCommand(wfId);
-        assertMoved(bendpoint, delta, originalWfEnt, redoneWorkflow);
+        executeWorkflowCommand(command, wfId);
+        awaitMoved(bendpoint, delta, originalWfEnt, wfId);
+        undoWorkflowCommand(wfId);
+        awaitMoved(bendpoint, new int[]{0, 0}, originalWfEnt, wfId);
+        redoWorkflowCommand(wfId);
+        awaitMoved(bendpoint, delta, originalWfEnt, wfId);
     }
 
     public void testTranslateBendpointsOnlySelected() throws Exception {
@@ -141,8 +141,8 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connectionId, selectedBendpointIndex);
         var command = translateCommand(delta, List.of(sourceNode, targetNode),
             Map.of(connectionId, List.of(selectedBendpointIndex)));
-        var modifiedWorkflow = executeWorkflowCommand(command, wfId);
-        assertMoved(bendpoint, delta, originalWfEnt, modifiedWorkflow);
+        executeWorkflowCommand(command, wfId);
+        awaitMoved(bendpoint, delta, originalWfEnt, wfId);
     }
 
     public void testTranslateBendpointOfInvalidIndex() throws Exception {
@@ -349,6 +349,11 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         message = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2)).getMessage();
         assertThat(message, is("Metanode in-ports-bar can't be moved. It doesn't have a position, yet."));
+    }
+
+
+    private void awaitMoved(Function<WorkflowEnt, XYEnt> accessor, int[] delta, WorkflowEnt originalWorkflow, String wfId) {
+        awaitTrue(wfId, wf -> objectMoved(accessor, delta, originalWorkflow, wf));
     }
 
 }

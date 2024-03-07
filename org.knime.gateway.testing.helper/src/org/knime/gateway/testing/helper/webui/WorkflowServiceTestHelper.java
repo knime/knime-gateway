@@ -913,7 +913,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command6));
         assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
 
-        // deletion of a connection fails because because it's connected to an executing node
+        // deletion of a connection fails because it's connected to an executing node
         var command7 =
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(7), 0)), emptyList());
         ex = Assert.assertThrows(OperationNotAllowedException.class,

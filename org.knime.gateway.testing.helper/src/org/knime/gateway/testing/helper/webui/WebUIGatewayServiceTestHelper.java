@@ -53,9 +53,12 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
@@ -341,11 +344,9 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
-    protected WorkflowEnt executeWorkflowCommand(final WorkflowCommandEnt commandEnt, final String workflowId)
+    protected void executeWorkflowCommand(final WorkflowCommandEnt commandEnt, final String workflowId)
         throws Exception {
         ws().executeWorkflowCommand(workflowId, NodeIDEnt.getRootID(), commandEnt);
-        return ws().getWorkflow(workflowId, NodeIDEnt.getRootID(), true).getWorkflow();
-
     }
 
     /**
@@ -354,9 +355,8 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
-    protected WorkflowEnt undoWorkflowCommand(final String wfId) throws Exception {
+    protected void undoWorkflowCommand(final String wfId) throws Exception {
         ws().undoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        return ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
     }
 
     /**
@@ -365,9 +365,35 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
-    protected WorkflowEnt redoWorkflowCommand(final String wfId) throws Exception {
+    protected void redoWorkflowCommand(final String wfId) throws Exception {
         ws().redoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        return ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+    }
+
+    /**
+     * Get the current state of the workflow, re-throwing any exception as a runtime exception. Useful if used inside a
+     * lambda expression.
+     *
+     * @param workflowId The ID of the workflow to fetch
+     * @return The entity describing the current state of the workflow
+     */
+    @SuppressWarnings({"java:S2221", "java:S112"}) // exception handling
+    WorkflowEnt getWorkflow(final String workflowId) {
+        WorkflowEnt workflow;
+        try {
+            workflow = ws().getWorkflow(workflowId, NodeIDEnt.getRootID(), true).getWorkflow();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return workflow;
+    }
+
+    void awaitTrue(final String workflowId, final Predicate<WorkflowEnt> condition) {
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS)
+            .untilAsserted(() -> condition.test(getWorkflow(workflowId)));
+    }
+
+    void awaitFalse(final String workflowId, final Predicate<WorkflowEnt> condition) {
+        awaitTrue(workflowId, condition.negate());
     }
 
 }
