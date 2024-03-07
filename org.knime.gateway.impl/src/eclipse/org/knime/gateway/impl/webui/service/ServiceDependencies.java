@@ -61,6 +61,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -133,6 +134,7 @@ public final class ServiceDependencies {
      * @param preferencesProvider
      * @param exampleProjects
      * @param nodeFactoryProvider
+     * @param kaiHandler handle K-AI related requests
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
@@ -143,7 +145,8 @@ public final class ServiceDependencies {
         final UpdateStateProvider updateStateProvider, //
         final PreferencesProvider preferencesProvider, //
         final ExampleProjects exampleProjects, //
-        final NodeFactoryProvider nodeFactoryProvider) {
+        final NodeFactoryProvider nodeFactoryProvider,//
+        final KaiHandler kaiHandler) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -154,6 +157,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
             ServiceDependencies.setServiceDependency(ExampleProjects.class, exampleProjects);
             ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
+            ServiceDependencies.setServiceDependency(KaiHandler.class, kaiHandler);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "
