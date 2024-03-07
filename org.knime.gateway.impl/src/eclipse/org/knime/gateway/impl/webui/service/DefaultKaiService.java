@@ -48,10 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
@@ -59,20 +56,17 @@ import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.service.KaiService;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Role;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.UiStrings;
-import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.kai.KaiHandler;
+import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
 
 /**
- * Receives calls from the frontend and delegates them to a {@link KaiGatewayListener}.
+ * Receives calls from the frontend and delegates them to a {@link KaiHandler}.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
 public final class DefaultKaiService implements KaiService {
 
-    private static final AtomicReference<KaiGatewayListener> LISTENER = new AtomicReference<>();
-
-    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, true);
+    private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
     /**
      * @return the singleton instance of this service
@@ -81,117 +75,8 @@ public final class DefaultKaiService implements KaiService {
         return ServiceInstances.getDefaultServiceInstance(DefaultKaiService.class);
     }
 
-    /**
-     * @param listener to register
-     * @return true if the listener was not already registered
-     */
-    public static boolean registerListener(final KaiGatewayListener listener) {
-        return LISTENER.compareAndSet(null, listener);
-    }
-
-    /**
-     * @param listener to remove
-     * @return true if the listener was registered
-     */
-    public static boolean unregisterListener(final KaiGatewayListener listener) {
-        return LISTENER.compareAndSet(listener, null);
-    }
-
-    /**
-     * Listener that is invoked whenever this service is called.
-     *
-     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
-     */
-    public interface KaiGatewayListener {
-        /**
-         * Invoked when the user sends a message in the chat.
-         *
-         * @param request the user request
-         */
-        void onNewRequest(Request request);
-
-        /**
-         * Invoked if the user cancels the answer of the currently processed message.
-         *
-         * @param chainType the type of chain to cancel
-         */
-        void onCancel(String chainType);
-
-        /**
-         * @return the UI strings (disclaimer and welcome messages) in JSON format
-         */
-        UiStrings getUiStrings();
-
-        /**
-         * Encapsulates the welcome messages that K-AI displays in the UI.
-         *
-         * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
-         * @param qa welcome message for the Q&A mode
-         * @param build welcome message for the Build mode
-         */
-        record WelcomeMessages(String qa, String build) {
-        }
-
-        /**
-         * Container for the disclaimer and welcome messages that K-AI displays in the UI.
-         *
-         * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
-         * @param disclaimer users have to accept before they can chat with K-AI
-         * @param welcomeMessages the messages K-AI starts the conversation with
-         */
-        record UiStrings(String disclaimer, WelcomeMessages welcomeMessages) {
-        }
-
-        /**
-         * Represents a message in a conversation with K-AI
-         *
-         * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
-         * @param role who the message is from
-         * @param content of the message
-         */
-        record Message(Role role, String content) {
-        }
-
-        /**
-         * Role of the sender of the message.
-         *
-         * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
-         */
-        enum Role {
-            USER("user"),
-            ASSISTANT("assistant");
-
-            private String m_toString;
-
-            Role(final String toString) {
-                m_toString = toString;
-            }
-
-            @Override
-            public String toString() {
-                return m_toString;
-            }
-        }
-
-        /**
-         * Represents a user request sent to K-AI.
-         *
-         * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
-         * @param conversationId ID of the conversation (null at start of conversation)
-         * @param chainType i.e. qa or build mode
-         * @param projectId ID of the workflow the user is interacting with
-         * @param workflowId ID of the subworkflow the user is interacting with
-         * @param selectedNodes IDs of the nodes the user selected
-         * @param messages of the conversation
-         */
-        record Request(String conversationId, String chainType, String projectId, String workflowId,
-            List<String> selectedNodes, List<Message> messages) {
-        }
-
-    }
-
-    private static Optional<KaiGatewayListener> getListener() {
-        return Optional.of(LISTENER.get());
+    private Optional<KaiHandler> getListener() {
+        return Optional.ofNullable(m_kaiHandler);
     }
 
     @Override
@@ -201,7 +86,7 @@ public final class DefaultKaiService implements KaiService {
 
     @Override
     public KaiUiStringsEnt getUiStrings() {
-        return getListener().map(KaiGatewayListener::getUiStrings).map(DefaultKaiService::fromUiStrings).orElse(null);
+        return getListener().map(KaiHandler::getUiStrings).map(DefaultKaiService::fromUiStrings).orElse(null);
     }
 
     private static KaiUiStringsEnt fromUiStrings(final UiStrings uiStrings) {
@@ -213,25 +98,18 @@ public final class DefaultKaiService implements KaiService {
     @Override
     public void makeAiRequest(final String kaiChainId, final KaiRequestEnt kaiRequestEnt) {
         var messages = kaiRequestEnt.getMessages().stream()//
-            .map(m -> new KaiGatewayListener.Message(fromRoleEnum(m.getRole()), m.getContent())).toList();
-        var request = new KaiGatewayListener.Request(kaiRequestEnt.getConversationId(), kaiChainId,
+            .map(m -> new KaiHandler.Message(fromRoleEnum(m.getRole()), m.getContent())).toList();
+        var request = new KaiHandler.Request(kaiRequestEnt.getConversationId(), kaiChainId,
             kaiRequestEnt.getProjectId(), kaiRequestEnt.getWorkflowId(), kaiRequestEnt.getSelectedNodes(), messages);
         getListener().ifPresent(l -> l.onNewRequest(request));
     }
 
-    private static KaiGatewayListener.Role fromRoleEnum(final RoleEnum role) {
+    private static KaiHandler.Role fromRoleEnum(final RoleEnum role) {
         return switch (role) {
-            case ASSISTANT -> Role.ASSISTANT;
-            case USER -> Role.USER;
+            case ASSISTANT -> KaiHandler.Role.ASSISTANT;
+            case USER -> KaiHandler.Role.USER;
             default -> throw new IllegalArgumentException("Unknown role: " + role);
         };
-    }
-
-    /**
-     * @return the returned consumer relays events to the frontend (message must be JSON serializable)
-     */
-    public Consumer<Object> getEventConsumer() {
-        return m -> m_eventConsumer.accept("AiAssistantEvent", m);
     }
 
 }

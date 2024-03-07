@@ -49,24 +49,18 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Message;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Request;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.Role;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.UiStrings;
-import org.knime.gateway.impl.webui.service.DefaultKaiService.KaiGatewayListener.WelcomeMessages;
+import org.knime.gateway.impl.webui.kai.KaiHandler;
+import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
+import org.knime.gateway.impl.webui.kai.KaiHandler.WelcomeMessages;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -80,22 +74,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 public final class DefaultKaiServiceTest extends GatewayServiceTest {
 
     @Mock
-    private KaiGatewayListener m_listener;
+    private KaiHandler m_kaiHandler;
 
     /**
      * Registers the mock listener in the DefaultKaiService.
      */
     @Before
     public void setup() {
-        DefaultKaiService.registerListener(m_listener);
-    }
-
-    /**
-     * Unregisters the mock listener in the DefaultKaiService.
-     */
-    @After
-    public void teardown() {
-        DefaultKaiService.unregisterListener(m_listener);
+        ServiceDependencies.setServiceDependency(KaiHandler.class, m_kaiHandler);
     }
 
     /**
@@ -107,7 +93,7 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     public void testGetUiStrings() throws Exception {
         var uiStrings =
             new UiStrings("my disclaimer", new WelcomeMessages("Qa welcome message", "Build welcome message"));
-        Mockito.when(m_listener.getUiStrings()).thenReturn(uiStrings);
+        Mockito.when(m_kaiHandler.getUiStrings()).thenReturn(uiStrings);
         var returnedUiStrings = DefaultKaiService.getInstance().getUiStrings();
         assertEquals(uiStrings.disclaimer(), returnedUiStrings.getDisclaimer());
         assertEquals(uiStrings.welcomeMessages().qa(), returnedUiStrings.getWelcomeMessages().getQa());
@@ -125,10 +111,10 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
         List<String> selectedNodes = List.of("bli", "bla", "blub");
         var request = new DefaultKaiRequestEnt("foo", "bar", "baz", selectedNodes, List.of(message));
 
-        var expectedRequest =
-            new Request("foo", "qa", "bar", "baz", selectedNodes, List.of(new Message(Role.USER, "Hello there")));
+        var expectedRequest = new KaiHandler.Request("foo", "qa", "bar", "baz", selectedNodes,
+            List.of(new KaiHandler.Message(KaiHandler.Role.USER, "Hello there")));
         DefaultKaiService.getInstance().makeAiRequest("qa", request);
-        Mockito.verify(m_listener)//
+        Mockito.verify(m_kaiHandler)//
             .onNewRequest(expectedRequest);
     }
 
@@ -140,27 +126,7 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     @Test
     public void testAbortAiRequest() throws Exception {
         DefaultKaiService.getInstance().abortAiRequest("build");
-        Mockito.verify(m_listener).onCancel("build");
-    }
-
-    /**
-     * Tests if registering and unregistering the listener works as expected.
-     *
-     * @throws Exception not thrown
-     */
-    @Test
-    public void testListenerRegistration() throws Exception {
-        // the listener is already registered by the setup method
-        assertFalse(DefaultKaiService.registerListener(m_listener),
-            "The listener should already be registered by the setup method.");
-        //
-        assertFalse(DefaultKaiService.unregisterListener(Mockito.mock(KaiGatewayListener.class)),
-            "It should not be possible to unregister a listener that was not previously registered.");
-        assertTrue(DefaultKaiService.unregisterListener(m_listener),
-            "The listener should be registered by the setup method, so we should be able to unregister it.");
-        assertTrue(DefaultKaiService.registerListener(m_listener),
-            "We unregistered the listener previously, so we should be able to register it again.");
-
+        Mockito.verify(m_kaiHandler).onCancel("build");
     }
 
 }
