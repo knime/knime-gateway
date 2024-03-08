@@ -57,6 +57,7 @@ import java.util.Optional;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.util.Version;
+import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 
@@ -184,6 +185,14 @@ public interface SpaceProvider {
          * @return the user that is connected
          */
         String getUsername();
+
+        /**
+         * @return the authorization string that can be set for the authorization header
+         * @throws CouldNotAuthorizeException if the authorization cannot be created
+         */
+        default String getAuthorization() throws CouldNotAuthorizeException {
+            throw new CouldNotAuthorizeException("No authorization token available");
+        }
 
         /**
          * Cuts the connection.
