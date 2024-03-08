@@ -48,10 +48,10 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.io.IOException;
+import static org.knime.gateway.impl.webui.service.DefaultServiceUtil.assertProjectIdAndGetNodeContainer;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
@@ -67,11 +67,8 @@ import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 
 /**
  * Default implementation of the {@link PortService}-interface.
@@ -187,29 +184,8 @@ public class DefaultPortService implements PortService {
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final Integer portIdx, final Integer viewIdx, final String mode, final List<String> selection)
         throws NodeNotFoundException {
-        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
-        final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase(Locale.ROOT));
-        try {
-            var portWrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
-            var tableViewManager = PortViewManager.getInstance().getTableViewManager();
-            var rowKeys = tableViewManager.callSelectionTranslationService(portWrapper, selection);
-            var hiLiteHandler = tableViewManager.getHiLiteHandler(portWrapper).orElseThrow();
-            SelectionEventSource.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
-        } catch (IOException ex) {
-            throw new IllegalStateException("Problem translating selection to row keys", ex);
-        }
-    }
-
-    private static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        NodeContainer nc;
-        try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-        return nc;
+        DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, nodeId, mode, selection,
+            nc -> NodePortWrapper.of(nc, portIdx, viewIdx));
     }
 
 }

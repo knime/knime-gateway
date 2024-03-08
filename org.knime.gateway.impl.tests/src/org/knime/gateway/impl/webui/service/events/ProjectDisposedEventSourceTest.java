@@ -63,8 +63,8 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.DefaultEventService;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
-import org.knime.gateway.impl.webui.service.util.DefaultServicesUtil;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -101,7 +101,7 @@ public class ProjectDisposedEventSourceTest {
         var eventConsumer = mock(EventConsumer.class);
         var spaceProviders = mock(SpaceProviders.class);
         var preferenceProvider = mock(PreferencesProvider.class);
-        DefaultServicesUtil.setDefaultServiceDependencies(projectManager, new WorkflowMiddleware(projectManager), null,
+        ServiceDependencies.setDefaultServiceDependencies(projectManager, new WorkflowMiddleware(projectManager), null,
             eventConsumer, spaceProviders, null, preferenceProvider, null, null);
 
         // register event listener

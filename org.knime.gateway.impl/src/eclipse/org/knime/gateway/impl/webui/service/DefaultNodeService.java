@@ -46,9 +46,10 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer;
+
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.collections4.map.LRUMap;
@@ -80,11 +81,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 
 /**
  * The default implementation of the {@link NodeService}-interface.
@@ -119,7 +117,7 @@ public final class DefaultNodeService implements NodeService {
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         try {
-            DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
+            org.knime.gateway.impl.service.util.DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
@@ -136,9 +134,8 @@ public final class DefaultNodeService implements NodeService {
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         try {
-            var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-            if (nc instanceof NativeNodeContainer) {
-                NativeNodeContainer nnc = (NativeNodeContainer)nc;
+            var nc = getNodeContainer(projectId, workflowId, nodeId);
+            if (nc instanceof NativeNodeContainer nnc) {
                 if (nnc.isModelCompatibleTo(LoopEndNode.class)) {
                     changeLoopState(action, nnc);
                     return;
@@ -219,7 +216,7 @@ public final class DefaultNodeService implements NodeService {
         final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
-            nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+            nc = getNodeContainer(projectId, workflowId, nodeId);
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
@@ -291,21 +288,9 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final String mode, final List<String> selection) {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-
-        final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase(Locale.ROOT));
-        var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        try {
-            var nodeWrapper = NodeWrapper.of(nc);
-            var tableViewManager = NodeViewManager.getInstance().getTableViewManager();
-            var rowKeys = tableViewManager.callSelectionTranslationService(nodeWrapper, selection);
-            var hiLiteHandler = tableViewManager.getHiLiteHandler(nodeWrapper).orElseThrow();
-            SelectionEventSource.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
-        } catch (IOException ex) {
-            throw new IllegalStateException("Problem translating selection to row keys", ex);
-        }
+    public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final String mode, final List<String> selection) throws NodeNotFoundException {
+        DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, nodeId, mode, selection, NodeWrapper::of);
     }
 
     /**

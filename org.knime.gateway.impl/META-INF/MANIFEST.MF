@@ -28,7 +28,6 @@ Export-Package: org.knime.gateway.impl.node.port.table,
  org.knime.gateway.impl.webui.service,
  org.knime.gateway.impl.webui.service.commands,
  org.knime.gateway.impl.webui.service.events,
- org.knime.gateway.impl.webui.service.util,
  org.knime.gateway.impl.webui.spaces,
  org.knime.gateway.impl.webui.spaces.local
 Automatic-Module-Name: org.knime.gateway.impl

@@ -54,6 +54,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.ExampleProjects;
+import org.knime.gateway.impl.webui.NodeFactoryProvider;
+import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.webui.UpdateStateProvider;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Provides and manages specific object instances that are considered to be dependencies for the
@@ -110,6 +119,47 @@ public final class ServiceDependencies {
      */
     public static void disposeAllServicesDependencies() {
         DEPENDENCIES.clear();
+    }
+
+    /**
+     * Helper to set all dependencies required by the default service implementations.
+     *
+     * @param projectManager
+     * @param workflowMiddleware
+     * @param appStateUpdater The application state updater
+     * @param eventConsumer The event consumer
+     * @param spaceProviders The space providers
+     * @param updateStateProvider The update state provider
+     * @param preferencesProvider
+     * @param exampleProjects
+     * @param nodeFactoryProvider
+     */
+    public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
+        final ProjectManager projectManager, //
+        final WorkflowMiddleware workflowMiddleware, //
+        final AppStateUpdater appStateUpdater, //
+        final EventConsumer eventConsumer, //
+        final SpaceProviders spaceProviders, //
+        final UpdateStateProvider updateStateProvider, //
+        final PreferencesProvider preferencesProvider, //
+        final ExampleProjects exampleProjects, //
+        final NodeFactoryProvider nodeFactoryProvider) {
+        if (!ServiceInstances.areServicesInitialized()) {
+            ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
+            ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
+            ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
+            ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
+            ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
+            ServiceDependencies.setServiceDependency(UpdateStateProvider.class, updateStateProvider);
+            ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
+            ServiceDependencies.setServiceDependency(ExampleProjects.class, exampleProjects);
+            ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
+        } else {
+            throw new IllegalStateException(
+                "Some services are already initialized. Service dependencies can't be set anymore. "
+                    + "Maybe you already started a Web UI within the AP and have now tried to launch "
+                    + "another instance in a browser, or vice versa?");
+        }
     }
 
 }
