@@ -56,6 +56,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
+import org.knime.gateway.impl.webui.kai.KaiHandlerFactory.AuthTokenProvider;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 
 /**
@@ -111,9 +112,11 @@ public final class KaiHandlerFactoryRegistry {
 
     /**
      * @param eventConsumer for sending events to the frontend
+     * @param authTokenProvider the {@link AuthTokenProvider}
      * @return a {@link KaiHandler} instance or {@link Optional#empty()} if no {@link KaiHandlerFactory} is registered
      */
-    public static Optional<KaiHandler> createKaiHandler(final EventConsumer eventConsumer) {
-        return getKaiHandlerFactory().map(f -> f.createKaiHandler(eventConsumer));
+    public static Optional<KaiHandler> createKaiHandler(final EventConsumer eventConsumer,
+        final AuthTokenProvider authTokenProvider) {
+        return getKaiHandlerFactory().map(f -> f.createKaiHandler(eventConsumer, authTokenProvider));
     }
 }

@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.kai;
 
+import org.knime.core.node.workflow.contextv2.RestLocationInfo;
+import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 
 /**
@@ -59,7 +61,24 @@ public interface KaiHandlerFactory {
 
     /**
      * @param eventConsumer for sending events to the frontend
+     * @param tokenProvider
      * @return a new KaiHandler
      */
-    KaiHandler createKaiHandler(final EventConsumer eventConsumer);
+    KaiHandler createKaiHandler(final EventConsumer eventConsumer, AuthTokenProvider tokenProvider);
+
+    /**
+     * Provides token required for authorization with the respective hub services.
+     */
+    interface AuthTokenProvider {
+        /**
+         *
+         * @param projectId the project-id; if in Hub the auth token is associated with the workflow project (see
+         *            {@link RestLocationInfo#getAuthenticator()}.
+         * @param hubId the id of the Hub that provides the KAI-services; only available for the desktop application,
+         *            i.e. can be {@code null}
+         * @return the token for authorization
+         * @throws CouldNotAuthorizeException if the auth token couldn't be retrieved
+         */
+        String getAuthToken(String projectId, String hubId) throws CouldNotAuthorizeException;
+    }
 }

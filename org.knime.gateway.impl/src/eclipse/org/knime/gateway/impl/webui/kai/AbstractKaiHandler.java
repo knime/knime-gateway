@@ -72,7 +72,7 @@ public abstract class AbstractKaiHandler implements KaiHandler {
      * @param projectId the id of the current workflow
      * @return the returned consumer relays events to the frontend (message must be JSON serializable)
      */
-    public Consumer<Object> getEventConsumer(final String projectId) {
+    protected final Consumer<Object> getEventConsumer(final String projectId) {
         return m -> m_eventConsumer.accept("AiAssistantEvent", m, projectId);
     }
 }
