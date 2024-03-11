@@ -53,12 +53,10 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -245,8 +243,7 @@ public final class WorkflowMiddleware {
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
         if (m_spaceProviders != null) {
-            buildContextBuilder.setSpaceProviderTypes(m_spaceProviders.getProvidersMap().entrySet().stream() //
-                .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType())));
+            buildContextBuilder.setSpaceProviderTypes(m_spaceProviders.getProviderTypes());
         }
         final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {

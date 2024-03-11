@@ -49,9 +49,12 @@
 package org.knime.gateway.impl.webui.spaces;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 
 /**
@@ -104,4 +107,14 @@ public interface SpaceProviders {
      * @return map of available {@link SpaceProvider}s; maps the space-provider-id to the space-provider.
      */
     Map<String, SpaceProvider> getProvidersMap();
+
+    /**
+     * Types of available {@link SpaceProvider}s, may be overridden for performance.
+     *
+     * @return types of available {@link SpaceProvider}s
+     */
+    default Map<String, SpaceProviderEnt.TypeEnum> getProviderTypes() {
+        return getProvidersMap().entrySet().stream() //
+                .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType()));
+    }
 }
