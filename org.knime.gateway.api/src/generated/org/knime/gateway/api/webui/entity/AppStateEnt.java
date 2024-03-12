@@ -146,7 +146,7 @@ public interface AppStateEnt extends GatewayEntity {
   public Boolean isNodeRepositoryLoaded();
 
   /**
-   * Web URL to send the user to to download the desktop edition of the AP.
+   * Web URL to send the user to to download the desktop edition of the Analytics Platform.
    * @return analyticsPlatformDownloadURL 
    **/
   public String getAnalyticsPlatformDownloadURL();
@@ -282,7 +282,7 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setNodeRepositoryLoaded(Boolean nodeRepositoryLoaded);
         
         /**
-         * Web URL to send the user to to download the desktop edition of the AP.
+         * Web URL to send the user to to download the desktop edition of the Analytics Platform.
          * 
          * @param analyticsPlatformDownloadURL the property value,  
          * @return this entity builder for chaining
