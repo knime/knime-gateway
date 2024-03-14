@@ -61,7 +61,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JComponent;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 
 /**
@@ -70,6 +76,15 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class AppStateEntityFactoryTest {
+
+    /**
+     * Registers an invalid port type, which tests NXT-2490. Needs to be static and run before
+     * {@link AppStateEntityFactory}.
+     */
+    @BeforeClass
+    public static void registerInvalidPortTypeBeforeClass_NXT2490() {
+        PortTypeRegistry.getInstance().getPortType(NXT2490UnregisteredPortObject.class);
+    }
 
     /**
      * Tests
@@ -117,7 +132,6 @@ public class AppStateEntityFactoryTest {
 
         assertThat(buildAppStateEntDiff(null, newAppState), sameInstance(newAppState));
         assertThat(buildAppStateEntDiff(oldAppState, newAppState), is(expectedAppStateDiff));
-
     }
 
     private static <T> List<T> oneNullElementList() {
@@ -130,6 +144,24 @@ public class AppStateEntityFactoryTest {
         var res = new HashMap<String, T>(1);
         res.put("blub", null);
         return res;
+    }
+
+    /** A port object / type definition that is not registered via extension point, Caused problems in NXT-2490. */
+    public static final class NXT2490UnregisteredPortObject implements PortObject {
+        @Override
+        public String getSummary() {
+            return null;
+        }
+
+        @Override
+        public PortObjectSpec getSpec() {
+            return null;
+        }
+
+        @Override
+        public JComponent[] getViews() {
+            return null;
+        }
     }
 
 }

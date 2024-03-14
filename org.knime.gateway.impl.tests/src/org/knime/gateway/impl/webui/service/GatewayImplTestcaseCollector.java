@@ -45,11 +45,30 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections4.ListUtils;
+import org.knime.gateway.impl.webui.entity.AppStateEntityFactoryTest;
 import org.knime.testing.core.AbstractTestcaseCollector;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class GatewayImplTestcaseCollector extends AbstractTestcaseCollector {
-	//empty on purpose
+
+    /**
+     * Calls super but sorts {@link AppStateEntityFactoryTest} first so that the port type registry is filled
+     * with a test object, see test class for details.
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Class<?>> getUnittestsClasses() throws IOException, ClassNotFoundException {
+        final var origList = super.getUnittestsClasses();
+        List<Class<?>> result = new ArrayList<>();
+        result.add(AppStateEntityFactoryTest.class);
+        result.addAll(ListUtils.selectRejected(origList, e -> e == AppStateEntityFactoryTest.class));
+        return result;
+    }
 }
