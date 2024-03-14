@@ -62,7 +62,6 @@ import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.NodeSearch;
-import org.knime.gateway.impl.webui.PreferencesProvider;
 
 /**
  * The default implementation of {@link NodeRepositoryService}.
@@ -79,9 +78,6 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
 
     private NodeRecommendations m_nodeRecommendations;
 
-    private final PreferencesProvider m_preferencesProvider =
-        ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
-
     /**
      * Returns the singleton instance for this service.
      *
@@ -96,11 +92,12 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     }
 
     /**
-     * Reset the node repository and apply the currently active node collection from the preference provider. All caches
-     * of the node search and node groups are deleted.
+     * Initialise and attach a new node repository instance, discarding any previously used instance and its caches.
      */
     public void resetNodeRepository() {
-        m_nodeRepo = new NodeRepository(m_preferencesProvider.activeNodeCollection());
+        var collectionPredicate =
+            NodeCollections.getActiveCollection().map(NodeCollections.NodeCollection::predicate).orElse(null);
+        m_nodeRepo = new NodeRepository(collectionPredicate);
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);

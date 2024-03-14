@@ -128,6 +128,12 @@ public interface AppStateEnt extends GatewayEntity {
   public Boolean hasNodeCollectionActive();
 
   /**
+   * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.
+   * @return activeNodeCollection 
+   **/
+  public String getActiveNodeCollection();
+
+  /**
    * If true, dev mode specific buttons will be shown.
    * @return devMode 
    **/
@@ -166,6 +172,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("permissions", Pair.create(getPermissions(), e.getPermissions()));
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
+      valueConsumer.accept("activeNodeCollection", Pair.create(getActiveNodeCollection(), e.getActiveNodeCollection()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
       valueConsumer.accept("fileExtensionToNodeTemplateId", Pair.create(getFileExtensionToNodeTemplateId(), e.getFileExtensionToNodeTemplateId()));
       valueConsumer.accept("nodeRepositoryLoaded", Pair.create(isNodeRepositoryLoaded(), e.isNodeRepositoryLoaded()));
@@ -256,6 +263,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setHasNodeCollectionActive(Boolean hasNodeCollectionActive);
+        
+        /**
+         * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.
+         * 
+         * @param activeNodeCollection the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setActiveNodeCollection(String activeNodeCollection);
         
         /**
          * If true, dev mode specific buttons will be shown.

@@ -114,6 +114,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public Boolean hasNodeCollectionActive();
     
     @Override
+    @JsonProperty("activeNodeCollection")
+    public String getActiveNodeCollection();
+    
+    @Override
     @JsonProperty("devMode")
     public Boolean isDevMode();
     
@@ -181,6 +185,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("hasNodeCollectionActive")
         public AppStateEntMixInBuilder setHasNodeCollectionActive(final Boolean hasNodeCollectionActive);
+        
+        @Override
+        @JsonProperty("activeNodeCollection")
+        public AppStateEntMixInBuilder setActiveNodeCollection(final String activeNodeCollection);
         
         @Override
         @JsonProperty("devMode")

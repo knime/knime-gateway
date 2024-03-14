@@ -90,6 +90,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.modes.Permissions;
+import org.knime.gateway.impl.webui.service.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
@@ -157,11 +158,10 @@ public final class AppStateEntityFactory {
      * @return a new entity instance
      */
     @SuppressWarnings("java:S107") // lots of parameters are okay because it's a builder helper method
-    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
-        final ProjectManager projectManager, final PreferencesProvider preferenceProvider,
-        final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
-        final NodeFactoryProvider nodeFactoryProvider, final Predicate<String> workflowProjectFilter,
-        final Predicate<String> isActiveProject) {
+    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState, final ProjectManager projectManager,
+        final PreferencesProvider preferenceProvider, final ExampleProjects exampleProjects,
+        final SpaceProviders spaceProviders, final NodeFactoryProvider nodeFactoryProvider,
+        final Predicate<String> workflowProjectFilter, final Predicate<String> isActiveProject) {
         List<ExampleProjectEnt> exampleProjectEnts =
             exampleProjects == null ? null : buildExampleProjects(exampleProjects);
         if (exampleProjectEnts == null && previousAppState != null) {
@@ -177,7 +177,12 @@ public final class AppStateEntityFactory {
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
             .setAvailableComponentTypes(AVAILABLE_COMPONENT_TYPES) //
             .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
-            .setHasNodeCollectionActive(preferenceProvider.activeNodeCollection() != null) //
+            .setHasNodeCollectionActive(NodeCollections.getActiveCollection().isPresent()) //
+            .setActiveNodeCollection( //
+                NodeCollections.getActiveCollection() //
+                    .map(NodeCollections.NodeCollection::displayName) //
+                    .orElse("all") //
+            ) //
             .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setPermissions(Permissions.getPermissions())//
@@ -204,6 +209,8 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::getOpenProjects, builder::setOpenProjects);
             setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeCollectionActive,
                 builder::setHasNodeCollectionActive);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::getActiveNodeCollection,
+                builder::setActiveNodeCollection);
             setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeRecommendationsEnabled,
                 builder::setHasNodeRecommendationsEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isScrollToZoomEnabled, builder::setScrollToZoomEnabled);
@@ -265,7 +272,6 @@ public final class AppStateEntityFactory {
             .toList();
     }
 
-
     private static ExampleProjectEnt buildExampleProject(final Path workflowDir, final LocalWorkspace localWorkspace) {
         var svgFile = workflowDir.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE);
         byte[] svg;
@@ -316,12 +322,10 @@ public final class AppStateEntityFactory {
 
     private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
         final SpaceProviders spaceProviders) {
-        return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class)
-            .setProviderId(origin.getProviderId()) //
+        return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class).setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
-            .setProjectType(origin.getProjectType())
-            .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
+            .setProjectType(origin.getProjectType()).setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }
 
@@ -340,7 +344,7 @@ public final class AppStateEntityFactory {
 
     /**
      * @return Web URL to send the user to to download the desktop edition of the Analytics Platform, or null if not
-     * configured.
+     *         configured.
      */
     private static String getAnalyticsPlatformDownloadURL() {
         return System.getProperty("org.knime.ui.analytics_platform_download_url");
