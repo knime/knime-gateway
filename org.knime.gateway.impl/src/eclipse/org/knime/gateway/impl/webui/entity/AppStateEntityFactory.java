@@ -235,6 +235,7 @@ public final class AppStateEntityFactory {
     private static Map<String, PortTypeEnt> getAvailablePortTypeEnts() {
         var availablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
         return availablePortTypes.stream() //
+            .distinct() //
             .collect(Collectors.toMap( //
                 CoreUtil::getPortTypeId, //
                 pt -> EntityFactory.PortType.buildPortTypeEnt(pt, availablePortTypes, true) //
