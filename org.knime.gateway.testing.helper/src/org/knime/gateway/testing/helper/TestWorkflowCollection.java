@@ -49,6 +49,8 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
      */
     LOOP_EXECUTION("/files/testflows/Loop Execution", "loop execution"),
 
+    TRY_CATCH("/files/testflows/Try-Catch", "try_catch"),
+
     /**
      * Workflow to test ports and port types.
      */

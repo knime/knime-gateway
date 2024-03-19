@@ -89,6 +89,7 @@ import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeExecutionJobManagerFactory;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
+import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
@@ -975,37 +976,59 @@ public final class WorkflowEntityFactory {
         return ports;
     }
 
-    private NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {
-        if (nc.isInactive()) {
+    private NodeStateEnt buildNodeStateEnt(final SingleNodeContainer node) {
+        NodeStateEntBuilder builder = builder(NodeStateEntBuilder.class);
+        // Error messages in try-catch contexts/scopes should always be reported...
+        var inTryCatchOnActiveBranch = CoreUtil.getTryCatchContext(node)
+            // ... except for when the whole try-catch is in an inactive branch/context/scope.
+            .map(c -> !c.isInactiveScope()).orElse(false);
+        // Report errors in failing try-catch contexts
+        var doReportStateOnTryCatch = inTryCatchOnActiveBranch
+            // Any predecessors of a failing node should still report their full state.
+            // The first failing node and all successors until catch are considered inactive.
+            && node.isInactive()
+            // Only touch the builder if there actually are messages.
+            // Avoids having a `state` with all properties being `null`.
+            && node.getNodeMessage().getMessageType() != Type.RESET;
+        if (doReportStateOnTryCatch) {
+            setNodeStateMessages(node, builder);
+            return builder.build();
+        } else if (node.isInactive()) { // Inactive but not on eligible try-catch
             return null;
-        }
-        var ncState = nc.getNodeContainerState();
-        NodeStateEntBuilder builder =
-            builder(NodeStateEntBuilder.class).setExecutionState(getNodeExecutionStateEnum(ncState));
-        var nodeMessage = nc.getNodeMessage();
-        if (nodeMessage.getMessageType() == Type.ERROR) {
-            builder.setError(nodeMessage.getMessage());
-        } else if (nodeMessage.getMessageType() == Type.WARNING) {
-            builder.setWarning(nodeMessage.getMessage());
         } else {
-            //
+            var state = node.getNodeContainerState();
+            builder.setExecutionState(getNodeExecutionStateEnum(state));
+            setNodeStateMessages(node, builder);
+            if (state.isExecutionInProgress()) {
+                setNodeStateProgress(node, builder);
+            }
+            return builder.build();
         }
+    }
 
-        if (nodeMessage.getMessageType() != Type.RESET) {
+    private static void setNodeStateProgress(SingleNodeContainer node, NodeStateEntBuilder builder) {
+        var progressMonitor = node.getProgressMonitor();
+        var progress = progressMonitor.getProgress();
+        builder.setProgress(progress == null ? null : BigDecimal.valueOf(progress));
+        final var messages = progressMonitor.getMessages();
+        if (!messages.isEmpty()) {
+            builder.setProgressMessages(messages);
+        }
+    }
+
+    private static void setNodeStateMessages(SingleNodeContainer node, NodeStateEntBuilder builder) {
+        var nodeMessage = node.getNodeMessage();
+        switch (nodeMessage.getMessageType()) {
+            case ERROR -> builder.setError(nodeMessage.getMessage());
+            case WARNING -> builder.setWarning(nodeMessage.getMessage());
+            default -> {
+                //
+            }
+        }
+        if (nodeMessage.getMessageType() != Type.RESET) { // warning or error
             builder.setIssue(nodeMessage.getIssue().orElse(null));
             builder.setResolutions(nodeMessage.getResolutions());
         }
-
-        if (ncState.isExecutionInProgress()) {
-            NodeProgressMonitor progressMonitor = nc.getProgressMonitor();
-            Double progress = progressMonitor.getProgress();
-            builder.setProgress(progress == null ? null : BigDecimal.valueOf(progress));
-            final var messages = progressMonitor.getMessages();
-            if (!messages.isEmpty()) {
-                builder.setProgressMessages(messages);
-            }
-        }
-        return builder.build();
     }
 
     private NativeNodeInvariantsEnt buildOrGetFromCacheNativeNodeInvariantsEnt(final String templateId,

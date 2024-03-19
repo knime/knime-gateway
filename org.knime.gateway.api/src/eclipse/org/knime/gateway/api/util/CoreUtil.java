@@ -92,7 +92,8 @@ import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.FlowLoopContext;
-import org.knime.core.node.workflow.LoopStartNode;
+import org.knime.core.node.workflow.FlowScopeContext;
+import org.knime.core.node.workflow.FlowTryCatchContext;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerMetadata;
@@ -101,6 +102,8 @@ import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.ScopeStartNode;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
@@ -448,21 +451,34 @@ public final class CoreUtil {
         }).collect(Collectors.toSet());
     }
 
-
     /**
      * Obtain the loop context of the given node, if any.
-     * @param nnc The node container to get the loop context for.
+     * 
+     * @param node The node container to get the loop context for.
      * @return An Optional containing the loop context if available, else an empty Optional.
      */
-    public static Optional<FlowLoopContext> getLoopContext(final NativeNodeContainer nnc) {
+    public static Optional<FlowLoopContext> getLoopContext(final SingleNodeContainer node) {
         // Node#getLoopContext does not suffice since this field is only set after the first
         //  loop iteration is completed.
-        if (nnc.isModelCompatibleTo(LoopStartNode.class)) {
-            // The loop head node produces the FlowLoopContext, hence it is not available on the stack yet.
-            return Optional.ofNullable(nnc.getOutgoingFlowObjectStack()).map(stack -> stack.peek(FlowLoopContext.class));
-        } else {
-            return Optional.ofNullable(nnc.getFlowObjectStack()).map(stack -> stack.peek(FlowLoopContext.class));
-        }
+        return getFlowContext(node, FlowLoopContext.class);
+    }
+
+    public static Optional<FlowTryCatchContext> getTryCatchContext(final SingleNodeContainer node) {
+        return getFlowContext(node, FlowTryCatchContext.class);
+    }
+
+    private static <C extends FlowScopeContext> Optional<C> getFlowContext(final SingleNodeContainer node,
+        final Class<C> loopContext) {
+        // The scope start node produces the context stack object, hence it is not available on the stack just yet
+        // for that node.
+        // Do not need to distinguish between types of start node because we always peek at the stack. Since it is a
+        // scope start node, the top object on the outgoing flow object stack will always be the context of this
+        // just-opened context (and not any parent one).
+        var stack = node.isModelCompatibleTo(ScopeStartNode.class) //
+            ? node.getOutgoingFlowObjectStack() //
+            : node.getFlowObjectStack();
+        return Optional.ofNullable(stack) //
+            .map(s -> s.peek(loopContext));
     }
 
     /**

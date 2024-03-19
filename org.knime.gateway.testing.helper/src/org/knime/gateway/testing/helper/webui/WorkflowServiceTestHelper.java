@@ -146,6 +146,7 @@ import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -201,14 +202,14 @@ import org.knime.testing.util.URIToFileResolveTestUtil;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-
 /**
  * Test for the endpoints to view/render a workflow.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
+ * @author Benjamin Moser, KNIME GmbH
  */
-@SuppressWarnings({"java:S112", "java:S1192", "java:S3655", "java:S1874", "javadoc"})
+@SuppressWarnings({"java:S112", "java:S1192", "java:S3655", "java:S1874", "javadoc", "deprecation"})
 // generic exceptions, repeated string literals, Optional#get without presence check, deprecated classes
 public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
@@ -348,7 +349,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertNull(workflow.getProjectMetadata());
         assertNull(workflow.getComponentMetadata());
     }
-
 
     public void testCollapseConfiguredToMetanode() throws Exception {
         testCollapseConfigured(CollapseCommandEnt.ContainerTypeEnum.METANODE);
@@ -1062,8 +1062,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:boxplot_v2\"}}}";
         result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, factorySettings, 15, 16, null, null));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + "#Box Plot (JavaScript)",
-            15, 16, result);
+        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), jsNodeFactory + "#Box Plot (JavaScript)", 15,
+            16, result);
 
         // add a node that doesn't exists
         Exception ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId,
@@ -1962,10 +1962,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             connections.get(String.format("%s_1", newId.toString())).getSourceNode().toString(), is("root:2"));
         assertThat("Metanode is reconnected", connections.get("root:4_1").getSourceNode().toString(),
             is(newId.toString()));
-        assertThat("Metanode is reconnected",
-            connections.get("root:5_1").getSourceNode().toString(), is(newId.toString()));
-        assertThat("Metanode connection has bendpoints",
-            connections.get("root:5_1").getBendpoints(), equalTo(List.of(position)));
+        assertThat("Metanode is reconnected", connections.get("root:5_1").getSourceNode().toString(),
+            is(newId.toString()));
+        assertThat("Metanode connection has bendpoints", connections.get("root:5_1").getBendpoints(),
+            equalTo(List.of(position)));
 
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
@@ -1976,8 +1976,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             is("root:6"));
         assertThat("Should restore all connections", connections.get("root:5_1").getSourceNode().toString(),
             is("root:6"));
-        assertThat("Bendpoints are restored",
-            connections.get("root:5_1").getBendpoints(), equalTo(List.of(position)));
+        assertThat("Bendpoints are restored", connections.get("root:5_1").getBendpoints(), equalTo(List.of(position)));
     }
 
     /**
@@ -2010,12 +2009,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // undo
         ws().undoWorkflowCommand(wfId, getRootID());
         var columnFilterFactory = "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory";
-        checkForNode("Should restore old target node", ws().getWorkflow(wfId, getRootID(), false),
-            columnFilterFactory, targetNode.getX(), targetNode.getY());
+        checkForNode("Should restore old target node", ws().getWorkflow(wfId, getRootID(), false), columnFilterFactory,
+            targetNode.getX(), targetNode.getY());
         connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
-        assertThat("Should restore all connections", connections.get("root:2_1").getSourceNode().toString(), is("root:1"));
-        assertThat("Should restore all connections", connections.get("root:6_0").getSourceNode().toString(), is("root:2"));
-        assertThat("Should restore all connections", connections.get("root:11_1").getSourceNode().toString(), is("root:2"));
+        assertThat("Should restore all connections", connections.get("root:2_1").getSourceNode().toString(),
+            is("root:1"));
+        assertThat("Should restore all connections", connections.get("root:6_0").getSourceNode().toString(),
+            is("root:2"));
+        assertThat("Should restore all connections", connections.get("root:11_1").getSourceNode().toString(),
+            is("root:2"));
     }
 
     private static ReplaceNodeCommandEnt buildReplaceNodeCommand(final NodeIDEnt targetNodeId,
@@ -2040,7 +2042,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         var ingoingConnection = connections.get("root:183_1");
-        assertThat("connection between src and node exists", ingoingConnection.getSourceNode().toString(), is("root:1"));
+        assertThat("connection between src and node exists", ingoingConnection.getSourceNode().toString(),
+            is("root:1"));
 
         var outgoingConnection = connections.get("root:2_1");
         assertThat("connection between node and dest exists", outgoingConnection.getSourceNode().toString(),
@@ -2071,12 +2074,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var workflow = ws().getWorkflow(wfId, getRootID(), false).getWorkflow();
         var nodes = workflow.getNodes();
         var newNode = nodes.entrySet().stream()
-            .filter(entry -> entry.getValue() instanceof NativeNodeEnt && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
+            .filter(entry -> entry.getValue() instanceof NativeNodeEnt
+                && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
             .findFirst().get().getValue();
         var connections = ws().getWorkflow(wfId, getRootID(), false).getWorkflow().getConnections();
         var ingoingConnection = connections.get(newNode.getId().toString() + "_1");
-        assertThat(
-            "connection between src and node exists", ingoingConnection.getSourceNode().toString(), is("root:1"));
+        assertThat("connection between src and node exists", ingoingConnection.getSourceNode().toString(),
+            is("root:1"));
 
         var outgoingConnection = connections.get("root:2_1");
         assertThat("connection between node and dest exists", outgoingConnection.getSourceNode().toString(),
@@ -2108,12 +2112,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var nodes = ws().getWorkflow(wfId, workflowId, false).getWorkflow().getNodes();
         var newNode = nodes.entrySet().stream()
-            .filter(entry -> entry.getValue() instanceof NativeNodeEnt && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
+            .filter(entry -> entry.getValue() instanceof NativeNodeEnt
+                && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
             .findFirst().get().getValue();
         var connections = ws().getWorkflow(wfId, workflowId, false).getWorkflow().getConnections();
         var ingoingConnection = connections.get(newNode.getId().toString() + "_1");
-        assertThat(
-            "connection between src and node exists", ingoingConnection.getSourceNode().toString(), is("root:6:3"));
+        assertThat("connection between src and node exists", ingoingConnection.getSourceNode().toString(),
+            is("root:6:3"));
 
         var outgoingConnection = connections.get("root:6_0");
         assertThat("connection between node and dest exists", outgoingConnection.getSourceNode().toString(),
@@ -2259,8 +2264,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Bring bottom annotation forward
         assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_FORWARD, 0, 1);
         // Bring bottom annotation to front
-        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_TO_FRONT, 0,
-            annotationCount - 1);
+        assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.BRING_TO_FRONT, 0, annotationCount - 1);
         // Send top annotation backward
         assertReorderWorkflowAnnotationsCommand(projectId, ActionEnum.SEND_BACKWARD, annotationCount - 1,
             annotationCount - 2);
@@ -2381,14 +2385,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var previousTextAlignment = annotationEnt.getTextAlign();
         var formattedText =
             """
-            <p>this is a text with <strong>bold</strong>,<em>italic</em> <strong><em>bolditalic</em></strong>, <u>underline</u></p>
-            <ul>
-                <li><p><u>list item</u></p></li>
-                <li><p><u>list item</u></p></li>
-            </ul>
-            <p></p>
-            <p style="text-align: right">and right aligned text</p><p style="text-align: right"></p>
-            """;
+                    <p>this is a text with <strong>bold</strong>,<em>italic</em> <strong><em>bolditalic</em></strong>, <u>underline</u></p>
+                    <ul>
+                        <li><p><u>list item</u></p></li>
+                        <li><p><u>list item</u></p></li>
+                    </ul>
+                    <p></p>
+                    <p style="text-align: right">and right aligned text</p><p style="text-align: right"></p>
+                    """;
 
         assertThat("Content type isn't plain text prior to execution", annotationEnt.getText().getContentType(),
             is(ContentTypeEnum.PLAIN));
@@ -2931,6 +2935,88 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.UPDATE_LINKED_COMPONENTS)//
             .setNodeIds(nodeIds)//
             .build();
+    }
+
+    public void testTryCatchNoFailure() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var tryCatchStart = "root:31";
+        var tryCatchEnd = "root:32";
+        var nodeInTry = "root:28";
+        Stream.of(tryCatchStart, tryCatchEnd, nodeInTry) //
+            .map(id -> getNativeNode(nodes, id)) //
+            .forEach(node -> assertThat( //
+                "Node is executed", //
+                node.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED //
+            ));
+    }
+
+    public void testTryCatchFailureInTry() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var nodeBeforeFailure = getNativeNode(nodes, "root:26");
+        assert nodeBeforeFailure.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED;
+        var nodeFailing = getNativeNode(nodes, "root:3");
+        assert nodeFailing.getState().getError() != null;
+        var nodeAfterFailure = getNativeNode(nodes, "root:39");
+        assert nodeAfterFailure.getState() == null;
+        var failingNodeAfterFailure = getNativeNode(nodes, "root:40");
+        assert failingNodeAfterFailure.getState() == null;
+    }
+
+    public void testTryCatchFailureInCatch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var tryCatchEnd = getNativeNode(nodes, "root:49");
+        assert tryCatchEnd.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.CONFIGURED;
+        var failingInTry = getNativeNode(nodes, "root:47");
+        assert failingInTry.getState().getError() != null;
+        var failingInCatch = getNativeNode(nodes, "root:46");
+        assert failingInCatch.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.CONFIGURED;
+    }
+
+    public void testFailureInInactiveBranch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingOnInactiveElseBranch = getNativeNode(nodes, "root:9");
+        assert failingOnInactiveElseBranch.getState() == null;
+    }
+
+    public void testFailureInActiveBranch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingNodeOnActiveElseBranch = getNativeNode(nodes, "root:38");
+        assert failingNodeOnActiveElseBranch.getState()
+            .getExecutionState() == NodeStateEnt.ExecutionStateEnum.CONFIGURED;
+        assert failingNodeOnActiveElseBranch.getState().getError() != null;
+    }
+
+    /**
+     * Test reported state of a failing node in a try catch scope, which itself is fully contained in an inactive
+     * branch.
+     */
+    public void testFailureInTryCatchOnInactiveBranch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingInTryCatchOnInactive = getNativeNode(nodes, "root:14");
+        assert failingInTryCatchOnInactive.getState() == null;
+        var failingOnInActive = getNativeNode(nodes, "root:17");
+        assert failingOnInActive.getState() == null;
+    }
+
+    public void testFailureInNestedTryCatch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingNode = getNativeNode(nodes, "root:22");
+        assert failingNode.getState().getError() != null;
+        var innerTryCatchStart = getNativeNode(nodes, "root:23");
+        assert innerTryCatchStart.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED;
+        var innerTryCatchEnd = getNativeNode(nodes, "root:24");
+        assert innerTryCatchEnd.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED;
+    }
+
+    private static NativeNodeEnt getNativeNode(final Map<String, NodeEnt> nodes, final String id) {
+        return (NativeNodeEnt)nodes.get(id);
+    }
+
+    private Map<String, NodeEnt> executeWorkflowAndGetNodes(final TestWorkflowCollection workflow) throws Exception {
+        var projectId = loadWorkflow(workflow);
+        executeWorkflow(projectId);
+        var project = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), false).getWorkflow();
+        return project.getNodes();
     }
 
 }
