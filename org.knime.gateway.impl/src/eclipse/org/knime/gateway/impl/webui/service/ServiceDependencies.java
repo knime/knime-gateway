@@ -68,7 +68,8 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Provides and manages specific object instances that are considered to be dependencies for the
- * implementation of {@link GatewayService}s.
+ * implementation of {@link GatewayService}s. An instance should be managed through this mechanism if it is shared
+ * between services or requires context-specific initialization.
  *
  * @author Kai Franze, KNIME GmbH
  */

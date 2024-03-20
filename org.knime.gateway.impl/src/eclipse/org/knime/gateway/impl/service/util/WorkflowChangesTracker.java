@@ -134,7 +134,7 @@ public class WorkflowChangesTracker {
 
         /**
          * @param workflowChanges The changes to check for
-         * @return Whether at least one off given changes have occurred
+         * @return Whether at least one of the given changes have occurred
          */
         public Boolean hasOccurredAtLeastOne(final WorkflowChange... workflowChanges) {
             for (var workflowChange : workflowChanges) {
