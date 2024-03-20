@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -86,11 +87,11 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.ExampleProjects;
+import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.modes.Permissions;
-import org.knime.gateway.impl.webui.service.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
@@ -127,68 +128,67 @@ public final class AppStateEntityFactory {
     }
 
     /**
-     * @param previousAppState the previously created app state, or {@code null} if there is none
-     * @param workflowProjectManager
-     * @param preferenceProvider
-     * @param exampleProjects if {@code null}, example projects will be taken from the previous app state
-     * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
-     * @param nodeFactoryProvider used to determine the nodeFactory based on a fileExtension; can be {@code null}
-     * @return a new entity instance
+     * Holds instances of service dependencies needed for building this application state.
      */
-    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
-        final ProjectManager workflowProjectManager, final PreferencesProvider preferenceProvider,
-        final ExampleProjects exampleProjects, final SpaceProviders spaceProviders,
-        final NodeFactoryProvider nodeFactoryProvider) {
-        return buildAppStateEnt(previousAppState, workflowProjectManager, preferenceProvider, exampleProjects,
-            spaceProviders, nodeFactoryProvider, null, null);
+    public record ServiceDependencies( //
+            ProjectManager projectManager, //
+            PreferencesProvider preferencesProvider, //
+            ExampleProjects exampleProjects, //
+            SpaceProviders spaceProviders, //
+            NodeFactoryProvider nodeFactoryProvider, //
+            NodeCollections nodeCollections //
+    ) {
+
     }
 
     /**
      * @param previousAppState the previously created app state, or {@code null} if there is none
-     * @param projectManager
-     * @param preferenceProvider
-     * @param exampleProjects if {@code null}, example projects will be taken from the previous app state
-     * @param spaceProviders used to, e.g., determine the ancestor item ids for a given item-id
-     * @param nodeFactoryProvider used to determine the nodeFactory based on a fileExtension; can be {@code null}
+     * @param dependencies Service dependencies needed for building this application state
      * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if
      *            all projects are to be included
      * @param isActiveProject determines the projects to be set to active (see
      *            {@link WorkflowProjectEnt#getActiveWorkflowId()}; if {@code null}
      *            {@link ProjectManager#isActiveProject(String)} is used
-     * @return a new entity instance
+     * @return a new application state entity instance
      */
-    @SuppressWarnings("java:S107") // lots of parameters are okay because it's a builder helper method
-    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState, final ProjectManager projectManager,
-        final PreferencesProvider preferenceProvider, final ExampleProjects exampleProjects,
-        final SpaceProviders spaceProviders, final NodeFactoryProvider nodeFactoryProvider,
-        final Predicate<String> workflowProjectFilter, final Predicate<String> isActiveProject) {
-        List<ExampleProjectEnt> exampleProjectEnts =
-            exampleProjects == null ? null : buildExampleProjects(exampleProjects);
-        if (exampleProjectEnts == null && previousAppState != null) {
-            exampleProjectEnts = previousAppState.getExampleProjects();
+    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
+        final Predicate<String> workflowProjectFilter, final Predicate<String> isActiveProject,
+        final ServiceDependencies dependencies) {
+        List<ExampleProjectEnt> exampleProjects =
+            dependencies.exampleProjects() == null ? null : buildExampleProjects(dependencies.exampleProjects());
+        if (exampleProjects == null && previousAppState != null) {
+            exampleProjects = previousAppState.getExampleProjects();
         }
-        var projectEnts = getProjectEnts(projectManager, spaceProviders,
+        var projects = getProjectEnts( //
+            dependencies.projectManager(), //
+            dependencies.spaceProviders(), //
             workflowProjectFilter == null ? id -> true : workflowProjectFilter, //
-            isActiveProject == null ? projectManager::isActiveProject : isActiveProject);
+            isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
+        );
+        Optional<NodeCollections.NodeCollection> activeCollection =
+            dependencies.nodeCollections().getActiveCollection();
         return builder(AppStateEntBuilder.class) //
-            .setOpenProjects(projectEnts) //
-            .setExampleProjects(exampleProjectEnts) //
+            .setOpenProjects(projects) //
+            .setExampleProjects(exampleProjects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
             .setAvailableComponentTypes(AVAILABLE_COMPONENT_TYPES) //
-            .setScrollToZoomEnabled(preferenceProvider.isScrollToZoomEnabled()) //
-            .setHasNodeCollectionActive(NodeCollections.getActiveCollection().isPresent()) //
+            .setScrollToZoomEnabled(dependencies.preferencesProvider().isScrollToZoomEnabled()) //
+            .setHasNodeCollectionActive(activeCollection.isPresent()) //
             .setActiveNodeCollection( //
-                NodeCollections.getActiveCollection() //
+                activeCollection //
                     .map(NodeCollections.NodeCollection::displayName) //
                     .orElse("all") //
             ) //
-            .setHasNodeRecommendationsEnabled(preferenceProvider.hasNodeRecommendationsEnabled()) //
+            .setHasNodeRecommendationsEnabled(dependencies.preferencesProvider().hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setPermissions(Permissions.getPermissions())//
             .setDevMode(WebUIUtil.isInDevMode()) //
-            .setFileExtensionToNodeTemplateId(nodeFactoryProvider == null ? Collections.emptyMap()
-                : nodeFactoryProvider.getFileExtensionToNodeFactoryMap()) //
+            .setFileExtensionToNodeTemplateId( //
+                dependencies.nodeFactoryProvider() == null //
+                    ? Collections.emptyMap() //
+                    : dependencies.nodeFactoryProvider().getFileExtensionToNodeFactoryMap() //
+            ) //
             .setNodeRepositoryLoaded(NodeSpecCollectionProvider.Progress.isDone()) //
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .build();
@@ -258,7 +258,7 @@ public final class AppStateEntityFactory {
     private static List<String> getSuggestedPortTypeIds() {
         var portTypeRegistry = PortTypeRegistry.getInstance();
         return SUGGESTED_PORT_TYPE_IDS.stream() //
-            .filter(id -> !portTypeRegistry.getObjectClass(id).isEmpty()) //
+            .filter(id -> portTypeRegistry.getObjectClass(id).isPresent()) //
             .toList();
     }
 
@@ -325,7 +325,8 @@ public final class AppStateEntityFactory {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class).setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
-            .setProjectType(origin.getProjectType()).setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
+            .setProjectType(origin.getProjectType()) //
+            .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }
 

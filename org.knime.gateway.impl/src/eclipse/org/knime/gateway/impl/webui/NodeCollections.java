@@ -43,7 +43,7 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.service;
+package org.knime.gateway.impl.webui;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -52,22 +52,24 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 
 /**
- * Provide information about the currently active node collection to services.
+ * Provide information about node collections to services.
+ *
+ * @author Benjamin Moser, KNIME GmbH
  */
 public final class NodeCollections {
 
-    private NodeCollections() {
+    private final PreferencesProvider preferencesProvider;
 
+    public NodeCollections(final PreferencesProvider preferencesProvider) {
+        this.preferencesProvider = preferencesProvider;
     }
 
     /**
-     *
      * @param displayName Must be compatible for an input placeholder "Search in {displayName} nodes"
-     * @param predicate
+     * @param predicate Decides whether a given node factory class name is in this collection
      */
     public record NodeCollection(String displayName, Predicate<String> predicate) {
         public NodeCollection(final String displayName, final Predicate<String> predicate) {
@@ -76,7 +78,10 @@ public final class NodeCollections {
         }
     }
 
-    public static Optional<NodeCollection> getActiveCollection() {
+    /**
+     * @return The currently active collection
+     */
+    public Optional<NodeCollection> getActiveCollection() {
         if (WebUIMode.getMode() == WebUIMode.PLAYGROUND) {
             return Optional.of(getPlaygroundCollection());
         } else {
@@ -84,9 +89,8 @@ public final class NodeCollections {
         }
     }
 
-    private static Optional<NodeCollection> getCollectionFromPreferences() {
-        var configuredPredicate =
-                ServiceDependencies.getServiceDependency(PreferencesProvider.class, true).activeNodeCollection();
+    private Optional<NodeCollection> getCollectionFromPreferences() {
+        var configuredPredicate = preferencesProvider.activeNodeCollection();
         if (configuredPredicate == null) {
             return Optional.empty();
         }
@@ -105,7 +109,5 @@ public final class NodeCollections {
         }
         return Arrays.stream(value.split(",")).collect(Collectors.toUnmodifiableSet());
     }
-
-
 
 }

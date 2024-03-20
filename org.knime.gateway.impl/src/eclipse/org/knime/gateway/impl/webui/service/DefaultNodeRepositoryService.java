@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRepository;
@@ -95,9 +96,10 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * Initialise and attach a new node repository instance, discarding any previously used instance and its caches.
      */
     public void resetNodeRepository() {
-        var collectionPredicate =
-            NodeCollections.getActiveCollection().map(NodeCollections.NodeCollection::predicate).orElse(null);
-        m_nodeRepo = new NodeRepository(collectionPredicate);
+        var activeCollection = ServiceDependencies.getServiceDependency(NodeCollections.class, true) //
+            .getActiveCollection() //
+            .map(NodeCollections.NodeCollection::predicate);
+        m_nodeRepo = new NodeRepository(activeCollection.orElse(null));
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
@@ -116,11 +118,11 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      * {@inheritDoc}
      */
     @Override
-    public NodeSearchResultEnt searchNodes(final String q, final List<String> tags,
-        final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean fullTemplateInfo,
-        final String nodesPartition, final String portTypeId) throws InvalidRequestException {
-        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo,
-            nodesPartition, portTypeId);
+    public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
+        final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String nodesPartition,
+        final String portTypeId) throws InvalidRequestException {
+        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, nodesPartition,
+            portTypeId);
     }
 
     /**

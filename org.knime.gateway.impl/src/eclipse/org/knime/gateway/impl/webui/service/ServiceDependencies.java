@@ -57,6 +57,7 @@ import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
+import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
@@ -127,14 +128,15 @@ public final class ServiceDependencies {
      *
      * @param projectManager
      * @param workflowMiddleware
-     * @param appStateUpdater The application state updater
-     * @param eventConsumer The event consumer
-     * @param spaceProviders The space providers
+     * @param appStateUpdater     The application state updater
+     * @param eventConsumer       The event consumer
+     * @param spaceProviders      The space providers
      * @param updateStateProvider The update state provider
      * @param preferencesProvider
      * @param exampleProjects
      * @param nodeFactoryProvider
-     * @param kaiHandler handle K-AI related requests
+     * @param kaiHandler          handle K-AI related requests
+     * @param nodeCollections
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
@@ -146,7 +148,8 @@ public final class ServiceDependencies {
         final PreferencesProvider preferencesProvider, //
         final ExampleProjects exampleProjects, //
         final NodeFactoryProvider nodeFactoryProvider,//
-        final KaiHandler kaiHandler) {
+        final KaiHandler kaiHandler, //
+        final NodeCollections nodeCollections) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -158,6 +161,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(ExampleProjects.class, exampleProjects);
             ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
             ServiceDependencies.setServiceDependency(KaiHandler.class, kaiHandler);
+            ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "

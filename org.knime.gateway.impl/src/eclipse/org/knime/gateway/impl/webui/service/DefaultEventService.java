@@ -64,10 +64,12 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
@@ -104,13 +106,16 @@ public final class DefaultEventService implements EventService {
         ServiceDependencies.getServiceDependency(UpdateStateProvider.class, false);
 
     private final PreferencesProvider m_preferencesProvider =
-            ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
+        ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
 
     private final SpaceProviders m_spaceProviders =
-            ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+        ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
 
     private final NodeFactoryProvider m_nodeFactoryProvider =
-            ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
+        ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
+
+    private final NodeCollections m_nodeCollections =
+        ServiceDependencies.getServiceDependency(NodeCollections.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -132,14 +137,17 @@ public final class DefaultEventService implements EventService {
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
+        // TODO replace with switch
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_projectManager));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             if (m_appStateUpdater != null) {
-                eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                    t -> new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, m_projectManager,
-                        m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider));
+                eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
+                    var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager,
+                        m_preferencesProvider, null, m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections);
+                    return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
+                });
             } else {
                 NodeLogger.getLogger(getClass()).warn(
                     "Listener for 'app state changed' event type can't be attached. No app state updater available.");
