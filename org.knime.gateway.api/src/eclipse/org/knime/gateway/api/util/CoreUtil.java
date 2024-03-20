@@ -463,6 +463,11 @@ public final class CoreUtil {
         return getFlowContext(node, FlowLoopContext.class);
     }
 
+    /**
+     * Obtain the try-catch context of the given node, if any.
+     * @param node The node container to get the try-catch context for.
+     * @return An optional containing the try-catch context if available, else an empty Optional.
+     */
     public static Optional<FlowTryCatchContext> getTryCatchContext(final SingleNodeContainer node) {
         return getFlowContext(node, FlowTryCatchContext.class);
     }

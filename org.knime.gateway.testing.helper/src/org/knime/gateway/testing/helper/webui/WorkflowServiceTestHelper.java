@@ -2953,37 +2953,36 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testTryCatchFailureInTry() throws Exception {
         var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
         var nodeBeforeFailure = getNativeNode(nodes, "root:26");
-        assert nodeBeforeFailure.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED;
+        assertThat(nodeBeforeFailure.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.EXECUTED));
         var nodeFailing = getNativeNode(nodes, "root:3");
-        assert nodeFailing.getState().getError() != null;
+        assertNotNull(nodeFailing.getState().getError());
         var nodeAfterFailure = getNativeNode(nodes, "root:39");
-        assert nodeAfterFailure.getState() == null;
+        assertNull(nodeAfterFailure.getState());
         var failingNodeAfterFailure = getNativeNode(nodes, "root:40");
-        assert failingNodeAfterFailure.getState() == null;
+        assertNull(failingNodeAfterFailure.getState());
     }
 
     public void testTryCatchFailureInCatch() throws Exception {
         var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
         var tryCatchEnd = getNativeNode(nodes, "root:49");
-        assert tryCatchEnd.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.CONFIGURED;
+        assertThat(tryCatchEnd.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.CONFIGURED));
         var failingInTry = getNativeNode(nodes, "root:47");
-        assert failingInTry.getState().getError() != null;
+        assertNotNull(failingInTry.getState().getError());
         var failingInCatch = getNativeNode(nodes, "root:46");
-        assert failingInCatch.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.CONFIGURED;
+        assertThat(failingInCatch.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.CONFIGURED));
     }
 
     public void testFailureInInactiveBranch() throws Exception {
         var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
         var failingOnInactiveElseBranch = getNativeNode(nodes, "root:9");
-        assert failingOnInactiveElseBranch.getState() == null;
+        assertNull(failingOnInactiveElseBranch.getState());
     }
 
     public void testFailureInActiveBranch() throws Exception {
         var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
         var failingNodeOnActiveElseBranch = getNativeNode(nodes, "root:38");
-        assert failingNodeOnActiveElseBranch.getState()
-            .getExecutionState() == NodeStateEnt.ExecutionStateEnum.CONFIGURED;
-        assert failingNodeOnActiveElseBranch.getState().getError() != null;
+        assertThat(failingNodeOnActiveElseBranch.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.CONFIGURED);
+        assertNotNull(failingNodeOnActiveElseBranch.getState().getError());
     }
 
     /**
@@ -2993,19 +2992,19 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testFailureInTryCatchOnInactiveBranch() throws Exception {
         var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
         var failingInTryCatchOnInactive = getNativeNode(nodes, "root:14");
-        assert failingInTryCatchOnInactive.getState() == null;
+        assertNull(failingInTryCatchOnInactive.getState());
         var failingOnInActive = getNativeNode(nodes, "root:17");
-        assert failingOnInActive.getState() == null;
+        assertNull(failingOnInActive.getState());
     }
 
     public void testFailureInNestedTryCatch() throws Exception {
         var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
         var failingNode = getNativeNode(nodes, "root:22");
-        assert failingNode.getState().getError() != null;
+        assertNotNull(failingNode.getState().getError());
         var innerTryCatchStart = getNativeNode(nodes, "root:23");
-        assert innerTryCatchStart.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED;
+        assertThat(innerTryCatchStart.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.EXECUTED));
         var innerTryCatchEnd = getNativeNode(nodes, "root:24");
-        assert innerTryCatchEnd.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED;
+        assertThat(innerTryCatchEnd.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.EXECUTED));
     }
 
     private static NativeNodeEnt getNativeNode(final Map<String, NodeEnt> nodes, final String id) {
