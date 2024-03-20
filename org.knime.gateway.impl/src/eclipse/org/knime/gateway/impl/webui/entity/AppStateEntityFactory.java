@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -163,7 +164,8 @@ public final class AppStateEntityFactory {
             workflowProjectFilter == null ? id -> true : workflowProjectFilter, //
             isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
         );
-        var activeCollection = dependencies.nodeCollections().getActiveCollection();
+        var activeCollection =
+            Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projects) //
             .setExampleProjects(exampleProjects) //

@@ -89,7 +89,7 @@ public final class DefaultApplicationService implements ApplicationService {
         ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
 
     private final NodeCollections m_nodeCollections =
-        ServiceDependencies.getServiceDependency(NodeCollections.class, true);
+        ServiceDependencies.getServiceDependency(NodeCollections.class, false);
 
     /**
      * Returns the singleton instance for this service.
