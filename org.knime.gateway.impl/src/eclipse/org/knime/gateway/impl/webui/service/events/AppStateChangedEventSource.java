@@ -81,10 +81,10 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     /**
      * @param eventConsumer consumes the emitted events
      * @param appStateUpdater
-     * @param preferenceProvider
-     * @param spaceProviders
+     * @param dependencies
      */
-    public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateUpdater appStateUpdater, final AppStateEntityFactory.ServiceDependencies dependencies) {
+    public AppStateChangedEventSource(final EventConsumer eventConsumer, final AppStateUpdater appStateUpdater,
+        final AppStateEntityFactory.ServiceDependencies dependencies) {
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;
         m_workflowProjectManager = dependencies.projectManager();

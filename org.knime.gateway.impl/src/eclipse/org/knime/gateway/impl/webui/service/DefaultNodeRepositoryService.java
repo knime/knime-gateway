@@ -98,7 +98,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     public void resetNodeRepository() {
         var activeCollection = ServiceDependencies.getServiceDependency(NodeCollections.class, true) //
             .getActiveCollection() //
-            .map(NodeCollections.NodeCollection::predicate);
+            .map(NodeCollections.NodeCollection::nodeFilter);
         m_nodeRepo = new NodeRepository(activeCollection.orElse(null));
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);

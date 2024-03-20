@@ -59,7 +59,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -131,14 +130,13 @@ public final class AppStateEntityFactory {
      * Holds instances of service dependencies needed for building this application state.
      */
     public record ServiceDependencies( //
-            ProjectManager projectManager, //
-            PreferencesProvider preferencesProvider, //
-            ExampleProjects exampleProjects, //
-            SpaceProviders spaceProviders, //
-            NodeFactoryProvider nodeFactoryProvider, //
-            NodeCollections nodeCollections //
+        ProjectManager projectManager, //
+        PreferencesProvider preferencesProvider, //
+        ExampleProjects exampleProjects, //
+        SpaceProviders spaceProviders, //
+        NodeFactoryProvider nodeFactoryProvider, //
+        NodeCollections nodeCollections //
     ) {
-
     }
 
     /**
@@ -154,7 +152,7 @@ public final class AppStateEntityFactory {
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final Predicate<String> workflowProjectFilter, final Predicate<String> isActiveProject,
         final ServiceDependencies dependencies) {
-        List<ExampleProjectEnt> exampleProjects =
+        var exampleProjects =
             dependencies.exampleProjects() == null ? null : buildExampleProjects(dependencies.exampleProjects());
         if (exampleProjects == null && previousAppState != null) {
             exampleProjects = previousAppState.getExampleProjects();
@@ -165,8 +163,7 @@ public final class AppStateEntityFactory {
             workflowProjectFilter == null ? id -> true : workflowProjectFilter, //
             isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
         );
-        Optional<NodeCollections.NodeCollection> activeCollection =
-            dependencies.nodeCollections().getActiveCollection();
+        var activeCollection = dependencies.nodeCollections().getActiveCollection();
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projects) //
             .setExampleProjects(exampleProjects) //
@@ -322,7 +319,8 @@ public final class AppStateEntityFactory {
 
     private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
         final SpaceProviders spaceProviders) {
-        return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class).setProviderId(origin.getProviderId()) //
+        return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
+            .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
             .setProjectType(origin.getProjectType()) //

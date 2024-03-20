@@ -61,20 +61,20 @@ import org.knime.gateway.impl.webui.modes.WebUIMode;
  */
 public final class NodeCollections {
 
-    private final PreferencesProvider preferencesProvider;
+    private final PreferencesProvider m_preferencesProvider;
 
     public NodeCollections(final PreferencesProvider preferencesProvider) {
-        this.preferencesProvider = preferencesProvider;
+        this.m_preferencesProvider = preferencesProvider;
     }
 
     /**
      * @param displayName Must be compatible for an input placeholder "Search in {displayName} nodes"
-     * @param predicate Decides whether a given node factory class name is in this collection
+     * @param nodeFilter Decides whether a given node factory class name is in this collection
      */
-    public record NodeCollection(String displayName, Predicate<String> predicate) {
-        public NodeCollection(final String displayName, final Predicate<String> predicate) {
+    public record NodeCollection(String displayName, Predicate<String> nodeFilter) {
+        public NodeCollection(final String displayName, final Predicate<String> nodeFilter) {
             this.displayName = Objects.requireNonNull(displayName);
-            this.predicate = Objects.requireNonNull(predicate);
+            this.nodeFilter = Objects.requireNonNull(nodeFilter);
         }
     }
 
@@ -90,7 +90,7 @@ public final class NodeCollections {
     }
 
     private Optional<NodeCollection> getCollectionFromPreferences() {
-        var configuredPredicate = preferencesProvider.activeNodeCollection();
+        var configuredPredicate = m_preferencesProvider.activeNodeCollection();
         if (configuredPredicate == null) {
             return Optional.empty();
         }
