@@ -976,12 +976,11 @@ public final class WorkflowEntityFactory {
     }
 
     private NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {
-        if (nc.isInactive()) {
-            return null;
-        }
         var ncState = nc.getNodeContainerState();
-        NodeStateEntBuilder builder =
-            builder(NodeStateEntBuilder.class).setExecutionState(getNodeExecutionStateEnum(ncState));
+        var builder = builder(NodeStateEntBuilder.class);
+        if (!nc.isInactive()) {
+            builder.setExecutionState(getNodeExecutionStateEnum(ncState));
+        }
         var nodeMessage = nc.getNodeMessage();
         if (nodeMessage.getMessageType() == Type.ERROR) {
             builder.setError(nodeMessage.getMessage());
