@@ -146,6 +146,7 @@ import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -2931,6 +2932,87 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.UPDATE_LINKED_COMPONENTS)//
             .setNodeIds(nodeIds)//
             .build();
+    }
+
+    public void testTryCatchNoFailure() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var tryCatchStart = "root:31";
+        var tryCatchEnd = "root:32";
+        var nodeInTry = "root:28";
+        Stream.of(tryCatchStart, tryCatchEnd, nodeInTry) //
+            .map(id -> getNativeNode(nodes, id)) //
+            .forEach(node -> assertThat( //
+                "Node is executed", //
+                node.getState().getExecutionState() == NodeStateEnt.ExecutionStateEnum.EXECUTED //
+            ));
+    }
+
+    public void testTryCatchFailureInTry() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var nodeBeforeFailure = getNativeNode(nodes, "root:26");
+        assertThat(nodeBeforeFailure.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.EXECUTED));
+        var nodeFailing = getNativeNode(nodes, "root:3");
+        assertNotNull(nodeFailing.getState().getError());
+        var nodeAfterFailure = getNativeNode(nodes, "root:39");
+        assertNull(nodeAfterFailure.getState());
+        var failingNodeAfterFailure = getNativeNode(nodes, "root:40");
+        assertNull(failingNodeAfterFailure.getState());
+    }
+
+    public void testTryCatchFailureInCatch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var tryCatchEnd = getNativeNode(nodes, "root:49");
+        assertThat(tryCatchEnd.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.CONFIGURED));
+        var failingInTry = getNativeNode(nodes, "root:47");
+        assertNotNull(failingInTry.getState().getError());
+        var failingInCatch = getNativeNode(nodes, "root:46");
+        assertThat(failingInCatch.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.CONFIGURED));
+    }
+
+    public void testFailureInInactiveBranch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingOnInactiveElseBranch = getNativeNode(nodes, "root:9");
+        assertNull(failingOnInactiveElseBranch.getState());
+    }
+
+    public void testFailureInActiveBranch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingNodeOnActiveElseBranch = getNativeNode(nodes, "root:38");
+        assertThat(failingNodeOnActiveElseBranch.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.CONFIGURED));
+        assertNotNull(failingNodeOnActiveElseBranch.getState().getError());
+    }
+
+    /**
+     * Test reported state of a failing node in a try catch scope, which itself is fully contained in an inactive
+     * branch.
+     */
+    public void testFailureInTryCatchOnInactiveBranch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingInTryCatchOnInactive = getNativeNode(nodes, "root:14");
+        assertNull(failingInTryCatchOnInactive.getState());
+        var failingOnInActive = getNativeNode(nodes, "root:17");
+        assertNull(failingOnInActive.getState());
+    }
+
+    public void testFailureInNestedTryCatch() throws Exception {
+        var nodes = executeWorkflowAndGetNodes(TestWorkflowCollection.TRY_CATCH);
+        var failingNode = getNativeNode(nodes, "root:22");
+        assertNotNull(failingNode.getState().getError());
+        var innerTryCatchStart = getNativeNode(nodes, "root:23");
+        assertThat(innerTryCatchStart.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.EXECUTED));
+        var innerTryCatchEnd = getNativeNode(nodes, "root:24");
+        assertThat(innerTryCatchEnd.getState().getExecutionState(), is(NodeStateEnt.ExecutionStateEnum.EXECUTED));
+    }
+
+    private static NativeNodeEnt getNativeNode(final Map<String, NodeEnt> nodes, final String id) {
+        return (NativeNodeEnt)nodes.get(id);
+    }
+
+    private Map<String, NodeEnt> executeWorkflowAndGetNodes(final TestWorkflowCollection workflow) throws Exception {
+        var projectId = loadWorkflow(workflow);
+        executeWorkflow(projectId);
+        var project = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), false).getWorkflow();
+        return project.getNodes();
     }
 
 }

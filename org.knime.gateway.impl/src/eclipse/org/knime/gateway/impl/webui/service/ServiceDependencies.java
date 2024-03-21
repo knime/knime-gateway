@@ -67,8 +67,17 @@ import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
- * Provides and manages specific object instances that are considered to be dependencies for the
- * implementation of {@link GatewayService}s.
+ * Provides and manages specific object instances that are considered to be dependencies for the implementation of
+ * {@link GatewayService}s.
+ * <p>
+ * An instance should be managed through this mechanism if it is shared between services or requires context-specific
+ * initialization.
+ * <p>
+ * Service dependencies should be obtained via {@link #getServiceDependency(Class, boolean)}. This should be called in
+ * the main class of the service (and not in any other helper classes) such that dependencies are easily visible.
+ * <p>
+ * Unless actually required, {@link #getServiceDependency(Class, boolean)} should be called with
+ * {@code isRequired=false} and absence handled by the caller.
  *
  * @author Kai Franze, KNIME GmbH
  */

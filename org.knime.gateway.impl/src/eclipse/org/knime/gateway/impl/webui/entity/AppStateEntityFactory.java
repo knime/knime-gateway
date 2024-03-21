@@ -141,6 +141,9 @@ public final class AppStateEntityFactory {
     }
 
     /**
+     * Properties added here potentially also need to be considered in
+     * {@link #buildAppStateEntDiff(AppStateEnt, AppStateEnt)}.
+     * 
      * @param previousAppState the previously created app state, or {@code null} if there is none
      * @param dependencies Service dependencies needed for building this application state
      * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if

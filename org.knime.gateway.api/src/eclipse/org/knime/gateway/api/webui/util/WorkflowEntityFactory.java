@@ -20,7 +20,6 @@ package org.knime.gateway.api.webui.util;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.util.EntityUtil.toLinkEnts;
@@ -218,38 +217,38 @@ public final class WorkflowEntityFactory {
     private static final String ICON_DATA_URL_PREFIX = "data:image/png;base64,";
 
     /**
-     * Characterization of loop state for determining allowed actions.
-     * This is not part of the API, see {@link StatusEnum} instead.
+     * Characterization of loop state for determining allowed actions. This is not part of the API, see
+     * {@link StatusEnum} instead.
      */
     private enum LoopState {
 
-        /** Initial state, no loop iteration has been performed yet */
-        READY,
-        /** Loop is currently performing "full" execution (not step) */
-        RUNNING,
-        /** Loop is currently executing and will be paused after this iteration
-         * (e.g. due to step execution, or pause action) */
-        PAUSE_PENDING,
-        /** Loop is currently executing and is currently in paused state */
-        PAUSED,
-        /** Loop is fully executed */
-        DONE,
-        /** Status could not be determined (e.g. if there is no valid loop structure) */
-        NONE;
+            /** Initial state, no loop iteration has been performed yet */
+            READY,
+            /** Loop is currently performing "full" execution (not step) */
+            RUNNING,
+            /**
+             * Loop is currently executing and will be paused after this iteration (e.g. due to step execution, or pause
+             * action)
+             */
+            PAUSE_PENDING,
+            /** Loop is currently executing and is currently in paused state */
+            PAUSED,
+            /** Loop is fully executed */
+            DONE,
+            /** Status could not be determined (e.g. if there is no valid loop structure) */
+            NONE;
 
         /**
          * @param tail The node to consider
          * @param buildContext The workflow build context
          * @return The state of the given node.
          */
-        @SuppressWarnings("java:S1142")  // number of method returns
+        @SuppressWarnings("java:S1142") // number of method returns
         static LoopState get(final NativeNodeContainer tail, final WorkflowBuildContext buildContext) {
-            boolean hasLoopHead = CoreUtil.getLoopContext(tail)
-                    .map(FlowScopeContext::getHeadNode)
-                    // When a loop head node is removed, the loop context may point to a node ID that is no longer
-                    //  present in the workflow.
-                    .map(head -> buildContext.wfm().containsNodeContainer(head))
-                    .orElse(false);
+            boolean hasLoopHead = CoreUtil.getLoopContext(tail).map(FlowScopeContext::getHeadNode)
+                // When a loop head node is removed, the loop context may point to a node ID that is no longer
+                //  present in the workflow.
+                .map(head -> buildContext.wfm().containsNodeContainer(head)).orElse(false);
             boolean canExecuteDirectly = tail.getParent().canExecuteNodeDirectly(tail.getID());
             var loopStatus = tail.getLoopStatus();
             // Resume and step should not be enabled if nodes in the loop body are currently executing (this includes
@@ -269,7 +268,7 @@ public final class WorkflowEntityFactory {
                 return NONE;
             } else if (canExecuteDirectly) {
                 return READY;
-            } else if(loopStatus == NativeNodeContainer.LoopStatus.RUNNING) {
+            } else if (loopStatus == NativeNodeContainer.LoopStatus.RUNNING) {
                 return RUNNING;
             } else if (loopStatus == NativeNodeContainer.LoopStatus.PAUSED) {
                 if (loopBodyActive) {
@@ -336,11 +335,11 @@ public final class WorkflowEntityFactory {
     }
 
     /**
-     * The node position in the java-ui refers to the upper left corner of the 'node figure' which also includes
-     * the (not always visible) implicit flow variables ports. I.e. the position does NOT match with the upper left
-     * corner of the node background image. However, this is used as reference point in the web-ui. Thus, we need
-     * to correct the position in y direction by some pixels.
-     * (the value is chosen according to org.knime.workbench.editor2.figures.AbstractPortFigure.getPortSizeNode())
+     * The node position in the java-ui refers to the upper left corner of the 'node figure' which also includes the
+     * (not always visible) implicit flow variables ports. I.e. the position does NOT match with the upper left corner
+     * of the node background image. However, this is used as reference point in the web-ui. Thus, we need to correct
+     * the position in y direction by some pixels. (the value is chosen according to
+     * org.knime.workbench.editor2.figures.AbstractPortFigure.getPortSizeNode())
      *
      * NOTE: the current value has been 'experimentally' determined
      */
@@ -378,8 +377,8 @@ public final class WorkflowEntityFactory {
             Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()
                 .map(cc -> buildConnectionEnt(buildConnectionIDEnt(cc, buildContext), cc, buildContext))
                 .collect(Collectors.toMap(c -> c.getId().toString(), c -> c)); // NOSONAR
-            List<WorkflowAnnotationEnt> annotations = wfm.getWorkflowAnnotations().stream()
-                .map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).collect(Collectors.toList());
+            List<WorkflowAnnotationEnt> annotations =
+                wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).toList();
             var info = buildWorkflowInfoEnt(wfm, buildContext);
             return builder(WorkflowEntBuilder.class).setInfo(info)//
                 .setNodes(nodes)//
@@ -412,7 +411,7 @@ public final class WorkflowEntityFactory {
         final boolean isInputPort) {
         var id = entry.getKey();
         var builder = entry.getValue();
-        var ids = portEnts.stream().map(NodePortEnt::getPortGroupId).collect(Collectors.toList());
+        var ids = portEnts.stream().map(NodePortEnt::getPortGroupId).toList();
         var minIdx = ids.indexOf(id);
         var maxIdx = ids.lastIndexOf(id);
         if (minIdx > -1 && maxIdx > -1) {
@@ -461,9 +460,9 @@ public final class WorkflowEntityFactory {
     }
 
     private AllowedWorkflowActionsEnt buildAllowedWorkflowActionsEnt(final WorkflowManager wfm,
-            final WorkflowBuildContext buildContext) {
+        final WorkflowBuildContext buildContext) {
         return builder(AllowedWorkflowActionsEntBuilder.class)//
-            .setCanReset(buildContext.dependentNodeProperties().canResetAny())
+            .setCanReset(buildContext.dependentNodeProperties().canResetAny()) //
             .setCanExecute(wfm.canExecuteAll())//
             .setCanCancel(wfm.canCancelAll())//
             .setCanUndo(buildContext.canUndo())//
@@ -483,19 +482,19 @@ public final class WorkflowEntityFactory {
     private List<NodeDialogOptionDescriptionEnt> buildComponentDialogOptionsEnts(final SubNodeContainer snc) {
         List<SubNodeDescriptionProvider<? extends DialogNodeValue>> descs = snc.getDialogDescriptions();
         if (!descs.isEmpty()) {
-            return descs.stream().map(d ->
-                    builder(NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder.class)
-                        .setName(d.getLabel())
-                        .setDescription(d.getDescription())
-                        .build()
-            ).collect(toList());
+            return descs.stream()
+                .map(d -> builder(NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder.class)
+                    .setName(d.getLabel()) //
+                    .setDescription(d.getDescription()) //
+                    .build() //
+                ).toList();
         } else {
             return null; // NOSONAR
         }
     }
 
-    private List<NodePortDescriptionEnt>
-        buildComponentInNodePortDescriptionEnts(final ComponentMetadata metadata, final SubNodeContainer snc) {
+    private List<NodePortDescriptionEnt> buildComponentInNodePortDescriptionEnts(final ComponentMetadata metadata,
+        final SubNodeContainer snc) {
         if (snc.getNrInPorts() == 1) {
             return null; // NOSONAR
         }
@@ -515,6 +514,7 @@ public final class WorkflowEntityFactory {
      * @param snc The sub node container to get the description for
      * @return The newly created entity
      */
+    @SuppressWarnings("java:S3516") // "Methods returns should not be invariant" -- false positive
     public ComponentNodeDescriptionEnt buildComponentNodeDescriptionEnt(final SubNodeContainer snc) {
         if (snc == null) {
             return null;
@@ -564,8 +564,8 @@ public final class WorkflowEntityFactory {
             .build();
     }
 
-    private List<NodePortDescriptionEnt>
-        buildComponentOutNodePortDescriptionEnts(final ComponentMetadata metadata, final SubNodeContainer snc) {
+    private List<NodePortDescriptionEnt> buildComponentOutNodePortDescriptionEnts(final ComponentMetadata metadata,
+        final SubNodeContainer snc) {
         if (snc.getNrOutPorts() == 1) {
             return null; // NOSONAR
         }
@@ -618,12 +618,12 @@ public final class WorkflowEntityFactory {
         if (cc.getUIInfo() != null) {
             int[][] allBendpoints = cc.getUIInfo().getAllBendpoints();
             if (allBendpoints.length == 0) {
-                return null;
+                return null; // NOSONAR
             }
             return Arrays.stream(allBendpoints).map(a -> builder(XYEntBuilder.class).setX(a[0]).setY(a[1]).build())
                 .toList();
         } else {
-            return null;
+            return null; // NOSONAR
         }
     }
 
@@ -643,8 +643,6 @@ public final class WorkflowEntityFactory {
         return builder(CustomJobManagerEntBuilder.class).setName(name).setIcon(icon).setWorkflowIcon(iconForWorkflow)
             .build();
     }
-
-
 
     private JobManagerEnt buildJobManagerEnt(final NodeExecutionJobManager jobManager) {
         if (CoreUtil.isDefaultOrNullJobManager(jobManager)) {
@@ -708,7 +706,7 @@ public final class WorkflowEntityFactory {
                 .setNodeState(nodeState)//
                 .setCanRemove(np.isCanRemove())//
                 .build();
-        }).collect(toList());
+        }).toList();
     }
 
     private MetaNodeStateEnt buildMetaNodeStateEnt(final NodeContainerState state) {
@@ -754,7 +752,7 @@ public final class WorkflowEntityFactory {
         var hasView = NodeViewManager.hasNodeView(nnc) ? Boolean.TRUE : null;
         Boolean isReexecutable = null;
         if (nnc.getNodeModel() instanceof ReExecutable) {
-            isReexecutable = ((ReExecutable<?>) nnc.getNodeModel()).canTriggerReExecution();
+            isReexecutable = ((ReExecutable<?>)nnc.getNodeModel()).canTriggerReExecution();
         }
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
@@ -769,7 +767,7 @@ public final class WorkflowEntityFactory {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nnc))//
             .setLoopInfo(buildLoopInfoEnt(nnc, buildContext))//
-            .setHasDialog(hasDialog)
+            .setHasDialog(hasDialog) //
             .setHasView(hasView)//
             .setIsReexecutable(isReexecutable)//
             .build();
@@ -818,11 +816,11 @@ public final class WorkflowEntityFactory {
     private Supplier<List<StyleRangeEnt>> getStyleRangesSupplier(final StyleRange[] styleRanges) {
         return () -> Arrays.stream(styleRanges)//
             .map(this::buildStyleRangeEnt)//
-            .collect(Collectors.toList());
+            .toList();
     }
 
-    private NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
+    private NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc, final AllowedNodeActionsEnt allowedActions,
+        final WorkflowBuildContext buildContext) {
         if (nc instanceof NativeNodeContainer nnc) {
             return buildNativeNodeEnt(id, nnc, allowedActions, buildContext);
         } else if (nc instanceof WorkflowManager wfm) {
@@ -835,8 +833,7 @@ public final class WorkflowEntityFactory {
         }
     }
 
-    private NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc,
-        final WorkflowBuildContext buildContext) {
+    private NodeEnt buildNodeEnt(final NodeIDEnt id, final NodeContainer nc, final WorkflowBuildContext buildContext) {
         AllowedNodeActionsEnt allowedActions =
             buildContext.includeInteractionInfo() ? buildAllowedNodeActionsEnt(nc, buildContext) : null;
         return buildNodeEnt(id, nc, allowedActions, buildContext);
@@ -865,8 +862,7 @@ public final class WorkflowEntityFactory {
             }
         } else if (parentJobManager instanceof AbstractNodeExecutionJobManager aneJobManager) {
             return builder(NodeExecutionInfoEntBuilder.class)
-                .setIcon(createIconDataURL(aneJobManager.getIconForChild(nc)))
-                .build();
+                .setIcon(createIconDataURL(aneJobManager.getIconForChild(nc))).build();
         } else {
             return null;
         }
@@ -895,16 +891,15 @@ public final class WorkflowEntityFactory {
     }
 
     @SuppressWarnings("java:S107") // it's a 'builder'-method, so many parameters are ok
-    private NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info,
-        final int portIdx, final Boolean isOptional, final Boolean isInactive, final Boolean canRemovePort,
-        final Boolean isReportPort, final Collection<ConnectionContainer> connections, final Integer portContentVersion,
-        final String portGroupId, final WorkflowBuildContext buildContext) {
+    private NodePortEnt buildNodePortEnt(final PortType ptype, final String name, final String info, final int portIdx,
+        final Boolean isOptional, final Boolean isInactive, final Boolean canRemovePort, final Boolean isReportPort,
+        final Collection<ConnectionContainer> connections, final Integer portContentVersion, final String portGroupId,
+        final WorkflowBuildContext buildContext) {
         return builder(NodePortEntBuilder.class) //
             .setIndex(portIdx)//
             .setOptional(isOptional)//
             .setInactive(isInactive)//
-            .setConnectedVia(
-                connections.stream().map(cc -> buildConnectionIDEnt(cc, buildContext)).collect(Collectors.toList()))//
+            .setConnectedVia(connections.stream().map(cc -> buildConnectionIDEnt(cc, buildContext)).toList())//
             .setName(name)//
             .setInfo(info)//
             .setTypeId(CoreUtil.getPortTypeId(ptype))//
@@ -976,12 +971,11 @@ public final class WorkflowEntityFactory {
     }
 
     private NodeStateEnt buildNodeStateEnt(final SingleNodeContainer nc) {
-        if (nc.isInactive()) {
-            return null;
-        }
         var ncState = nc.getNodeContainerState();
-        NodeStateEntBuilder builder =
-            builder(NodeStateEntBuilder.class).setExecutionState(getNodeExecutionStateEnum(ncState));
+        var builder = builder(NodeStateEntBuilder.class);
+        if (!nc.isInactive()) {
+            builder.setExecutionState(getNodeExecutionStateEnum(ncState));
+        }
         var nodeMessage = nc.getNodeMessage();
         if (nodeMessage.getMessageType() == Type.ERROR) {
             builder.setError(nodeMessage.getMessage());
@@ -1005,18 +999,22 @@ public final class WorkflowEntityFactory {
                 builder.setProgressMessages(messages);
             }
         }
-        return builder.build();
+
+        var state = builder.build();
+        return emptyState.equals(state) ? null : state;
     }
+
+    private static final NodeStateEnt emptyState = builder(NodeStateEntBuilder.class).build();
 
     private NativeNodeInvariantsEnt buildOrGetFromCacheNativeNodeInvariantsEnt(final String templateId,
         final NativeNodeContainer nc) {
         return m_nativeNodeInvariantsCache.computeIfAbsent(templateId, id -> buildNativeNodeInvariantsEnt(nc));
     }
 
-    private NodePortDescriptionEnt buildOrGetFromCacheNodePortDescriptionEnt(final PortType ptype,
-        final String name, final String description) {
-        NodePortDescriptionEntBuilder builder = m_nodePortBuilderCache.computeIfAbsent(
-            ptype.getPortObjectClass().getName(), k -> buildNodePortDescriptionEntBuilder(ptype));
+    private NodePortDescriptionEnt buildOrGetFromCacheNodePortDescriptionEnt(final PortType ptype, final String name,
+        final String description) {
+        NodePortDescriptionEntBuilder builder = m_nodePortBuilderCache
+            .computeIfAbsent(ptype.getPortObjectClass().getName(), k -> buildNodePortDescriptionEntBuilder(ptype));
         builder.setName(isBlank(name) ? null : name);
         builder.setDescription(isBlank(description) ? null : description);
         return builder.build();
@@ -1164,7 +1162,7 @@ public final class WorkflowEntityFactory {
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
             .setLinked(getTemplateLink(template) != null ? Boolean.TRUE : null)//
-            .setContainsLinkedComponents(getContainsLinkedComponents(wfm))
+            .setContainsLinkedComponents(getContainsLinkedComponents(wfm)) //
             .setProviderType(switch (locationType) {
                 case LOCAL -> ProviderTypeEnum.LOCAL;
                 case HUB_SPACE -> ProviderTypeEnum.HUB;
@@ -1270,8 +1268,7 @@ public final class WorkflowEntityFactory {
      * @return Whether the queried port can currently be removed from the node.
      */
     @SuppressWarnings("java:S2301") // boolean parameter is reasonable.
-    private boolean canRemoveContainerNodePort(final NodeContainer nc, final int portIndex,
-        final boolean isInputPort) {
+    private boolean canRemoveContainerNodePort(final NodeContainer nc, final int portIndex, final boolean isInputPort) {
         var isContainerNode = (nc instanceof SubNodeContainer) || (nc instanceof WorkflowManager);
         if (!isContainerNode) {
             throw new IllegalArgumentException("Not a container node");
@@ -1314,8 +1311,8 @@ public final class WorkflowEntityFactory {
             .orElse(false);
     }
 
-    private boolean hasPortsAddedToPortGroup(final NativeNodeContainer nnc,
-        final WorkflowBuildContext buildContext, final String portGroupName) {
+    private boolean hasPortsAddedToPortGroup(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext,
+        final String portGroupName) {
         return buildContext.getPortsConfiguration(nnc)//
             // Map to `ExtendablePortGroup` if there is any
             .map(portsConfig -> portsConfig.getExtendablePorts().get(portGroupName))//
@@ -1524,7 +1521,7 @@ public final class WorkflowEntityFactory {
     }
 
     private TemplateLinkEnt buildTemplateLinkEnt(final NodeContainerTemplate nct,
-            final WorkflowBuildContext buildContext) {
+        final WorkflowBuildContext buildContext) {
         final var templateInfo = nct.getTemplateInformation();
         if (templateInfo.getRole() != Role.Link) { // Only works for linked components and metanodes
             return null;
@@ -1547,7 +1544,7 @@ public final class WorkflowEntityFactory {
     }
 
     private static boolean isLinkTypeChangeable(final URI templateUri, final WorkflowContextV2 projectContext,
-            final WorkflowBuildContext buildContext) {
+        final WorkflowBuildContext buildContext) {
         final var optLinkVariant = KnimeUrlVariant.getVariant(templateUri);
         if (optLinkVariant.isEmpty()) {
             return false;
@@ -1558,8 +1555,8 @@ public final class WorkflowEntityFactory {
 
             // find the space provider ID by converting the URL to mountpoint-absolute
             final var spaceProviderType = resolver.resolveToAbsolute(templateUri) //
-                    .flatMap(url -> buildContext.getSpaceProviderType(url.getAuthority())) //
-                    .orElse(null);
+                .flatMap(url -> buildContext.getSpaceProviderType(url.getAuthority())) //
+                .orElse(null);
             if (spaceProviderType == SpaceProviderEnt.TypeEnum.HUB) {
                 // can convert between ID-based and path-based URLs (not done here because it needs a REST call)
                 return true;
@@ -1587,7 +1584,7 @@ public final class WorkflowEntityFactory {
      */
     private static boolean isHubItemVersionChangeable(final URI uri, final WorkflowBuildContext buildContext) {
         return KnimeUrlType.getType(uri).orElse(null) == KnimeUrlType.MOUNTPOINT_ABSOLUTE
-                && buildContext.getSpaceProviderType(uri.getAuthority()).orElse(null) == SpaceProviderEnt.TypeEnum.HUB;
+            && buildContext.getSpaceProviderType(uri.getAuthority()).orElse(null) == SpaceProviderEnt.TypeEnum.HUB;
     }
 
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
@@ -1624,14 +1621,14 @@ public final class WorkflowEntityFactory {
      * @param canEditPorts Can ports be edited for the parent node
      * @return A single Map.Entry<String, PortGroupEntBuilder>
      */
-    private Map.Entry<String, PortGroupEntBuilder> initializePortGroupEntBuilder(
-        final Map.Entry<String, ExtendablePortGroup> entry, final boolean canEditPorts) {
+    private Map.Entry<String, PortGroupEntBuilder>
+        initializePortGroupEntBuilder(final Map.Entry<String, ExtendablePortGroup> entry, final boolean canEditPorts) {
         var portGroupId = entry.getKey();
         var portGroup = entry.getValue();
         var isInputPort = portGroup.definesInputPorts();
         var supportedTypeIds = Arrays.stream(portGroup.getSupportedPortTypes())//
             .map(CoreUtil::getPortTypeId)//
-            .collect(toList());
+            .toList();
         var canAddPort = canEditPorts && portGroup.canAddPort();
         return Map.entry(portGroupId, builder(PortGroupEntBuilder.class)//
             .setSupportedPortTypeIds(supportedTypeIds)//

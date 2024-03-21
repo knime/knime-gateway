@@ -83,6 +83,8 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+// assertions in production code, repeated string literals
+@SuppressWarnings({"java:S5960", "java:S1192"})
 public class DefaultWorkflowServiceTest extends GatewayServiceTest {
 
     /**
@@ -118,18 +120,17 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
     @Test
     public void testAllowedNodeActionsForViewNodes() throws Exception { // NOSONAR 'cr' does the check
         var wfId = "wf_id";
-        var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, "wf_id");
+        var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, wfId);
         var workflowService = DefaultWorkflowService.getInstance();
 
-        var allowedActionsMap = workflowService.getWorkflow(wfId.toString(), getRootID(), true).getWorkflow().getNodes()
-            .entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
+        var allowedActionsMap = workflowService.getWorkflow(wfId, getRootID(), true).getWorkflow().getNodes().entrySet()
+            .stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
         cr(allowedActionsMap, "allowed_actions_for_view_nodes");
 
         wfm.executeAllAndWaitUntilDone();
 
-        var allowedActionsMapExecuted =
-            workflowService.getWorkflow(wfId.toString(), getRootID(), true).getWorkflow().getNodes().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
+        var allowedActionsMapExecuted = workflowService.getWorkflow(wfId, getRootID(), true).getWorkflow().getNodes()
+            .entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
         cr(allowedActionsMapExecuted, "allowed_actions_for_view_nodes_executed");
     }
 
@@ -142,11 +143,11 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
     @Test
     public void testNodeMessage() throws Exception {
         var wfId = "wf_id";
-        var wfm = loadWorkflow(TestWorkflowCollection.NODE_MESSAGE, "wf_id");
+        var wfm = loadWorkflow(TestWorkflowCollection.NODE_MESSAGE, wfId);
 
         var workflowService = DefaultWorkflowService.getInstance();
-        var stateEnt =
-            ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes().get("root:4")).getState();
+        var stateEnt = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes()
+            .get("root:4")).getState();
         assertThat(stateEnt.getWarning(), is(nullValue()));
         assertThat(stateEnt.getIssue(), is(nullValue()));
         assertThat(stateEnt.getResolutions(), is(nullValue()));
@@ -167,9 +168,10 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testLockedMetanodeAndComponent() throws Exception {
-        var wfm = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS, "wf_id");
+        var wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS, wfId);
         var workflowService = DefaultWorkflowService.getInstance();
-        var nodes = workflowService.getWorkflow("wf_id", getRootID(), false).getWorkflow().getNodes();
+        var nodes = workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
         var metanode = (MetaNodeEnt)nodes.get("root:27");
         var component = (ComponentNodeEnt)nodes.get("root:28");
         assertThat(metanode.isLocked(), is(Boolean.TRUE));
