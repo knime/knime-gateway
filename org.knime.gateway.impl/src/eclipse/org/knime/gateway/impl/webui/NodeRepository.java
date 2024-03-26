@@ -65,6 +65,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.knime.core.customization.APCustomization;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.extension.NodeSpec;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
@@ -74,6 +75,7 @@ import org.knime.core.ui.util.FuzzySearchable;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.GatewayImplPlugin;
 import org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService;
 
 /**
@@ -243,7 +245,9 @@ public final class NodeRepository {
     private synchronized void loadAllNodesAndNodeSets() {
         if (m_nodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
+            final APCustomization customization = GatewayImplPlugin.getInstance().getCustomization();
             var activeNodes = NodeSpecCollectionProvider.getInstance().getActiveNodes().values().stream() //
+                .filter(ns -> customization.isViewAllowed(ns.factory().id())) //
                 .collect(Collectors.toMap(ns -> ns.factory().id(), Node::new));
             addNodeWeights(activeNodes);
 
