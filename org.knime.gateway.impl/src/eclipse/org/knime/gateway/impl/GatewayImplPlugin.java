@@ -49,7 +49,10 @@
 package org.knime.gateway.impl;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.knime.core.customization.APCustomization;
+import org.knime.core.customization.APCustomizationProviderService;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
@@ -61,6 +64,7 @@ import org.knime.gateway.impl.node.port.TablePortViewFactory;
 import org.knime.gateway.impl.node.port.TableSpecViewFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Bundle activator of the gateway.impl plugin.
@@ -69,8 +73,14 @@ import org.osgi.framework.BundleContext;
  */
 public class GatewayImplPlugin implements BundleActivator {
 
+    private static GatewayImplPlugin instance;
+
+    private ServiceTracker<APCustomizationProviderService, APCustomizationProviderService>
+            m_customizationServiceTracker;
+
     @Override
     public void start(final BundleContext context) throws Exception {
+        instance = this; // NOSONAR
         // Temporary solution to register port views with port types/objects.
         // To be removed once it's part of the PortObject/PortType API.
         // NOTE: the port-object-class-names are used to avoid the initialization of the PortTypeRegistry at this point
@@ -102,11 +112,26 @@ public class GatewayImplPlugin implements BundleActivator {
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
 
+        m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
+        m_customizationServiceTracker.open();
+    }
+
+    /** @return the currently active instance (after bundle is started). */
+    public static GatewayImplPlugin getInstance() {
+        return instance;
+    }
+
+    /** @return The currently active customisation, not null. */
+    public APCustomization getCustomization() {
+        return Optional.ofNullable(m_customizationServiceTracker.getService())
+                .map(APCustomizationProviderService::getCustomization).orElse(APCustomization.DEFAULT);
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
-        //
+        m_customizationServiceTracker.close();
+        m_customizationServiceTracker = null;
+        instance = null; // NOSONAR
     }
 
 }
