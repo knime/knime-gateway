@@ -119,5 +119,6 @@ class CoreUtilTest {
         assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).isTrue();
         assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(metanodeWfm)).isTrue();
         assertThat(CoreUtil.isWorkflowDirtyOrHasDirtyParent(compnentWfm)).isTrue();
+        CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
     }
 }
