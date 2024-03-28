@@ -51,6 +51,7 @@ package org.knime.gateway.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
 import org.knime.core.webui.node.port.PortViewManager;
@@ -121,10 +122,10 @@ public class GatewayImplPlugin implements BundleActivator {
         return instance;
     }
 
-    /** @return the customization set in KNIME core, often a "noop" customization, never null. */
-    public APCustomization getCustomization() {
+    /** @return The currently active customisation. */
+    public @NonNull APCustomization getCustomization() {
         return Optional.ofNullable(m_customizationServiceTracker.getService())
-                .map(APCustomizationProviderService::getCustomization).orElse(APCustomization.NOOP);
+                .map(APCustomizationProviderService::getCustomization).orElse(APCustomization.DEFAULT);
     }
 
     @Override
