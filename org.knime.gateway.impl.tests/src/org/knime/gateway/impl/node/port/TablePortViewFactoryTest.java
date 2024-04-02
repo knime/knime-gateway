@@ -148,6 +148,7 @@ public class TablePortViewFactoryTest {
             assertThat(settings.get("enableSortingByHeader").asBoolean(), is(true));
             assertThat(settings.get("enableRendererSelection").asBoolean(), is(true));
             assertThat(settings.get("skipRemainingColumns").asBoolean(), is(true));
+            assertThat(settings.get("showOnlySelectedRowsConfigurable").asBoolean(), is(true));
         } finally {
             PortContext.removeLastContext();
             port.dispose();
