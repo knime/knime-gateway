@@ -93,6 +93,12 @@ public interface PermissionsEnt extends GatewayEntity {
    **/
   public Boolean isCanAccessSpaceExplorer();
 
+  /**
+   * Whether an indicator for certain kinds of remote workflows (\&quot;yellow bar\&quot;) should be shown
+   * @return showRemoteWorkflowInfo , never <code>null</code>
+   **/
+  public Boolean isShowRemoteWorkflowInfo();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -103,6 +109,7 @@ public interface PermissionsEnt extends GatewayEntity {
       valueConsumer.accept("canAccessNodeRepository", Pair.create(isCanAccessNodeRepository(), e.isCanAccessNodeRepository()));
       valueConsumer.accept("canAccessKAIPanel", Pair.create(isCanAccessKAIPanel(), e.isCanAccessKAIPanel()));
       valueConsumer.accept("canAccessSpaceExplorer", Pair.create(isCanAccessSpaceExplorer(), e.isCanAccessSpaceExplorer()));
+      valueConsumer.accept("showRemoteWorkflowInfo", Pair.create(isShowRemoteWorkflowInfo(), e.isShowRemoteWorkflowInfo()));
   }
 
     /**
@@ -149,6 +156,14 @@ public interface PermissionsEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         PermissionsEntBuilder setCanAccessSpaceExplorer(Boolean canAccessSpaceExplorer);
+        
+        /**
+         * Whether an indicator for certain kinds of remote workflows (\&quot;yellow bar\&quot;) should be shown
+         * 
+         * @param showRemoteWorkflowInfo the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PermissionsEntBuilder setShowRemoteWorkflowInfo(Boolean showRemoteWorkflowInfo);
         
         
         /**

@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.PermissionsEnt;
  * @param canAccessNodeRepository
  * @param canAccessKAIPanel
  * @param canAccessSpaceExplorer
+ * @param showRemoteWorkflowInfo
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -66,7 +67,8 @@ public record DefaultPermissionsEnt(
     Boolean canEditWorkflow,
     Boolean canAccessNodeRepository,
     Boolean canAccessKAIPanel,
-    Boolean canAccessSpaceExplorer) implements PermissionsEnt {
+    Boolean canAccessSpaceExplorer,
+    Boolean showRemoteWorkflowInfo) implements PermissionsEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -86,6 +88,9 @@ public record DefaultPermissionsEnt(
         }
         if(canAccessSpaceExplorer == null) {
             throw new IllegalArgumentException("<canAccessSpaceExplorer> must not be null.");
+        }
+        if(showRemoteWorkflowInfo == null) {
+            throw new IllegalArgumentException("<showRemoteWorkflowInfo> must not be null.");
         }
     }
 
@@ -119,6 +124,11 @@ public record DefaultPermissionsEnt(
         return canAccessSpaceExplorer;
     }
     
+    @Override
+    public Boolean isShowRemoteWorkflowInfo() {
+        return showRemoteWorkflowInfo;
+    }
+    
     /**
      * A builder for {@link DefaultPermissionsEnt}.
      */
@@ -133,6 +143,8 @@ public record DefaultPermissionsEnt(
         private Boolean m_canAccessKAIPanel;
 
         private Boolean m_canAccessSpaceExplorer;
+
+        private Boolean m_showRemoteWorkflowInfo;
 
         @Override
         public DefaultPermissionsEntBuilder setCanConfigureNodes(Boolean canConfigureNodes) {
@@ -180,13 +192,23 @@ public record DefaultPermissionsEnt(
         }
 
         @Override
+        public DefaultPermissionsEntBuilder setShowRemoteWorkflowInfo(Boolean showRemoteWorkflowInfo) {
+             if(showRemoteWorkflowInfo == null) {
+                 throw new IllegalArgumentException("<showRemoteWorkflowInfo> must not be null.");
+             }
+             m_showRemoteWorkflowInfo = showRemoteWorkflowInfo;
+             return this;
+        }
+
+        @Override
         public DefaultPermissionsEnt build() {
             return new DefaultPermissionsEnt(
                 immutable(m_canConfigureNodes),
                 immutable(m_canEditWorkflow),
                 immutable(m_canAccessNodeRepository),
                 immutable(m_canAccessKAIPanel),
-                immutable(m_canAccessSpaceExplorer));
+                immutable(m_canAccessSpaceExplorer),
+                immutable(m_showRemoteWorkflowInfo));
         }
     
     }

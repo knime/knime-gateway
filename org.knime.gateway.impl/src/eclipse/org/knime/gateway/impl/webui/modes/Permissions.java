@@ -84,6 +84,7 @@ public final class Permissions {
             .setCanAccessSpaceExplorer(true) //
             .setCanConfigureNodes(true) //
             .setCanEditWorkflow(true) //
+            .setShowRemoteWorkflowInfo(true) //
             .build();
     }
 
@@ -94,6 +95,7 @@ public final class Permissions {
             .setCanAccessSpaceExplorer(false) //
             .setCanConfigureNodes(true) //
             .setCanEditWorkflow(true) //
+            .setShowRemoteWorkflowInfo(false) //
             .build();
     }
 
@@ -104,6 +106,7 @@ public final class Permissions {
             .setCanAccessSpaceExplorer(false) //
             .setCanConfigureNodes(false) //
             .setCanEditWorkflow(false) //
+            .setShowRemoteWorkflowInfo(false) //
             .build();
     }
 

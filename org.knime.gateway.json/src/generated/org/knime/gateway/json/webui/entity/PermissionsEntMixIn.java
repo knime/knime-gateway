@@ -89,6 +89,10 @@ public interface PermissionsEntMixIn extends PermissionsEnt {
     @JsonProperty("canAccessSpaceExplorer")
     public Boolean isCanAccessSpaceExplorer();
     
+    @Override
+    @JsonProperty("showRemoteWorkflowInfo")
+    public Boolean isShowRemoteWorkflowInfo();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -121,6 +125,10 @@ public interface PermissionsEntMixIn extends PermissionsEnt {
         @Override
         @JsonProperty("canAccessSpaceExplorer")
         public PermissionsEntMixInBuilder setCanAccessSpaceExplorer(final Boolean canAccessSpaceExplorer);
+        
+        @Override
+        @JsonProperty("showRemoteWorkflowInfo")
+        public PermissionsEntMixInBuilder setShowRemoteWorkflowInfo(final Boolean showRemoteWorkflowInfo);
         
     }
 
