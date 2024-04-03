@@ -98,18 +98,27 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private final Map<WorkflowKey, WorkflowChangesTracker> m_trackers = new HashMap<>();
 
-    private final ProjectManager m_workflowProjectManager;
+    private final ProjectManager m_projectManager;
 
     /**
      * @param eventConsumer
      * @param workflowMiddleware
-     * @param workflowProjectManager
+     * @param projectManager
      */
     public WorkflowChangedEventSource(final EventConsumer eventConsumer, final WorkflowMiddleware workflowMiddleware,
-        final ProjectManager workflowProjectManager) {
+        final ProjectManager projectManager) {
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
-        m_workflowProjectManager = workflowProjectManager;
+        m_projectManager = projectManager;
+        m_projectManager.addProjectRemovedListener(projectId ->
+        // remove listeners in case the FE doesn't explicitly do it,
+        // e.g., in case the underlying job is swapped (AP in Hub)
+        new HashSet<>(m_workflowChangesCallbacks.keySet()).stream() //
+            .filter(wfKey -> wfKey.getProjectId().equals(projectId)) //
+            .forEach(wfKey -> {
+                removeEventListener(wfKey);
+                removeTracker(wfKey);
+            }));
     }
 
     /**
@@ -163,7 +172,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             return Optional.empty();
         } else {
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setDirtyProjectsMap(m_workflowProjectManager.getDirtyProjectsMap()).build();
+                .setDirtyProjectsMap(m_projectManager.getDirtyProjectsMap()).build();
 
             return Optional.of(EntityBuilderManager.builder(CompositeEventEntBuilder.class)
                 .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build());
@@ -239,6 +248,16 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     }
 
     /**
+     * For testing purposes only.
+     *
+     * @return the number of registered event listeners
+     */
+    int getNumRegisteredListeners() {
+        assert m_workflowChangesCallbacks.size() == m_trackers.size();
+        return m_workflowChangesCallbacks.size();
+    }
+
+    /**
      * Creates {@link PatchEnt}s.
      *
      * Public scope for testing.
@@ -246,6 +265,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     public static class PatchEntCreator implements PatchCreator<WorkflowChangedEventEnt> {
 
         private final List<PatchOpEnt> m_ops = new ArrayList<>();
+
         private String m_lastSnapshotId;
 
         /**
