@@ -52,6 +52,7 @@ import static org.knime.gateway.impl.webui.service.DefaultServiceUtil.assertProj
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
@@ -172,7 +173,13 @@ public class DefaultPortService implements PortService {
     @Override
     public void deactivatePortDataServices(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final Integer portIdx, final Integer viewIdx) throws NodeNotFoundException, InvalidRequestException {
-        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        NodeContainer nc;
+        try {
+            nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        } catch (NoSuchElementException e) {
+            // in case there is no project for the given id
+            throw new InvalidRequestException(e.getMessage(), e);
+        }
         PortViewManager.getInstance().getDataServiceManager()
             .deactivateDataServices(NodePortWrapper.of(nc, portIdx, viewIdx));
     }

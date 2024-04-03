@@ -266,7 +266,13 @@ public final class DefaultNodeService implements NodeService {
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String extensionType) throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var nc = getNC(projectId, workflowId, nodeId, NodeContainer.class);
+        NodeContainer nc;
+        try {
+            nc = getNC(projectId, workflowId, nodeId, NodeContainer.class);
+        } catch (NoSuchElementException e) {
+            // in case there is no rpoject for the given id
+            throw new InvalidRequestException(e.getMessage(), e);
+        }
         var dataServiceManager = getDataServiceManager(extensionType);
         dataServiceManager.deactivateDataServices(NodeWrapper.of(nc));
     }

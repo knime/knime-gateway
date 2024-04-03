@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -87,6 +88,7 @@ final class DefaultServiceUtil {
      * @return
      * @throws NodeNotFoundException if the node container couldn't be found
      * @throws IllegalStateException if the given project-id is not the expected one
+     * @throws NoSuchElementException if there is no project for the given id
      */
     static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId) throws NodeNotFoundException {
