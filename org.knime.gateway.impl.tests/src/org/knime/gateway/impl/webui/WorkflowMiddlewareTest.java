@@ -52,6 +52,7 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.workflow.NodeID;
@@ -62,6 +63,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.js.core.JSCorePlugin;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -70,6 +72,17 @@ import org.knime.testing.util.WorkflowManagerUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class WorkflowMiddlewareTest {
+
+    /**
+     * Makes sure the org.knime.js.core plugin is activated which in turn registers the
+     * DefaultConfigurationLayoutCreator osgi-service registered which in turn is required to create the component
+     * description which is used by tests (see SubNodeContainer#getDialogDescriptions and
+     * ConfigurationLayoutUtil#getConfigurationOrder)
+     */
+    @BeforeClass
+    public static void activateJsCore() {
+        JSCorePlugin.class.getName();
+    }
 
     /**
      * Tests that the {@link WorkflowMiddleware}s workflow state cache is properly cleared on sub-workflow removal
