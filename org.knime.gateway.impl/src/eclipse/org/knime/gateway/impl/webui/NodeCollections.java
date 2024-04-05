@@ -45,12 +45,9 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 
@@ -83,7 +80,7 @@ public final class NodeCollections {
      */
     public Optional<NodeCollection> getActiveCollection() {
         if (WebUIMode.getMode() == WebUIMode.PLAYGROUND) {
-            return Optional.of(getPlaygroundCollection());
+            return Optional.of(new NodeCollection("preview", id -> true));
         } else {
             return getCollectionFromPreferences();
         }
@@ -95,19 +92,6 @@ public final class NodeCollections {
             return Optional.empty();
         }
         return Optional.of(new NodeCollection("starter", configuredPredicate));
-    }
-
-    private static NodeCollection getPlaygroundCollection() {
-        var whitelist = getSystemPropertySet("org.knime.ui.playground_collection");
-        return new NodeCollection("preview", whitelist::contains);
-    }
-
-    private static Set<String> getSystemPropertySet(final String key) {
-        var value = System.getProperty(key);
-        if (value == null) {
-            return java.util.Collections.emptySet();
-        }
-        return Arrays.stream(value.split(",")).collect(Collectors.toUnmodifiableSet());
     }
 
 }
