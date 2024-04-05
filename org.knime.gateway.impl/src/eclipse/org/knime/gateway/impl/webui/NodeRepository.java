@@ -244,9 +244,9 @@ public final class NodeRepository {
     private synchronized void loadAllNodesAndNodeSets() {
         if (m_nodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
-            final var customization = GatewayImplPlugin.getInstance().getCustomization();
+            final var nodesCustomization = GatewayImplPlugin.getInstance().getCustomization().nodes();
             var activeNodes = NodeSpecCollectionProvider.getInstance().getActiveNodes().values().stream() //
-                .filter(ns -> customization.isViewAllowed(ns.factory().id())) //
+                .filter(ns -> nodesCustomization.isViewAllowed(ns.factory().id())) //
                 .collect(Collectors.toMap(ns -> ns.factory().id(), Node::new));
             addNodeWeights(activeNodes);
 
