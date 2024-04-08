@@ -50,7 +50,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeLogger;
@@ -66,7 +65,6 @@ import org.knime.core.node.interactive.ReExecutable;
 import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
 import org.knime.core.node.wizard.page.WizardPageUtil;
 import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
@@ -75,7 +73,6 @@ import org.knime.core.node.workflow.AnnotationData.TextAlignment;
 import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowScopeContext;
-import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -546,6 +543,8 @@ public final class WorkflowEntityFactory {
         var type =
             metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
         var hasDialog = NodeDialogManager.hasNodeDialog(nc) ? Boolean.TRUE : null;
+        var inputContentVersion = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(nc)
+            ? ContentVersions.getInputContentVersion(nc) : null;
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
             .setId(id)//
             .setType(type) //
@@ -561,6 +560,7 @@ public final class WorkflowEntityFactory {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
             .setIsLocked(isLocked(nc)) //
+            .setInputContentVersion(inputContentVersion) //
             .build();
     }
 
@@ -754,6 +754,8 @@ public final class WorkflowEntityFactory {
         if (nnc.getNodeModel() instanceof ReExecutable) {
             isReexecutable = ((ReExecutable<?>)nnc.getNodeModel()).canTriggerReExecution();
         }
+        var inputContentVersion = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(nnc)
+            ? ContentVersions.getInputContentVersion(nnc) : null;
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
             .setKind(KindEnum.NODE)//
@@ -770,6 +772,7 @@ public final class WorkflowEntityFactory {
             .setHasDialog(hasDialog) //
             .setHasView(hasView)//
             .setIsReexecutable(isReexecutable)//
+            .setInputContentVersion(inputContentVersion) //
             .build();
     }
 
@@ -934,9 +937,11 @@ public final class WorkflowEntityFactory {
                 var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, false, buildContext);
                 var pt = outPort.getPortType();
                 final var isReportPort = isComponentReportPort(nc, i, isInputPorts);
+                var portContentVersion =
+                    buildContext.includeInteractionInfo() ? ContentVersions.getPortContentVersion(outPort) : null;
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
                     outPort.isInactive() ? outPort.isInactive() : null, canRemovePort, isReportPort, connections,
-                    getPortContentVersion(outPort, buildContext), portGroupId, buildContext));
+                    portContentVersion, portGroupId, buildContext));
             }
         }
         return res;
@@ -952,7 +957,7 @@ public final class WorkflowEntityFactory {
                 Set<ConnectionContainer> connections = wfm.getOutgoingConnectionsFor(wfm.getID(), i);
                 NodeOutPort port = wfm.getWorkflowIncomingPort(i);
                 var isInactive = port.isInactive() ? Boolean.TRUE : null;
-                var portContentVersion = getPortContentVersion(port, buildContext);
+                var portContentVersion = ContentVersions.getPortContentVersion(port);
                 ports.add(buildNodePortEnt(port.getPortType(), port.getPortName(), port.getPortSummary(), i, null,
                     isInactive, canRemovePort, null, connections, portContentVersion, null, buildContext));
             }
@@ -1485,31 +1490,6 @@ public final class WorkflowEntityFactory {
                 .orElse(null);
         }
         return null;
-    }
-
-    private Integer getPortContentVersion(final NodeOutPort outPort, final WorkflowBuildContext buildContext) {
-        if (!buildContext.includeInteractionInfo()) {
-            return null;
-        }
-        if (outPort.getPortType().equals(FlowVariablePortObject.TYPE)) {
-            var hashCodeBuilder = new HashCodeBuilder();
-            var flowObjectStack = outPort.getFlowObjectStack();
-            if (flowObjectStack != null) {
-                for (FlowVariable v : flowObjectStack.getAllAvailableFlowVariables().values()) {
-                    hashCodeBuilder.append(v.getName());
-                    hashCodeBuilder.append(Objects.hashCode(v.getValue(v.getVariableType())));
-                }
-            }
-            return hashCodeBuilder.build();
-        } else {
-            var po = outPort.getPortObject();
-            if (po == null) {
-                var spec = outPort.getPortObjectSpec();
-                return spec == null ? null : System.identityHashCode(spec);
-            } else {
-                return System.identityHashCode(po);
-            }
-        }
     }
 
     private String getTemplateLink(final NodeContainerTemplate nct) {

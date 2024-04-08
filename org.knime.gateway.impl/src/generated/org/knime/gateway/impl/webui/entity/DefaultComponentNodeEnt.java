@@ -68,6 +68,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
  * @param position
  * @param kind
  * @param hasDialog
+ * @param inputContentVersion
  * @param allowedActions
  * @param executionInfo
  * @param name
@@ -88,6 +89,7 @@ public record DefaultComponentNodeEnt(
     XYEnt position,
     KindEnum kind,
     Boolean hasDialog,
+    Integer inputContentVersion,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
     String name,
@@ -162,6 +164,11 @@ public record DefaultComponentNodeEnt(
     }
     
     @Override
+    public Integer getInputContentVersion() {
+        return inputContentVersion;
+    }
+    
+    @Override
     public AllowedNodeActionsEnt getAllowedActions() {
         return allowedActions;
     }
@@ -219,6 +226,8 @@ public record DefaultComponentNodeEnt(
         private KindEnum m_kind;
 
         private Boolean m_hasDialog;
+
+        private Integer m_inputContentVersion;
 
         private AllowedNodeActionsEnt m_allowedActions;
 
@@ -294,6 +303,12 @@ public record DefaultComponentNodeEnt(
         }
 
         @Override
+        public DefaultComponentNodeEntBuilder setInputContentVersion(Integer inputContentVersion) {
+             m_inputContentVersion = inputContentVersion;
+             return this;
+        }
+
+        @Override
         public DefaultComponentNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
@@ -354,6 +369,7 @@ public record DefaultComponentNodeEnt(
                 immutable(m_position),
                 immutable(m_kind),
                 immutable(m_hasDialog),
+                immutable(m_inputContentVersion),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),
                 immutable(m_name),

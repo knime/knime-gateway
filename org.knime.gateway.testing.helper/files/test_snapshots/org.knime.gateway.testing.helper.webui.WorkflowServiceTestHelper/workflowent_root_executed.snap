@@ -1316,6 +1316,7 @@
         "optional" : false,
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
+      "inputContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,
@@ -1821,6 +1822,7 @@
         "portGroupId" : "input",
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
+      "inputContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,

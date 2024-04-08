@@ -123,6 +123,10 @@
   "value" : true
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:3:0:7/inputContentVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:3:0:7/state/executionState",
   "value" : "EXECUTED"
 } ]

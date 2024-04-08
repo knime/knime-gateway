@@ -134,6 +134,12 @@ public interface NodeEnt extends GatewayEntity {
   public Boolean hasDialog();
 
   /**
+   * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.
+   * @return inputContentVersion 
+   **/
+  public Integer getInputContentVersion();
+
+  /**
    * Get allowedActions
    * @return allowedActions 
    **/
@@ -157,6 +163,7 @@ public interface NodeEnt extends GatewayEntity {
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
+      valueConsumer.accept("inputContentVersion", Pair.create(getInputContentVersion(), e.getInputContentVersion()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
   }
@@ -221,6 +228,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setHasDialog(Boolean hasDialog);
+        
+        /**
+         * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.
+         * 
+         * @param inputContentVersion the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setInputContentVersion(Integer inputContentVersion);
         
         /**
    		 * Set allowedActions

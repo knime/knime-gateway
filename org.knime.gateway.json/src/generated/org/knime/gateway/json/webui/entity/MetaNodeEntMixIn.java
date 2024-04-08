@@ -106,6 +106,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public Boolean hasDialog();
     
     @Override
+    @JsonProperty("inputContentVersion")
+    public Integer getInputContentVersion();
+    
+    @Override
     @JsonProperty("allowedActions")
     public AllowedNodeActionsEnt getAllowedActions();
     
@@ -169,6 +173,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("hasDialog")
         public MetaNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        
+        @Override
+        @JsonProperty("inputContentVersion")
+        public MetaNodeEntMixInBuilder setInputContentVersion(final Integer inputContentVersion);
         
         @Override
         @JsonProperty("allowedActions")

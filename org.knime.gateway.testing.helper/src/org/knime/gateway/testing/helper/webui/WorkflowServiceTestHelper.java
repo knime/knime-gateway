@@ -821,6 +821,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testExecuteDeleteCommand() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        // TODO this is too long
 
         // successful deletion
         var command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),

@@ -132,7 +132,8 @@ public final class WorkflowTransformations {
     }
 
     private static List<WorkflowTransformation> createTransformationsForGeneral() {
-        return asList(newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"), //
+        return asList( //
+            newTransformation(w -> w.executeUpToHere(w.getID().createChild(1)), "node_executed"), //
             newTransformation(w -> w.resetAndConfigureNode(w.getID().createChild(1)), "node_reset"), //
             newTransformation(w -> w.removeConnection(w.getIncomingConnectionFor(w.getID().createChild(26), 1)),
                 "connection_removed"), //
@@ -179,7 +180,8 @@ public final class WorkflowTransformations {
                 "metanode_renamed"), //
             newTransformation(
                 w -> ((SubNodeContainer)w.getNodeContainer(w.getID().createChild(23))).setName("New Name"),
-                "component_renamed"));
+                "component_renamed") //
+        );
     }
 
     private static List<WorkflowTransformation> createTransformationsForStreamingExecution() {

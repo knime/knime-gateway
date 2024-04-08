@@ -58,7 +58,6 @@
       "connectedVia" : "[  ]",
       "index" : 1,
       "name" : "Outport 1",
-      "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
     } ]
   },

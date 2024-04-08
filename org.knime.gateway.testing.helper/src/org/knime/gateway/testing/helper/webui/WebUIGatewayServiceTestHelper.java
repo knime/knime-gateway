@@ -62,6 +62,7 @@ import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
@@ -194,6 +195,12 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * Non-deterministic field.
          */
+        objToString.addException(NodeEnt.class, "inputContentVersion",
+                (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_VERSION"));
+
+        /**
+         * Non-deterministic field.
+         */
         objToString.addException(SpaceItemEnt.class, "id", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_ID"));
 
         /**
@@ -238,7 +245,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     private static PatchOpEnt replaceNonDeterministicPatchValues(final PatchOpEnt o) {
         String newValue = null;
-        if (o.getPath().endsWith("/portContentVersion")) {
+        if (o.getPath().endsWith("/portContentVersion") || o.getPath().endsWith("/inputContentVersion")) {
             newValue = "PLACEHOLDER_FOR_VERSION";
         } else if (o.getPath().endsWith("/state/warning")) {
             newValue = replaceNodeIdsWithPlaceholder((String)o.getValue());

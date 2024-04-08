@@ -68,6 +68,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param position
  * @param kind
  * @param hasDialog
+ * @param inputContentVersion
  * @param allowedActions
  * @param executionInfo
  * @param templateId
@@ -88,6 +89,7 @@ public record DefaultNativeNodeEnt(
     XYEnt position,
     KindEnum kind,
     Boolean hasDialog,
+    Integer inputContentVersion,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
     String templateId,
@@ -162,6 +164,11 @@ public record DefaultNativeNodeEnt(
     }
     
     @Override
+    public Integer getInputContentVersion() {
+        return inputContentVersion;
+    }
+    
+    @Override
     public AllowedNodeActionsEnt getAllowedActions() {
         return allowedActions;
     }
@@ -219,6 +226,8 @@ public record DefaultNativeNodeEnt(
         private KindEnum m_kind;
 
         private Boolean m_hasDialog;
+
+        private Integer m_inputContentVersion;
 
         private AllowedNodeActionsEnt m_allowedActions;
 
@@ -294,6 +303,12 @@ public record DefaultNativeNodeEnt(
         }
 
         @Override
+        public DefaultNativeNodeEntBuilder setInputContentVersion(Integer inputContentVersion) {
+             m_inputContentVersion = inputContentVersion;
+             return this;
+        }
+
+        @Override
         public DefaultNativeNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions) {
              m_allowedActions = allowedActions;
              return this;
@@ -354,6 +369,7 @@ public record DefaultNativeNodeEnt(
                 immutable(m_position),
                 immutable(m_kind),
                 immutable(m_hasDialog),
+                immutable(m_inputContentVersion),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),
                 immutable(m_templateId),

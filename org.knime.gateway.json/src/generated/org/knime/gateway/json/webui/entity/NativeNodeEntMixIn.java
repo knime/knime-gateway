@@ -107,6 +107,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public Boolean hasDialog();
     
     @Override
+    @JsonProperty("inputContentVersion")
+    public Integer getInputContentVersion();
+    
+    @Override
     @JsonProperty("allowedActions")
     public AllowedNodeActionsEnt getAllowedActions();
     
@@ -178,6 +182,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("hasDialog")
         public NativeNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        
+        @Override
+        @JsonProperty("inputContentVersion")
+        public NativeNodeEntMixInBuilder setInputContentVersion(final Integer inputContentVersion);
         
         @Override
         @JsonProperty("allowedActions")

@@ -107,6 +107,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public Boolean hasDialog();
     
     @Override
+    @JsonProperty("inputContentVersion")
+    public Integer getInputContentVersion();
+    
+    @Override
     @JsonProperty("allowedActions")
     public AllowedNodeActionsEnt getAllowedActions();
     
@@ -178,6 +182,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("hasDialog")
         public ComponentNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        
+        @Override
+        @JsonProperty("inputContentVersion")
+        public ComponentNodeEntMixInBuilder setInputContentVersion(final Integer inputContentVersion);
         
         @Override
         @JsonProperty("allowedActions")

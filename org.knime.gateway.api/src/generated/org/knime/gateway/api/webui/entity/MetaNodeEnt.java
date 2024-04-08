@@ -119,6 +119,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
+      valueConsumer.accept("inputContentVersion", Pair.create(getInputContentVersion(), e.getInputContentVersion()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
@@ -187,6 +188,14 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setHasDialog(Boolean hasDialog);
+        
+        /**
+         * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.
+         * 
+         * @param inputContentVersion the property value,  
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setInputContentVersion(Integer inputContentVersion);
         
         /**
    		 * Set allowedActions
