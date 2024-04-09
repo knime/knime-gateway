@@ -93,6 +93,10 @@ public interface PermissionsEntMixIn extends PermissionsEnt {
     @JsonProperty("showRemoteWorkflowInfo")
     public Boolean isShowRemoteWorkflowInfo();
     
+    @Override
+    @JsonProperty("showFloatingDownloadButton")
+    public Boolean isShowFloatingDownloadButton();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -129,6 +133,10 @@ public interface PermissionsEntMixIn extends PermissionsEnt {
         @Override
         @JsonProperty("showRemoteWorkflowInfo")
         public PermissionsEntMixInBuilder setShowRemoteWorkflowInfo(final Boolean showRemoteWorkflowInfo);
+        
+        @Override
+        @JsonProperty("showFloatingDownloadButton")
+        public PermissionsEntMixInBuilder setShowFloatingDownloadButton(final Boolean showFloatingDownloadButton);
         
     }
 

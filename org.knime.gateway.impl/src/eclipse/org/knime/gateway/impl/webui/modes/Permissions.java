@@ -85,6 +85,7 @@ public final class Permissions {
             .setCanConfigureNodes(true) //
             .setCanEditWorkflow(true) //
             .setShowRemoteWorkflowInfo(true) //
+            .setShowFloatingDownloadButton(false) //
             .build();
     }
 
@@ -96,6 +97,7 @@ public final class Permissions {
             .setCanConfigureNodes(true) //
             .setCanEditWorkflow(true) //
             .setShowRemoteWorkflowInfo(false) //
+            .setShowFloatingDownloadButton(true) //
             .build();
     }
 
@@ -107,6 +109,7 @@ public final class Permissions {
             .setCanConfigureNodes(false) //
             .setCanEditWorkflow(false) //
             .setShowRemoteWorkflowInfo(false) //
+            .setShowFloatingDownloadButton(false) //
             .build();
     }
 

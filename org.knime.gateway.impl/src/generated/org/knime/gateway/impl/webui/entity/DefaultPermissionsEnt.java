@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.PermissionsEnt;
  * @param canAccessKAIPanel
  * @param canAccessSpaceExplorer
  * @param showRemoteWorkflowInfo
+ * @param showFloatingDownloadButton
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -68,7 +69,8 @@ public record DefaultPermissionsEnt(
     Boolean canAccessNodeRepository,
     Boolean canAccessKAIPanel,
     Boolean canAccessSpaceExplorer,
-    Boolean showRemoteWorkflowInfo) implements PermissionsEnt {
+    Boolean showRemoteWorkflowInfo,
+    Boolean showFloatingDownloadButton) implements PermissionsEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -91,6 +93,9 @@ public record DefaultPermissionsEnt(
         }
         if(showRemoteWorkflowInfo == null) {
             throw new IllegalArgumentException("<showRemoteWorkflowInfo> must not be null.");
+        }
+        if(showFloatingDownloadButton == null) {
+            throw new IllegalArgumentException("<showFloatingDownloadButton> must not be null.");
         }
     }
 
@@ -129,6 +134,11 @@ public record DefaultPermissionsEnt(
         return showRemoteWorkflowInfo;
     }
     
+    @Override
+    public Boolean isShowFloatingDownloadButton() {
+        return showFloatingDownloadButton;
+    }
+    
     /**
      * A builder for {@link DefaultPermissionsEnt}.
      */
@@ -145,6 +155,8 @@ public record DefaultPermissionsEnt(
         private Boolean m_canAccessSpaceExplorer;
 
         private Boolean m_showRemoteWorkflowInfo;
+
+        private Boolean m_showFloatingDownloadButton;
 
         @Override
         public DefaultPermissionsEntBuilder setCanConfigureNodes(Boolean canConfigureNodes) {
@@ -201,6 +213,15 @@ public record DefaultPermissionsEnt(
         }
 
         @Override
+        public DefaultPermissionsEntBuilder setShowFloatingDownloadButton(Boolean showFloatingDownloadButton) {
+             if(showFloatingDownloadButton == null) {
+                 throw new IllegalArgumentException("<showFloatingDownloadButton> must not be null.");
+             }
+             m_showFloatingDownloadButton = showFloatingDownloadButton;
+             return this;
+        }
+
+        @Override
         public DefaultPermissionsEnt build() {
             return new DefaultPermissionsEnt(
                 immutable(m_canConfigureNodes),
@@ -208,7 +229,8 @@ public record DefaultPermissionsEnt(
                 immutable(m_canAccessNodeRepository),
                 immutable(m_canAccessKAIPanel),
                 immutable(m_canAccessSpaceExplorer),
-                immutable(m_showRemoteWorkflowInfo));
+                immutable(m_showRemoteWorkflowInfo),
+                immutable(m_showFloatingDownloadButton));
         }
     
     }

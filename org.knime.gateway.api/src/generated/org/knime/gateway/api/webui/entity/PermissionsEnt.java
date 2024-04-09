@@ -94,10 +94,16 @@ public interface PermissionsEnt extends GatewayEntity {
   public Boolean isCanAccessSpaceExplorer();
 
   /**
-   * Whether an indicator for certain kinds of remote workflows (\&quot;yellow bar\&quot;) should be shown
+   * Whether an indicator for certain kinds of remote workflows (\&quot;yellow bar\&quot;) should be shown in some contexts
    * @return showRemoteWorkflowInfo , never <code>null</code>
    **/
   public Boolean isShowRemoteWorkflowInfo();
+
+  /**
+   * Whether to show a floating download button above the entire app.
+   * @return showFloatingDownloadButton , never <code>null</code>
+   **/
+  public Boolean isShowFloatingDownloadButton();
 
 
   @Override
@@ -110,6 +116,7 @@ public interface PermissionsEnt extends GatewayEntity {
       valueConsumer.accept("canAccessKAIPanel", Pair.create(isCanAccessKAIPanel(), e.isCanAccessKAIPanel()));
       valueConsumer.accept("canAccessSpaceExplorer", Pair.create(isCanAccessSpaceExplorer(), e.isCanAccessSpaceExplorer()));
       valueConsumer.accept("showRemoteWorkflowInfo", Pair.create(isShowRemoteWorkflowInfo(), e.isShowRemoteWorkflowInfo()));
+      valueConsumer.accept("showFloatingDownloadButton", Pair.create(isShowFloatingDownloadButton(), e.isShowFloatingDownloadButton()));
   }
 
     /**
@@ -158,12 +165,20 @@ public interface PermissionsEnt extends GatewayEntity {
         PermissionsEntBuilder setCanAccessSpaceExplorer(Boolean canAccessSpaceExplorer);
         
         /**
-         * Whether an indicator for certain kinds of remote workflows (\&quot;yellow bar\&quot;) should be shown
+         * Whether an indicator for certain kinds of remote workflows (\&quot;yellow bar\&quot;) should be shown in some contexts
          * 
          * @param showRemoteWorkflowInfo the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         PermissionsEntBuilder setShowRemoteWorkflowInfo(Boolean showRemoteWorkflowInfo);
+        
+        /**
+         * Whether to show a floating download button above the entire app.
+         * 
+         * @param showFloatingDownloadButton the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PermissionsEntBuilder setShowFloatingDownloadButton(Boolean showFloatingDownloadButton);
         
         
         /**
