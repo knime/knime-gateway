@@ -48,7 +48,8 @@ public final class GatewayTestCollection {
         WorkflowServiceTestHelper.class, //
         TranslateCommandTestHelper.class, //
         CutCopyPasteCommandsTestHelper.class, //
-        BendpointsTestHelper.class
+        BendpointsTestHelper.class, //
+        DeleteCommandTestHelper.class
     );
 
     private GatewayTestCollection() {

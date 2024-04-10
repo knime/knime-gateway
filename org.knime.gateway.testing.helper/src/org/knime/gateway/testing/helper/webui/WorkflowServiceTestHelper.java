@@ -58,7 +58,6 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -128,8 +127,6 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
-import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
-import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
@@ -814,124 +811,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> ws().executeWorkflowCommand(wfId, getRootID(), expandCommand));
     }
 
-    /**
-     * Tests
-     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
-     * when called with {@link DeleteCommandEnt}.
-     */
-    public void testExecuteDeleteCommand() throws Exception {
-        final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        // TODO this is too long
-
-        // successful deletion
-        var command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
-            asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
-        ws().executeWorkflowCommand(wfId, getRootID(), command);
-        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        cr(workflow, "delete_command");
-        assertThat(workflow.getNodes().keySet(), not(hasItems("root:1", "root:4")));
-        assertThat(
-            workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toList()),
-            not(hasItems("root_1")));
-        assertThat(workflow.getWorkflowAnnotations().size(), is(6));
-        assertThat(workflow.getConnections().keySet(), not(hasItems("root:26_1")));
-
-        // undo deletion
-        ws().undoWorkflowCommand(wfId, getRootID());
-        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
-        assertThat(workflow.getNodes().keySet(), hasItems("root:1", "root:4"));
-        assertThat(
-            workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toList()),
-            hasItems("root_1"));
-        assertThat(workflow.getWorkflowAnnotations().size(), is(7));
-        assertThat(workflow.getConnections().keySet(), hasItems("root:26_1"));
-
-        // delete a node within a component
-        assertThat("node expected to be present",
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10"),
-            is(notNullValue()));
-        ws().executeWorkflowCommand(wfId, new NodeIDEnt(12),
-            createDeleteCommandEnt(asList(new NodeIDEnt(12, 0, 10)), emptyList(), emptyList()));
-        assertThat("node expected to be deleted",
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10"),
-            is(nullValue()));
-
-        // deletion a connection between a node and a port leaving a metanode
-        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow().getConnections().get("root:6_1"),
-            is(notNullValue()));
-        ws().executeWorkflowCommand(wfId, new NodeIDEnt(6),
-            createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt("root:6_1")), emptyList()));
-        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow().getConnections().get("root:6_1"),
-            is(nullValue()));
-
-        // delete a node within a metanode
-        assertThat("node expected to be present",
-            ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"),
-            is(notNullValue()));
-        ws().executeWorkflowCommand(wfId, new NodeIDEnt(6),
-            createDeleteCommandEnt(asList(new NodeIDEnt(6, 3)), emptyList(), emptyList()));
-        assertThat("node expected to be deleted",
-            ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"), is(nullValue()));
-
-        // deletion fails because a node doesn't exist
-        var command2 = createDeleteCommandEnt(asList(new NodeIDEnt(99999999)), emptyList(), emptyList());
-        Exception ex = Assert.assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
-        assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
-
-        // deletion fails because a connection doesn't exist
-        var command3 =
-            createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(99999999), 0)), emptyList());
-        ex = Assert.assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
-        assertThat(ex.getMessage(), is("Some connections don't exist. Delete operation aborted."));
-
-        // deletion fails because a workflow annotation doesn't exist
-        var command4 =
-            createDeleteCommandEnt(emptyList(), emptyList(), asList(new AnnotationIDEnt(getRootID(), 999999999)));
-        ex = Assert.assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
-        assertThat(ex.getMessage(), is("Some workflow annotations don't exist. Delete operation aborted."));
-
-        // deletion fails because a node cannot be deleted due to a delete lock
-        var command5 = createDeleteCommandEnt(asList(new NodeIDEnt(23, 0, 8)), emptyList(), emptyList());
-        ex = Assert.assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(23), command5));
-        assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
-
-        /* checks for a workflow in execution */
-        String wfId2 = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
-        executeWorkflowAsync(wfId2);
-        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WorkflowEnt w = ws().getWorkflow(wfId2, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
-            assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
-                is(ExecutionStateEnum.EXECUTED));
-        });
-        cr(ws().getWorkflow(wfId2, getRootID(), Boolean.TRUE).getWorkflow(), "can_delete_executing");
-
-        // deletion fails because of a node that cannot be deleted due to executing successors
-        var command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());
-        ex = Assert.assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId2, getRootID(), command6));
-        assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
-
-        // deletion of a connection fails because it's connected to an executing node
-        var command7 =
-            createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(7), 0)), emptyList());
-        ex = Assert.assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId2, getRootID(), command7));
-        assertThat(ex.getMessage(), is("Some connections can't be deleted. Delete operation aborted."));
-
-    }
-
-    static DeleteCommandEnt createDeleteCommandEnt(final List<NodeIDEnt> nodeIds,
-        final List<ConnectionIDEnt> connectionIds, final List<AnnotationIDEnt> annotationIds) {
-        return builder(DeleteCommandEntBuilder.class).setKind(KindEnum.DELETE)//
-            .setNodeIds(nodeIds)//
-            .setConnectionIds(connectionIds)//
-            .setAnnotationIds(annotationIds)//
-            .build();
-    }
 
     /**
      * Tests
@@ -994,7 +873,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // add a connection within a sub-workflow (e.g. within a component)
         var component23Id = new NodeIDEnt(23);
         var deleteCommand =
-            createDeleteCommandEnt(emptyList(), List.of(new ConnectionIDEnt(new NodeIDEnt(23, 0, 9), 1)), emptyList());
+            DeleteCommandTestHelper.createDeleteCommandEnt(emptyList(), List.of(new ConnectionIDEnt(new NodeIDEnt(23, 0, 9), 1)), emptyList());
         ws().executeWorkflowCommand(wfId, component23Id, deleteCommand);
         var component23ConnectionRemoved = ws().getWorkflow(wfId, component23Id, false);
         assertThat(component23ConnectionRemoved.getWorkflow().getConnections().size(), is(1));
@@ -1989,7 +1868,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         // delete Existing connection on Component
         var deleteCommand =
-            createDeleteCommandEnt(asList(), asList(new ConnectionIDEnt(new NodeIDEnt(23), 1)), asList());
+            DeleteCommandTestHelper.createDeleteCommandEnt(asList(), asList(new ConnectionIDEnt(new NodeIDEnt(23), 1)), asList());
         ws().executeWorkflowCommand(wfId, getRootID(), deleteCommand);
 
         var command = buildReplaceNodeCommand(new NodeIDEnt(2), null, new NodeIDEnt(23));

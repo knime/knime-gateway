@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.gateway.webui.util;
+package org.knime.gateway.api.webui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

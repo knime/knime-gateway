@@ -66,7 +66,7 @@ import org.knime.core.webui.data.util.InputSpecUtil;
  * 
  * @author Benjamin Moser, KNIME GmbH
  */
-public class ContentVersions {
+class ContentVersions {
 
     private ContentVersions() {
 

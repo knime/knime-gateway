@@ -120,7 +120,7 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setTypeId("WorkflowChangedEventType").build();
         es().addEventListener(eventType);
 
-        var command = WorkflowServiceTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
+        var command = DeleteCommandTestHelper.createDeleteCommandEnt(asList(new NodeIDEnt(5)),
             Collections.emptyList(), Collections.emptyList());
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         var patchPath =
