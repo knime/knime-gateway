@@ -66,7 +66,7 @@ import org.knime.core.webui.data.util.InputSpecUtil;
  * 
  * @author Benjamin Moser, KNIME GmbH
  */
-final class ContentVersions {
+public class ContentVersions {
 
     private ContentVersions() {
 
@@ -78,7 +78,7 @@ final class ContentVersions {
      * @param outPort An output port providing some content
      * @return A value identifying the content provided by the port
      */
-    static Integer getPortContentVersion(final NodeOutPort outPort) {
+    public static Integer getPortContentVersion(final NodeOutPort outPort) {
         if (outPort.getPortType().equals(FlowVariablePortObject.TYPE)) {
             return getContentVersion(getAllAvailableFlowVariables(outPort));
         } else {
@@ -98,7 +98,7 @@ final class ContentVersions {
      * @param nc The node whose input to consider
      * @return A value identifying the input provided to the node
      */
-    static Integer getInputContentVersion(final NodeContainer nc) {
+    public static Integer getInputContentVersion(final NodeContainer nc) {
         var inPortSpecs = InputSpecUtil.getInputSpecsIncludingVariablePort(nc);
         return getContentVersion(inPortSpecs);
     }
