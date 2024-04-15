@@ -52,6 +52,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 
@@ -71,6 +72,20 @@ public final class AppStateUpdater {
     private final Set<Runnable> m_listeners = new HashSet<>();
 
     private AppStateEnt m_lastAppState;
+
+    private final boolean m_filterProjectSpecificInfosFromEvents;
+
+    @SuppressWarnings("javadoc")
+    public AppStateUpdater() {
+        this(false);
+    }
+
+    /**
+     * @param filterProjectSpecificInfosFromEvents see {@link #filterProjectSpecificInfosFromEvents()}
+     */
+    public AppStateUpdater(final boolean filterProjectSpecificInfosFromEvents) {
+        m_filterProjectSpecificInfosFromEvents = filterProjectSpecificInfosFromEvents;
+    }
 
     /**
      * Informs all the registered listeners that the app state has changed.
@@ -111,6 +126,18 @@ public final class AppStateUpdater {
      */
     public void setLastAppState(final AppStateEnt lastAppState) {
         m_lastAppState = lastAppState;
+    }
+
+    /**
+     * Workaround to optionally filter any project-specific infos from the app-state, such as
+     * {@link AppStateEnt#getOpenProjects()}, before broadcasting the {@link AppStateChangedEventEnt} to the connect
+     * clients (only relevant for AP in Hub). To be made obsolete when refactoring the app-state with NXT-1442.
+     *
+     * @return the filterProjectSpecificInfosFromEvents if {@code true}, project-specific infos will be filtered from
+     *         the app-state
+     */
+    public boolean filterProjectSpecificInfosFromEvents() {
+        return m_filterProjectSpecificInfosFromEvents;
     }
 
 }

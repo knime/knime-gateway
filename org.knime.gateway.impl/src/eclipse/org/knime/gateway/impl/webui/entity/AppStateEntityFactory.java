@@ -143,7 +143,7 @@ public final class AppStateEntityFactory {
     /**
      * Properties added here potentially also need to be considered in
      * {@link #buildAppStateEntDiff(AppStateEnt, AppStateEnt)}.
-     * 
+     *
      * @param previousAppState the previously created app state, or {@code null} if there is none
      * @param dependencies Service dependencies needed for building this application state
      * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if
@@ -170,7 +170,7 @@ public final class AppStateEntityFactory {
         var activeCollection =
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         return builder(AppStateEntBuilder.class) //
-            .setOpenProjects(projects) //
+            .setOpenProjects(projects.isEmpty() ? null : projects) //
             .setExampleProjects(exampleProjects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //

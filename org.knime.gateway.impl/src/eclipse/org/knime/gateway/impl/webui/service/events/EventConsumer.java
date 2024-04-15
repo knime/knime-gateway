@@ -59,13 +59,15 @@ import java.util.function.BiConsumer;
 public interface EventConsumer extends BiConsumer<String, Object> {
 
     /**
-     * Accept the given event with some meta-info.
+     * Accept the given event with some meta-info. To be called if an event is associated with a particular
+     * workflow/component project. If it's an 'application-wide' event, call {@link #accept(String, Object)}. These
+     * events, e.g., will be broadcasted to all users connected to an executor (in case of AP in Hub).
      *
-     * @param name
-     * @param event
-     * @param workflowProjectId
+     * @param name the event name/type
+     * @param event the actual event payload
+     * @param projectId the id of the project this event is associated with
      */
-    default void accept(final String name, final Object event, final String workflowProjectId) {
+    default void accept(final String name, final Object event, final String projectId) {
         accept(name, event);
     }
 

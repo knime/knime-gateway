@@ -46,6 +46,8 @@
  */
 package org.knime.gateway.impl.webui.service.events;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +61,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
+import org.knime.gateway.api.webui.entity.EventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -72,11 +75,14 @@ import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
  */
 public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, CompositeEventEnt> {
 
+    private static final AppStateChangedEventEnt EMPTY_APP_STATE_CHANGED_EVENT =
+        builder(AppStateChangedEventEntBuilder.class).setAppState(builder(AppStateEntBuilder.class).build()).build();
+
     private final Runnable m_callback;
 
     private final AppStateUpdater m_appStateUpdater;
 
-    private final ProjectManager m_workflowProjectManager;
+    private final ProjectManager m_projectManager;
 
     /**
      * @param eventConsumer consumes the emitted events
@@ -87,26 +93,36 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         final AppStateEntityFactory.ServiceDependencies dependencies) {
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;
-        m_workflowProjectManager = dependencies.projectManager();
+        m_projectManager = dependencies.projectManager();
         m_callback = () -> {
             var previousAppState = appStateUpdater.getLastAppState().orElse(null);
+            var filterProjectSpecificInfosFromEvents = appStateUpdater.filterProjectSpecificInfosFromEvents();
             var appState = AppStateEntityFactory.buildAppStateEnt( //
                 previousAppState, //
-                null, //
-                null, //
+                filterProjectSpecificInfosFromEvents ? id -> false : null, //
+                filterProjectSpecificInfosFromEvents ? id -> false : null, //
                 dependencies //
             );
             appStateUpdater.setLastAppState(appState);
-            var appStateEvent = buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(previousAppState, appState));
-            var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setDirtyProjectsMap(dependencies.projectManager().getDirtyProjectsMap()) //
-                .setShouldReplace(true) //
-                .build();
+            var appStateChangedEvent =
+                buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(previousAppState, appState));
 
-            sendEvent( //
-                EntityBuilderManager.builder(CompositeEventEntBuilder.class) //
-                    .setEvents(List.of(appStateEvent, projectDirtyStateEvent)).build() //
-            );
+            List<EventEnt> events = null;
+            if (filterProjectSpecificInfosFromEvents) {
+                if (!EMPTY_APP_STATE_CHANGED_EVENT.equals(appStateChangedEvent)) {
+                    events = List.of(appStateChangedEvent);
+                }
+            } else {
+                var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
+                    .setDirtyProjectsMap(dependencies.projectManager().getDirtyProjectsMap()) //
+                    .setShouldReplace(true) //
+                    .build();
+                events = List.of(appStateChangedEvent, projectDirtyStateEvent);
+            }
+
+            if (events != null) {
+                sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class).setEvents(events).build());
+            }
         };
     }
 
@@ -119,13 +135,12 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
             NodeSpecCollectionProvider.Progress.addListener(this::handleProgressEvent);
         }
 
-        if (!m_workflowProjectManager.getDirtyProjectsMap().isEmpty()) {
-            var appStateEvent = EntityBuilderManager.builder(AppStateChangedEventEntBuilder.class)
-                .setAppState(EntityBuilderManager.builder(AppStateEntBuilder.class).build()).build();
+        if (!m_appStateUpdater.filterProjectSpecificInfosFromEvents()
+            && !m_projectManager.getDirtyProjectsMap().isEmpty()) {
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setDirtyProjectsMap(m_workflowProjectManager.getDirtyProjectsMap()).setShouldReplace(true).build();
+                .setDirtyProjectsMap(m_projectManager.getDirtyProjectsMap()).setShouldReplace(true).build();
             var compositeEvent = EntityBuilderManager.builder(CompositeEventEntBuilder.class)
-                .setEvents(List.of(appStateEvent, projectDirtyStateEvent)).build();
+                .setEvents(List.of(EMPTY_APP_STATE_CHANGED_EVENT, projectDirtyStateEvent)).build();
             return Optional.of(compositeEvent);
         } else {
             return Optional.empty();
