@@ -62,7 +62,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeRepositoryLoadingProgressEventEnt extends GatewayEntity, EventEnt {
+public interface NodeRepositoryLoadingProgressEventEnt extends GatewayEntity, EventEnt, org.knime.gateway.api.entity.BroadcastEvent {
 
 
   /**

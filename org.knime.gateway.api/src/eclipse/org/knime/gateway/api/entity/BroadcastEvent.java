@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,68 +41,19 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Apr 15, 2024 (hornm): created
  */
-package org.knime.gateway.api.webui.entity;
-
-import org.knime.gateway.api.webui.entity.AppStateEnt;
-import org.knime.gateway.api.webui.entity.EventEnt;
-
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+package org.knime.gateway.api.entity;
 
 /**
- * Event for changes to the application state
- * 
+ * A marker interface for event-entities to indicate that it's an event safe and required to be broadcasted to all
+ * connected clients
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AppStateChangedEventEnt extends GatewayEntity, EventEnt, org.knime.gateway.api.entity.BroadcastEvent {
-
-
-  /**
-   * Get appState
-   * @return appState , never <code>null</code>
-   **/
-  public AppStateEnt getAppState();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AppStateChangedEventEnt)other;
-      valueConsumer.accept("appState", Pair.create(getAppState(), e.getAppState()));
-  }
-
-    /**
-     * The builder for the entity.
-     */
-    public interface AppStateChangedEventEntBuilder extends GatewayEntityBuilder<AppStateChangedEventEnt> {
-
-        /**
-   		 * Set appState
-         * 
-         * @param appState the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        AppStateChangedEventEntBuilder setAppState(AppStateEnt appState);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        AppStateChangedEventEnt build();
-    
-    }
+public interface BroadcastEvent {
 
 }
