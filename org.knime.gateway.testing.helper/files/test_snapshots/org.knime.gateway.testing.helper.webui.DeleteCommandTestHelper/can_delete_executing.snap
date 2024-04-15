@@ -1,0 +1,436 @@
+{
+  "allowedActions" : {
+    "canCancel" : true,
+    "canExecute" : false,
+    "canRedo" : false,
+    "canReset" : false,
+    "canUndo" : false
+  },
+  "connections" : {
+    "root:3_1" : {
+      "allowedActions" : {
+        "canDelete" : false
+      },
+      "destNode" : "root:3",
+      "destPort" : 1,
+      "flowVariableConnection" : true,
+      "id" : "root:3_1",
+      "sourceNode" : "root:2",
+      "sourcePort" : 1
+    },
+    "root:7_0" : {
+      "allowedActions" : {
+        "canDelete" : false
+      },
+      "destNode" : "root:7",
+      "destPort" : 0,
+      "flowVariableConnection" : true,
+      "id" : "root:7_0",
+      "sourceNode" : "root:4",
+      "sourcePort" : 0
+    },
+    "root:8_0" : {
+      "allowedActions" : {
+        "canDelete" : false
+      },
+      "destNode" : "root:8",
+      "destPort" : 0,
+      "flowVariableConnection" : true,
+      "id" : "root:8_0",
+      "sourceNode" : "root:3",
+      "sourcePort" : 1
+    }
+  },
+  "dirty" : true,
+  "info" : {
+    "containerId" : "root",
+    "containerType" : "project",
+    "name" : "execution states",
+    "providerType" : "LOCAL"
+  },
+  "nodeTemplates" : {
+    "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QzcwQTA5NkE3RjE2MTFFNUE3NjBCMzY2NkE3NjU5N0EiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QzcwQTA5Njk3RjE2MTFFNUE3NjBCMzY2NkE3NjU5N0EiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpFRTMxRTc5RTQ1QzcxMUU1QUM2QkE3NzQyQjhFM0EyRCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpFRTMxRTc5RjQ1QzcxMUU1QUM2QkE3NzQyQjhFM0EyRCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pi6LhAkAAAHaSURBVHjanFNNSxtRFL3zEUsWfsxCuxDdGIkVS11XUAiWIrpyEbJ3IQUli9KN2G5cSOnGtNCN4B9wJYZQKlIqRgVtdyZCJE4hmIXSViQzZjIzr+dGR+JEi3jgzLy575zD3HdniOrRBSbAHGiBFfDwqhbyiyXf+g04Fw6Hs/F4XNU0rd2yLDJN8ziRSFjZbLYX+2/BD6Dwh80rivInmUweiRqw0EMqldJZw1q/eRi8SKfTx8KH2gAGa1gLvqgN2IpGo3viFvgDGLFYbBf1Hc/czqJ8Pn9+3wBd189Rd6+8FEFfp+IO3BbAUFX1lFuXu1qDGh4q16OQpBu8C/DwiB/RycLz4uxYp2P8LrrinjAMg1+/DPZLZ58G9rHodUhxg8/G5Yb+GMmNj+l/+P45Xvz2ZaUp8qSljQNSqI1c78oqBXpeUnDoNZHSUGcuHayL8td3pMrV/n6ouPzyiwKhSJ1ZmH+ptL0onMyKBLNXfl8f4Np0tjrjBEODiqJ1kKgY5JzkyC78FBIJ71j5DF41T6eXOUAHeSRzrqAphHcHRFmxc2tk3/xRql5oMtBMwrxZ7Rjc4ENE4SM2+rCewPTXbVeUWOC4omJabgH3JTyOQvPUM1eDL7+Vh+OfAAMALKR5cjIu4dEAAAAASUVORK5CYII=",
+      "name" : "Wait...",
+      "nodeFactory" : {
+        "className" : "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"
+      },
+      "type" : "Manipulator"
+    },
+    "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6Rjk3QThFRUE0NDFDMTFFNUI4QUY5RjNFOUEzQTE4QjIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Rjk3QThFRTk0NDFDMTFFNUI4QUY5RjNFOUEzQTE4QjIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpiNmRiZTRmOC00Yzc3LTQyZGUtOGI5NC00ZGExNTM3Y2Q1M2YiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MGIzNmFjOTctNWViYS00MGU3LTkxODktYmJlOGQ3ZDBmMjRlIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+JOw8vQAAAJVJREFUeNqkUgEKwCAI9KL/f9ll6BCntrGDkEhPu3MwM8WzwBrTuz+DCgDYRStShymJHYmElqBIMNK+/cJo3lBN5b81TZyQdGeoDpFMSNCK6BwwUkpIjiKeJOBBPyEa4EtBmBjzxZiUCW0uVS7sBbI33UpvBtI9kATvYLg/iqVB64JuJLpvpSIaaRg71aMUMSvOcAkwALIaZjL1MMxxAAAAAElFTkSuQmCC",
+      "name" : "Row Filter",
+      "nodeFactory" : {
+        "className" : "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory"
+      },
+      "type" : "Manipulator"
+    },
+    "org.knime.base.node.util.sampledata.SampleDataNodeFactory" : {
+      "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3BpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYjM2YWM5Ny01ZWJhLTQwZTctOTE4OS1iYmU4ZDdkMGYyNGUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkRBMkI1RTE4QTIyMTFFNTkyQzJBQjlCNTFCMUUyMzIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkRBMkI1RTA4QTIyMTFFNTkyQzJBQjlCNTFCMUUyMzIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBM0VBMDE1RTJFMkYxMUU1OUMzRUMzQkRFMzNFNTk1RiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCQTI5MjQyMjJFMkYxMUU1OUMzRUMzQkRFMzNFNTk1RiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pp5Rd2EAAAE8SURBVHjaYmSAAu8WJ242btZ2ZhYmRyZWZn6Q2L/ffz/+/fNv/6+vvyu31uz7ChL7//8/AzJgBBF+HS7qrJwsW0SU+FVYedlQFPz+/Ivhzb2Pd35//+OzqWLPTQwDQDZz8LJdkNQRUWFgZmTACv7+Z3h+5c2dH59/GWyp3vsVWYoJ5GyQzTg1gwBQDqQGpBZdigXkZ2Rnf335neHSottgtl6cKgO3OCeYDVIDUotpACsTP7IASPPzM2/gfMtSPYRD0NSCvcBAIWD5+/vfRyAtCxMAORsbGxyWELVoBgDjGRhVOrBwAPkZ2dnI0QlSi+EFUCIBxTMoqnACoBxIDUgthgGgFAZKJKB4BtmCzWawHFANSC0jI+N/KGYAY1KTMig1I6diRvSkiQuAbMUmTnk0kqCWEZsXKHYBQIABAPVenM3vr81YAAAAAElFTkSuQmCC",
+      "name" : "Data Generator",
+      "nodeFactory" : {
+        "className" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
+      },
+      "type" : "Source"
+    }
+  },
+  "nodes" : {
+    "root:1" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canCollapse" : "true",
+        "canDelete" : true,
+        "canExecute" : false,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "defaultFontSize" : 11,
+        "styleRanges" : [ ],
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "idle"
+        },
+        "textAlign" : "center"
+      },
+      "id" : "root:1",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "To be filtered",
+        "optional" : false,
+        "typeId" : "org.knime.core.node.BufferedDataTable"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Filtered",
+        "typeId" : "org.knime.core.node.BufferedDataTable"
+      } ],
+      "position" : {
+        "x" : 84,
+        "y" : 58
+      },
+      "state" : {
+        "executionState" : "IDLE"
+      },
+      "templateId" : "org.knime.base.node.preproc.filter.row.RowFilterNodeFactory"
+    },
+    "root:2" : {
+      "allowedActions" : {
+        "canCancel" : true,
+        "canCollapse" : "false",
+        "canDelete" : false,
+        "canExecute" : false,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "defaultFontSize" : 11,
+        "styleRanges" : [ ],
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "configured/executing"
+        },
+        "textAlign" : "center"
+      },
+      "id" : "root:2",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "name" : "Input table",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[ root:3_1 ]",
+        "index" : 1,
+        "name" : "Output table",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "position" : {
+        "x" : 184,
+        "y" : 58
+      },
+      "state" : {
+        "executionState" : "EXECUTING",
+        "progress" : "PROGRESS_PLACEHOLDER",
+        "progressMessages" : "PROGRESS_MESSAGES_PLACEHOLDER"
+      },
+      "templateId" : "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"
+    },
+    "root:3" : {
+      "allowedActions" : {
+        "canCancel" : true,
+        "canCollapse" : "false",
+        "canDelete" : false,
+        "canExecute" : false,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "defaultFontSize" : 11,
+        "styleRanges" : [ ],
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "queued"
+        },
+        "textAlign" : "center"
+      },
+      "id" : "root:3",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[ root:3_1 ]",
+        "index" : 1,
+        "name" : "Input table",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[ root:8_0 ]",
+        "index" : 1,
+        "name" : "Output table",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "position" : {
+        "x" : 284,
+        "y" : 58
+      },
+      "state" : {
+        "executionState" : "QUEUED"
+      },
+      "templateId" : "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"
+    },
+    "root:4" : {
+      "allowedActions" : {
+        "canCancel" : false,
+        "canCollapse" : "false",
+        "canDelete" : false,
+        "canExecute" : false,
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "defaultFontSize" : 11,
+        "styleRanges" : [ ],
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "configured/executed"
+        },
+        "textAlign" : "center"
+      },
+      "id" : "root:4",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "kind" : "node",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[ root:7_0 ]",
+        "index" : 0,
+        "info" : "Variables connection",
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 1,
+        "info" : "Rows: 4, Cols: 5",
+        "name" : "Random data with cluster ID",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.BufferedDataTable"
+      }, {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 2,
+        "info" : "Rows: 4, Cols: 4",
+        "name" : "Cluster centers",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.BufferedDataTable"
+      } ],
+      "position" : {
+        "x" : 384,
+        "y" : 58
+      },
+      "state" : {
+        "executionState" : "EXECUTED"
+      },
+      "templateId" : "org.knime.base.node.util.sampledata.SampleDataNodeFactory"
+    },
+    "root:7" : {
+      "allowedActions" : {
+        "canCancel" : true,
+        "canCollapse" : "false",
+        "canDelete" : false,
+        "canExecute" : false,
+        "canExpand" : "false",
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "defaultFontSize" : 11,
+        "styleRanges" : [ {
+          "color" : "#000000",
+          "fontSize" : 11,
+          "length" : 33,
+          "start" : 0
+        } ],
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "'executing remotely'\n-> executing"
+        },
+        "textAlign" : "center"
+      },
+      "executionInfo" : {
+        "jobManager" : {
+          "type" : "streaming"
+        }
+      },
+      "id" : "root:7",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[ root:7_0 ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "kind" : "component",
+      "name" : "Component",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "position" : {
+        "x" : 534,
+        "y" : 58
+      },
+      "state" : {
+        "executionState" : "EXECUTING"
+      }
+    },
+    "root:8" : {
+      "allowedActions" : {
+        "canCancel" : true,
+        "canCollapse" : "false",
+        "canDelete" : false,
+        "canExecute" : false,
+        "canExpand" : "false",
+        "canOpenDialog" : true,
+        "canReset" : false
+      },
+      "annotation" : {
+        "defaultFontSize" : 11,
+        "styleRanges" : [ ],
+        "text" : {
+          "contentType" : "text/plain",
+          "value" : "queued"
+        },
+        "textAlign" : "center"
+      },
+      "executionInfo" : {
+        "jobManager" : {
+          "type" : "streaming"
+        }
+      },
+      "id" : "root:8",
+      "inPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[ root:8_0 ]",
+        "index" : 0,
+        "name" : "Variable Inport",
+        "optional" : true,
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "kind" : "component",
+      "name" : "Component",
+      "outPorts" : [ {
+        "canRemove" : false,
+        "connectedVia" : "[  ]",
+        "index" : 0,
+        "name" : "Variable Outport",
+        "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+        "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+      } ],
+      "position" : {
+        "x" : 684,
+        "y" : 58
+      },
+      "state" : {
+        "executionState" : "QUEUED"
+      }
+    }
+  },
+  "projectMetadata" : {
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "lastEdit" : "DATE_TIME_PLACEHOLDER",
+    "links" : [ ],
+    "tags" : [ ]
+  },
+  "workflowAnnotations" : [ ]
+}
