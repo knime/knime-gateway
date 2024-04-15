@@ -58,9 +58,9 @@ import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.awaitility.Awaitility;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -81,8 +81,8 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 @SuppressWarnings("javadoc")
 public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
-    public DeleteCommandTestHelper(ResultChecker entityResultChecker, ServiceProvider serviceProvider,
-        WorkflowLoader workflowLoader, WorkflowExecutor workflowExecutor) {
+    public DeleteCommandTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(DeleteCommandTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
@@ -99,8 +99,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
         cr(workflow, "delete_command");
         assertThat(workflow.getNodes().keySet(), not(hasItems("root:1", "root:4")));
-        assertThat(
-            workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toList()),
+        assertThat(workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).toList(),
             not(hasItems("root_1")));
         assertThat(workflow.getWorkflowAnnotations().size(), is(6));
         assertThat(workflow.getConnections().keySet(), not(hasItems("root:26_1")));
@@ -112,11 +111,11 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
             asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
         ws().executeWorkflowCommand(wfId, getRootID(), command);
         WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        assertThat(workflow.getNodes().keySet(), Matchers.not(hasItems("root:1", "root:4")));
         ws().undoWorkflowCommand(wfId, getRootID());
         workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
         assertThat(workflow.getNodes().keySet(), hasItems("root:1", "root:4"));
-        assertThat(
-            workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).collect(Collectors.toList()),
+        assertThat(workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).toList(),
             hasItems("root_1"));
         assertThat(workflow.getWorkflowAnnotations().size(), is(7));
         assertThat(workflow.getConnections().keySet(), hasItems("root:26_1"));
