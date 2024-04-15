@@ -57,6 +57,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
@@ -78,7 +80,6 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.util.ContentVersions;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -86,13 +87,24 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 
 @SuppressWarnings({"unchecked", "java:S1186", "java:S3010", "java:S112"})
-public class ContentVersionsTest {
+class ContentVersionsTest {
+
+    private WorkflowManager m_wfm;
+
+    @BeforeEach
+    void createEmptyWorkflow() throws IOException {
+        m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+    }
+
+    @AfterEach
+    void disposeWorkflow() {
+        WorkflowManagerUtil.disposeWorkflow(m_wfm);
+    }
 
     @Test
     void portContentVersionDoesNotChangeIfNothingHappens() throws Exception {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var factory = getFactory(new IncrementingPortOutput());
-        var node = WorkflowManagerUtil.createAndAddNode(wfm, factory);
+        var node = WorkflowManagerUtil.createAndAddNode(m_wfm, factory);
         getDataOutPorts(node).forEach(nodeOutPort -> {
             var firstContentVersion = ContentVersions.getPortContentVersion(nodeOutPort);
             var secondContentVersion = ContentVersions.getPortContentVersion(nodeOutPort);
@@ -102,10 +114,9 @@ public class ContentVersionsTest {
 
     @Test
     void portContentVersionChangedIfSpecChanged() throws Exception {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var node = WorkflowManagerUtil.createAndAddNode(wfm, getFactory(new IncrementingPortOutput()));
+        var node = WorkflowManagerUtil.createAndAddNode(m_wfm, getFactory(new IncrementingPortOutput()));
         var contentVersionsAtLoad = getDataOutPorts(node).stream().map(ContentVersions::getPortContentVersion).toList();
-        wfm.resetAndConfigureAll();
+        m_wfm.resetAndConfigureAll();
         var contentVersionsAtConfigure =
             getDataOutPorts(node).stream().map(ContentVersions::getPortContentVersion).toList();
         assertContentVersionsChanged(contentVersionsAtLoad, contentVersionsAtConfigure);
@@ -114,16 +125,15 @@ public class ContentVersionsTest {
     @Test
     void portContentVersionChangesIfDataChanges() throws Exception {
         // execute, assert content version has changed
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var node = WorkflowManagerUtil.createAndAddNode(wfm, getFactory(new IncrementingPortOutput()));
-        wfm.resetAndConfigureAll();
-        wfm.executeAll();
-        waitUntilExecuted(wfm);
+        var node = WorkflowManagerUtil.createAndAddNode(m_wfm, getFactory(new IncrementingPortOutput()));
+        m_wfm.resetAndConfigureAll();
+        m_wfm.executeAll();
+        waitUntilExecuted(m_wfm);
         var contentVersionsAtFirstExecute =
             getDataOutPorts(node).stream().map(ContentVersions::getPortContentVersion).toList();
-        wfm.resetAndConfigureAll();
-        wfm.executeAll();
-        waitUntilExecuted(wfm);
+        m_wfm.resetAndConfigureAll();
+        m_wfm.executeAll();
+        waitUntilExecuted(m_wfm);
         var contentVersionsAtSecondExecute =
             getDataOutPorts(node).stream().map(ContentVersions::getPortContentVersion).toList();
         assertContentVersionsChanged(contentVersionsAtFirstExecute, contentVersionsAtSecondExecute);
@@ -131,10 +141,9 @@ public class ContentVersionsTest {
 
     @Test
     void inputContentVersionDoesNotChangeIfNothingHappens() throws Exception {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, getFactory(new IncrementingPortOutput()));
-        var sinkNode = WorkflowManagerUtil.createAndAddNode(wfm, getFactory(1, new IncrementingPortOutput()));
-        connect(wfm, sourceNode.getID(), 1, sinkNode.getID(), 1);
+        var sourceNode = WorkflowManagerUtil.createAndAddNode(m_wfm, getFactory(new IncrementingPortOutput()));
+        var sinkNode = WorkflowManagerUtil.createAndAddNode(m_wfm, getFactory(1, new IncrementingPortOutput()));
+        connect(m_wfm, sourceNode.getID(), 1, sinkNode.getID(), 1);
         var firstContentVersion = ContentVersions.getInputContentVersion(sinkNode);
         var secondContentVersion = ContentVersions.getInputContentVersion(sinkNode);
         assertThat(firstContentVersion).isEqualTo(secondContentVersion);
@@ -148,13 +157,12 @@ public class ContentVersionsTest {
 
     @Test
     void inputContentVersionChangesOnPredecessorExecute() throws Exception {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, getFactory(new IncrementingPortOutput()));
-        var sinkNode = WorkflowManagerUtil.createAndAddNode(wfm, getFactory(1, new IncrementingPortOutput()));
-        connect(wfm, sourceNode.getID(), 1, sinkNode.getID(), 1);
+        var sourceNode = WorkflowManagerUtil.createAndAddNode(m_wfm, getFactory(new IncrementingPortOutput()));
+        var sinkNode = WorkflowManagerUtil.createAndAddNode(m_wfm, getFactory(1, new IncrementingPortOutput()));
+        connect(m_wfm, sourceNode.getID(), 1, sinkNode.getID(), 1);
         var inputVersionBeforeExecute = ContentVersions.getInputContentVersion(sinkNode);
-        wfm.executeAll();
-        waitUntilExecuted(wfm);
+        m_wfm.executeAll();
+        waitUntilExecuted(m_wfm);
         var inputVersionAfterExecute = ContentVersions.getInputContentVersion(sinkNode);
         assertThat(inputVersionBeforeExecute).isNotEqualTo(inputVersionAfterExecute);
     }
