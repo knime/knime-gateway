@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -269,15 +270,21 @@ final class MatchingPortsUtil {
      */
     static List<PortType> getAllPortTypesOfSide(final NodeContainer nc, final boolean isInPort,
         final boolean isMetaNodeBar) {
-        final var numberOfPortsOnSide = getPortCount(nc, isInPort);
+        final var numberOfPortsOnSide = getPortCount(nc, isInPort, isMetaNodeBar);
+
+        if (numberOfPortsOnSide == 0) {
+            return Collections.emptyList();
+        }
+
         return IntStream.range(0, numberOfPortsOnSide)//
             .mapToObj(portIdx -> getPortType(nc, portIdx, isInPort, isMetaNodeBar))//
             .toList();
     }
 
-    private static int getPortCount(final NodeContainer nc, final boolean isInPort) {
-        if (nc instanceof WorkflowManager wfm) {
-            return isInPort ? wfm.getNrWorkflowOutgoingPorts() : wfm.getNrWorkflowIncomingPorts();
+    private static int getPortCount(final NodeContainer nc, final boolean isInPort, final boolean isMetaNodeBar) {
+        if (isMetaNodeBar) {
+            final var subWfm = (WorkflowManager)nc; // 'nc instanceof WorkflowManager' in this case
+            return isInPort ? subWfm.getNrWorkflowOutgoingPorts() : subWfm.getNrWorkflowIncomingPorts();
         }
         return isInPort ? nc.getNrInPorts() : nc.getNrOutPorts();
     }
@@ -306,6 +313,11 @@ final class MatchingPortsUtil {
         final List<Connectable> destinations) {
         final var sourcePortStart = source.firstDataPortIdx();
         final var sourcePortCount = source.numOutPorts();
+
+        if (sourcePortCount <= sourcePortStart) {
+            return false;
+        }
+
         return IntStream.range(sourcePortStart, sourcePortCount)//
             .mapToObj(idx -> source.outPorts().get(idx))//
             .anyMatch(sourcePortType -> checkForAtLeastOnePairOfCompatiblePorts(source, sourcePortType, destinations));
@@ -323,6 +335,11 @@ final class MatchingPortsUtil {
         final Connectable destination) {
         final var destinationPortStart = destination.firstDataPortIdx();
         final var destinationPortCount = destination.numInPorts();
+
+        if (destinationPortCount <= destinationPortStart) {
+            return false;
+        }
+
         return IntStream.range(destinationPortStart, destinationPortCount)//
             .mapToObj(idx -> destination.inPorts().get(idx))//
             .anyMatch(destinationPortType -> CoreUtil.arePortTypesCompatible(sourcePortType, destinationPortType));

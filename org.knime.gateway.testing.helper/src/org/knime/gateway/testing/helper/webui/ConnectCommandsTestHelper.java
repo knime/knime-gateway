@@ -74,7 +74,6 @@ import org.knime.gateway.api.webui.entity.ConnectableEnt;
 import org.knime.gateway.api.webui.entity.ConnectableEnt.ConnectableEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
-import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -101,13 +100,11 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests
-     * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
-     * when called with {@link ConnectCommandEnt}.
+     * Tests {@link ConnectCommandEnt} replacing an existing command
      *
      * @throws Exception
      */
-    public void testConnect() throws Exception { // TODO: Split this long test into smaller ones
+    public void testConnectReplaceExisting() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
@@ -127,9 +124,23 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+    }
+
+    /**
+     * Tests {@link ConnectCommandEnt} creating a new connection
+     *
+     * @throws Exception
+     */
+    public void testConnectNewConnection() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflowId = getRootID();
+        Map<String, ConnectionEnt> connections =
+            ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
+        var originalNumConnections = connections.size();
+        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // new connection
-        command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(21), 2);
+        var command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(21), 2);
         ws().executeWorkflowCommand(projectId, workflowId, command);
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections + 1));
@@ -140,17 +151,43 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
         assertNull(connections.get("root:21_2"));
+    }
+
+    /**
+     * Tests {@link ConnectCommandEnt} doing nothing
+     *
+     * @throws Exception
+     */
+    public void testConnectNoop() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflowId = getRootID();
+        Map<String, ConnectionEnt> connections =
+            ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
+        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // add already existing connection (command is not added to the undo stack)
-        command = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(10), 1);
+        var command = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(10), 1);
         ws().executeWorkflowCommand(projectId, workflowId, command);
         Exception exception =
             assertThrows(OperationNotAllowedException.class, () -> ws().undoWorkflowCommand(projectId, workflowId));
         assertThat(exception.getMessage(), is("No command to undo"));
+    }
+
+    /**
+     * Tests {@link ConnectCommandEnt} throwing exceptions
+     *
+     * @throws Exception
+     */
+    public void testConnectExceptions() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflowId = getRootID();
+        Map<String, ConnectionEnt> connections =
+            ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
+        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // add a connection to a node that doesn't exist
         var command2 = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(9999999), 1);
-        exception = assertThrows(OperationNotAllowedException.class,
+        var exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(projectId, workflowId, command2));
         assertThat(exception.getMessage(),
             containsString("9999999\" not contained in workflow, nor it's the workflow itself"));
@@ -160,6 +197,19 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(projectId, workflowId, command3));
         assertThat(exception.getMessage(), containsString("Connection couldn't be created"));
+    }
+
+    /**
+     * Tests {@link ConnectCommandEnt} within a sub workflow
+     *
+     * @throws Exception
+     */
+    public void testConnectSubWorkflow() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflowId = getRootID();
+        Map<String, ConnectionEnt> connections =
+            ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
+        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
 
         // add a connection within a sub-workflow (e.g. within a component)
         var component23Id = new NodeIDEnt(23);
@@ -204,23 +254,45 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws Exception
      */
-    public void testAutoConnectNativeNodesEdgeCases() throws Exception {
+    public void testAutoConnectNativeNodesWithConnectionCheck1() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        var c15 = buildConnectableEnt(new NodeIDEnt(15));
-        var c19 = buildConnectableEnt(new NodeIDEnt(19));
+        var c23 = buildConnectableEnt(new NodeIDEnt(23));
+        var c24 = buildConnectableEnt(new NodeIDEnt(24));
         var c20 = buildConnectableEnt(new NodeIDEnt(20));
         var c21 = buildConnectableEnt(new NodeIDEnt(21));
         var c22 = buildConnectableEnt(new NodeIDEnt(22));
 
-        assertAutoConnect(projectId, workflowId, 3, 5, List.of(c15, c19, c20, c21, c22));
+        assertAutoConnect(projectId, workflowId, 3, 5, List.of(c23, c24, c20, c21, c22));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
-        assertConnection(connections, new NodeIDEnt(15), new NodeIDEnt(19));
-        assertConnection(connections, new NodeIDEnt(19), new NodeIDEnt(20));
+        assertConnection(connections, new NodeIDEnt(23), new NodeIDEnt(24));
+        assertConnection(connections, new NodeIDEnt(24), new NodeIDEnt(20));
         assertConnection(connections, new NodeIDEnt(22), new NodeIDEnt(21));
         assertConnection(connections, new NodeIDEnt(20), new NodeIDEnt(22));
+    }
+
+    /**
+     * ...
+     *
+     * @throws Exception
+     */
+    public void testAutoConnectNativeNodesWithConnectionCheck2() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = getRootID();
+
+        var c26 = buildConnectableEnt(new NodeIDEnt(26)); // Node with 2 input ports
+        var c28 = buildConnectableEnt(new NodeIDEnt(28)); // Node without output ports
+        var c29 = buildConnectableEnt(new NodeIDEnt(29)); // Node without input ports
+        var c30 = buildConnectableEnt(new NodeIDEnt(30)); // Node without input ports
+
+        assertAutoConnect(projectId, workflowId, 3, 6, List.of(c26, c28, c29, c30));
+
+        var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
+        assertConnection(connections, new NodeIDEnt(29), new NodeIDEnt(26));
+        assertConnection(connections, new NodeIDEnt(30), new NodeIDEnt(26));
+        assertConnection(connections, new NodeIDEnt(26), new NodeIDEnt(28));
     }
 
     /**

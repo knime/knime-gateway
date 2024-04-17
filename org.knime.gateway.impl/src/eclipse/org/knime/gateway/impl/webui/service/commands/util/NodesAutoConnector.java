@@ -282,9 +282,8 @@ public final class NodesAutoConnector {
             .filter(destination -> !source.bounds().xRange().intersects(destination.bounds().xRange()))//
             .filter(hasNoIncoming)//
             .map(destination -> getPlannedConnection(source, destination, existingPlan))//
-            .filter(Optional::isPresent)//
-            .findFirst()//
-            .orElse(Optional.empty());
+            .flatMap(Optional::stream)//
+            .findFirst();
     }
 
     /**
@@ -301,9 +300,8 @@ public final class NodesAutoConnector {
         return sources//
             .filter(source -> source.numOutPorts() > source.firstDataPortIdx())//
             .map(source -> getPlannedConnection(source, destination, existingPlan))//
-            .filter(Optional::isPresent)//
-            .findFirst()//
-            .orElse(Optional.empty());
+            .flatMap(Optional::stream)//
+            .findFirst();
     }
 
     /**
@@ -367,14 +365,18 @@ public final class NodesAutoConnector {
     private static Optional<PlannedConnection> findFirstMatchPairOfCompatiblePorts(final Connectable source,
         final Connectable destination, final IntPredicate isSourceUsable, final IntPredicate isDestinationUsable,
         final IntPredicate mustDetach) {
-        final var sourceStartIndex = source.firstDataPortIdx();
+        final var sourcePortStart = source.firstDataPortIdx();
         final var sourcePortCount = source.numOutPorts();
-        return IntStream.range(sourceStartIndex, sourcePortCount)//
+
+        if (sourcePortCount <= sourcePortStart) {
+            return Optional.empty();
+        }
+
+        return IntStream.range(sourcePortStart, sourcePortCount)//
             .filter(isSourceUsable)//
             .mapToObj(sourcePortIdx -> findFirstMatchingPairOfCompatiblePorts(source, sourcePortIdx, destination,
                 isDestinationUsable, mustDetach))
-            .filter(Optional::isPresent)//
-            .map(Optional::get)//
+            .flatMap(Optional::stream)//
             .findFirst();
     }
 
@@ -392,10 +394,15 @@ public final class NodesAutoConnector {
     private static Optional<PlannedConnection> findFirstMatchingPairOfCompatiblePorts(final Connectable source,
         final int sourcePortIdx, final Connectable destination, final IntPredicate isDestinationUsable,
         final IntPredicate mustDetach) {
-        final var destinationStartIndex = destination.firstDataPortIdx();
+        final var destinationPortStart = destination.firstDataPortIdx();
         final var destinationPortCount = destination.numInPorts();
+
+        if (destinationPortCount <= destinationPortStart) {
+            return Optional.empty();
+        }
+
         final var sourcePortType = source.outPorts().get(sourcePortIdx);
-        return IntStream.range(destinationStartIndex, destinationPortCount)//
+        return IntStream.range(destinationPortStart, destinationPortCount)//
             .filter(isDestinationUsable)//
             .filter(destinationPortIdx -> {
                 final var destinationPortType = destination.inPorts().get(destinationPortIdx);
@@ -422,8 +429,7 @@ public final class NodesAutoConnector {
         final List<ConnectionContainer> removedConnections = new ArrayList<>();
         final List<ConnectionContainer> addedConnections = plannedConnections.stream()//
             .map(plannedConnection -> createNewConnection(plannedConnection, wfm, removedConnections::add))//
-            .filter(Optional::isPresent)//
-            .map(Optional::get)//
+            .flatMap(Optional::stream)//
             .toList();
 
         return new AutoConnectResult(addedConnections, removedConnections);
