@@ -130,7 +130,7 @@ public final class AppStateUpdater {
 
     /**
      * Workaround to optionally filter any project-specific infos from the app-state, such as
-     * {@link AppStateEnt#getOpenProjects()}, before broadcasting the {@link AppStateChangedEventEnt} to the connect
+     * {@link AppStateEnt#getOpenProjects()}, before broadcasting the {@link AppStateChangedEventEnt} to the connected
      * clients (only relevant for AP in Hub). To be made obsolete when refactoring the app-state with NXT-1442.
      *
      * @return the filterProjectSpecificInfosFromEvents if {@code true}, project-specific infos will be filtered from

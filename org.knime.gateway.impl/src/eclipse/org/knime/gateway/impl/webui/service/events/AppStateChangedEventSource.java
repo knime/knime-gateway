@@ -66,6 +66,7 @@ import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirty
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies;
 
 /**
  * Event source that emits events whenever the cached application state changes.
@@ -78,11 +79,13 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     private static final AppStateChangedEventEnt EMPTY_APP_STATE_CHANGED_EVENT =
         builder(AppStateChangedEventEntBuilder.class).setAppState(builder(AppStateEntBuilder.class).build()).build();
 
-    private final Runnable m_callback;
-
     private final AppStateUpdater m_appStateUpdater;
 
     private final ProjectManager m_projectManager;
+
+    private final ServiceDependencies m_dependencies;
+
+    private Runnable m_removeAppStateChangedListener;
 
     /**
      * @param eventConsumer consumes the emitted events
@@ -93,43 +96,17 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         final AppStateEntityFactory.ServiceDependencies dependencies) {
         super(eventConsumer);
         m_appStateUpdater = appStateUpdater;
+        m_dependencies = dependencies;
         m_projectManager = dependencies.projectManager();
-        m_callback = () -> {
-            var previousAppState = appStateUpdater.getLastAppState().orElse(null);
-            var filterProjectSpecificInfosFromEvents = appStateUpdater.filterProjectSpecificInfosFromEvents();
-            var appState = AppStateEntityFactory.buildAppStateEnt( //
-                previousAppState, //
-                filterProjectSpecificInfosFromEvents ? id -> false : null, //
-                filterProjectSpecificInfosFromEvents ? id -> false : null, //
-                dependencies //
-            );
-            appStateUpdater.setLastAppState(appState);
-            var appStateChangedEvent =
-                buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(previousAppState, appState));
-
-            List<EventEnt> events = null;
-            if (filterProjectSpecificInfosFromEvents) {
-                if (!EMPTY_APP_STATE_CHANGED_EVENT.equals(appStateChangedEvent)) {
-                    events = List.of(appStateChangedEvent);
-                }
-            } else {
-                var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                    .setDirtyProjectsMap(dependencies.projectManager().getDirtyProjectsMap()) //
-                    .setShouldReplace(true) //
-                    .build();
-                events = List.of(appStateChangedEvent, projectDirtyStateEvent);
-            }
-
-            if (events != null) {
-                sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class).setEvents(events).build());
-            }
-        };
     }
 
     @Override
     public Optional<CompositeEventEnt>
         addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
-        m_appStateUpdater.addAppStateChangedListener(m_callback);
+        Runnable appStateChangedListener = this::checkForAppStateChangeAndSendEvent;
+        m_appStateUpdater.addAppStateChangedListener(appStateChangedListener);
+        m_removeAppStateChangedListener =
+            () -> m_appStateUpdater.removeAppStateChangedListener(appStateChangedListener);
 
         if (!NodeSpecCollectionProvider.Progress.isDone()) {
             NodeSpecCollectionProvider.Progress.addListener(this::handleProgressEvent);
@@ -149,7 +126,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
     private void handleProgressEvent(final ProgressEvent progressEvent) {
         if (progressEvent.isDone()) {
-            m_callback.run();
+            checkForAppStateChangeAndSendEvent();
         }
     }
 
@@ -160,7 +137,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
     @Override
     public void removeEventListener(final AppStateChangedEventTypeEnt eventTypeEnt) {
-        m_appStateUpdater.removeAppStateChangedListener(m_callback);
+        m_removeAppStateChangedListener.run();
     }
 
     @Override
@@ -171,5 +148,38 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     @Override
     protected String getName() {
         return "AppStateChangedEvent:ProjectDirtyStateEvent";
+    }
+
+    private void checkForAppStateChangeAndSendEvent() {
+        var appStateChangedEvent = buildAppStateChangedEvent();
+        List<EventEnt> events = null;
+        if (m_appStateUpdater.filterProjectSpecificInfosFromEvents()) {
+            if (!EMPTY_APP_STATE_CHANGED_EVENT.equals(appStateChangedEvent)) {
+                events = List.of(appStateChangedEvent);
+            }
+        } else {
+            var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
+                .setDirtyProjectsMap(m_dependencies.projectManager().getDirtyProjectsMap()) //
+                .setShouldReplace(true) //
+                .build();
+            events = List.of(appStateChangedEvent, projectDirtyStateEvent);
+        }
+
+        if (events != null) {
+            sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class).setEvents(events).build());
+        }
+    }
+
+    private AppStateChangedEventEnt buildAppStateChangedEvent() {
+        var previousAppState = m_appStateUpdater.getLastAppState().orElse(null);
+        var filterProjectSpecificInfosFromEvents = m_appStateUpdater.filterProjectSpecificInfosFromEvents();
+        var appState = AppStateEntityFactory.buildAppStateEnt( //
+            previousAppState, //
+            filterProjectSpecificInfosFromEvents ? id -> false : null, //
+            filterProjectSpecificInfosFromEvents ? id -> false : null, //
+            m_dependencies //
+        );
+        m_appStateUpdater.setLastAppState(appState);
+        return buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(previousAppState, appState));
     }
 }
