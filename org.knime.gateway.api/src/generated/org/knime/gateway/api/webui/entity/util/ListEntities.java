@@ -60,6 +60,7 @@ import org.knime.gateway.api.webui.entity.AnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
@@ -70,6 +71,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.ConnectableEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
@@ -219,6 +221,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEnt.class);
         res.add(AppStateChangedEventTypeEnt.class);
         res.add(AppStateEnt.class);
+        res.add(AutoConnectCommandEnt.class);
         res.add(BoundsEnt.class);
         res.add(CollapseCommandEnt.class);
         res.add(CollapseResultEnt.class);
@@ -229,6 +232,7 @@ public class ListEntities {
         res.add(ComponentPortDescriptionEnt.class);
         res.add(CompositeEventEnt.class);
         res.add(ConnectCommandEnt.class);
+        res.add(ConnectableEnt.class);
         res.add(ConnectionEnt.class);
         res.add(ConvertContainerResultEnt.class);
         res.add(CopyCommandEnt.class);
@@ -363,6 +367,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEnt.AppStateChangedEventEntBuilder.class);
         res.add(AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder.class);
         res.add(AppStateEnt.AppStateEntBuilder.class);
+        res.add(AutoConnectCommandEnt.AutoConnectCommandEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);
         res.add(CollapseCommandEnt.CollapseCommandEntBuilder.class);
         res.add(CollapseResultEnt.CollapseResultEntBuilder.class);
@@ -373,6 +378,7 @@ public class ListEntities {
         res.add(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class);
         res.add(CompositeEventEnt.CompositeEventEntBuilder.class);
         res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
+        res.add(ConnectableEnt.ConnectableEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
         res.add(ConvertContainerResultEnt.ConvertContainerResultEntBuilder.class);
         res.add(CopyCommandEnt.CopyCommandEntBuilder.class);

@@ -44,76 +44,61 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 20, 2021 (hornm): created
+ *   Apr 4, 2024 (kai): created
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.List;
+
 import org.knime.core.node.workflow.ConnectionContainer;
-import org.knime.core.node.workflow.ConnectionID;
-import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
+import org.knime.gateway.impl.webui.service.commands.util.NodesAutoConnector;
 
 /**
- * Workflow command to connect two nodes.
+ * ...
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
  */
-final class Connect extends AbstractWorkflowCommand {
+final class AutoConnect extends AbstractWorkflowCommand {
 
-    private final ConnectCommandEnt m_commandEnt;
+    private final AutoConnectCommandEnt m_commandEnt;
 
-    private ConnectionContainer m_newConnection;
+    private List<ConnectionContainer> m_oldConnections;
 
-    private ConnectionContainer m_oldConnection;
+    private List<ConnectionContainer> m_newConnections;
 
-    Connect(final ConnectCommandEnt commandEnt) {
+    AutoConnect(final AutoConnectCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
     @Override
-    public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(wfm);
-        var destPortIdx = m_commandEnt.getDestinationPortIdx();
-        try {
-            m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, destPortIdx));
-        } catch (IllegalArgumentException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
-        }
+    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        final var wfm = getWorkflowManager();
+        final var connectableEnts = m_commandEnt.getConnectables();
+        final var nodesAutoConnector = new NodesAutoConnector(wfm, connectableEnts);
 
-        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm);
-        var sourcePortIdx = m_commandEnt.getSourcePortIdx();
-        if (m_oldConnection != null && m_oldConnection.getSource().equals(sourceNodeId)
-            && m_oldConnection.getSourcePort() == sourcePortIdx) {
-            // it's the very same connection -> no change
-            return false;
-        }
+        final var addedAndRemovedConnections = nodesAutoConnector.connect();
+        m_newConnections = addedAndRemovedConnections.getFirst();
+        m_oldConnections = addedAndRemovedConnections.getSecond();
 
-        m_newConnection =
-            NodeConnector.connect(getWorkflowManager(), sourceNodeId, sourcePortIdx, destNodeId, destPortIdx, true);
-        if (m_newConnection == null) {
-            throw new OperationNotAllowedException("Connection couldn't be created");
-        }
-        return true;
+        return !m_newConnections.isEmpty();
     }
 
     @Override
     public boolean canUndo() {
-        return getWorkflowManager().canRemoveConnection(m_newConnection);
+        final var wfm = getWorkflowManager();
+        return m_newConnections.stream().allMatch(wfm::canRemoveConnection);
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
-        var wfm = getWorkflowManager();
-        wfm.removeConnection(m_newConnection);
-        if (m_oldConnection != null) {
-            wfm.addConnection(m_oldConnection.getSource(), m_oldConnection.getSourcePort(), m_oldConnection.getDest(),
-                m_oldConnection.getDestPort());
-        }
-        m_newConnection = null;
-        m_oldConnection = null;
+        final var wfm = getWorkflowManager();
+        m_newConnections.forEach(wfm::removeConnection);
+        m_oldConnections
+            .forEach(cc -> wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort()));
+        m_newConnections = null;
+        m_oldConnections = null;
     }
 
 }
-

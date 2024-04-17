@@ -124,7 +124,9 @@ final class InsertNode extends AbstractWorkflowCommand {
             m_insertedNode = new NodeCreator(wfm, nodeFactoryEnt, targetPosition) //
                 .centerNode() //
                 .trackCreation() //
-                .connect(connector -> connector.connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort).trackCreation()) //
+                .connect(connector -> connector.connectFrom(m_srcNode, m_srcPort) //
+                    .connectTo(m_destNode, m_destPort) //
+                    .trackCreation()) //
                 .create();
         } else {
             throw new OperationNotAllowedException(

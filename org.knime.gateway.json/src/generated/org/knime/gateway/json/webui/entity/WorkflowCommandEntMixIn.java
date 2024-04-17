@@ -67,6 +67,7 @@ import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAutoConnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddBendpointCommandEnt;
@@ -105,6 +106,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultDeleteCommandEnt.class, name = "delete")
 ,
   @Type(value = DefaultConnectCommandEnt.class, name = "connect")
+,
+  @Type(value = DefaultAutoConnectCommandEnt.class, name = "auto_connect")
 ,
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
@@ -183,6 +186,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultDeleteCommandEnt.class, name = "delete")
 ,
   @Type(value = DefaultConnectCommandEnt.class, name = "connect")
+,
+  @Type(value = DefaultAutoConnectCommandEnt.class, name = "auto_connect")
 ,
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,

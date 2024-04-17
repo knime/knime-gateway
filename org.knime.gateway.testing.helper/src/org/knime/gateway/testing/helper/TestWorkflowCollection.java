@@ -79,7 +79,7 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     NESTED_LINKED_COMPONENT_PROJECT("/files/testflows/Nested-Linked-Components/Project", "nested_linked_components"),
 
     /**
-     * Contains a nodes with the node messages (including a node message with the 'issue' and 'resolution'
+     * Contains nodes with the node messages (including a node message with the 'issue' and 'resolution'
      * properties).
      */
     NODE_MESSAGE("/files/testflows/Node Message", "node_message"),
@@ -105,10 +105,16 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     LINKED_COMPONENT("/files/testflows/Linked Component", "linked_component"),
 
     /**
+     * Contains connected and unconnected nodes to test auto connection
+     */
+    AUTO_CONNECT_NODES("/files/testflows/Auto Connect Nodes", "auto_connect_nodes"),
+
+
+    /**
      * Workflow to test encrypted metanodes and components.
      */
     ENCRYPTED_METANODE_AND_COMPONENT("/files/testflows/Encrypted Metanode and Component",
-        "encrypted_metanode_and_component");
+            "encrypted_metanode_and_component");
 
     private final String m_workflowDir;
 

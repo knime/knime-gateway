@@ -214,7 +214,14 @@ public final class NodeConnector {
             getNodeContainerOrSelf(destNodeId, wfm));
     }
 
-    private static NodeContainer getNodeContainerOrSelf(final NodeID nodeId, final WorkflowManager wfm) {
+    /**
+     * Get the node container for a node ID, could be the same as the workflow manager to retrieve it from.
+     *
+     * @param nodeId The node ID
+     * @param wfm The workflow manager to retrieve the node container from
+     * @return The node container
+     */
+    static NodeContainer getNodeContainerOrSelf(final NodeID nodeId, final WorkflowManager wfm) {
         if (nodeId.equals(wfm.getID())) {
             return wfm;
         }

@@ -46,15 +46,20 @@
  */
 package org.knime.gateway.impl.webui.service.commands.util;
 
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Stream;
 
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
  * Utility class for geometric objects.
+ *
+ * TODO javadoc, visibility, tests
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
@@ -116,7 +121,7 @@ public final class Geometry {
     /**
      * Represents a point in the 2-dim space.
      */
-    public final static class Point extends Vec2D {
+    public static final class Point extends Vec2D implements Comparable<Point> {
 
         private static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
@@ -158,12 +163,29 @@ public final class Geometry {
             return Stream.of(pointStreams).flatMap(s -> s).reduce(Point.MAX_VALUE, Point::min);
         }
 
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj instanceof Point otherPoint) {
+                // TODO can implement using compareTo? i.e. does p1 <= p2 and p2 <= p1 iff p1 = p2 hold with our ordering?
+                return this.x() == otherPoint.x() && this.y() == otherPoint.y();
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int compareTo(final Point other) {
+            return Comparator //
+                .comparingInt(Point::x) //
+                .thenComparingInt(Point::y) //
+                .compare(this, other); //
+        }
     }
 
     /**
-     * Represents the a delta in the 2-dim space.
+     * Represents a delta in the 2-dim space.
      */
-    public final static class Delta extends Vec2D {
+    public static final class Delta extends Vec2D {
 
         private Delta(final int dx, final int dy) {
             super(dx, dy);
@@ -179,7 +201,7 @@ public final class Geometry {
         }
 
         /**
-         * Calculates the delta between two point.
+         * Calculates the delta between two points.
          *
          * @param a
          * @param b
@@ -198,11 +220,94 @@ public final class Geometry {
         }
 
         /**
-         * @return a new instance we the inverted deltas
+         * @return a new instance with the inverted deltas
          */
         public Delta invert() {
             return map(this, i -> i * (-1), Delta::new);
         }
 
+    }
+
+    /**
+     * The more precise name for this would be "closed interval": Start and end values are inclusive, that is, part of
+     * the range.
+     *
+     * @param start
+     * @param end
+     */
+    record Range(int start, int end) {
+
+        static Range of(final int value, final int otherValue) {
+            if (value < otherValue) {
+                return new Range(value, otherValue);
+            } else {
+                return new Range(otherValue, value);
+            }
+        }
+
+
+        boolean intersects(final Range other) {
+            // The start point of `other` is in `this` (strictly smaller) implies that, no matter the end of the other,
+            // it then always intersects
+            return (this.start() < other.start() && other.start() < this.end()) //
+                || (other.start() < this.start() && this.start() < other.end());
+        }
+    }
+
+    static class Rectangle {
+
+        private final Point m_leftTop;
+
+        private final int m_width;
+
+        private final int m_height;
+
+        Rectangle(final Point leftTop, final int width, final int height) {
+            m_leftTop = leftTop;
+            m_width = width;
+            m_height = height;
+        }
+
+        Range xRange() {
+            return Range.of(leftTop().x(), leftTop().x() + m_width);
+        }
+
+        Point leftTop() {
+            return m_leftTop;
+        }
+
+        int height() {
+            return m_height;
+        }
+
+    }
+
+    static final class Bounds extends Rectangle {
+
+        /**
+         * @param coords array of the shape [x, y, width, height, ...]. Any further elements are ignored.
+         */
+        private Bounds(final int... coords) {
+            super(new Point(coords[0], coords[1]), coords[2], coords[3]);
+        }
+
+        /**
+         * ...
+         *
+         * @param nc
+         * @param type
+         * @return ...
+         */
+        static Bounds of(final NodeContainer nc, final Connectable.Type type) {
+            return switch (type) {
+                case METANODE_INPUT_BAR -> new Bounds(0, 0, Integer.MIN_VALUE, 0); // All the way to the left
+                case METANODE_OUTPUT_BAR -> new Bounds(0, 0, Integer.MAX_VALUE, 0); // All the way to the right
+                case DEFAULT -> {
+                    var uiInfo = Optional.ofNullable(nc.getUIInformation()).orElseThrow();
+                    var bounds = Optional.ofNullable(uiInfo.getBounds()).orElseThrow();
+                    yield new Bounds(bounds);
+                }
+            };
+        }
     }
 }

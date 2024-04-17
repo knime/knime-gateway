@@ -54,7 +54,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -67,6 +66,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodePort;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 
@@ -166,13 +166,13 @@ final class MatchingPortsUtil {
         var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1;
         for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
             var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
-            if (CoreUtil.arePortTypesCompatible(destPortType, sourcePortType)) {
+            if (CoreUtil.arePortTypesCompatible(sourcePortType, destPortType)) {
                 return sourcePortIdx;
             }
         }
 
         // check default flow variable if compatible with destination port
-        if (CoreUtil.arePortTypesCompatible(destPortType, FlowVariablePortObject.TYPE)) {
+        if (CoreUtil.arePortTypesCompatible(FlowVariablePortObject.TYPE, destPortType)) {
             return 0;
         }
 
@@ -193,7 +193,7 @@ final class MatchingPortsUtil {
             .filter(portsConfig::isInteractive) //
             .map(portsConfig::getGroup)//
             .filter(PortGroupConfiguration::definesInputPorts)//
-            .collect(Collectors.toList());
+            .toList();
 
         var portGroupToCompatibleTypes = inPortGroups.stream()//
             .filter(ConfigurablePortGroup.class::isInstance)//
@@ -201,7 +201,7 @@ final class MatchingPortsUtil {
             .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())//
                 .filter(pt -> CoreUtil.arePortTypesCompatible(sourcePortType, pt))//
                 .map(pt -> ImmutablePair.of(cpg, pt)))//
-            .collect(Collectors.toList());
+            .toList();
 
         // If there are no compatible port types, we are done
         if (portGroupToCompatibleTypes.isEmpty()) {
@@ -223,8 +223,8 @@ final class MatchingPortsUtil {
     private static int doCreatePortAndReturnPortIdx(final ConfigurablePortGroup portGroup, final PortType destPortType,
         final NodeID destNodeId, final ModifiableNodeCreationConfiguration creationConfig,
         final List<PortGroupConfiguration> inPortGroups, final WorkflowManager wfm) {
-        if (portGroup instanceof ExtendablePortGroup) {
-            ((ExtendablePortGroup)portGroup).addPort(destPortType);
+        if (portGroup instanceof ExtendablePortGroup extendablePortGroup) {
+            extendablePortGroup.addPort(destPortType);
         } else {
             ((ExchangeablePortGroup)portGroup).setSelectedPortType(destPortType);
         }
@@ -237,8 +237,8 @@ final class MatchingPortsUtil {
 
     private static Map<Integer, Integer> getFirstMatchingSourcePortsForDestPorts(final NodeContainer sourceNode,
         final NodeContainer destNode, final WorkflowManager wfm) {
-        var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
-        var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1; // Don't connect to default flow variable ports
+        var sourcePortFirst = determineFirstNonFlowVariablePort(sourceNode);
+        var destPortFirst = determineFirstNonFlowVariablePort(destNode);
         var matchingPorts = new TreeMap<Integer, Integer>();
         for (var destPortIdx = destPortFirst; destPortIdx < destNode.getNrInPorts(); destPortIdx++) {
             var destPortType = destNode.getInPort(destPortIdx).getPortType();
@@ -255,6 +255,77 @@ final class MatchingPortsUtil {
             }
         }
         return matchingPorts;
+    }
+
+    private static int determineFirstNonFlowVariablePort(final NodeContainer nodeContainer) {
+        return (nodeContainer instanceof WorkflowManager) ? 0 : 1;
+    }
+
+    /**
+     * @param nc The node container to get all the port types from
+     * @param isInPort Whether to return all the input or ouput port types
+     * @param isMetaNodeBar Whether the node is a metanode or not
+     * @return The ordered list of port types
+     */
+    static List<PortType> getAllPortTypesOfSide(final NodeContainer nc, final boolean isInPort,
+        final boolean isMetaNodeBar) {
+        final var numberOfPortsOnSide = getPortCount(nc, isInPort);
+        return IntStream.range(0, numberOfPortsOnSide)//
+            .mapToObj(portIdx -> getPortType(nc, portIdx, isInPort, isMetaNodeBar))//
+            .toList();
+    }
+
+    private static int getPortCount(final NodeContainer nc, final boolean isInPort) {
+        if (nc instanceof WorkflowManager wfm) {
+            return isInPort ? wfm.getNrWorkflowOutgoingPorts() : wfm.getNrWorkflowIncomingPorts();
+        }
+        return isInPort ? nc.getNrInPorts() : nc.getNrOutPorts();
+    }
+
+    /**
+     * @param isMetaNodeBar If inside a metanode, the roles of input and output ports are swapped.
+     * @return The port type
+     */
+    private static PortType getPortType(final NodeContainer nc, final int portIdx, final boolean isInPort,
+        final boolean isMetaNodeBar) {
+        final NodePort p;
+        if (isInPort) {
+            p = isMetaNodeBar ? nc.getOutPort(portIdx) : nc.getInPort(portIdx);
+        } else {
+            p = isMetaNodeBar ? nc.getInPort(portIdx) : nc.getOutPort(portIdx);
+        }
+        return p.getPortType();
+    }
+
+    /**
+     * @param source The source with the output ports to check
+     * @param destinations The list of destinations with the input ports to check
+     * @return Whether there is at least one matching pair of compatible ports or not.
+     */
+    static boolean checkForAtLeastOnePairOfCompatiblePorts(final Connectable source,
+        final List<Connectable> destinations) {
+        final var sourcePortStart = source.firstDataPortIdx();
+        final var sourcePortCount = source.numOutPorts();
+        return IntStream.range(sourcePortStart, sourcePortCount)//
+            .mapToObj(idx -> source.outPorts().get(idx))//
+            .anyMatch(sourcePortType -> checkForAtLeastOnePairOfCompatiblePorts(source, sourcePortType, destinations));
+    }
+
+    private static boolean checkForAtLeastOnePairOfCompatiblePorts(final Connectable source,
+        final PortType sourcePortType, final List<Connectable> destinations) {
+        return destinations.stream()//
+            .filter(destination -> !source.equals(destination))//
+            .filter(destination -> source.bounds().xRange().start() < destination.bounds().xRange().start())//
+            .anyMatch(destination -> checkForAtLeastOnePairOfCompatiblePorts(sourcePortType, destination));
+    }
+
+    private static boolean checkForAtLeastOnePairOfCompatiblePorts(final PortType sourcePortType,
+        final Connectable destination) {
+        final var destinationPortStart = destination.firstDataPortIdx();
+        final var destinationPortCount = destination.numInPorts();
+        return IntStream.range(destinationPortStart, destinationPortCount)//
+            .mapToObj(idx -> destination.inPorts().get(idx))//
+            .anyMatch(destinationPortType -> CoreUtil.arePortTypesCompatible(sourcePortType, destinationPortType));
     }
 
 }

@@ -60,6 +60,7 @@ import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateChangedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
+import org.knime.gateway.json.webui.entity.AutoConnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseResultEntMixIn;
@@ -70,6 +71,7 @@ import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentPortDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.CompositeEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.ConnectableEntMixIn;
 import org.knime.gateway.json.webui.entity.ConnectionEntMixIn;
 import org.knime.gateway.json.webui.entity.ConvertContainerResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CopyCommandEntMixIn;
@@ -218,6 +220,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEntMixIn.class);
         res.add(AppStateChangedEventTypeEntMixIn.class);
         res.add(AppStateEntMixIn.class);
+        res.add(AutoConnectCommandEntMixIn.class);
         res.add(BoundsEntMixIn.class);
         res.add(CollapseCommandEntMixIn.class);
         res.add(CollapseResultEntMixIn.class);
@@ -228,6 +231,7 @@ public class ListEntities {
         res.add(ComponentPortDescriptionEntMixIn.class);
         res.add(CompositeEventEntMixIn.class);
         res.add(ConnectCommandEntMixIn.class);
+        res.add(ConnectableEntMixIn.class);
         res.add(ConnectionEntMixIn.class);
         res.add(ConvertContainerResultEntMixIn.class);
         res.add(CopyCommandEntMixIn.class);
@@ -362,6 +366,7 @@ public class ListEntities {
         res.add(AppStateChangedEventEntMixIn.AppStateChangedEventEntMixInBuilder.class);
         res.add(AppStateChangedEventTypeEntMixIn.AppStateChangedEventTypeEntMixInBuilder.class);
         res.add(AppStateEntMixIn.AppStateEntMixInBuilder.class);
+        res.add(AutoConnectCommandEntMixIn.AutoConnectCommandEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);
         res.add(CollapseCommandEntMixIn.CollapseCommandEntMixInBuilder.class);
         res.add(CollapseResultEntMixIn.CollapseResultEntMixInBuilder.class);
@@ -372,6 +377,7 @@ public class ListEntities {
         res.add(ComponentPortDescriptionEntMixIn.ComponentPortDescriptionEntMixInBuilder.class);
         res.add(CompositeEventEntMixIn.CompositeEventEntMixInBuilder.class);
         res.add(ConnectCommandEntMixIn.ConnectCommandEntMixInBuilder.class);
+        res.add(ConnectableEntMixIn.ConnectableEntMixInBuilder.class);
         res.add(ConnectionEntMixIn.ConnectionEntMixInBuilder.class);
         res.add(ConvertContainerResultEntMixIn.ConvertContainerResultEntMixInBuilder.class);
         res.add(CopyCommandEntMixIn.CopyCommandEntMixInBuilder.class);
