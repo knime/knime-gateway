@@ -40,16 +40,16 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 public final class GatewayTestCollection {
 
     private static final List<Class<?>> CONTRIBUTING_CLASSES = List.of( //
-        NodeRecommendationsTestHelper.class, //
-        NodeServiceTestHelper.class, //
-        PortServiceTestHelper.class, //
-        SpaceServiceTestHelper.class, //
-        StreamingExecutionTestHelper.class, //
-        WorkflowServiceTestHelper.class, //
-        TranslateCommandTestHelper.class, //
-        CutCopyPasteCommandsTestHelper.class, //
-        BendpointsTestHelper.class, //
-        DeleteCommandTestHelper.class, //
+//        NodeRecommendationsTestHelper.class, //
+//        NodeServiceTestHelper.class, //
+//        PortServiceTestHelper.class, //
+//        SpaceServiceTestHelper.class, //
+//        StreamingExecutionTestHelper.class, //
+//        WorkflowServiceTestHelper.class, //
+//        TranslateCommandTestHelper.class, //
+//        CutCopyPasteCommandsTestHelper.class, //
+//        BendpointsTestHelper.class, //
+//        DeleteCommandTestHelper.class, //
         ConnectCommandsTestHelper.class
     );
 

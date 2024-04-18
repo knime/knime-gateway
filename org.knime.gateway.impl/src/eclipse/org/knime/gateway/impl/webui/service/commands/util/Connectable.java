@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.knime.core.node.port.PortType;
@@ -168,4 +169,38 @@ record Connectable(NodeContainer nc, boolean isContainedInWfm, Connectable.Type 
         return isConnectableMetaNodeInPortsBar || isConnectableNativeNode;
     }
 
+    boolean hasEnoughInputPorts() {
+        return numInPorts > firstDataPortIdx;
+    }
+
+    boolean hasEnoughOutputPorts() {
+        return numOutPorts > firstDataPortIdx;
+    }
+
+    boolean intersects(final Connectable connectable) {
+        return bounds().xRange().intersects(connectable.bounds().xRange());
+    }
+
+    boolean isLeftTo(final Connectable connectable) {
+        return bounds().xRange().start() < connectable.bounds().xRange().start();
+    }
+
+    boolean isRightTo(final Connectable connectable) {
+        return bounds().xRange().start() > connectable.bounds().xRange().start();
+    }
+
+    boolean hasIncomingConnectionFrom(final Collection<Connectable> connectables) {
+        return incomingConnections().stream()//
+            .anyMatch(connection -> connectables.stream()//
+                .map(Connectable::nodeId)//
+                // True if any incoming connection starts from any node within the collection,
+                // false otherwise. Also false if the stream is empty.
+                .anyMatch(nodeId -> connection.getSource().equals(nodeId)));
+    }
+
+    Optional<ConnectionContainer> incomingConnection(final int portIdx) {
+        return incomingConnections.stream()//
+            .filter(cc -> cc.getDestPort() == portIdx)//
+            .findFirst();
+    }
 }

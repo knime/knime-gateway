@@ -103,8 +103,14 @@ public final class NodesAutoConnector {
         final List<Connectable> connectables = m_connectableEnts.stream()//
             .map(connectableEnt -> Connectable.of(connectableEnt, m_wfm))//
             .toList();
-
         final ScreenedSelectionSet selection = determineWhetherSetIsConnectable(connectables);
+
+        // Should never be the case since this method is only ever called as part of run, which can't
+        // execute unless we're enabled, the crux of which already checks this condition.
+        if (!selection.setIsConnectable()) {
+            return Pair.create(Collections.emptyList(), Collections.emptyList());
+        }
+
         final List<PlannedConnection> plannedConnections = computeConnectionPlan(selection);
         final AutoConnectResult result = executeCompletePlan(plannedConnections, m_wfm);
 
@@ -124,23 +130,21 @@ public final class NodesAutoConnector {
     private static ScreenedSelectionSet determineWhetherSetIsConnectable(final Collection<Connectable> connectables) {
         final var emptySelectionSet = new ScreenedSelectionSet(Collections.emptyList(), null, null);
 
-        final var validLeft = getValidNodesForPredicate(connectables, Connectable::isValidLeft);
-        final var validRight = getValidNodesForPredicate(connectables, Connectable::isValidRight);
+        final var validLeft = getValidLeft(connectables);
+        final var validRight = getValidRight(connectables);
 
         if (validLeft.isEmpty() || validRight.isEmpty()) {
             return emptySelectionSet; // Since either no sources or no destinations are available
         }
 
-        final var leftMostNode = validLeft.get(0);
-        final var rightMostNode = validRight.get(validRight.size() - 1);
+        final var leftMost = validLeft.get(0);
+        final var rightMost = validRight.get(validRight.size() - 1);
 
         // TODO: Find edge cases for this and test this
-        final var nodesToDiscardFromLeft =
-            getNodesToDiscardForPredicate(validLeft, rightMostNode, n -> !n.isValidLeft());
-        validLeft.removeAll(nodesToDiscardFromLeft);
-        final var nodesToDiscardFromRight =
-            getNodesToDiscardForPredicate(validRight, leftMostNode, n -> !n.isValidRight());
-        validRight.removeAll(nodesToDiscardFromRight);
+        final var leftToDiscard = getLeftToDiscard(validLeft, validRight.get(validRight.size() - 1));
+        validLeft.removeAll(leftToDiscard);
+        final var rightToDiscard = getRightToDiscard(validRight, validLeft.get(0));
+        validRight.removeAll(rightToDiscard);
 
         final var hasAtLeastOnLegalConnection = validLeft.stream()//
             .anyMatch(source -> MatchingPortsUtil.checkForAtLeastOnePairOfCompatiblePorts(source, validRight));
@@ -153,32 +157,51 @@ public final class NodesAutoConnector {
             .distinct()//
             .sorted(Connectable.NORTH_WEST_ORDERING)//
             .toList();
-        return new ScreenedSelectionSet(orderedConnectables, leftMostNode, rightMostNode);
+        return new ScreenedSelectionSet(orderedConnectables, leftMost, rightMost);
     }
 
-    private static List<Connectable> getValidNodesForPredicate(final Collection<Connectable> connectables,
+    private static List<Connectable> getValidLeft(final Collection<Connectable> connectables) {
+        return getValidConnectablesForPredicate(connectables, Connectable::isValidLeft);
+    }
+
+    private static List<Connectable> getValidRight(final Collection<Connectable> connectables) {
+        return getValidConnectablesForPredicate(connectables, Connectable::isValidRight);
+    }
+
+    private static List<Connectable> getValidConnectablesForPredicate(final Collection<Connectable> connectables,
         final Predicate<Connectable> isValid) {
         final var validNodesForSide = connectables.stream()//
-            .filter(node -> node.isContainedInWfm() || node.type() == Type.METANODE_INPUT_BAR
-                || node.type() == Type.METANODE_OUTPUT_BAR)//
+            .filter(connectable -> connectable.isContainedInWfm() || connectable.type() == Type.METANODE_INPUT_BAR
+                || connectable.type() == Type.METANODE_OUTPUT_BAR)//
             .filter(isValid)//
             .sorted(Connectable.NORTH_WEST_ORDERING)//
             .toList();
         return new ArrayList<>(validNodesForSide); // To return a mutable list
     }
 
-    private static Collection<Connectable> getNodesToDiscardForPredicate(final List<Connectable> connectablesFromSide,
-        final Connectable connectableAtChainEnd, final Predicate<Connectable> isNotConnectable) {
+    private static Collection<Connectable> getLeftToDiscard(final List<Connectable> validLeft,
+        final Connectable rightMost) {
+        return getConnectablesToDiscardForPredicate(validLeft, rightMost, c -> !c.isValidLeft());
+    }
+
+    private static Collection<Connectable> getRightToDiscard(final List<Connectable> validRight,
+        final Connectable leftMost) {
+        return getConnectablesToDiscardForPredicate(validRight, leftMost, c -> !c.isValidRight());
+    }
+
+    private static Collection<Connectable> getConnectablesToDiscardForPredicate(
+        final List<Connectable> validFromSide, final Connectable connectableAtChainEnd,
+        final Predicate<Connectable> isNotConnectable) {
         final Set<Connectable> discards = new HashSet<>();
-        for (int i = (connectablesFromSide.size() - 1); i >= 0; i--) { // Iterate in backward order
-            final var node = connectablesFromSide.get(i);
-            if (!node.equals(connectableAtChainEnd)) {
-                if (node.bounds().xRange().start() < connectableAtChainEnd.bounds().xRange().start()) {
+        for (int i = (validFromSide.size() - 1); i >= 0; i--) { // Iterate in backward order
+            final var connectable = validFromSide.get(i);
+            if (!connectable.equals(connectableAtChainEnd)) {
+                if (connectable.isLeftTo(connectableAtChainEnd)) { // We don't need to look more to the left
                     break;
                 }
                 // It's not clear whether there may ever be a node which doesn't have a flow output, <= to be sure
-                if (isNotConnectable.test(node)) {
-                    discards.add(node);
+                if (isNotConnectable.test(connectable)) {
+                    discards.add(connectable);
                 }
             }
         }
@@ -192,17 +215,10 @@ public final class NodesAutoConnector {
      * @return a list of planned connections
      */
     private static List<PlannedConnection> computeConnectionPlan(final ScreenedSelectionSet selection) {
-        // Should never be the case since this method is only ever called as part of run, which can't
-        // execute unless we're enabled, the crux of which already checks this condition.
-        if (!selection.setIsConnectable()) {
-            return Collections.emptyList();
-        }
-
         final var orderedConnectables = selection.connectables();
         final List<PlannedConnection> plannedConnections = new ArrayList<>();
         final Set<Connectable> plannedDestinations = new HashSet<>();
-        final Predicate<Connectable> hasNoIncoming =
-            dest -> !destinationHasIncomingFromCollection(dest, orderedConnectables);
+        final Predicate<Connectable> hasNoIncoming = dest -> !dest.hasIncomingConnectionFrom(plannedDestinations);
 
         // Step one:
         // Iterate the ordered nodes and try to connect from left to right. If they don't overlap in the X domain and
@@ -211,10 +227,9 @@ public final class NodesAutoConnector {
             final var source = orderedConnectables.get(i);
             final var offset = i + 1; // To pick the second node in the list as destination
 
-            if (source.numOutPorts() > source.firstDataPortIdx()) {
+            if (source.hasEnoughOutputPorts()) {
                 final var destinations = orderedConnectables.stream().skip(offset);
-                final var pcOptional = getPlannedConnection(source, destinations, plannedConnections, hasNoIncoming);
-                pcOptional.ifPresent(pc -> {
+                getPlannedConnection(source, destinations, plannedConnections, hasNoIncoming).ifPresent(pc -> {
                     plannedDestinations.add(pc.destination());
                     plannedConnections.add(pc);
                 });
@@ -230,13 +245,10 @@ public final class NodesAutoConnector {
             final var destination = orderedConnectables.get(i);
             final var length = i; // To pick all the nodes left to the destination as potential sources
 
-            final var notAlreadyInPlan = !plannedDestinations.contains(destination);
-            final var notLeftMost = destination.bounds().xRange().start() > nodeAtChainStart.bounds().xRange().start();
-            final var hasEnoughInPorts = destination.numInPorts() > destination.firstDataPortIdx();
-            if (notAlreadyInPlan && notLeftMost && hasEnoughInPorts) {
+            if (!plannedDestinations.contains(destination) && destination.isRightTo(nodeAtChainStart)
+                && destination.hasEnoughInputPorts()) {
                 final var sources = getHeadAsReverseStream(orderedConnectables, length);
-                final var pcOptional = getPlannedConnection(destination, sources, plannedConnections);
-                pcOptional.ifPresent(pc -> {
+                getPlannedConnection(destination, sources, plannedConnections).ifPresent(pc -> {
                     plannedDestinations.add(pc.destination());
                     plannedConnections.add(pc);
                 });
@@ -254,16 +266,6 @@ public final class NodesAutoConnector {
         return mutableHeadOfList.stream();
     }
 
-    private static boolean destinationHasIncomingFromCollection(final Connectable destination,
-        final Collection<Connectable> collection) {
-        return destination.incomingConnections().stream()//
-            .anyMatch(connection -> collection.stream()//
-                .map(Connectable::nodeId)//
-                // True if any incoming connection starts from any node within the collection,
-                // false otherwise. Also false if the stream is empty.
-                .anyMatch(nodeId -> connection.getSource().equals(nodeId)));
-    }
-
     /**
      * Try to find a planned connection from the source to to any of the destination nodes, searching from left to
      * right. Returns an empty {@link Optional} if no connection is possible.
@@ -278,8 +280,8 @@ public final class NodesAutoConnector {
         final Stream<Connectable> destinations, final List<PlannedConnection> existingPlan,
         final Predicate<Connectable> hasNoIncoming) {
         return destinations//
-            .filter(destination -> destination.numInPorts() > destination.firstDataPortIdx())//
-            .filter(destination -> !source.bounds().xRange().intersects(destination.bounds().xRange()))//
+            .filter(Connectable::hasEnoughInputPorts)//
+            .filter(destination -> !destination.intersects(source))//
             .filter(hasNoIncoming)//
             .map(destination -> getPlannedConnection(source, destination, existingPlan))//
             .flatMap(Optional::stream)//
@@ -298,7 +300,7 @@ public final class NodesAutoConnector {
     private static Optional<PlannedConnection> getPlannedConnection(final Connectable destination,
         final Stream<Connectable> sources, final List<PlannedConnection> existingPlan) {
         return sources//
-            .filter(source -> source.numOutPorts() > source.firstDataPortIdx())//
+            .filter(Connectable::hasEnoughOutputPorts)//
             .map(source -> getPlannedConnection(source, destination, existingPlan))//
             .flatMap(Optional::stream)//
             .findFirst();
@@ -317,13 +319,11 @@ public final class NodesAutoConnector {
      */
     private static Optional<PlannedConnection> getPlannedConnection(final Connectable source,
         final Connectable destination, final List<PlannedConnection> existingPlan) {
-        final var existingOutConnections = source.outgoingConnections();
-        final var existingInConnections = destination.incomingConnections();
-
         // Step 1: Taking existing connections for source and destination into account
         var plannedConnection = findFirstMatchPairOfCompatiblePorts(source, destination, //
-            portIdx -> !portAlreadyHasConnection(source, portIdx, false, existingPlan, existingOutConnections), //
-            portIdx -> !portAlreadyHasConnection(destination, portIdx, true, existingPlan, existingInConnections), //
+            portIdx -> !outputPortAlreadyHasConnection(source, portIdx, existingPlan, source.outgoingConnections()), //
+            portIdx -> !inputPortAlreadyHasConnection(destination, portIdx, existingPlan,
+                destination.incomingConnections()), //
             portIdx -> false);
         if (plannedConnection.isPresent()) {
             return plannedConnection;
@@ -332,8 +332,9 @@ public final class NodesAutoConnector {
         // Step 2: If we've made it to here, nothing was found in, taking existing connections on source and
         // destination into account. Try again ignoring existing connections on source.
         plannedConnection = findFirstMatchPairOfCompatiblePorts(source, destination, //
-            portIdx -> !portAlreadyHasConnection(source, portIdx, false, existingPlan, Collections.emptySet()), //
-            portIdx -> !portAlreadyHasConnection(destination, portIdx, true, existingPlan, existingInConnections), //
+            portIdx -> !outputPortAlreadyHasConnection(source, portIdx, existingPlan, Collections.emptySet()), //
+            portIdx -> !inputPortAlreadyHasConnection(destination, portIdx, existingPlan,
+                destination.incomingConnections()), //
             portIdx -> false);
         if (plannedConnection.isPresent()) {
             return plannedConnection;
@@ -345,9 +346,9 @@ public final class NodesAutoConnector {
         // as a last ditch effort.
         plannedConnection = findFirstMatchPairOfCompatiblePorts(source, destination, //
             portIdx -> true, //
-            portIdx -> !portAlreadyHasConnection(destination, portIdx, true, existingPlan, Collections.emptySet()), //
-            portIdx -> portAlreadyHasConnection(destination, portIdx, true, Collections.emptyList(),
-                existingInConnections));
+            portIdx -> !inputPortAlreadyHasConnection(destination, portIdx, existingPlan, Collections.emptySet()), //
+            portIdx -> inputPortAlreadyHasConnection(destination, portIdx, Collections.emptyList(),
+                destination.incomingConnections()));
 
         return plannedConnection; // Return optional, no matter if empty or not
     }
@@ -365,14 +366,11 @@ public final class NodesAutoConnector {
     private static Optional<PlannedConnection> findFirstMatchPairOfCompatiblePorts(final Connectable source,
         final Connectable destination, final IntPredicate isSourceUsable, final IntPredicate isDestinationUsable,
         final IntPredicate mustDetach) {
-        final var sourcePortStart = source.firstDataPortIdx();
-        final var sourcePortCount = source.numOutPorts();
-
-        if (sourcePortCount <= sourcePortStart) {
+        if (!source.hasEnoughOutputPorts()) {
             return Optional.empty();
         }
 
-        return IntStream.range(sourcePortStart, sourcePortCount)//
+        return IntStream.range(source.firstDataPortIdx(), source.numOutPorts())//
             .filter(isSourceUsable)//
             .mapToObj(sourcePortIdx -> findFirstMatchingPairOfCompatiblePorts(source, sourcePortIdx, destination,
                 isDestinationUsable, mustDetach))
@@ -394,15 +392,12 @@ public final class NodesAutoConnector {
     private static Optional<PlannedConnection> findFirstMatchingPairOfCompatiblePorts(final Connectable source,
         final int sourcePortIdx, final Connectable destination, final IntPredicate isDestinationUsable,
         final IntPredicate mustDetach) {
-        final var destinationPortStart = destination.firstDataPortIdx();
-        final var destinationPortCount = destination.numInPorts();
-
-        if (destinationPortCount <= destinationPortStart) {
+        if (!destination.hasEnoughInputPorts()) {
             return Optional.empty();
         }
 
         final var sourcePortType = source.outPorts().get(sourcePortIdx);
-        return IntStream.range(destinationPortStart, destinationPortCount)//
+        return IntStream.range(destination.firstDataPortIdx(), destination.numInPorts())//
             .filter(isDestinationUsable)//
             .filter(destinationPortIdx -> {
                 final var destinationPortType = destination.inPorts().get(destinationPortIdx);
@@ -443,7 +438,7 @@ public final class NodesAutoConnector {
         final var destinationPortIdx = plannedConnection.destinationPortIdx();
 
         if (plannedConnection.destinationRequiresDetachEvent()) {
-            final var connectionToRemove = getIncomingConnectionForPort(destination, destinationPortIdx);
+            final var connectionToRemove = destination.incomingConnection(destinationPortIdx).orElse(null);
             if (connectionToRemove != null) {
                 try {
                     wfm.removeConnection(connectionToRemove);
@@ -475,42 +470,22 @@ public final class NodesAutoConnector {
             .anyMatch(Connectable::isExecuted);
     }
 
-    private static ConnectionContainer getIncomingConnectionForPort(final Connectable destination,
-        final int destinationPortIdx) {
-        return destination.incomingConnections().stream()//
-            .filter(cc -> cc.getDestPort() == destinationPortIdx)//
-            .findFirst()//
-            .orElse(null);
+    private static boolean outputPortAlreadyHasConnection(final Connectable source, final int sourcePortIdx,
+        final List<PlannedConnection> existingPlan, final Collection<ConnectionContainer> outgoingConnections) {
+        final var connectionExists = outgoingConnections.stream()//
+            .anyMatch(cc -> cc.getSourcePort() == sourcePortIdx);
+        final var connectionPlanned = existingPlan.stream()//
+            .anyMatch(pc -> pc.source().nodeId().equals(source.nodeId()) && pc.sourcePortIdx() == sourcePortIdx);
+        return connectionExists || connectionPlanned;
     }
 
-    private static boolean portAlreadyHasConnection(final Connectable node, final int portIdx, final boolean isInPort,
-        final List<PlannedConnection> existingPlan, final Collection<ConnectionContainer> existingConnections) {
-        if (existingPlan == null) {
-            throw new IllegalArgumentException("existingPlan cannot be null.");
-        }
-
-        if (existingConnections == null) {
-            throw new IllegalArgumentException("existingConnections cannot be null.");
-        }
-
-        // Checks for already existing connections
-        final var connectionExists = existingConnections.stream()//
-            .anyMatch(cc -> {
-                final var existingIn = cc.getDestPort() == portIdx;
-                final var existingOut = cc.getSourcePort() == portIdx;
-                return (isInPort && existingIn) || (!isInPort && existingOut);
-            });
-
-        // Checks for already planned connections
+    private static boolean inputPortAlreadyHasConnection(final Connectable destination, final int destinationPortIdx,
+        final List<PlannedConnection> existingPlan, final Collection<ConnectionContainer> incomingConnections) {
+        final var connectionExists = incomingConnections.stream()//
+            .anyMatch(cc -> cc.getDestPort() == destinationPortIdx);
         final var connectionPlanned = existingPlan.stream()//
-            .anyMatch(pc -> {
-                final var sourceId = pc.source().nodeId();
-                final var plannedOut = sourceId.equals(node.nodeId()) && pc.sourcePortIdx() == portIdx;
-                final var destinationId = pc.destination().nodeId();
-                final var plannedIn = destinationId.equals(node.nodeId()) && pc.destinationPortIdx() == portIdx;
-                return (isInPort && plannedIn) || (!isInPort && plannedOut);
-            });
-
+            .anyMatch(pc -> pc.destination().nodeId().equals(destination.nodeId())
+                && pc.destinationPortIdx() == destinationPortIdx);
         return connectionExists || connectionPlanned;
     }
 
