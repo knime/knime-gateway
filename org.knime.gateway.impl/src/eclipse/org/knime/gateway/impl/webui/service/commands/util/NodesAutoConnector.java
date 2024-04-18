@@ -83,15 +83,19 @@ public final class NodesAutoConnector {
 
     private final List<ConnectableEnt> m_connectableEnts;
 
+    private final boolean m_isFlowVariablesOnly;
+
     /**
      * Instantiates the {@link NodesAutoConnector}
      *
      * @param wfm The workflow manager
      * @param connectableEnts The list of nodes to connect
+     * @param isFlowVariablesOnly Whether to only connect the flow variable ports or not
      */
-    public NodesAutoConnector(final WorkflowManager wfm, final List<ConnectableEnt> connectableEnts) {
+    public NodesAutoConnector(final WorkflowManager wfm, final List<ConnectableEnt> connectableEnts, final boolean isFlowVariablesOnly) {
         m_wfm = wfm;
         m_connectableEnts = connectableEnts;
+        m_isFlowVariablesOnly = isFlowVariablesOnly;
     }
 
     /**
@@ -103,6 +107,17 @@ public final class NodesAutoConnector {
         final List<Connectable> connectables = m_connectableEnts.stream()//
             .map(connectableEnt -> Connectable.of(connectableEnt, m_wfm))//
             .toList();
+
+        if (m_isFlowVariablesOnly) {
+            LOGGER.warn("Only connect flow variable ports. Not implemented yet");
+            // TODO:
+            //   1. Spatially order all the nodes
+            //   2. From left to right: Identify the flow variable ports and create a planned connection
+            //   3. Create all the connections
+            //   4. Return all the added and removed connections
+            return Pair.create(Collections.emptyList(), Collections.emptyList());
+        }
+
         final ScreenedSelectionSet selection = determineWhetherSetIsConnectable(connectables);
 
         // Should never be the case since this method is only ever called as part of run, which can't

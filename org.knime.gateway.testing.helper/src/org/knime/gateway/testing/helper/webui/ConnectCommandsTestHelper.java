@@ -233,7 +233,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * ...
+     * Tests {@link AutoConnectCommandEnt} with unconnected native nodes
      *
      * @throws Exception
      */
@@ -250,7 +250,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * ...
+     * Tests {@link AutoConnectCommandEnt} with native nodes checking the resulting connections
      *
      * @throws Exception
      */
@@ -274,7 +274,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * ...
+     * Tests {@link AutoConnectCommandEnt} with native nodes checking the resulting connections
      *
      * @throws Exception
      */
@@ -296,7 +296,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * ...
+     * Tests {@link AutoConnectCommandEnt} with native nodes and a component
      *
      * @throws Exception
      */
@@ -313,7 +313,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * ...
+     * Tests {@link AutoConnectCommandEnt} with native nodes and a metanode
      *
      * @throws Exception
      */
@@ -330,7 +330,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * ...
+     * Tests {@link AutoConnectCommandEnt} within a component
      *
      * @throws Exception
      */
@@ -348,7 +348,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * ...
+     * Tests {@link AutoConnectCommandEnt} within a metanode
      *
      * @throws Exception
      */
@@ -363,6 +363,28 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var c7 = buildConnectableEnt(new NodeIDEnt(13, 7));
 
         assertAutoConnect(projectId, workflowId, 0, 3, List.of(cIn, c6, c7, cOut));
+    }
+
+    /**
+     * Tests {@link AutoConnectCommandEnt} only connecting flow variable ports.
+     *
+     * @throws Exception
+     */
+    public void testAutoConnectFlowVariablesOnly() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = getRootID();
+
+        var c1 = buildConnectableEnt(new NodeIDEnt(1));
+        var c2 = buildConnectableEnt(new NodeIDEnt(2));
+        var c3 = buildConnectableEnt(new NodeIDEnt(3));
+        var c4 = buildConnectableEnt(new NodeIDEnt(4));
+
+        var connectables = List.of(c1, c2, c3, c4);
+        var command = buildAutoConnectCommandEnt(connectables, true);
+        var exception = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, workflowId, command));
+        assertThat(exception.getMessage(),
+            containsString("Automatically connecting all flow variables is not supported yet"));
     }
 
     private void assertAutoConnect(final String projectId, final NodeIDEnt workflowId, final int numConnectionsBefore,

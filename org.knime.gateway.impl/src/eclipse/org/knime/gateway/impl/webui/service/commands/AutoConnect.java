@@ -74,9 +74,14 @@ final class AutoConnect extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        final var isFlowVariablesOnly = Boolean.TRUE.equals(m_commandEnt.isFlowVariablesOnly());
+        if (isFlowVariablesOnly) {
+            throw new OperationNotAllowedException("Automatically connecting all flow variables is not supported yet");
+        }
+
         final var wfm = getWorkflowManager();
         final var connectableEnts = m_commandEnt.getConnectables();
-        final var nodesAutoConnector = new NodesAutoConnector(wfm, connectableEnts);
+        final var nodesAutoConnector = new NodesAutoConnector(wfm, connectableEnts, isFlowVariablesOnly);
 
         final var addedAndRemovedConnections = nodesAutoConnector.connect();
         m_newConnections = addedAndRemovedConnections.getFirst();
