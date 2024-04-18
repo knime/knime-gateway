@@ -72,8 +72,8 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 public class AppStateEntityFactoryTest {
 
     /**
-     * Tests
-     * {@link AppStateEntityFactory#buildAppStateEntDiff(org.knime.gateway.api.webui.entity.AppStateEnt, org.knime.gateway.api.webui.entity.AppStateEnt)}.
+     * Tests {@link AppStateEntityFactory#buildAppStateEntDiff(org.knime.gateway.api.webui.entity.AppStateEnt,
+     * org.knime.gateway.api.webui.entity.AppStateEnt, boolean)}.
      */
     @Test
     public void testBuildAppStateEntDiff() {
@@ -115,8 +115,17 @@ public class AppStateEntityFactoryTest {
             .setNodeRepositoryLoaded(Boolean.TRUE) //
             .build();
 
-        assertThat(buildAppStateEntDiff(null, newAppState), sameInstance(newAppState));
-        assertThat(buildAppStateEntDiff(oldAppState, newAppState), is(expectedAppStateDiff));
+        assertThat(buildAppStateEntDiff(null, newAppState, true), sameInstance(newAppState));
+        assertThat(buildAppStateEntDiff(oldAppState, newAppState, true), is(expectedAppStateDiff));
+
+        expectedAppStateDiff = builder(AppStateEntBuilder.class) //
+                .setOpenProjects(null) //
+                .setHasNodeCollectionActive(Boolean.TRUE) //
+                .setHasNodeRecommendationsEnabled(Boolean.TRUE) //
+                .setScrollToZoomEnabled(Boolean.TRUE) //
+                .setNodeRepositoryLoaded(Boolean.TRUE) //
+                .build();
+        assertThat(buildAppStateEntDiff(oldAppState, newAppState, false), is(expectedAppStateDiff));
 
     }
 

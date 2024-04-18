@@ -149,7 +149,7 @@ public final class AppStateEntityFactory {
      * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if
      *            all projects are to be included
      * @param isActiveProject determines the projects to be set to active (see
-     *            {@link WorkflowProjectEnt#getActiveWorkflowId()}; if {@code null}
+     *            {@link ProjectEnt#getActiveWorkflowId()}; if {@code null}
      *            {@link ProjectManager#isActiveProject(String)} is used
      * @return a new application state entity instance
      */
@@ -170,7 +170,7 @@ public final class AppStateEntityFactory {
         var activeCollection =
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         return builder(AppStateEntBuilder.class) //
-            .setOpenProjects(projects.isEmpty() ? null : projects) //
+            .setOpenProjects(projects) //
             .setExampleProjects(exampleProjects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
@@ -201,14 +201,18 @@ public final class AppStateEntityFactory {
      *
      * @param oldAppState
      * @param newAppState
+     * @param includePojectSpecificInfosInDiff
      * @return the app state where only the properties are set which have changed
      */
-    public static AppStateEnt buildAppStateEntDiff(final AppStateEnt oldAppState, final AppStateEnt newAppState) {
+    public static AppStateEnt buildAppStateEntDiff(final AppStateEnt oldAppState, final AppStateEnt newAppState,
+        final boolean includePojectSpecificInfosInDiff) {
         if (oldAppState == null) { // If there is no previous app state, no checks are needed
             return newAppState;
         } else { // Only set what has changed (except for properties we know that are static)
             var builder = builder(AppStateEntBuilder.class);
-            setIfChanged(oldAppState, newAppState, AppStateEnt::getOpenProjects, builder::setOpenProjects);
+            if (includePojectSpecificInfosInDiff) {
+                setIfChanged(oldAppState, newAppState, AppStateEnt::getOpenProjects, builder::setOpenProjects);
+            }
             setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeCollectionActive,
                 builder::setHasNodeCollectionActive);
             setIfChanged(oldAppState, newAppState, AppStateEnt::getActiveNodeCollection,

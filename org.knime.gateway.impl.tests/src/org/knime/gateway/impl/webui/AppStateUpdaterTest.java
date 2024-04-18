@@ -110,10 +110,8 @@ public class AppStateUpdaterTest {
         DefaultApplicationService.getInstance().getState(); // initializes the app-state for the AppStateUpdater
         DefaultEventService.getInstance().addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
         // verify initial event
-        var appStateChangedEvent = builder(AppStateChangedEventEntBuilder.class)
-            .setAppState(builder(AppStateEntBuilder.class).build()).build();
-        var expectedEvent = builder(CompositeEventEntBuilder.class)
-            .setEvents(List.of(appStateChangedEvent, buildProjectDirtyStateEvent(proj1))).build();
+        var expectedEvent =
+            builder(CompositeEventEntBuilder.class).setEvents(List.of(buildProjectDirtyStateEvent(proj1))).build();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent, null);
 
         // update open projects and verify resulting app state changed event
@@ -127,7 +125,7 @@ public class AppStateUpdaterTest {
         // update a preference and verify resulting app state changed event
         when(preferencesProvider.hasNodeRecommendationsEnabled()).thenReturn(true);
         appStateUpdater.updateAppState();
-        appStateChangedEvent = builder(AppStateChangedEventEntBuilder.class)
+        var appStateChangedEvent = builder(AppStateChangedEventEntBuilder.class)
             .setAppState(builder(AppStateEntBuilder.class).setHasNodeRecommendationsEnabled(Boolean.TRUE).build())
             .build();
         expectedEvent = builder(CompositeEventEntBuilder.class)
@@ -162,10 +160,6 @@ public class AppStateUpdaterTest {
         DefaultApplicationService.getInstance().getState(); // initializes the app-state for the AppStateUpdater
         DefaultEventService.getInstance().addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
         // verify there is no initial event (because there is no project-specific info to be updated initially)
-        var appStateChangedEvent = builder(AppStateChangedEventEntBuilder.class)
-            .setAppState(builder(AppStateEntBuilder.class).build()).build();
-        var expectedEvent = builder(CompositeEventEntBuilder.class)
-            .setEvents(List.of(appStateChangedEvent, buildProjectDirtyStateEvent(proj1))).build();
         verify(eventConsumer, times(0)).accept(any(), any(), any());
         verify(eventConsumer, times(0)).accept(any(), any());
 
@@ -180,10 +174,10 @@ public class AppStateUpdaterTest {
         // update a preference and check resulting app state changed event
         when(preferencesProvider.hasNodeRecommendationsEnabled()).thenReturn(true);
         appStateUpdater.updateAppState();
-        appStateChangedEvent = builder(AppStateChangedEventEntBuilder.class)
+        var appStateChangedEvent = builder(AppStateChangedEventEntBuilder.class)
             .setAppState(builder(AppStateEntBuilder.class).setHasNodeRecommendationsEnabled(Boolean.TRUE).build())
             .build();
-        expectedEvent = builder(CompositeEventEntBuilder.class).setEvents(List.of(appStateChangedEvent)).build();
+        var expectedEvent = builder(CompositeEventEntBuilder.class).setEvents(List.of(appStateChangedEvent)).build();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent);
 
         pm.removeProject(proj1.getID(), WorkflowManagerUtil::disposeWorkflow);
