@@ -118,6 +118,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public String getActiveNodeCollection();
     
     @Override
+    @JsonProperty("confirmNodeConfigChanges")
+    public Boolean isConfirmNodeConfigChanges();
+    
+    @Override
     @JsonProperty("devMode")
     public Boolean isDevMode();
     
@@ -189,6 +193,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("activeNodeCollection")
         public AppStateEntMixInBuilder setActiveNodeCollection(final String activeNodeCollection);
+        
+        @Override
+        @JsonProperty("confirmNodeConfigChanges")
+        public AppStateEntMixInBuilder setConfirmNodeConfigChanges(final Boolean confirmNodeConfigChanges);
         
         @Override
         @JsonProperty("devMode")

@@ -134,6 +134,12 @@ public interface AppStateEnt extends GatewayEntity {
   public String getActiveNodeCollection();
 
   /**
+   * Whether to always confirm node config changes or apply them automatically when de-selecting a node.
+   * @return confirmNodeConfigChanges 
+   **/
+  public Boolean isConfirmNodeConfigChanges();
+
+  /**
    * If true, dev mode specific buttons will be shown.
    * @return devMode 
    **/
@@ -173,6 +179,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("activeNodeCollection", Pair.create(getActiveNodeCollection(), e.getActiveNodeCollection()));
+      valueConsumer.accept("confirmNodeConfigChanges", Pair.create(isConfirmNodeConfigChanges(), e.isConfirmNodeConfigChanges()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
       valueConsumer.accept("fileExtensionToNodeTemplateId", Pair.create(getFileExtensionToNodeTemplateId(), e.getFileExtensionToNodeTemplateId()));
       valueConsumer.accept("nodeRepositoryLoaded", Pair.create(isNodeRepositoryLoaded(), e.isNodeRepositoryLoaded()));
@@ -271,6 +278,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setActiveNodeCollection(String activeNodeCollection);
+        
+        /**
+         * Whether to always confirm node config changes or apply them automatically when de-selecting a node.
+         * 
+         * @param confirmNodeConfigChanges the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setConfirmNodeConfigChanges(Boolean confirmNodeConfigChanges);
         
         /**
          * If true, dev mode specific buttons will be shown.

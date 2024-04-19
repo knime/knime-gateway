@@ -182,6 +182,7 @@ public final class AppStateEntityFactory {
                     .map(NodeCollections.NodeCollection::displayName) //
                     .orElse("all") //
             ) //
+            .setConfirmNodeConfigChanges(dependencies.preferencesProvider().confirmNodeConfigChanges()) //
             .setHasNodeRecommendationsEnabled(dependencies.preferencesProvider().hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setPermissions(Permissions.getPermissions())//
@@ -220,6 +221,8 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeRecommendationsEnabled,
                 builder::setHasNodeRecommendationsEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isScrollToZoomEnabled, builder::setScrollToZoomEnabled);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isConfirmNodeConfigChanges,
+                builder::setConfirmNodeConfigChanges);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
             return builder.build();

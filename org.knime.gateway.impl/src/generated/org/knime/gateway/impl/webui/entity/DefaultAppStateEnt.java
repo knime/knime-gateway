@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param scrollToZoomEnabled
  * @param hasNodeCollectionActive
  * @param activeNodeCollection
+ * @param confirmNodeConfigChanges
  * @param devMode
  * @param fileExtensionToNodeTemplateId
  * @param nodeRepositoryLoaded
@@ -87,6 +88,7 @@ public record DefaultAppStateEnt(
     Boolean scrollToZoomEnabled,
     Boolean hasNodeCollectionActive,
     String activeNodeCollection,
+    Boolean confirmNodeConfigChanges,
     Boolean devMode,
     java.util.Map<String, String> fileExtensionToNodeTemplateId,
     Boolean nodeRepositoryLoaded,
@@ -159,6 +161,11 @@ public record DefaultAppStateEnt(
     }
     
     @Override
+    public Boolean isConfirmNodeConfigChanges() {
+        return confirmNodeConfigChanges;
+    }
+    
+    @Override
     public Boolean isDevMode() {
         return devMode;
     }
@@ -204,6 +211,8 @@ public record DefaultAppStateEnt(
         private Boolean m_hasNodeCollectionActive;
 
         private String m_activeNodeCollection;
+
+        private Boolean m_confirmNodeConfigChanges;
 
         private Boolean m_devMode;
 
@@ -280,6 +289,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setConfirmNodeConfigChanges(Boolean confirmNodeConfigChanges) {
+             m_confirmNodeConfigChanges = confirmNodeConfigChanges;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEntBuilder setDevMode(Boolean devMode) {
              m_devMode = devMode;
              return this;
@@ -317,6 +332,7 @@ public record DefaultAppStateEnt(
                 immutable(m_scrollToZoomEnabled),
                 immutable(m_hasNodeCollectionActive),
                 immutable(m_activeNodeCollection),
+                immutable(m_confirmNodeConfigChanges),
                 immutable(m_devMode),
                 immutable(m_fileExtensionToNodeTemplateId),
                 immutable(m_nodeRepositoryLoaded),

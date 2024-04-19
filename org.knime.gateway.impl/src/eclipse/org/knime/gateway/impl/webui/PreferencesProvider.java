@@ -72,4 +72,9 @@ public interface PreferencesProvider {
      * @return {@code true} if scrolling should be interpreted as zooming
      */
     boolean isScrollToZoomEnabled();
+
+    /**
+     * @return whether to always confirm node configuration changes or not
+     */
+    boolean confirmNodeConfigChanges();
 }
