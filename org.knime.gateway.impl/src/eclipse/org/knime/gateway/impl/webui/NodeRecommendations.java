@@ -58,6 +58,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendation;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
@@ -119,13 +120,18 @@ public class NodeRecommendations {
         var fullInfo = fullTemplateInfo == null ? DEFAULT_FULL_TEMPLATE_INFO : fullTemplateInfo;
 
         // This `null` is evaluated in `NodeRecommandationManager#getNodeRecommendationFor(...)`
-        var nnc = nodeId == null ? null : getNativeNodeContainer(projectId, workflowId, nodeId);
+        var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilterByPortType(...)`
-        var sourcePortType = nodeId == null ? null : determineSourcePortType(nnc, portIdx);
+        var sourcePortType = nodeId == null ? null : determineSourcePortType(nc, portIdx);
 
-        var recommendations =
-            Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes());
+        Stream<NodeRecommendation> recommendations;
+        if (nc instanceof NativeNodeContainer nnc) {
+            recommendations =
+                Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes());
+        } else {
+            recommendations = getFlatStreamOfMostFrequentlyUsedNodes();
+        }
         return getNodeTemplatesAndFilter(recommendations, sourcePortType, limit, fullInfo);
     }
 
@@ -143,23 +149,12 @@ public class NodeRecommendations {
         return NodeRecommendationManager.getInstance().initialize(getNodeType);
     }
 
-    private static NativeNodeContainer getNativeNodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws OperationNotAllowedException {
-        var nc = DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
-        if (nc instanceof NativeNodeContainer nnc) {
-            return nnc;
-        } else {
-            throw new OperationNotAllowedException(
-                "Node recommendations for metanodes or components aren't supported yet");
-        }
-    }
-
-    private static PortType determineSourcePortType(final NativeNodeContainer nnc, final Integer portIdx)
+    private static PortType determineSourcePortType(final NodeContainer nc, final Integer portIdx)
         throws OperationNotAllowedException {
-        if (portIdx + 1 > nnc.getNrOutPorts() || portIdx < 0) {
+        if (portIdx + 1 > nc.getNrOutPorts() || portIdx < 0) {
             throw new OperationNotAllowedException("Cannot recommend nodes for non-existing port");
         }
-        return nnc.getOutPort(portIdx).getPortType();
+        return nc.getOutPort(portIdx).getPortType();
     }
 
     private static Stream<NodeRecommendation> getFlatStreamOfRecommendations(final NativeNodeContainer nnc) {
