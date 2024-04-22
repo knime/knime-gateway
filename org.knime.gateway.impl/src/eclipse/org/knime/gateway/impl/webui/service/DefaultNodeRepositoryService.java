@@ -50,7 +50,6 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
@@ -59,7 +58,6 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRepository;
@@ -72,16 +70,13 @@ import org.knime.gateway.impl.webui.NodeSearch;
  */
 public final class DefaultNodeRepositoryService implements NodeRepositoryService {
 
-    private NodeRepository m_nodeRepo;
+    private final NodeRepository m_nodeRepo = ServiceDependencies.getServiceDependency(NodeRepository.class, true);
 
-    private NodeSearch m_nodeSearch;
+    private final NodeSearch m_nodeSearch;
 
-    private NodeGroups m_nodeGroups;
+    private final NodeGroups m_nodeGroups;
 
-    private NodeRecommendations m_nodeRecommendations;
-
-    private final NodeCollections m_nodeCollections =
-        ServiceDependencies.getServiceDependency(NodeCollections.class, false);
+    private final NodeRecommendations m_nodeRecommendations;
 
     /**
      * Returns the singleton instance for this service.
@@ -93,18 +88,6 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     }
 
     DefaultNodeRepositoryService() {
-        resetNodeRepository();
-    }
-
-    /**
-     * Initialise and attach a new node repository instance, discarding any previously used instance and its caches.
-     */
-    public void resetNodeRepository() {
-        var activeCollection = //
-            Optional.ofNullable(m_nodeCollections) //
-                .flatMap(NodeCollections::getActiveCollection) //
-                .map(NodeCollections.NodeCollection::nodeFilter);
-        m_nodeRepo = new NodeRepository(activeCollection.orElse(null));
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);

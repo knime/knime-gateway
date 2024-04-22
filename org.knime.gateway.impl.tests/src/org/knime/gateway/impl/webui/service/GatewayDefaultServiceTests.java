@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
@@ -209,6 +210,7 @@ public class GatewayDefaultServiceTests {
             new WorkflowMiddleware(ProjectManager.getInstance(), null));
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, null);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
+        ServiceDependencies.setServiceDependency(NodeRepository.class, new NodeRepository());
     }
 
     @SuppressWarnings("javadoc")

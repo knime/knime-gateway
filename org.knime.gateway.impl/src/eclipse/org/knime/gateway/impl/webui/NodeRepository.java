@@ -59,7 +59,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -86,12 +85,10 @@ public final class NodeRepository {
 
     private static final String NODE_USAGE_FILE = "/files/node_usage/node_usage.csv";
 
-    private static final Pattern MULTIPLE_SLASHES = Pattern.compile("/{2,}");
-
     /**
      * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is, e.g., in the basic or advanced nodes
      */
-    private final Predicate<String> m_isInCollection;
+    private Predicate<String> m_isInCollection;
 
     /**
      * Nodes of the active collection or all nodes if no collection is active. Loaded/filled once with the call of any
@@ -107,6 +104,17 @@ public final class NodeRepository {
     private Map<String, Node> m_deprecatedNodes;
 
     private final Map<String, NodeTemplateEnt> m_fullInfoNodeTemplateEntCache = new ConcurrentHashMap<>(2000);
+
+    /**
+     * Determine whether a node is forbidden to be used as per {@link org.knime.core.customization.APCustomization}.
+     *
+     * @param templateId node in question
+     * @return true if the node usage is forbidden (regardless of whether it's installed or not)
+     * @since 5.3
+     */
+    public static boolean isNodeUsageForbidden(final String templateId) {
+        return !GatewayImplPlugin.getInstance().getCustomization().nodes().isUsageAllowed(templateId);
+    }
 
     /**
      * Create a new node repository without a collection. All nodes are included.
@@ -130,7 +138,7 @@ public final class NodeRepository {
      * the given template ids. Template ids that aren't found are omitted.
      *
      * @param templateIds the ids to create the entities for
-     * @param fullTemplateInfo whether to innclude the full node template information or not
+     * @param fullTemplateInfo whether to include the full node template information or not
      * @return a new map instance containing newly created entity instances
      */
     public Map<String, NodeTemplateEnt> getNodeTemplates(final Collection<String> templateIds,
@@ -153,6 +161,18 @@ public final class NodeRepository {
      */
     public NodeTemplateEnt getNodeTemplate(final String templateId, final boolean fullTemplateInfo) {
         return getNodeTemplate(getNodeIncludeAdditionalNodes(templateId), fullTemplateInfo);
+    }
+
+    /**
+     * Resets the 'isInCollection' predicate.
+     *
+     * @param isInCollection defines which nodes should be included in the active collection by matching the templateId
+     *            of the node. Can be <code>null</code> if no collection is active
+     */
+    public void resetIsInCollection(final Predicate<String> isInCollection) {
+        m_isInCollection = isInCollection;
+        m_nodes = null;
+        m_additionalNodes = null;
     }
 
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
@@ -259,7 +279,6 @@ public final class NodeRepository {
             }
         }
     }
-
 
     private static Map<String, Node> filterNodes(final Map<String, Node> nodes, final Predicate<String> filter) {
         return nodes.entrySet().stream() //

@@ -59,6 +59,7 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
+import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -146,6 +147,7 @@ public final class ServiceDependencies {
      * @param nodeFactoryProvider
      * @param kaiHandler          handle K-AI related requests
      * @param nodeCollections
+     * @param nodeRepo
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
@@ -156,9 +158,10 @@ public final class ServiceDependencies {
         final UpdateStateProvider updateStateProvider, //
         final PreferencesProvider preferencesProvider, //
         final ExampleProjects exampleProjects, //
-        final NodeFactoryProvider nodeFactoryProvider,//
+        final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
-        final NodeCollections nodeCollections) {
+        final NodeCollections nodeCollections, //
+        final NodeRepository nodeRepo) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -171,6 +174,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
             ServiceDependencies.setServiceDependency(KaiHandler.class, kaiHandler);
             ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);
+            ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "
