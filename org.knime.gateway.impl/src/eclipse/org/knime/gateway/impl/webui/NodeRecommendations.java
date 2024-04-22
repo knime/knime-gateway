@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.knime.core.node.NodeFactory.NodeType;
@@ -122,7 +124,8 @@ public class NodeRecommendations {
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilterByPortType(...)`
         var sourcePortType = nodeId == null ? null : determineSourcePortType(nnc, portIdx);
 
-        var recommendations = getFlatListOfRecommendations(nnc);
+        var recommendations =
+            Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes());
         return getNodeTemplatesAndFilter(recommendations, sourcePortType, limit, fullInfo);
     }
 
@@ -159,20 +162,30 @@ public class NodeRecommendations {
         return nnc.getOutPort(portIdx).getPortType();
     }
 
-    private static List<NodeRecommendation> getFlatListOfRecommendations(final NativeNodeContainer nnc) {
+    private static Stream<NodeRecommendation> getFlatStreamOfRecommendations(final NativeNodeContainer nnc) {
         var recommendations = nnc == null //
             ? NodeRecommendationManager.getInstance().getNodeRecommendationFor() //
             : NodeRecommendationManager.getInstance().getNodeRecommendationFor(NativeNodeContainerWrapper.wrap(nnc));
         var recommendationsWithoutDups =
             NodeRecommendationManager.joinRecommendationsWithoutDuplications(recommendations);
         return recommendationsWithoutDups.stream() //
-            .map(ObjectUtils::firstNonNull) //
-            .toList();
+            .map(ObjectUtils::firstNonNull);
     }
 
-    private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final List<NodeRecommendation> recommendations,
+    private static Stream<NodeRecommendation> getFlatStreamOfMostFrequentlyUsedNodes() {
+        Supplier<List<NodeRecommendation[]>> supplier = () -> {
+            var recommendations = NodeRecommendationManager.getInstance().getMostFrequentlyUsedNodes();
+            return NodeRecommendationManager.joinRecommendationsWithoutDuplications(recommendations);
+        };
+        // This construct makes sure that the above supplier is only being called if the stream is
+        // processed until this point (which is not the case, if there are sufficiently many node recommendations
+        // such that the result doesn't need to be backfilled with the most frequently used nodes).
+        return Stream.of(supplier).flatMap(s -> s.get().stream()).map(ObjectUtils::firstNonNull);
+    }
+
+    private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final Stream<NodeRecommendation> recommendations,
         final PortType sourcePortType, final int limit, final boolean fullInfo) {
-        return recommendations.stream() //
+        return recommendations //
             .map(r -> m_nodeRepo.getNode(r.getFactoryId())) //
             .filter(Objects::nonNull) //
             .filter(n -> sourcePortType == null || n.isCompatibleWith(sourcePortType)) //
