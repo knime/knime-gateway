@@ -125,13 +125,9 @@ public class NodeRecommendations {
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilterByPortType(...)`
         var sourcePortType = nodeId == null ? null : determineSourcePortType(nc, portIdx);
 
-        Stream<NodeRecommendation> recommendations;
-        if (nc instanceof NativeNodeContainer nnc) {
-            recommendations =
-                Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes());
-        } else {
-            recommendations = getFlatStreamOfMostFrequentlyUsedNodes();
-        }
+        var recommendations = nc instanceof NativeNodeContainer nnc
+            ? Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes())
+            : getFlatStreamOfMostFrequentlyUsedNodes();
         return getNodeTemplatesAndFilter(recommendations, sourcePortType, limit, fullInfo);
     }
 

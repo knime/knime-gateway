@@ -114,7 +114,8 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         var workflowId = getRootID();
         var resultDefault = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, null, null);
         assertRecommendations(resultDefault, 12, false);
-        // Max number of 13*2 recommendations received (successor recommendation + backfilled 'most frequently used nodes')
+        // Max number of 13*2 recommendations received
+        // (successor recommendation + backfilled 'most frequently used nodes')
         var resultMinimal26 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 101, false);
         assertRecommendations(resultMinimal26, 26, false);
         var resultFull7 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 7, true);
