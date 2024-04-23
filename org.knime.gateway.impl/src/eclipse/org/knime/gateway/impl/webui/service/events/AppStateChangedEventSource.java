@@ -46,6 +46,7 @@
  */
 package org.knime.gateway.impl.webui.service.events;
 
+import static java.util.Arrays.asList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.List;
@@ -117,7 +118,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
                 .setDirtyProjectsMap(m_projectManager.getDirtyProjectsMap()).setShouldReplace(true).build();
             var compositeEvent = EntityBuilderManager.builder(CompositeEventEntBuilder.class)
-                .setEvents(List.of(projectDirtyStateEvent)).build();
+                .setEvents(asList(null, projectDirtyStateEvent)).build();
             return Optional.of(compositeEvent);
         } else {
             return Optional.empty();
@@ -155,7 +156,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         List<EventEnt> events = null;
         if (m_appStateUpdater.filterProjectSpecificInfosFromEvents()) {
             if (!EMPTY_APP_STATE_CHANGED_EVENT.equals(appStateChangedEvent)) {
-                events = List.of(appStateChangedEvent);
+                events = asList(appStateChangedEvent, null);
             }
         } else {
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)

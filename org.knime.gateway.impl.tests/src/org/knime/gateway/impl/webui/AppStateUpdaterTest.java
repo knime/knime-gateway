@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui;
 
+import static java.util.Arrays.asList;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -111,7 +112,8 @@ public class AppStateUpdaterTest {
         DefaultEventService.getInstance().addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
         // verify initial event
         var expectedEvent =
-            builder(CompositeEventEntBuilder.class).setEvents(List.of(buildProjectDirtyStateEvent(proj1))).build();
+            builder(CompositeEventEntBuilder.class).setEvents(asList(null, buildProjectDirtyStateEvent(proj1)))
+                .build();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent, null);
 
         // update open projects and verify resulting app state changed event
@@ -177,7 +179,8 @@ public class AppStateUpdaterTest {
         var appStateChangedEvent = builder(AppStateChangedEventEntBuilder.class)
             .setAppState(builder(AppStateEntBuilder.class).setHasNodeRecommendationsEnabled(Boolean.TRUE).build())
             .build();
-        var expectedEvent = builder(CompositeEventEntBuilder.class).setEvents(List.of(appStateChangedEvent)).build();
+        var expectedEvent =
+            builder(CompositeEventEntBuilder.class).setEvents(asList(appStateChangedEvent, null)).build();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent);
 
         pm.removeProject(proj1.getID(), WorkflowManagerUtil::disposeWorkflow);
