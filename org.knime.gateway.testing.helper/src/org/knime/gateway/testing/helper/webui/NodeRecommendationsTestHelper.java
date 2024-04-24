@@ -49,6 +49,7 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThrows;
@@ -151,12 +152,25 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
             () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, null));
-        assertThrows("Node recommendations for metanodes or components aren't supported yet",
-            OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_metanode, null, null, null));
-        assertThrows("Node recommendations for metanodes or components aren't supported yet",
-            OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, true));
+    }
+
+    /**
+     * Tests the node recommendations for components and metanodes as provided by the
+     * {@link TestNodeTripleProviderFactory}.
+     *
+     * @throws Exception
+     */
+    public void testNodeRecommendationsForComponentAndMetanode() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflowId = getRootID();
+        // suggests the most frequently used node(s) - and that's only the 'String Manipulation'-node
+        // since it's the only one compatible with the table port (see TestNodeTripleProviderFactory)
+        var recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 1, 7, true);
+        assertThat(recommendations, hasSize(1));
+        assertThat(recommendations.get(0).getName(), is("String Manipulation"));
+        recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, true);
+        assertThat(recommendations, hasSize(1));
+        assertThat(recommendations.get(0).getName(), is("String Manipulation"));
     }
 
 }

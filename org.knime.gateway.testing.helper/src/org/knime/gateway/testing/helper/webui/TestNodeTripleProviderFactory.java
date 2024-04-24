@@ -206,7 +206,10 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
                 new NodeInfo(// 13, extra successor since 12 recommendations are the default
                     "org.knime.base.node.io.variablecreator.VariableCreatorNodeFactory", //
                     "Variable Creator"),
-                new NodeInfo(// 14, not present in node repository, must be filtered out
+                new NodeInfo(// 14, a non-source node
+                    "org.knime.base.node.preproc.stringmanipulation.StringManipulationNodeFactory", //
+                    "String Manipulation"),
+                new NodeInfo(// 15, not present in node repository, must be filtered out
                     "non.existing.factory", //
                     "Non-Existing Node"));
             return nodes.map(node -> new NodeTriple(null, node, successor));
