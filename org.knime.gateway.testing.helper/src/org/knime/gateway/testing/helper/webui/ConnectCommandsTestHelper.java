@@ -356,13 +356,38 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = new NodeIDEnt(13); // A metanode with one table input and one table output port
 
-        // "1" is a virtual node with one output port, "2" is a virtual node with one input port
-        var cIn = buildConnectableEnt(new NodeIDEnt(13), true, null); // Using 'null'
         var cOut = buildConnectableEnt(new NodeIDEnt(13), false, true); // Using 'false'
+        var cIn = buildConnectableEnt(new NodeIDEnt(13), true, null); // Using 'null'
         var c6 = buildConnectableEnt(new NodeIDEnt(13, 6));
         var c7 = buildConnectableEnt(new NodeIDEnt(13, 7));
 
-        assertAutoConnect(projectId, workflowId, 0, 3, List.of(cIn, c6, c7, cOut));
+        // Use random order on purpose
+        assertAutoConnect(projectId, workflowId, 0, 3, List.of(c6, cIn, cOut, c7));
+
+        var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
+        assertConnection(connections, new NodeIDEnt(13), new NodeIDEnt(13, 6));
+        assertConnection(connections, new NodeIDEnt(13, 6), new NodeIDEnt(13, 7));
+        assertConnection(connections, new NodeIDEnt(13, 7), new NodeIDEnt(13));
+    }
+
+    /**
+     * Tests {@link AutoConnectCommandEnt} throwing an expected exception.
+     *
+     * @throws Exception
+     */
+    public void testAutoConnectException() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = new NodeIDEnt(13); // A metanode with one table input and one table output port
+
+        var cInOut = buildConnectableEnt(new NodeIDEnt(13), true, true);
+        var c6 = buildConnectableEnt(new NodeIDEnt(13, 6));
+
+        var connectables = List.of(cInOut, c6);
+        var command = buildAutoConnectCommandEnt(connectables, false);
+        var exception = assertThrows(OperationNotAllowedException.class,
+            () -> ws().executeWorkflowCommand(projectId, workflowId, command));
+        assertThat(exception.getMessage(),
+            containsString("A metanode ports bar can either be INPUT or OUTPUT, never both"));
     }
 
     /**
@@ -381,6 +406,9 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 
         var connectables = List.of(c1, c2, c3, c4);
         var command = buildAutoConnectCommandEnt(connectables, true);
+
+        // TODO (NXT-2595): Update this, once the functionality is fully supported
+
         var exception = assertThrows(OperationNotAllowedException.class,
             () -> ws().executeWorkflowCommand(projectId, workflowId, command));
         assertThat(exception.getMessage(),
@@ -390,28 +418,32 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     private void assertAutoConnect(final String projectId, final NodeIDEnt workflowId, final int numConnectionsBefore,
         final int numConnectionsAfter, final List<ConnectableEnt> connectables) throws Exception {
         var connectionsBefore = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat(connectionsBefore.size(), is(numConnectionsBefore));
+        assertThat("Unexpected number of connections before command execution", connectionsBefore.size(),
+            is(numConnectionsBefore));
 
         var command = buildAutoConnectCommandEnt(connectables, null);
         ws().executeWorkflowCommand(projectId, workflowId, command);
 
         var connectionsAfter = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat(connectionsAfter.size(), is(numConnectionsAfter));
+        assertThat("Unexpected number of connections after command execution", connectionsAfter.size(),
+            is(numConnectionsAfter));
 
         ws().undoWorkflowCommand(projectId, workflowId);
         var connectionsUndo = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat(connectionsUndo.size(), is(numConnectionsBefore));
+        assertThat("Unexpected number of connections after command undo", connectionsUndo.size(),
+            is(numConnectionsBefore));
 
         ws().redoWorkflowCommand(projectId, workflowId);
         var connectionsRedo = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat(connectionsRedo.size(), is(numConnectionsAfter));
+        assertThat("Unexpected number of connections after command redo", connectionsRedo.size(),
+            is(numConnectionsAfter));
     }
 
     private static void assertConnection(final Collection<ConnectionEnt> connections, final NodeIDEnt sourceId,
         final NodeIDEnt destId) {
         var containsConnection = connections.stream().anyMatch(
             connection -> connection.getSourceNode().equals(sourceId) && connection.getDestNode().equals(destId));
-        assertThat(containsConnection, is(true));
+        assertThat("Connection <%s -> %s> doesn't exist".formatted(sourceId, destId), containsConnection, is(true));
     }
 
     private static ConnectableEnt buildConnectableEnt(final NodeIDEnt nodeId) {

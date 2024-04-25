@@ -49,12 +49,12 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -67,9 +67,11 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodePort;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.impl.webui.service.commands.util.Connectable.Destination;
+import org.knime.gateway.impl.webui.service.commands.util.Connectable.Source;
+import org.knime.gateway.impl.webui.service.commands.util.NodesAutoConnector.PlannedConnection;
 
 /**
  * Utility methods to identify matching port pairs for nodes.
@@ -263,86 +265,89 @@ final class MatchingPortsUtil {
     }
 
     /**
-     * @param nc The node container to get all the port types from
-     * @param isInPort Whether to return all the input or ouput port types
-     * @param isMetaNodeBar Whether the node is a metanode or not
-     * @return The ordered list of port types
-     */
-    static List<PortType> getAllPortTypesOfSide(final NodeContainer nc, final boolean isInPort,
-        final boolean isMetaNodeBar) {
-        final var numberOfPortsOnSide = getPortCount(nc, isInPort, isMetaNodeBar);
-
-        if (numberOfPortsOnSide == 0) {
-            return Collections.emptyList();
-        }
-
-        return IntStream.range(0, numberOfPortsOnSide)//
-            .mapToObj(portIdx -> getPortType(nc, portIdx, isInPort, isMetaNodeBar))//
-            .toList();
-    }
-
-    private static int getPortCount(final NodeContainer nc, final boolean isInPort, final boolean isMetaNodeBar) {
-        if (isMetaNodeBar) {
-            final var subWfm = (WorkflowManager)nc; // 'nc instanceof WorkflowManager' in this case
-            return isInPort ? subWfm.getNrWorkflowOutgoingPorts() : subWfm.getNrWorkflowIncomingPorts();
-        }
-        return isInPort ? nc.getNrInPorts() : nc.getNrOutPorts();
-    }
-
-    /**
-     * @param isMetaNodeBar If inside a metanode, the roles of input and output ports are swapped.
-     * @return The port type
-     */
-    private static PortType getPortType(final NodeContainer nc, final int portIdx, final boolean isInPort,
-        final boolean isMetaNodeBar) {
-        final NodePort p;
-        if (isInPort) {
-            p = isMetaNodeBar ? nc.getOutPort(portIdx) : nc.getInPort(portIdx);
-        } else {
-            p = isMetaNodeBar ? nc.getInPort(portIdx) : nc.getOutPort(portIdx);
-        }
-        return p.getPortType();
-    }
-
-    /**
      * @param source The source with the output ports to check
      * @param destinations The list of destinations with the input ports to check
      * @return Whether there is at least one matching pair of compatible ports or not.
      */
-    static boolean checkForAtLeastOnePairOfCompatiblePorts(final Connectable source,
-        final List<Connectable> destinations) {
-        final var sourcePortStart = source.firstDataPortIdx();
-        final var sourcePortCount = source.numOutPorts();
-
-        if (sourcePortCount <= sourcePortStart) {
+    static boolean checkForAtLeastOneMatchingPairOfPorts(final Source source, final List<Destination> destinations) {
+        if (!source.hasEnoughPorts()) {
             return false;
         }
-
-        return IntStream.range(sourcePortStart, sourcePortCount)//
-            .mapToObj(idx -> source.outPorts().get(idx))//
-            .anyMatch(sourcePortType -> checkForAtLeastOnePairOfCompatiblePorts(source, sourcePortType, destinations));
+        return IntStream.range(source.getFirstDataPortIdx(), source.getPorts().size())//
+            .mapToObj(idx -> source.getPorts().get(idx))//
+            .anyMatch(sourcePortType -> checkForAtLeastOneMatchingPairOfPorts(source, sourcePortType, destinations));
     }
 
-    private static boolean checkForAtLeastOnePairOfCompatiblePorts(final Connectable source,
-        final PortType sourcePortType, final List<Connectable> destinations) {
+    private static boolean checkForAtLeastOneMatchingPairOfPorts(final Source source, final PortType sourcePortType,
+        final List<Destination> destinations) {
         return destinations.stream()//
-            .filter(destination -> !source.equals(destination))//
-            .filter(destination -> source.bounds().xRange().start() < destination.bounds().xRange().start())//
-            .anyMatch(destination -> checkForAtLeastOnePairOfCompatiblePorts(sourcePortType, destination));
+            .filter(destination -> !source.getNodeId().equals(destination.getNodeId()))//
+            .filter(source::isLeftTo)//
+            .anyMatch(destination -> checkForAtLeastOneMatchingPairOfPorts(sourcePortType, destination));
     }
 
-    private static boolean checkForAtLeastOnePairOfCompatiblePorts(final PortType sourcePortType,
-        final Connectable destination) {
-        final var destinationPortStart = destination.firstDataPortIdx();
-        final var destinationPortCount = destination.numInPorts();
-
-        if (destinationPortCount <= destinationPortStart) {
+    private static boolean checkForAtLeastOneMatchingPairOfPorts(final PortType sourcePortType,
+        final Destination destination) {
+        if (!destination.hasEnoughPorts()) {
             return false;
         }
-
-        return IntStream.range(destinationPortStart, destinationPortCount)//
-            .mapToObj(idx -> destination.inPorts().get(idx))//
+        return IntStream.range(destination.getFirstDataPortIdx(), destination.getPorts().size())//
+            .mapToObj(idx -> destination.getPorts().get(idx))//
             .anyMatch(destinationPortType -> CoreUtil.arePortTypesCompatible(sourcePortType, destinationPortType));
+    }
+
+    /**
+     * Finds first matching pair of compatible ports iterating all the source output and destination input ports.
+     *
+     * @param source The source node
+     * @param destination The destination node
+     * @param isSourceUsable Predicate to filter for usable source output ports
+     * @param isDestinationUsable Predicate to filter for usable destination input ports
+     * @param mustDetach Predicate to determine whether an existing connection needs to be removed first
+     * @return The optional planned connection
+     */
+    static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source, final Destination destination,
+        final IntPredicate isSourceUsable, final IntPredicate isDestinationUsable, final IntPredicate mustDetach) {
+        if (!source.hasEnoughPorts()) {
+            return Optional.empty();
+        }
+
+        return IntStream.range(source.getFirstDataPortIdx(), source.getPorts().size())//
+            .filter(isSourceUsable)//
+            .mapToObj(sourcePortIdx -> findFirstMatchingPairOfPorts(source, sourcePortIdx, destination,
+                isDestinationUsable, mustDetach))
+            .flatMap(Optional::stream)//
+            .findFirst();
+    }
+
+    /**
+     * Finds first matching pair of compatible ports for a given source output port iterating iterating all destination
+     * input ports.
+     *
+     * @param source The source node
+     * @param sourcePortIdx The source output port index
+     * @param destination The destination node
+     * @param isDestinationUsable Predicate to filter for usable destination input ports
+     * @param mustDetach Predicate to determine whether an existing connection needs to be removed first
+     * @return The optional planned connection
+     */
+    private static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source,
+        final int sourcePortIdx, final Destination destination, final IntPredicate isDestinationUsable,
+        final IntPredicate mustDetach) {
+        if (!destination.hasEnoughPorts()) {
+            return Optional.empty();
+        }
+
+        final var sourcePortType = source.getPorts().get(sourcePortIdx);
+        return IntStream.range(destination.getFirstDataPortIdx(), destination.getPorts().size())//
+            .filter(isDestinationUsable)//
+            .filter(destinationPortIdx -> {
+                final var destinationPortType = destination.getPorts().get(destinationPortIdx);
+                return CoreUtil.arePortTypesCompatible(sourcePortType, destinationPortType);
+            })//
+            .mapToObj(destinationPortIdx -> new PlannedConnection(source, sourcePortIdx, destination,
+                destinationPortIdx, mustDetach.test(destinationPortIdx)))//
+            .findFirst();
     }
 
 }

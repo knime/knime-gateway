@@ -79,8 +79,13 @@ final class AutoConnect extends AbstractWorkflowCommand {
             throw new OperationNotAllowedException("Automatically connecting all flow variables is not supported yet");
         }
 
-        final var wfm = getWorkflowManager();
         final var connectableEnts = m_commandEnt.getConnectables();
+        if (connectableEnts.stream().anyMatch(
+            c -> Boolean.TRUE.equals(c.isMetanodeInPortsBar()) && Boolean.TRUE.equals(c.isMetanodeOutPortsBar()))) {
+            throw new OperationNotAllowedException("A metanode ports bar can either be INPUT or OUTPUT, never both");
+        }
+
+        final var wfm = getWorkflowManager();
         final var nodesAutoConnector = new NodesAutoConnector(wfm, connectableEnts, isFlowVariablesOnly);
 
         final var addedAndRemovedConnections = nodesAutoConnector.connect();

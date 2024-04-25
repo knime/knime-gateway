@@ -47,13 +47,11 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Stream;
 
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
@@ -287,27 +285,10 @@ public final class Geometry {
         /**
          * @param coords array of the shape [x, y, width, height, ...]. Any further elements are ignored.
          */
-        private Bounds(final int... coords) {
+        Bounds(final int... coords) {
             super(new Point(coords[0], coords[1]), coords[2], coords[3]);
         }
 
-        /**
-         * ...
-         *
-         * @param nc
-         * @param type
-         * @return ...
-         */
-        static Bounds of(final NodeContainer nc, final Connectable.Type type) {
-            return switch (type) {
-                case METANODE_INPUT_BAR -> new Bounds(0, 0, Integer.MIN_VALUE, 0); // All the way to the left
-                case METANODE_OUTPUT_BAR -> new Bounds(0, 0, Integer.MAX_VALUE, 0); // All the way to the right
-                case DEFAULT -> {
-                    var uiInfo = Optional.ofNullable(nc.getUIInformation()).orElseThrow();
-                    var bounds = Optional.ofNullable(uiInfo.getBounds()).orElseThrow();
-                    yield new Bounds(bounds);
-                }
-            };
-        }
     }
+
 }
