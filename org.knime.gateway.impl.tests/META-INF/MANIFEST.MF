@@ -24,4 +24,5 @@ Require-Bundle: org.knime.testing;bundle-version="[5.3.0,6.0.0)",
  junit-jupiter-api;bundle-version="[5.9.2,6.0.0)",
  junit-jupiter-params;bundle-version="[5.9.2,6.0.0)",
  org.junit;bundle-version="[4.13.2,5.0.0)",
- org.knime.js.core;bundle-version="[5.3.0,6.0.0)"
+ org.knime.js.core;bundle-version="[5.3.0,6.0.0)",
+ com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;bundle-version="[2.13.2,3.0.0)"
