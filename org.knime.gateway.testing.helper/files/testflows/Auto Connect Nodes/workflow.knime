@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="workflow.knime">
-    <entry key="created_by" type="xstring" value="5.3.0.v202404121402"/>
+    <entry key="created_by" type="xstring" value="5.3.0.qualifier"/>
     <entry key="created_by_nightly" type="xboolean" value="true"/>
     <entry key="version" type="xstring" value="5.1.0"/>
     <entry key="name" type="xstring" isnull="true" value=""/>
@@ -8,7 +8,7 @@
         <entry key="authored-by" type="xstring" value="kai"/>
         <entry key="authored-when" type="xstring" value="2024-04-04 15:47:42 +0200"/>
         <entry key="lastEdited-by" type="xstring" value="kai"/>
-        <entry key="lastEdited-when" type="xstring" value="2024-04-17 15:54:45 +0200"/>
+        <entry key="lastEdited-when" type="xstring" value="2024-04-26 12:05:01 +0200"/>
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="IDLE"/>
@@ -91,22 +91,6 @@
         </config>
     </config>
     <config key="nodes">
-        <config key="node_1">
-            <entry key="id" type="xint" value="1"/>
-            <entry key="node_settings_file" type="xstring" value="Excel Reader (#1)/settings.xml"/>
-            <entry key="node_is_meta" type="xboolean" value="false"/>
-            <entry key="node_type" type="xstring" value="NativeNode"/>
-            <entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
-            <config key="ui_settings">
-                <config key="extrainfo.node.bounds">
-                    <entry key="array-size" type="xint" value="4"/>
-                    <entry key="0" type="xint" value="-540"/>
-                    <entry key="1" type="xint" value="-141"/>
-                    <entry key="2" type="xint" value="101"/>
-                    <entry key="3" type="xint" value="81"/>
-                </config>
-            </config>
-        </config>
         <config key="node_2">
             <entry key="id" type="xint" value="2"/>
             <entry key="node_settings_file" type="xstring" value="Column Filter (#2)/settings.xml"/>
@@ -310,7 +294,7 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="-529"/>
                     <entry key="1" type="xint" value="373"/>
-                    <entry key="2" type="xint" value="110"/>
+                    <entry key="2" type="xint" value="134"/>
                     <entry key="3" type="xint" value="68"/>
                 </config>
             </config>
@@ -326,7 +310,7 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="-359"/>
                     <entry key="1" type="xint" value="381"/>
-                    <entry key="2" type="xint" value="134"/>
+                    <entry key="2" type="xint" value="121"/>
                     <entry key="3" type="xint" value="81"/>
                 </config>
             </config>
@@ -392,6 +376,22 @@
                     <entry key="1" type="xint" value="904"/>
                     <entry key="2" type="xint" value="93"/>
                     <entry key="3" type="xint" value="81"/>
+                </config>
+            </config>
+        </config>
+        <config key="node_31">
+            <entry key="id" type="xint" value="31"/>
+            <entry key="node_settings_file" type="xstring" value="CSV Reader (#31)/settings.xml"/>
+            <entry key="node_is_meta" type="xboolean" value="false"/>
+            <entry key="node_type" type="xstring" value="NativeNode"/>
+            <entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+            <config key="ui_settings">
+                <config key="extrainfo.node.bounds">
+                    <entry key="array-size" type="xint" value="4"/>
+                    <entry key="0" type="xint" value="-535"/>
+                    <entry key="1" type="xint" value="-136"/>
+                    <entry key="2" type="xint" value="-1"/>
+                    <entry key="3" type="xint" value="-1"/>
                 </config>
             </config>
         </config>

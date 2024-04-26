@@ -375,13 +375,10 @@ interface Connectable {
         }
 
         private static Bounds getBounds(final WorkflowManager wfm) {
-            final var bounds = Optional.ofNullable(wfm.getOutPortsBarUIInfo())//
+            return Optional.ofNullable(wfm.getOutPortsBarUIInfo())//
                 .map(NodeUIInformation::getBounds)//
-                .orElse(null);
-            if (bounds != null) {
-                return new Bounds(bounds);
-            }
-            return new Bounds(Integer.MIN_VALUE + 1, 0, 1, 1); // Max to the right without integer overflow
+                .map(Bounds::new)//
+                .orElse(new Bounds(Integer.MIN_VALUE + 1, 0, 1, 1)); // Max to the right without integer overflow
         }
 
     }
@@ -536,13 +533,10 @@ interface Connectable {
         }
 
         private static Bounds getBounds(final WorkflowManager wfm) {
-            final var bounds = Optional.ofNullable(wfm.getInPortsBarUIInfo())//
+            return Optional.ofNullable(wfm.getInPortsBarUIInfo())//
                 .map(NodeUIInformation::getBounds)//
-                .orElse(null);
-            if (bounds != null) {
-                return new Bounds(bounds);
-            }
-            return new Bounds(Integer.MAX_VALUE - 1, 0, 1, 1); // Max to the left without integer overflow
+                .map(Bounds::new)//
+                .orElse(new Bounds(Integer.MAX_VALUE - 1, 0, 1, 1)); // Max to the left without integer overflow
         }
 
     }

@@ -241,12 +241,12 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        var c1 = buildConnectableEnt(new NodeIDEnt(1));
+        var c31 = buildConnectableEnt(new NodeIDEnt(31));
         var c2 = buildConnectableEnt(new NodeIDEnt(2));
         var c3 = buildConnectableEnt(new NodeIDEnt(3));
         var c4 = buildConnectableEnt(new NodeIDEnt(4));
 
-        assertAutoConnect(projectId, workflowId, 3, 6, List.of(c1, c2, c3, c4));
+        assertAutoConnect(projectId, workflowId, 3, 6, List.of(c31, c2, c3, c4));
     }
 
     /**

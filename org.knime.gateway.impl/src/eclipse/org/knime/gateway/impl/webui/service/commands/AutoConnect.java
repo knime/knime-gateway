@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
@@ -64,9 +64,9 @@ final class AutoConnect extends AbstractWorkflowCommand {
 
     private final AutoConnectCommandEnt m_commandEnt;
 
-    private List<ConnectionContainer> m_oldConnections;
+    private Collection<ConnectionContainer> m_addedConnections;
 
-    private List<ConnectionContainer> m_newConnections;
+    private Collection<ConnectionContainer> m_removedConnections;
 
     AutoConnect(final AutoConnectCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -74,41 +74,46 @@ final class AutoConnect extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        final var isFlowVariablesOnly = Boolean.TRUE.equals(m_commandEnt.isFlowVariablesOnly());
-        if (isFlowVariablesOnly) {
-            throw new OperationNotAllowedException("Automatically connecting all flow variables is not supported yet");
-        }
-
         final var connectableEnts = m_commandEnt.getConnectables();
+
         if (connectableEnts.stream().anyMatch(
             c -> Boolean.TRUE.equals(c.isMetanodeInPortsBar()) && Boolean.TRUE.equals(c.isMetanodeOutPortsBar()))) {
             throw new OperationNotAllowedException("A metanode ports bar can either be INPUT or OUTPUT, never both");
         }
 
         final var wfm = getWorkflowManager();
-        final var nodesAutoConnector = new NodesAutoConnector(wfm, connectableEnts, isFlowVariablesOnly);
+        final var nodesAutoConnector = new NodesAutoConnector(wfm, connectableEnts);
 
-        final var addedAndRemovedConnections = nodesAutoConnector.connect();
-        m_newConnections = addedAndRemovedConnections.getFirst();
-        m_oldConnections = addedAndRemovedConnections.getSecond();
+        final var isFlowVariablesOnly = Boolean.TRUE.equals(m_commandEnt.isFlowVariablesOnly());
+        if (isFlowVariablesOnly) {
 
-        return !m_newConnections.isEmpty();
+            // TODO (NXT-2595): Activate the option here by calling:
+            // nodesAutoConnector.onlyConnectFlowVariables();
+
+            throw new OperationNotAllowedException("Automatically connecting all flow variables is not supported yet");
+        }
+
+        nodesAutoConnector.connect();
+        m_addedConnections = nodesAutoConnector.getAddedConnections();
+        m_removedConnections = nodesAutoConnector.getRemovedConnections();
+
+        return !m_addedConnections.isEmpty();
     }
 
     @Override
     public boolean canUndo() {
         final var wfm = getWorkflowManager();
-        return m_newConnections.stream().allMatch(wfm::canRemoveConnection);
+        return m_addedConnections.stream().allMatch(wfm::canRemoveConnection);
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        m_newConnections.forEach(wfm::removeConnection);
-        m_oldConnections
+        m_addedConnections.forEach(wfm::removeConnection);
+        m_removedConnections
             .forEach(cc -> wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort()));
-        m_newConnections = null;
-        m_oldConnections = null;
+        m_addedConnections = null;
+        m_removedConnections = null;
     }
 
 }
