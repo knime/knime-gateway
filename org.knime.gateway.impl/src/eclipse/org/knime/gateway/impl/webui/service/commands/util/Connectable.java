@@ -106,25 +106,67 @@ interface Connectable {
     }
 
     /**
-     * For everything that is not source / destination specific and not a metanode ports bar
+     * Mainly introduced for shared 'equals(...)' and 'hashCode()' methods
+     *
+     * @author Kai Franze, KNIME GmbH, Germany
      */
-    class DefaultConnectable implements Connectable {
+    abstract class AbstractConnectable implements Connectable { // NOSONAR: Cannot be final
 
         protected final ConnectableEnt m_connectableEnt;
 
-        protected final WorkflowManager m_wfm;
-
         protected final NodeID m_nodeId;
 
+        protected final WorkflowManager m_wfm;
+
         protected final NodeContainer m_nc;
+
+        private AbstractConnectable(final ConnectableEnt connectableEnt, final WorkflowManager wfm) {
+            m_connectableEnt = connectableEnt;
+            m_nodeId = connectableEnt.getNodeId().toNodeID(wfm);
+            m_wfm = wfm;
+            m_nc = NodeConnector.getNodeContainerOrSelf(m_nodeId, wfm);
+        }
+
+        @Override
+        public ConnectableEnt getConnectableEnt() {
+            return m_connectableEnt;
+        }
+
+        @Override
+        public NodeID getNodeId() {
+            return m_nodeId;
+        }
+
+        @Override
+        public boolean equals(final Object other) {
+            if (other == this) {
+                return true;
+            }
+            if (other == null) {
+                return false;
+            }
+            if (other instanceof AbstractConnectable ac) { // NOSONAR: 'instanceof' is needed here
+                return new EqualsBuilder().append(m_connectableEnt, ac.getConnectableEnt()).build();
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder().append(m_connectableEnt).build();
+        }
+
+    }
+
+    /**
+     * For everything that is not source / destination specific and not a metanode ports bar
+     */
+    class DefaultConnectable extends AbstractConnectable { // NOSONAR: Cannot be final
 
         protected final int m_firstDataPortIdx;
 
         private DefaultConnectable(final ConnectableEnt connectableEnt, final WorkflowManager wfm) {
-            m_connectableEnt = connectableEnt;
-            m_wfm = wfm;
-            m_nodeId = connectableEnt.getNodeId().toNodeID(wfm);
-            m_nc = NodeConnector.getNodeContainerOrSelf(m_nodeId, wfm);
+            super(connectableEnt, wfm);
             m_firstDataPortIdx = m_nc instanceof WorkflowManager ? 0 : 1;
         }
 
@@ -134,43 +176,10 @@ interface Connectable {
         }
 
         @Override
-        public ConnectableEnt getConnectableEnt() {
-            return m_connectableEnt;
-        }
-
-        @Override
         public Bounds getBounds() {
             final var uiInfo = Optional.ofNullable(m_nc.getUIInformation()).orElseThrow();
             final var bounds = Optional.ofNullable(uiInfo.getBounds()).orElseThrow();
             return new Bounds(bounds);
-        }
-
-        @Override
-        public boolean equals(final Object other) {
-            if (this == other) {
-                return true;
-            }
-
-            if (!(other instanceof Connectable)) {
-                return false;
-            }
-
-            final var otherConnectable = (Connectable)other;
-            final var otherConnectableEnt = otherConnectable.getConnectableEnt();
-            return new EqualsBuilder()//
-                .append(m_nodeId, otherConnectable.getNodeId())//
-                .append(m_connectableEnt.isMetanodeInPortsBar(), otherConnectableEnt.isMetanodeInPortsBar())//
-                .append(m_connectableEnt.isMetanodeOutPortsBar(), otherConnectableEnt.isMetanodeOutPortsBar())//
-                .build();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder()//
-                .append(m_nodeId)//
-                .append(m_connectableEnt.isMetanodeInPortsBar())//
-                .append(m_connectableEnt.isMetanodeOutPortsBar())//
-                .build();
         }
 
     }
@@ -178,30 +187,19 @@ interface Connectable {
     /**
      * For everything that is not source / destination specific but a metanode ports bar
      */
-    class MetanodePortsBarConnectable implements Connectable {
-
-        protected final ConnectableEnt m_connectableEnt;
-
-        protected final WorkflowManager m_wfm;
-
-        protected final NodeID m_nodeId;
+    class MetanodePortsBarConnectable extends AbstractConnectable { // NOSONAR: Cannot be final
 
         protected final boolean m_isMetanodeInPortsBar;
 
         protected final boolean m_isMetanodeOutPortsBar;
 
-        protected final NodeContainer m_nc;
-
         protected final int m_firstDataPortIdx;
 
         private MetanodePortsBarConnectable(final ConnectableEnt connectableEnt, final WorkflowManager wfm,
             final boolean isMetanodeInPortsBar, final boolean isMetanodeOutPortsBar) {
-            m_connectableEnt = connectableEnt;
-            m_wfm = wfm;
-            m_nodeId = connectableEnt.getNodeId().toNodeID(wfm);
+            super(connectableEnt, wfm);
             m_isMetanodeInPortsBar = isMetanodeInPortsBar;
             m_isMetanodeOutPortsBar = isMetanodeOutPortsBar;
-            m_nc = NodeConnector.getNodeContainerOrSelf(m_nodeId, wfm);
             m_firstDataPortIdx = 0;
         }
 
@@ -211,43 +209,10 @@ interface Connectable {
         }
 
         @Override
-        public ConnectableEnt getConnectableEnt() {
-            return m_connectableEnt;
-        }
-
-        @Override
         public Bounds getBounds() {
             return m_isMetanodeInPortsBar //
                 ? MetanodeInPortsBarDestination.getBounds(m_wfm) //
                 : MetanodeOutPortsBarSource.getBounds(m_wfm);
-        }
-
-        @Override
-        public boolean equals(final Object other) {
-            if (this == other) {
-                return true;
-            }
-
-            if (!(other instanceof Connectable)) {
-                return false;
-            }
-
-            final var otherConnectable = (Connectable)other;
-            final var otherConnectableEnt = otherConnectable.getConnectableEnt();
-            return new EqualsBuilder()//
-                .append(m_nodeId, otherConnectable.getNodeId())//
-                .append(m_connectableEnt.isMetanodeInPortsBar(), otherConnectableEnt.isMetanodeInPortsBar())//
-                .append(m_connectableEnt.isMetanodeOutPortsBar(), otherConnectableEnt.isMetanodeOutPortsBar())//
-                .build();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder()//
-                .append(m_nodeId)//
-                .append(m_connectableEnt.isMetanodeInPortsBar())//
-                .append(m_connectableEnt.isMetanodeOutPortsBar())//
-                .build();
         }
 
     }

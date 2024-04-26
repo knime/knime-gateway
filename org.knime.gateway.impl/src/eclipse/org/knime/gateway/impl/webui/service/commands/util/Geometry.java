@@ -52,6 +52,8 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
@@ -162,13 +164,27 @@ public final class Geometry {
         }
 
         @Override
-        public boolean equals(final Object obj) {
-            if (obj instanceof Point otherPoint) {
-                // TODO can implement using compareTo? i.e. does p1 <= p2 and p2 <= p1 iff p1 = p2 hold with our ordering?
-                return this.x() == otherPoint.x() && this.y() == otherPoint.y();
-            } else {
+        public boolean equals(final Object other) {
+            if (!(other instanceof Point)) {
                 return false;
             }
+
+            if (other == this) {
+                return true;
+            }
+
+            return new EqualsBuilder()//
+                .append(this.x(), ((Point)other).x())//
+                .append(this.y(), ((Point)other).y())//
+                .build();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder()//
+                .append(this.x())//
+                .append(this.y())//
+                .build();
         }
 
         @Override

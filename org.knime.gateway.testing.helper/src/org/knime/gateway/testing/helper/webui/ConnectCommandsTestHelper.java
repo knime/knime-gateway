@@ -88,6 +88,12 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
  */
 public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 
+    private static final String NODE_ID_DATA_GENERATOR = "root:1";
+
+    private static final String NODE_ID_CONCATENATE = "root:27";
+
+    private static final String CONNECTION_ID_DATA_GENERATOR_SRC = "root:10_1";
+
     /**
      * @param entityResultChecker
      * @param serviceProvider
@@ -110,20 +116,22 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         Map<String, ConnectionEnt> connections =
             ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         var originalNumConnections = connections.size();
-        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
+            is(NODE_ID_DATA_GENERATOR));
 
         // replace existing connection
         var command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(10), 1);
         ws().executeWorkflowCommand(projectId, workflowId, command);
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
-        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:27"));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(), is(NODE_ID_CONCATENATE));
 
         // undo
         ws().undoWorkflowCommand(projectId, workflowId);
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
-        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
+            is(NODE_ID_DATA_GENERATOR));
     }
 
     /**
@@ -137,14 +145,15 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         Map<String, ConnectionEnt> connections =
             ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         var originalNumConnections = connections.size();
-        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
+            is(NODE_ID_DATA_GENERATOR));
 
         // new connection
         var command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(21), 2);
         ws().executeWorkflowCommand(projectId, workflowId, command);
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections + 1));
-        assertThat(connections.get("root:21_2").getSourceNode().toString(), is("root:27"));
+        assertThat(connections.get("root:21_2").getSourceNode().toString(), is(NODE_ID_CONCATENATE));
 
         // undo
         ws().undoWorkflowCommand(projectId, workflowId);
@@ -163,7 +172,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
             ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
+            is(NODE_ID_DATA_GENERATOR));
 
         // add already existing connection (command is not added to the undo stack)
         var command = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(10), 1);
@@ -183,7 +193,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
             ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
+            is(NODE_ID_DATA_GENERATOR));
 
         // add a connection to a node that doesn't exist
         var command2 = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(9999999), 1);
@@ -209,7 +220,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
             ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat(connections.get("root:10_1").getSourceNode().toString(), is("root:1"));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
+            is(NODE_ID_DATA_GENERATOR));
 
         // add a connection within a sub-workflow (e.g. within a component)
         var component23Id = new NodeIDEnt(23);
