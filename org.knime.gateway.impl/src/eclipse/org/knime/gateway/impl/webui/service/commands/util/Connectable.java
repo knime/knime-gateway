@@ -171,11 +171,6 @@ interface Connectable {
         }
 
         @Override
-        public NodeID getNodeId() {
-            return m_nodeId;
-        }
-
-        @Override
         public Bounds getBounds() {
             final var uiInfo = Optional.ofNullable(m_nc.getUIInformation()).orElseThrow();
             final var bounds = Optional.ofNullable(uiInfo.getBounds()).orElseThrow();
@@ -201,11 +196,6 @@ interface Connectable {
             m_isMetanodeInPortsBar = isMetanodeInPortsBar;
             m_isMetanodeOutPortsBar = isMetanodeOutPortsBar;
             m_firstDataPortIdx = 0;
-        }
-
-        @Override
-        public NodeID getNodeId() {
-            return m_nodeId;
         }
 
         @Override
@@ -240,7 +230,7 @@ interface Connectable {
 
         /**
          * @param connectable
-         * @return A source derived from a given connectable
+         * @return A source derived from a given {@link Connectable}
          */
         static Optional<Source> of(final Connectable connectable) {
             if (connectable instanceof DefaultConnectable dc
@@ -391,6 +381,10 @@ interface Connectable {
 
         boolean isExecuted();
 
+        /**
+         * @param connectable
+         * @return A destination derived from a given {@link Connectable}
+         */
         static Optional<Destination> of(final Connectable connectable) {
             if (connectable instanceof DefaultConnectable dc
                 && DefaultDestination.isValid(dc.m_wfm, dc.m_nc, dc.m_firstDataPortIdx)) {
