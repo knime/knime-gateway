@@ -279,7 +279,7 @@ final class MatchingPortsUtil {
         final List<Destination> destinations) {
         return destinations.stream()//
             .filter(destination -> !source.getNodeId().equals(destination.getNodeId()))//
-            .filter(source::isLeftTo)//
+            .filter(source::isLeftOf)//
             .anyMatch(destination -> checkForAtLeastOneMatchingPairOfPorts(sourcePortType, destination));
     }
 

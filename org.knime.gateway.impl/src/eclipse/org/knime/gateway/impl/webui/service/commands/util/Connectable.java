@@ -84,11 +84,11 @@ interface Connectable {
 
     Bounds getBounds();
 
-    default boolean isLeftTo(final Connectable connectable) {
+    default boolean isLeftOf(final Connectable connectable) {
         return getBounds().xRange().start() < connectable.getBounds().xRange().start();
     }
 
-    default boolean isRightTo(final Connectable connectable) {
+    default boolean isRightOf(final Connectable connectable) {
         return getBounds().xRange().start() > connectable.getBounds().xRange().start();
     }
 
