@@ -262,7 +262,7 @@ interface Connectable {
         public List<PortType> getPorts() {
             final var portCount = m_nc.getNrOutPorts();
             if (portCount == 0) {
-                return Collections.emptyList();
+                return Collections.emptyList(); // Should never happen
             }
             return IntStream.range(0, portCount)//
                 .mapToObj(m_nc::getOutPort)//
@@ -326,14 +326,14 @@ interface Connectable {
                 final var parentWfmContainsNc = subWfm.getParent().containsNodeContainer(nc.getID());
                 return !wfmContainsNc && subWfmEqualsWfm && parentWfmContainsNc && isMetanodeOutPortsBar;
             }
-            return false;
+            return false; // Should never happen
         }
 
         private static Bounds getBounds(final WorkflowManager wfm) {
             return Optional.ofNullable(wfm.getOutPortsBarUIInfo())//
                 .map(NodeUIInformation::getBounds)//
                 .map(Bounds::new)//
-                .orElse(new Bounds(Integer.MIN_VALUE + 1, 0, 1, 1)); // Max to the right without integer overflow
+                .orElse(new Bounds(Integer.MIN_VALUE + 1, 0, 1, 1)); // Max to the left without integer overflow
         }
 
     }
@@ -414,7 +414,7 @@ interface Connectable {
         public List<PortType> getPorts() {
             final var portCount = m_nc.getNrInPorts();
             if (portCount == 0) {
-                return Collections.emptyList();
+                return Collections.emptyList(); // Should never happen
             }
             return IntStream.range(0, portCount)//
                 .mapToObj(m_nc::getInPort)//
@@ -488,14 +488,14 @@ interface Connectable {
                 final var parentWfmContainsNc = subWfm.getParent().containsNodeContainer(nc.getID());
                 return !wfmContainsNc && subWfmEqualsWfm && parentWfmContainsNc && isMetanodeInPortsBar;
             }
-            return false;
+            return false; // Should never happen
         }
 
         private static Bounds getBounds(final WorkflowManager wfm) {
             return Optional.ofNullable(wfm.getInPortsBarUIInfo())//
                 .map(NodeUIInformation::getBounds)//
                 .map(Bounds::new)//
-                .orElse(new Bounds(Integer.MAX_VALUE - 1, 0, 1, 1)); // Max to the left without integer overflow
+                .orElse(new Bounds(Integer.MAX_VALUE - 1, 0, 1, 1)); // Max to the right without integer overflow
         }
 
     }

@@ -216,16 +216,16 @@ public final class NodesAutoConnector {
         // Iterate the ordered nodes and try to connect from left to right. If they don't overlap in the X domain and
         // the destination node doesn't have any incoming connection from within the selection yet.
         for (var i = 0; i < (selection.size() - 1); i++) { // Iterate all potential sources
-            final var source = Source.of(selection.get(i)).orElse(null);
             final var offset = i + 1; // To pick the second node in the list as destination
-
-            if (source != null && source.hasEnoughPorts()) {
-                final var destinations = getTailOfDestinationStream(selection, offset);
-                getPlannedConnection(source, destinations, plannedConnections, hasNoIncoming).ifPresent(pc -> {
+            Source.of(selection.get(i))//
+                .flatMap(source -> {
+                    final var destinations = getTailOfDestinationStream(selection, offset);
+                    return getPlannedConnection(source, destinations, plannedConnections, hasNoIncoming);
+                })//
+                .ifPresent(pc -> {
                     plannedDestinations.add(pc.destination());
                     plannedConnections.add(pc);
                 });
-            }
         }
 
         // Step two:
@@ -234,17 +234,18 @@ public final class NodesAutoConnector {
         // port of the appropriate port type. Such situations may arise due certain spatial configurations.
         final var nodeAtChainStart = selection.get(0);
         for (var i = 1; i < selection.size(); i++) { // Iterate all potential destinations
-            final var destination = Destination.of(selection.get(i)).orElse(null);
             final var length = i; // To pick all the nodes left to the destination as potential sources
-
-            if (destination != null && !plannedDestinations.contains(destination)
-                && destination.isRightTo(nodeAtChainStart) && destination.hasEnoughPorts()) {
-                final var sources = getHeadOfSourceStreamReversed(selection, length);
-                getPlannedConnection(destination, sources, plannedConnections).ifPresent(pc -> {
+            Destination.of(selection.get(i))//
+                .filter(destination -> !plannedDestinations.contains(destination))//
+                .filter(destination -> destination.isRightTo(nodeAtChainStart))//
+                .flatMap(destination -> {
+                    final var sources = getHeadOfSourceStreamReversed(selection, length);
+                    return getPlannedConnection(destination, sources, plannedConnections);
+                })//
+                .ifPresent(pc -> {
                     plannedDestinations.add(pc.destination());
                     plannedConnections.add(pc);
                 });
-            }
         }
 
         return plannedConnections;

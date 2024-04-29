@@ -94,6 +94,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static final String CONNECTION_ID_DATA_GENERATOR_SRC = "root:10_1";
 
+    private static final int NUMBER_OF_EXISTING_CONNECTIONS = 7;
+
     /**
      * @param entityResultChecker
      * @param serviceProvider
@@ -258,7 +260,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var c3 = buildConnectableEnt(new NodeIDEnt(3));
         var c4 = buildConnectableEnt(new NodeIDEnt(4));
 
-        assertAutoConnect(projectId, workflowId, 3, 6, List.of(c31, c2, c3, c4));
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 3,
+            List.of(c31, c2, c3, c4));
     }
 
     /**
@@ -276,7 +279,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var c21 = buildConnectableEnt(new NodeIDEnt(21));
         var c22 = buildConnectableEnt(new NodeIDEnt(22));
 
-        assertAutoConnect(projectId, workflowId, 3, 5, List.of(c23, c24, c20, c21, c22));
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 2,
+            List.of(c23, c24, c20, c21, c22));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
         assertConnection(connections, new NodeIDEnt(23), new NodeIDEnt(24));
@@ -299,7 +303,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var c29 = buildConnectableEnt(new NodeIDEnt(29)); // Node without input ports
         var c30 = buildConnectableEnt(new NodeIDEnt(30)); // Node without input ports
 
-        assertAutoConnect(projectId, workflowId, 3, 6, List.of(c26, c28, c29, c30));
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 3,
+            List.of(c26, c28, c29, c30));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
         assertConnection(connections, new NodeIDEnt(29), new NodeIDEnt(26));
@@ -321,7 +326,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var c11 = buildConnectableEnt(new NodeIDEnt(11));
         var c14 = buildConnectableEnt(new NodeIDEnt(14));
 
-        assertAutoConnect(projectId, workflowId, 3, 5, List.of(c10, c11, c14));
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 2,
+            List.of(c10, c11, c14));
     }
 
     /**
@@ -338,7 +344,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var c8 = buildConnectableEnt(new NodeIDEnt(8));
         var c13 = buildConnectableEnt(new NodeIDEnt(13));
 
-        assertAutoConnect(projectId, workflowId, 3, 4, List.of(c5, c8, c13));
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 1,
+            List.of(c5, c8, c13));
     }
 
     /**
@@ -403,6 +410,87 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests {@link AutoConnectCommandEnt} with two nodes that can't be connected
+     *
+     * @throws Exception
+     */
+    public void testAutoConnectFromWriterToReader() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = getRootID();
+
+        // "32" is a 'CSV Reader' and "33" is a 'CSV Writer', but the writer is left to the reader
+        var c32 = buildConnectableEnt(new NodeIDEnt(32));
+        var c33 = buildConnectableEnt(new NodeIDEnt(33));
+
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
+            List.of(c32, c33));
+
+        var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
+        assertNoConnection(connections, new NodeIDEnt(32), new NodeIDEnt(33));
+    }
+
+    /**
+     * Tests {@link AutoConnectCommandEnt} with two nodes that can't be connected
+     *
+     * @throws Exception
+     */
+    public void testAutoConnectFromReaderToMetanodeWithoutPorts() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = getRootID();
+
+        // "32" is a 'CSV Reader' and "38" is a metanode without ports
+        var c32 = buildConnectableEnt(new NodeIDEnt(32));
+        var c38 = buildConnectableEnt(new NodeIDEnt(38));
+
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
+            List.of(c32, c38));
+
+        var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
+        assertNoConnection(connections, new NodeIDEnt(32), new NodeIDEnt(38));
+    }
+
+    /**
+     * Tests {@link AutoConnectCommandEnt} with two nodes that can't be connected
+     *
+     * @throws Exception
+     */
+    public void testAutoConnectFromComponentWithoutPortsToWriter() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = getRootID();
+
+        // "32" is a 'CSV Writer' and "39" is a component without ports
+        var c33 = buildConnectableEnt(new NodeIDEnt(33));
+        var c39 = buildConnectableEnt(new NodeIDEnt(39));
+
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
+            List.of(c33, c39));
+
+        var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
+        assertNoConnection(connections, new NodeIDEnt(33), new NodeIDEnt(39));
+    }
+
+    /**
+     * Tests {@link AutoConnectCommandEnt} with replacing an existing and executed connection
+     *
+     * @throws Exception
+     */
+    public void testAutoConnectWithReplacingExistingExecutedConnection() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = getRootID();
+
+        // both are executed and already connected
+        var c42 = buildConnectableEnt(new NodeIDEnt(42));
+        var c44 = buildConnectableEnt(new NodeIDEnt(44));
+
+        // number of connections doesn't change, since one is replaced
+        assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
+            List.of(c42, c44));
+
+        var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
+        assertConnection(connections, new NodeIDEnt(42), new NodeIDEnt(44));
+    }
+
+    /**
      * Tests {@link AutoConnectCommandEnt} only connecting flow variable ports.
      *
      * @throws Exception
@@ -428,7 +516,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertAutoConnect(final String projectId, final NodeIDEnt workflowId, final int numConnectionsBefore,
-        final int numConnectionsAfter, final List<ConnectableEnt> connectables) throws Exception {
+        final int numConnectionsAfter, final List<ConnectableEnt> connectables)
+        throws Exception {
         var connectionsBefore = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat("Unexpected number of connections before command execution", connectionsBefore.size(),
             is(numConnectionsBefore));
@@ -436,19 +525,22 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var command = buildAutoConnectCommandEnt(connectables, null);
         ws().executeWorkflowCommand(projectId, workflowId, command);
 
-        var connectionsAfter = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
+        var workflowAfter = ws().getWorkflow(projectId, workflowId, true).getWorkflow();
+        var connectionsAfter = workflowAfter.getConnections();
         assertThat("Unexpected number of connections after command execution", connectionsAfter.size(),
             is(numConnectionsAfter));
 
-        ws().undoWorkflowCommand(projectId, workflowId);
-        var connectionsUndo = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat("Unexpected number of connections after command undo", connectionsUndo.size(),
-            is(numConnectionsBefore));
+        if (Boolean.TRUE.equals(workflowAfter.getAllowedActions().isCanUndo())) { // Only undo if we can
+            ws().undoWorkflowCommand(projectId, workflowId);
+            var connectionsUndo = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
+            assertThat("Unexpected number of connections after command undo", connectionsUndo.size(),
+                is(numConnectionsBefore));
 
-        ws().redoWorkflowCommand(projectId, workflowId);
-        var connectionsRedo = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
-        assertThat("Unexpected number of connections after command redo", connectionsRedo.size(),
-            is(numConnectionsAfter));
+            ws().redoWorkflowCommand(projectId, workflowId);
+            var connectionsRedo = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
+            assertThat("Unexpected number of connections after command redo", connectionsRedo.size(),
+                is(numConnectionsAfter));
+        }
     }
 
     private static void assertConnection(final Collection<ConnectionEnt> connections, final NodeIDEnt sourceId,
@@ -456,6 +548,14 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var containsConnection = connections.stream().anyMatch(
             connection -> connection.getSourceNode().equals(sourceId) && connection.getDestNode().equals(destId));
         assertThat("Connection <%s -> %s> doesn't exist".formatted(sourceId, destId), containsConnection, is(true));
+    }
+
+    private static void assertNoConnection(final Collection<ConnectionEnt> connections, final NodeIDEnt sourceId,
+        final NodeIDEnt destId) {
+        var containsConnection = connections.stream().noneMatch(
+            connection -> connection.getSourceNode().equals(sourceId) && connection.getDestNode().equals(destId));
+        assertThat("Connection <%s -> %s> does exist but shouldn't".formatted(sourceId, destId), containsConnection,
+            is(true));
     }
 
     private static ConnectableEnt buildConnectableEnt(final NodeIDEnt nodeId) {

@@ -270,9 +270,6 @@ final class MatchingPortsUtil {
      * @return Whether there is at least one matching pair of compatible ports or not.
      */
     static boolean checkForAtLeastOneMatchingPairOfPorts(final Source source, final List<Destination> destinations) {
-        if (!source.hasEnoughPorts()) {
-            return false;
-        }
         return IntStream.range(source.getFirstDataPortIdx(), source.getPorts().size())//
             .mapToObj(idx -> source.getPorts().get(idx))//
             .anyMatch(sourcePortType -> checkForAtLeastOneMatchingPairOfPorts(source, sourcePortType, destinations));
@@ -288,9 +285,6 @@ final class MatchingPortsUtil {
 
     private static boolean checkForAtLeastOneMatchingPairOfPorts(final PortType sourcePortType,
         final Destination destination) {
-        if (!destination.hasEnoughPorts()) {
-            return false;
-        }
         return IntStream.range(destination.getFirstDataPortIdx(), destination.getPorts().size())//
             .mapToObj(idx -> destination.getPorts().get(idx))//
             .anyMatch(destinationPortType -> CoreUtil.arePortTypesCompatible(sourcePortType, destinationPortType));
@@ -308,10 +302,6 @@ final class MatchingPortsUtil {
      */
     static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source, final Destination destination,
         final IntPredicate isSourceUsable, final IntPredicate isDestinationUsable, final IntPredicate mustDetach) {
-        if (!source.hasEnoughPorts()) {
-            return Optional.empty();
-        }
-
         return IntStream.range(source.getFirstDataPortIdx(), source.getPorts().size())//
             .filter(isSourceUsable)//
             .mapToObj(sourcePortIdx -> findFirstMatchingPairOfPorts(source, sourcePortIdx, destination,
@@ -334,10 +324,6 @@ final class MatchingPortsUtil {
     private static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source,
         final int sourcePortIdx, final Destination destination, final IntPredicate isDestinationUsable,
         final IntPredicate mustDetach) {
-        if (!destination.hasEnoughPorts()) {
-            return Optional.empty();
-        }
-
         final var sourcePortType = source.getPorts().get(sourcePortIdx);
         return IntStream.range(destination.getFirstDataPortIdx(), destination.getPorts().size())//
             .filter(isDestinationUsable)//
