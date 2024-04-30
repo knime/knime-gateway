@@ -47,31 +47,23 @@
 package org.knime.gateway.impl.service.util;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.ConnectionContainer;
-import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.ConnectionProgressListener;
-import org.knime.core.node.workflow.ConnectionUIInformationListener;
 import org.knime.core.node.workflow.LoopStatusChangeListener;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeMessageListener;
 import org.knime.core.node.workflow.NodeProgressListener;
-import org.knime.core.node.workflow.NodePropertyChangedListener;
-import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -93,39 +85,6 @@ public class WorkflowChangesListener implements Closeable {
 
     private WorkflowListener m_workflowListener;
 
-    private final NodeListenerMap<NodeStateChangeListener> m_nodeStateChangeListeners =
-        new NodeListenerMap<>(NodeContainer::addNodeStateChangeListener, NodeContainer::removeNodeStateChangeListener);
-
-    private final NodeListenerMap<NodeProgressListener> m_progressListeners =
-        new NodeListenerMap<>((nc, l) -> nc.getProgressMonitor().addProgressListener(l),
-            (nc, l) -> nc.getProgressMonitor().removeProgressListener(l));
-
-    private final NodeListenerMap<NodeUIInformationListener> m_nodeUIListeners = new NodeListenerMap<>( //
-        (nc, l) -> { //
-            nc.addUIInformationListener(l);
-            nc.getNodeAnnotation().addUIInformationListener(l);
-        }, //
-        (nc, l) -> { //
-            nc.removeUIInformationListener(l);
-            nc.getNodeAnnotation().removeUIInformationListener(l);
-        });
-
-    private final NodeListenerMap<NodeMessageListener> m_nodeMessageListeners =
-        new NodeListenerMap<>(NodeContainer::addNodeMessageListener, NodeContainer::removeNodeMessageListener);
-
-    private final NodeListenerMap<NodePropertyChangedListener> m_nodePropertyChangedListeners = new NodeListenerMap<>(
-        NodeContainer::addNodePropertyChangedListener, NodeContainer::removeNodePropertyChangedListener);
-
-    private final NodeListenerMap<LoopStatusChangeListener> m_loopStatusChangeListeners = new NodeListenerMap<>(
-        (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
-            .ifPresent(h -> h.addLoopPausedListener(l)),
-        (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
-            .ifPresent(h -> h.removeLoopPausedListener(l)));
-
-    private final Map<WorkflowAnnotationID, NodeUIInformationListener> m_workflowAnnotationListeners = new HashMap<>();
-
-    private final Map<ConnectionID, ConnectionProgressListener> m_connectionProgressListeners;
-
     private final Set<Consumer<WorkflowManager>> m_workflowChangedCallbacks;
 
     private final Set<WorkflowChangesTracker> m_workflowChangesTrackers = Collections.synchronizedSet(new HashSet<>());
@@ -134,25 +93,94 @@ public class WorkflowChangesListener implements Closeable {
 
     private final CallThrottle m_callThrottle;
 
-    private final boolean m_isInStreamingMode;
+    private final List<Listener<NodeContainer>> m_nodeListeners = new ArrayList<>();
 
-    private final Map<ConnectionID, ConnectionUIInformationListener> m_connectionUIInformationListeners =
-        new HashMap<>();
+    private Listener<WorkflowAnnotation> m_workflowAnnotationListener = new NoopListener<>();
+
+    private Listener<ConnectionContainer> m_connectionUIInformationListener =
+        new NoopListener<>();
+
+    private Listener<ConnectionContainer> m_connectionProgressListener = new NoopListener<>();
+
+    /**
+     * Allows one to define what aspects of the workflow to listen to.
+     */
+    public enum Scope {
+            /**
+             * Listen to node message changes.
+             */
+            NODE_MESSAGES, //
+            /**
+             * Everything else to listen to.
+             */
+            ALL_OTHERS;
+    }
 
     /**
      * @param wfm the workflow manager to listen to
      */
     public WorkflowChangesListener(final WorkflowManager wfm) {
+        this(wfm, Scope.NODE_MESSAGES, Scope.ALL_OTHERS);
+    }
+
+    /**
+     * @param wfm the workflow manager to listen to
+     * @param scopes what workflow changes to listen to
+     */
+    public WorkflowChangesListener(final WorkflowManager wfm, final Scope... scopes) {
         m_wfm = wfm;
         m_workflowChangedCallbacks = new HashSet<>();
 
-        m_isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
-        m_connectionProgressListeners = m_isInStreamingMode ? new HashMap<>() : null;
+        var isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
+        if (isInStreamingMode) {
+            m_connectionProgressListener = new ListenerImpl<>(ConnectionContainer::addProgressListener,
+                ConnectionContainer::removeProgressListener, e -> callback());
+        }
 
         m_callThrottle = new CallThrottle(() -> {
             m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
             m_postProcessCallbacks.forEach(Runnable::run);
         }, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
+
+        for (var scope : scopes) {
+            if (scope == Scope.NODE_MESSAGES) {
+                m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodeMessageListener,
+                    NodeContainer::removeNodeMessageListener, e -> callback()));
+            } else {
+                m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodeStateChangeListener,
+                    NodeContainer::removeNodeStateChangeListener, e -> {
+                        updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
+                        callback();
+                    }));
+                m_nodeListeners.add(new ListenerImpl<NodeContainer, NodeProgressListener>(
+                    (nc, l) -> nc.getProgressMonitor().addProgressListener(l),
+                    (nc, l) -> nc.getProgressMonitor().removeProgressListener(l), e -> callback()));
+                m_nodeListeners.add(new ListenerImpl<NodeContainer, NodeUIInformationListener>( //
+                    (nc, l) -> { //
+                        nc.addUIInformationListener(l);
+                        nc.getNodeAnnotation().addUIInformationListener(l);
+                    }, //
+                    (nc, l) -> { //
+                        nc.removeUIInformationListener(l);
+                        nc.getNodeAnnotation().removeUIInformationListener(l);
+                    }, e -> callback()));
+                m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodePropertyChangedListener,
+                    NodeContainer::removeNodePropertyChangedListener, e -> callback()));
+                m_nodeListeners.add(new ListenerImpl<NodeContainer, LoopStatusChangeListener>(
+                    (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
+                        .ifPresent(h -> h.addLoopPausedListener(l)),
+                    (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
+                        .ifPresent(h -> h.removeLoopPausedListener(l)),
+                    this::callback));
+                m_workflowAnnotationListener = new ListenerImpl<>(WorkflowAnnotation::addUIInformationListener,
+                    WorkflowAnnotation::removeUIInformationListener, e -> callback());
+                m_connectionUIInformationListener = new ListenerImpl<>(ConnectionContainer::addUIInformationListener,
+                    ConnectionContainer::removeUIInformationListener, e -> {
+                        updateWorkflowChangesTrackers(WorkflowChange.BENDPOINTS_MODIFIED);
+                        callback();
+                    });
+            }
+        }
     }
 
     /**
@@ -259,12 +287,10 @@ public class WorkflowChangesListener implements Closeable {
         };
         m_wfm.addListener(m_workflowListener);
         m_wfm.getNodeContainers().forEach(this::addNodeListeners);
-        m_wfm.getWorkflowAnnotations().forEach(this::addWorkflowAnnotationListener);
-        Collection<ConnectionContainer> connectionContainers = m_wfm.getConnectionContainers();
-        if (m_isInStreamingMode) {
-            connectionContainers.forEach(this::addConnectionProgressListener);
-        }
-        connectionContainers.forEach(this::addConnectionUIInformationListener);
+        m_workflowAnnotationListener.addTo(m_wfm.getWorkflowAnnotations());
+        var connectionContainers = m_wfm.getConnectionContainers();
+        m_connectionProgressListener.addTo(connectionContainers);
+        m_connectionUIInformationListener.addTo(connectionContainers);
     }
 
     private void trackChange(final WorkflowEvent e) {
@@ -315,22 +341,20 @@ public class WorkflowChangesListener implements Closeable {
                 removeNodeListeners((NodeContainer)e.getOldValue());
                 break;
             case ANNOTATION_ADDED:
-                addWorkflowAnnotationListener((WorkflowAnnotation)e.getNewValue());
+                m_workflowAnnotationListener.addTo((WorkflowAnnotation)e.getNewValue());
                 break;
             case ANNOTATION_REMOVED:
-                removeWorkflowAnnotationListener((WorkflowAnnotation)e.getOldValue());
+                m_workflowAnnotationListener.removeFrom((WorkflowAnnotation)e.getOldValue());
                 break;
             case CONNECTION_ADDED:
-                addConnectionUIInformationListener((ConnectionContainer)e.getNewValue());
-                if (m_isInStreamingMode) {
-                    addConnectionProgressListener((ConnectionContainer)e.getNewValue());
-                }
+                var cc = (ConnectionContainer)e.getNewValue();
+                m_connectionUIInformationListener.addTo(cc);
+                m_connectionProgressListener.addTo(cc);
                 break;
             case CONNECTION_REMOVED:
-                removeConnectionUIInformationListener((ConnectionContainer)e.getOldValue());
-                if (m_isInStreamingMode) {
-                    removeConnectionProgressListener((ConnectionContainer)e.getOldValue());
-                }
+                cc = (ConnectionContainer)e.getOldValue();
+                m_connectionUIInformationListener.removeFrom(cc);
+                m_connectionProgressListener.removeFrom(cc);
                 break;
             default:
                 //
@@ -338,67 +362,15 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void addNodeListeners(final NodeContainer nc) {
-        m_nodeStateChangeListeners.add(nc, e -> {
-            updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
-            callback();
-        });
-        m_progressListeners.add(nc, e -> callback());
-        m_nodeUIListeners.add(nc, e -> callback());
-        m_nodeMessageListeners.add(nc, e -> callback());
-        m_loopStatusChangeListeners.add(nc, this::callback);
-        m_nodePropertyChangedListeners.add(nc, e -> callback());
+        m_nodeListeners.forEach(l -> l.addTo(nc));
     }
 
     private void removeNodeListeners(final NodeContainer nc) {
-        List.of( //
-            m_nodeStateChangeListeners, //
-            m_progressListeners, //
-            m_nodeUIListeners, //
-            m_nodeMessageListeners, //
-            m_loopStatusChangeListeners, //
-            m_nodePropertyChangedListeners //
-        ).forEach(nlm -> nlm.remove(nc));
+        m_nodeListeners.forEach(nlm -> nlm.removeFrom(nc));
     }
 
     private static Optional<NativeNodeContainer> getNNC(final NodeContainer nc) {
         return (nc instanceof NativeNodeContainer nnc) ? Optional.of(nnc) : Optional.empty();
-    }
-
-    private void addConnectionProgressListener(final ConnectionContainer cc) {
-        ConnectionProgressListener l = e -> callback();
-        cc.addProgressListener(l);
-        m_connectionProgressListeners.put(cc.getID(), l);
-    }
-
-    private void removeConnectionProgressListener(final ConnectionContainer cc) {
-        ConnectionID id = cc.getID();
-        cc.removeProgressListener(m_connectionProgressListeners.get(id));
-        m_connectionProgressListeners.remove(id);
-    }
-
-    private void addConnectionUIInformationListener(final ConnectionContainer cc) {
-        ConnectionUIInformationListener l = e -> {
-            updateWorkflowChangesTrackers(WorkflowChange.BENDPOINTS_MODIFIED);
-            callback();
-        };
-        cc.addUIInformationListener(l);
-        m_connectionUIInformationListeners.put(cc.getID(), l);
-    }
-
-    private void removeConnectionUIInformationListener(final ConnectionContainer cc) {
-        cc.removeUIInformationListener(m_connectionUIInformationListeners.get(cc.getID()));
-        m_connectionUIInformationListeners.remove(cc.getID());
-    }
-
-    private void addWorkflowAnnotationListener(final WorkflowAnnotation wa) {
-        NodeUIInformationListener l = e -> callback();
-        m_workflowAnnotationListeners.put(wa.getID(), l);
-        wa.addUIInformationListener(l);
-    }
-
-    private void removeWorkflowAnnotationListener(final WorkflowAnnotation wa) {
-        wa.removeUIInformationListener(m_workflowAnnotationListeners.get(wa.getID()));
-        m_workflowAnnotationListeners.remove(wa.getID());
     }
 
     private void callback() {
@@ -414,19 +386,10 @@ public class WorkflowChangesListener implements Closeable {
         m_wfm.removeListener(m_workflowListener);
         m_workflowListener = null;
         m_wfm.getNodeContainers().forEach(this::removeNodeListeners);
-        m_wfm.getWorkflowAnnotations().forEach(this::removeWorkflowAnnotationListener);
-        m_nodeMessageListeners.clear();
-        m_nodeStateChangeListeners.clear();
-        m_nodeUIListeners.clear();
-        m_progressListeners.clear();
-        m_workflowAnnotationListeners.clear();
+        m_workflowAnnotationListener.removeFrom(m_wfm.getWorkflowAnnotations());
         var connectionContainers = m_wfm.getConnectionContainers();
-        if (m_isInStreamingMode) {
-            connectionContainers.forEach(this::removeConnectionProgressListener);
-            m_connectionProgressListeners.clear();
-        }
-        connectionContainers.forEach(this::removeConnectionUIInformationListener);
-        m_connectionUIInformationListeners.clear();
+        m_connectionProgressListener.removeFrom(connectionContainers);
+        m_connectionUIInformationListener.removeFrom(connectionContainers);
     }
 
     @Override
@@ -452,51 +415,89 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     /**
-     * Wrapper around HashMap that uses the given NodeContainer's {@link System#identityHashCode(Object)} as keys. Only
-     * performs update if key not yet present. {@link org.knime.core.node.workflow.NodeID} does not suffice because the
-     * object associated with a node ID may change in the underlying workflow (e.g. conversion from metanode to
-     * component). Dependency to {@link NodeContainer} and related classes is avoided for maintainability.
+     * Generalization of any listener that can be attached to aspects of a node/connection/annotation.
      *
+     * @param <T> The target type to attach/detach the listener to/from
      * @param <L> The type of event listener to attach / detach
      */
-    private static final class NodeListenerMap<L> {
+    private interface Listener<T> {
 
-        private final Map<Integer, L> m_listeners = new HashMap<>();
+        void addTo(T target);
 
-        final BiConsumer<NodeContainer, L> m_attacher;
+        void addTo(final Collection<T> targets);
 
-        final BiConsumer<NodeContainer, L> m_detacher;
+        void removeFrom(T target);
 
-        private NodeListenerMap(final BiConsumer<NodeContainer, L> attacher,
-            final BiConsumer<NodeContainer, L> detacher) {
+        void removeFrom(final Collection<T> targets);
+
+    }
+
+
+    /**
+     * Generalization of any listener that can be attached to aspects of a node/connection/annotation.
+     *
+     * @param <L> The type of event listener to attach / detach
+     * @param <T> The target type to attach/detach the listener to/from
+     */
+    private static final class ListenerImpl<T, L> implements Listener<T> {
+
+        final BiConsumer<T, L> m_attacher;
+
+        final BiConsumer<T, L> m_detacher;
+
+        final L m_listener;
+
+        private ListenerImpl(final BiConsumer<T, L> attacher,
+            final BiConsumer<T, L> detacher, final L listener) {
             m_attacher = attacher;
             m_detacher = detacher;
+            m_listener = listener;
         }
 
-        private static Integer getKey(final NodeContainer nc) {
-            return System.identityHashCode(nc);
+        @Override
+        public void addTo(final Collection<T> targets) {
+            targets.forEach(this::addTo);
         }
 
-        private void add(final NodeContainer nc, final L listener) {
-            var ncKey = getKey(nc);
-
-            if (!m_listeners.containsKey(ncKey)) {  // NOSONAR
-                m_attacher.accept(nc, listener);
-                m_listeners.put(ncKey, listener);
-            }
+        @Override
+        public void removeFrom(final Collection<T> targets) {
+            targets.forEach(this::removeFrom);
         }
 
-        private void remove(final NodeContainer nc) {
-            var ncKey = getKey(nc);
-            var listener = m_listeners.remove(ncKey);
-            if (listener != null) {
-                m_detacher.accept(nc, listener);
-            }
+        @Override
+        public void addTo(final T target) {
+            m_attacher.accept(target, m_listener);
         }
 
-        private void clear() {
-            m_listeners.clear();
+        @Override
+        public void removeFrom(final T target) {
+            m_detacher.accept(target, m_listener);
         }
+
+    }
+
+    private static final class NoopListener<T, L> implements Listener<T> {
+
+        @Override
+        public void addTo(final Collection<T> targets) {
+           //
+        }
+
+        @Override
+        public void removeFrom(final Collection<T> targets) {
+           //
+        }
+
+        @Override
+        public void addTo(final T target) {
+            //
+        }
+
+        @Override
+        public void removeFrom(final T target) {
+            //
+        }
+
     }
 
 }
