@@ -73,9 +73,9 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.service.util.CallThrottle.CallState;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
-import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -242,9 +242,9 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      * @return <code>true</code> any of the {@link WorkflowChangesListener}s has the callback-state as given by the
      *         argument
      */
-    public boolean checkWorkflowChangesListenerCallbackState(final CallbackState state) {
+    public boolean checkWorkflowChangesListenerCallbackState(final CallState state) {
         return m_workflowChangesCallbacks.keySet().stream()
-            .anyMatch(k -> m_workflowMiddleware.getWorkflowChangesListener(k).getCallbackState() == state);
+            .anyMatch(k -> m_workflowMiddleware.getWorkflowChangesListener(k).getCallState() == state);
     }
 
     /**

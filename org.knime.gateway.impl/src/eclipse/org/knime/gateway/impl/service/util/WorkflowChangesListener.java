@@ -55,8 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -78,6 +76,7 @@ import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.impl.service.util.CallThrottle.CallState;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
@@ -89,13 +88,6 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  * @author Kai Franze, KNIME GmbH
  */
 public class WorkflowChangesListener implements Closeable {
-
-    /**
-     * The minimum time interval between two consecutive calls to the registered callbacks in order to throttle the
-     * number of callbacks to not overwhelm the consumer. If calling the callbacks takes longer than this amount, it
-     * won't be throttled any further.
-     */
-    private static final int MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS = 100;
 
     private final WorkflowManager m_wfm;
 
@@ -140,9 +132,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private final Set<Runnable> m_postProcessCallbacks = new HashSet<>();
 
-    private final ExecutorService m_executorService;
-
-    private final AtomicCallbackState m_callbackState = new AtomicCallbackState();
+    private final CallThrottle m_callThrottle;
 
     private final boolean m_isInStreamingMode;
 
@@ -154,15 +144,15 @@ public class WorkflowChangesListener implements Closeable {
      */
     public WorkflowChangesListener(final WorkflowManager wfm) {
         m_wfm = wfm;
-        m_executorService = Executors.newSingleThreadExecutor(r -> {
-            var t = new Thread(r, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
-            t.setDaemon(true);
-            return t;
-        });
         m_workflowChangedCallbacks = new HashSet<>();
 
         m_isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
         m_connectionProgressListeners = m_isInStreamingMode ? new HashMap<>() : null;
+
+        m_callThrottle = new CallThrottle(() -> {
+            m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
+            m_postProcessCallbacks.forEach(Runnable::run);
+        }, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
     }
 
     /**
@@ -413,30 +403,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private void callback() {
         updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANY);
-        if (!m_callbackState.checkIsCallbackInProgressAndChangeState()) {
-            m_executorService.execute(() -> {
-                do {
-                    throttle(() -> {
-                        m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
-                        m_postProcessCallbacks.forEach(Runnable::run);
-                    });
-                } while (m_callbackState.checkIsCallbackAwaitingAndChangeState());
-            });
-        }
-    }
-
-    private static void throttle(final Runnable run) {
-        var start = System.currentTimeMillis();
-        run.run();
-        var duration = System.currentTimeMillis() - start;
-        var waitTimeToThrottle = MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS - duration;
-        if (waitTimeToThrottle > 0) {
-            try {
-                Thread.sleep(waitTimeToThrottle);
-            } catch (InterruptedException ex) { // NOSONAR
-                // ignore
-            }
-        }
+        m_callThrottle.invoke();
     }
 
     private void stopListening() {
@@ -465,7 +432,7 @@ public class WorkflowChangesListener implements Closeable {
     @Override
     public void close() {
         stopListening();
-        m_executorService.shutdown();
+        m_callThrottle.dispose();
         m_workflowChangedCallbacks.clear();
         m_workflowChangesTrackers.clear();
         m_postProcessCallbacks.clear();
@@ -473,6 +440,15 @@ public class WorkflowChangesListener implements Closeable {
 
     boolean isListening() {
         return m_workflowListener != null;
+    }
+
+    /**
+     * For testing purposes only!
+     *
+     * @return
+     */
+    public CallState getCallState() {
+        return m_callThrottle.getCallState();
     }
 
     /**
@@ -523,69 +499,4 @@ public class WorkflowChangesListener implements Closeable {
         }
     }
 
-    /**
-     * Gives the current callback state. Mainly for testing purposes.
-     *
-     * @return the current callback state
-     */
-    public CallbackState getCallbackState() {
-        return m_callbackState.m_state;
-    }
-
-    /**
-     * The state the 'callback process' is in.
-     */
-    public enum CallbackState {
-            /**
-             * No callback in progress nor is one awaiting
-             */
-            IDLE,
-
-            /**
-             * Callback in progress, none is awaiting
-             */
-            IN_PROGRESS,
-
-            /**
-             * Callback in progress, and another one awaiting
-             */
-            IN_PROGRESS_AND_AWAITING;
-    }
-
-    private static final class AtomicCallbackState {
-
-        private CallbackState m_state = CallbackState.IDLE;
-
-        /**
-         * If the callback is in progress, state will change to 'in progress and one callback awaiting' (2); else to 'in
-         * progress, no callback awaiting' (1).
-         *
-         * @return <code>true</code> if the callback is in progress, otherwise <code>false</code>
-         */
-        synchronized boolean checkIsCallbackInProgressAndChangeState() {
-            if (m_state == CallbackState.IDLE) {
-                m_state = CallbackState.IN_PROGRESS;
-                return false;
-            } else {
-                m_state = CallbackState.IN_PROGRESS_AND_AWAITING;
-                return true;
-            }
-        }
-
-        /**
-         * If a callback is awaiting (and another already in progress), the state will change to 'in progress' (1);
-         * otherwise it will change to 'not in progress, none awaiting' (0)
-         *
-         * @return <code>true</code> if a callback is awaiting, otherwise <code>false</code>
-         */
-        synchronized boolean checkIsCallbackAwaitingAndChangeState() {
-            if (m_state == CallbackState.IN_PROGRESS_AND_AWAITING) {
-                m_state = CallbackState.IN_PROGRESS;
-                return true;
-            } else {
-                m_state = CallbackState.IDLE;
-                return false;
-            }
-        }
-    }
 }

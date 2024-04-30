@@ -77,7 +77,7 @@ import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.impl.service.util.WorkflowChangesListener.CallbackState;
+import org.knime.gateway.impl.service.util.CallThrottle.CallState;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
@@ -177,7 +177,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
                 WorkflowChangedEventSource es = (WorkflowChangedEventSource)DefaultEventService.getInstance()
                     .getEventSource(DefaultWorkflowChangedEventTypeEnt.class);
-                assertTrue(es.checkWorkflowChangesListenerCallbackState(CallbackState.IDLE));
+                assertTrue(es.checkWorkflowChangesListenerCallbackState(CallState.IDLE));
             });
 
             // check the expected patches
