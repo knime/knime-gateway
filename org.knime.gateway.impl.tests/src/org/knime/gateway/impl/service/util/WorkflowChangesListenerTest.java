@@ -52,10 +52,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 import org.junit.Test;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -76,32 +74,32 @@ public class WorkflowChangesListenerTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var workflowChangesListener = new WorkflowChangesListener(wfm);
 
-        assertThat(workflowChangesListener.isListening(), is(false));
+        assertThat(workflowChangesListener.m_isListening, is(false));
 
-        Consumer<WorkflowManager> callback = w -> {
+        Runnable callback = () -> {
         };
         workflowChangesListener.addWorkflowChangeCallback(callback);
-        assertThat(workflowChangesListener.isListening(), is(true));
-        Consumer<WorkflowManager> callback2 = w -> {
+        assertThat(workflowChangesListener.m_isListening, is(true));
+        Runnable callback2 = () -> {
         };
         workflowChangesListener.addWorkflowChangeCallback(callback2);
-        assertThat(workflowChangesListener.isListening(), is(true));
+        assertThat(workflowChangesListener.m_isListening, is(true));
 
         workflowChangesListener.removeCallback(callback);
-        assertThat(workflowChangesListener.isListening(), is(true));
+        assertThat(workflowChangesListener.m_isListening, is(true));
         workflowChangesListener.removeCallback(callback2);
-        assertThat(workflowChangesListener.isListening(), is(false));
+        assertThat(workflowChangesListener.m_isListening, is(false));
 
         var tracker = workflowChangesListener.createWorkflowChangeTracker();
-        assertThat(workflowChangesListener.isListening(), is(true));
+        assertThat(workflowChangesListener.m_isListening, is(true));
 
         workflowChangesListener.removeWorkflowChangesTracker(tracker);
-        assertThat(workflowChangesListener.isListening(), is(false));
+        assertThat(workflowChangesListener.m_isListening, is(false));
 
         workflowChangesListener.addWorkflowChangeCallback(callback);
-        assertThat(workflowChangesListener.isListening(), is(true));
+        assertThat(workflowChangesListener.m_isListening, is(true));
         workflowChangesListener.close();
-        assertThat(workflowChangesListener.isListening(), is(false));
+        assertThat(workflowChangesListener.m_isListening, is(false));
     }
 
 }

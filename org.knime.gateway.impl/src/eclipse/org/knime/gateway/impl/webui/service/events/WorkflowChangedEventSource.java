@@ -56,7 +56,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -74,6 +73,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.CallThrottle.CallState;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
@@ -94,7 +94,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
-    private final Map<WorkflowKey, Consumer<WorkflowManager>> m_workflowChangesCallbacks = new HashMap<>();
+    private final Map<WorkflowKey, Runnable> m_workflowChangesCallbacks = new HashMap<>();
 
     private final Map<WorkflowKey, WorkflowChangesTracker> m_trackers = new HashMap<>();
 
@@ -162,7 +162,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         m_workflowChangesCallbacks.computeIfAbsent(workflowKey, wfKey -> {
             String latestSnapshotId =
                 workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
-            Consumer<WorkflowManager> callback =
+            Runnable callback =
                 createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId), wfChangesTracker);
             workflowChangesListener.addWorkflowChangeCallback(callback);
             return callback;
@@ -179,9 +179,10 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         }
     }
 
-    private Consumer<WorkflowManager> createWorkflowChangesCallback(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator, final WorkflowChangesTracker tracker) {
-        return wfm -> {
+    private Runnable createWorkflowChangesCallback(final WorkflowKey wfKey, final PatchEntCreator patchEntCreator,
+        final WorkflowChangesTracker tracker) {
+        var wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId());
+        return () -> {
             preEventCreation();
             WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey,
                 patchEntCreator, patchEntCreator.getLastSnapshotId(), true, tracker);
@@ -212,7 +213,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     @SuppressWarnings("resource")
     private void removeEventListener(final WorkflowKey wfKey) {
-        Consumer<WorkflowManager> callback = m_workflowChangesCallbacks.remove(wfKey);
+        var callback = m_workflowChangesCallbacks.remove(wfKey);
         if (callback != null && m_workflowMiddleware.hasStateFor(wfKey)) {
             m_workflowMiddleware.getWorkflowChangesListener(wfKey).removeCallback(callback);
         }

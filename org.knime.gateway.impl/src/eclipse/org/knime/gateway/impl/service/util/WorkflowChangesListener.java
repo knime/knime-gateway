@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.LoopStatusChangeListener;
@@ -83,15 +82,15 @@ public class WorkflowChangesListener implements Closeable {
 
     private final WorkflowManager m_wfm;
 
-    private WorkflowListener m_workflowListener;
-
-    private final Set<Consumer<WorkflowManager>> m_workflowChangedCallbacks;
+    private final Set<Runnable> m_workflowChangedCallbacks;
 
     private final Set<WorkflowChangesTracker> m_workflowChangesTrackers = Collections.synchronizedSet(new HashSet<>());
 
     private final Set<Runnable> m_postProcessCallbacks = new HashSet<>();
 
     private final CallThrottle m_callThrottle;
+
+    private final WorkflowListener m_workflowListener;
 
     private final List<Listener<NodeContainer>> m_nodeListeners = new ArrayList<>();
 
@@ -101,6 +100,10 @@ public class WorkflowChangesListener implements Closeable {
         new NoopListener<>();
 
     private Listener<ConnectionContainer> m_connectionProgressListener = new NoopListener<>();
+
+    boolean m_isListening;
+
+    private final boolean m_recurse;
 
     /**
      * Allows one to define what aspects of the workflow to listen to.
@@ -120,15 +123,17 @@ public class WorkflowChangesListener implements Closeable {
      * @param wfm the workflow manager to listen to
      */
     public WorkflowChangesListener(final WorkflowManager wfm) {
-        this(wfm, Scope.NODE_MESSAGES, Scope.ALL_OTHERS);
+        this(wfm, false, Scope.NODE_MESSAGES, Scope.ALL_OTHERS);
     }
 
     /**
      * @param wfm the workflow manager to listen to
      * @param scopes what workflow changes to listen to
+     * @param recurse whether to recurse into sub-workflows to listen for respective changes there, too
      */
-    public WorkflowChangesListener(final WorkflowManager wfm, final Scope... scopes) {
+    public WorkflowChangesListener(final WorkflowManager wfm, final boolean recurse, final Scope... scopes) {
         m_wfm = wfm;
+        m_recurse = recurse;
         m_workflowChangedCallbacks = new HashSet<>();
 
         var isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
@@ -138,9 +143,15 @@ public class WorkflowChangesListener implements Closeable {
         }
 
         m_callThrottle = new CallThrottle(() -> {
-            m_workflowChangedCallbacks.forEach(c -> c.accept(m_wfm));
+            m_workflowChangedCallbacks.forEach(Runnable::run);
             m_postProcessCallbacks.forEach(Runnable::run);
         }, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
+
+        m_workflowListener = e -> {
+            addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
+            trackChange(e);
+            callback();
+        };
 
         for (var scope : scopes) {
             if (scope == Scope.NODE_MESSAGES) {
@@ -186,9 +197,9 @@ public class WorkflowChangesListener implements Closeable {
     /**
      * Adds a callback which is called as soon as the associated workflow changed.
      *
-     * @param callback the callback to call if a change occurs in the workflow manager
+     * @param callback the callback to call if a change occurs in the workflow manager(s)
      */
-    public void addWorkflowChangeCallback(final Consumer<WorkflowManager> callback) {
+    public void addWorkflowChangeCallback(final Runnable callback) {
         if (m_workflowChangedCallbacks.isEmpty()) {
             startListening();
         }
@@ -200,7 +211,7 @@ public class WorkflowChangesListener implements Closeable {
      *
      * @param callback
      */
-    public void removeCallback(final Consumer<WorkflowManager> callback) {
+    public void removeCallback(final Runnable callback) {
         m_workflowChangedCallbacks.remove(callback);
         if (m_workflowChangedCallbacks.isEmpty()) {
             stopListening();
@@ -276,19 +287,24 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void startListening() {
-        if (isListening()) {
+        if (m_isListening) {
             // already listening
             return;
         }
-        m_workflowListener = e -> {
-            addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
-            trackChange(e);
-            callback();
-        };
-        m_wfm.addListener(m_workflowListener);
-        m_wfm.getNodeContainers().forEach(this::addNodeListeners);
-        m_workflowAnnotationListener.addTo(m_wfm.getWorkflowAnnotations());
-        var connectionContainers = m_wfm.getConnectionContainers();
+        startListening(m_wfm);
+        if (m_recurse) {
+            for (var nc : m_wfm.getNodeContainers()) {
+                CoreUtil.runOnNodeOrWfm(nc, null, this::startListening);
+            }
+        }
+        m_isListening = true;
+    }
+
+    private void startListening(final WorkflowManager wfm) {
+        wfm.addListener(m_workflowListener);
+        wfm.getNodeContainers().forEach(this::addNodeListeners);
+        m_workflowAnnotationListener.addTo(wfm.getWorkflowAnnotations());
+        var connectionContainers = wfm.getConnectionContainers();
         m_connectionProgressListener.addTo(connectionContainers);
         m_connectionUIInformationListener.addTo(connectionContainers);
     }
@@ -333,12 +349,18 @@ public class WorkflowChangesListener implements Closeable {
     private void addOrRemoveListenersFromNodeOrWorkflowAnnotation(final WorkflowEvent e) {
         switch (e.getType()) {
             case NODE_ADDED:
-                if (m_wfm.containsNodeContainer(e.getID())) {
-                    addNodeListeners(m_wfm.getNodeContainer(e.getID()));
+                var nc = (NodeContainer)e.getNewValue();
+                addNodeListeners(nc);
+                if (m_recurse) {
+                    CoreUtil.runOnNodeOrWfm(nc, null, wfm -> wfm.addListener(m_workflowListener));
                 }
                 break;
             case NODE_REMOVED:
-                removeNodeListeners((NodeContainer)e.getOldValue());
+                nc = (NodeContainer)e.getOldValue();
+                removeNodeListeners(nc);
+                if (m_recurse) {
+                    CoreUtil.runOnNodeOrWfm(nc, null, wfm -> wfm.removeListener(m_workflowListener));
+                }
                 break;
             case ANNOTATION_ADDED:
                 m_workflowAnnotationListener.addTo((WorkflowAnnotation)e.getNewValue());
@@ -379,15 +401,24 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void stopListening() {
-        if (!isListening()) {
+        if (!m_isListening) {
             // already not listening
             return;
         }
-        m_wfm.removeListener(m_workflowListener);
-        m_workflowListener = null;
-        m_wfm.getNodeContainers().forEach(this::removeNodeListeners);
-        m_workflowAnnotationListener.removeFrom(m_wfm.getWorkflowAnnotations());
-        var connectionContainers = m_wfm.getConnectionContainers();
+
+        if (m_recurse) {
+            for (var nc : m_wfm.getNodeContainers()) {
+                CoreUtil.runOnNodeOrWfm(nc, null, this::stopListening);
+            }
+        }
+        m_isListening = false;
+    }
+
+    private void stopListening(final WorkflowManager wfm) {
+        wfm.removeListener(m_workflowListener);
+        wfm.getNodeContainers().forEach(this::removeNodeListeners);
+        m_workflowAnnotationListener.removeFrom(wfm.getWorkflowAnnotations());
+        var connectionContainers = wfm.getConnectionContainers();
         m_connectionProgressListener.removeFrom(connectionContainers);
         m_connectionUIInformationListener.removeFrom(connectionContainers);
     }
@@ -399,10 +430,6 @@ public class WorkflowChangesListener implements Closeable {
         m_workflowChangedCallbacks.clear();
         m_workflowChangesTrackers.clear();
         m_postProcessCallbacks.clear();
-    }
-
-    boolean isListening() {
-        return m_workflowListener != null;
     }
 
     /**
