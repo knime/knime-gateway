@@ -6,63 +6,54 @@
         <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
     </config>
     <config key="model">
-        <config key="include_Internals">
-            <entry key="SettingsModelID" type="xstring" value="SMID_columnfilter"/>
-            <entry key="EnabledStatus" type="xboolean" value="true"/>
-        </config>
-        <config key="include">
+        <config key="variable-filter">
             <entry key="filter-type" type="xstring" value="STANDARD"/>
             <config key="included_names">
-                <entry key="array-size" type="xint" value="1"/>
-                <entry key="0" type="xstring" value="column1"/>
+                <entry key="array-size" type="xint" value="0"/>
             </config>
             <config key="excluded_names">
                 <entry key="array-size" type="xint" value="0"/>
             </config>
-            <entry key="enforce_option" type="xstring" value="EnforceExclusion"/>
+            <entry key="enforce_option" type="xstring" value="EnforceInclusion"/>
             <config key="name_pattern">
                 <entry key="pattern" type="xstring" value=""/>
                 <entry key="type" type="xstring" value="Wildcard"/>
                 <entry key="caseSensitive" type="xboolean" value="true"/>
                 <entry key="excludeMatching" type="xboolean" value="false"/>
             </config>
-            <config key="datatype">
-                <config key="typelist">
-                    <entry key="org.knime.core.data.StringValue" type="xboolean" value="false"/>
-                </config>
-            </config>
         </config>
-        <entry key="decimal_separator" type="xstring" value="."/>
-        <entry key="thousands_separator" type="xstring" value=""/>
-        <config key="parse_type">
-            <entry key="cell_class" type="xstring" value="org.knime.core.data.def.DoubleCell"/>
-            <entry key="is_null" type="xboolean" value="false"/>
+        <entry key="variable-prefix" type="xstring" isnull="true" value=""/>
+        <config key="port-names">
+            <entry key="array-size" type="xint" value="0"/>
         </config>
-        <entry key="generic_parse" type="xboolean" value="false"/>
-        <entry key="fail_on_error" type="xboolean" value="false"/>
+        <config key="port-descriptions">
+            <entry key="array-size" type="xint" value="0"/>
+        </config>
+        <entry key="allowOutputNodeToCompleteBeforeContent" type="xboolean" value="false"/>
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
-    <entry key="state" type="xstring" value="CONFIGURED"/>
-    <entry key="factory" type="xstring" value="org.knime.base.node.preproc.colconvert.stringtonumber2.StringToNumber2NodeFactory"/>
-    <entry key="node-name" type="xstring" value="String to Number"/>
-    <entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
-    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
+    <entry key="state" type="xstring" value="IDLE"/>
+    <config key="nodecontainer_message">
+        <entry key="type" type="xstring" value="WARNING"/>
+        <entry key="message" type="xstring" value="Component does not have input data, execute upstream nodes first"/>
+    </config>
+    <entry key="isDeletable" type="xboolean" value="false"/>
+    <entry key="factory" type="xstring" value="org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Component Output"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Core API"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.core"/>
     <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
     <entry key="node-bundle-version" type="xstring" value="5.3.0.qualifier"/>
     <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-version" type="xstring" value="0.0.0"/>
+    <entry key="factory-id-uniquifier" type="xstring" isnull="true" value=""/>
     <config key="factory_settings"/>
-    <entry key="name" type="xstring" value="String to Number"/>
+    <entry key="name" type="xstring" value="Component Output"/>
     <entry key="hasContent" type="xboolean" value="false"/>
     <entry key="isInactive" type="xboolean" value="false"/>
-    <config key="ports">
-        <config key="port_1">
-            <entry key="index" type="xint" value="1"/>
-            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
-        </config>
-    </config>
+    <config key="ports"/>
     <config key="filestores">
         <entry key="file_store_location" type="xstring" isnull="true" value=""/>
         <entry key="file_store_id" type="xstring" isnull="true" value=""/>

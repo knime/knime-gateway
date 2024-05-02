@@ -57,20 +57,31 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
+import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
+import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt.WorkflowMonitorMessageEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.WorkflowMonitorStateChangeEventEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt.WorkflowMonitorStateChangeEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -79,6 +90,7 @@ import org.knime.gateway.impl.webui.service.events.SelectionEvent;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
+import org.mockito.Mockito;
 
 /**
  * Tests regarding the {@link DefaultEventService}.
@@ -221,6 +233,84 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         ns.updateDataPointSelection(projectId, NodeIDEnt.getRootID(), new NodeIDEnt(15), "add", List.of("Row6"));
         verify(m_testConsumer, never()).accept(eq("SelectionEvent"),
             argThat(e -> ((SelectionEvent)e).getSelection().equals(List.of("Row6"))));
+    }
+
+    /**
+     * TODO
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testWorkflowMonitorStateChangedEventListener() throws Exception {
+        var idAndWfm = loadWorkflow(TestWorkflowCollection.NODE_MESSAGE);
+        var projectId = idAndWfm.getFirst().toString();
+
+        var ws = DefaultWorkflowService.getInstance();
+        var monitorStateSnapshot = ws.getWorkflowMonitorState(projectId);
+        cr(monitorStateSnapshot.getState(), "initial_workflow_monitor_state");
+
+        var es = DefaultEventService.getInstance();
+        es.addEventListener(builder(WorkflowMonitorStateChangeEventTypeEntBuilder.class).setProjectId(projectId)
+            .setSnapshotId(monitorStateSnapshot.getSnapshotId()).build());
+        var ns = DefaultNodeService.getInstance();
+
+        // error message added
+        ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "execute");
+        var expectedEvent1 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
+            "Fail in execution", NodeIDEnt.getRootID(), "org.knime.testing.node.failing.FailingNodeFactory",
+            new NodeIDEnt(6));
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
+            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
+                return expectedEvent1.equals(e);
+            })));
+
+        // error message removed
+        ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "reset");
+        var expectedEvent2 = buildEvent(OpEnum.REMOVE, "/errors/0", null, null, null, null, null);
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
+            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
+                return expectedEvent2.equals(e);
+            })));
+
+        // error message within component added
+        ns.changeNodeStates(projectId, new NodeIDEnt(8), List.of(new NodeIDEnt(8, 0, 7)), "execute");
+        var expectedEvent3 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
+            "Fail in execution", new NodeIDEnt(8, 0), "org.knime.testing.node.failing.FailingNodeFactory",
+            new NodeIDEnt(8, 0, 7));
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
+            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
+                return expectedEvent3.equals(e);
+            })));
+
+        // warning message removed due to node removal
+        DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(),
+            builder(DeleteCommandEntBuilder.class).setKind(KindEnum.DELETE).setNodeIds(List.of(new NodeIDEnt(9)))
+                .build());
+        var expectedEvent4 = buildEvent(OpEnum.REMOVE, "/warnings/0", null, null, null, null, null);
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
+            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
+                return expectedEvent4.equals(e);
+            })));
+
+        // remove event listener
+        es.removeEventListener(builder(WorkflowMonitorStateChangeEventTypeEntBuilder.class).setProjectId(projectId)
+            .setSnapshotId("unused").build());
+        Mockito.clearInvocations(m_testConsumer);
+        ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), Collections.emptyList(), "execute");
+        Awaitility.await().until(() -> !ws.getWorkflowMonitorState(projectId).getState().getErrors().isEmpty());
+        verify(m_testConsumer, times(0)).accept(any(), any(), any());
+        verify(m_testConsumer, times(0)).accept(any(), any());
+    }
+
+    private static WorkflowMonitorStateChangeEventEnt buildEvent(final OpEnum opEnum, final String path,
+        final String message, final String nodeName, final NodeIDEnt workflowId, final String templateId,
+        final NodeIDEnt nodeId) {
+        var value = message == null ? null : builder(WorkflowMonitorMessageEntBuilder.class).setMessage(message)
+            .setName(nodeName).setNodeId(nodeId).setTemplateId(templateId).setWorkflowId(workflowId).build();
+        var op = builder(PatchOpEntBuilder.class).setOp(opEnum).setPath(path).setValue(value).build();
+        var ops = List.of(op);
+        var patch = builder(PatchEntBuilder.class).setOps(ops).build();
+        return builder(WorkflowMonitorStateChangeEventEntBuilder.class).setPatch(patch).build();
     }
 
 }

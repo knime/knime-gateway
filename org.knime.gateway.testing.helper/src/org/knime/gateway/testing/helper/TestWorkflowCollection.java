@@ -77,7 +77,8 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     NESTED_LINKED_COMPONENT_PROJECT("/files/testflows/Nested-Linked-Components/Project", "nested_linked_components"),
 
     /**
-     * Contains a node with the new node message properties.
+     * Contains a nodes with the node messages (including a node message with the 'issue' and 'resolution'
+     * properties).
      */
     NODE_MESSAGE("/files/testflows/Node Message", "node_message"),
 
