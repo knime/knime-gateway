@@ -115,16 +115,16 @@ public class WorkflowChangesListener implements Closeable {
              */
             NODE_MESSAGES, //
             /**
-             * Everything else to listen to.
+             * Listen to everything that can be listened to.
              */
-            ALL_OTHERS;
+            EVERYTHING;
     }
 
     /**
      * @param wfm the workflow manager to listen to
      */
     public WorkflowChangesListener(final WorkflowManager wfm) {
-        this(wfm, Set.of(Scope.NODE_MESSAGES, Scope.ALL_OTHERS), false);
+        this(wfm, Set.of(Scope.EVERYTHING), false);
     }
 
     /**
@@ -152,50 +152,49 @@ public class WorkflowChangesListener implements Closeable {
             addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
             trackChange(e);
             var type = e.getType();
-            if (scopes.contains(Scope.ALL_OTHERS) || //
+            if (scopes.contains(Scope.EVERYTHING) || //
                 (scopes.contains(Scope.NODE_MESSAGES) && (type == Type.NODE_ADDED || type == Type.NODE_REMOVED))) {
                 callback();
             }
         };
 
-        for (var scope : scopes) {
-            if (scope == Scope.NODE_MESSAGES) {
-                m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodeMessageListener,
-                    NodeContainer::removeNodeMessageListener, e -> callback()));
-            } else {
-                m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodeStateChangeListener,
-                    NodeContainer::removeNodeStateChangeListener, e -> {
-                        updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
-                        callback();
-                    }));
-                m_nodeListeners.add(new ListenerImpl<NodeContainer, NodeProgressListener>(
-                    (nc, l) -> nc.getProgressMonitor().addProgressListener(l),
-                    (nc, l) -> nc.getProgressMonitor().removeProgressListener(l), e -> callback()));
-                m_nodeListeners.add(new ListenerImpl<NodeContainer, NodeUIInformationListener>( //
-                    (nc, l) -> { //
-                        nc.addUIInformationListener(l);
-                        nc.getNodeAnnotation().addUIInformationListener(l);
-                    }, //
-                    (nc, l) -> { //
-                        nc.removeUIInformationListener(l);
-                        nc.getNodeAnnotation().removeUIInformationListener(l);
-                    }, e -> callback()));
-                m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodePropertyChangedListener,
-                    NodeContainer::removeNodePropertyChangedListener, e -> callback()));
-                m_nodeListeners.add(new ListenerImpl<NodeContainer, LoopStatusChangeListener>(
-                    (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
-                        .ifPresent(h -> h.addLoopPausedListener(l)),
-                    (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
-                        .ifPresent(h -> h.removeLoopPausedListener(l)),
-                    this::callback));
-                m_workflowAnnotationListener = new ListenerImpl<>(WorkflowAnnotation::addUIInformationListener,
-                    WorkflowAnnotation::removeUIInformationListener, e -> callback());
-                m_connectionUIInformationListener = new ListenerImpl<>(ConnectionContainer::addUIInformationListener,
-                    ConnectionContainer::removeUIInformationListener, e -> {
-                        updateWorkflowChangesTrackers(WorkflowChange.BENDPOINTS_MODIFIED);
-                        callback();
-                    });
-            }
+        if (scopes.contains(Scope.NODE_MESSAGES) || scopes.contains(Scope.EVERYTHING)) {
+            m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodeMessageListener,
+                NodeContainer::removeNodeMessageListener, e -> callback()));
+        }
+        if (scopes.contains(Scope.EVERYTHING)) {
+            m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodeStateChangeListener,
+                NodeContainer::removeNodeStateChangeListener, e -> {
+                    updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_STATE_UPDATED);
+                    callback();
+                }));
+            m_nodeListeners.add(new ListenerImpl<NodeContainer, NodeProgressListener>(
+                (nc, l) -> nc.getProgressMonitor().addProgressListener(l),
+                (nc, l) -> nc.getProgressMonitor().removeProgressListener(l), e -> callback()));
+            m_nodeListeners.add(new ListenerImpl<NodeContainer, NodeUIInformationListener>( //
+                (nc, l) -> { //
+                    nc.addUIInformationListener(l);
+                    nc.getNodeAnnotation().addUIInformationListener(l);
+                }, //
+                (nc, l) -> { //
+                    nc.removeUIInformationListener(l);
+                    nc.getNodeAnnotation().removeUIInformationListener(l);
+                }, e -> callback()));
+            m_nodeListeners.add(new ListenerImpl<>(NodeContainer::addNodePropertyChangedListener,
+                NodeContainer::removeNodePropertyChangedListener, e -> callback()));
+            m_nodeListeners.add(new ListenerImpl<NodeContainer, LoopStatusChangeListener>(
+                (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
+                    .ifPresent(h -> h.addLoopPausedListener(l)),
+                (nc, l) -> getNNC(nc).flatMap(NativeNodeContainer::getLoopStatusChangeHandler)
+                    .ifPresent(h -> h.removeLoopPausedListener(l)),
+                this::callback));
+            m_workflowAnnotationListener = new ListenerImpl<>(WorkflowAnnotation::addUIInformationListener,
+                WorkflowAnnotation::removeUIInformationListener, e -> callback());
+            m_connectionUIInformationListener = new ListenerImpl<>(ConnectionContainer::addUIInformationListener,
+                ConnectionContainer::removeUIInformationListener, e -> {
+                    updateWorkflowChangesTrackers(WorkflowChange.BENDPOINTS_MODIFIED);
+                    callback();
+                });
         }
     }
 
