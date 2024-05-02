@@ -83,6 +83,8 @@ public final class WorkflowMonitorStateChangedEventSource
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
+    // TODO in a multi-user scenario we will need to keep track of the callbacks
+    // per 'user/client' instead of per workflow - see NXT-2599
     private final Map<String, Runnable> m_workflowChangeCallbacks = new HashMap<>();
 
     /**
