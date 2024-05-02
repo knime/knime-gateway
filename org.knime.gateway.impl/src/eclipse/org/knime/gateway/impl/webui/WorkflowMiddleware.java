@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -422,7 +423,8 @@ public final class WorkflowMiddleware {
 
         WorkflowChangesListener changesListenerForWorkflowMonitor() {
             if (m_changesListenerForWorkflowMonitor == null) {
-                m_changesListenerForWorkflowMonitor = new WorkflowChangesListener(m_wfm, true, Scope.NODE_MESSAGES);
+                m_changesListenerForWorkflowMonitor =
+                    new WorkflowChangesListener(m_wfm, Set.of(Scope.NODE_MESSAGES), true);
             }
             return m_changesListenerForWorkflowMonitor;
         }

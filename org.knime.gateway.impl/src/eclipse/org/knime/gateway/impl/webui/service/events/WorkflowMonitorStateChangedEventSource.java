@@ -121,7 +121,6 @@ public final class WorkflowMonitorStateChangedEventSource
                 if (event != null) {
                     sendEvent(event, projectId);
                 }
-                // TODO double-check the amount of 'empty events' and why
             };
             m_workflowMiddleware.getWorkflowChangesListenerForWorkflowMonitor(wfKey)
                 .addWorkflowChangeCallback(callback);

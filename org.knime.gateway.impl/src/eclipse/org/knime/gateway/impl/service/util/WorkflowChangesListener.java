@@ -64,6 +64,7 @@ import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.NodeUIInformationListener;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowEvent;
+import org.knime.core.node.workflow.WorkflowEvent.Type;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
@@ -123,7 +124,7 @@ public class WorkflowChangesListener implements Closeable {
      * @param wfm the workflow manager to listen to
      */
     public WorkflowChangesListener(final WorkflowManager wfm) {
-        this(wfm, false, Scope.NODE_MESSAGES, Scope.ALL_OTHERS);
+        this(wfm, Set.of(Scope.NODE_MESSAGES, Scope.ALL_OTHERS), false);
     }
 
     /**
@@ -131,7 +132,7 @@ public class WorkflowChangesListener implements Closeable {
      * @param scopes what workflow changes to listen to
      * @param recurse whether to recurse into sub-workflows to listen for respective changes there, too
      */
-    public WorkflowChangesListener(final WorkflowManager wfm, final boolean recurse, final Scope... scopes) {
+    public WorkflowChangesListener(final WorkflowManager wfm, final Set<Scope> scopes, final boolean recurse) {
         m_wfm = wfm;
         m_recurse = recurse;
         m_workflowChangedCallbacks = new HashSet<>();
@@ -150,7 +151,11 @@ public class WorkflowChangesListener implements Closeable {
         m_workflowListener = e -> {
             addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
             trackChange(e);
-            callback();
+            var type = e.getType();
+            if (scopes.contains(Scope.ALL_OTHERS) || //
+                (scopes.contains(Scope.NODE_MESSAGES) && (type == Type.NODE_ADDED || type == Type.NODE_REMOVED))) {
+                callback();
+            }
         };
 
         for (var scope : scopes) {
