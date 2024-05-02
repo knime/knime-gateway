@@ -50,11 +50,31 @@ package org.knime.gateway.impl.service.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.knime.testing.util.WorkflowManagerUtil.createEmptyWorkflow;
+import static org.knime.testing.util.WorkflowManagerUtil.disposeWorkflow;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.function.Predicate;
 
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
 import org.junit.Test;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.AnnotationData;
+import org.knime.core.node.workflow.NodeMessage;
+import org.knime.core.node.workflow.NodeMessage.Type;
+import org.knime.core.node.workflow.NodeUIInformation;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowListener;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
+import org.knime.testing.node.SourceNodeTestFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
+import org.mockito.Mockito;
 
 /**
  * Tests for {@link WorkflowChangesListener}.
@@ -71,7 +91,7 @@ public class WorkflowChangesListenerTest {
      */
     @Test
     public void testIsListening() throws IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var wfm = createEmptyWorkflow();
         var workflowChangesListener = new WorkflowChangesListener(wfm);
 
         assertThat(workflowChangesListener.m_isListening, is(false));
@@ -100,6 +120,139 @@ public class WorkflowChangesListenerTest {
         assertThat(workflowChangesListener.m_isListening, is(true));
         workflowChangesListener.close();
         assertThat(workflowChangesListener.m_isListening, is(false));
+
+        disposeWorkflow(wfm);
+    }
+
+    /**
+     * Checks that the workflow-changes-listener listens to any workflow modification.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testListenToEverything() throws IOException {
+        var wfm = createEmptyWorkflow();
+
+        var workflowChangesListener = new WorkflowChangesListener(wfm, Set.of(Scope.EVERYTHING), false);
+        var callback = mock(Runnable.class);
+        workflowChangesListener.addWorkflowChangeCallback(callback);
+
+        modifyWorkflowAndVerifyCallback(wfm, callback, mod -> switch (mod) {
+            default -> true;
+        });
+
+        disposeWorkflow(wfm);
+    }
+
+    /**
+     * Checks that the workflow-changes-listener selectively listens to node-message change events (and related events
+     * such as node added, node removed).
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testListenToNodeMessagesOnly() throws IOException {
+        var wfm = createEmptyWorkflow();
+
+        var workflowChangesListener = new WorkflowChangesListener(wfm, Set.of(Scope.NODE_MESSAGES), false);
+        var callback = mock(Runnable.class);
+        workflowChangesListener.addWorkflowChangeCallback(callback);
+
+        modifyWorkflowAndVerifyCallback(wfm, callback, mod -> {
+            return switch (mod) {
+                // adding/removing a node is expected to result in a callback (since it could add/remove a node message)
+                case ADD_NODE, REMOVE_NODE, UPDATE_NODE_MESSAGE -> true;
+                default -> false;
+            };
+        });
+
+        disposeWorkflow(wfm);
+    }
+
+    private static void modifyWorkflowAndVerifyCallback(final WorkflowManager wfm, final Runnable callbackMock,
+        final Predicate<Modification> callbackExpected) {
+        var annoId = wfm.addWorkflowAnnotation(new AnnotationData(), 0).getID();
+        verify(callbackMock, callbackExpected.test(Modification.OTHER));
+        wfm.removeAnnotation(annoId);
+        verify(callbackMock, callbackExpected.test(Modification.OTHER));
+        var nc1 = WorkflowManagerUtil.createAndAddNode(wfm, new SourceNodeTestFactory());
+        verify(callbackMock, callbackExpected.test(Modification.ADD_NODE));
+        nc1.setNodeMessage(new NodeMessage(Type.ERROR, "blub"));
+        verify(callbackMock, callbackExpected.test(Modification.UPDATE_NODE_MESSAGE));
+        nc1.setNodeMessage(new NodeMessage(Type.RESET, "blub"));
+        verify(callbackMock, callbackExpected.test(Modification.UPDATE_NODE_MESSAGE));
+        var nc2 = WorkflowManagerUtil.createAndAddNode(wfm, new SourceNodeTestFactory());
+        verify(callbackMock, callbackExpected.test(Modification.ADD_NODE));
+        var connId = wfm.addConnection(nc1.getID(), 0, nc2.getID(), 0);
+        verify(callbackMock, callbackExpected.test(Modification.OTHER));
+        wfm.removeConnection(connId);
+        verify(callbackMock, callbackExpected.test(Modification.OTHER));
+        nc1.setUIInformation(NodeUIInformation.builder().build());
+        verify(callbackMock, callbackExpected.test(Modification.OTHER));
+        var nodeAnno = nc1.getNodeAnnotation();
+        var annoData = nodeAnno.getData();
+        annoData.setText("blub");
+        nodeAnno.copyFrom(annoData, false);
+        verify(callbackMock, callbackExpected.test(Modification.OTHER));
+        var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
+        verify(callbackMock, callbackExpected.test(Modification.ADD_NODE));
+        metanode.setName("new metanode name");
+        verify(callbackMock, callbackExpected.test(Modification.OTHER));
+        wfm.removeNode(nc1.getID());
+        verify(callbackMock, callbackExpected.test(Modification.REMOVE_NODE));
+    }
+
+    private static void verify(final Runnable callbackMock, final boolean callbackExpected) {
+        Awaitility.await().atMost(Duration.FIVE_SECONDS)
+            .untilAsserted(() -> Mockito.verify(callbackMock, callbackExpected ? atLeast(1) : times(0)).run());
+        Mockito.clearInvocations(callbackMock);
+    }
+
+    private enum Modification {
+            ADD_NODE, REMOVE_NODE, UPDATE_NODE_MESSAGE, OTHER;
+    }
+
+    /**
+     * Tests that the workflow-changes-listener also listens to event in sub-workflows.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testRecursive() throws IOException {
+        var wfm = createEmptyWorkflow();
+        var workflowListener = mock(WorkflowListener.class);
+        wfm.addListener(workflowListener);
+        var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
+        // add a node already to make sure the metanode-state doesn't change later on
+        // (which is propagated to the parent)
+        WorkflowManagerUtil.createAndAddNode(metanode, new SourceNodeTestFactory());
+        var component = wfm.convertMetaNodeToSubNode(
+            wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "component").getID());
+        var componentWfm =
+            wfm.getNodeContainer(component.getConvertedNodeID(), SubNodeContainer.class, false).getWorkflowManager();
+
+        var workflowChangesListenerRecursive = new WorkflowChangesListener(wfm, Set.of(Scope.EVERYTHING), true);
+        var workflowChangesListenerNonRecursive = new WorkflowChangesListener(wfm, Set.of(Scope.EVERYTHING), false);
+        var callbackRecursive = mock(Runnable.class);
+        var callbackNonRecursive = mock(Runnable.class);
+        workflowChangesListenerRecursive.addWorkflowChangeCallback(callbackRecursive);
+        workflowChangesListenerNonRecursive.addWorkflowChangeCallback(callbackNonRecursive);
+
+        modifyWorkflowAndVerifyCallback(metanode, callbackNonRecursive, mod -> switch (mod) {
+            default -> false;
+        });
+        modifyWorkflowAndVerifyCallback(metanode, callbackRecursive, mod -> switch (mod) {
+            default -> true;
+        });
+
+        modifyWorkflowAndVerifyCallback(componentWfm, callbackNonRecursive, mod -> switch (mod) {
+            default -> false;
+        });
+        modifyWorkflowAndVerifyCallback(componentWfm, callbackRecursive, mod -> switch (mod) {
+            default -> true;
+        });
+
+        WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
 }
