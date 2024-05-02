@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateEnt;
 
 /**
  * Entry utility class to access builder-methods for all kind of entities (i.e. {@link GatewayEntity GatewayEntities}).
@@ -101,5 +102,10 @@ public final class EntityFactory {
      * Entity builder instance to mainly build {@link UpdateAvailableEventEnt}s and related entities.
      */
     public static final UpdateStateEntityFactory UpdateState = new UpdateStateEntityFactory();
+
+    /**
+     * Entity builder instance to mainly build {@link WorkflowMonitorStateEnt}s and related entities.
+     */
+    public static final WorkflowMonitorStateEntityFactory WorkflowMonitorState = new WorkflowMonitorStateEntityFactory();
 
 }

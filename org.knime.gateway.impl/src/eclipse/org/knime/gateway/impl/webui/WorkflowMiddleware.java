@@ -68,8 +68,14 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.WorkflowMonitorStateChangeEventEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt.WorkflowMonitorStateSnapshotEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
@@ -81,6 +87,7 @@ import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.SimpleRepository;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
+import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
@@ -106,7 +113,9 @@ public final class WorkflowMiddleware {
      */
     private static final int UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW = 50;
 
-    private final EntityRepository<WorkflowKey, WorkflowEnt> m_entityRepo;
+    private final EntityRepository<WorkflowKey, WorkflowEnt> m_workflowEntRepo;
+
+    private final EntityRepository<WorkflowKey, WorkflowMonitorStateEnt> m_workflowMonitorStateEntRepo;
 
     final Map<WorkflowKey, WorkflowState> m_workflowStateCache;
 
@@ -115,20 +124,22 @@ public final class WorkflowMiddleware {
     private final SpaceProviders m_spaceProviders;
 
     /**
-     * @param workflowProjectManager
+     * @param projectManager
      * @param spaceProviders
      */
-    public WorkflowMiddleware(final ProjectManager workflowProjectManager, final SpaceProviders spaceProviders) {
-        m_entityRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
+    public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProviders spaceProviders) {
+        m_workflowEntRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
+        m_workflowMonitorStateEntRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
         m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
         m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
         m_spaceProviders = spaceProviders;
-        workflowProjectManager.addProjectRemovedListener(
+        projectManager.addProjectRemovedListener(
             projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
     }
 
     private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
-        m_entityRepo.disposeHistory(keyFilter);
+        m_workflowEntRepo.disposeHistory(keyFilter);
+        m_workflowMonitorStateEntRepo.disposeHistory(keyFilter);
         m_commands.disposeUndoAndRedoStacks(keyFilter);
         m_workflowStateCache.entrySet().removeIf(e -> {
             if (keyFilter.test(e.getKey())) {
@@ -156,7 +167,7 @@ public final class WorkflowMiddleware {
         var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
 
         // try to commit the workflow entity and return the (existing or new) snapshot
-        return buildWorkflowSnapshotEnt(workflowEntity, m_entityRepo.commit(wfKey, workflowEntity));
+        return buildWorkflowSnapshotEnt(workflowEntity, m_workflowEntRepo.commit(wfKey, workflowEntity));
     }
 
     private static WorkflowEnt buildWorkflowEntIfWorkflowHasChanged(final WorkflowManager wfm,
@@ -179,11 +190,26 @@ public final class WorkflowMiddleware {
     }
 
     /**
+     * Builds a new {@link WorkflowMonitorStateChangeEventEnt} instance. If there are any changes to the workflow, a new
+     * workflow entity is committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise the
+     * snapshot id of the last commit will be used.
+     *
+     * @param wfKey the workflow to get/create the snapshot for
+     * @return the entity instance
+     */
+    public WorkflowMonitorStateSnapshotEnt buildWorkflowMonitorStateSnapshotEnt(final WorkflowKey wfKey) {
+        var ws = getWorkflowState(wfKey);
+        var state = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(ws.m_wfm);
+        return builder(WorkflowMonitorStateSnapshotEntBuilder.class).setState(state)
+            .setSnapshotId(m_workflowMonitorStateEntRepo.commit(wfKey, state)).build();
+    }
+
+    /**
      * @param wfKey The workflow to query
      * @return The snapshot-id of the most recent commit, or an empty optional if there are no commits yet.
      */
     public Optional<String> getLatestSnapshotId(final WorkflowKey wfKey) {
-        var latestCommit = m_entityRepo.getLastCommit(wfKey);
+        var latestCommit = m_workflowEntRepo.getLastCommit(wfKey);
         return latestCommit.map(Pair::getFirst);
     }
 
@@ -212,12 +238,27 @@ public final class WorkflowMiddleware {
     }
 
     /**
+     * Returns the {@link WorkflowChangesListener} associated with the workflow represented by the given
+     * {@link WorkflowKey} as required by the workflow monitor (it only listen for a subset of workflow changes, but
+     * does it recursively).
+     *
+     * If called for the first time, the {@link WorkflowChangesListener} will be created. Subsequent calls will always
+     * return the very same instance (per workflow).
+     *
+     * @param wfkey
+     * @return the listener instance
+     */
+    public WorkflowChangesListener getWorkflowChangesListenerForWorkflowMonitor(final WorkflowKey wfkey) {
+        return getWorkflowState(wfkey).changesListenerForWorkflowMonitor();
+    }
+
+    /**
      * Helper to create a {@link WorkflowChangedEventEnt}-instance.
      *
      * When calling this, it is assumed that {@link #buildWorkflowSnapshotEnt(WorkflowKey, Supplier)} has been called at
      * least once before for the given workflow key.
      *
-     * State information is used to <br>
+     * State information (maintained by this {@link WorkflowMiddleware}-instance) is used to <br>
      * - avoid unnecessary calculations of {@link DependentNodeProperties} on workflow changes tracked by the associated
      * {@link WorkflowChangesListener} (only if interaction info is to be included)<br>
      * - include the can-undo and can-redo flags determined via {@link WorkflowCommands} (only if interaction info is to
@@ -250,7 +291,34 @@ public final class WorkflowMiddleware {
             // no change
             return null;
         } else {
-            return m_entityRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
+            return m_workflowEntRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
+        }
+    }
+
+    /**
+     * Helper to create a {@link WorkflowMonitorStateChangeEventEnt}-instance.
+     *
+     * When calling this, it is assumed that {@link #buildWorkflowMonitorStateSnapshotEnt(WorkflowKey)} has been called
+     * at least once before with the given workflow key.
+     *
+     * State information (maintained by this {@link WorkflowMiddleware}-instance) is used to <br>
+     * - compare the current state against an older state (i.e. entity history managed via {@link EntityRepository})
+     *
+     * @param wfKey the workflow to create the changed event for
+     * @param snapshotId the latest snapshot id
+     * @param patchCreator helper to create the patch (diff)
+     * @return {@code null} if there are not changes, other the event-entity instance
+     */
+    public WorkflowMonitorStateChangeEventEnt buildWorkflowMonitorStateChangeEventEnt(final WorkflowKey wfKey,
+        final String snapshotId, final PatchCreator<PatchEnt> patchCreator) {
+        final var ws = getWorkflowState(wfKey);
+        var monitorState = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(ws.m_wfm);
+        var patch =
+            m_workflowMonitorStateEntRepo.getChangesAndCommit(snapshotId, monitorState, patchCreator).orElse(null);
+        if (patch != null) {
+            return builder(WorkflowMonitorStateChangeEventEntBuilder.class).setPatch(patch).build();
+        } else {
+            return null;
         }
     }
 
@@ -331,6 +399,8 @@ public final class WorkflowMiddleware {
 
         private WorkflowChangesListener m_changesListener;
 
+        private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
+
         private WorkflowState(final WorkflowKey wfKey)  {
             m_wfKey = wfKey;
             m_wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
@@ -350,12 +420,22 @@ public final class WorkflowMiddleware {
             return m_changesListener;
         }
 
+        WorkflowChangesListener changesListenerForWorkflowMonitor() {
+            if (m_changesListenerForWorkflowMonitor == null) {
+                m_changesListenerForWorkflowMonitor = new WorkflowChangesListener(m_wfm, true, Scope.NODE_MESSAGES);
+            }
+            return m_changesListenerForWorkflowMonitor;
+        }
+
         void dispose() {
             if (m_depNodeProperties != null) {
                 m_depNodeProperties.dispose();
             }
             if (m_changesListener != null) {
                 m_changesListener.close();
+            }
+            if (m_changesListenerForWorkflowMonitor != null) {
+                m_changesListenerForWorkflowMonitor.close();
             }
         }
 

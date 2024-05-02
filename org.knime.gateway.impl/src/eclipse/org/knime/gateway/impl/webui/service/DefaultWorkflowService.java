@@ -61,6 +61,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -185,6 +186,16 @@ public final class DefaultWorkflowService implements WorkflowService {
         throws OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorkflowMonitorStateSnapshotEnt getWorkflowMonitorState(final String projectId) {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        return m_workflowMiddleware
+            .buildWorkflowMonitorStateSnapshotEnt(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
     }
 
 }

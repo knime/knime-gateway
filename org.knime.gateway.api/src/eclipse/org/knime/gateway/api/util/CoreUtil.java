@@ -819,6 +819,47 @@ public final class CoreUtil {
     }
 
     /**
+     * Helper to recursively iterate all nodes in a workflow.
+     *
+     * @param wfm the workflow to iterate
+     * @param nodeVisitor callback whenever a native node was found
+     * @param wfmVisitor callback whenever a metanode or component was found
+     */
+    public static void iterateNodes(final WorkflowManager wfm, final Consumer<NativeNodeContainer> nodeVisitor,
+        final Consumer<WorkflowManager> wfmVisitor) {
+        for (var nc : wfm.getNodeContainers()) {
+            runOnNodeOrWfm(nc, nodeVisitor::accept, subWfm -> {
+                if (wfmVisitor != null) {
+                    wfmVisitor.accept(subWfm);
+                }
+                iterateNodes(subWfm, nodeVisitor, wfmVisitor);
+            });
+        }
+    }
+
+    /**
+     * Helper to run logic on a native node or component/metanode-workflow respectively.
+     *
+     * @param nc the node to check
+     * @param nncConsumer logic to be run on a native node
+     * @param wfmConsumer logic to be run on a metanode/component workflow
+     */
+    public static void runOnNodeOrWfm(final NodeContainer nc, final Consumer<NativeNodeContainer> nncConsumer,
+        final Consumer<WorkflowManager> wfmConsumer) {
+        if (nc instanceof NativeNodeContainer nnc && nncConsumer != null) {
+            nncConsumer.accept(nnc);
+            return;
+        }
+        if (wfmConsumer != null) {
+            if (nc instanceof WorkflowManager wfm) {
+                wfmConsumer.accept(wfm);
+            } else if (nc instanceof SubNodeContainer snc) {
+                wfmConsumer.accept(snc.getWorkflowManager());
+            }
+        }
+    }
+
+    /**
      * Helper class to convert {@link TypedTextEnt.ContentTypeEnum}s to the corresponding `knime-core` classes.
      */
     public static final class ContentTypeConverter {

@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.jsonrpc.service;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -121,6 +122,15 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     })
     public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="includeInteractionInfo") Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         return m_service.get().getWorkflow(projectId, workflowId, includeInteractionInfo);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getWorkflowMonitorState")
+    public WorkflowMonitorStateSnapshotEnt getWorkflowMonitorState(@JsonRpcParam(value="projectId") String projectId)  {
+        return m_service.get().getWorkflowMonitorState(projectId);    
     }
 
 	/**

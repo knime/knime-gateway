@@ -60,6 +60,7 @@ import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -78,6 +79,7 @@ import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
 import org.knime.gateway.impl.webui.service.events.SelectionEventSourceDelegator;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
+import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -168,6 +170,9 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof ProjectDisposedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new ProjectDisposedEventSource(m_eventConsumer, m_projectManager));
+        } else if (eventTypeEnt instanceof WorkflowMonitorStateChangeEventTypeEnt) {
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new WorkflowMonitorStateChangedEventSource(m_eventConsumer, m_projectManager, m_workflowMiddleware));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }

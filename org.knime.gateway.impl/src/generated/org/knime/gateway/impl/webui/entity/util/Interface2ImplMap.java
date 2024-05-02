@@ -300,6 +300,16 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupC
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt.WorkflowMonitorMessageEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorMessageEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.WorkflowMonitorStateChangeEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorStateChangeEventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt.WorkflowMonitorStateChangeEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorStateChangeEventTypeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateEnt.WorkflowMonitorStateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorStateEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt.WorkflowMonitorStateSnapshotEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -709,6 +719,21 @@ public class Interface2ImplMap {
         }        
         if(clazz == WorkflowInfoEntBuilder.class) {
             return (B)new DefaultWorkflowInfoEnt.DefaultWorkflowInfoEntBuilder();
+        }        
+        if(clazz == WorkflowMonitorMessageEntBuilder.class) {
+            return (B)new DefaultWorkflowMonitorMessageEnt.DefaultWorkflowMonitorMessageEntBuilder();
+        }        
+        if(clazz == WorkflowMonitorStateChangeEventEntBuilder.class) {
+            return (B)new DefaultWorkflowMonitorStateChangeEventEnt.DefaultWorkflowMonitorStateChangeEventEntBuilder();
+        }        
+        if(clazz == WorkflowMonitorStateChangeEventTypeEntBuilder.class) {
+            return (B)new DefaultWorkflowMonitorStateChangeEventTypeEnt.DefaultWorkflowMonitorStateChangeEventTypeEntBuilder();
+        }        
+        if(clazz == WorkflowMonitorStateEntBuilder.class) {
+            return (B)new DefaultWorkflowMonitorStateEnt.DefaultWorkflowMonitorStateEntBuilder();
+        }        
+        if(clazz == WorkflowMonitorStateSnapshotEntBuilder.class) {
+            return (B)new DefaultWorkflowMonitorStateSnapshotEnt.DefaultWorkflowMonitorStateSnapshotEntBuilder();
         }        
         if(clazz == WorkflowSnapshotEntBuilder.class) {
             return (B)new DefaultWorkflowSnapshotEnt.DefaultWorkflowSnapshotEntBuilder();

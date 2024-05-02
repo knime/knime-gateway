@@ -172,6 +172,11 @@ import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowGroupContentEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowInfoEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowMonitorMessageEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowMonitorStateChangeEventEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowMonitorStateChangeEventTypeEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowMonitorStateEntMixIn;
+import org.knime.gateway.json.webui.entity.WorkflowMonitorStateSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowSnapshotEntMixIn;
 import org.knime.gateway.json.webui.entity.XYEntMixIn;
 
@@ -325,6 +330,11 @@ public class ListEntities {
         res.add(WorkflowEntMixIn.class);
         res.add(WorkflowGroupContentEntMixIn.class);
         res.add(WorkflowInfoEntMixIn.class);
+        res.add(WorkflowMonitorMessageEntMixIn.class);
+        res.add(WorkflowMonitorStateChangeEventEntMixIn.class);
+        res.add(WorkflowMonitorStateChangeEventTypeEntMixIn.class);
+        res.add(WorkflowMonitorStateEntMixIn.class);
+        res.add(WorkflowMonitorStateSnapshotEntMixIn.class);
         res.add(WorkflowSnapshotEntMixIn.class);
         res.add(XYEntMixIn.class);
         return res;
@@ -464,6 +474,11 @@ public class ListEntities {
         res.add(WorkflowEntMixIn.WorkflowEntMixInBuilder.class);
         res.add(WorkflowGroupContentEntMixIn.WorkflowGroupContentEntMixInBuilder.class);
         res.add(WorkflowInfoEntMixIn.WorkflowInfoEntMixInBuilder.class);
+        res.add(WorkflowMonitorMessageEntMixIn.WorkflowMonitorMessageEntMixInBuilder.class);
+        res.add(WorkflowMonitorStateChangeEventEntMixIn.WorkflowMonitorStateChangeEventEntMixInBuilder.class);
+        res.add(WorkflowMonitorStateChangeEventTypeEntMixIn.WorkflowMonitorStateChangeEventTypeEntMixInBuilder.class);
+        res.add(WorkflowMonitorStateEntMixIn.WorkflowMonitorStateEntMixInBuilder.class);
+        res.add(WorkflowMonitorStateSnapshotEntMixIn.WorkflowMonitorStateSnapshotEntMixInBuilder.class);
         res.add(WorkflowSnapshotEntMixIn.WorkflowSnapshotEntMixInBuilder.class);
         res.add(XYEntMixIn.XYEntMixInBuilder.class);
         return res;

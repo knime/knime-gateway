@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 
 /**
@@ -99,6 +100,15 @@ public interface WorkflowService extends GatewayService {
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
     WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+        
+    /**
+     * Returns the current state of the workflow monitor.
+     *
+     * @param projectId ID of the workflow-project.
+     *
+     * @return the result
+     */
+    WorkflowMonitorStateSnapshotEnt getWorkflowMonitorState(String projectId) ;
         
     /**
      * Re-does the last command from the redo-stack.

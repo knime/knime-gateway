@@ -172,6 +172,11 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateEnt;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -326,6 +331,11 @@ public class ListEntities {
         res.add(WorkflowEnt.class);
         res.add(WorkflowGroupContentEnt.class);
         res.add(WorkflowInfoEnt.class);
+        res.add(WorkflowMonitorMessageEnt.class);
+        res.add(WorkflowMonitorStateChangeEventEnt.class);
+        res.add(WorkflowMonitorStateChangeEventTypeEnt.class);
+        res.add(WorkflowMonitorStateEnt.class);
+        res.add(WorkflowMonitorStateSnapshotEnt.class);
         res.add(WorkflowSnapshotEnt.class);
         res.add(XYEnt.class);
         return res;
@@ -465,6 +475,11 @@ public class ListEntities {
         res.add(WorkflowEnt.WorkflowEntBuilder.class);
         res.add(WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder.class);
         res.add(WorkflowInfoEnt.WorkflowInfoEntBuilder.class);
+        res.add(WorkflowMonitorMessageEnt.WorkflowMonitorMessageEntBuilder.class);
+        res.add(WorkflowMonitorStateChangeEventEnt.WorkflowMonitorStateChangeEventEntBuilder.class);
+        res.add(WorkflowMonitorStateChangeEventTypeEnt.WorkflowMonitorStateChangeEventTypeEntBuilder.class);
+        res.add(WorkflowMonitorStateEnt.WorkflowMonitorStateEntBuilder.class);
+        res.add(WorkflowMonitorStateSnapshotEnt.WorkflowMonitorStateSnapshotEntBuilder.class);
         res.add(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class);
         res.add(XYEnt.XYEntBuilder.class);
         return res;
