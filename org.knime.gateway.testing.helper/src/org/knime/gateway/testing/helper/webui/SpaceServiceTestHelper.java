@@ -79,6 +79,7 @@ import org.knime.core.util.PathUtils;
 import org.knime.core.util.Version;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -93,6 +94,7 @@ import org.knime.gateway.impl.project.Project.Origin;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
@@ -128,8 +130,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var mockedSpace = mock(Space.class);
         when(mockedSpace.getId()).thenReturn(spaceId);
-        var newSpaceItemEnt =
-            EntityFactory.Space.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
+        var newSpaceItemEnt = EntityFactory.Space.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
         when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
 
         var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", mockedSpace);
@@ -147,8 +148,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
-        final String workspaceName)
-        throws IOException {
+        final String workspaceName) throws IOException {
         var tempPath = PathUtils.createTempDir(directoryNamePrefix);
         var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
         var space = spaceProvider.getSpace(LocalWorkspace.LOCAL_WORKSPACE_ID);
@@ -210,7 +210,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testRenameRootLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
         ServiceDependencies.setServiceDependency(SpaceProviders.class,
-                () -> Map.of(p.getFirst().getId(), p.getFirst()));
+            () -> Map.of(p.getFirst().getId(), p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
         assertThrows(ServiceExceptions.OperationNotAllowedException.class, () -> {
@@ -227,7 +227,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private static SpaceItemEnt getItemByName(final String name, final Space space) throws IOException {
         var group = space.listWorkflowGroup(Space.ROOT_ITEM_ID);
         return group.getItems().stream().filter(item -> item.getName().equals(name)).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
+            .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
     }
 
     private static String findItemId(final WorkflowGroupContentEnt groupContent, final String name) {
@@ -237,6 +237,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .findFirst() //
             .orElseThrow(() -> new IllegalArgumentException("Item expected to be present in workspace"));
     }
+
     /**
      * Tests {@link SpaceService#listWorkflowGroup(String, String, String)} for the local workspace.
      *
@@ -297,12 +298,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
-            final Space... spaces) {
+        final Space... spaces) {
         return createSpaceProvider(TypeEnum.LOCAL, id, spaceProviderName, spaces);
     }
 
-    private static SpaceProvider createSpaceProvider(final SpaceProviderEnt.TypeEnum type,
-            final String id, final String spaceProviderName, final Space... spaces) {
+    private static SpaceProvider createSpaceProvider(final SpaceProviderEnt.TypeEnum type, final String id,
+        final String spaceProviderName, final Space... spaces) {
         return new SpaceProvider() {
 
             @Override
@@ -318,18 +319,18 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public SpaceProviderEnt toEntity() {
                 return EntityFactory.Space.buildSpaceProviderEnt(type,
-                    Arrays.stream(spaces).map(Space::toEntity).collect(Collectors.toList()));
+                    List.of(getLocalSpaceGroupForTesting(spaces).toEntity()));
             }
 
             @Override
             public Space getSpace(final String spaceId) {
                 return Arrays.stream(spaces).filter(s -> s.getId().equals(spaceId)).findFirst() //
-                        .orElseThrow(() -> new NoSuchElementException("No space with ID " + spaceId + " found."));
+                    .orElseThrow(() -> new NoSuchElementException("No space with ID " + spaceId + " found."));
             }
 
             @Override
             public Version getServerVersion() {
-                return new Version(1,2,3);
+                return new Version(1, 2, 3);
             }
         };
     }
@@ -401,21 +402,21 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public void moveOrCopyItems(final List<String> itemIds, final String destWorkflowGroupItemId,
-                    final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
+                final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
                 // do nothing
             }
 
             @Override
             public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-                    final Space.NameCollisionHandling collisionHandling, final IProgressMonitor progress)
-                    throws IOException {
+                final Space.NameCollisionHandling collisionHandling, final IProgressMonitor progress)
+                throws IOException {
                 return null;
             }
 
             @Override
             public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
-                    final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
-                    final IProgressMonitor progress) throws IOException {
+                final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
+                final IProgressMonitor progress) throws IOException {
                 return null;
             }
 
@@ -456,7 +457,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public SpaceProviderEnt toEntity() {
-                return EntityFactory.Space.buildSpaceProviderEnt(null, List.of(localWorkspace.toEntity()));
+                return EntityFactory.Space.buildSpaceProviderEnt(null,
+                    List.of(getLocalSpaceGroupForTesting(localWorkspace).toEntity()));
             }
 
             @Override
@@ -471,7 +473,42 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public Version getServerVersion() {
-                return new Version(1,2,3);
+                return new Version(1, 2, 3);
+            }
+        };
+    }
+
+    private static SpaceGroup getLocalSpaceGroupForTesting(final Space... spaces) {
+        return new SpaceGroup() {
+
+            String id = "Local-Testing-space-id";
+
+            String name = "Local Testing Group";
+
+            @Override
+            public SpaceGroupEnt toEntity() {
+                return EntityFactory.Space.buildSpaceGroupEnt(id, name, SpaceGroupEnt.TypeEnum.USER,
+                    Arrays.stream(spaces).map(Space::toEntity).collect(Collectors.toList()));
+            }
+
+            @Override
+            public SpaceGroupType getType() {
+                return SpaceGroupType.USER;
+            }
+
+            @Override
+            public List<Space> getSpaces() {
+                return List.of(spaces);
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public String getId() {
+                return id;
             }
         };
     }
@@ -834,7 +871,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             // Move with auto-rename collision handling
             Files.createFile(testWorkspacePath.resolve(fileName));
-            var anotherWfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+            var anotherWfLevel0 =
+                ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
             var anotherFileIdLevel0 =
                 findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
             ss().moveOrCopyItems(spaceId, providerId, List.of(anotherFileIdLevel0, anotherWfLevel0.getId()), level1Id,

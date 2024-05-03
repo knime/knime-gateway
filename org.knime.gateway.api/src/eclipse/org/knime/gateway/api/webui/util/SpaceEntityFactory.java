@@ -63,6 +63,8 @@ import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt.SpaceGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
@@ -88,15 +90,31 @@ public final class SpaceEntityFactory {
 
     /**
      * @param type
-     * @param spaces
+     * @param groups
      *
      * @return a new {@link SpaceProviderEnt}-instance
      */
     public SpaceProviderEnt buildSpaceProviderEnt(final SpaceProviderEnt.TypeEnum type,
-            final List<SpaceEnt> spaces) {
+            final List<SpaceGroupEnt> groups) {
         return builder(SpaceProviderEntBuilder.class) //
-            .setSpaces(spaces) //
+            .setSpaceGroups(groups) //
             .setType(type) //
+            .build();
+    }
+
+    /**
+     * @param type
+     * @param spaces
+     *
+     * @return a new {@link SpaceProviderEnt}-instance
+     */
+    public SpaceGroupEnt buildSpaceGroupEnt(final String id, final String name, final SpaceGroupEnt.TypeEnum type,
+        final List<SpaceEnt> spaces) {
+        return builder(SpaceGroupEntBuilder.class) //
+            .setId(id) //
+            .setName(name) //
+            .setType(type) //
+            .setSpaces(spaces) //
             .build();
     }
 
