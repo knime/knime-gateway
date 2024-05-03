@@ -64,6 +64,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -823,16 +824,17 @@ public final class CoreUtil {
      *
      * @param wfm the workflow to iterate
      * @param nodeVisitor callback whenever a native node was found
-     * @param wfmVisitor callback whenever a metanode or component was found
+     * @param wfmVisitor callback whenever a metanode or component was found; it returns {@code true} if the contained
+     *            nodes are to be iterated, too, otherwise {@code false} to stop there
      */
     public static void iterateNodes(final WorkflowManager wfm, final Consumer<NativeNodeContainer> nodeVisitor,
-        final Consumer<WorkflowManager> wfmVisitor) {
+        final Predicate<WorkflowManager> wfmVisitor) {
         for (var nc : wfm.getNodeContainers()) {
             runOnNodeOrWfm(nc, nodeVisitor::accept, subWfm -> {
-                if (wfmVisitor != null) {
-                    wfmVisitor.accept(subWfm);
+                var iterateContainedNodes = wfmVisitor == null || wfmVisitor.test(subWfm);
+                if (iterateContainedNodes) {
+                    iterateNodes(subWfm, nodeVisitor, wfmVisitor);
                 }
-                iterateNodes(subWfm, nodeVisitor, wfmVisitor);
             });
         }
     }

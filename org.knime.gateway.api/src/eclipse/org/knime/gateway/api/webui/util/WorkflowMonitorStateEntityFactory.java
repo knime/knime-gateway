@@ -100,7 +100,7 @@ public final class WorkflowMonitorStateEntityFactory {
                     nodesWithMessages.add(nnc);
                 }
             }
-        }, null);
+        }, subWfm -> !subWfm.isEncrypted());
 
         var errors = new ArrayList<WorkflowMonitorMessageEnt>();
         var warnings = new ArrayList<WorkflowMonitorMessageEnt>();

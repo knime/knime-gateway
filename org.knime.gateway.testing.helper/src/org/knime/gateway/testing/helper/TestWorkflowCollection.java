@@ -38,7 +38,6 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
      */
     METADATA2("/files/testflows/Workflow Metadata New Format", "workflow_metadata2"),
 
-
     /**
      * Workflow to test job managers.
      */
@@ -49,6 +48,9 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
      */
     LOOP_EXECUTION("/files/testflows/Loop Execution", "loop execution"),
 
+    /**
+     * Workflow to test the try-catch nodes.
+     */
     TRY_CATCH("/files/testflows/Try-Catch", "try_catch"),
 
     /**
@@ -56,9 +58,9 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
      */
     PORTS("/files/testflows/Ports", "ports"),
 
-        /**
-         * A workflow without any native nodes, but an empty metanode (#1) and an empty component (#2).
-         */
+    /**
+     * A workflow without any native nodes, but an empty metanode (#1) and an empty component (#2).
+     */
     HOLLOW("/files/testflows/Hollow", "hollow"),
 
     /**
@@ -100,7 +102,13 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Linked component (!) needed to mock URL to file resolver.
      */
-    LINKED_COMPONENT("/files/testflows/Linked Component", "linked_component");
+    LINKED_COMPONENT("/files/testflows/Linked Component", "linked_component"),
+
+    /**
+     * Workflow to test encrypted metanodes and components.
+     */
+    ENCRYPTED_METANODE_AND_COMPONENT("/files/testflows/Encrypted Metanode and Component",
+        "encrypted_metanode_and_component");
 
     private final String m_workflowDir;
 
