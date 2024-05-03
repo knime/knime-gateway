@@ -46,43 +46,58 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.SpaceEnt;
+
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-
 /**
- * Provides one or more spaces.
+ * Defines a group of spaces, could be an user or a team.
  *
- * @param spaceGroups
+ * @param id
+ * @param name
  * @param type
+ * @param spaces
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultSpaceProviderEnt(
-    java.util.List<SpaceGroupEnt> spaceGroups,
-    TypeEnum type) implements SpaceProviderEnt {
+public record DefaultSpaceGroupEnt(
+    String id,
+    String name,
+    TypeEnum type,
+    java.util.List<SpaceEnt> spaces) implements SpaceGroupEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultSpaceProviderEnt {
-        if(spaceGroups == null) {
-            throw new IllegalArgumentException("<spaceGroups> must not be null.");
+    public DefaultSpaceGroupEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
+        }
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
         if(type == null) {
             throw new IllegalArgumentException("<type> must not be null.");
+        }
+        if(spaces == null) {
+            throw new IllegalArgumentException("<spaces> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "SpaceProvider";
+        return "SpaceGroup";
     }
   
     @Override
-    public java.util.List<SpaceGroupEnt> getSpaceGroups() {
-        return spaceGroups;
+    public String getId() {
+        return id;
+    }
+    
+    @Override
+    public String getName() {
+        return name;
     }
     
     @Override
@@ -90,26 +105,44 @@ public record DefaultSpaceProviderEnt(
         return type;
     }
     
+    @Override
+    public java.util.List<SpaceEnt> getSpaces() {
+        return spaces;
+    }
+    
     /**
-     * A builder for {@link DefaultSpaceProviderEnt}.
+     * A builder for {@link DefaultSpaceGroupEnt}.
      */
-    public static class DefaultSpaceProviderEntBuilder implements SpaceProviderEntBuilder {
+    public static class DefaultSpaceGroupEntBuilder implements SpaceGroupEntBuilder {
 
-        private java.util.List<SpaceGroupEnt> m_spaceGroups = new java.util.ArrayList<>();
+        private String m_id;
+
+        private String m_name;
 
         private TypeEnum m_type;
 
+        private java.util.List<SpaceEnt> m_spaces = new java.util.ArrayList<>();
+
         @Override
-        public DefaultSpaceProviderEntBuilder setSpaceGroups(java.util.List<SpaceGroupEnt> spaceGroups) {
-             if(spaceGroups == null) {
-                 throw new IllegalArgumentException("<spaceGroups> must not be null.");
+        public DefaultSpaceGroupEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
-             m_spaceGroups = spaceGroups;
+             m_id = id;
              return this;
         }
 
         @Override
-        public DefaultSpaceProviderEntBuilder setType(TypeEnum type) {
+        public DefaultSpaceGroupEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("<name> must not be null.");
+             }
+             m_name = name;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceGroupEntBuilder setType(TypeEnum type) {
              if(type == null) {
                  throw new IllegalArgumentException("<type> must not be null.");
              }
@@ -118,10 +151,21 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
-        public DefaultSpaceProviderEnt build() {
-            return new DefaultSpaceProviderEnt(
-                immutable(m_spaceGroups),
-                immutable(m_type));
+        public DefaultSpaceGroupEntBuilder setSpaces(java.util.List<SpaceEnt> spaces) {
+             if(spaces == null) {
+                 throw new IllegalArgumentException("<spaces> must not be null.");
+             }
+             m_spaces = spaces;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceGroupEnt build() {
+            return new DefaultSpaceGroupEnt(
+                immutable(m_id),
+                immutable(m_name),
+                immutable(m_type),
+                immutable(m_spaces));
         }
     
     }

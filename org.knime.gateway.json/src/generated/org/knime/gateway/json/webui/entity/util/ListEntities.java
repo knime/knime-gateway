@@ -143,6 +143,7 @@ import org.knime.gateway.json.webui.entity.ReplaceNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.ShowToastEventEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceEntMixIn;
+import org.knime.gateway.json.webui.entity.SpaceGroupEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceItemReferenceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpacePathSegmentEntMixIn;
@@ -302,6 +303,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.class);
         res.add(ShowToastEventEntMixIn.class);
         res.add(SpaceEntMixIn.class);
+        res.add(SpaceGroupEntMixIn.class);
         res.add(SpaceItemEntMixIn.class);
         res.add(SpaceItemReferenceEntMixIn.class);
         res.add(SpacePathSegmentEntMixIn.class);
@@ -447,6 +449,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEntMixIn.SelectionEventTypeEntMixInBuilder.class);
         res.add(ShowToastEventEntMixIn.ShowToastEventEntMixInBuilder.class);
         res.add(SpaceEntMixIn.SpaceEntMixInBuilder.class);
+        res.add(SpaceGroupEntMixIn.SpaceGroupEntMixInBuilder.class);
         res.add(SpaceItemEntMixIn.SpaceItemEntMixInBuilder.class);
         res.add(SpaceItemReferenceEntMixIn.SpaceItemReferenceEntMixInBuilder.class);
         res.add(SpacePathSegmentEntMixIn.SpacePathSegmentEntMixInBuilder.class);

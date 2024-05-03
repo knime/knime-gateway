@@ -242,6 +242,8 @@ import org.knime.gateway.api.webui.entity.ShowToastEventEnt.ShowToastEventEntBui
 import org.knime.gateway.impl.webui.entity.DefaultShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt.SpaceGroupEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
@@ -634,6 +636,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == SpaceEntBuilder.class) {
             return (B)new DefaultSpaceEnt.DefaultSpaceEntBuilder();
+        }        
+        if(clazz == SpaceGroupEntBuilder.class) {
+            return (B)new DefaultSpaceGroupEnt.DefaultSpaceGroupEntBuilder();
         }        
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();

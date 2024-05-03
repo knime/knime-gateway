@@ -143,6 +143,7 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
@@ -303,6 +304,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEnt.class);
         res.add(ShowToastEventEnt.class);
         res.add(SpaceEnt.class);
+        res.add(SpaceGroupEnt.class);
         res.add(SpaceItemEnt.class);
         res.add(SpaceItemReferenceEnt.class);
         res.add(SpacePathSegmentEnt.class);
@@ -448,6 +450,7 @@ public class ListEntities {
         res.add(SelectionEventTypeEnt.SelectionEventTypeEntBuilder.class);
         res.add(ShowToastEventEnt.ShowToastEventEntBuilder.class);
         res.add(SpaceEnt.SpaceEntBuilder.class);
+        res.add(SpaceGroupEnt.SpaceGroupEntBuilder.class);
         res.add(SpaceItemEnt.SpaceItemEntBuilder.class);
         res.add(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class);
         res.add(SpacePathSegmentEnt.SpacePathSegmentEntBuilder.class);

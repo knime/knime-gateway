@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,22 +56,20 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Provides one or more spaces.
+ * Defines a group of spaces, could be an user or a team.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceProviderEnt extends GatewayEntity {
+public interface SpaceGroupEnt extends GatewayEntity {
 
   /**
-   * Type of the space provider.
+   * The type of the group.
    */
   public enum TypeEnum {
-    LOCAL("LOCAL"),
+    TEAM("TEAM"),
     
-    HUB("HUB"),
-    
-    SERVER("SERVER");
+    USER("USER");
 
     private String value;
 
@@ -88,46 +86,76 @@ public interface SpaceProviderEnt extends GatewayEntity {
 
 
   /**
-   * The groups contained in this provider to which the user have access to.
-   * @return spaceGroups , never <code>null</code>
+   * Identifier of the group
+   * @return id , never <code>null</code>
    **/
-  public java.util.List<SpaceGroupEnt> getSpaceGroups();
+  public String getId();
 
   /**
-   * Type of the space provider.
+   * The group name
+   * @return name , never <code>null</code>
+   **/
+  public String getName();
+
+  /**
+   * The type of the group.
    * @return type , never <code>null</code>
    **/
   public TypeEnum getType();
+
+  /**
+   * The spaces contained in the group.
+   * @return spaces , never <code>null</code>
+   **/
+  public java.util.List<SpaceEnt> getSpaces();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (SpaceProviderEnt)other;
-      valueConsumer.accept("spaceGroups", Pair.create(getSpaceGroups(), e.getSpaceGroups()));
+      var e = (SpaceGroupEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("spaces", Pair.create(getSpaces(), e.getSpaces()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface SpaceProviderEntBuilder extends GatewayEntityBuilder<SpaceProviderEnt> {
+    public interface SpaceGroupEntBuilder extends GatewayEntityBuilder<SpaceGroupEnt> {
 
         /**
-         * The groups contained in this provider to which the user have access to.
+         * Identifier of the group
          * 
-         * @param spaceGroups the property value, NOT <code>null</code>! 
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceProviderEntBuilder setSpaceGroups(java.util.List<SpaceGroupEnt> spaceGroups);
+        SpaceGroupEntBuilder setId(String id);
         
         /**
-         * Type of the space provider.
+         * The group name
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceGroupEntBuilder setName(String name);
+        
+        /**
+         * The type of the group.
          * 
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceProviderEntBuilder setType(TypeEnum type);
+        SpaceGroupEntBuilder setType(TypeEnum type);
+        
+        /**
+         * The spaces contained in the group.
+         * 
+         * @param spaces the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceGroupEntBuilder setSpaces(java.util.List<SpaceEnt> spaces);
         
         
         /**
@@ -137,7 +165,7 @@ public interface SpaceProviderEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SpaceProviderEnt build();
+        SpaceGroupEnt build();
     
     }
 

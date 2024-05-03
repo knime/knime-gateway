@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt.DefaultSpaceProviderEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt.DefaultSpaceGroupEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,22 +61,30 @@ import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt.DefaultSpaceP
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultSpaceProviderEntBuilder.class)
-@JsonSerialize(as=SpaceProviderEnt.class)
+@JsonDeserialize(builder=DefaultSpaceGroupEntBuilder.class)
+@JsonSerialize(as=SpaceGroupEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
+public interface SpaceGroupEntMixIn extends SpaceGroupEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("spaceGroups")
-    public java.util.List<SpaceGroupEnt> getSpaceGroups();
+    @JsonProperty("id")
+    public String getId();
+    
+    @Override
+    @JsonProperty("name")
+    public String getName();
     
     @Override
     @JsonProperty("type")
     public TypeEnum getType();
+    
+    @Override
+    @JsonProperty("spaces")
+    public java.util.List<SpaceEnt> getSpaces();
     
 
     /**
@@ -86,18 +94,26 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface SpaceProviderEntMixInBuilder extends SpaceProviderEntBuilder {
+    public static interface SpaceGroupEntMixInBuilder extends SpaceGroupEntBuilder {
     
         @Override
-        public SpaceProviderEntMixIn build();
+        public SpaceGroupEntMixIn build();
     
         @Override
-        @JsonProperty("spaceGroups")
-        public SpaceProviderEntMixInBuilder setSpaceGroups(final java.util.List<SpaceGroupEnt> spaceGroups);
+        @JsonProperty("id")
+        public SpaceGroupEntMixInBuilder setId(final String id);
+        
+        @Override
+        @JsonProperty("name")
+        public SpaceGroupEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("type")
-        public SpaceProviderEntMixInBuilder setType(final TypeEnum type);
+        public SpaceGroupEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("spaces")
+        public SpaceGroupEntMixInBuilder setSpaces(final java.util.List<SpaceEnt> spaces);
         
     }
 
