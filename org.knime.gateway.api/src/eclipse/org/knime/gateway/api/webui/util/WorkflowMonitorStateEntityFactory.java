@@ -56,7 +56,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeMessage.Type;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory;
@@ -122,12 +124,16 @@ public final class WorkflowMonitorStateEntityFactory {
 
     private static WorkflowMonitorMessageEnt buildWorkflowMonitorMessageEnt(final NativeNodeContainer nnc,
         final boolean hasComponentProjectParent) {
+        NodeContainer containerNode = nnc.getParent();
+        if (containerNode.getDirectNCParent() instanceof SubNodeContainer snc) {
+            containerNode = snc;
+        }
         return builder(WorkflowMonitorMessageEntBuilder.class) //
             .setNodeId(new NodeIDEnt(nnc.getID(), hasComponentProjectParent)) //
             .setName(nnc.getName()) //
             .setTemplateId(nnc.getNode().getFactory().getFactoryId()) //
             .setMessage(nnc.getNodeMessage().getMessage()) //
-            .setWorkflowId(new NodeIDEnt(nnc.getParent().getID(), hasComponentProjectParent)) //
+            .setWorkflowId(new NodeIDEnt(containerNode.getID(), hasComponentProjectParent)) //
             .build();
     }
 
