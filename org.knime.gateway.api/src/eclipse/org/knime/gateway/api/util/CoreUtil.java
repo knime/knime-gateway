@@ -252,13 +252,9 @@ public final class CoreUtil {
      *         workflow manager does not correspond to a component
      */
     public static Optional<SubNodeContainer> getComponentSNC(final WorkflowManager wfm) {
-        if (!CoreUtil.isComponentWFM(wfm)) {
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(wfm.getDirectNCParent())//
-                .filter(SubNodeContainer.class::isInstance)//
-                .map(SubNodeContainer.class::cast);
-        }
+        return Optional.ofNullable(wfm.getDirectNCParent())//
+            .filter(SubNodeContainer.class::isInstance)//
+            .map(SubNodeContainer.class::cast);
     }
 
     /**
@@ -824,16 +820,16 @@ public final class CoreUtil {
      *
      * @param wfm the workflow to iterate
      * @param nodeVisitor callback whenever a native node was found
-     * @param wfmVisitor callback whenever a metanode or component was found; it returns {@code true} if the contained
+     * @param doRecurse callback whenever a metanode or component was found; it returns {@code true} if the contained
      *            nodes are to be iterated, too, otherwise {@code false} to stop there
      */
     public static void iterateNodes(final WorkflowManager wfm, final Consumer<NativeNodeContainer> nodeVisitor,
-        final Predicate<WorkflowManager> wfmVisitor) {
+        final Predicate<WorkflowManager> doRecurse) {
         for (var nc : wfm.getNodeContainers()) {
-            runOnNodeOrWfm(nc, nodeVisitor::accept, subWfm -> {
-                var iterateContainedNodes = wfmVisitor == null || wfmVisitor.test(subWfm);
+            runOnNodeOrWfm(nc, nodeVisitor, subWfm -> {
+                var iterateContainedNodes = doRecurse == null || doRecurse.test(subWfm);
                 if (iterateContainedNodes) {
-                    iterateNodes(subWfm, nodeVisitor, wfmVisitor);
+                    iterateNodes(subWfm, nodeVisitor, doRecurse);
                 }
             });
         }

@@ -83,7 +83,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private final WorkflowManager m_wfm;
 
-    private final Set<Runnable> m_workflowChangedCallbacks;
+    private final Set<Runnable> m_workflowChangedCallbacks = new HashSet<>();
 
     private final Set<WorkflowChangesTracker> m_workflowChangesTrackers = Collections.synchronizedSet(new HashSet<>());
 
@@ -132,10 +132,10 @@ public class WorkflowChangesListener implements Closeable {
      * @param scopes what workflow changes to listen to
      * @param recurse whether to recurse into sub-workflows to listen for respective changes there, too
      */
+    @SuppressWarnings("java:S2293") // diamond operator: need to explicitly specify type params
     public WorkflowChangesListener(final WorkflowManager wfm, final Set<Scope> scopes, final boolean recurse) {
         m_wfm = wfm;
         m_recurse = recurse;
-        m_workflowChangedCallbacks = new HashSet<>();
 
         var isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
         if (isInStreamingMode) {
@@ -313,6 +313,7 @@ public class WorkflowChangesListener implements Closeable {
         m_connectionUIInformationListener.addTo(connectionContainers);
     }
 
+    @SuppressWarnings("java:S1541") // Complexity: Simple 1:1 matching
     private void trackChange(final WorkflowEvent e) {
         switch (e.getType()) {
             case NODE_ADDED:
@@ -392,7 +393,7 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void removeNodeListeners(final NodeContainer nc) {
-        m_nodeListeners.forEach(nlm -> nlm.removeFrom(nc));
+        m_nodeListeners.forEach(l -> l.removeFrom(nc));
     }
 
     private static Optional<NativeNodeContainer> getNNC(final NodeContainer nc) {
@@ -507,7 +508,7 @@ public class WorkflowChangesListener implements Closeable {
 
     }
 
-    private static final class NoopListener<T, L> implements Listener<T> {
+    private static final class NoopListener<T> implements Listener<T> {
 
         @Override
         public void addTo(final Collection<T> targets) {

@@ -246,11 +246,11 @@ public final class WorkflowMiddleware {
      * If called for the first time, the {@link WorkflowChangesListener} will be created. Subsequent calls will always
      * return the very same instance (per workflow).
      *
-     * @param wfkey
+     * @param wfKey
      * @return the listener instance
      */
-    public WorkflowChangesListener getWorkflowChangesListenerForWorkflowMonitor(final WorkflowKey wfkey) {
-        return getWorkflowState(wfkey).changesListenerForWorkflowMonitor();
+    public WorkflowChangesListener getWorkflowChangesListenerForWorkflowMonitor(final WorkflowKey wfKey) {
+        return getWorkflowState(wfKey).changesListenerForWorkflowMonitor();
     }
 
     /**

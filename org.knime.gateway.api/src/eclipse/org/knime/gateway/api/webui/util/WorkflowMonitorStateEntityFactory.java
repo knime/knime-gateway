@@ -77,7 +77,7 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorStateEnt.WorkflowMonito
 @SuppressWarnings("static-method")
 public final class WorkflowMonitorStateEntityFactory {
 
-    private static final Set<Class<?>> NODE_IGNORE_LIST =
+    private static final Set<Class<?>> IGNORED_NODES =
         Set.of(VirtualSubNodeInputNodeFactory.class, VirtualSubNodeOutputNodeFactory.class);
 
     WorkflowMonitorStateEntityFactory() {
@@ -91,12 +91,12 @@ public final class WorkflowMonitorStateEntityFactory {
      * @return the new instance
      */
     public WorkflowMonitorStateEnt buildWorkflowMonitorStateEnt(final WorkflowManager wfm) {
-        var nncComparator = Comparator.<NativeNodeContainer> comparingLong(nnc -> nnc.getNodeTimer().getStartTime())
+        var startTimeDescending = Comparator.<NativeNodeContainer> comparingLong(nnc -> nnc.getNodeTimer().getStartTime())
             .thenComparing(NativeNodeContainer::getID).reversed();
-        var nodesWithMessages = new TreeSet<NativeNodeContainer>(nncComparator);
+        var nodesWithMessages = new TreeSet<>(startTimeDescending);
 
         CoreUtil.iterateNodes(wfm, nnc -> {
-            if (!NODE_IGNORE_LIST.contains(nnc.getNode().getFactory().getClass())) {
+            if (!IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
                 var messageType = nnc.getNodeMessage().getMessageType();
                 if (messageType != Type.RESET) {
                     nodesWithMessages.add(nnc);
@@ -124,16 +124,16 @@ public final class WorkflowMonitorStateEntityFactory {
 
     private static WorkflowMonitorMessageEnt buildWorkflowMonitorMessageEnt(final NativeNodeContainer nnc,
         final boolean hasComponentProjectParent) {
-        NodeContainer containerNode = nnc.getParent();
-        if (containerNode.getDirectNCParent() instanceof SubNodeContainer snc) {
-            containerNode = snc;
+        NodeContainer parent = nnc.getParent();
+        if (parent.getDirectNCParent() instanceof SubNodeContainer snc) {
+            parent = snc;
         }
         return builder(WorkflowMonitorMessageEntBuilder.class) //
             .setNodeId(new NodeIDEnt(nnc.getID(), hasComponentProjectParent)) //
             .setName(nnc.getName()) //
             .setTemplateId(nnc.getNode().getFactory().getFactoryId()) //
             .setMessage(nnc.getNodeMessage().getMessage()) //
-            .setWorkflowId(new NodeIDEnt(containerNode.getID(), hasComponentProjectParent)) //
+            .setWorkflowId(new NodeIDEnt(parent.getID(), hasComponentProjectParent)) //
             .build();
     }
 

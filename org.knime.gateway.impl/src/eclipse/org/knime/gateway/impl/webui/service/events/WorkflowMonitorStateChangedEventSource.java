@@ -79,8 +79,6 @@ import org.knime.gateway.impl.webui.service.DefaultEventService;
 public final class WorkflowMonitorStateChangedEventSource
     extends EventSource<WorkflowMonitorStateChangeEventTypeEnt, WorkflowMonitorStateChangeEventEnt> {
 
-    private final ProjectManager m_projectManager;
-
     private final WorkflowMiddleware m_workflowMiddleware;
 
     // TODO in a multi-user scenario we will need to keep track of the callbacks
@@ -95,9 +93,8 @@ public final class WorkflowMonitorStateChangedEventSource
     public WorkflowMonitorStateChangedEventSource(final BiConsumer<String, Object> eventConsumer,
         final ProjectManager projectManager, final WorkflowMiddleware workflowMiddleware) {
         super(eventConsumer);
-        m_projectManager = projectManager;
         m_workflowMiddleware = workflowMiddleware;
-        m_projectManager.addProjectRemovedListener(m_workflowChangeCallbacks::remove);
+        projectManager.addProjectRemovedListener(m_workflowChangeCallbacks::remove);
     }
 
     /**
