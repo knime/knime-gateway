@@ -42,13 +42,11 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
-import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource.PatchEntCreator;
 
 /**
  * Tests for {@link EntityRepository}.
@@ -122,21 +120,19 @@ public abstract class AbstractEntityRepositoryTest {
         wfBuilder.setNodes(nodes);
 
         WorkflowEnt newWfEntity = wfBuilder.build();
-        WorkflowChangedEventEnt event =
-            repo.getChangesAndCommit(commitRes, newWfEntity, new PatchEntCreator(null)).orElse(null);
-        assertThat(event.getPatch().getOps().size(), is(3));
-        assertNotEquals(commitRes, event.getSnapshotId());
+        var patchEntCreator = new PatchEntCreator(null);
+        var patch = repo.getChangesAndCommit(commitRes, newWfEntity, patchEntCreator).orElse(null);
+        assertThat(patch.getOps().size(), is(3));
+        assertNotEquals(commitRes, patchEntCreator.getLastSnapshotId());
 
         //get patch for a non-modified entity
-        event = repo
-            .getChangesAndCommit(event.getSnapshotId(), wfBuilder.build(), new PatchEntCreator(event.getSnapshotId()))
+        patch = repo.getChangesAndCommit(patchEntCreator.getLastSnapshotId(), wfBuilder.build(), patchEntCreator)
             .orElse(null);
-        Assert.assertNull(event);
+        Assert.assertNull(patch);
 
         //make sure that the very first snapshot is still there
-        event =
-            repo.getChangesAndCommit(commitRes, wfBuilder.build(), new PatchEntCreator(null)).orElse(null);
-        assertThat(event.getPatch().getOps().size(), is(3));
+        patch = repo.getChangesAndCommit(commitRes, wfBuilder.build(), new PatchEntCreator(null)).orElse(null);
+        assertThat(patch.getOps().size(), is(3));
     }
 
     /**

@@ -71,6 +71,7 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
+import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.WorkflowMonitorStateChangeEventEntBuilder;
@@ -86,6 +87,7 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.PatchCreator;
+import org.knime.gateway.impl.service.util.PatchEntCreator;
 import org.knime.gateway.impl.service.util.SimpleRepository;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
@@ -274,8 +276,8 @@ public final class WorkflowMiddleware {
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
-        final PatchCreator<WorkflowChangedEventEnt> patchEntCreator, final String snapshotId,
-        final boolean includeInteractionInfo, final WorkflowChangesTracker changes) {
+        final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo,
+        final WorkflowChangesTracker changes) {
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);
@@ -292,7 +294,9 @@ public final class WorkflowMiddleware {
             // no change
             return null;
         } else {
-            return m_workflowEntRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
+            var patch = m_workflowEntRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
+            return patch == null ? null : builder(WorkflowChangedEventEntBuilder.class).setPatch(patch)
+                .setSnapshotId(patchEntCreator.getLastSnapshotId()).build();
         }
     }
 

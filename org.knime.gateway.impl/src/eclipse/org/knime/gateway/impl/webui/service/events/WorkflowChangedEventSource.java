@@ -48,42 +48,30 @@
  */
 package org.knime.gateway.impl.webui.service.events;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
-import org.knime.gateway.api.webui.entity.PatchEnt;
-import org.knime.gateway.api.webui.entity.PatchOpEnt;
-import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
-import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt.WorkflowChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.CallThrottle.CallState;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.service.util.PatchCreator;
+import org.knime.gateway.impl.service.util.PatchEntCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
-import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
-import org.knime.gateway.impl.webui.service.DefaultEventService;
 
 /**
  * An event source that emits events whenever something changes in a particular workflow.
@@ -258,57 +246,6 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     int getNumRegisteredListeners() {
         assert m_workflowChangesCallbacks.size() == m_trackers.size();
         return m_workflowChangesCallbacks.size();
-    }
-
-    /**
-     * Creates {@link PatchEnt}s.
-     *
-     * Public scope for testing.
-     */
-    public static class PatchEntCreator implements PatchCreator<WorkflowChangedEventEnt> {
-
-        private final List<PatchOpEnt> m_ops = new ArrayList<>();
-
-        private String m_lastSnapshotId;
-
-        /**
-         * @param lastSnapshotId the latest snapshot id
-         */
-        public PatchEntCreator(final String lastSnapshotId) {
-            m_lastSnapshotId = lastSnapshotId;
-        }
-
-        @Override
-        public void replaced(final String path, final Object value) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REPLACE).setPath(path).setValue(value).build());
-        }
-
-        @Override
-        public void removed(final String path) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REMOVE).setPath(path).build());
-        }
-
-        @Override
-        public void added(final String path, final Object value) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.ADD).setPath(path).setValue(value).build());
-            if (value == null) {
-                NodeLogger.getLogger(DefaultEventService.class).error(
-                    "An 'ADD' patch operation has been created without a value. Most likely an implementation error.");
-            }
-        }
-
-        @Override
-        public WorkflowChangedEventEnt create(final String newSnapshotId) {
-            m_lastSnapshotId = newSnapshotId;
-            DefaultPatchEnt patch = new DefaultPatchEntBuilder().setOps(m_ops).build();
-            m_ops.clear();
-            return builder(WorkflowChangedEventEntBuilder.class).setPatch(patch).setSnapshotId(newSnapshotId).build();
-
-        }
-
-        String getLastSnapshotId() {
-            return m_lastSnapshotId;
-        }
     }
 
 }

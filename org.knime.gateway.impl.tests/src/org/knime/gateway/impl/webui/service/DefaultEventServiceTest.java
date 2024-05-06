@@ -81,6 +81,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt.WorkflowMonitorMessageEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.WorkflowMonitorStateChangeEventEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt.WorkflowMonitorStateChangeEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
@@ -236,7 +237,8 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
     }
 
     /**
-     * TODO
+     * Tests {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} for the
+     * {@link WorkflowMonitorStateChangeEventTypeEnt}.
      *
      * @throws Exception
      */
@@ -275,7 +277,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         // error message within component added
         ns.changeNodeStates(projectId, new NodeIDEnt(8), List.of(new NodeIDEnt(8, 0, 7)), "execute");
         var expectedEvent3 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
-            "Fail in execution", new NodeIDEnt(8, 0), "org.knime.testing.node.failing.FailingNodeFactory",
+            "Fail in execution", new NodeIDEnt(8), "org.knime.testing.node.failing.FailingNodeFactory",
             new NodeIDEnt(8, 0, 7));
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {

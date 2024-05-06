@@ -48,28 +48,19 @@
  */
 package org.knime.gateway.impl.webui.service.events;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.PatchEnt;
-import org.knime.gateway.api.webui.entity.PatchOpEnt;
-import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.service.util.PatchCreator;
+import org.knime.gateway.impl.service.util.PatchEntCreator;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.entity.DefaultPatchEnt.DefaultPatchEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt.DefaultPatchOpEntBuilder;
-import org.knime.gateway.impl.webui.service.DefaultEventService;
 
 /**
  * An event source emitting {@link WorkflowMonitorStateChangeEventEnt}s.
@@ -108,10 +99,12 @@ public final class WorkflowMonitorStateChangedEventSource
 
         // initial event to catch-up with the most recent workflow version
         var patchEntCreator = new PatchEntCreator(eventTypeEnt.getSnapshotId());
-        var initialEvent = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey,
+        // no-sonar: initial event needs to be created before registering the callbacks
+        // also because it might create a new snapshot id (relayed via the patchEntCreator)
+        var initialEvent = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey, // NOSONAR
             eventTypeEnt.getSnapshotId(), patchEntCreator);
 
-        m_workflowChangeCallbacks.computeIfAbsent(projectId, id -> {
+        m_workflowChangeCallbacks.computeIfAbsent(projectId, id -> { // NOSONAR
             Runnable callback = () -> {
                 var event = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey,
                     patchEntCreator.getLastSnapshotId(), patchEntCreator);
@@ -158,54 +151,6 @@ public final class WorkflowMonitorStateChangedEventSource
     @Override
     protected String getName() {
         return "WorkflowMonitorStateChangeEvent";
-    }
-
-    /**
-     * Creates {@link PatchEnt}s.
-     */
-    static class PatchEntCreator implements PatchCreator<PatchEnt> {
-
-        private final List<PatchOpEnt> m_ops = new ArrayList<>();
-
-        private String m_lastSnapshotId;
-
-        /**
-         * @param lastSnapshotId the latest snapshot id
-         */
-        public PatchEntCreator(final String lastSnapshotId) {
-            m_lastSnapshotId = lastSnapshotId;
-        }
-
-        @Override
-        public void replaced(final String path, final Object value) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REPLACE).setPath(path).setValue(value).build());
-        }
-
-        @Override
-        public void removed(final String path) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.REMOVE).setPath(path).build());
-        }
-
-        @Override
-        public void added(final String path, final Object value) {
-            m_ops.add(new DefaultPatchOpEntBuilder().setOp(OpEnum.ADD).setPath(path).setValue(value).build());
-            if (value == null) {
-                NodeLogger.getLogger(DefaultEventService.class).error(
-                    "An 'ADD' patch operation has been created without a value. Most likely an implementation error.");
-            }
-        }
-
-        @Override
-        public PatchEnt create(final String newSnapshotId) {
-            m_lastSnapshotId = newSnapshotId;
-            var patch = new DefaultPatchEntBuilder().setOps(m_ops).build();
-            m_ops.clear();
-            return patch;
-        }
-
-        String getLastSnapshotId() {
-            return m_lastSnapshotId;
-        }
     }
 
 }

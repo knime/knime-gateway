@@ -307,10 +307,10 @@ public class WorkflowChangesListener implements Closeable {
     private void startListening(final WorkflowManager wfm) {
         wfm.addListener(m_workflowListener);
         wfm.getNodeContainers().forEach(this::addNodeListeners);
-        m_workflowAnnotationListener.addTo(wfm.getWorkflowAnnotations());
+        m_workflowAnnotationListener.attachTo(wfm.getWorkflowAnnotations());
         var connectionContainers = wfm.getConnectionContainers();
-        m_connectionProgressListener.addTo(connectionContainers);
-        m_connectionUIInformationListener.addTo(connectionContainers);
+        m_connectionProgressListener.attachTo(connectionContainers);
+        m_connectionUIInformationListener.attachTo(connectionContainers);
     }
 
     @SuppressWarnings("java:S1541") // Complexity: Simple 1:1 matching
@@ -368,20 +368,20 @@ public class WorkflowChangesListener implements Closeable {
                 }
                 break;
             case ANNOTATION_ADDED:
-                m_workflowAnnotationListener.addTo((WorkflowAnnotation)e.getNewValue());
+                m_workflowAnnotationListener.attachTo((WorkflowAnnotation)e.getNewValue());
                 break;
             case ANNOTATION_REMOVED:
-                m_workflowAnnotationListener.removeFrom((WorkflowAnnotation)e.getOldValue());
+                m_workflowAnnotationListener.detachFrom((WorkflowAnnotation)e.getOldValue());
                 break;
             case CONNECTION_ADDED:
                 var cc = (ConnectionContainer)e.getNewValue();
-                m_connectionUIInformationListener.addTo(cc);
-                m_connectionProgressListener.addTo(cc);
+                m_connectionUIInformationListener.attachTo(cc);
+                m_connectionProgressListener.attachTo(cc);
                 break;
             case CONNECTION_REMOVED:
                 cc = (ConnectionContainer)e.getOldValue();
-                m_connectionUIInformationListener.removeFrom(cc);
-                m_connectionProgressListener.removeFrom(cc);
+                m_connectionUIInformationListener.detachFrom(cc);
+                m_connectionProgressListener.detachFrom(cc);
                 break;
             default:
                 //
@@ -389,11 +389,11 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void addNodeListeners(final NodeContainer nc) {
-        m_nodeListeners.forEach(l -> l.addTo(nc));
+        m_nodeListeners.forEach(l -> l.attachTo(nc));
     }
 
     private void removeNodeListeners(final NodeContainer nc) {
-        m_nodeListeners.forEach(l -> l.removeFrom(nc));
+        m_nodeListeners.forEach(l -> l.detachFrom(nc));
     }
 
     private static Optional<NativeNodeContainer> getNNC(final NodeContainer nc) {
@@ -422,10 +422,10 @@ public class WorkflowChangesListener implements Closeable {
     private void stopListening(final WorkflowManager wfm) {
         wfm.removeListener(m_workflowListener);
         wfm.getNodeContainers().forEach(this::removeNodeListeners);
-        m_workflowAnnotationListener.removeFrom(wfm.getWorkflowAnnotations());
+        m_workflowAnnotationListener.detachFrom(wfm.getWorkflowAnnotations());
         var connectionContainers = wfm.getConnectionContainers();
-        m_connectionProgressListener.removeFrom(connectionContainers);
-        m_connectionUIInformationListener.removeFrom(connectionContainers);
+        m_connectionProgressListener.detachFrom(connectionContainers);
+        m_connectionUIInformationListener.detachFrom(connectionContainers);
     }
 
     @Override
@@ -454,13 +454,13 @@ public class WorkflowChangesListener implements Closeable {
      */
     private interface Listener<T> {
 
-        void addTo(T target);
+        void attachTo(T target);
 
-        void addTo(final Collection<T> targets);
+        void attachTo(final Collection<T> targets);
 
-        void removeFrom(T target);
+        void detachFrom(T target);
 
-        void removeFrom(final Collection<T> targets);
+        void detachFrom(final Collection<T> targets);
 
     }
 
@@ -487,22 +487,22 @@ public class WorkflowChangesListener implements Closeable {
         }
 
         @Override
-        public void addTo(final Collection<T> targets) {
-            targets.forEach(this::addTo);
+        public void attachTo(final Collection<T> targets) {
+            targets.forEach(this::attachTo);
         }
 
         @Override
-        public void removeFrom(final Collection<T> targets) {
-            targets.forEach(this::removeFrom);
+        public void detachFrom(final Collection<T> targets) {
+            targets.forEach(this::detachFrom);
         }
 
         @Override
-        public void addTo(final T target) {
+        public void attachTo(final T target) {
             m_attacher.accept(target, m_listener);
         }
 
         @Override
-        public void removeFrom(final T target) {
+        public void detachFrom(final T target) {
             m_detacher.accept(target, m_listener);
         }
 
@@ -511,22 +511,22 @@ public class WorkflowChangesListener implements Closeable {
     private static final class NoopListener<T> implements Listener<T> {
 
         @Override
-        public void addTo(final Collection<T> targets) {
+        public void attachTo(final Collection<T> targets) {
            //
         }
 
         @Override
-        public void removeFrom(final Collection<T> targets) {
+        public void detachFrom(final Collection<T> targets) {
            //
         }
 
         @Override
-        public void addTo(final T target) {
+        public void attachTo(final T target) {
             //
         }
 
         @Override
-        public void removeFrom(final T target) {
+        public void detachFrom(final T target) {
             //
         }
 
