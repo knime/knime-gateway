@@ -98,8 +98,6 @@ import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBui
 import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
-import org.knime.gateway.api.webui.entity.ConnectableEnt.ConnectableEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultConnectableEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt.ConvertContainerResultEntBuilder;
@@ -420,9 +418,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == ConnectCommandEntBuilder.class) {
             return (B)new DefaultConnectCommandEnt.DefaultConnectCommandEntBuilder();
-        }        
-        if(clazz == ConnectableEntBuilder.class) {
-            return (B)new DefaultConnectableEnt.DefaultConnectableEntBuilder();
         }        
         if(clazz == ConnectionEntBuilder.class) {
             return (B)new DefaultConnectionEnt.DefaultConnectionEntBuilder();

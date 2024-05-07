@@ -71,7 +71,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
-import org.knime.gateway.api.webui.entity.ConnectableEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
@@ -232,7 +231,6 @@ public class ListEntities {
         res.add(ComponentPortDescriptionEnt.class);
         res.add(CompositeEventEnt.class);
         res.add(ConnectCommandEnt.class);
-        res.add(ConnectableEnt.class);
         res.add(ConnectionEnt.class);
         res.add(ConvertContainerResultEnt.class);
         res.add(CopyCommandEnt.class);
@@ -378,7 +376,6 @@ public class ListEntities {
         res.add(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class);
         res.add(CompositeEventEnt.CompositeEventEntBuilder.class);
         res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
-        res.add(ConnectableEnt.ConnectableEntBuilder.class);
         res.add(ConnectionEnt.ConnectionEntBuilder.class);
         res.add(ConvertContainerResultEnt.ConvertContainerResultEntBuilder.class);
         res.add(CopyCommandEnt.CopyCommandEntBuilder.class);

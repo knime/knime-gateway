@@ -46,7 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.ConnectableEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
@@ -55,16 +54,18 @@ import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
  * Automatically connects all the nodes / port bars selected.
  *
  * @param kind
- * @param connectables
- * @param flowVariablesOnly
+ * @param workflowInPortsBarSelected
+ * @param workflowOutPortsBarSelected
+ * @param selectedNodes
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAutoConnectCommandEnt(
     KindEnum kind,
-    java.util.List<ConnectableEnt> connectables,
-    Boolean flowVariablesOnly) implements AutoConnectCommandEnt {
+    Boolean workflowInPortsBarSelected,
+    Boolean workflowOutPortsBarSelected,
+    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes) implements AutoConnectCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -72,9 +73,6 @@ public record DefaultAutoConnectCommandEnt(
     public DefaultAutoConnectCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
-        }
-        if(connectables == null) {
-            throw new IllegalArgumentException("<connectables> must not be null.");
         }
     }
 
@@ -89,13 +87,18 @@ public record DefaultAutoConnectCommandEnt(
     }
     
     @Override
-    public java.util.List<ConnectableEnt> getConnectables() {
-        return connectables;
+    public Boolean isWorkflowInPortsBarSelected() {
+        return workflowInPortsBarSelected;
     }
     
     @Override
-    public Boolean isFlowVariablesOnly() {
-        return flowVariablesOnly;
+    public Boolean isWorkflowOutPortsBarSelected() {
+        return workflowOutPortsBarSelected;
+    }
+    
+    @Override
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getSelectedNodes() {
+        return selectedNodes;
     }
     
     /**
@@ -105,9 +108,11 @@ public record DefaultAutoConnectCommandEnt(
 
         private KindEnum m_kind;
 
-        private java.util.List<ConnectableEnt> m_connectables = new java.util.ArrayList<>();
+        private Boolean m_workflowInPortsBarSelected;
 
-        private Boolean m_flowVariablesOnly;
+        private Boolean m_workflowOutPortsBarSelected;
+
+        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_selectedNodes;
 
         @Override
         public DefaultAutoConnectCommandEntBuilder setKind(KindEnum kind) {
@@ -119,17 +124,20 @@ public record DefaultAutoConnectCommandEnt(
         }
 
         @Override
-        public DefaultAutoConnectCommandEntBuilder setConnectables(java.util.List<ConnectableEnt> connectables) {
-             if(connectables == null) {
-                 throw new IllegalArgumentException("<connectables> must not be null.");
-             }
-             m_connectables = connectables;
+        public DefaultAutoConnectCommandEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected) {
+             m_workflowInPortsBarSelected = workflowInPortsBarSelected;
              return this;
         }
 
         @Override
-        public DefaultAutoConnectCommandEntBuilder setFlowVariablesOnly(Boolean flowVariablesOnly) {
-             m_flowVariablesOnly = flowVariablesOnly;
+        public DefaultAutoConnectCommandEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected) {
+             m_workflowOutPortsBarSelected = workflowOutPortsBarSelected;
+             return this;
+        }
+
+        @Override
+        public DefaultAutoConnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes) {
+             m_selectedNodes = selectedNodes;
              return this;
         }
 
@@ -137,8 +145,9 @@ public record DefaultAutoConnectCommandEnt(
         public DefaultAutoConnectCommandEnt build() {
             return new DefaultAutoConnectCommandEnt(
                 immutable(m_kind),
-                immutable(m_connectables),
-                immutable(m_flowVariablesOnly));
+                immutable(m_workflowInPortsBarSelected),
+                immutable(m_workflowOutPortsBarSelected),
+                immutable(m_selectedNodes));
         }
     
     }

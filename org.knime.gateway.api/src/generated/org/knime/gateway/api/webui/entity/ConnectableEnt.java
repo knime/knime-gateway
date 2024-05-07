@@ -69,26 +69,12 @@ public interface ConnectableEnt extends GatewayEntity {
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
-  /**
-   * Is the node a metanode in ports bar?
-   * @return metanodeInPortsBar 
-   **/
-  public Boolean isMetanodeInPortsBar();
-
-  /**
-   * Is the node a metanode out ports bar?
-   * @return metanodeOutPortsBar 
-   **/
-  public Boolean isMetanodeOutPortsBar();
-
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ConnectableEnt)other;
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
-      valueConsumer.accept("metanodeInPortsBar", Pair.create(isMetanodeInPortsBar(), e.isMetanodeInPortsBar()));
-      valueConsumer.accept("metanodeOutPortsBar", Pair.create(isMetanodeOutPortsBar(), e.isMetanodeOutPortsBar()));
   }
 
     /**
@@ -103,22 +89,6 @@ public interface ConnectableEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ConnectableEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
-        
-        /**
-         * Is the node a metanode in ports bar?
-         * 
-         * @param metanodeInPortsBar the property value,  
-         * @return this entity builder for chaining
-         */
-        ConnectableEntBuilder setMetanodeInPortsBar(Boolean metanodeInPortsBar);
-        
-        /**
-         * Is the node a metanode out ports bar?
-         * 
-         * @param metanodeOutPortsBar the property value,  
-         * @return this entity builder for chaining
-         */
-        ConnectableEntBuilder setMetanodeOutPortsBar(Boolean metanodeOutPortsBar);
         
         
         /**

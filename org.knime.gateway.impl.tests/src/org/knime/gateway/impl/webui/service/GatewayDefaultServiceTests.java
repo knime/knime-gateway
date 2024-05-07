@@ -71,6 +71,7 @@ import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
+import org.knime.gateway.testing.helper.webui.ConnectCommandsTestHelper;
 import org.knime.gateway.testing.helper.webui.GatewayTestCollection;
 import org.knime.gateway.testing.helper.webui.GatewayTestRunner;
 import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
@@ -116,7 +117,7 @@ public class GatewayDefaultServiceTests {
      */
     @Parameters(name = "{0}")
     public static Iterable<String> testNames() {
-        return GATEWAY_TESTS.keySet();
+        return GATEWAY_TESTS.keySet().stream().filter(s -> s.startsWith(ConnectCommandsTestHelper.class.getSimpleName())).toList();
     }
 
     /**

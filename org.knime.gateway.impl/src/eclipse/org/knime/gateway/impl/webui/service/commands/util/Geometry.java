@@ -59,8 +59,6 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 /**
  * Utility class for geometric objects.
  *
- * TODO javadoc, visibility, tests
- *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 public final class Geometry {
@@ -69,7 +67,7 @@ public final class Geometry {
 
     }
 
-    private static sealed class Vec2D permits Point, Delta {
+    private static sealed class Vec2D {  // NOSONAR: sealed, cannot make final
 
         private final int m_x;
 
@@ -116,21 +114,30 @@ public final class Geometry {
         public boolean isZero() {
             return x() == 0 && y() == 0;
         }
+
     }
 
     /**
-     * Represents a point in the 2-dim space.
+     * Represents a point in the 2-dimensional space.
      */
     public static final class Point extends Vec2D implements Comparable<Point> {
 
-        private static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        /**
+         * An instance containing minimal values
+         */
+        public static final Point MIN_VALUE = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
+
+        /**
+         * An instance containing maximal values
+         */
+        public static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
         private Point(final int x, final int y) {
             super(x, y);
         }
 
         /**
-         * @param xy the x,y coordinates of the point
+         * @param xy the x,y coordinates of the point. Any additional array elements are ignored.
          * @return the new instance
          */
         public static Point of(final int... xy) {
@@ -146,8 +153,6 @@ public final class Geometry {
         }
 
         /**
-         * @param a
-         * @param b
          * @return the min of two points
          */
         public static Point min(final Point a, final Point b) {
@@ -155,8 +160,8 @@ public final class Geometry {
         }
 
         /**
-         * @param pointStreams
-         * @return the min of multiple point streams
+         * @param pointStreams One or multiple streams of points
+         * @return The minimal point
          */
         @SafeVarargs
         public static Point min(final Stream<Point>... pointStreams) {
@@ -259,16 +264,20 @@ public final class Geometry {
             }
         }
 
-
         boolean intersects(final Range other) {
-            // The start point of `other` is in `this` (strictly smaller) implies that, no matter the end of the other,
-            // it then always intersects
-            return (this.start() < other.start() && other.start() < this.end()) //
+            return
+            // this:      [------------]
+            // other:          [------------]
+            (this.start() < other.start() && other.start() < this.end()) //
+                // this:           [------------]
+                // other:     [------------]
                 || (other.start() < this.start() && this.start() < other.end());
         }
     }
 
-    static class Rectangle {
+    public static class Rectangle {
+
+        public static final Comparator<Rectangle> NORTH_WEST_ORDERING = Comparator.comparing(Rectangle::leftTop);
 
         private final Point m_leftTop;
 
@@ -286,7 +295,7 @@ public final class Geometry {
             return Range.of(leftTop().x(), leftTop().x() + m_width);
         }
 
-        Point leftTop() {
+        public Point leftTop() {
             return m_leftTop;
         }
 
@@ -296,15 +305,22 @@ public final class Geometry {
 
     }
 
-    static final class Bounds extends Rectangle {
+    public static final class Bounds extends Rectangle {
 
         /**
          * @param coords array of the shape [x, y, width, height, ...]. Any further elements are ignored.
          */
-        Bounds(final int... coords) {
-            super(new Point(coords[0], coords[1]), coords[2], coords[3]);
+        public Bounds(final int... coords) {
+            this( //
+                new Point(coords[0], coords[1]), //
+                coords[2], //
+                coords[3] //
+            );
         }
 
+        public Bounds(final Point leftTop, final int width, final int height) {
+            super(leftTop, width, height);
+        }
     }
 
 }

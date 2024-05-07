@@ -73,14 +73,6 @@ public interface ConnectableEntMixIn extends ConnectableEnt {
     @JsonProperty("nodeId")
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
-    @Override
-    @JsonProperty("metanodeInPortsBar")
-    public Boolean isMetanodeInPortsBar();
-    
-    @Override
-    @JsonProperty("metanodeOutPortsBar")
-    public Boolean isMetanodeOutPortsBar();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -97,14 +89,6 @@ public interface ConnectableEntMixIn extends ConnectableEnt {
         @Override
         @JsonProperty("nodeId")
         public ConnectableEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
-        
-        @Override
-        @JsonProperty("metanodeInPortsBar")
-        public ConnectableEntMixInBuilder setMetanodeInPortsBar(final Boolean metanodeInPortsBar);
-        
-        @Override
-        @JsonProperty("metanodeOutPortsBar")
-        public ConnectableEntMixInBuilder setMetanodeOutPortsBar(final Boolean metanodeOutPortsBar);
         
     }
 

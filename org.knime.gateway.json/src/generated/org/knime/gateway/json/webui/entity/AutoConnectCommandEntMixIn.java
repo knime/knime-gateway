@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectableEnt;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
@@ -76,12 +75,16 @@ public interface AutoConnectCommandEntMixIn extends AutoConnectCommandEnt {
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("connectables")
-    public java.util.List<ConnectableEnt> getConnectables();
+    @JsonProperty("workflowInPortsBarSelected")
+    public Boolean isWorkflowInPortsBarSelected();
     
     @Override
-    @JsonProperty("flowVariablesOnly")
-    public Boolean isFlowVariablesOnly();
+    @JsonProperty("workflowOutPortsBarSelected")
+    public Boolean isWorkflowOutPortsBarSelected();
+    
+    @Override
+    @JsonProperty("selectedNodes")
+    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getSelectedNodes();
     
 
     /**
@@ -101,12 +104,16 @@ public interface AutoConnectCommandEntMixIn extends AutoConnectCommandEnt {
         public AutoConnectCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("connectables")
-        public AutoConnectCommandEntMixInBuilder setConnectables(final java.util.List<ConnectableEnt> connectables);
+        @JsonProperty("workflowInPortsBarSelected")
+        public AutoConnectCommandEntMixInBuilder setWorkflowInPortsBarSelected(final Boolean workflowInPortsBarSelected);
         
         @Override
-        @JsonProperty("flowVariablesOnly")
-        public AutoConnectCommandEntMixInBuilder setFlowVariablesOnly(final Boolean flowVariablesOnly);
+        @JsonProperty("workflowOutPortsBarSelected")
+        public AutoConnectCommandEntMixInBuilder setWorkflowOutPortsBarSelected(final Boolean workflowOutPortsBarSelected);
+        
+        @Override
+        @JsonProperty("selectedNodes")
+        public AutoConnectCommandEntMixInBuilder setSelectedNodes(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
         
     }
 

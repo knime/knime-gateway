@@ -53,16 +53,12 @@ import org.knime.gateway.api.webui.entity.ConnectableEnt;
  * A node ID and additional whether this is a metanode ports bar
  *
  * @param nodeId
- * @param metanodeInPortsBar
- * @param metanodeOutPortsBar
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultConnectableEnt(
-    org.knime.gateway.api.entity.NodeIDEnt nodeId,
-    Boolean metanodeInPortsBar,
-    Boolean metanodeOutPortsBar) implements ConnectableEnt {
+    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements ConnectableEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -83,26 +79,12 @@ public record DefaultConnectableEnt(
         return nodeId;
     }
     
-    @Override
-    public Boolean isMetanodeInPortsBar() {
-        return metanodeInPortsBar;
-    }
-    
-    @Override
-    public Boolean isMetanodeOutPortsBar() {
-        return metanodeOutPortsBar;
-    }
-    
     /**
      * A builder for {@link DefaultConnectableEnt}.
      */
     public static class DefaultConnectableEntBuilder implements ConnectableEntBuilder {
 
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-
-        private Boolean m_metanodeInPortsBar;
-
-        private Boolean m_metanodeOutPortsBar;
 
         @Override
         public DefaultConnectableEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
@@ -114,23 +96,9 @@ public record DefaultConnectableEnt(
         }
 
         @Override
-        public DefaultConnectableEntBuilder setMetanodeInPortsBar(Boolean metanodeInPortsBar) {
-             m_metanodeInPortsBar = metanodeInPortsBar;
-             return this;
-        }
-
-        @Override
-        public DefaultConnectableEntBuilder setMetanodeOutPortsBar(Boolean metanodeOutPortsBar) {
-             m_metanodeOutPortsBar = metanodeOutPortsBar;
-             return this;
-        }
-
-        @Override
         public DefaultConnectableEnt build() {
             return new DefaultConnectableEnt(
-                immutable(m_nodeId),
-                immutable(m_metanodeInPortsBar),
-                immutable(m_metanodeOutPortsBar));
+                immutable(m_nodeId));
         }
     
     }

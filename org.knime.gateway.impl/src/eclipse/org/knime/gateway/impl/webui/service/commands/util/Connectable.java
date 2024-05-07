@@ -49,455 +49,229 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeInPort;
-import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.ConnectableEnt;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Bounds;
 
 /**
- * A connectable represents a node that could be automatically connected. The following interfaces and implementations
- * were introduced to isolate those concerns and make the whole thing more readable and understandable.
- *
+ * A workflow part (native node, metanode, container, workflow-in-bar, workflow-out-bar, ...) that can be connected via
+ * workflow connections.
+ * 
  * @author Kai Franze, KNIME GmbH, Germany
+ * @author Benjamin Moser, KNIME GmbH, Germany
  */
-interface Connectable {
-
-    Comparator<Connectable> NORTH_WEST_ORDERING = Comparator.comparing(s -> s.getBounds().leftTop());
+public interface Connectable {
 
     NodeID getNodeId();
 
-    ConnectableEnt getConnectableEnt();
-
     Bounds getBounds();
 
-    default boolean isLeftOf(final Connectable connectable) {
-        return getBounds().xRange().start() < connectable.getBounds().xRange().start();
-    }
-
-    default boolean isRightOf(final Connectable connectable) {
-        return getBounds().xRange().start() > connectable.getBounds().xRange().start();
-    }
-
     /**
-     * @param connectableEnt
-     * @param wfm
-     * @return A connectable derived from a given connectable entity
-     */
-    static Connectable of(final ConnectableEnt connectableEnt, final WorkflowManager wfm) {
-        final var isMetanodeInPortsBar = Boolean.TRUE.equals(connectableEnt.isMetanodeInPortsBar());
-        final var isMetanodeOutPortsBar = Boolean.TRUE.equals(connectableEnt.isMetanodeOutPortsBar());
-        return (isMetanodeInPortsBar || isMetanodeOutPortsBar) //
-            ? new MetanodePortsBarConnectable(connectableEnt, wfm, isMetanodeInPortsBar, isMetanodeOutPortsBar) //
-            : new DefaultConnectable(connectableEnt, wfm);
-    }
-
-    /**
-     * Mainly introduced for shared 'equals(...)' and 'hashCode()' methods
-     *
-     * @author Kai Franze, KNIME GmbH, Germany
-     */
-    abstract class AbstractConnectable implements Connectable { // NOSONAR: Cannot be final
-
-        protected final ConnectableEnt m_connectableEnt;
-
-        protected final NodeID m_nodeId;
-
-        protected final WorkflowManager m_wfm;
-
-        protected final NodeContainer m_nc;
-
-        private AbstractConnectable(final ConnectableEnt connectableEnt, final WorkflowManager wfm) {
-            m_connectableEnt = connectableEnt;
-            m_nodeId = connectableEnt.getNodeId().toNodeID(wfm);
-            m_wfm = wfm;
-            m_nc = NodeConnector.getNodeContainerOrSelf(m_nodeId, wfm);
-        }
-
-        @Override
-        public ConnectableEnt getConnectableEnt() {
-            return m_connectableEnt;
-        }
-
-        @Override
-        public NodeID getNodeId() {
-            return m_nodeId;
-        }
-
-        @Override
-        public boolean equals(final Object other) {
-            if (other == this) {
-                return true;
-            }
-            if (other == null) {
-                return false;
-            }
-            if (other instanceof AbstractConnectable ac) { // NOSONAR: 'instanceof' is needed here
-                return new EqualsBuilder().append(m_connectableEnt, ac.getConnectableEnt()).build();
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder().append(m_connectableEnt).build();
-        }
-
-    }
-
-    /**
-     * For everything that is not source / destination specific and not a metanode ports bar
-     */
-    class DefaultConnectable extends AbstractConnectable { // NOSONAR: Cannot be final
-
-        protected final int m_firstDataPortIdx;
-
-        private DefaultConnectable(final ConnectableEnt connectableEnt, final WorkflowManager wfm) {
-            super(connectableEnt, wfm);
-            m_firstDataPortIdx = m_nc instanceof WorkflowManager ? 0 : 1;
-        }
-
-        @Override
-        public Bounds getBounds() {
-            final var uiInfo = Optional.ofNullable(m_nc.getUIInformation()).orElseThrow();
-            final var bounds = Optional.ofNullable(uiInfo.getBounds()).orElseThrow();
-            return new Bounds(bounds);
-        }
-
-    }
-
-    /**
-     * For everything that is not source / destination specific but a metanode ports bar
-     */
-    class MetanodePortsBarConnectable extends AbstractConnectable { // NOSONAR: Cannot be final
-
-        protected final boolean m_isMetanodeInPortsBar;
-
-        protected final boolean m_isMetanodeOutPortsBar;
-
-        protected final int m_firstDataPortIdx;
-
-        private MetanodePortsBarConnectable(final ConnectableEnt connectableEnt, final WorkflowManager wfm,
-            final boolean isMetanodeInPortsBar, final boolean isMetanodeOutPortsBar) {
-            super(connectableEnt, wfm);
-            m_isMetanodeInPortsBar = isMetanodeInPortsBar;
-            m_isMetanodeOutPortsBar = isMetanodeOutPortsBar;
-            m_firstDataPortIdx = 0;
-        }
-
-        @Override
-        public Bounds getBounds() {
-            return m_isMetanodeInPortsBar //
-                ? MetanodeInPortsBarDestination.getBounds(m_wfm) //
-                : MetanodeOutPortsBarSource.getBounds(m_wfm);
-        }
-
-    }
-
-    /**
-     * For source nodes
-     *
-     * @author Kai Franze, KNIME GmbH, Germany
+     * A workflow part that can have outgoing connections.
+     * <p>
+     * A more precise name would be "Origin" but naming is chosen for consistency with existing code. Unlike in the
+     * graph-theoretical sense, here the name "source" does <i>not</i> imply that there are no incoming connections.
      */
     interface Source extends Connectable {
 
-        List<PortType> getPorts();
+        /**
+         * @return All to-be-considered outgoing ports from this {@code Connectable}.
+         */
+        List<SourcePort> getSourcePorts();
 
-        int getFirstDataPortIdx();
-
-        default boolean hasEnoughPorts() {
-            return getPorts().size() > getFirstDataPortIdx();
-        }
-
-        Collection<ConnectionContainer> getConnections();
-
-        default boolean isPortConnected(final int sourcePortIdx) {
-            return getConnections().stream().anyMatch(cc -> cc.getSourcePort() == sourcePortIdx);
-        }
+        Collection<ConnectionContainer> getOutgoingConnections();
 
         /**
-         * @param connectable
-         * @return A source derived from a given {@link Connectable}
+         * Name intentionally chosen to not be "out port". An instance corresponds to an out-port but not all of a
+         * {@link Connectable}'s out-ports are {@code SourcePort}s in the sense of {@link Source#getSourcePorts()}.
+         *
+         * @param source The owner of this port
+         * @param index Original port index (considering all ports, including implicit/hidden flow-variable port)
+         * @param type The port type
          */
-        static Optional<Source> of(final Connectable connectable) {
-            if (connectable instanceof DefaultConnectable dc
-                && DefaultSource.isValid(dc.m_wfm, dc.m_nc, dc.m_firstDataPortIdx)) {
-                return Optional.of(new DefaultSource(dc.m_connectableEnt, dc.m_wfm));
+        record SourcePort(Source source, int index, PortType type) {
+            Optional<ConnectionContainer> getOutgoingConnection() {
+                return source().getOutgoingConnections().stream().filter(cc -> cc.getSourcePort() == this.index())
+                    .findFirst();
             }
-
-            if (connectable instanceof MetanodePortsBarConnectable mpbc
-                && MetanodeOutPortsBarSource.isValid(mpbc.m_wfm, mpbc.m_nc, mpbc.m_isMetanodeOutPortsBar)) {
-                return Optional.of(new MetanodeOutPortsBarSource(mpbc.m_connectableEnt, mpbc.m_wfm,
-                    mpbc.m_isMetanodeInPortsBar, mpbc.m_isMetanodeOutPortsBar));
-            }
-
-            return Optional.empty();
         }
-
     }
 
     /**
-     * For source nodes that are not metanode output port bars
-     */
-    final class DefaultSource extends DefaultConnectable implements Source {
-
-        private DefaultSource(final ConnectableEnt connectableEnt, final WorkflowManager wfm) {
-            super(connectableEnt, wfm);
-        }
-
-        @Override
-        public List<PortType> getPorts() {
-            final var portCount = m_nc.getNrOutPorts();
-            if (portCount == 0) {
-                return Collections.emptyList(); // Should never happen
-            }
-            return IntStream.range(0, portCount)//
-                .mapToObj(m_nc::getOutPort)//
-                .map(NodeOutPort::getPortType)//
-                .toList();
-        }
-
-        @Override
-        public int getFirstDataPortIdx() {
-            return m_firstDataPortIdx;
-        }
-
-        @Override
-        public Collection<ConnectionContainer> getConnections() {
-            return m_wfm.getOutgoingConnectionsFor(m_nodeId);
-        }
-
-        private static boolean isValid(final WorkflowManager wfm, final NodeContainer nc, final int firstDataPortIdx) {
-            return wfm.containsNodeContainer(nc.getID()) && (nc.getNrOutPorts() > firstDataPortIdx);
-        }
-
-    }
-
-    /**
-     * For source nodes that are metanode output ports bars
-     */
-    final class MetanodeOutPortsBarSource extends MetanodePortsBarConnectable implements Source {
-
-        private MetanodeOutPortsBarSource(final ConnectableEnt connectableEnt, final WorkflowManager wfm,
-            final boolean isMetanodeInPortsBar, final boolean isMetanodeOutPortsBar) {
-            super(connectableEnt, wfm, isMetanodeInPortsBar, isMetanodeOutPortsBar);
-        }
-
-        @Override
-        public List<PortType> getPorts() {
-            if (m_nc instanceof WorkflowManager subWfm) {
-                final var portCount = subWfm.getNrWorkflowIncomingPorts();
-                return IntStream.range(0, portCount)//
-                    .mapToObj(m_nc::getInPort)//
-                    .map(NodeInPort::getPortType)//
-                    .toList();
-            }
-            return Collections.emptyList(); // Should never happen
-        }
-
-        @Override
-        public int getFirstDataPortIdx() {
-            return m_firstDataPortIdx;
-        }
-
-        @Override
-        public Collection<ConnectionContainer> getConnections() {
-            return m_wfm.getParent().getIncomingConnectionsFor(m_nodeId);
-        }
-
-        private static boolean isValid(final WorkflowManager wfm, final NodeContainer nc,
-            final boolean isMetanodeOutPortsBar) {
-            if (nc instanceof WorkflowManager subWfm) {
-                final var wfmContainsNc = wfm.containsNodeContainer(nc.getID());
-                final var subWfmEqualsWfm = subWfm.equals(wfm);
-                final var parentWfmContainsNc = subWfm.getParent().containsNodeContainer(nc.getID());
-                return !wfmContainsNc && subWfmEqualsWfm && parentWfmContainsNc && isMetanodeOutPortsBar;
-            }
-            return false; // Should never happen
-        }
-
-        private static Bounds getBounds(final WorkflowManager wfm) {
-            return Optional.ofNullable(wfm.getOutPortsBarUIInfo())//
-                .map(NodeUIInformation::getBounds)//
-                .map(Bounds::new)//
-                .orElse(new Bounds(Integer.MIN_VALUE + 1, 0, 1, 1)); // Max to the left without integer overflow
-        }
-
-    }
-
-    /**
-     * For destination nodes
-     *
-     * @author Kai Franze, KNIME GmbH, Germany
+     * A workflow part that can have incoming connections.
      */
     interface Destination extends Connectable {
 
-        List<PortType> getPorts();
+        /**
+         * @return All to-be-considered incoming ports to this {@code Connectable}.
+         */
+        List<DestinationPort> getDestinationPorts();
 
-        int getFirstDataPortIdx();
-
-        default boolean hasEnoughPorts() {
-            return getPorts().size() > getFirstDataPortIdx();
-        }
-
-        Collection<ConnectionContainer> getConnections();
-
-        default Optional<ConnectionContainer> getConnection(final int destinationPortIdx) {
-            return getConnections().stream()//
-                .filter(cc -> cc.getDestPort() == destinationPortIdx)//
-                .findFirst();
-        }
-
-        default boolean isPortConnected(final int destinationPortIdx) {
-            return getConnection(destinationPortIdx).isPresent();
-        }
-
-        default boolean hasIncomingConnectionFrom(final Collection<Destination> plannedDestinations) {
-            return getConnections().stream()//
-                .anyMatch(connection -> plannedDestinations.stream()//
-                    .map(Destination::getNodeId)//
-                    // True if any incoming connection starts from any node within the collection,
-                    // false otherwise. Also false if the stream is empty.
-                    .anyMatch(nodeId -> connection.getSource().equals(nodeId)));
-
-        }
-
-        default boolean intersects(final Connectable connectable) {
-            return getBounds().xRange().intersects(connectable.getBounds().xRange());
-        }
+        Collection<ConnectionContainer> getIncomingConnections();
 
         boolean isExecuted();
 
         /**
-         * @param connectable
-         * @return A destination derived from a given {@link Connectable}
+         * Name intentionally chosen to not be "in-port". An instance corresponds to an in-port but not all of a
+         * {@link Connectable}'s in-ports are {@code DestinationPort}s in the sense of {@link Destination#getDestinationPorts()}.
+         *
+         * @param destination The owner of this port
+         * @param index Original port index (considering all ports, including implicit/hidden flow-variable port)
+         * @param type The port type
          */
-        static Optional<Destination> of(final Connectable connectable) {
-            if (connectable instanceof DefaultConnectable dc
-                && DefaultDestination.isValid(dc.m_wfm, dc.m_nc, dc.m_firstDataPortIdx)) {
-                return Optional.of(new DefaultDestination(dc.m_connectableEnt, dc.m_wfm));
-            }
+        record DestinationPort(Destination destination, int index, PortType type) {
 
-            if (connectable instanceof MetanodePortsBarConnectable mpbc
-                && MetanodeInPortsBarDestination.isValid(mpbc.m_wfm, mpbc.m_nc, mpbc.m_isMetanodeInPortsBar)) {
-                return Optional.of(new MetanodeInPortsBarDestination(mpbc.m_connectableEnt, mpbc.m_wfm,
-                    mpbc.m_isMetanodeInPortsBar, mpbc.m_isMetanodeOutPortsBar));
+            Optional<ConnectionContainer> getIncomingConnection() {
+                return destination().getIncomingConnections().stream().filter(cc -> cc.getDestPort() == this.index())
+                    .findFirst();
             }
-
-            return Optional.empty();
         }
     }
 
     /**
-     * For regular destination nodes
+     * A node, but considering only its data ports, omitting the implicit flow variable port on native nodes.
      */
-    final class DefaultDestination extends DefaultConnectable implements Destination {
+    record NodeDataPorts(NodeContainer nc, WorkflowManager parentWfm) implements Source, Destination {
 
-        private DefaultDestination(final ConnectableEnt connectableEnt, final WorkflowManager wfm) {
-            super(connectableEnt, wfm);
+        public NodeDataPorts(final NodeID nodeID, final WorkflowManager parentWfm) {
+            this(parentWfm.getNodeContainer(nodeID), parentWfm);
+            if (!parentWfm.containsNodeContainer(nodeID)) {
+                throw new IllegalArgumentException("Given node ID %s not in workflow %s".formatted(nodeID, parentWfm));
+            }
+        }
+
+
+        @Override
+        public NodeID getNodeId() {
+            return nc().getID();
         }
 
         @Override
-        public List<PortType> getPorts() {
-            final var portCount = m_nc.getNrInPorts();
-            if (portCount == 0) {
-                return Collections.emptyList(); // Should never happen
-            }
-            return IntStream.range(0, portCount)//
-                .mapToObj(m_nc::getInPort)//
-                .map(NodeInPort::getPortType)//
+        public Bounds getBounds() {
+            return new Bounds( //
+                Optional.ofNullable(nc().getUIInformation()) //
+                    .map(NodeUIInformation::getBounds) //
+                    .orElseThrow() //
+            );
+        }
+
+
+        @Override
+        public List<DestinationPort> getDestinationPorts() {
+            return IntStream.range(getFirstDataPortIndex(), nc().getNrInPorts())//
+                .mapToObj(nc()::getInPort)//
+                .map(nodeInPort -> new DestinationPort(this, nodeInPort.getPortIndex(), nodeInPort.getPortType()))
                 .toList();
         }
 
         @Override
-        public int getFirstDataPortIdx() {
-            return m_firstDataPortIdx;
+        public List<SourcePort> getSourcePorts() {
+            return IntStream.range(getFirstDataPortIndex(), nc().getNrOutPorts())//
+                .mapToObj(nc()::getOutPort)//
+                .map(nodeOutPort -> new SourcePort(this, nodeOutPort.getPortIndex(), nodeOutPort.getPortType()))
+                .toList();
+        }
+
+        private int getFirstDataPortIndex() {
+            return nc() instanceof WorkflowManager ? 0 : 1;
         }
 
         @Override
-        public Collection<ConnectionContainer> getConnections() {
-            return m_wfm.getIncomingConnectionsFor(m_nodeId);
+        public Collection<ConnectionContainer> getIncomingConnections() {
+            return parentWfm().getIncomingConnectionsFor(getNodeId());
+        }
+
+        @Override
+        public Collection<ConnectionContainer> getOutgoingConnections() {
+            return parentWfm().getOutgoingConnectionsFor(getNodeId());
         }
 
         @Override
         public boolean isExecuted() {
-            return m_nc.getNodeContainerState().isExecuted();
-        }
-
-        private static boolean isValid(final WorkflowManager wfm, final NodeContainer nc, final int firstDataPortIdx) {
-            return wfm.containsNodeContainer(nc.getID()) && (nc.getNrInPorts() > firstDataPortIdx);
+            return nc().getNodeContainerState().isExecuted();
         }
 
     }
 
     /**
-     * For destination nodes that are metanode input ports bars
+     * The workflow-out ports bar of a metanode workflow.
+     * The input ports of the Workflow <i>out</i> ports-bar correspond to the ports <i>leaving</i> the workflow i.e.,
+     * the workflow <i>out</i> ports.
      */
-    final class MetanodeInPortsBarDestination extends MetanodePortsBarConnectable implements Destination {
+    record WorkflowOutPortsBar(WorkflowManager wfm) implements Destination {
 
-        private MetanodeInPortsBarDestination(final ConnectableEnt connectableEnt, final WorkflowManager wfm,
-            final boolean isMetanodeInPortsBar, final boolean isMetanodeOutPortsBar) {
-            super(connectableEnt, wfm, isMetanodeInPortsBar, isMetanodeOutPortsBar);
+        @Override
+        public List<DestinationPort> getDestinationPorts() {
+            return IntStream.range(0, wfm().getNrWorkflowOutgoingPorts())//
+                .mapToObj(wfm()::getInPort)//
+                .map(nodeInPort -> new DestinationPort(this, nodeInPort.getPortIndex(), nodeInPort.getPortType()))
+                .toList();
         }
 
         @Override
-        public List<PortType> getPorts() {
-            if (m_nc instanceof WorkflowManager subWfm) {
-                final var portCount = subWfm.getNrWorkflowOutgoingPorts();
-                return IntStream.range(0, portCount)//
-                    .mapToObj(m_nc::getOutPort)//
-                    .map(NodeOutPort::getPortType)//
-                    .toList();
-            }
-            return Collections.emptyList(); // Should never happen
-        }
-
-        @Override
-        public int getFirstDataPortIdx() {
-            return m_firstDataPortIdx;
-        }
-
-        @Override
-        public Collection<ConnectionContainer> getConnections() {
-            return m_wfm.getParent().getOutgoingConnectionsFor(m_nodeId);
+        public Collection<ConnectionContainer> getIncomingConnections() {
+            return wfm().getParent().getOutgoingConnectionsFor(getNodeId());
         }
 
         @Override
         public boolean isExecuted() {
-            return m_nc.getNodeContainerState().isExecuted();
+            return wfm().getNodeContainerState().isExecuted();
         }
 
-        private static boolean isValid(final WorkflowManager wfm, final NodeContainer nc,
-            final boolean isMetanodeInPortsBar) {
-            if (nc instanceof WorkflowManager subWfm) {
-                final var wfmContainsNc = wfm.containsNodeContainer(nc.getID());
-                final var subWfmEqualsWfm = subWfm.equals(wfm);
-                final var parentWfmContainsNc = subWfm.getParent().containsNodeContainer(nc.getID());
-                return !wfmContainsNc && subWfmEqualsWfm && parentWfmContainsNc && isMetanodeInPortsBar;
-            }
-            return false; // Should never happen
+        @Override
+        public NodeID getNodeId() {
+            return wfm().getID();
         }
 
-        private static Bounds getBounds(final WorkflowManager wfm) {
-            return Optional.ofNullable(wfm.getInPortsBarUIInfo())//
+        @Override
+        public Bounds getBounds() {
+            return Optional.ofNullable(wfm().getOutPortsBarUIInfo())//
                 .map(NodeUIInformation::getBounds)//
-                .map(Bounds::new)//
-                .orElse(new Bounds(Integer.MAX_VALUE - 1, 0, 1, 1)); // Max to the right without integer overflow
+                .map(Bounds::new) //
+                .orElse(new Bounds(Geometry.Point.MAX_VALUE, 0, 0));
+        }
+    }
+
+    /**
+     * The workflow-in ports bar of a metanode workflow.
+     * The output ports of the Workflow <i>in</i> ports-bar correspond to the ports <i>entering</i> the workflow i.e., the
+     * workflow <i>in</i> ports.
+     */
+    record WorkflowInPortsBar(WorkflowManager wfm) implements Source {
+
+        @Override
+        public List<SourcePort> getSourcePorts() {
+            return IntStream.range(0, wfm().getNrWorkflowIncomingPorts())//
+                .mapToObj(wfm()::getOutPort)//
+                .map(nodeOutPort -> new SourcePort(this, nodeOutPort.getPortIndex(), nodeOutPort.getPortType()))
+                .toList();
+        }
+
+        @Override
+        public Collection<ConnectionContainer> getOutgoingConnections() {
+            return wfm().getParent().getIncomingConnectionsFor(getNodeId());
+        }
+
+        @Override
+        public NodeID getNodeId() {
+            return wfm().getID();
+        }
+
+        @Override
+        public Bounds getBounds() {
+            return Optional.ofNullable(wfm().getInPortsBarUIInfo())//
+                .map(NodeUIInformation::getBounds)//
+                .map(Bounds::new) //
+                .orElse(new Bounds(Geometry.Point.MIN_VALUE, 0, 0));
         }
 
     }
-
 }

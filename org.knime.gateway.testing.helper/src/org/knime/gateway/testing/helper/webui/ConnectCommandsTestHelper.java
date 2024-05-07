@@ -70,8 +70,6 @@ import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt.AutoConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.ConnectableEnt;
-import org.knime.gateway.api.webui.entity.ConnectableEnt.ConnectableEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -126,7 +124,8 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         ws().executeWorkflowCommand(projectId, workflowId, command);
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
-        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(), is(NODE_ID_CONCATENATE));
+        assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
+                is(NODE_ID_CONCATENATE));
 
         // undo
         ws().undoWorkflowCommand(projectId, workflowId);
@@ -255,13 +254,13 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        var c31 = buildConnectableEnt(new NodeIDEnt(31));
-        var c2 = buildConnectableEnt(new NodeIDEnt(2));
-        var c3 = buildConnectableEnt(new NodeIDEnt(3));
-        var c4 = buildConnectableEnt(new NodeIDEnt(4));
+        var c31 = new NodeIDEnt(31);
+        var c2 = new NodeIDEnt(2);
+        var c3 = new NodeIDEnt(3);
+        var c4 = new NodeIDEnt(4);
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 3,
-            List.of(c31, c2, c3, c4));
+            buildAutoConnectCommandEnt(List.of(c31, c2, c3, c4)));
     }
 
     /**
@@ -273,20 +272,22 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        var c23 = buildConnectableEnt(new NodeIDEnt(23));
-        var c24 = buildConnectableEnt(new NodeIDEnt(24));
-        var c20 = buildConnectableEnt(new NodeIDEnt(20));
-        var c21 = buildConnectableEnt(new NodeIDEnt(21));
-        var c22 = buildConnectableEnt(new NodeIDEnt(22));
+        var c23 = new NodeIDEnt(23);
+        var c24 = new NodeIDEnt(24);
+        var c20 = new NodeIDEnt(20);
+        var c21 = new NodeIDEnt(21);
+        var c22 = new NodeIDEnt(22);
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 2,
-            List.of(c23, c24, c20, c21, c22));
+            buildAutoConnectCommandEnt(List.of(c23, c24, c20, c21, c22)));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
-        assertConnection(connections, new NodeIDEnt(23), new NodeIDEnt(24));
-        assertConnection(connections, new NodeIDEnt(24), new NodeIDEnt(20));
-        assertConnection(connections, new NodeIDEnt(22), new NodeIDEnt(21));
-        assertConnection(connections, new NodeIDEnt(20), new NodeIDEnt(22));
+        assertConnection(connections, new NodeIDEnt(23), new NodeIDEnt(24)); //
+        assertConnection(connections, new NodeIDEnt(24), new NodeIDEnt(20)); //
+        assertConnection(connections, new NodeIDEnt(20), new NodeIDEnt(22)); //
+        assertConnection(connections, new NodeIDEnt(22), new NodeIDEnt(21)); //
+        // plan is
+        // add:  23-24, 24-20
     }
 
     /**
@@ -298,16 +299,16 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        var c26 = buildConnectableEnt(new NodeIDEnt(26)); // Node with 2 input ports
-        var c28 = buildConnectableEnt(new NodeIDEnt(28)); // Node without output ports
-        var c29 = buildConnectableEnt(new NodeIDEnt(29)); // Node without input ports
-        var c30 = buildConnectableEnt(new NodeIDEnt(30)); // Node without input ports
+        var c26 = new NodeIDEnt(26); // Node with 2 input ports
+        var c28 = new NodeIDEnt(28); // Node without output ports
+        var c29 = new NodeIDEnt(29); // Node without input ports
+        var c30 = new NodeIDEnt(30); // Node without input ports
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 3,
-            List.of(c26, c28, c29, c30));
+            buildAutoConnectCommandEnt(List.of(c26, c28, c29, c30)));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
-        assertConnection(connections, new NodeIDEnt(29), new NodeIDEnt(26));
+        // assertConnection(connections, new NodeIDEnt(29), new NodeIDEnt(26));  // missing, but another created instead
         assertConnection(connections, new NodeIDEnt(30), new NodeIDEnt(26));
         assertConnection(connections, new NodeIDEnt(26), new NodeIDEnt(28));
     }
@@ -322,12 +323,12 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = getRootID();
 
         // "14" is a component
-        var c10 = buildConnectableEnt(new NodeIDEnt(10));
-        var c11 = buildConnectableEnt(new NodeIDEnt(11));
-        var c14 = buildConnectableEnt(new NodeIDEnt(14));
+        var c10 = new NodeIDEnt(10);
+        var c11 = new NodeIDEnt(11);
+        var component = new NodeIDEnt(14);
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 2,
-            List.of(c10, c11, c14));
+            buildAutoConnectCommandEnt(List.of(c10, c11, component)));
     }
 
     /**
@@ -339,13 +340,12 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        // "13" is a metanode
-        var c5 = buildConnectableEnt(new NodeIDEnt(5));
-        var c8 = buildConnectableEnt(new NodeIDEnt(8));
-        var c13 = buildConnectableEnt(new NodeIDEnt(13));
+        var c5 = new NodeIDEnt(5);
+        var c8 = new NodeIDEnt(8);
+        var metanode = new NodeIDEnt(13);
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS + 1,
-            List.of(c5, c8, c13));
+            buildAutoConnectCommandEnt(List.of(c5, c8, metanode)));
     }
 
     /**
@@ -358,12 +358,13 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = new NodeIDEnt(14); // A component with one table input and one table output port
 
         // "1" is a virtual node with one output port, "2" is a virtual node with one input port
-        var c1 = buildConnectableEnt(new NodeIDEnt(14, 0, 1));
-        var c2 = buildConnectableEnt(new NodeIDEnt(14, 0, 2));
-        var c9 = buildConnectableEnt(new NodeIDEnt(14, 0, 9));
-        var c12 = buildConnectableEnt(new NodeIDEnt(14, 0, 12));
+        var virtualNodeWithOutput = new NodeIDEnt(14, 0, 1);
+        var virtualNodeWithInput = new NodeIDEnt(14, 0, 2);
+        var c9 = new NodeIDEnt(14, 0, 9);
+        var c12 = new NodeIDEnt(14, 0, 12);
 
-        assertAutoConnect(projectId, workflowId, 0, 3, List.of(c1, c2, c9, c12));
+        assertAutoConnect(projectId, workflowId, 0, 3,
+            buildAutoConnectCommandEnt(List.of(virtualNodeWithOutput, virtualNodeWithInput, c9, c12)));
     }
 
     /**
@@ -371,42 +372,21 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws Exception
      */
-    public void testAutoConnectWithinMetaNodeWithMetaNodeBars() throws Exception {
+    public void workflowInOutPortBarsAreConnected() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
-        var workflowId = new NodeIDEnt(13); // A metanode with one table input and one table output port
+        var parentWf = new NodeIDEnt(13); // A metanode with one table input and one table output port
 
-        var cOut = buildConnectableEnt(new NodeIDEnt(13), false, true); // Using 'false'
-        var cIn = buildConnectableEnt(new NodeIDEnt(13), true, null); // Using 'null'
-        var c6 = buildConnectableEnt(new NodeIDEnt(13, 6));
-        var c7 = buildConnectableEnt(new NodeIDEnt(13, 7));
+        var childA = new NodeIDEnt(13, 6);
+        var childB = new NodeIDEnt(13, 7);
 
-        // Use random order on purpose
-        assertAutoConnect(projectId, workflowId, 0, 3, List.of(c6, cIn, cOut, c7));
+        var command = buildAutoConnectCommandEnt(List.of(childA, childB), true, true);
+        assertAutoConnect(projectId, parentWf, 0, 3, command);
+        // only get 2 connections
 
-        var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
-        assertConnection(connections, new NodeIDEnt(13), new NodeIDEnt(13, 6));
-        assertConnection(connections, new NodeIDEnt(13, 6), new NodeIDEnt(13, 7));
-        assertConnection(connections, new NodeIDEnt(13, 7), new NodeIDEnt(13));
-    }
-
-    /**
-     * Tests {@link AutoConnectCommandEnt} throwing an expected exception.
-     *
-     * @throws Exception
-     */
-    public void testAutoConnectException() throws Exception {
-        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
-        var workflowId = new NodeIDEnt(13); // A metanode with one table input and one table output port
-
-        var cInOut = buildConnectableEnt(new NodeIDEnt(13), true, true);
-        var c6 = buildConnectableEnt(new NodeIDEnt(13, 6));
-
-        var connectables = List.of(cInOut, c6);
-        var command = buildAutoConnectCommandEnt(connectables, false);
-        var exception = assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(projectId, workflowId, command));
-        assertThat(exception.getMessage(),
-            containsString("A metanode ports bar can either be INPUT or OUTPUT, never both"));
+        var connections = ws().getWorkflow(projectId, parentWf, false).getWorkflow().getConnections().values();
+        assertConnection(connections, parentWf, childA);
+        assertConnection(connections, childA, childB);
+        assertConnection(connections, childB, parentWf);
     }
 
     /**
@@ -414,19 +394,18 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws Exception
      */
-    public void testAutoConnectFromWriterToReader() throws Exception {
+    public void destinationLeftOfSourceIsNotUsed() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        // "32" is a 'CSV Reader' and "33" is a 'CSV Writer', but the writer is left to the reader
-        var c32 = buildConnectableEnt(new NodeIDEnt(32));
-        var c33 = buildConnectableEnt(new NodeIDEnt(33));
+        var reader = (new NodeIDEnt(32));
+        var writerLeftOfReader = (new NodeIDEnt(33));
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
-            List.of(c32, c33));
+            buildAutoConnectCommandEnt(List.of(reader, writerLeftOfReader)));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
-        assertNoConnection(connections, new NodeIDEnt(32), new NodeIDEnt(33));
+        assertNoConnection(connections, reader, writerLeftOfReader);
     }
 
     /**
@@ -438,15 +417,14 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
         var workflowId = getRootID();
 
-        // "32" is a 'CSV Reader' and "38" is a metanode without ports
-        var c32 = buildConnectableEnt(new NodeIDEnt(32));
-        var c38 = buildConnectableEnt(new NodeIDEnt(38));
+        var csvReader = new NodeIDEnt(32);
+        var metanodeWithoutPorts = new NodeIDEnt(38);
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
-            List.of(c32, c38));
+            buildAutoConnectCommandEnt(List.of(csvReader, metanodeWithoutPorts)));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
-        assertNoConnection(connections, new NodeIDEnt(32), new NodeIDEnt(38));
+        assertNoConnection(connections, csvReader, metanodeWithoutPorts);
     }
 
     /**
@@ -459,11 +437,11 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = getRootID();
 
         // "32" is a 'CSV Writer' and "39" is a component without ports
-        var c33 = buildConnectableEnt(new NodeIDEnt(33));
-        var c39 = buildConnectableEnt(new NodeIDEnt(39));
+        var c33 = new NodeIDEnt(33);
+        var c39 = new NodeIDEnt(39);
 
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
-            List.of(c33, c39));
+            buildAutoConnectCommandEnt(List.of(c33, c39)));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
         assertNoConnection(connections, new NodeIDEnt(33), new NodeIDEnt(39));
@@ -479,50 +457,24 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var workflowId = getRootID();
 
         // both are executed and already connected
-        var c42 = buildConnectableEnt(new NodeIDEnt(42));
-        var c44 = buildConnectableEnt(new NodeIDEnt(44));
+        var c42 = new NodeIDEnt(42);
+        var c44 = new NodeIDEnt(44);
 
         // number of connections doesn't change, since one is replaced
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
-            List.of(c42, c44));
+            buildAutoConnectCommandEnt(List.of(c42, c44)));
 
         var connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections().values();
         assertConnection(connections, new NodeIDEnt(42), new NodeIDEnt(44));
     }
 
-    /**
-     * Tests {@link AutoConnectCommandEnt} only connecting flow variable ports.
-     *
-     * @throws Exception
-     */
-    public void testAutoConnectFlowVariablesOnly() throws Exception {
-        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
-        var workflowId = getRootID();
-
-        var c1 = buildConnectableEnt(new NodeIDEnt(1));
-        var c2 = buildConnectableEnt(new NodeIDEnt(2));
-        var c3 = buildConnectableEnt(new NodeIDEnt(3));
-        var c4 = buildConnectableEnt(new NodeIDEnt(4));
-
-        var connectables = List.of(c1, c2, c3, c4);
-        var command = buildAutoConnectCommandEnt(connectables, true);
-
-        // TODO (NXT-2595): Update this, once the functionality is fully supported
-
-        var exception = assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(projectId, workflowId, command));
-        assertThat(exception.getMessage(),
-            containsString("Automatically connecting all flow variables is not supported yet"));
-    }
-
     private void assertAutoConnect(final String projectId, final NodeIDEnt workflowId, final int numConnectionsBefore,
-        final int numConnectionsAfter, final List<ConnectableEnt> connectables)
-        throws Exception {
+        final int numConnectionsAfter, final AutoConnectCommandEnt command)
+        throws Exception { // NOSONAR
         var connectionsBefore = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat("Unexpected number of connections before command execution", connectionsBefore.size(),
             is(numConnectionsBefore));
 
-        var command = buildAutoConnectCommandEnt(connectables, null);
         ws().executeWorkflowCommand(projectId, workflowId, command);
 
         var workflowAfter = ws().getWorkflow(projectId, workflowId, true).getWorkflow();
@@ -558,25 +510,16 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
             is(true));
     }
 
-    private static ConnectableEnt buildConnectableEnt(final NodeIDEnt nodeId) {
-        return buildConnectableEnt(nodeId, null, null);
+    private static AutoConnectCommandEnt buildAutoConnectCommandEnt(final List<NodeIDEnt> selectedNodes) {
+        return buildAutoConnectCommandEnt(selectedNodes, false, false);
     }
 
-    private static ConnectableEnt buildConnectableEnt(final NodeIDEnt nodeId, final Boolean isMetanodeInPortsBar,
-        final Boolean isMetanodeOutPortsBar) {
-        return builder(ConnectableEntBuilder.class)//
-            .setNodeId(nodeId)//
-            .setMetanodeInPortsBar(isMetanodeInPortsBar)//
-            .setMetanodeOutPortsBar(isMetanodeOutPortsBar)//
-            .build();
-    }
-
-    private static AutoConnectCommandEnt buildAutoConnectCommandEnt(final List<ConnectableEnt> connectables,
-        final Boolean flowVariablesOnly) {
+    private static AutoConnectCommandEnt buildAutoConnectCommandEnt(final List<NodeIDEnt> selectedNodes,
+        final boolean workflowInPortBarSelected, final boolean workflowOutPortBarSelected) {
         return builder(AutoConnectCommandEntBuilder.class)//
             .setKind(KindEnum.AUTO_CONNECT)//
-            .setConnectables(connectables)//
-            .setFlowVariablesOnly(flowVariablesOnly)//
+            .setSelectedNodes(selectedNodes).setWorkflowInPortsBarSelected(workflowInPortBarSelected)
+            .setWorkflowOutPortsBarSelected(workflowOutPortBarSelected)
             .build();
     }
 

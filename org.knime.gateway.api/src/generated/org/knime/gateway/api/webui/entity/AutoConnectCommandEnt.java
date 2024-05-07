@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectableEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
@@ -66,16 +65,22 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
 
 
   /**
-   * The collection of items to automatically connect
-   * @return connectables , never <code>null</code>
+   * Get workflowInPortsBarSelected
+   * @return workflowInPortsBarSelected 
    **/
-  public java.util.List<ConnectableEnt> getConnectables();
+  public Boolean isWorkflowInPortsBarSelected();
 
   /**
-   * If set and &#39;true&#39;, it only connects the flow variable ports.
-   * @return flowVariablesOnly 
+   * Get workflowOutPortsBarSelected
+   * @return workflowOutPortsBarSelected 
    **/
-  public Boolean isFlowVariablesOnly();
+  public Boolean isWorkflowOutPortsBarSelected();
+
+  /**
+   * Get selectedNodes
+   * @return selectedNodes 
+   **/
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getSelectedNodes();
 
 
   @Override
@@ -83,8 +88,9 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (AutoConnectCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("connectables", Pair.create(getConnectables(), e.getConnectables()));
-      valueConsumer.accept("flowVariablesOnly", Pair.create(isFlowVariablesOnly(), e.isFlowVariablesOnly()));
+      valueConsumer.accept("workflowInPortsBarSelected", Pair.create(isWorkflowInPortsBarSelected(), e.isWorkflowInPortsBarSelected()));
+      valueConsumer.accept("workflowOutPortsBarSelected", Pair.create(isWorkflowOutPortsBarSelected(), e.isWorkflowOutPortsBarSelected()));
+      valueConsumer.accept("selectedNodes", Pair.create(getSelectedNodes(), e.getSelectedNodes()));
   }
 
     /**
@@ -101,20 +107,28 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
         AutoConnectCommandEntBuilder setKind(KindEnum kind);
         
         /**
-         * The collection of items to automatically connect
+   		 * Set workflowInPortsBarSelected
          * 
-         * @param connectables the property value, NOT <code>null</code>! 
+         * @param workflowInPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setConnectables(java.util.List<ConnectableEnt> connectables);
+        AutoConnectCommandEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected);
         
         /**
-         * If set and &#39;true&#39;, it only connects the flow variable ports.
+   		 * Set workflowOutPortsBarSelected
          * 
-         * @param flowVariablesOnly the property value,  
+         * @param workflowOutPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setFlowVariablesOnly(Boolean flowVariablesOnly);
+        AutoConnectCommandEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected);
+        
+        /**
+   		 * Set selectedNodes
+         * 
+         * @param selectedNodes the property value,  
+         * @return this entity builder for chaining
+         */
+        AutoConnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
         
         
         /**

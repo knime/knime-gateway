@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands.util;
 
+import java.util.Optional;
+
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
@@ -173,7 +175,7 @@ public final class NodeConnector {
      *         couldn't be added
      */
     boolean connect(final NodeID nodeId) {
-        boolean allConnectionsCreated = true;
+        var allConnectionsCreated = true;
         if (m_sourceNodeId != null
             && !findMatchingPortAndConnect(m_wfm, m_sourceNodeId, m_sourcePortIdx, nodeId, null, m_track)) {
             allConnectionsCreated = false;
@@ -193,11 +195,11 @@ public final class NodeConnector {
         var matchingPorts =
             MatchingPortsUtil.getMatchingPorts(sourceNode, destNode, sourcePortIdxParam, destPortIdxParam, wfm);
         for (var entry : matchingPorts.entrySet()) {
-            Integer sourcePortIdx = entry.getKey();
             Integer destPortIdx = entry.getValue();
             if (destPortIdx == -1) {
                 return false;
             }
+            Integer sourcePortIdx = entry.getKey();
             if (connect(wfm, sourceNodeId, sourcePortIdx, destNodeId, destPortIdx, false) == null) {
                 return false;
             }
@@ -226,6 +228,22 @@ public final class NodeConnector {
             return wfm;
         }
         return wfm.getNodeContainer(nodeId);
+    }
+
+    /**
+     * Create a connection between two ports
+     * @param wfm The workflow to work in
+     * @param sourcePort The start port of the connection
+     * @param destinationPort The end port of the connection
+     * @param track whether to track the connection creation (via the {@link NodeTimer})
+     * @return the new connection or {@code Optional.empty()} if the connection couldn't be created
+     */
+    public static Optional<ConnectionContainer> connect(final WorkflowManager wfm,
+        final Connectable.Source.SourcePort sourcePort, Connectable.Destination.DestinationPort destinationPort,
+        boolean track) {
+        var result = connect(wfm, sourcePort.source().getNodeId(), sourcePort.index(),
+            destinationPort.destination().getNodeId(), destinationPort.index(), track);
+        return Optional.ofNullable(result);
     }
 
     /**

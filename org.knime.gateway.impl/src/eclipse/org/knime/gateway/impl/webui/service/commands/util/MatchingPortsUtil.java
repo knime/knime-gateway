@@ -54,7 +54,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -71,7 +71,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.webui.service.commands.util.Connectable.Destination;
 import org.knime.gateway.impl.webui.service.commands.util.Connectable.Source;
-import org.knime.gateway.impl.webui.service.commands.util.NodesAutoConnector.PlannedConnection;
+import org.knime.gateway.impl.webui.service.commands.util.ConnectionPlan.PlannedConnection;
 
 /**
  * Utility methods to identify matching port pairs for nodes.
@@ -144,7 +144,6 @@ final class MatchingPortsUtil {
             }
         }
 
-        // Second try to create a matching port for dynamic nodes
         try {
             return createAndGetDestPortIdx(sourcePortType, destNode.getID(), wfm).orElseThrow();
         } catch (IllegalArgumentException | NoSuchElementException e) { // NOSONAR
@@ -265,75 +264,31 @@ final class MatchingPortsUtil {
     }
 
     /**
-     * @param source The source with the output ports to check
-     * @param destinations The list of destinations with the input ports to check
-     * @return Whether there is at least one matching pair of compatible ports or not.
+     * @param source A candidate source to connect
+     * @param destination A candidate destination to connect
+     * @param sourcePortUsable Predicate whether a source port can be connected
+     * @param destinationPortUsable Predicate whether a destination port can be connected
+     * @return A planned connection between the first matching ports of {@code source} and {@code destination}.
      */
-    static boolean checkForAtLeastOneMatchingPairOfPorts(final Source source, final List<Destination> destinations) {
-        return IntStream.range(source.getFirstDataPortIdx(), source.getPorts().size())//
-            .mapToObj(idx -> source.getPorts().get(idx))//
-            .anyMatch(sourcePortType -> checkForAtLeastOneMatchingPairOfPorts(source, sourcePortType, destinations));
+    static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source,
+            final Destination destination, Predicate<Source.SourcePort> sourcePortUsable,
+            Predicate<Destination.DestinationPort> destinationPortUsable) {
+        return source.getSourcePorts().stream()
+                .filter(sourcePortUsable)
+                .map(sp -> findFirstMatchingPairOfPorts(sp, destination, destinationPortUsable))
+                .flatMap(Optional::stream)
+                .findFirst();
     }
 
-    private static boolean checkForAtLeastOneMatchingPairOfPorts(final Source source, final PortType sourcePortType,
-        final List<Destination> destinations) {
-        return destinations.stream()//
-            .filter(destination -> !source.getNodeId().equals(destination.getNodeId()))//
-            .filter(source::isLeftOf)//
-            .anyMatch(destination -> checkForAtLeastOneMatchingPairOfPorts(sourcePortType, destination));
-    }
-
-    private static boolean checkForAtLeastOneMatchingPairOfPorts(final PortType sourcePortType,
-        final Destination destination) {
-        return IntStream.range(destination.getFirstDataPortIdx(), destination.getPorts().size())//
-            .mapToObj(idx -> destination.getPorts().get(idx))//
-            .anyMatch(destinationPortType -> CoreUtil.arePortTypesCompatible(sourcePortType, destinationPortType));
-    }
-
-    /**
-     * Finds first matching pair of compatible ports iterating all the source output and destination input ports.
-     *
-     * @param source The source node
-     * @param destination The destination node
-     * @param isSourceUsable Predicate to filter for usable source output ports
-     * @param isDestinationUsable Predicate to filter for usable destination input ports
-     * @param mustDetach Predicate to determine whether an existing connection needs to be removed first
-     * @return The optional planned connection
-     */
-    static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source, final Destination destination,
-        final IntPredicate isSourceUsable, final IntPredicate isDestinationUsable, final IntPredicate mustDetach) {
-        return IntStream.range(source.getFirstDataPortIdx(), source.getPorts().size())//
-            .filter(isSourceUsable)//
-            .mapToObj(sourcePortIdx -> findFirstMatchingPairOfPorts(source, sourcePortIdx, destination,
-                isDestinationUsable, mustDetach))
-            .flatMap(Optional::stream)//
-            .findFirst();
-    }
-
-    /**
-     * Finds first matching pair of compatible ports for a given source output port iterating iterating all destination
-     * input ports.
-     *
-     * @param source The source node
-     * @param sourcePortIdx The source output port index
-     * @param destination The destination node
-     * @param isDestinationUsable Predicate to filter for usable destination input ports
-     * @param mustDetach Predicate to determine whether an existing connection needs to be removed first
-     * @return The optional planned connection
-     */
-    private static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source,
-        final int sourcePortIdx, final Destination destination, final IntPredicate isDestinationUsable,
-        final IntPredicate mustDetach) {
-        final var sourcePortType = source.getPorts().get(sourcePortIdx);
-        return IntStream.range(destination.getFirstDataPortIdx(), destination.getPorts().size())//
-            .filter(isDestinationUsable)//
-            .filter(destinationPortIdx -> {
-                final var destinationPortType = destination.getPorts().get(destinationPortIdx);
-                return CoreUtil.arePortTypesCompatible(sourcePortType, destinationPortType);
-            })//
-            .mapToObj(destinationPortIdx -> new PlannedConnection(source, sourcePortIdx, destination,
-                destinationPortIdx, mustDetach.test(destinationPortIdx)))//
-            .findFirst();
+    private static Optional<PlannedConnection> findFirstMatchingPairOfPorts(
+            Source.SourcePort sourcePort,
+            final Destination destination,
+            Predicate<Destination.DestinationPort> destinationPortUsable) {
+        return destination.getDestinationPorts().stream() //
+                .filter(destinationPortUsable) //
+                .filter(destPort -> CoreUtil.arePortTypesCompatible(sourcePort.type(), destPort.type())) //
+                .map(dp -> new PlannedConnection(sourcePort, dp)) //
+                .findFirst(); //
     }
 
 }
