@@ -481,9 +481,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private static SpaceGroup getLocalSpaceGroupForTesting(final Space... spaces) {
         return new SpaceGroup() {
 
-            String id = "Local-Testing-space-id";
+            final String id = "Local-Testing-space-id";
 
-            String name = "Local Testing Group";
+            final String name = "Local Testing Group";
 
             @Override
             public SpaceGroupEnt toEntity() {
@@ -501,15 +501,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 return List.of(spaces);
             }
 
-            @Override
-            public String getName() {
-                return name;
-            }
-
-            @Override
-            public String getId() {
-                return id;
-            }
         };
     }
 

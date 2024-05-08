@@ -60,16 +60,6 @@ import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 public interface SpaceGroup {
 
     /**
-     * @return the unique group id unique within a {@link SpaceProvider}
-     */
-    String getId();
-
-    /**
-     * @return group name
-     */
-    String getName();
-
-    /**
      * Describe the type of this group
      */
     enum SpaceGroupType {
