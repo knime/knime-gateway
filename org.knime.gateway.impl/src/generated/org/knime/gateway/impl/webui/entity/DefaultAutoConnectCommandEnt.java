@@ -74,6 +74,9 @@ public record DefaultAutoConnectCommandEnt(
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
         }
+        if(selectedNodes == null) {
+            throw new IllegalArgumentException("<selectedNodes> must not be null.");
+        }
     }
 
     @Override
@@ -112,7 +115,7 @@ public record DefaultAutoConnectCommandEnt(
 
         private Boolean m_workflowOutPortsBarSelected;
 
-        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_selectedNodes;
+        private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_selectedNodes = new java.util.ArrayList<>();
 
         @Override
         public DefaultAutoConnectCommandEntBuilder setKind(KindEnum kind) {
@@ -137,6 +140,9 @@ public record DefaultAutoConnectCommandEnt(
 
         @Override
         public DefaultAutoConnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes) {
+             if(selectedNodes == null) {
+                 throw new IllegalArgumentException("<selectedNodes> must not be null.");
+             }
              m_selectedNodes = selectedNodes;
              return this;
         }

@@ -78,7 +78,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
 
   /**
    * Get selectedNodes
-   * @return selectedNodes 
+   * @return selectedNodes , never <code>null</code>
    **/
   public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getSelectedNodes();
 
@@ -125,7 +125,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
         /**
    		 * Set selectedNodes
          * 
-         * @param selectedNodes the property value,  
+         * @param selectedNodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         AutoConnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
