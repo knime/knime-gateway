@@ -64,14 +64,20 @@ import org.knime.gateway.impl.webui.service.commands.util.Geometry.Bounds;
 /**
  * A workflow part (native node, metanode, container, workflow-in-bar, workflow-out-bar, ...) that can be connected via
  * workflow connections.
- * 
+ *
  * @author Kai Franze, KNIME GmbH, Germany
  * @author Benjamin Moser, KNIME GmbH, Germany
  */
 public interface Connectable {
 
+    /**
+     * @return the id of the node or workflow (in case of metanode port bars) to connect
+     */
     NodeID getNodeId();
 
+    /**
+     * @return the bounds of the node or metanode port bar
+     */
     Bounds getBounds();
 
     /**
@@ -138,6 +144,8 @@ public interface Connectable {
 
     /**
      * A node, but considering only its data ports, omitting the implicit flow variable port on native nodes.
+     * @param nc
+     * @param parentWfm
      */
     record NodeDataPorts(NodeContainer nc, WorkflowManager parentWfm) implements Source, Destination {
 
@@ -241,9 +249,8 @@ public interface Connectable {
     }
 
     /**
-     * The workflow-in ports bar of a metanode workflow.
-     * The output ports of the Workflow <i>in</i> ports-bar correspond to the ports <i>entering</i> the workflow i.e., the
-     * workflow <i>in</i> ports.
+     * The workflow-in ports bar of a metanode workflow. The output ports of the Workflow <i>in</i> ports-bar correspond
+     * to the ports <i>entering</i> the workflow i.e., the workflow <i>in</i> ports.
      */
     record WorkflowInPortsBar(WorkflowManager wfm) implements Source {
 

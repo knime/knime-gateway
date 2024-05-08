@@ -48,21 +48,15 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.service.commands.util.AutoConnectUtil;
 import org.knime.gateway.impl.webui.service.commands.util.Connectable;
-import org.knime.gateway.impl.webui.service.commands.util.ConnectionPlan;
-import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 
 /**
  * Connect multiple notes according to an automatically determined plan.
@@ -72,9 +66,11 @@ import org.knime.gateway.impl.webui.service.commands.util.Geometry;
  */
 public final class AutoConnect extends AbstractWorkflowCommand {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoConnect.class);
+
     private final AutoConnectCommandEnt m_commandEnt;
 
-    private ConnectionPlan.AutoConnectResult m_connectResult;
+    private AutoConnectUtil.AutoConnectResult m_connectResult;
 
     AutoConnect(final AutoConnectCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -82,15 +78,12 @@ public final class AutoConnect extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var selection = new AutoConnect.OrderedSelection(getConnectables());
-        final var plan = new ConnectionPlan(selection);
-        final var result = plan.execute(getWorkflowManager());
-        NodeLogger.getLogger(this.getClass()).info("%s connections were added and %s connections were removed"
+        var result = AutoConnectUtil.autoConnect(getWorkflowManager(), getConnectables());
+        LOGGER.info("%s connections were added and %s connections were removed"
             .formatted(result.addedConnections().size(), result.removedConnections().size()));
         m_connectResult = result;
         return !result.addedConnections().isEmpty();
     }
-
 
     private Set<Connectable> getConnectables() {
         var wfm = getWorkflowManager();
@@ -124,54 +117,4 @@ public final class AutoConnect extends AbstractWorkflowCommand {
         m_connectResult = null;
     }
 
-    /**
-     * An immutable list of {@link Connectable}s ordered by their bounds by north-west ordering.
-     */
-    public static class OrderedSelection {
-
-        private final List<Connectable> m_list;
-
-        OrderedSelection(final Set<Connectable> connectables) {
-            m_list = connectables.stream()//
-                .sorted(Comparator.comparing(Connectable::getBounds, Geometry.Rectangle.NORTH_WEST_ORDERING))//
-                .toList();
-        }
-
-        private static <E> Stream<E> filter(final Stream<?> stream, final Class<E> targetClass) {
-            return stream.filter(targetClass::isInstance).map(targetClass::cast);
-        }
-
-        public List<Connectable.Source> sources() {
-            return filter(this.stream(), Connectable.Source.class).toList();
-        }
-
-        private Stream<Connectable> reversedFrom(final int index) {
-            var els = new ArrayList<>(m_list);
-            Collections.reverse(els);
-            return els.stream().skip((long)this.size() - index);
-        }
-
-        public Stream<Connectable.Source> sourcesBefore(final int index) {
-            return filter(reversedFrom(index), Connectable.Source.class);
-        }
-
-        public Stream<Connectable.Destination> destinationsAfter(final int index) {
-            return filter( //
-                this.stream().skip((long)index + 1), //
-                Connectable.Destination.class //
-            );
-        }
-
-        public Stream<Connectable> stream() {
-            return m_list.stream();
-        }
-
-        public int size() {
-            return m_list.size();
-        }
-
-        public Connectable get(int index) {
-            return m_list.get(index);
-        }
-    }
 }
