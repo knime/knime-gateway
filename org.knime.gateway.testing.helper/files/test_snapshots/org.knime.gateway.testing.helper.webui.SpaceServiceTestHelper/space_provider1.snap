@@ -1,16 +1,21 @@
 {
-  "spaces" : [ {
-    "description" : "description0",
-    "id" : "id0",
-    "name" : "name0",
-    "owner" : "owner0",
-    "private" : true
-  }, {
-    "description" : "description1",
-    "id" : "id1",
-    "name" : "name1",
-    "owner" : "owner1",
-    "private" : false
+  "spaceGroups" : [ {
+    "id" : "Local-Testing-space-id",
+    "name" : "Local Testing Group",
+    "spaces" : [ {
+      "description" : "description0",
+      "id" : "id0",
+      "name" : "name0",
+      "owner" : "owner0",
+      "private" : true
+    }, {
+      "description" : "description1",
+      "id" : "id1",
+      "name" : "name1",
+      "owner" : "owner1",
+      "private" : false
+    } ],
+    "type" : "USER"
   } ],
   "type" : "LOCAL"
 }
