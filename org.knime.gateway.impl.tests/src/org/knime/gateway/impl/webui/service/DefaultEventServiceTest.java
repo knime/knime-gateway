@@ -264,7 +264,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent1.equals(e);
-            })));
+            }), eq(projectId)));
 
         // error message removed
         ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "reset");
@@ -272,7 +272,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent2.equals(e);
-            })));
+            }), eq(projectId)));
 
         // error message within component added
         ns.changeNodeStates(projectId, new NodeIDEnt(8), List.of(new NodeIDEnt(8, 0, 7)), "execute");
@@ -282,7 +282,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent3.equals(e);
-            })));
+            }), eq(projectId)));
 
         // warning message removed due to node removal
         DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(),
@@ -292,7 +292,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent4.equals(e);
-            })));
+            }), eq(projectId)));
 
         // remove event listener
         es.removeEventListener(builder(WorkflowMonitorStateChangeEventTypeEntBuilder.class).setProjectId(projectId)

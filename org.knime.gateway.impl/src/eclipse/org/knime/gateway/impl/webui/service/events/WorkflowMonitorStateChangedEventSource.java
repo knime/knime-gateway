@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
@@ -81,7 +80,7 @@ public final class WorkflowMonitorStateChangedEventSource
      * @param projectManager
      * @param workflowMiddleware
      */
-    public WorkflowMonitorStateChangedEventSource(final BiConsumer<String, Object> eventConsumer,
+    public WorkflowMonitorStateChangedEventSource(final EventConsumer eventConsumer,
         final ProjectManager projectManager, final WorkflowMiddleware workflowMiddleware) {
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
