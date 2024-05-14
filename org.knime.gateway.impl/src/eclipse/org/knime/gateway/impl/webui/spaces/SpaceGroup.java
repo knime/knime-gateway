@@ -56,8 +56,9 @@ import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
  * Represents a space group which can be an user or a team inside a provider
  *
  * @author Juan Baquero
+ * @param <S>
  */
-public interface SpaceGroup {
+public interface SpaceGroup<S extends Space> {
 
     /**
      * Describe the type of this group
@@ -86,7 +87,7 @@ public interface SpaceGroup {
     /**
      * @return the spaces contained within this group
      */
-    List<Space> getSpaces();
+    List<S> getSpaces();
 
     /**
      * Creates a {@link SpaceGroupEnt} for this space group.

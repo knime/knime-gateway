@@ -478,8 +478,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         };
     }
 
-    private static SpaceGroup getLocalSpaceGroupForTesting(final Space... spaces) {
-        return new SpaceGroup() {
+    private static SpaceGroup<Space> getLocalSpaceGroupForTesting(final Space... spaces) {
+        return new SpaceGroup<Space>() {
 
             final String id = "Local-Testing-space-id";
 
