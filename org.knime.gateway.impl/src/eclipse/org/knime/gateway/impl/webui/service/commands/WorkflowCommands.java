@@ -228,7 +228,7 @@ public final class WorkflowCommands {
             command = new UpdateComponentMetadata(ce);
         } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
             command = new AddBendpoint(ce);
-        } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
+        } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
             command = new UpdateComponentLinkInformation(ce);
         } else if(commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
             command = new TransformMetanodePortsBar(ce);

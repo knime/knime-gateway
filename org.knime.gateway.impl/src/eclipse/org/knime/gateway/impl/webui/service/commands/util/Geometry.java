@@ -54,6 +54,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
@@ -123,16 +124,11 @@ public final class Geometry {
     public static final class Point extends Vec2D implements Comparable<Point> {
 
         /**
-         * An instance containing minimal values
-         */
-        public static final Point MIN_VALUE = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
-
-        /**
          * An instance containing maximal values
          */
         public static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-        private Point(final int x, final int y) {
+        Point(final int x, final int y) {
             super(x, y);
         }
 
@@ -199,6 +195,10 @@ public final class Geometry {
                 .thenComparingInt(Point::y) //
                 .compare(this, other); //
         }
+
+        public Point translate(final Delta delta) {
+            return zip(this, delta, Integer::sum, Point::new);
+        }
     }
 
     /**
@@ -206,7 +206,7 @@ public final class Geometry {
      */
     public static final class Delta extends Vec2D {
 
-        private Delta(final int dx, final int dy) {
+        Delta(final int dx, final int dy) {
             super(dx, dy);
         }
 
@@ -256,14 +256,6 @@ public final class Geometry {
      */
     record Range(int start, int end) {
 
-        static Range of(final int value, final int otherValue) {
-            if (value < otherValue) {
-                return new Range(value, otherValue);
-            } else {
-                return new Range(otherValue, value);
-            }
-        }
-
         boolean intersects(final Range other) {
             return
             // this:      [------------]
@@ -286,17 +278,23 @@ public final class Geometry {
         private final int m_height;
 
         Rectangle(final Point leftTop, final int width, final int height) {
+            CheckUtils.checkArgument(width >= 0, "Width must be non-negative");
+            CheckUtils.checkArgument(height >= 0, "Height must be non-negative");
             m_leftTop = leftTop;
             m_width = width;
             m_height = height;
         }
 
         Range xRange() {
-            return Range.of(leftTop().x(), leftTop().x() + m_width);
+            return new Range(leftTop().x(), leftTop().x() + m_width);
         }
 
         public Point leftTop() {
             return m_leftTop;
+        }
+
+        int width() {
+            return m_width;
         }
 
         int height() {
@@ -305,7 +303,15 @@ public final class Geometry {
 
     }
 
+    /**
+     * @implNote {@link Bounds#MIN_VALUE} and {@link Bounds#MAX_VALUE} must have zero width and height, else
+     *  {@link Range} computation runs into value overflows.
+     */
     public static final class Bounds extends Rectangle {
+
+        public static final Bounds MIN_VALUE = new Bounds(new Point(Integer.MIN_VALUE, Integer.MIN_VALUE), 0, 0);
+
+        public static final Bounds MAX_VALUE = new Bounds(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE), 0, 0);
 
         /**
          * @param coords array of the shape [x, y, width, height, ...]. Any further elements are ignored.
@@ -320,6 +326,10 @@ public final class Geometry {
 
         public Bounds(final Point leftTop, final int width, final int height) {
             super(leftTop, width, height);
+        }
+
+        public Bounds translate(final Delta delta) {
+            return new Bounds(this.leftTop().translate(delta), this.width(), this.height());
         }
     }
 

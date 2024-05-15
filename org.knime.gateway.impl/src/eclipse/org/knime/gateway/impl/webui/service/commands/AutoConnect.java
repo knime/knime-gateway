@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,7 +71,7 @@ public final class AutoConnect extends AbstractWorkflowCommand {
 
     private final AutoConnectCommandEnt m_commandEnt;
 
-    private AutoConnectUtil.AutoConnectResult m_connectResult;
+    private AutoConnectUtil.AutoConnectChanges m_autoConnectChanges;
 
     AutoConnect(final AutoConnectCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -78,43 +79,61 @@ public final class AutoConnect extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var result = AutoConnectUtil.autoConnect(getWorkflowManager(), getConnectables());
+        var changes = AutoConnectUtil.autoConnect(getWorkflowManager(), getConnectables());
         LOGGER.info("%s connections were added and %s connections were removed"
-            .formatted(result.addedConnections().size(), result.removedConnections().size()));
-        m_connectResult = result;
-        return !result.addedConnections().isEmpty();
+            .formatted(changes.addedConnections().size(), changes.removedConnections().size()));
+        m_autoConnectChanges = changes;
+        return !changes.addedConnections().isEmpty();
     }
 
     private Set<Connectable> getConnectables() {
         var wfm = getWorkflowManager();
+        boolean isFlowVariablePortsOnly = Optional.ofNullable(m_commandEnt.isFlowVariablePortsOnly()).orElse(false);
         var selectedNodes = m_commandEnt.getSelectedNodes().stream() //
-            .map(nodeId -> new Connectable.NodeDataPorts(nodeId.toNodeID(wfm), wfm))//
+            .map(nodeId -> {  // NOSONAR
+                return isFlowVariablePortsOnly //
+                    ? new Connectable.NodeFlow(nodeId.toNodeID(wfm), wfm) //
+                    : new Connectable.NodeData(nodeId.toNodeID(wfm), wfm);
+            })//
             .collect(Collectors.toUnmodifiableSet());
         Set<Connectable> connectables = new HashSet<>(selectedNodes);
         if (Boolean.TRUE.equals(m_commandEnt.isWorkflowInPortsBarSelected())) {
-            connectables.add(new Connectable.WorkflowInPortsBar(wfm));
+            connectables.add( //
+                isFlowVariablePortsOnly //
+                    ? new Connectable.InPortsBarFlow(wfm) //
+                    : new Connectable.InPortsBarData(wfm) //
+            );
         }
         if (Boolean.TRUE.equals(m_commandEnt.isWorkflowOutPortsBarSelected())) {
-            connectables.add(new Connectable.WorkflowOutPortsBar(wfm));
+            connectables.add( //
+                isFlowVariablePortsOnly //
+                    ? new Connectable.OutPortsBarFlow(wfm) //
+                    : new Connectable.OutPortsBarData(wfm) //
+            );
         }
         return connectables;
     }
 
     @Override
     public boolean canUndo() {
-        if (m_connectResult == null) {
+        if (m_autoConnectChanges == null) {
             return false;
         }
-        return m_connectResult.addedConnections().stream().allMatch(getWorkflowManager()::canRemoveConnection);
+        return m_autoConnectChanges.addedConnections().stream().allMatch(getWorkflowManager()::canRemoveConnection);
     }
 
     @Override
     public void undo() throws OperationNotAllowedException {
         final var wfm = getWorkflowManager();
-        m_connectResult.addedConnections().forEach(wfm::removeConnection);
-        m_connectResult.removedConnections()
-            .forEach(cc -> wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort()));
-        m_connectResult = null;
+        m_autoConnectChanges.addedConnections().forEach(wfm::removeConnection);
+        m_autoConnectChanges.removedConnections().forEach(cc -> {
+            try {
+                wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
+            } catch (IllegalArgumentException e) {
+                LOGGER.info("Could not re-add connection on undo: " + e.getMessage());
+            }
+        });
+        m_autoConnectChanges = null;
     }
 
 }

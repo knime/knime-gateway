@@ -82,6 +82,12 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
    **/
   public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getSelectedNodes();
 
+  /**
+   * Consider implicit flow variable ports.
+   * @return flowVariablePortsOnly 
+   **/
+  public Boolean isFlowVariablePortsOnly();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -91,6 +97,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
       valueConsumer.accept("workflowInPortsBarSelected", Pair.create(isWorkflowInPortsBarSelected(), e.isWorkflowInPortsBarSelected()));
       valueConsumer.accept("workflowOutPortsBarSelected", Pair.create(isWorkflowOutPortsBarSelected(), e.isWorkflowOutPortsBarSelected()));
       valueConsumer.accept("selectedNodes", Pair.create(getSelectedNodes(), e.getSelectedNodes()));
+      valueConsumer.accept("flowVariablePortsOnly", Pair.create(isFlowVariablePortsOnly(), e.isFlowVariablePortsOnly()));
   }
 
     /**
@@ -129,6 +136,14 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @return this entity builder for chaining
          */
         AutoConnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
+        
+        /**
+         * Consider implicit flow variable ports.
+         * 
+         * @param flowVariablePortsOnly the property value,  
+         * @return this entity builder for chaining
+         */
+        AutoConnectCommandEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly);
         
         
         /**

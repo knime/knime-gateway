@@ -82,6 +82,11 @@ import org.mockito.Mockito;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings({ //
+    "java:S1192", // duplicate string literals
+    "java:S5960", // assertions are okay here
+    "java:S6212" // not using local-variable type inference is okay
+})
 public class DefaultServiceUtilTest {
 
     private WorkflowManager m_wfm;

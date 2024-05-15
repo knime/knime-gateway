@@ -69,9 +69,9 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.impl.webui.service.commands.util.AutoConnectUtil.PlannedConnection;
 import org.knime.gateway.impl.webui.service.commands.util.Connectable.Destination;
 import org.knime.gateway.impl.webui.service.commands.util.Connectable.Source;
-import org.knime.gateway.impl.webui.service.commands.util.AutoConnectUtil.PlannedConnection;
 
 /**
  * Utility methods to identify matching port pairs for nodes.
@@ -271,8 +271,8 @@ final class MatchingPortsUtil {
      * @return A planned connection between the first matching ports of {@code source} and {@code destination}.
      */
     static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source,
-            final Destination destination, Predicate<Source.SourcePort> sourcePortUsable,
-            Predicate<Destination.DestinationPort> destinationPortUsable) {
+            final Destination destination, final Predicate<Connectable.SourcePort<?>> sourcePortUsable,
+            final Predicate<Connectable.DestinationPort<?>> destinationPortUsable) {
         return source.getSourcePorts().stream()
                 .filter(sourcePortUsable)
                 .map(sp -> findFirstMatchingPairOfPorts(sp, destination, destinationPortUsable))
@@ -281,13 +281,13 @@ final class MatchingPortsUtil {
     }
 
     private static Optional<PlannedConnection> findFirstMatchingPairOfPorts(
-            Source.SourcePort sourcePort,
+        final Connectable.SourcePort<?> sourcePort,
             final Destination destination,
-            Predicate<Destination.DestinationPort> destinationPortUsable) {
+            final Predicate<Connectable.DestinationPort<?>> destinationPortUsable) {
         return destination.getDestinationPorts().stream() //
                 .filter(destinationPortUsable) //
-                .filter(destPort -> CoreUtil.arePortTypesCompatible(sourcePort.type(), destPort.type())) //
-                .map(dp -> new PlannedConnection(sourcePort, dp)) //
+                .filter(sourcePort::isCompatibleWith)
+            .map(destPort -> new PlannedConnection(sourcePort, destPort)) //
                 .findFirst(); //
     }
 

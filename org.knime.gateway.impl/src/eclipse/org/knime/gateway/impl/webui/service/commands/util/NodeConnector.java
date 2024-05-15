@@ -239,10 +239,11 @@ public final class NodeConnector {
      * @return the new connection or {@code Optional.empty()} if the connection couldn't be created
      */
     public static Optional<ConnectionContainer> connect(final WorkflowManager wfm,
-        final Connectable.Source.SourcePort sourcePort, Connectable.Destination.DestinationPort destinationPort,
+        final Connectable.SourcePort<?> sourcePort,
+        Connectable.DestinationPort<?> destinationPort,
         boolean track) {
-        var result = connect(wfm, sourcePort.source().getNodeId(), sourcePort.index(),
-            destinationPort.destination().getNodeId(), destinationPort.index(), track);
+        var result = connect(wfm, sourcePort.owner().getNodeId(), sourcePort.index(),
+            destinationPort.owner().getNodeId(), destinationPort.index(), track);
         return Optional.ofNullable(result);
     }
 

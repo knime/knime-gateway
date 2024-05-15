@@ -75,66 +75,78 @@ public final class AutoConnectUtil {
     }
 
     /**
-     * Establish a plan to connect the selected workflow parts. Algorithm based on LinkNodesAction
+     * Connect the provided connectables.
      *
      * @param wfm the workflow containing the connectables
      * @param connectables
      * @return the auto-connect result
      */
-    public static AutoConnectResult autoConnect(final WorkflowManager wfm, final Set<Connectable> connectables) {
+    public static AutoConnectChanges autoConnect(final WorkflowManager wfm, final Set<Connectable> connectables) {
         var plannedConnections = plan(new OrderedConnectables(connectables));
         return execute(wfm, plannedConnections);
     }
 
-    private static List<PlannedConnection> plan(final OrderedConnectables orderedConnectables) {
+    /**
+     * Plans connections among the provided spatially sorted connectables. We search in two passes: A forward pass that
+     * iterates over potential sources and tries to find destinations; and a backward pass that iterates over potential
+     * destinations and tries to find sources.
+     * <p>
+     * Algorithm based on {@code LinkNodesAction}.
+     *
+     * @param orderedConnectables A collection of connectables sorted by
+     *            {@link org.knime.gateway.impl.webui.service.commands.util.Geometry.Rectangle#NORTH_WEST_ORDERING}.
+     * @return A collection of planned connections that connect the given connectables.
+     */
+    @SuppressWarnings("java:S135") // more than one `continue` statement
+    static List<PlannedConnection> plan(final OrderedConnectables orderedConnectables) {
         var plannedConnections = new ArrayList<PlannedConnection>();
 
-        // Forward pass: Iterate sources and try to find a fitting destination
         for (var candidateSourceIndex =
             0; candidateSourceIndex < (orderedConnectables.size() - 1); candidateSourceIndex++) {
-            if (orderedConnectables.get(candidateSourceIndex) instanceof Connectable.Source candidateSource) {
-                var possibleConnections = orderedConnectables.destinationsAfter(candidateSourceIndex) //
-                    .filter(dest -> !dest.getBounds().xRange().intersects(candidateSource.getBounds().xRange())) //
-                    .filter(dest -> { // NOSONAR
-                        // Do not plan forward connections to destinations that are in the selection.
-                        // This is to enable these destinations to be connected via the backwards pass later
-                        return dest.getIncomingConnections().stream().noneMatch(incoming -> {
+            if (!(orderedConnectables.get(candidateSourceIndex) instanceof Connectable.Source candidateSource)) {
+                continue;
+            }
+            var possibleConnections = orderedConnectables.destinationsAfter(candidateSourceIndex) //
+                .filter(dest -> !dest.getBounds().xRange().intersects(candidateSource.getBounds().xRange())) //
+                .filter(dest -> { // NOSONAR: curly braces for one-line-lambda
+                    // Do not plan forward connections to destinations that are in the selection.
+                    // This is to enable these destinations to be connected via the backwards pass later
+                    return dest.getDestinationPorts().stream().flatMap(dp -> dp.getIncomingConnection().stream())
+                        .noneMatch(incoming -> {
                             var sourceIds = orderedConnectables.sources().stream().map(Connectable::getNodeId)
                                 .collect(Collectors.toUnmodifiableSet());
                             return sourceIds.contains(incoming.getSource());
                         });
-                    }) //
-                    .map(dest -> matchPorts(candidateSource, dest, plannedConnections));
-                addFirst(possibleConnections, plannedConnections);
-            }
+                }) //
+                .map(dest -> matchPorts(candidateSource, dest, plannedConnections));
+            addFirst(possibleConnections, plannedConnections);
         }
-        // Backward pass: Iterate destinations and try to find a fitting source
+
         for (var candidateDestinationIndex = 1; candidateDestinationIndex < orderedConnectables
             .size(); candidateDestinationIndex++) {
-            if (orderedConnectables
-                .get(candidateDestinationIndex) instanceof Connectable.Destination candidateDestination) {
-                // connections planned from first pass
-                var destinationsFromForwardPass =
-                    plannedConnections.stream().map(pc -> pc.destinationPort().destination());
-                var alreadyPlanned = destinationsFromForwardPass.anyMatch(d -> d.equals(candidateDestination));
-                var onLeftBoundary = candidateDestination.getBounds().xRange().start() == orderedConnectables.get(0)
-                    .getBounds().xRange().start();
-                if (alreadyPlanned || onLeftBoundary) {
-                    continue;
-                }
-                var possibleConnections = orderedConnectables.sourcesBefore(candidateDestinationIndex) //
-                    .map(src -> matchPorts(src, candidateDestination, plannedConnections));
-                addFirst(possibleConnections, plannedConnections);
+            if ((!(orderedConnectables
+                .get(candidateDestinationIndex) instanceof Connectable.Destination candidateDestination))) {
+                continue;
             }
+            var destinationsFromForwardPass = plannedConnections.stream().map(pc -> pc.destinationPort().owner());
+            var alreadyPlanned = destinationsFromForwardPass.anyMatch(d -> d.equals(candidateDestination));
+            var onLeftBoundary = candidateDestination.getBounds().xRange().start() == orderedConnectables.get(0)
+                .getBounds().xRange().start();
+            if (alreadyPlanned || onLeftBoundary) {
+                continue;
+            }
+            var possibleConnections = orderedConnectables.sourcesBefore(candidateDestinationIndex) //
+                .map(src -> matchPorts(src, candidateDestination, plannedConnections));
+            addFirst(possibleConnections, plannedConnections);
         }
 
         return plannedConnections;
     }
 
-    private static AutoConnectResult execute(final WorkflowManager wfm,
+    private static AutoConnectChanges execute(final WorkflowManager wfm,
         final List<PlannedConnection> plannedConnections) {
         if (willReplaceExecutedIncoming(plannedConnections)) {
-            LOGGER.warn("This will replace at least one already executed incoming connection");
+            LOGGER.warn("Auto-Connect will replace at least one already executed incoming connection");
         }
         final List<ConnectionContainer> removedConnections = new ArrayList<>();
         final List<ConnectionContainer> addedConnections = plannedConnections.stream()//
@@ -142,7 +154,7 @@ public final class AutoConnectUtil {
                 removedConnections::add))//
             .flatMap(Optional::stream)//
             .toList();
-        return new AutoConnectResult(addedConnections, removedConnections);
+        return new AutoConnectChanges(addedConnections, removedConnections);
     }
 
     private static void addFirst(final Stream<Optional<PlannedConnection>> possibleConnections,
@@ -153,7 +165,7 @@ public final class AutoConnectUtil {
     private static boolean willReplaceExecutedIncoming(final List<PlannedConnection> plannedConnections) {
         return plannedConnections.stream()//
             .map(PlannedConnection::destinationPort)//
-            .anyMatch(dp -> dp.destination().isExecuted());
+            .anyMatch(dp -> dp.owner().isExecuted());
     }
 
     private static Optional<ConnectionContainer> createNewConnection(
@@ -181,22 +193,23 @@ public final class AutoConnectUtil {
     }
 
     /**
-     * Finds a pair of output port of {@code source} and input port of{@code destination}, taking into account already
-     * planned connections.
+     * Finds a pair of output port of {@code source} and input port of{@code destination}, taking into account
+     * connections already in the workflow and already planned connections.
      *
-     * @param source
-     * @param destination
-     * @return
+     * @param source The candidate source connectable
+     * @param destination the candidate destination connectable
+     * @return A planned connection connecting {@code source} and {@code destination} via matching ports.
      */
+    @SuppressWarnings("java:S3252") // false positive: no member access
     private static Optional<PlannedConnection> matchPorts(final Connectable.Source source,
         final Connectable.Destination destination, final List<PlannedConnection> plannedConnections) {
-        Predicate<Connectable.Source.SourcePort> sourcePortFreeInWf =
-            sourcePort -> sourcePort.getOutgoingConnection().isEmpty();
-        Predicate<Connectable.Destination.DestinationPort> destPortFreeInWf =
+        Predicate<Connectable.Source.SourcePort<?>> sourcePortFreeInWf =
+            sourcePort -> sourcePort.getOutgoingConnections().isEmpty();
+        Predicate<Connectable.Destination.DestinationPort<?>> destPortFreeInWf =
             destPort -> destPort.getIncomingConnection().isEmpty();
-        Predicate<Connectable.Source.SourcePort> sourcePortFreeInPlan =
+        Predicate<Connectable.Source.SourcePort<?>> sourcePortFreeInPlan =
             sourcePort -> plannedConnections.stream().noneMatch(pc -> pc.sourcePort().equals(sourcePort));
-        Predicate<Connectable.Destination.DestinationPort> destPortFreeInPlan =
+        Predicate<Connectable.Destination.DestinationPort<?>> destPortFreeInPlan =
             destPort -> plannedConnections.stream().noneMatch(pc -> pc.destinationPort().equals(destPort));
         var searchStages = Stream.of( //
             MatchingPortsUtil.findFirstMatchingPairOfPorts( //
@@ -217,13 +230,13 @@ public final class AutoConnectUtil {
 
     }
 
-    static record PlannedConnection(Connectable.Source.SourcePort sourcePort,
-            Connectable.Destination.DestinationPort destinationPort) {
+    static record PlannedConnection(Connectable.SourcePort<? extends Connectable.Source> sourcePort,
+            Connectable.DestinationPort<? extends Connectable.Destination> destinationPort) {
 
         @Override
         public String toString() {
-            return "%s/%s -> %s/%s".formatted(sourcePort().source().getNodeId(), sourcePort().index(),
-                destinationPort().destination().getNodeId(), destinationPort().index());
+            return "%s/%s -> %s/%s".formatted(sourcePort().owner().getNodeId(), sourcePort().index(),
+                destinationPort().owner().getNodeId(), destinationPort().index());
         }
     }
 
@@ -233,14 +246,14 @@ public final class AutoConnectUtil {
      * @param addedConnections connections that have been added in the process
      * @param removedConnections connections that have been removed in the process
      */
-    public static record AutoConnectResult(List<ConnectionContainer> addedConnections,
-        List<ConnectionContainer> removedConnections) {
+    public static record AutoConnectChanges(List<ConnectionContainer> addedConnections,
+            List<ConnectionContainer> removedConnections) {
     }
 
     /**
      * An immutable list of {@link Connectable}s ordered by their bounds by north-west ordering.
      */
-    private static class OrderedConnectables {
+    static class OrderedConnectables {
 
         private final List<Connectable> m_list;
 

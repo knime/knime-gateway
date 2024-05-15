@@ -86,6 +86,10 @@ public interface AutoConnectCommandEntMixIn extends AutoConnectCommandEnt {
     @JsonProperty("selectedNodes")
     public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getSelectedNodes();
     
+    @Override
+    @JsonProperty("flowVariablePortsOnly")
+    public Boolean isFlowVariablePortsOnly();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -114,6 +118,10 @@ public interface AutoConnectCommandEntMixIn extends AutoConnectCommandEnt {
         @Override
         @JsonProperty("selectedNodes")
         public AutoConnectCommandEntMixInBuilder setSelectedNodes(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
+        
+        @Override
+        @JsonProperty("flowVariablePortsOnly")
+        public AutoConnectCommandEntMixInBuilder setFlowVariablePortsOnly(final Boolean flowVariablePortsOnly);
         
     }
 

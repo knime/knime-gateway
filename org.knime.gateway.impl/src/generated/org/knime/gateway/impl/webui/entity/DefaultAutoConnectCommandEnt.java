@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
  * @param workflowInPortsBarSelected
  * @param workflowOutPortsBarSelected
  * @param selectedNodes
+ * @param flowVariablePortsOnly
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -65,7 +66,8 @@ public record DefaultAutoConnectCommandEnt(
     KindEnum kind,
     Boolean workflowInPortsBarSelected,
     Boolean workflowOutPortsBarSelected,
-    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes) implements AutoConnectCommandEnt {
+    java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes,
+    Boolean flowVariablePortsOnly) implements AutoConnectCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -104,6 +106,11 @@ public record DefaultAutoConnectCommandEnt(
         return selectedNodes;
     }
     
+    @Override
+    public Boolean isFlowVariablePortsOnly() {
+        return flowVariablePortsOnly;
+    }
+    
     /**
      * A builder for {@link DefaultAutoConnectCommandEnt}.
      */
@@ -116,6 +123,8 @@ public record DefaultAutoConnectCommandEnt(
         private Boolean m_workflowOutPortsBarSelected;
 
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_selectedNodes = new java.util.ArrayList<>();
+
+        private Boolean m_flowVariablePortsOnly;
 
         @Override
         public DefaultAutoConnectCommandEntBuilder setKind(KindEnum kind) {
@@ -148,12 +157,19 @@ public record DefaultAutoConnectCommandEnt(
         }
 
         @Override
+        public DefaultAutoConnectCommandEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly) {
+             m_flowVariablePortsOnly = flowVariablePortsOnly;
+             return this;
+        }
+
+        @Override
         public DefaultAutoConnectCommandEnt build() {
             return new DefaultAutoConnectCommandEnt(
                 immutable(m_kind),
                 immutable(m_workflowInPortsBarSelected),
                 immutable(m_workflowOutPortsBarSelected),
-                immutable(m_selectedNodes));
+                immutable(m_selectedNodes),
+                immutable(m_flowVariablePortsOnly));
         }
     
     }
