@@ -53,10 +53,10 @@ import java.util.List;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 
 /**
- * Represents a space group which can be an user or a team inside a provider
+ * Represents a space group which can be a user or a team inside a provider
  *
  * @author Juan Baquero
- * @param <S>
+ * @param <S> The concrete type of spaces contained in this group
  */
 public interface SpaceGroup<S extends Space> {
 

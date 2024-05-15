@@ -481,13 +481,13 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private static SpaceGroup<Space> getLocalSpaceGroupForTesting(final Space... spaces) {
         return new SpaceGroup<Space>() {
 
-            final String id = "Local-Testing-space-id";
+            static final String ID = "Local-Testing-space-id";
 
-            final String name = "Local Testing Group";
+            static final String NAME = "Local Testing Group";
 
             @Override
             public SpaceGroupEnt toEntity() {
-                return EntityFactory.Space.buildSpaceGroupEnt(id, name, SpaceGroupEnt.TypeEnum.USER,
+                return EntityFactory.Space.buildSpaceGroupEnt(ID, NAME, SpaceGroupEnt.TypeEnum.USER,
                     Arrays.stream(spaces).map(Space::toEntity).collect(Collectors.toList()));
             }
 
