@@ -80,15 +80,6 @@ import org.knime.gateway.impl.webui.service.commands.util.Geometry.Bounds;
  */
 public interface Connectable {
 
-    static Optional<Bounds> readBounds(NodeUIInformation uiInfo) {
-        return Optional.ofNullable(uiInfo.getBounds()).map(arr -> {
-            return new Bounds( //
-                new Geometry.Point(arr[0], arr[1]), //
-                Math.max(0, arr[2]), //
-                Math.max(0, arr[3])); //
-        });
-    }
-
     /**
      * @return the id of the node or workflow (in case of metanode port bars) to connect
      */
@@ -139,8 +130,6 @@ public interface Connectable {
          */
         @SuppressWarnings("java:S1452") // wildcard types are narrowed by implementing classes
         List<? extends DestinationPort<? extends Destination>> getDestinationPorts();
-
-        boolean isExecuted();
 
     }
 
@@ -228,7 +217,7 @@ public interface Connectable {
          * @param destinationPort
          * @return
          */
-        boolean isCompatibleWith(DestinationPort<?> destinationPort) {
+        boolean isCompatibleWith(final DestinationPort<?> destinationPort) {
             return CoreUtil.arePortTypesCompatible(this.type(), destinationPort.type());
         }
     }
@@ -257,7 +246,7 @@ public interface Connectable {
         }
 
         @Override
-        boolean isCompatibleWith(DestinationPort<?> destinationPort) {
+        boolean isCompatibleWith(final DestinationPort<?> destinationPort) {
             if (!(destinationPort instanceof FlowDestinationPort flowDestinationPort)) {
                 return false;
             }
@@ -361,11 +350,6 @@ public interface Connectable {
         public Bounds getBounds() {
             return Optional.ofNullable(m_nc.getUIInformation()) //
                 .flatMap(Connectable::readBounds).orElseThrow();
-        }
-
-        @Override
-        public boolean isExecuted() {
-            return m_nc.getNodeContainerState().isExecuted();
         }
 
         @Override
@@ -477,7 +461,7 @@ public interface Connectable {
             super(mWfm);
         }
 
-        static <T extends PortsBar> Stream<NodeOutPort> getSourcePorts(T bar) {
+        static <T extends PortsBar> Stream<NodeOutPort> getSourcePorts(final T bar) {
             return IntStream.range(0, bar.wfm().getNrWorkflowIncomingPorts())//
                 .mapToObj(bar.wfm()::getWorkflowIncomingPort);//
         }
@@ -550,14 +534,9 @@ public interface Connectable {
             super(mWfm);
         }
 
-        static <T extends PortsBar> Stream<NodeInPort> getDestinationPorts(T bar) {
+        static <T extends PortsBar> Stream<NodeInPort> getDestinationPorts(final T bar) {
             return IntStream.range(0, bar.wfm().getNrWorkflowOutgoingPorts())//
                 .mapToObj(bar.wfm()::getWorkflowOutgoingPort);//
-        }
-
-        @Override
-        public boolean isExecuted() {
-            return super.wfm().getNodeContainerState().isExecuted();
         }
 
         @Override
@@ -614,6 +593,15 @@ public interface Connectable {
             return getDestinationPorts(this).map(nodeInPort -> new FlowDestinationPort(this, nodeInPort, false))
                 .toList();
         }
+    }
+
+    private static Optional<Bounds> readBounds(final NodeUIInformation uiInfo) {
+        return Optional.ofNullable(uiInfo.getBounds()).map(arr -> //
+        new Bounds( //
+            new Geometry.Point(arr[0], arr[1]), //
+            Math.max(0, arr[2]), //
+            Math.max(0, arr[3])) //
+        );
     }
 
 }

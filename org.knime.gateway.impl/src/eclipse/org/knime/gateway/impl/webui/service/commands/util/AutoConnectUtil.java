@@ -145,9 +145,6 @@ public final class AutoConnectUtil {
 
     private static AutoConnectChanges execute(final WorkflowManager wfm,
         final List<PlannedConnection> plannedConnections) {
-        if (willReplaceExecutedIncoming(plannedConnections)) {
-            LOGGER.warn("Auto-Connect will replace at least one already executed incoming connection");
-        }
         final List<ConnectionContainer> removedConnections = new ArrayList<>();
         final List<ConnectionContainer> addedConnections = plannedConnections.stream()//
             .map(plannedConnection -> AutoConnectUtil.createNewConnection(plannedConnection, wfm,
@@ -160,12 +157,6 @@ public final class AutoConnectUtil {
     private static void addFirst(final Stream<Optional<PlannedConnection>> possibleConnections,
         final List<PlannedConnection> plannedConnections) {
         possibleConnections.flatMap(Optional::stream).findFirst().ifPresent(plannedConnections::add);
-    }
-
-    private static boolean willReplaceExecutedIncoming(final List<PlannedConnection> plannedConnections) {
-        return plannedConnections.stream()//
-            .map(PlannedConnection::destinationPort)//
-            .anyMatch(dp -> dp.owner().isExecuted());
     }
 
     private static Optional<ConnectionContainer> createNewConnection(
