@@ -432,7 +432,7 @@ public interface Connectable {
             Stream<FlowDestinationPort> hiddenPorts = !this.hasHiddenPort() //
                 ? Stream.empty() //
                 : Stream.of(new FlowDestinationPort(this, m_nc.getInPort(0), true));
-            var visiblePorts = IntStream.range(dataPortsStartIndex(), m_nc.getNrOutPorts())//
+            var visiblePorts = IntStream.range(dataPortsStartIndex(), m_nc.getNrInPorts())//
                 .mapToObj(m_nc::getInPort)//
                 .filter(inPort -> inPort.getPortType().equals(FlowVariablePortObject.TYPE)) //
                 .map(inPort -> new FlowDestinationPort(this, inPort, false));
