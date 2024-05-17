@@ -219,7 +219,7 @@ public interface Connectable {
         @Override
         public List<DestinationPort> getDestinationPorts() {
             return IntStream.range(0, wfm().getNrWorkflowOutgoingPorts())//
-                .mapToObj(wfm()::getInPort)//
+                .mapToObj(wfm()::getWorkflowOutgoingPort)//
                 .map(nodeInPort -> new DestinationPort(this, nodeInPort.getPortIndex(), nodeInPort.getPortType()))
                 .toList();
         }
@@ -257,7 +257,7 @@ public interface Connectable {
         @Override
         public List<SourcePort> getSourcePorts() {
             return IntStream.range(0, wfm().getNrWorkflowIncomingPorts())//
-                .mapToObj(wfm()::getOutPort)//
+                .mapToObj(wfm()::getWorkflowIncomingPort)//
                 .map(nodeOutPort -> new SourcePort(this, nodeOutPort.getPortIndex(), nodeOutPort.getPortType()))
                 .toList();
         }
