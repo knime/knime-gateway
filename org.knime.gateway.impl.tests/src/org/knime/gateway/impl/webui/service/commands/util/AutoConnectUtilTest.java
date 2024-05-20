@@ -334,8 +334,8 @@ public class AutoConnectUtilTest {
     }
 
     /**
-     * Assert that explicit flow variable ports are connected by the "standard mode", i.e. not explicitly considering
-     * implicit flow variable ports. <code>
+     * Assert that visible flow variable ports are connected by the "standard mode", i.e. not explicitly considering
+     * hidden flow variable ports. <code>
      *     [ ]f>       <f[ ]
      * </code>
      */
@@ -357,7 +357,7 @@ public class AutoConnectUtilTest {
     }
 
     /**
-     * Assert that explicit flow variable ports are connected by "flow variable mode", i.e., when considering hidden
+     * Assert that visible flow variable ports are connected by "flow variable mode", i.e., when considering hidden
      * flow variable ports. <code>
      *     [ ]f>       <f[ ]
      * </code>
@@ -386,7 +386,7 @@ public class AutoConnectUtilTest {
      * </code>
      */
     @Test
-    public void implicitToImplicitIsPlannedOnlyWhenNoExplicitPresent() {
+    public void hiddenToHiddenIsPlannedOnlyWhenNoExplicitPresent() {
         var sourceNode = mockConnectable(Connectable.NodeFlow.class, Geometry.Bounds.MIN_VALUE);
         var sourcePorts =
             List.of(spy(new Connectable.FlowSourcePort(sourceNode, 0, FlowVariablePortObject.TYPE, false)));
@@ -401,7 +401,7 @@ public class AutoConnectUtilTest {
         var resultingPlan =
             AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
-        assertPlanned("Implicit flow variable ports are connected", sourcePorts.get(0), destinationPorts.get(0),
+        assertPlanned("hidden flow variable ports are connected", sourcePorts.get(0), destinationPorts.get(0),
             resultingPlan);
     }
 
@@ -428,7 +428,7 @@ public class AutoConnectUtilTest {
         var resultingPlan =
             AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
-        assertPlanned("Source for implicit flow variable target is explicit port if present", sourcePorts.get(1),
+        assertPlanned("Source for hidden flow variable target is visible port if present", sourcePorts.get(1),
             destinationPorts.get(0), resultingPlan);
     }
 
@@ -453,7 +453,7 @@ public class AutoConnectUtilTest {
         var resultingPlan =
             AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
-        assertPlanned("Source for implicit flow variable target is explicit port if present", sourcePorts.get(0),
+        assertPlanned("Source for hidden flow variable target is visible port if present", sourcePorts.get(0),
             destinationPorts.get(0), resultingPlan);
 
     }

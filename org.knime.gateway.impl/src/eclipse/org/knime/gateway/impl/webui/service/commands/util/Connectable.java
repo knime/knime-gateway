@@ -520,7 +520,9 @@ public interface Connectable {
         @Override
         public List<FlowSourcePort> getSourcePorts() {
             var isVisible = true; // ports bars never have hidden ports
-            return getSourcePorts(this).map(nodeOutPort -> new FlowSourcePort(this, nodeOutPort, isVisible)).toList();
+            return getSourcePorts(this) //
+                .filter(nodeInPort -> nodeInPort.getPortType().equals(FlowVariablePortObject.TYPE)) //
+                .map(nodeOutPort -> new FlowSourcePort(this, nodeOutPort, isVisible)).toList();
         }
 
     }
@@ -590,8 +592,9 @@ public interface Connectable {
 
         @Override
         public List<FlowDestinationPort> getDestinationPorts() {
-            return getDestinationPorts(this).map(nodeInPort -> new FlowDestinationPort(this, nodeInPort, false))
-                .toList();
+            return getDestinationPorts(this) //
+                .filter(nodeInPort -> nodeInPort.getPortType().equals(FlowVariablePortObject.TYPE)) //
+                .map(nodeInPort -> new FlowDestinationPort(this, nodeInPort, false)).toList();
         }
     }
 

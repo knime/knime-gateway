@@ -84,6 +84,7 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
+@SuppressWarnings("javadoc")
 public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static final String NODE_ID_DATA_GENERATOR = "root:1";
@@ -103,6 +104,31 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     public ConnectCommandsTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(ConnectCommandsTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+    }
+
+    private static ConnectCommandEnt buildConnectCommandEnt(final NodeIDEnt source, final Integer sourcePort,
+        final NodeIDEnt dest, final Integer destPort) {
+        return builder(ConnectCommandEntBuilder.class).setKind(KindEnum.CONNECT).setSourceNodeId(source)
+            .setSourcePortIdx(sourcePort).setDestinationNodeId(dest).setDestinationPortIdx(destPort).build();
+    }
+
+    private static void assertConnection(final Collection<ConnectionEnt> connections, final NodeIDEnt sourceId,
+        final NodeIDEnt destId) {
+        var containsConnection = connections.stream().anyMatch(
+            connection -> connection.getSourceNode().equals(sourceId) && connection.getDestNode().equals(destId));
+        assertThat("Connection <%s -> %s> doesn't exist".formatted(sourceId, destId), containsConnection, is(true));
+    }
+
+    private static AutoConnectCommandEnt buildAutoConnectCommandEnt(final List<NodeIDEnt> selectedNodes) {
+        return buildAutoConnectCommandEnt(selectedNodes, false, false);
+    }
+
+    private static AutoConnectCommandEnt buildAutoConnectCommandEnt(final List<NodeIDEnt> selectedNodes,
+        final boolean workflowInPortBarSelected, final boolean workflowOutPortBarSelected) {
+        return builder(AutoConnectCommandEntBuilder.class)//
+            .setKind(KindEnum.AUTO_CONNECT)//
+            .setSelectedNodes(selectedNodes).setWorkflowInPortsBarSelected(workflowInPortBarSelected)
+            .setWorkflowOutPortsBarSelected(workflowOutPortBarSelected).build();
     }
 
     /**
@@ -125,7 +151,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         connections = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
-                is(NODE_ID_CONCATENATE));
+            is(NODE_ID_CONCATENATE));
 
         // undo
         ws().undoWorkflowCommand(projectId, workflowId);
@@ -239,12 +265,6 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         });
     }
 
-    private static ConnectCommandEnt buildConnectCommandEnt(final NodeIDEnt source, final Integer sourcePort,
-        final NodeIDEnt dest, final Integer destPort) {
-        return builder(ConnectCommandEntBuilder.class).setKind(KindEnum.CONNECT).setSourceNodeId(source)
-            .setSourcePortIdx(sourcePort).setDestinationNodeId(dest).setDestinationPortIdx(destPort).build();
-    }
-
     /**
      * Tests {@link AutoConnectCommandEnt} with native nodes and a component
      *
@@ -341,9 +361,45 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         assertConnection(connections, new NodeIDEnt(42), new NodeIDEnt(44));
     }
 
+    public void autoConnectFlowVariablesOnly() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = getRootID();
+
+        var metanodeWithSingleFlowVarOut = new NodeIDEnt(23);
+        var componentWithVisibleFlowVarIn = new NodeIDEnt(24);
+        var nativeNode = new NodeIDEnt(20);
+
+        var selectedNodes = List.of(metanodeWithSingleFlowVarOut, componentWithVisibleFlowVarIn, nativeNode);
+        var command = builder(AutoConnectCommandEntBuilder.class)//
+            .setKind(KindEnum.AUTO_CONNECT)//
+            .setSelectedNodes(selectedNodes)//
+            .setWorkflowInPortsBarSelected(false)//
+            .setWorkflowOutPortsBarSelected(false)//
+            .setFlowVariablePortsOnly(true) //
+            .build();
+        ws().executeWorkflowCommand(projectId, workflowId, command);
+        var workflowAfter = ws().getWorkflow(projectId, workflowId, true).getWorkflow();
+        var connectionsAfter = workflowAfter.getConnections().values();
+        assertThat("Connection visible-to-hidden should be made even if visible destination is available", //
+            connectionsAfter.stream().anyMatch(c -> //
+            c.getSourceNode().equals(metanodeWithSingleFlowVarOut) //
+                && c.getSourcePort() == 0 //
+                && c.getDestNode().equals(componentWithVisibleFlowVarIn) //
+                && c.getDestPort() == 0 //
+            ) //
+        );
+        assertThat("Connection hidden-to-hidden should be made if no visible available", //
+            connectionsAfter.stream().anyMatch(c -> //
+            c.getSourceNode().equals(componentWithVisibleFlowVarIn) //
+                && c.getSourcePort() == 0 //
+                && c.getDestNode().equals(nativeNode) //
+                && c.getDestPort() == 0 //
+            ) //
+        );
+    }
+
     private void assertAutoConnect(final String projectId, final NodeIDEnt workflowId, final int numConnectionsBefore,
-        final int numConnectionsAfter, final AutoConnectCommandEnt command)
-        throws Exception { // NOSONAR
+        final int numConnectionsAfter, final AutoConnectCommandEnt command) throws Exception { // NOSONAR
         var connectionsBefore = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat("Unexpected number of connections before command execution", connectionsBefore.size(),
             is(numConnectionsBefore));
@@ -366,26 +422,6 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
             assertThat("Unexpected number of connections after command redo", connectionsRedo.size(),
                 is(numConnectionsAfter));
         }
-    }
-
-    private static void assertConnection(final Collection<ConnectionEnt> connections, final NodeIDEnt sourceId,
-        final NodeIDEnt destId) {
-        var containsConnection = connections.stream().anyMatch(
-            connection -> connection.getSourceNode().equals(sourceId) && connection.getDestNode().equals(destId));
-        assertThat("Connection <%s -> %s> doesn't exist".formatted(sourceId, destId), containsConnection, is(true));
-    }
-
-    private static AutoConnectCommandEnt buildAutoConnectCommandEnt(final List<NodeIDEnt> selectedNodes) {
-        return buildAutoConnectCommandEnt(selectedNodes, false, false);
-    }
-
-    private static AutoConnectCommandEnt buildAutoConnectCommandEnt(final List<NodeIDEnt> selectedNodes,
-        final boolean workflowInPortBarSelected, final boolean workflowOutPortBarSelected) {
-        return builder(AutoConnectCommandEntBuilder.class)//
-            .setKind(KindEnum.AUTO_CONNECT)//
-            .setSelectedNodes(selectedNodes).setWorkflowInPortsBarSelected(workflowInPortBarSelected)
-            .setWorkflowOutPortsBarSelected(workflowOutPortBarSelected)
-            .build();
     }
 
 }
