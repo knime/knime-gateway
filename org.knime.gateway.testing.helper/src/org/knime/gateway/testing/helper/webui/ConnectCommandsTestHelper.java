@@ -68,10 +68,12 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt.AutoConnectCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -398,16 +400,125 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         );
     }
 
+    /**
+     * <code>
+     * |        fh>~~~~<fh[C]>----<|
+     * |>---< [A] >----<[B]>       |
+     * |                           |
+     * </code>
+     */
+    public void autoDisconnectRemovesConnections() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = new NodeIDEnt(50);
+
+        var a = new NodeIDEnt(50, 46);
+        var b = new NodeIDEnt(50, 47);
+        var c = new NodeIDEnt(50, 48);
+
+        var command = builder(AutoDisconnectCommandEnt.AutoDisconnectCommandEntBuilder.class)//
+                .setKind(KindEnum.AUTO_DISCONNECT) //
+                .setSelectedNodes(List.of(a, c)) //
+                .setWorkflowInPortsBarSelected(true) //
+                .setWorkflowOutPortsBarSelected(false) //
+                .build();
+
+        ws().executeWorkflowCommand(projectId, workflowId, command);
+
+        var connectionsAfter = getConnectionsFromWorkflow(projectId, workflowId);
+        assertThat("Should disconnect wfIn<->[A]", connectionsAfter.stream().noneMatch(
+                connection -> connection.getSourceNode().equals(workflowId) && connection.getDestNode().equals(a)));
+
+        assertThat("Should not disconnect [A]<->[C] (is flow variable connection)", connectionsAfter.stream()
+                .anyMatch(connection -> connection.getSourceNode().equals(a) && connection.getDestNode().equals(c)));
+
+        assertThat("Should not disconnect [A]<->[B] (destination not in selection)", connectionsAfter.stream()
+                .anyMatch(connection -> connection.getSourceNode().equals(a) && connection.getDestNode().equals(b)));
+    }
+
+    /**
+     * <code>
+     * |        fh>~~~~<fh[C]>----<|
+     * |>---< [A] >----<[B]>       |
+     * |                           |
+     * </code>
+     */
+    public void autoDisconnectRemovesFlowVariableConnection() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+        var workflowId = new NodeIDEnt(50);
+
+        var a = new NodeIDEnt(50, 46);
+        var c = new NodeIDEnt(50, 48);
+
+        var command = builder(AutoDisconnectCommandEnt.AutoDisconnectCommandEntBuilder.class)//
+                .setKind(KindEnum.AUTO_DISCONNECT)//
+                .setSelectedNodes(List.of(a, c)) //
+                .setWorkflowInPortsBarSelected(false) //
+                .setWorkflowOutPortsBarSelected(false) //
+                .setFlowVariablePortsOnly(true) //
+                .build();
+
+        ws().executeWorkflowCommand(projectId, workflowId, command);
+        var workflowAfter = ws().getWorkflow(projectId, workflowId, true).getWorkflow();
+        var connectionsAfter = workflowAfter.getConnections().entrySet().stream().map(Map.Entry::getValue).toList();
+
+        assertThat("Should disconnect nodes", connectionsAfter.stream()
+                .noneMatch(connection -> connection.getSourceNode().equals(a) && connection.getDestNode().equals(c)));
+    }
+
+    public void autoDisconnectUndoRedo() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.AUTO_CONNECT_NODES);
+
+        var parentWfm = new NodeIDEnt(50);
+
+        var a = new NodeIDEnt(50, 46);
+        var b = new NodeIDEnt(50, 47);
+
+        var command = builder(AutoDisconnectCommandEnt.AutoDisconnectCommandEntBuilder.class)//
+                .setKind(KindEnum.AUTO_DISCONNECT)//
+                .setSelectedNodes(List.of(a, b)) //
+                .setWorkflowInPortsBarSelected(true) //
+                .setWorkflowOutPortsBarSelected(false) //
+                .build();
+
+        ws().executeWorkflowCommand(projectId, parentWfm, command);
+        var connectionsAfter = getConnectionsFromWorkflow(projectId, parentWfm);
+
+        assertThat("Connection [wfIn]<->[A] should be removed", connectionsAfter.stream().noneMatch(
+                connection -> connection.getSourceNode().equals(parentWfm) && connection.getDestNode().equals(a)));
+        assertThat("Connection [A]<->[B] should be removed", connectionsAfter.stream()
+                .noneMatch(connection -> connection.getSourceNode().equals(a) && connection.getDestNode().equals(b)));
+
+        ws().undoWorkflowCommand(projectId, parentWfm);
+        var connectionsAfterUndo = getConnectionsFromWorkflow(projectId, parentWfm);
+
+        assertThat("Connection [wfIn]<->[A] should be re-added", connectionsAfterUndo.stream().anyMatch(
+                connection -> connection.getSourceNode().equals(parentWfm) && connection.getDestNode().equals(a)));
+        assertThat("Connection [A]<->[B] should be re-added", connectionsAfterUndo.stream()
+                .anyMatch(connection -> connection.getSourceNode().equals(a) && connection.getDestNode().equals(b)));
+
+        ws().redoWorkflowCommand(projectId, parentWfm);
+        var connectionsAfterRedo = getConnectionsFromWorkflow(projectId, parentWfm);
+
+        assertThat("Connection [wfIn]<->[A] should be removed on redo", connectionsAfterRedo.stream().noneMatch(
+                connection -> connection.getSourceNode().equals(parentWfm) && connection.getDestNode().equals(a)));
+        assertThat("Connection [A]<->[B] should be removed on redo", connectionsAfterRedo.stream()
+                .noneMatch(connection -> connection.getSourceNode().equals(a) && connection.getDestNode().equals(b)));
+    }
+
+    private List<ConnectionEnt> getConnectionsFromWorkflow(final String projectId, final NodeIDEnt workflowId)
+            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException {
+        var workflow = ws().getWorkflow(projectId, workflowId, true).getWorkflow();
+        return workflow.getConnections().entrySet().stream().map(Map.Entry::getValue).toList();
+    }
+
     private void assertAutoConnect(final String projectId, final NodeIDEnt workflowId, final int numConnectionsBefore,
         final int numConnectionsAfter, final AutoConnectCommandEnt command) throws Exception { // NOSONAR
         var connectionsBefore = ws().getWorkflow(projectId, workflowId, false).getWorkflow().getConnections();
         assertThat("Unexpected number of connections before command execution", connectionsBefore.size(),
             is(numConnectionsBefore));
-
         ws().executeWorkflowCommand(projectId, workflowId, command);
-
         var workflowAfter = ws().getWorkflow(projectId, workflowId, true).getWorkflow();
-        var connectionsAfter = workflowAfter.getConnections();
+        var connectionsAfter = getConnectionsFromWorkflow(projectId, workflowId);
         assertThat("Unexpected number of connections after command execution", connectionsAfter.size(),
             is(numConnectionsAfter));
 

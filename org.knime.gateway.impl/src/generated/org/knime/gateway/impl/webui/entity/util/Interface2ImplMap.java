@@ -78,6 +78,8 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt.AutoConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAutoConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt.AutoDisconnectCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.CollapseCommandEntBuilder;
@@ -98,6 +100,8 @@ import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBui
 import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt.ConnectableSelectionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultConnectableSelectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt.ConvertContainerResultEntBuilder;
@@ -391,6 +395,9 @@ public class Interface2ImplMap {
         if(clazz == AutoConnectCommandEntBuilder.class) {
             return (B)new DefaultAutoConnectCommandEnt.DefaultAutoConnectCommandEntBuilder();
         }        
+        if(clazz == AutoDisconnectCommandEntBuilder.class) {
+            return (B)new DefaultAutoDisconnectCommandEnt.DefaultAutoDisconnectCommandEntBuilder();
+        }        
         if(clazz == BoundsEntBuilder.class) {
             return (B)new DefaultBoundsEnt.DefaultBoundsEntBuilder();
         }        
@@ -420,6 +427,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ConnectCommandEntBuilder.class) {
             return (B)new DefaultConnectCommandEnt.DefaultConnectCommandEntBuilder();
+        }        
+        if(clazz == ConnectableSelectionEntBuilder.class) {
+            return (B)new DefaultConnectableSelectionEnt.DefaultConnectableSelectionEntBuilder();
         }        
         if(clazz == ConnectionEntBuilder.class) {
             return (B)new DefaultConnectionEnt.DefaultConnectionEntBuilder();

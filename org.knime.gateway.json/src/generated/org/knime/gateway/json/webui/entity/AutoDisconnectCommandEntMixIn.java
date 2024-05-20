@@ -53,8 +53,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAutoConnectCommandEnt.DefaultAutoConnectCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAutoDisconnectCommandEnt.DefaultAutoDisconnectCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,10 +62,10 @@ import org.knime.gateway.impl.webui.entity.DefaultAutoConnectCommandEnt.DefaultA
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultAutoConnectCommandEntBuilder.class)
-@JsonSerialize(as=AutoConnectCommandEnt.class)
+@JsonDeserialize(builder=DefaultAutoDisconnectCommandEntBuilder.class)
+@JsonSerialize(as=AutoDisconnectCommandEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface AutoConnectCommandEntMixIn extends AutoConnectCommandEnt {
+public interface AutoDisconnectCommandEntMixIn extends AutoDisconnectCommandEnt {
 
     @Override
     @JsonIgnore
@@ -99,30 +99,30 @@ public interface AutoConnectCommandEntMixIn extends AutoConnectCommandEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AutoConnectCommandEntMixInBuilder extends AutoConnectCommandEntBuilder {
+    public static interface AutoDisconnectCommandEntMixInBuilder extends AutoDisconnectCommandEntBuilder {
     
         @Override
-        public AutoConnectCommandEntMixIn build();
+        public AutoDisconnectCommandEntMixIn build();
     
         @Override
         @JsonProperty("kind")
-        public AutoConnectCommandEntMixInBuilder setKind(final KindEnum kind);
+        public AutoDisconnectCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
         @JsonProperty("workflowInPortsBarSelected")
-        public AutoConnectCommandEntMixInBuilder setWorkflowInPortsBarSelected(final Boolean workflowInPortsBarSelected);
+        public AutoDisconnectCommandEntMixInBuilder setWorkflowInPortsBarSelected(final Boolean workflowInPortsBarSelected);
         
         @Override
         @JsonProperty("workflowOutPortsBarSelected")
-        public AutoConnectCommandEntMixInBuilder setWorkflowOutPortsBarSelected(final Boolean workflowOutPortsBarSelected);
+        public AutoDisconnectCommandEntMixInBuilder setWorkflowOutPortsBarSelected(final Boolean workflowOutPortsBarSelected);
         
         @Override
         @JsonProperty("selectedNodes")
-        public AutoConnectCommandEntMixInBuilder setSelectedNodes(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
+        public AutoDisconnectCommandEntMixInBuilder setSelectedNodes(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
         
         @Override
         @JsonProperty("flowVariablePortsOnly")
-        public AutoConnectCommandEntMixInBuilder setFlowVariablePortsOnly(final Boolean flowVariablePortsOnly);
+        public AutoDisconnectCommandEntMixInBuilder setFlowVariablePortsOnly(final Boolean flowVariablePortsOnly);
         
     }
 

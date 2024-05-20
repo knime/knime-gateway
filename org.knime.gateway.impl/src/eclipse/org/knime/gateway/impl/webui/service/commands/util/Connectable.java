@@ -208,7 +208,7 @@ public interface Connectable {
             super(owner, index, type);
         }
 
-        Set<ConnectionContainer> getOutgoingConnections() {
+        public Set<ConnectionContainer> getOutgoingConnections() {
             return m_owner.wfm().getOutgoingConnectionsFor(m_owner.getNodeId(), this.m_index);
         }
 
@@ -578,7 +578,6 @@ public interface Connectable {
         public List<DestinationPort<OutPortsBarData>> getDestinationPorts() {
             return getDestinationPorts(this).map(nodeInPort -> new DestinationPort<>(this, nodeInPort)).toList();
         }
-
     }
 
     /**

@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
@@ -190,6 +191,8 @@ public final class WorkflowCommands {
             command = new Connect(ce);
         } else if (commandEnt instanceof AutoConnectCommandEnt ce) {
             command = new AutoConnect(ce);
+        } else if (commandEnt instanceof AutoDisconnectCommandEnt ce) {
+            command = new AutoDisconnect(ce);
         } else if (commandEnt instanceof AddNodeCommandEnt ce) {
             command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
         } else if (commandEnt instanceof ReplaceNodeCommandEnt ce) {

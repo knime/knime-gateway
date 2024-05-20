@@ -46,75 +46,93 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.core.node.workflow.ConnectionContainer;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.service.commands.util.AutoConnectUtil;
+import org.knime.gateway.impl.webui.service.commands.util.Connectable;
+import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 
 /**
- * Connect selected workflow elements according to an automatically determined plan.
+ * Disconnect the selected workflow elements.
  *
  * @author Benjamin Moser, KNIME GmbH, Germany
- * @author Kai Franze, KNIME GmbH, Germany
  */
-public final class AutoConnect extends AbstractWorkflowCommand {
+public class AutoDisconnect extends AbstractWorkflowCommand {
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoDisconnect.class);
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoConnect.class);
+    private final AutoDisconnectCommandEnt m_command;
 
-    private final AutoConnectCommandEnt m_commandEnt;
+    private Set<ConnectionContainer> m_removed;
 
-    private AutoConnectUtil.AutoConnectChanges m_autoConnectChanges;
+    AutoDisconnect(final AutoDisconnectCommandEnt commandEnt) {
+        m_command = commandEnt;
+    }
 
-    AutoConnect(final AutoConnectCommandEnt commandEnt) {
-        m_commandEnt = commandEnt;
+    private static Set<ConnectionContainer> autoDisconnect(final AutoConnectUtil.Connectables connectables,
+        final WorkflowManager wfm) {
+        var destinations =
+            connectables.destinations().stream().map(Connectable::getNodeId).collect(Collectors.toUnmodifiableSet());
+        var connectionsWithinSelection = connectables.sources().stream() //
+            .flatMap(source -> source.getSourcePorts().stream()) //
+            .flatMap(sourcePort -> sourcePort.getOutgoingConnections().stream()) //
+            .filter(outgoingConnection -> destinations.contains(outgoingConnection.getDest())); //
+        var removed = new HashSet<ConnectionContainer>();
+        connectionsWithinSelection.forEach(cc -> {
+            try {
+                wfm.removeConnection(cc);
+                removed.add(cc);
+            } catch (IllegalArgumentException e) {
+                LOGGER.info("Can not remove connection %s".formatted(cc), e);
+            }
+        });
+        return removed;
+    }
+
+    private static void connect(final ConnectionContainer connection, final WorkflowManager wfm) {
+        var addedConnection = NodeConnector.connect( //
+            wfm, //
+            connection.getSource(), connection.getSourcePort(), //
+            connection.getDest(), connection.getDestPort(), //
+            false //
+        );
+        if (addedConnection == null) {
+            LOGGER.info("could not re-add connection");
+        }
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var changes = AutoConnectUtil.autoConnect( //
-            getWorkflowManager(), //
-            new AutoConnectUtil.Connectables(m_commandEnt, getWorkflowManager()) //
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+        m_removed = autoDisconnect( //
+            new AutoConnectUtil.Connectables(m_command, getWorkflowManager()), //
+            getWorkflowManager() //
         );
-        LOGGER.info("%s connections were added and %s connections were removed"
-            .formatted(changes.addedConnections().size(), changes.removedConnections().size()));
-        m_autoConnectChanges = changes;
-        return !changes.addedConnections().isEmpty();
+        return !m_removed.isEmpty();
+    }
+
+    @Override
+    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+        m_removed.forEach(cc -> connect(cc, getWorkflowManager()));
     }
 
     @Override
     public boolean canUndo() {
-        if (m_autoConnectChanges == null) {
+        if (m_removed == null) {
             return false;
         }
-        return AutoConnectUtil.canAddConnections(m_autoConnectChanges.removedConnections(), getWorkflowManager())
-            && AutoConnectUtil.canRemoveConnections(m_autoConnectChanges.addedConnections(), getWorkflowManager());
+        return AutoConnectUtil.canAddConnections(m_removed, getWorkflowManager());
     }
 
     @Override
     public boolean canRedo() {
-        if (m_autoConnectChanges == null) {
+        if (m_removed == null) {
             return false;
         }
-        return AutoConnectUtil.canAddConnections(m_autoConnectChanges.addedConnections(), getWorkflowManager())
-            && AutoConnectUtil.canRemoveConnections(m_autoConnectChanges.removedConnections(), getWorkflowManager());
+        return AutoConnectUtil.canRemoveConnections(m_removed, getWorkflowManager());
     }
-
-    @Override
-    public void undo() throws OperationNotAllowedException {
-        final var wfm = getWorkflowManager();
-        m_autoConnectChanges.addedConnections().forEach(wfm::removeConnection);
-        m_autoConnectChanges.removedConnections().forEach(cc -> {
-            try {
-                wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
-            } catch (IllegalArgumentException e) {
-                LOGGER.info("Could not re-add connection on undo: " + e.getMessage());
-            }
-        });
-        m_autoConnectChanges = null;
-    }
-
 }

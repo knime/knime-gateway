@@ -42,9 +42,6 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Oct 5, 2023 (hornm): created
  */
 package org.knime.gateway.impl.webui.service.commands.util;
 
@@ -119,7 +116,7 @@ public class AutoConnectUtilTest {
         return ports;
     }
 
-    private static <T> Stream<T> repeat(T obj, int times) {
+    private static <T> Stream<T> repeat(final T obj, final int times) {
         return IntStream.range(0, times).mapToObj(i -> obj);
     }
 
@@ -176,7 +173,7 @@ public class AutoConnectUtilTest {
         var destinationPort = mockDestinationPorts(destinationNode, List.of(portObjectType)).get(0);
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(sourceNode, destinationNode)).sorted());
 
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         var plannedConnection = resultingPlan.get(0);
@@ -210,7 +207,7 @@ public class AutoConnectUtilTest {
         mockDestinationPorts(d, 1);
         mockSourcePorts(d, 0);
 
-        var plan = AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(a, b, c, d)));
+        var plan = AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(a, b, c, d)).sorted());
 
         assertPlanned(a.getSourcePorts().get(0), c.getDestinationPorts().get(0), plan);
         assertPlanned(b.getSourcePorts().get(0), c.getDestinationPorts().get(1), plan);
@@ -243,7 +240,7 @@ public class AutoConnectUtilTest {
         mockDestinationPorts(d, 1);
         mockSourcePorts(d, 1);
 
-        var plan = AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(a, b, c, d)));
+        var plan = AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(a, b, c, d)).sorted());
 
         assertPlanned(a.getSourcePorts().get(0), b.getDestinationPorts().get(0), plan);
         assertPlanned(b.getSourcePorts().get(0), c.getDestinationPorts().get(0), plan);
@@ -265,7 +262,7 @@ public class AutoConnectUtilTest {
         mockDestinationPorts(b, 0);
         mockSourcePorts(b, 1);
 
-        var plan = AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(a, b)));
+        var plan = AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(a, b)).sorted());
 
         assertThat("Connection is not planned", plan.isEmpty());
     }
@@ -285,7 +282,7 @@ public class AutoConnectUtilTest {
         mockDestinationPorts(b, 0);
         mockSourcePorts(b, 0);
 
-        var plan = AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(a, b)));
+        var plan = AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(a, b)).sorted());
 
         assertThat("Connection is not planned", plan.isEmpty());
     }
@@ -305,7 +302,7 @@ public class AutoConnectUtilTest {
         mockDestinationPorts(b, 1);
         mockSourcePorts(b, 0);
 
-        var plan = AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(a, b)));
+        var plan = AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(a, b)).sorted());
 
         assertThat("Connection is not planned", plan.isEmpty());
     }
@@ -328,7 +325,7 @@ public class AutoConnectUtilTest {
         mockDestinationPorts(destinationNode, List.of(incompatiblePortObjectTypes.getSecond()));
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(sourceNode, destinationNode)).sorted());
 
         assertThat("No connections are planned", resultingPlan.isEmpty());
     }
@@ -350,15 +347,15 @@ public class AutoConnectUtilTest {
         var destinationPort = mockDestinationPorts(destinationNode, List.of(FlowVariablePortObject.TYPE)).get(0);
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(sourceNode, destinationNode)).sorted());
 
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned(sourcePort, destinationPort, resultingPlan);
     }
 
     /**
-     * Assert that visible flow variable ports are connected by "flow variable mode", i.e., when considering hidden
-     * flow variable ports. <code>
+     * Assert that visible flow variable ports are connected by "flow variable mode", i.e., when considering hidden flow
+     * variable ports. <code>
      *     [ ]f>       <f[ ]
      * </code>
      */
@@ -373,7 +370,7 @@ public class AutoConnectUtilTest {
         var destinationPort = mockDestinationPorts(destinationNode, List.of(FlowVariablePortObject.TYPE)).get(0);
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(sourceNode, destinationNode)).sorted());
 
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned(sourcePort, destinationPort, resultingPlan);
@@ -399,7 +396,7 @@ public class AutoConnectUtilTest {
         doReturn(destinationPorts).when(destinationNode).getDestinationPorts();
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(sourceNode, destinationNode)).sorted());
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned("hidden flow variable ports are connected", sourcePorts.get(0), destinationPorts.get(0),
             resultingPlan);
@@ -426,7 +423,7 @@ public class AutoConnectUtilTest {
         doReturn(destinationPorts).when(destinationNode).getDestinationPorts();
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(sourceNode, destinationNode)).sorted());
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned("Source for hidden flow variable target is visible port if present", sourcePorts.get(1),
             destinationPorts.get(0), resultingPlan);
@@ -451,7 +448,7 @@ public class AutoConnectUtilTest {
         doReturn(destinationPorts).when(destinationNode).getDestinationPorts();
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(sourceNode, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(sourceNode, destinationNode)).sorted());
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned("Source for hidden flow variable target is visible port if present", sourcePorts.get(0),
             destinationPorts.get(0), resultingPlan);
@@ -481,7 +478,8 @@ public class AutoConnectUtilTest {
         var outPortsBar = mockConnectable(Connectable.OutPortsBarData.class, Geometry.Bounds.MAX_VALUE);
         mockDestinationPorts(outPortsBar, 1);
 
-        var plan = AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(inPortsBar, a, b, outPortsBar)));
+        var plan =
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(inPortsBar, a, b, outPortsBar)).sorted());
 
         assertPlanned(inPortsBar.getSourcePorts().get(0), a.getDestinationPorts().get(0), plan);
         assertPlanned(a.getSourcePorts().get(0), b.getDestinationPorts().get(0), plan);
@@ -506,7 +504,7 @@ public class AutoConnectUtilTest {
         mockSourcePorts(destinationNode, Collections.emptyList());
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(inPortsBar, destinationNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(inPortsBar, destinationNode)).sorted());
 
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned(sourcePort, destinationPort, resultingPlan);
@@ -531,7 +529,7 @@ public class AutoConnectUtilTest {
         var destinationPort = mockDestinationPorts(outPortsBar, List.of(portObjectType)).get(0);
 
         var resultingPlan =
-            AutoConnectUtil.plan(new AutoConnectUtil.OrderedConnectables(Set.of(outPortsBar, sourceNode)));
+            AutoConnectUtil.plan(new AutoConnectUtil.Connectables(List.of(outPortsBar, sourceNode)).sorted());
 
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned(sourcePort, destinationPort, resultingPlan);

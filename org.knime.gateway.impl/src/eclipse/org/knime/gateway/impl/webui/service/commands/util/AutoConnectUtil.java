@@ -46,11 +46,11 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -59,6 +59,7 @@ import java.util.stream.Stream;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt;
 
 /**
  * Heuristic to connect a given set of connectable workflow parts.
@@ -81,8 +82,8 @@ public final class AutoConnectUtil {
      * @param connectables
      * @return the auto-connect result
      */
-    public static AutoConnectChanges autoConnect(final WorkflowManager wfm, final Set<Connectable> connectables) {
-        var plannedConnections = plan(new OrderedConnectables(connectables));
+    public static AutoConnectChanges autoConnect(final WorkflowManager wfm, final Connectables connectables) {
+        var plannedConnections = plan(connectables.sorted());
         return execute(wfm, plannedConnections);
     }
 
@@ -176,7 +177,7 @@ public final class AutoConnectUtil {
                         """.formatted(destinationPort, sourcePort, destinationPort), e);
             }
         });
-        final var addedConnection = NodeConnector.connect(wfm, sourcePort, destinationPort, true);
+        final var addedConnection = NodeConnector.connect(wfm, sourcePort, destinationPort, false);
         if (addedConnection.isEmpty()) {
             LOGGER.error("Could not create the connection from %s to %s".formatted(sourcePort, destinationPort));
         }
@@ -221,6 +222,18 @@ public final class AutoConnectUtil {
 
     }
 
+
+    public static boolean canAddConnections(final Collection<ConnectionContainer> connections,
+            final WorkflowManager wfm) {
+        return connections.stream()
+                .allMatch(cc -> wfm.canAddConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort()));
+    }
+
+    public static boolean canRemoveConnections(final Collection<ConnectionContainer> connections,
+            final WorkflowManager wfm) {
+        return connections.stream().allMatch(wfm::canRemoveConnection);
+    }
+
     static record PlannedConnection(Connectable.SourcePort<? extends Connectable.Source> sourcePort,
             Connectable.DestinationPort<? extends Connectable.Destination> destinationPort) {
 
@@ -242,33 +255,60 @@ public final class AutoConnectUtil {
     }
 
     /**
-     * An immutable list of {@link Connectable}s ordered by their bounds by north-west ordering.
+     * An immutable list of {@link Connectable}s providing specific accessors.
      */
-    static class OrderedConnectables {
+    public static class Connectables {
 
-        private final List<Connectable> m_list;
+        List<Connectable> m_connectables;
 
-        OrderedConnectables(final Set<Connectable> connectables) {
-            m_list = connectables.stream()//
-                .sorted(Comparator.comparing(Connectable::getBounds, Geometry.Rectangle.NORTH_WEST_ORDERING))//
+        public Connectables(final List<Connectable> connectables) {
+            m_connectables = connectables;
+        }
+
+        public Connectables(final ConnectableSelectionEnt selection, final WorkflowManager wfm) {
+            var isFlowVariablePortsOnly = Boolean.TRUE.equals(selection.isFlowVariablePortsOnly());
+            var selectedNodes = selection.getSelectedNodes().stream() //
+                .map(nodeId -> {  // NOSONAR
+                    return isFlowVariablePortsOnly ? //
+                        new Connectable.NodeFlow(nodeId.toNodeID(wfm), wfm) : //
+                        new Connectable.NodeData(nodeId.toNodeID(wfm), wfm);
+                })//
                 .toList();
+            List<Connectable> connectables = new ArrayList<>(selectedNodes);
+            if (Boolean.TRUE.equals(selection.isWorkflowInPortsBarSelected())) {
+                connectables.add( //
+                    isFlowVariablePortsOnly ? //
+                        new Connectable.InPortsBarFlow(wfm) : //
+                        new Connectable.InPortsBarData(wfm));
+            }
+            if (Boolean.TRUE.equals(selection.isWorkflowOutPortsBarSelected())) {
+                connectables.add( //
+                    isFlowVariablePortsOnly ? //
+                        new Connectable.OutPortsBarFlow(wfm) : //
+                        new Connectable.OutPortsBarData(wfm));
+            }
+            m_connectables = connectables;
         }
 
         private static <E> Stream<E> filter(final Stream<?> stream, final Class<E> targetClass) {
             return stream.filter(targetClass::isInstance).map(targetClass::cast);
         }
 
-        private List<Connectable.Source> sources() {
+        public List<Connectable.Source> sources() {
             return filter(this.stream(), Connectable.Source.class).toList();
         }
 
+        public List<Connectable.Destination> destinations() {
+            return filter(this.stream(), Connectable.Destination.class).toList();
+        }
+
         private Stream<Connectable> reversedFrom(final int index) {
-            var els = new ArrayList<>(m_list);
+            var els = new ArrayList<>(m_connectables);
             Collections.reverse(els);
             return els.stream().skip((long)this.size() - index);
         }
 
-        private Stream<Connectable.Source> sourcesBefore(final int index) {
+        Stream<Connectable.Source> sourcesBefore(final int index) {
             return filter(reversedFrom(index), Connectable.Source.class);
         }
 
@@ -280,15 +320,33 @@ public final class AutoConnectUtil {
         }
 
         private Stream<Connectable> stream() {
-            return m_list.stream();
+            return m_connectables.stream();
         }
 
-        private int size() {
-            return m_list.size();
+        int size() {
+            return m_connectables.size();
         }
 
-        private Connectable get(final int index) {
-            return m_list.get(index);
+        Connectable get(final int index) {
+            return m_connectables.get(index);
+        }
+
+        OrderedConnectables sorted() {
+            var sorted = this.stream()//
+                .sorted(Comparator.comparing(Connectable::getBounds, Geometry.Rectangle.NORTH_WEST_ORDERING))//
+                .toList();
+            return new OrderedConnectables(sorted);
+        }
+    }
+
+    /**
+     * A list of {@link Connectable}s ordered by their bounds under north-west-ordering.
+     *
+     * @see Connectables#sorted()
+     */
+    static final class OrderedConnectables extends Connectables {
+        private OrderedConnectables(final List<Connectable> connectables) {
+            super(connectables);
         }
     }
 }

@@ -74,6 +74,8 @@ public interface WorkflowCommandEnt extends GatewayEntity {
     
     AUTO_CONNECT("auto_connect"),
     
+    AUTO_DISCONNECT("auto_disconnect"),
+    
     ADD_NODE("add_node"),
     
     REPLACE_NODE("replace_node"),
