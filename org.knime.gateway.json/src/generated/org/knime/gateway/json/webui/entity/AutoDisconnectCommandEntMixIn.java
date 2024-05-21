@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.ConnectableSelectionEntMixIn;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.ConnectablesBasedCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

@@ -46,12 +46,14 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt;
+import org.knime.gateway.api.webui.entity.ConnectablesBasedCommandEnt;
 
 /**
  * A selection of connectable workflow parts
  *
+ * @param kind
  * @param workflowInPortsBarSelected
  * @param workflowOutPortsBarSelected
  * @param selectedNodes
@@ -60,16 +62,20 @@ import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultConnectableSelectionEnt(
+public record DefaultConnectablesBasedCommandEnt(
+    KindEnum kind,
     Boolean workflowInPortsBarSelected,
     Boolean workflowOutPortsBarSelected,
     java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes,
-    Boolean flowVariablePortsOnly) implements ConnectableSelectionEnt {
+    Boolean flowVariablePortsOnly) implements ConnectablesBasedCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultConnectableSelectionEnt {
+    public DefaultConnectablesBasedCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
         if(selectedNodes == null) {
             throw new IllegalArgumentException("<selectedNodes> must not be null.");
         }
@@ -77,9 +83,14 @@ public record DefaultConnectableSelectionEnt(
 
     @Override
     public String getTypeID() {
-        return "ConnectableSelection";
+        return "ConnectablesBasedCommand";
     }
   
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
+    
     @Override
     public Boolean isWorkflowInPortsBarSelected() {
         return workflowInPortsBarSelected;
@@ -101,9 +112,11 @@ public record DefaultConnectableSelectionEnt(
     }
     
     /**
-     * A builder for {@link DefaultConnectableSelectionEnt}.
+     * A builder for {@link DefaultConnectablesBasedCommandEnt}.
      */
-    public static class DefaultConnectableSelectionEntBuilder implements ConnectableSelectionEntBuilder {
+    public static class DefaultConnectablesBasedCommandEntBuilder implements ConnectablesBasedCommandEntBuilder {
+
+        private KindEnum m_kind;
 
         private Boolean m_workflowInPortsBarSelected;
 
@@ -114,19 +127,28 @@ public record DefaultConnectableSelectionEnt(
         private Boolean m_flowVariablePortsOnly;
 
         @Override
-        public DefaultConnectableSelectionEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected) {
+        public DefaultConnectablesBasedCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
+             }
+             m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultConnectablesBasedCommandEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected) {
              m_workflowInPortsBarSelected = workflowInPortsBarSelected;
              return this;
         }
 
         @Override
-        public DefaultConnectableSelectionEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected) {
+        public DefaultConnectablesBasedCommandEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected) {
              m_workflowOutPortsBarSelected = workflowOutPortsBarSelected;
              return this;
         }
 
         @Override
-        public DefaultConnectableSelectionEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes) {
+        public DefaultConnectablesBasedCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes) {
              if(selectedNodes == null) {
                  throw new IllegalArgumentException("<selectedNodes> must not be null.");
              }
@@ -135,14 +157,15 @@ public record DefaultConnectableSelectionEnt(
         }
 
         @Override
-        public DefaultConnectableSelectionEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly) {
+        public DefaultConnectablesBasedCommandEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly) {
              m_flowVariablePortsOnly = flowVariablePortsOnly;
              return this;
         }
 
         @Override
-        public DefaultConnectableSelectionEnt build() {
-            return new DefaultConnectableSelectionEnt(
+        public DefaultConnectablesBasedCommandEnt build() {
+            return new DefaultConnectablesBasedCommandEnt(
+                immutable(m_kind),
                 immutable(m_workflowInPortsBarSelected),
                 immutable(m_workflowOutPortsBarSelected),
                 immutable(m_selectedNodes),

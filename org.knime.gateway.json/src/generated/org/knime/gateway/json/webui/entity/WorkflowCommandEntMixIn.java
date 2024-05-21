@@ -65,6 +65,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultConnectablesBasedCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTranslateCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultConnectableSelectionEnt.DefaultConnectableSelectionEntBuilder;
+import org.knime.gateway.api.webui.entity.ConnectablesBasedCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultConnectablesBasedCommandEnt.DefaultConnectablesBasedCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,15 +61,19 @@ import org.knime.gateway.impl.webui.entity.DefaultConnectableSelectionEnt.Defaul
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultConnectableSelectionEntBuilder.class)
-@JsonSerialize(as=ConnectableSelectionEnt.class)
+@JsonDeserialize(builder=DefaultConnectablesBasedCommandEntBuilder.class)
+@JsonSerialize(as=ConnectablesBasedCommandEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ConnectableSelectionEntMixIn extends ConnectableSelectionEnt {
+public interface ConnectablesBasedCommandEntMixIn extends ConnectablesBasedCommandEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
     @Override
     @JsonProperty("workflowInPortsBarSelected")
     public Boolean isWorkflowInPortsBarSelected();
@@ -93,26 +98,30 @@ public interface ConnectableSelectionEntMixIn extends ConnectableSelectionEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ConnectableSelectionEntMixInBuilder extends ConnectableSelectionEntBuilder {
+    public static interface ConnectablesBasedCommandEntMixInBuilder extends ConnectablesBasedCommandEntBuilder {
     
         @Override
-        public ConnectableSelectionEntMixIn build();
+        public ConnectablesBasedCommandEntMixIn build();
     
+        @Override
+        @JsonProperty("kind")
+        public ConnectablesBasedCommandEntMixInBuilder setKind(final KindEnum kind);
+        
         @Override
         @JsonProperty("workflowInPortsBarSelected")
-        public ConnectableSelectionEntMixInBuilder setWorkflowInPortsBarSelected(final Boolean workflowInPortsBarSelected);
+        public ConnectablesBasedCommandEntMixInBuilder setWorkflowInPortsBarSelected(final Boolean workflowInPortsBarSelected);
         
         @Override
         @JsonProperty("workflowOutPortsBarSelected")
-        public ConnectableSelectionEntMixInBuilder setWorkflowOutPortsBarSelected(final Boolean workflowOutPortsBarSelected);
+        public ConnectablesBasedCommandEntMixInBuilder setWorkflowOutPortsBarSelected(final Boolean workflowOutPortsBarSelected);
         
         @Override
         @JsonProperty("selectedNodes")
-        public ConnectableSelectionEntMixInBuilder setSelectedNodes(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
+        public ConnectablesBasedCommandEntMixInBuilder setSelectedNodes(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
         
         @Override
         @JsonProperty("flowVariablePortsOnly")
-        public ConnectableSelectionEntMixInBuilder setFlowVariablePortsOnly(final Boolean flowVariablePortsOnly);
+        public ConnectablesBasedCommandEntMixInBuilder setFlowVariablePortsOnly(final Boolean flowVariablePortsOnly);
         
     }
 

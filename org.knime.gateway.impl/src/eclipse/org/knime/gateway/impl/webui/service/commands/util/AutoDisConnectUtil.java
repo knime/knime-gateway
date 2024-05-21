@@ -60,7 +60,7 @@ import java.util.stream.Stream;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt;
+import org.knime.gateway.api.webui.entity.ConnectablesBasedCommandEnt;
 
 /**
  * Heuristic to connect a given set of connectable workflow parts.
@@ -80,12 +80,12 @@ public final class AutoDisConnectUtil {
      * Connect the provided connectables.
      *
      * @param wfm the workflow containing the connectables
-     * @param connectableSelection
+     * @param connectablesBasedCommand
      * @return the auto-connect result
      */
     public static AutoConnectChanges autoConnect(final WorkflowManager wfm,
-        final ConnectableSelectionEnt connectableSelection) {
-        var plannedConnections = plan(new Connectables(connectableSelection, wfm).sorted());
+        final ConnectablesBasedCommandEnt connectablesBasedCommand) {
+        var plannedConnections = plan(new Connectables(connectablesBasedCommand, wfm).sorted());
         return execute(wfm, plannedConnections);
     }
 
@@ -227,13 +227,13 @@ public final class AutoDisConnectUtil {
     /**
      * Removes all connections between a set of 'connectables'.
      *
-     * @param connectableSelection
+     * @param connectablesBasedCommand
      * @param wfm
      * @return the removed connections
      */
-    public static Set<ConnectionContainer> autoDisconnect(final ConnectableSelectionEnt connectableSelection,
+    public static Set<ConnectionContainer> autoDisconnect(final ConnectablesBasedCommandEnt connectablesBasedCommand,
         final WorkflowManager wfm) {
-        var connectables = new Connectables(connectableSelection, wfm);
+        var connectables = new Connectables(connectablesBasedCommand, wfm);
         var destinations =
             connectables.destinations().stream().map(Connectable::getNodeId).collect(Collectors.toUnmodifiableSet());
         var connectionsWithinSelection = connectables.sources().stream() //
@@ -283,9 +283,9 @@ public final class AutoDisConnectUtil {
             m_connectables = connectables;
         }
 
-        public Connectables(final ConnectableSelectionEnt selection, final WorkflowManager wfm) {
-            var isFlowVariablePortsOnly = Boolean.TRUE.equals(selection.isFlowVariablePortsOnly());
-            var selectedNodes = selection.getSelectedNodes().stream() //
+        public Connectables(final ConnectablesBasedCommandEnt connectablesBasedCommand, final WorkflowManager wfm) {
+            var isFlowVariablePortsOnly = Boolean.TRUE.equals(connectablesBasedCommand.isFlowVariablePortsOnly());
+            var selectedNodes = connectablesBasedCommand.getSelectedNodes().stream() //
                 .map(nodeId -> {  // NOSONAR
                     return isFlowVariablePortsOnly ? //
                         new Connectable.NodeFlow(nodeId.toNodeID(wfm), wfm) : //
@@ -293,13 +293,13 @@ public final class AutoDisConnectUtil {
                 })//
                 .toList();
             List<Connectable> connectables = new ArrayList<>(selectedNodes);
-            if (Boolean.TRUE.equals(selection.isWorkflowInPortsBarSelected())) {
+            if (Boolean.TRUE.equals(connectablesBasedCommand.isWorkflowInPortsBarSelected())) {
                 connectables.add( //
                     isFlowVariablePortsOnly ? //
                         new Connectable.InPortsBarFlow(wfm) : //
                         new Connectable.InPortsBarData(wfm));
             }
-            if (Boolean.TRUE.equals(selection.isWorkflowOutPortsBarSelected())) {
+            if (Boolean.TRUE.equals(connectablesBasedCommand.isWorkflowOutPortsBarSelected())) {
                 connectables.add( //
                     isFlowVariablePortsOnly ? //
                         new Connectable.OutPortsBarFlow(wfm) : //

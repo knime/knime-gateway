@@ -100,8 +100,8 @@ import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBui
 import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
-import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt.ConnectableSelectionEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultConnectableSelectionEnt;
+import org.knime.gateway.api.webui.entity.ConnectablesBasedCommandEnt.ConnectablesBasedCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultConnectablesBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt.ConvertContainerResultEntBuilder;
@@ -428,8 +428,8 @@ public class Interface2ImplMap {
         if(clazz == ConnectCommandEntBuilder.class) {
             return (B)new DefaultConnectCommandEnt.DefaultConnectCommandEntBuilder();
         }        
-        if(clazz == ConnectableSelectionEntBuilder.class) {
-            return (B)new DefaultConnectableSelectionEnt.DefaultConnectableSelectionEntBuilder();
+        if(clazz == ConnectablesBasedCommandEntBuilder.class) {
+            return (B)new DefaultConnectablesBasedCommandEnt.DefaultConnectablesBasedCommandEntBuilder();
         }        
         if(clazz == ConnectionEntBuilder.class) {
             return (B)new DefaultConnectionEnt.DefaultConnectionEntBuilder();

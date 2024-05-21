@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -60,7 +61,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ConnectableSelectionEnt extends GatewayEntity {
+public interface ConnectablesBasedCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
 
   /**
@@ -91,7 +92,8 @@ public interface ConnectableSelectionEnt extends GatewayEntity {
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ConnectableSelectionEnt)other;
+      var e = (ConnectablesBasedCommandEnt)other;
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("workflowInPortsBarSelected", Pair.create(isWorkflowInPortsBarSelected(), e.isWorkflowInPortsBarSelected()));
       valueConsumer.accept("workflowOutPortsBarSelected", Pair.create(isWorkflowOutPortsBarSelected(), e.isWorkflowOutPortsBarSelected()));
       valueConsumer.accept("selectedNodes", Pair.create(getSelectedNodes(), e.getSelectedNodes()));
@@ -101,15 +103,23 @@ public interface ConnectableSelectionEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface ConnectableSelectionEntBuilder extends GatewayEntityBuilder<ConnectableSelectionEnt> {
+    public interface ConnectablesBasedCommandEntBuilder extends GatewayEntityBuilder<ConnectablesBasedCommandEnt> {
 
+        /**
+         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * 
+         * @param kind the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ConnectablesBasedCommandEntBuilder setKind(KindEnum kind);
+        
         /**
    		 * Set workflowInPortsBarSelected
          * 
          * @param workflowInPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        ConnectableSelectionEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected);
+        ConnectablesBasedCommandEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected);
         
         /**
    		 * Set workflowOutPortsBarSelected
@@ -117,7 +127,7 @@ public interface ConnectableSelectionEnt extends GatewayEntity {
          * @param workflowOutPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        ConnectableSelectionEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected);
+        ConnectablesBasedCommandEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected);
         
         /**
    		 * Set selectedNodes
@@ -125,7 +135,7 @@ public interface ConnectableSelectionEnt extends GatewayEntity {
          * @param selectedNodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ConnectableSelectionEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
+        ConnectablesBasedCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
         
         /**
          * Consider only flow variable ports (including hidden/implicit).
@@ -133,7 +143,7 @@ public interface ConnectableSelectionEnt extends GatewayEntity {
          * @param flowVariablePortsOnly the property value,  
          * @return this entity builder for chaining
          */
-        ConnectableSelectionEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly);
+        ConnectablesBasedCommandEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly);
         
         
         /**
@@ -143,7 +153,7 @@ public interface ConnectableSelectionEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ConnectableSelectionEnt build();
+        ConnectablesBasedCommandEnt build();
     
     }
 
