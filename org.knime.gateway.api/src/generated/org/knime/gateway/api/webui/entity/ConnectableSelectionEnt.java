@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -57,20 +55,43 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Automatically connects all the nodes / port bars selected.
+ * A selection of connectable workflow parts
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt, ConnectableSelectionEnt {
+public interface ConnectableSelectionEnt extends GatewayEntity {
 
+
+  /**
+   * Get workflowInPortsBarSelected
+   * @return workflowInPortsBarSelected 
+   **/
+  public Boolean isWorkflowInPortsBarSelected();
+
+  /**
+   * Get workflowOutPortsBarSelected
+   * @return workflowOutPortsBarSelected 
+   **/
+  public Boolean isWorkflowOutPortsBarSelected();
+
+  /**
+   * Get selectedNodes
+   * @return selectedNodes , never <code>null</code>
+   **/
+  public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getSelectedNodes();
+
+  /**
+   * Consider only flow variable ports (including hidden/implicit).
+   * @return flowVariablePortsOnly 
+   **/
+  public Boolean isFlowVariablePortsOnly();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AutoConnectCommandEnt)other;
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      var e = (ConnectableSelectionEnt)other;
       valueConsumer.accept("workflowInPortsBarSelected", Pair.create(isWorkflowInPortsBarSelected(), e.isWorkflowInPortsBarSelected()));
       valueConsumer.accept("workflowOutPortsBarSelected", Pair.create(isWorkflowOutPortsBarSelected(), e.isWorkflowOutPortsBarSelected()));
       valueConsumer.accept("selectedNodes", Pair.create(getSelectedNodes(), e.getSelectedNodes()));
@@ -80,23 +101,15 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
     /**
      * The builder for the entity.
      */
-    public interface AutoConnectCommandEntBuilder extends GatewayEntityBuilder<AutoConnectCommandEnt> {
+    public interface ConnectableSelectionEntBuilder extends GatewayEntityBuilder<ConnectableSelectionEnt> {
 
-        /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
-         * 
-         * @param kind the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        AutoConnectCommandEntBuilder setKind(KindEnum kind);
-        
         /**
    		 * Set workflowInPortsBarSelected
          * 
          * @param workflowInPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected);
+        ConnectableSelectionEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected);
         
         /**
    		 * Set workflowOutPortsBarSelected
@@ -104,7 +117,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param workflowOutPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected);
+        ConnectableSelectionEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected);
         
         /**
    		 * Set selectedNodes
@@ -112,7 +125,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param selectedNodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
+        ConnectableSelectionEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
         
         /**
          * Consider only flow variable ports (including hidden/implicit).
@@ -120,7 +133,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param flowVariablePortsOnly the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly);
+        ConnectableSelectionEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly);
         
         
         /**
@@ -130,7 +143,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        AutoConnectCommandEnt build();
+        ConnectableSelectionEnt build();
     
     }
 

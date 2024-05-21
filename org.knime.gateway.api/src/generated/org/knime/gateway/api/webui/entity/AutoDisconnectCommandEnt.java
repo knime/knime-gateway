@@ -57,19 +57,19 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Automatically connects all the nodes / port bars selected.
+ * Remove all connections among the selected workflow parts.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt, ConnectableSelectionEnt {
+public interface AutoDisconnectCommandEnt extends GatewayEntity, WorkflowCommandEnt, ConnectableSelectionEnt {
 
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AutoConnectCommandEnt)other;
+      var e = (AutoDisconnectCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("workflowInPortsBarSelected", Pair.create(isWorkflowInPortsBarSelected(), e.isWorkflowInPortsBarSelected()));
       valueConsumer.accept("workflowOutPortsBarSelected", Pair.create(isWorkflowOutPortsBarSelected(), e.isWorkflowOutPortsBarSelected()));
@@ -80,7 +80,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
     /**
      * The builder for the entity.
      */
-    public interface AutoConnectCommandEntBuilder extends GatewayEntityBuilder<AutoConnectCommandEnt> {
+    public interface AutoDisconnectCommandEntBuilder extends GatewayEntityBuilder<AutoDisconnectCommandEnt> {
 
         /**
          * The kind of command which directly maps to a specific &#39;implementation&#39;.
@@ -88,7 +88,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setKind(KindEnum kind);
+        AutoDisconnectCommandEntBuilder setKind(KindEnum kind);
         
         /**
    		 * Set workflowInPortsBarSelected
@@ -96,7 +96,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param workflowInPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected);
+        AutoDisconnectCommandEntBuilder setWorkflowInPortsBarSelected(Boolean workflowInPortsBarSelected);
         
         /**
    		 * Set workflowOutPortsBarSelected
@@ -104,7 +104,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param workflowOutPortsBarSelected the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected);
+        AutoDisconnectCommandEntBuilder setWorkflowOutPortsBarSelected(Boolean workflowOutPortsBarSelected);
         
         /**
    		 * Set selectedNodes
@@ -112,7 +112,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param selectedNodes the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
+        AutoDisconnectCommandEntBuilder setSelectedNodes(java.util.List<org.knime.gateway.api.entity.NodeIDEnt> selectedNodes);
         
         /**
          * Consider only flow variable ports (including hidden/implicit).
@@ -120,7 +120,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
          * @param flowVariablePortsOnly the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectCommandEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly);
+        AutoDisconnectCommandEntBuilder setFlowVariablePortsOnly(Boolean flowVariablePortsOnly);
         
         
         /**
@@ -130,7 +130,7 @@ public interface AutoConnectCommandEnt extends GatewayEntity, WorkflowCommandEnt
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        AutoConnectCommandEnt build();
+        AutoDisconnectCommandEnt build();
     
     }
 

@@ -57,6 +57,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAutoDisconnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsCommandEnt;
@@ -108,6 +109,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultConnectCommandEnt.class, name = "connect")
 ,
   @Type(value = DefaultAutoConnectCommandEnt.class, name = "auto_connect")
+,
+  @Type(value = DefaultAutoDisconnectCommandEnt.class, name = "auto_disconnect")
 ,
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
@@ -188,6 +191,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultConnectCommandEnt.class, name = "connect")
 ,
   @Type(value = DefaultAutoConnectCommandEnt.class, name = "auto_connect")
+,
+  @Type(value = DefaultAutoDisconnectCommandEnt.class, name = "auto_disconnect")
 ,
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
