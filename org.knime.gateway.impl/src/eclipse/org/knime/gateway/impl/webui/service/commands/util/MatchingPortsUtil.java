@@ -69,7 +69,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.webui.service.commands.util.AutoConnectUtil.PlannedConnection;
+import org.knime.gateway.impl.webui.service.commands.util.AutoDisConnectUtil.PlannedConnection;
 import org.knime.gateway.impl.webui.service.commands.util.Connectable.Destination;
 import org.knime.gateway.impl.webui.service.commands.util.Connectable.Source;
 

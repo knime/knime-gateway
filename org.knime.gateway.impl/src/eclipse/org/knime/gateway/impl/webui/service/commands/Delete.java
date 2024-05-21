@@ -170,7 +170,7 @@ final class Delete extends AbstractWorkflowCommand {
             addIfConnectedToJustOneNode(wfm.getOutgoingConnectionsFor(id), m_connectionsDeleted, nodesToDelete);
         }
 
-        if (!canRemoveAllConnections(wfm, m_connectionsDeleted)) {
+        if (!CoreUtil.canRemoveConnections(m_connectionsDeleted, wfm)) {
             throw new OperationNotAllowedException("Some connections can't be deleted. Delete operation aborted.");
         }
 
@@ -238,16 +238,6 @@ final class Delete extends AbstractWorkflowCommand {
     private static boolean canRemoveAllNodes(final WorkflowManager wfm, final Set<NodeID> nodeIDs) {
         for (NodeID id : nodeIDs) {
             if (!wfm.canRemoveNode(id)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean canRemoveAllConnections(final WorkflowManager wfm,
-        final Set<ConnectionContainer> connections) {
-        for (ConnectionContainer cc : connections) {
-            if (!wfm.canRemoveConnection(cc)) {
                 return false;
             }
         }

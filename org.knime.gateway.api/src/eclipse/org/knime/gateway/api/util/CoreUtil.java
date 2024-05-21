@@ -55,6 +55,7 @@ import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -676,6 +677,27 @@ public final class CoreUtil {
             .flatMap(pastedNode -> wfm.getOutgoingConnectionsFor(pastedNode.getID()).stream()) //
             .filter(connectionStartingInSet -> nodeIds.contains(connectionStartingInSet.getDest()))
             .collect(Collectors.toSet());
+    }
+
+    /**
+     * @param connections
+     * @param wfm
+     * @return whether all the passed connections can be added
+     */
+    public static boolean canAddConnections(final Collection<ConnectionContainer> connections,
+        final WorkflowManager wfm) {
+        return connections.stream()
+            .allMatch(cc -> wfm.canAddConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort()));
+    }
+
+    /**
+     * @param wfm
+     * @param connections
+     * @return whether all of the passed connections can be removed
+     */
+    public static boolean canRemoveConnections(final Collection<ConnectionContainer> connections,
+        final WorkflowManager wfm) {
+        return connections.stream().allMatch(wfm::canRemoveConnection);
     }
 
     /**

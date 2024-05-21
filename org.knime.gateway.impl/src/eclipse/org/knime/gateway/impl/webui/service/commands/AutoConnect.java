@@ -45,15 +45,11 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.knime.core.node.NodeLogger;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.service.commands.util.AutoConnectUtil;
+import org.knime.gateway.impl.webui.service.commands.util.AutoDisConnectUtil;
 
 /**
  * Connect selected workflow elements according to an automatically determined plan.
@@ -67,7 +63,7 @@ public final class AutoConnect extends AbstractWorkflowCommand {
 
     private final AutoConnectCommandEnt m_commandEnt;
 
-    private AutoConnectUtil.AutoConnectChanges m_autoConnectChanges;
+    private AutoDisConnectUtil.AutoConnectChanges m_autoConnectChanges;
 
     AutoConnect(final AutoConnectCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
@@ -75,9 +71,9 @@ public final class AutoConnect extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
-        var changes = AutoConnectUtil.autoConnect( //
+        var changes = AutoDisConnectUtil.autoConnect( //
             getWorkflowManager(), //
-            new AutoConnectUtil.Connectables(m_commandEnt, getWorkflowManager()) //
+            m_commandEnt //
         );
         LOGGER.info("%s connections were added and %s connections were removed"
             .formatted(changes.addedConnections().size(), changes.removedConnections().size()));
@@ -90,8 +86,8 @@ public final class AutoConnect extends AbstractWorkflowCommand {
         if (m_autoConnectChanges == null) {
             return false;
         }
-        return AutoConnectUtil.canAddConnections(m_autoConnectChanges.removedConnections(), getWorkflowManager())
-            && AutoConnectUtil.canRemoveConnections(m_autoConnectChanges.addedConnections(), getWorkflowManager());
+        return CoreUtil.canAddConnections(m_autoConnectChanges.removedConnections(), getWorkflowManager())
+            && CoreUtil.canRemoveConnections(m_autoConnectChanges.addedConnections(), getWorkflowManager());
     }
 
     @Override
@@ -99,8 +95,8 @@ public final class AutoConnect extends AbstractWorkflowCommand {
         if (m_autoConnectChanges == null) {
             return false;
         }
-        return AutoConnectUtil.canAddConnections(m_autoConnectChanges.addedConnections(), getWorkflowManager())
-            && AutoConnectUtil.canRemoveConnections(m_autoConnectChanges.removedConnections(), getWorkflowManager());
+        return CoreUtil.canAddConnections(m_autoConnectChanges.addedConnections(), getWorkflowManager())
+            && CoreUtil.canRemoveConnections(m_autoConnectChanges.removedConnections(), getWorkflowManager());
     }
 
     @Override

@@ -46,11 +46,12 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -67,11 +68,11 @@ import org.knime.gateway.api.webui.entity.ConnectableSelectionEnt;
  * @author Benjamin Moser, KNIME GmbH
  * @author Kai Franze, KNIME GmbH
  */
-public final class AutoConnectUtil {
+public final class AutoDisConnectUtil {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoConnectUtil.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoDisConnectUtil.class);
 
-    private AutoConnectUtil() {
+    private AutoDisConnectUtil() {
         // utility
     }
 
@@ -79,11 +80,12 @@ public final class AutoConnectUtil {
      * Connect the provided connectables.
      *
      * @param wfm the workflow containing the connectables
-     * @param connectables
+     * @param connectableSelection
      * @return the auto-connect result
      */
-    public static AutoConnectChanges autoConnect(final WorkflowManager wfm, final Connectables connectables) {
-        var plannedConnections = plan(connectables.sorted());
+    public static AutoConnectChanges autoConnect(final WorkflowManager wfm,
+        final ConnectableSelectionEnt connectableSelection) {
+        var plannedConnections = plan(new Connectables(connectableSelection, wfm).sorted());
         return execute(wfm, plannedConnections);
     }
 
@@ -148,7 +150,7 @@ public final class AutoConnectUtil {
         final List<PlannedConnection> plannedConnections) {
         final List<ConnectionContainer> removedConnections = new ArrayList<>();
         final List<ConnectionContainer> addedConnections = plannedConnections.stream()//
-            .map(plannedConnection -> AutoConnectUtil.createNewConnection(plannedConnection, wfm,
+            .map(plannedConnection -> AutoDisConnectUtil.createNewConnection(plannedConnection, wfm,
                 removedConnections::add))//
             .flatMap(Optional::stream)//
             .toList();
@@ -161,7 +163,7 @@ public final class AutoConnectUtil {
     }
 
     private static Optional<ConnectionContainer> createNewConnection(
-        final AutoConnectUtil.PlannedConnection plannedConnection, final WorkflowManager wfm,
+        final AutoDisConnectUtil.PlannedConnection plannedConnection, final WorkflowManager wfm,
         final Consumer<ConnectionContainer> removedConnectionConsumer) {
         var sourcePort = plannedConnection.sourcePort();
         var destinationPort = plannedConnection.destinationPort();
@@ -222,16 +224,32 @@ public final class AutoConnectUtil {
 
     }
 
-
-    public static boolean canAddConnections(final Collection<ConnectionContainer> connections,
-            final WorkflowManager wfm) {
-        return connections.stream()
-                .allMatch(cc -> wfm.canAddConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort()));
-    }
-
-    public static boolean canRemoveConnections(final Collection<ConnectionContainer> connections,
-            final WorkflowManager wfm) {
-        return connections.stream().allMatch(wfm::canRemoveConnection);
+    /**
+     * Removes all connections between a set of 'connectables'.
+     *
+     * @param connectableSelection
+     * @param wfm
+     * @return the removed connections
+     */
+    public static Set<ConnectionContainer> autoDisconnect(final ConnectableSelectionEnt connectableSelection,
+        final WorkflowManager wfm) {
+        var connectables = new Connectables(connectableSelection, wfm);
+        var destinations =
+            connectables.destinations().stream().map(Connectable::getNodeId).collect(Collectors.toUnmodifiableSet());
+        var connectionsWithinSelection = connectables.sources().stream() //
+            .flatMap(source -> source.getSourcePorts().stream()) //
+            .flatMap(sourcePort -> sourcePort.getOutgoingConnections().stream()) //
+            .filter(outgoingConnection -> destinations.contains(outgoingConnection.getDest())); //
+        var removed = new HashSet<ConnectionContainer>();
+        connectionsWithinSelection.forEach(cc -> {
+            try {
+                wfm.removeConnection(cc);
+                removed.add(cc);
+            } catch (IllegalArgumentException e) {
+                LOGGER.info("Can not remove connection %s".formatted(cc), e);
+            }
+        });
+        return removed;
     }
 
     static record PlannedConnection(Connectable.SourcePort<? extends Connectable.Source> sourcePort,
@@ -257,7 +275,7 @@ public final class AutoConnectUtil {
     /**
      * An immutable list of {@link Connectable}s providing specific accessors.
      */
-    public static class Connectables {
+    static class Connectables {
 
         List<Connectable> m_connectables;
 

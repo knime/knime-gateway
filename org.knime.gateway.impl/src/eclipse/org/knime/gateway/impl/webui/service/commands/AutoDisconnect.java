@@ -45,17 +45,15 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.webui.service.commands.util.AutoConnectUtil;
-import org.knime.gateway.impl.webui.service.commands.util.Connectable;
+import org.knime.gateway.impl.webui.service.commands.util.AutoDisConnectUtil;
 import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 
 /**
@@ -74,26 +72,6 @@ public class AutoDisconnect extends AbstractWorkflowCommand {
         m_command = commandEnt;
     }
 
-    private static Set<ConnectionContainer> autoDisconnect(final AutoConnectUtil.Connectables connectables,
-        final WorkflowManager wfm) {
-        var destinations =
-            connectables.destinations().stream().map(Connectable::getNodeId).collect(Collectors.toUnmodifiableSet());
-        var connectionsWithinSelection = connectables.sources().stream() //
-            .flatMap(source -> source.getSourcePorts().stream()) //
-            .flatMap(sourcePort -> sourcePort.getOutgoingConnections().stream()) //
-            .filter(outgoingConnection -> destinations.contains(outgoingConnection.getDest())); //
-        var removed = new HashSet<ConnectionContainer>();
-        connectionsWithinSelection.forEach(cc -> {
-            try {
-                wfm.removeConnection(cc);
-                removed.add(cc);
-            } catch (IllegalArgumentException e) {
-                LOGGER.info("Can not remove connection %s".formatted(cc), e);
-            }
-        });
-        return removed;
-    }
-
     private static void connect(final ConnectionContainer connection, final WorkflowManager wfm) {
         var addedConnection = NodeConnector.connect( //
             wfm, //
@@ -108,8 +86,8 @@ public class AutoDisconnect extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
-        m_removed = autoDisconnect( //
-            new AutoConnectUtil.Connectables(m_command, getWorkflowManager()), //
+        m_removed = AutoDisConnectUtil.autoDisconnect( //
+            m_command, //
             getWorkflowManager() //
         );
         return !m_removed.isEmpty();
@@ -125,7 +103,7 @@ public class AutoDisconnect extends AbstractWorkflowCommand {
         if (m_removed == null) {
             return false;
         }
-        return AutoConnectUtil.canAddConnections(m_removed, getWorkflowManager());
+        return CoreUtil.canAddConnections(m_removed, getWorkflowManager());
     }
 
     @Override
@@ -133,6 +111,6 @@ public class AutoDisconnect extends AbstractWorkflowCommand {
         if (m_removed == null) {
             return false;
         }
-        return AutoConnectUtil.canRemoveConnections(m_removed, getWorkflowManager());
+        return CoreUtil.canRemoveConnections(m_removed, getWorkflowManager());
     }
 }
