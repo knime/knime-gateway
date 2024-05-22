@@ -77,6 +77,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param portGroups
  * @param hasView
  * @param isReexecutable
+ * @param missingReason
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -97,7 +98,8 @@ public record DefaultNativeNodeEnt(
     LoopInfoEnt loopInfo,
     java.util.Map<String, PortGroupEnt> portGroups,
     Boolean hasView,
-    Boolean isReexecutable) implements NativeNodeEnt {
+    Boolean isReexecutable,
+    MissingReasonEnum missingReason) implements NativeNodeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -208,6 +210,11 @@ public record DefaultNativeNodeEnt(
         return isReexecutable;
     }
     
+    @Override
+    public MissingReasonEnum getMissingReason() {
+        return missingReason;
+    }
+    
     /**
      * A builder for {@link DefaultNativeNodeEnt}.
      */
@@ -244,6 +251,8 @@ public record DefaultNativeNodeEnt(
         private Boolean m_hasView;
 
         private Boolean m_isReexecutable;
+
+        private MissingReasonEnum m_missingReason;
 
         @Override
         public DefaultNativeNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id) {
@@ -360,6 +369,12 @@ public record DefaultNativeNodeEnt(
         }
 
         @Override
+        public DefaultNativeNodeEntBuilder setMissingReason(MissingReasonEnum missingReason) {
+             m_missingReason = missingReason;
+             return this;
+        }
+
+        @Override
         public DefaultNativeNodeEnt build() {
             return new DefaultNativeNodeEnt(
                 immutable(m_id),
@@ -377,7 +392,8 @@ public record DefaultNativeNodeEnt(
                 immutable(m_loopInfo),
                 immutable(m_portGroups),
                 immutable(m_hasView),
-                immutable(m_isReexecutable));
+                immutable(m_isReexecutable),
+                immutable(m_missingReason));
         }
     
     }
