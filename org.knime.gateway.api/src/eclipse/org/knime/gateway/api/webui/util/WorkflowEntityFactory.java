@@ -773,7 +773,19 @@ public final class WorkflowEntityFactory {
             .setHasView(hasView)//
             .setIsReexecutable(isReexecutable)//
             .setInputContentVersion(inputContentVersion) //
+            .setMissingReason(buildMissingReason(nnc)) //
             .build();
+    }
+
+    private NativeNodeEnt.MissingReasonEnum buildMissingReason(final NativeNodeContainer nnc) {
+        NodeFactory<? extends NodeModel> factory = nnc.getNode().getFactory();
+        if (!(factory instanceof MissingNodeFactory missingNodeFactory)) {
+            return null;
+        }
+        return switch (missingNodeFactory.getReason()) {
+            case MISSING -> NativeNodeEnt.MissingReasonEnum.MISSING;
+            case FORBIDDEN -> NativeNodeEnt.MissingReasonEnum.FORBIDDEN;
+        };
     }
 
     private NativeNodeInvariantsEnt buildNativeNodeInvariantsEnt(final NativeNodeContainer nc) {
