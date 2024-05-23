@@ -98,6 +98,14 @@ public interface SpaceProvider {
     Space getSpace(String spaceId);
 
     /**
+     * @return the newly created {@link Space}
+     * @throws IOException
+     */
+    default Space createSpace() throws IOException {
+        throw new UnsupportedOperationException("Creation of spaces is not supported in this provider");
+    }
+
+    /**
      * Returns the server address of the current space provider
      * @return the server address or an empty optional if this provider is not connected
      */

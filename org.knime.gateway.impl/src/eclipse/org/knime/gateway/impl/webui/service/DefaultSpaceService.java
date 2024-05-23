@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -167,6 +168,18 @@ public class DefaultSpaceService implements SpaceService {
         try {
             space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
         } catch (final ResourceAccessException e) {
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SpaceEnt createSpace(final String spaceProviderId) throws ServiceExceptions.IOException  {
+        try {
+            return m_spaceProviders.getProvidersMap().get(spaceProviderId).createSpace().toEntity();
+        } catch (IOException e) {
             throw new ServiceExceptions.IOException(e.getMessage(), e);
         }
     }

@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -59,6 +60,16 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface SpaceService extends GatewayService {
 
+    /**
+     * Create a new space within a given space provider.
+     *
+     * @param spaceProviderId Identifies a space-provider.
+     *
+     * @return the result
+     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
+     */
+    SpaceEnt createSpace(String spaceProviderId)  throws ServiceExceptions.IOException;
+        
     /**
      * Create a new workflow within a given workflow group.
      *
