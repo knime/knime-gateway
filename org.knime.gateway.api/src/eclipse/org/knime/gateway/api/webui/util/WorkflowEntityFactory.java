@@ -773,34 +773,34 @@ public final class WorkflowEntityFactory {
             .setHasView(hasView)//
             .setIsReexecutable(isReexecutable)//
             .setInputContentVersion(inputContentVersion) //
-            .setMissingReason(buildMissingReason(nnc)) //
             .build();
     }
 
-    private NativeNodeEnt.MissingReasonEnum buildMissingReason(final NativeNodeContainer nnc) {
+    static NativeNodeInvariantsEnt buildNativeNodeInvariantsEnt(final NativeNodeContainer nnc) {
+        NativeNodeInvariantsEntBuilder builder = builder(NativeNodeInvariantsEntBuilder.class);
+        NodeFactory<? extends NodeModel> factory = nnc.getNode().getFactory();
+        if (nnc.getType() == NodeType.Missing) {
+            NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)factory).getNodeAndBundleInfo();
+            builder.setName(nodeInfo.getNodeName().orElse("Unknown Name (MISSING)")) //
+                .setType(getMissingNodeType(nnc));
+        } else {
+            builder.setName(nnc.getName()) //
+                .setType(TypeEnum.valueOf(nnc.getType().toString().toUpperCase(Locale.ROOT))) //
+                .setNodeFactory(buildNodeFactoryKeyEnt(NodeSpec.Factory.of(factory))) //
+                .setIcon(createIconDataURL(factory));
+        }
+        return builder.build();
+    }
+
+    private static TypeEnum getMissingNodeType(final NativeNodeContainer nnc) {
         NodeFactory<? extends NodeModel> factory = nnc.getNode().getFactory();
         if (!(factory instanceof MissingNodeFactory missingNodeFactory)) {
             return null;
         }
         return switch (missingNodeFactory.getReason()) {
-            case MISSING -> NativeNodeEnt.MissingReasonEnum.MISSING;
-            case FORBIDDEN -> NativeNodeEnt.MissingReasonEnum.FORBIDDEN;
+            case MISSING -> TypeEnum.MISSING;
+            case FORBIDDEN -> TypeEnum.FORBIDDEN;
         };
-    }
-
-    private NativeNodeInvariantsEnt buildNativeNodeInvariantsEnt(final NativeNodeContainer nc) {
-        NativeNodeInvariantsEntBuilder builder = builder(NativeNodeInvariantsEntBuilder.class)
-            .setType(TypeEnum.valueOf(nc.getType().toString().toUpperCase(Locale.ROOT)));
-        if (nc.getType() != NodeType.Missing) {
-            var factory = nc.getNode().getFactory();
-            builder.setName(nc.getName()).setIcon(createIconDataURL(factory))
-                .setNodeFactory(buildNodeFactoryKeyEnt(NodeSpec.Factory.of(factory)));
-        } else {
-            NodeFactory<? extends NodeModel> factory = nc.getNode().getFactory();
-            NodeAndBundleInformation nodeInfo = ((MissingNodeFactory)factory).getNodeAndBundleInfo();
-            builder.setName(nodeInfo.getNodeName().orElse("Unknown Name (MISSING)"));
-        }
-        return builder.build();
     }
 
     private NodeAnnotationEnt buildNodeAnnotationEnt(final NodeAnnotation na) {
@@ -883,7 +883,7 @@ public final class WorkflowEntityFactory {
         }
     }
 
-    NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeSpec.Factory factorySpec) {
+    static NodeFactoryKeyEnt buildNodeFactoryKeyEnt(final NodeSpec.Factory factorySpec) {
         NodeFactoryKeyEntBuilder nodeFactoryKeyBuilder = builder(NodeFactoryKeyEntBuilder.class);
         if (factorySpec != null) {
             nodeFactoryKeyBuilder.setClassName(factorySpec.className());
