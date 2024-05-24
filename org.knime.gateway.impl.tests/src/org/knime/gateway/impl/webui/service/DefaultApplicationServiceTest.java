@@ -56,8 +56,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,15 +68,12 @@ import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
-import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
-import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 
 /**
@@ -233,37 +228,6 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         return spaceProviders;
     }
 
-    @Override
-    protected ExampleProjects createExampleProjects() {
-        return new ExampleProjects() {
-
-            @Override
-            public LocalWorkspace getLocalWorkspace() {
-                try {
-                    return mockLocalWorkspace();
-                } catch (IOException ex) {
-                    throw new IllegalStateException(ex);
-                }
-            }
-
-            @Override
-            public List<String> getRelativeExampleProjectPaths() {
-                return List.of("wfDir1", "wfDir2");
-            }
-        };
-    }
-
-    private static LocalWorkspace mockLocalWorkspace() throws IOException {
-        var root = Files.createTempDirectory("application_service_test");
-        var wfDir1 = root.resolve("wfDir1");
-        Files.createDirectory(wfDir1);
-        Files.writeString(wfDir1.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE), "svg file content");
-        var wfDir2 = root.resolve("wfDir2");
-        Files.createDirectory(wfDir2);
-        Files.writeString(wfDir2.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE), "svg file content 2");
-        return new LocalWorkspace(root);
-    }
-
     private static AppStateEnt stripAppState(final AppStateEnt appStateEnt) {
         var availablePortTypes = appStateEnt.getAvailablePortTypes().entrySet().stream().filter(e -> {
             var k = e.getKey();
@@ -281,7 +245,6 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
 
         return builder(AppStateEnt.AppStateEntBuilder.class) //
             .setOpenProjects(appStateEnt.getOpenProjects()) //
-            .setExampleProjects(appStateEnt.getExampleProjects()) //
             .setAvailablePortTypes(availablePortTypes) //
             .setAvailableComponentTypes(appStateEnt.getAvailableComponentTypes())
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
