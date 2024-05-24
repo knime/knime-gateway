@@ -84,7 +84,6 @@ import org.knime.gateway.json.webui.entity.DynamicPortGroupDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.EventEntMixIn;
 import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
-import org.knime.gateway.json.webui.entity.ExampleProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.ExpandCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ExpandResultEntMixIn;
 import org.knime.gateway.json.webui.entity.ExtensionEntMixIn;
@@ -247,7 +246,6 @@ public class ListEntities {
         res.add(EditableProjectMetadataEntMixIn.class);
         res.add(EventEntMixIn.class);
         res.add(EventTypeEntMixIn.class);
-        res.add(ExampleProjectEntMixIn.class);
         res.add(ExpandCommandEntMixIn.class);
         res.add(ExpandResultEntMixIn.class);
         res.add(ExtensionEntMixIn.class);
@@ -396,7 +394,6 @@ public class ListEntities {
         res.add(EditableProjectMetadataEntMixIn.EditableProjectMetadataEntMixInBuilder.class);
         res.add(EventEntMixIn.EventEntMixInBuilder.class);
         res.add(EventTypeEntMixIn.EventTypeEntMixInBuilder.class);
-        res.add(ExampleProjectEntMixIn.ExampleProjectEntMixInBuilder.class);
         res.add(ExpandCommandEntMixIn.ExpandCommandEntMixInBuilder.class);
         res.add(ExpandResultEntMixIn.ExpandResultEntMixInBuilder.class);
         res.add(ExtensionEntMixIn.ExtensionEntMixInBuilder.class);

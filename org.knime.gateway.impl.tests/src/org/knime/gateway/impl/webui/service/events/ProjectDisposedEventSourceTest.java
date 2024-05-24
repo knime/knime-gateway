@@ -104,8 +104,7 @@ public class ProjectDisposedEventSourceTest {
         var preferenceProvider = mock(PreferencesProvider.class);
         var nodeCollections = mock(NodeCollections.class);
         ServiceDependencies.setDefaultServiceDependencies(projectManager, new WorkflowMiddleware(projectManager, null),
-            null, eventConsumer, spaceProviders, null, preferenceProvider, null, null, null, nodeCollections, null,
-            null);
+            null, eventConsumer, spaceProviders, null, preferenceProvider, null, null, nodeCollections, null, null);
 
         // register event listener
         DefaultEventService.getInstance()

@@ -46,25 +46,6 @@
       "name" : "Shape"
     }
   },
-  "exampleProjects" : [ {
-    "name" : "wfDir1",
-    "origin" : {
-      "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
-      "projectType" : "Workflow",
-      "providerId" : "local",
-      "spaceId" : "local"
-    },
-    "svg" : "c3ZnIGZpbGUgY29udGVudA=="
-  }, {
-    "name" : "wfDir2",
-    "origin" : {
-      "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
-      "projectType" : "Workflow",
-      "providerId" : "local",
-      "spaceId" : "local"
-    },
-    "svg" : "c3ZnIGZpbGUgY29udGVudCAy"
-  } ],
   "featureFlags" : {
     "org.knime.ui.feature.ai_assistant" : true,
     "org.knime.ui.feature.ai_assistant_installed" : false,

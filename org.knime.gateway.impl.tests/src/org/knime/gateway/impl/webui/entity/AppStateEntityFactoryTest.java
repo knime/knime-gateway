@@ -81,7 +81,6 @@ public class AppStateEntityFactoryTest {
             .setAvailableComponentTypes(emptyList()) //
             .setAvailablePortTypes(emptyMap()) //
             .setDevMode(Boolean.FALSE) //
-            .setExampleProjects(emptyList()) //
             .setFeatureFlags(emptyMap()) //
             .setFileExtensionToNodeTemplateId(emptyMap()) //
             .setHasNodeCollectionActive(Boolean.FALSE) //
@@ -96,7 +95,6 @@ public class AppStateEntityFactoryTest {
             .setAvailableComponentTypes(oneNullElementList()) //
             .setAvailablePortTypes(oneNullElementMap()) //
             .setDevMode(Boolean.TRUE) //
-            .setExampleProjects(oneNullElementList()) //
             .setFeatureFlags(oneNullElementMap()) //
             .setFileExtensionToNodeTemplateId(oneNullElementMap()) //
             .setHasNodeCollectionActive(Boolean.TRUE) //

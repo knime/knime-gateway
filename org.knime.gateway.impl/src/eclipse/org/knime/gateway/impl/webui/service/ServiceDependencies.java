@@ -56,7 +56,6 @@ import java.util.Map;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.NodeRepository;
@@ -159,7 +158,6 @@ public final class ServiceDependencies {
         final SpaceProviders spaceProviders, //
         final UpdateStateProvider updateStateProvider, //
         final PreferencesProvider preferencesProvider, //
-        final ExampleProjects exampleProjects, //
         final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
         final NodeCollections nodeCollections, //
@@ -173,7 +171,6 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
             ServiceDependencies.setServiceDependency(UpdateStateProvider.class, updateStateProvider);
             ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
-            ServiceDependencies.setServiceDependency(ExampleProjects.class, exampleProjects);
             ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
             ServiceDependencies.setServiceDependency(KaiHandler.class, kaiHandler);
             ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);

@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
@@ -72,12 +71,6 @@ public interface AppStateEnt extends GatewayEntity {
    * @return openProjects 
    **/
   public java.util.List<ProjectEnt> getOpenProjects();
-
-  /**
-   * List of example projects, e.g., to be shown on and opened from the &#39;get started&#39; page.
-   * @return exampleProjects 
-   **/
-  public java.util.List<ExampleProjectEnt> getExampleProjects();
 
   /**
    * All port types available in this installation. Map from port type ID to port type entity.
@@ -175,7 +168,6 @@ public interface AppStateEnt extends GatewayEntity {
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (AppStateEnt)other;
       valueConsumer.accept("openProjects", Pair.create(getOpenProjects(), e.getOpenProjects()));
-      valueConsumer.accept("exampleProjects", Pair.create(getExampleProjects(), e.getExampleProjects()));
       valueConsumer.accept("availablePortTypes", Pair.create(getAvailablePortTypes(), e.getAvailablePortTypes()));
       valueConsumer.accept("suggestedPortTypeIds", Pair.create(getSuggestedPortTypeIds(), e.getSuggestedPortTypeIds()));
       valueConsumer.accept("availableComponentTypes", Pair.create(getAvailableComponentTypes(), e.getAvailableComponentTypes()));
@@ -205,14 +197,6 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setOpenProjects(java.util.List<ProjectEnt> openProjects);
-        
-        /**
-         * List of example projects, e.g., to be shown on and opened from the &#39;get started&#39; page.
-         * 
-         * @param exampleProjects the property value,  
-         * @return this entity builder for chaining
-         */
-        AppStateEntBuilder setExampleProjects(java.util.List<ExampleProjectEnt> exampleProjects);
         
         /**
          * All port types available in this installation. Map from port type ID to port type entity.

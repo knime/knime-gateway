@@ -46,7 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
@@ -57,7 +56,6 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * Represents the global application state.
  *
  * @param openProjects
- * @param exampleProjects
  * @param availablePortTypes
  * @param suggestedPortTypeIds
  * @param availableComponentTypes
@@ -79,7 +77,6 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAppStateEnt(
     java.util.List<ProjectEnt> openProjects,
-    java.util.List<ExampleProjectEnt> exampleProjects,
     java.util.Map<String, PortTypeEnt> availablePortTypes,
     java.util.List<String> suggestedPortTypeIds,
     java.util.List<String> availableComponentTypes,
@@ -110,11 +107,6 @@ public record DefaultAppStateEnt(
     @Override
     public java.util.List<ProjectEnt> getOpenProjects() {
         return openProjects;
-    }
-    
-    @Override
-    public java.util.List<ExampleProjectEnt> getExampleProjects() {
-        return exampleProjects;
     }
     
     @Override
@@ -199,8 +191,6 @@ public record DefaultAppStateEnt(
 
         private java.util.List<ProjectEnt> m_openProjects;
 
-        private java.util.List<ExampleProjectEnt> m_exampleProjects;
-
         private java.util.Map<String, PortTypeEnt> m_availablePortTypes;
 
         private java.util.List<String> m_suggestedPortTypeIds;
@@ -234,12 +224,6 @@ public record DefaultAppStateEnt(
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<ProjectEnt> openProjects) {
              m_openProjects = openProjects;
-             return this;
-        }
-
-        @Override
-        public DefaultAppStateEntBuilder setExampleProjects(java.util.List<ExampleProjectEnt> exampleProjects) {
-             m_exampleProjects = exampleProjects;
              return this;
         }
 
@@ -337,7 +321,6 @@ public record DefaultAppStateEnt(
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
                 immutable(m_openProjects),
-                immutable(m_exampleProjects),
                 immutable(m_availablePortTypes),
                 immutable(m_suggestedPortTypeIds),
                 immutable(m_availableComponentTypes),

@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
@@ -76,10 +75,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @Override
     @JsonProperty("openProjects")
     public java.util.List<ProjectEnt> getOpenProjects();
-    
-    @Override
-    @JsonProperty("exampleProjects")
-    public java.util.List<ExampleProjectEnt> getExampleProjects();
     
     @Override
     @JsonProperty("availablePortTypes")
@@ -157,10 +152,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("openProjects")
         public AppStateEntMixInBuilder setOpenProjects(final java.util.List<ProjectEnt> openProjects);
-        
-        @Override
-        @JsonProperty("exampleProjects")
-        public AppStateEntMixInBuilder setExampleProjects(final java.util.List<ExampleProjectEnt> exampleProjects);
         
         @Override
         @JsonProperty("availablePortTypes")

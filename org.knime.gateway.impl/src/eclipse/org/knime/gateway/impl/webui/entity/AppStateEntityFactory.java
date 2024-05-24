@@ -50,11 +50,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -70,30 +66,23 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ComponentMetadata;
-import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt;
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt.ExampleProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.webui.ExampleProjects;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.modes.Permissions;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -134,7 +123,6 @@ public final class AppStateEntityFactory {
     public record ServiceDependencies( //
         ProjectManager projectManager, //
         PreferencesProvider preferencesProvider, //
-        ExampleProjects exampleProjects, //
         SpaceProviders spaceProviders, //
         NodeFactoryProvider nodeFactoryProvider, //
         NodeCollections nodeCollections //
@@ -157,11 +145,6 @@ public final class AppStateEntityFactory {
     public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
         final Predicate<String> workflowProjectFilter, final Predicate<String> isActiveProject,
         final ServiceDependencies dependencies) {
-        var exampleProjects =
-            dependencies.exampleProjects() == null ? null : buildExampleProjects(dependencies.exampleProjects());
-        if (exampleProjects == null && previousAppState != null) {
-            exampleProjects = previousAppState.getExampleProjects();
-        }
         var projects = getProjectEnts( //
             dependencies.projectManager(), //
             dependencies.spaceProviders(), //
@@ -172,7 +155,6 @@ public final class AppStateEntityFactory {
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         return builder(AppStateEntBuilder.class) //
             .setOpenProjects(projects) //
-            .setExampleProjects(exampleProjects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
             .setAvailableComponentTypes(AVAILABLE_COMPONENT_TYPES) //
@@ -271,46 +253,6 @@ public final class AppStateEntityFactory {
         return SUGGESTED_PORT_TYPE_IDS.stream() //
             .filter(id -> portTypeRegistry.getObjectClass(id).isPresent()) //
             .toList();
-    }
-
-    private static List<ExampleProjectEnt> buildExampleProjects(final ExampleProjects exampleProjects) {
-        var localWorkspace = exampleProjects.getLocalWorkspace();
-        return exampleProjects.getRelativeExampleProjectPaths().stream() //
-            .map(s -> localWorkspace.getLocalRootPath().resolve(Path.of(s))) //
-            .filter(Files::exists) //
-            .map(f -> buildExampleProject(f, localWorkspace)) //
-            .filter(Objects::nonNull) //
-            .toList();
-    }
-
-    private static ExampleProjectEnt buildExampleProject(final Path workflowDir, final LocalWorkspace localWorkspace) {
-        var svgFile = workflowDir.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE);
-        byte[] svg;
-        try {
-            svg = Files.readAllBytes(svgFile);
-        } catch (IOException ex) {
-            NodeLogger.getLogger(AppStateEntityFactory.class)
-                .error("Svg for workflow '" + workflowDir + "' could not be read", ex);
-            return null;
-        }
-        var name = workflowDir.getFileName().toString();
-        var svgEncoded = Base64.getEncoder().encodeToString(svg);
-        var itemId = localWorkspace.getItemId(workflowDir);
-        return buildExampleProject(name, svgEncoded, itemId);
-    }
-
-    private static ExampleProjectEnt buildExampleProject(final String name, final String svg, final String itemId) {
-        var origin = builder(SpaceItemReferenceEntBuilder.class) //
-            .setItemId(itemId) //
-            .setSpaceId(LocalWorkspace.LOCAL_WORKSPACE_ID) //
-            .setProjectType(ProjectTypeEnum.WORKFLOW) //
-            .setProviderId(SpaceProvider.LOCAL_SPACE_PROVIDER_ID) //
-            .build();
-        return builder(ExampleProjectEntBuilder.class) //
-            .setName(name) //
-            .setSvg(svg) //
-            .setOrigin(origin) //
-            .build();
     }
 
     private static ProjectEnt buildWorkflowProjectEnt(final Project p, final Predicate<String> isActiveProject,

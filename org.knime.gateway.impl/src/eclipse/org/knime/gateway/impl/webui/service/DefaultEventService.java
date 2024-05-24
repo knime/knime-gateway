@@ -145,7 +145,7 @@ public final class DefaultEventService implements EventService {
             if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
                     var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager,
-                        m_preferencesProvider, null, m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections);
+                        m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections);
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
             } else {

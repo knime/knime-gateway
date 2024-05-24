@@ -124,8 +124,6 @@ import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
-import org.knime.gateway.api.webui.entity.ExampleProjectEnt.ExampleProjectEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultExampleProjectEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt.ExpandCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt.ExpandResultEntBuilder;
@@ -465,9 +463,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == EventTypeEntBuilder.class) {
             return (B)new DefaultEventTypeEnt.DefaultEventTypeEntBuilder();
-        }        
-        if(clazz == ExampleProjectEntBuilder.class) {
-            return (B)new DefaultExampleProjectEnt.DefaultExampleProjectEntBuilder();
         }        
         if(clazz == ExpandCommandEntBuilder.class) {
             return (B)new DefaultExpandCommandEnt.DefaultExpandCommandEntBuilder();
