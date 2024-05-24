@@ -71,27 +71,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
 
-  /**
-   * Only present for missing nodes.
-   */
-  public enum MissingReasonEnum {
-    FORBIDDEN("FORBIDDEN"),
-    
-    MISSING("MISSING");
-
-    private String value;
-
-    MissingReasonEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
 
   /**
    * The id of the node template this node is an instance of.
@@ -129,12 +108,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
    **/
   public Boolean isReexecutable();
 
-  /**
-   * Only present for missing nodes.
-   * @return missingReason 
-   **/
-  public MissingReasonEnum getMissingReason();
-
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -156,7 +129,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("portGroups", Pair.create(getPortGroups(), e.getPortGroups()));
       valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
       valueConsumer.accept("isReexecutable", Pair.create(isReexecutable(), e.isReexecutable()));
-      valueConsumer.accept("missingReason", Pair.create(getMissingReason(), e.getMissingReason()));
   }
 
     /**
@@ -291,14 +263,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setIsReexecutable(Boolean isReexecutable);
-        
-        /**
-         * Only present for missing nodes.
-         * 
-         * @param missingReason the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setMissingReason(MissingReasonEnum missingReason);
         
         
         /**

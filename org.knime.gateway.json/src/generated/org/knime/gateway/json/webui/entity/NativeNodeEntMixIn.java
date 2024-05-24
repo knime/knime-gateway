@@ -142,10 +142,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     @JsonProperty("isReexecutable")
     public Boolean isReexecutable();
     
-    @Override
-    @JsonProperty("missingReason")
-    public MissingReasonEnum getMissingReason();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -222,10 +218,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("isReexecutable")
         public NativeNodeEntMixInBuilder setIsReexecutable(final Boolean isReexecutable);
-        
-        @Override
-        @JsonProperty("missingReason")
-        public NativeNodeEntMixInBuilder setMissingReason(final MissingReasonEnum missingReason);
         
     }
 

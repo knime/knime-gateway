@@ -98,6 +98,8 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
     
     MISSING("Missing"),
     
+    FORBIDDEN("Forbidden"),
+    
     UNKNOWN("Unknown"),
     
     SUBNODE("Subnode"),
