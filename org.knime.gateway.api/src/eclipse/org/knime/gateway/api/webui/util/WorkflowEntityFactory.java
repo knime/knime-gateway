@@ -798,8 +798,8 @@ public final class WorkflowEntityFactory {
             return null;
         }
         return switch (missingNodeFactory.getReason()) {
-            case MISSING -> TypeEnum.MISSING;
-            case FORBIDDEN -> TypeEnum.FORBIDDEN;
+            case GOVERNANCE_FORBIDDEN -> TypeEnum.FORBIDDEN;
+            case MISSING_EXTENSION -> TypeEnum.MISSING;
         };
     }
 

@@ -81,7 +81,7 @@ public class WorkflowEntityFactoryTest {
     public void missingNodeTypeDefaultReason() {
         var info = new NodeAndBundleInformationPersistor(MissingNodeFactory.class.getName());
         var factory = new MissingNodeFactory(info, null, new PortType[]{}, new PortType[]{});
-        assertThat(factory.getReason()).isEqualTo(Reason.MISSING);
+        assertThat(factory.getReason()).isEqualTo(Reason.MISSING_EXTENSION);
         var missingNnc = WorkflowManagerUtil.createAndAddNode(m_wfm, factory);
         var resultingEntity = WorkflowEntityFactory.buildNativeNodeInvariantsEnt(missingNnc);
         assertThat(resultingEntity.getType()).isEqualTo(NativeNodeInvariantsEnt.TypeEnum.MISSING);
@@ -91,8 +91,8 @@ public class WorkflowEntityFactoryTest {
     public void missingNodeTypeForbidden() {
         var info = new NodeAndBundleInformationPersistor(MissingNodeFactory.class.getName());
         var factory =
-            new MissingNodeFactory(info, null, new PortType[]{}, new PortType[]{}, MissingNodeFactory.Reason.FORBIDDEN);
-        assertThat(factory.getReason()).isEqualTo(Reason.FORBIDDEN);
+            new MissingNodeFactory(info, null, new PortType[]{}, new PortType[]{}, MissingNodeFactory.Reason.GOVERNANCE_FORBIDDEN);
+        assertThat(factory.getReason()).isEqualTo(Reason.GOVERNANCE_FORBIDDEN);
         var missingNnc = WorkflowManagerUtil.createAndAddNode(m_wfm, factory);
         var resultingEntity = WorkflowEntityFactory.buildNativeNodeInvariantsEnt(missingNnc);
         assertThat(resultingEntity.getType()).isEqualTo(TypeEnum.FORBIDDEN);
