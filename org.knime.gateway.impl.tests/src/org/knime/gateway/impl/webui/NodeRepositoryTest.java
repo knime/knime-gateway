@@ -247,15 +247,16 @@ public class NodeRepositoryTest {
         properties.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE); // Use the highest possible ranking
 
         String customizationYaml = """
-                  nodesFilter:
-                  - scope: use
-                    rule: allow
-                    predicate:
-                      type: pattern
-                      patterns:
-                        - org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory
-                        - org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory
-                      isRegex: false
+                  nodes:
+                      filter:
+                      - scope: use
+                        rule: allow
+                        predicate:
+                          type: pattern
+                          patterns:
+                            - org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory
+                            - org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory
+                          isRegex: false
                 """;
 
         final APCustomization tempCustomization =
