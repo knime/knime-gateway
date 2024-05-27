@@ -176,9 +176,12 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public SpaceEnt createSpace(final String spaceProviderId) throws ServiceExceptions.IOException  {
+    public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName)
+        throws ServiceExceptions.IOException {
         try {
-            return m_spaceProviders.getProvidersMap().get(spaceProviderId).createSpace().toEntity();
+            return m_spaceProviders.getProvidersMap().get(spaceProviderId) //
+                .getSpaceGroup(spaceGroupName).createSpace() //
+                .toEntity();
         } catch (IOException e) {
             throw new ServiceExceptions.IOException(e.getMessage(), e);
         }

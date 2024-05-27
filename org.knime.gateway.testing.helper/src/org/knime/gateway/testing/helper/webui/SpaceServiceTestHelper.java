@@ -332,6 +332,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             public Version getServerVersion() {
                 return new Version(1, 2, 3);
             }
+
+            @Override
+            public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
+                return getLocalSpaceGroupForTesting(spaces);
+            }
         };
     }
 
@@ -475,15 +480,23 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             public Version getServerVersion() {
                 return new Version(1, 2, 3);
             }
+
+            @Override
+            public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
+                return getLocalSpaceGroupForTesting(localWorkspace);
+            }
         };
     }
 
     private static SpaceGroup<Space> getLocalSpaceGroupForTesting(final Space... spaces) {
         return new SpaceGroup<Space>() {
-
             static final String ID = "Local-Testing-space-id";
-
             static final String NAME = "Local Testing Group";
+
+            @Override
+            public String getName() {
+                return NAME;
+            }
 
             @Override
             public SpaceGroupEnt toEntity() {

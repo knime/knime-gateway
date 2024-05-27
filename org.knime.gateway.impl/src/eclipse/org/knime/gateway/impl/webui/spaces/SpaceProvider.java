@@ -98,12 +98,11 @@ public interface SpaceProvider {
     Space getSpace(String spaceId);
 
     /**
-     * @return the newly created {@link Space}
-     * @throws IOException
+     * @param spaceGroupName
+     * @return spaceGroup with the given name
+     * @throws NoSuchElementException if no group with the given name exists
      */
-    default Space createSpace() throws IOException {
-        throw new UnsupportedOperationException("Creation of spaces is not supported in this provider");
-    }
+    SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName);
 
     /**
      * Returns the server address of the current space provider

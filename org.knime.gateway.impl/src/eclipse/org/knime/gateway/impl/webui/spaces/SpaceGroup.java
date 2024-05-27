@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -80,6 +81,11 @@ public interface SpaceGroup<S extends Space> {
     }
 
     /**
+     * @return name of this group
+     */
+    String getName();
+
+    /**
      * @return group type
      */
     SpaceGroupType getType();
@@ -88,6 +94,14 @@ public interface SpaceGroup<S extends Space> {
      * @return the spaces contained within this group
      */
     List<S> getSpaces();
+
+    /**
+     * @return the newly created {@link Space}
+     * @throws IOException
+     */
+    default Space createSpace() throws IOException {
+        throw new UnsupportedOperationException("Creation of spaces is not supported in this provider");
+    }
 
     /**
      * Creates a {@link SpaceGroupEnt} for this space group.

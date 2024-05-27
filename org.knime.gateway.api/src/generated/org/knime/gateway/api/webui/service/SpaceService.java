@@ -64,11 +64,12 @@ public interface SpaceService extends GatewayService {
      * Create a new space within a given space provider.
      *
      * @param spaceProviderId Identifies a space-provider.
+     * @param spaceGroupName Identifier name of a space-group.
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
      */
-    SpaceEnt createSpace(String spaceProviderId)  throws ServiceExceptions.IOException;
+    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.IOException;
         
     /**
      * Create a new workflow within a given workflow group.
