@@ -73,10 +73,10 @@ public interface SpaceGroup<S extends Space> {
             TEAM;
 
         public SpaceGroupEnt.TypeEnum toEntity() {
-            if (this == USER) {
-                return SpaceGroupEnt.TypeEnum.USER;
-            }
-            return SpaceGroupEnt.TypeEnum.TEAM;
+            return switch (this) {
+                case USER -> SpaceGroupEnt.TypeEnum.USER;
+                case TEAM -> SpaceGroupEnt.TypeEnum.TEAM;
+            };
         }
     }
 
@@ -96,6 +96,8 @@ public interface SpaceGroup<S extends Space> {
     List<S> getSpaces();
 
     /**
+     * Creates a new private space inside this space group, it will use an automatically generated unique name
+     *
      * @return the newly created {@link Space}
      * @throws IOException
      */

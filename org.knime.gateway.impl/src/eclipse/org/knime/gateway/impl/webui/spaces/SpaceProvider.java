@@ -98,8 +98,8 @@ public interface SpaceProvider {
     Space getSpace(String spaceId);
 
     /**
-     * @param spaceGroupName
-     * @return spaceGroup with the given name
+     * @param spaceGroupName space group identifier name
+     * @return spaceGroup found space group that matches with the given name
      * @throws NoSuchElementException if no group with the given name exists
      */
     SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName);

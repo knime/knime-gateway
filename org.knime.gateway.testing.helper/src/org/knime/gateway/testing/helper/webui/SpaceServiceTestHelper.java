@@ -50,6 +50,7 @@ package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -490,7 +491,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static SpaceGroup<Space> getLocalSpaceGroupForTesting(final Space... spaces) {
         return new SpaceGroup<Space>() {
+
             static final String ID = "Local-Testing-space-id";
+
             static final String NAME = "Local Testing Group";
 
             @Override
@@ -501,7 +504,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public SpaceGroupEnt toEntity() {
                 return EntityFactory.Space.buildSpaceGroupEnt(ID, NAME, SpaceGroupEnt.TypeEnum.USER,
-                    Arrays.stream(spaces).map(Space::toEntity).collect(Collectors.toList()));
+                    Arrays.stream(spaces).map(Space::toEntity).toList());
             }
 
             @Override
@@ -512,6 +515,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public List<Space> getSpaces() {
                 return List.of(spaces);
+            }
+
+            @Override
+            public Space createSpace() throws IOException {
+                return null;
             }
 
         };
@@ -896,4 +904,20 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         }
     }
 
+    public void testCreateSpaceForLocalWorkspace() throws Exception {
+        var testWorkspacePath = getTestWorkspacePath("test_workspace_to_create_group");
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        assertThrows("This operation should not be supported", UnsupportedOperationException.class,
+            () -> ss().createSpace(providerId, "foo"));
+    }
+
+    public void testCreateSpace() throws Exception {
+        String providerId = "some_provider_id";
+
+        var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name");
+        var spaceProviders = Map.of(providerId, spaceProvider);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
+
+        assertNull("Should call an implementation of createSpace", ss().createSpace(providerId, "foo"));
+    }
 }
