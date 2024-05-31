@@ -819,13 +819,13 @@ public final class CoreUtil {
         var isDirty = wfm.isDirty();
         if (!isDirty) {
             if (wfm.isProject()) {
-                return isDirty;
+                return false;
             }
             var ncParent = wfm.getDirectNCParent();
             WorkflowManager parentWfm;
             if (ncParent instanceof SubNodeContainer snc) {
                 if (snc.isProject()) {
-                    return isDirty;
+                    return false;
                 } else {
                     parentWfm = snc.getParent();
                 }
@@ -834,18 +834,18 @@ public final class CoreUtil {
             }
             return isWorkflowDirtyOrHasDirtyParent(parentWfm);
         }
-        return isDirty;
+        return true;
     }
 
     /**
      * Helper to recursively iterate all nodes in a workflow.
      *
      * @param wfm the workflow to iterate
-     * @param nodeVisitor callback whenever a native node was found
+     * @param nodeVisitor callback whenever a node was found
      * @param doRecurse callback whenever a metanode or component was found; it returns {@code true} if the contained
      *            nodes are to be iterated, too, otherwise {@code false} to stop there
      */
-    public static void iterateNodes(final WorkflowManager wfm, final Consumer<NativeNodeContainer> nodeVisitor,
+    public static void iterateNodes(final WorkflowManager wfm, final Consumer<NodeContainer> nodeVisitor,
         final Predicate<WorkflowManager> doRecurse) {
         for (var nc : wfm.getNodeContainers()) {
             runOnNodeOrWfm(nc, nodeVisitor, subWfm -> {
@@ -858,17 +858,16 @@ public final class CoreUtil {
     }
 
     /**
-     * Helper to run logic on a native node or component/metanode-workflow respectively.
+     * Helper to run logic on a node or component/metanode-workflow respectively.
      *
      * @param nc the node to check
-     * @param nncConsumer logic to be run on a native node
+     * @param ncConsumer logic to be run on a node
      * @param wfmConsumer logic to be run on a metanode/component workflow
      */
-    public static void runOnNodeOrWfm(final NodeContainer nc, final Consumer<NativeNodeContainer> nncConsumer,
+    public static void runOnNodeOrWfm(final NodeContainer nc, final Consumer<NodeContainer> ncConsumer,
         final Consumer<WorkflowManager> wfmConsumer) {
-        if (nc instanceof NativeNodeContainer nnc && nncConsumer != null) {
-            nncConsumer.accept(nnc);
-            return;
+        if ((ncConsumer != null)) {
+            ncConsumer.accept(nc);
         }
         if (wfmConsumer != null) {
             if (nc instanceof WorkflowManager wfm) {

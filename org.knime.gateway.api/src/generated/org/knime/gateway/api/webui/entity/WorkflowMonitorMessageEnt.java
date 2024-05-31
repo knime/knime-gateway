@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 
 import java.util.function.BiConsumer;
 
@@ -55,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A message in the workflow monitor.
+ * A message in the workflow monitor. &#x60;templateId&#x60; is only present if the node is a native node. &#x60;componentInfo&#x60; is only present if the node is a component node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -64,10 +65,16 @@ public interface WorkflowMonitorMessageEnt extends GatewayEntity {
 
 
   /**
-   * The template id of the node the message is associated with.
-   * @return templateId , never <code>null</code>
+   * The template id of the native node the message is associated with. Only present if the node is a native node.
+   * @return templateId 
    **/
   public String getTemplateId();
+
+  /**
+   * Get componentInfo
+   * @return componentInfo 
+   **/
+  public ComponentNodeAndDescriptionEnt getComponentInfo();
 
   /**
    * The id of the worklfow the node is contained in.
@@ -99,6 +106,7 @@ public interface WorkflowMonitorMessageEnt extends GatewayEntity {
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (WorkflowMonitorMessageEnt)other;
       valueConsumer.accept("templateId", Pair.create(getTemplateId(), e.getTemplateId()));
+      valueConsumer.accept("componentInfo", Pair.create(getComponentInfo(), e.getComponentInfo()));
       valueConsumer.accept("workflowId", Pair.create(getWorkflowId(), e.getWorkflowId()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
@@ -111,12 +119,20 @@ public interface WorkflowMonitorMessageEnt extends GatewayEntity {
     public interface WorkflowMonitorMessageEntBuilder extends GatewayEntityBuilder<WorkflowMonitorMessageEnt> {
 
         /**
-         * The template id of the node the message is associated with.
+         * The template id of the native node the message is associated with. Only present if the node is a native node.
          * 
-         * @param templateId the property value, NOT <code>null</code>! 
+         * @param templateId the property value,  
          * @return this entity builder for chaining
          */
         WorkflowMonitorMessageEntBuilder setTemplateId(String templateId);
+        
+        /**
+   		 * Set componentInfo
+         * 
+         * @param componentInfo the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowMonitorMessageEntBuilder setComponentInfo(ComponentNodeAndDescriptionEnt componentInfo);
         
         /**
          * The id of the worklfow the node is contained in.

@@ -55,7 +55,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Properties common to ComponentNode and ComponentNodeDescription. Only purpose is to avoid &#39;code&#39; duplication. Never directly returned or used in another schema.
+ * Basic information about a component node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

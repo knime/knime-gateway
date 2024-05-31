@@ -517,16 +517,14 @@ public final class WorkflowEntityFactory {
             return null;
         }
         final var metadata = snc.getMetadata();
-        final var type =
-            metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
         final var description = metadata.getDescription().isEmpty() ? null
             : EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType());
         final var links = metadata.getLinks().isEmpty() ? null : toLinkEnts(metadata.getLinks());
         final var tags = metadata.getTags().isEmpty() ? null : metadata.getTags();
         return builder(ComponentNodeDescriptionEntBuilder.class)//
             .setName(snc.getName())//
-            .setIcon(createIconDataURL(metadata.getIcon().orElse(null)))//
-            .setType(type)//
+            .setIcon(buildComponentIconEnt(snc))//
+            .setType(buildComponentTypeEnt(snc))//
             .setDescription(description)//
             .setLinks(links)//
             .setTags(tags)//
@@ -535,6 +533,14 @@ public final class WorkflowEntityFactory {
             .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//
             .setOutPorts(buildComponentOutNodePortDescriptionEnts(metadata, snc))//
             .build();
+    }
+
+    static ComponentNodeAndDescriptionEnt.TypeEnum buildComponentTypeEnt(final SubNodeContainer snc) {
+        return snc.getMetadata().getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
+    }
+
+    static String buildComponentIconEnt(final SubNodeContainer snc) {
+        return createIconDataURL(snc.getMetadata().getIcon().orElse(null));
     }
 
     private ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,

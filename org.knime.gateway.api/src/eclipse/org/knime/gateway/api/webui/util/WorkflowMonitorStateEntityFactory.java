@@ -52,9 +52,11 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeMessage.Type;
@@ -64,6 +66,7 @@ import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFacto
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt.WorkflowMonitorMessageEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateEnt;
@@ -91,28 +94,43 @@ public final class WorkflowMonitorStateEntityFactory {
      * @return the new instance
      */
     public WorkflowMonitorStateEnt buildWorkflowMonitorStateEnt(final WorkflowManager wfm) {
-        var startTimeDescending = Comparator.<NativeNodeContainer> comparingLong(nnc -> nnc.getNodeTimer().getStartTime())
-            .thenComparing(NativeNodeContainer::getID).reversed();
+        var startTimeDescending = Comparator //
+            .<NodeContainer> comparingLong(nc -> nc.getNodeTimer().getStartTime()) //
+            .thenComparing(NodeContainer::getID) //
+            .reversed();
+
         var nodesWithMessages = new TreeSet<>(startTimeDescending);
 
-        CoreUtil.iterateNodes(wfm, nnc -> {
-            if (!IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
-                var messageType = nnc.getNodeMessage().getMessageType();
-                if (messageType != Type.RESET) {
-                    nodesWithMessages.add(nnc);
-                }
+        CoreUtil.iterateNodes(wfm, nc -> {
+            if (nc instanceof WorkflowManager) {
+                return;
             }
-        }, subWfm -> !subWfm.isEncrypted());
+            if ((nc instanceof NativeNodeContainer nnc)
+                && IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
+                return;
+            }
+            if ((nc instanceof SubNodeContainer snc) && snc.getWorkflowManager().isEncrypted()) {
+                return;
+            }
+            if ((nc instanceof SubNodeContainer snc) && !isLinkedComponent(snc)) {
+                return;
+            }
+
+            var messageType = nc.getNodeMessage().getMessageType();
+            if (messageType != Type.RESET) {
+                nodesWithMessages.add(nc);
+            }
+        }, subWfm -> !subWfm.isEncrypted() && !wfmIsLinkedComponentChild(subWfm));
 
         var errors = new ArrayList<WorkflowMonitorMessageEnt>();
         var warnings = new ArrayList<WorkflowMonitorMessageEnt>();
         var hasComponentProjectParent = wfm.getProjectComponent().isPresent();
-        nodesWithMessages.forEach(nnc -> {
-            var message = nnc.getNodeMessage();
+        nodesWithMessages.forEach(nc -> {
+            var message = nc.getNodeMessage();
             if (message.getMessageType() == Type.ERROR) {
-                errors.add(buildWorkflowMonitorMessageEnt(nnc, hasComponentProjectParent));
+                errors.add(buildWorkflowMonitorMessageEnt(nc, hasComponentProjectParent));
             } else {
-                warnings.add(buildWorkflowMonitorMessageEnt(nnc, hasComponentProjectParent));
+                warnings.add(buildWorkflowMonitorMessageEnt(nc, hasComponentProjectParent));
             }
         });
 
@@ -122,19 +140,43 @@ public final class WorkflowMonitorStateEntityFactory {
             .build();
     }
 
-    private static WorkflowMonitorMessageEnt buildWorkflowMonitorMessageEnt(final NativeNodeContainer nnc,
+    private boolean isLinkedComponent(final SubNodeContainer snc) {
+        return Optional.ofNullable(snc.getTemplateInformation())
+            .map(templateInfo -> templateInfo.getRole() == MetaNodeTemplateInformation.Role.Link).orElse(false);
+    }
+
+    private boolean wfmIsLinkedComponentChild(final WorkflowManager wfm) {
+        if (wfm.getDirectNCParent() instanceof SubNodeContainer snc) {
+            return isLinkedComponent(snc);
+        } else {
+            return false;
+        }
+    }
+
+    private static WorkflowMonitorMessageEnt buildWorkflowMonitorMessageEnt(final NodeContainer nc,
         final boolean hasComponentProjectParent) {
-        NodeContainer parent = nnc.getParent();
+        NodeContainer parent = nc.getParent();
         if (parent.getDirectNCParent() instanceof SubNodeContainer snc) {
             parent = snc;
         }
-        return builder(WorkflowMonitorMessageEntBuilder.class) //
-            .setNodeId(new NodeIDEnt(nnc.getID(), hasComponentProjectParent)) //
-            .setName(nnc.getName()) //
-            .setTemplateId(nnc.getNode().getFactory().getFactoryId()) //
-            .setMessage(nnc.getNodeMessage().getMessage()) //
-            .setWorkflowId(new NodeIDEnt(parent.getID(), hasComponentProjectParent)) //
-            .build();
+        var builder = builder(WorkflowMonitorMessageEntBuilder.class) //
+            .setNodeId(new NodeIDEnt(nc.getID(), hasComponentProjectParent)) //
+            .setName(nc.getName()) //
+            .setMessage(nc.getNodeMessage().getMessage()) //
+            .setWorkflowId(new NodeIDEnt(parent.getID(), hasComponentProjectParent));
+        if (nc instanceof NativeNodeContainer nnc) {
+            builder.setTemplateId(nnc.getNode().getFactory().getFactoryId());
+        }
+        if (nc instanceof SubNodeContainer snc) {
+            builder.setComponentInfo(
+                    builder(ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder.class) //
+                            .setName(snc.getName()) //
+                            .setType(WorkflowEntityFactory.buildComponentTypeEnt(snc)) //
+                            .setIcon(WorkflowEntityFactory.buildComponentIconEnt(snc)) //
+                            .build() //
+            );
+        }
+        return builder.build();
     }
 
 }
