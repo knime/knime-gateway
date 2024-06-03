@@ -50,7 +50,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 
 /**
- * Properties common to ComponentNode and ComponentNodeDescription. Only purpose is to avoid &#39;code&#39; duplication. Never directly returned or used in another schema.
+ * Basic information about a component node.
  *
  * @param name
  * @param type

@@ -46,13 +46,15 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 
 import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt;
 
 /**
- * A message in the workflow monitor.
+ * A message in the workflow monitor. &#x60;templateId&#x60; is only present if the node is a native node. &#x60;componentInfo&#x60; is only present if the node is a component node.
  *
  * @param templateId
+ * @param componentInfo
  * @param workflowId
  * @param nodeId
  * @param name
@@ -63,6 +65,7 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultWorkflowMonitorMessageEnt(
     String templateId,
+    ComponentNodeAndDescriptionEnt componentInfo,
     org.knime.gateway.api.entity.NodeIDEnt workflowId,
     org.knime.gateway.api.entity.NodeIDEnt nodeId,
     String name,
@@ -72,9 +75,6 @@ public record DefaultWorkflowMonitorMessageEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultWorkflowMonitorMessageEnt {
-        if(templateId == null) {
-            throw new IllegalArgumentException("<templateId> must not be null.");
-        }
         if(workflowId == null) {
             throw new IllegalArgumentException("<workflowId> must not be null.");
         }
@@ -97,6 +97,11 @@ public record DefaultWorkflowMonitorMessageEnt(
     @Override
     public String getTemplateId() {
         return templateId;
+    }
+    
+    @Override
+    public ComponentNodeAndDescriptionEnt getComponentInfo() {
+        return componentInfo;
     }
     
     @Override
@@ -126,6 +131,8 @@ public record DefaultWorkflowMonitorMessageEnt(
 
         private String m_templateId;
 
+        private ComponentNodeAndDescriptionEnt m_componentInfo;
+
         private org.knime.gateway.api.entity.NodeIDEnt m_workflowId;
 
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
@@ -136,10 +143,13 @@ public record DefaultWorkflowMonitorMessageEnt(
 
         @Override
         public DefaultWorkflowMonitorMessageEntBuilder setTemplateId(String templateId) {
-             if(templateId == null) {
-                 throw new IllegalArgumentException("<templateId> must not be null.");
-             }
              m_templateId = templateId;
+             return this;
+        }
+
+        @Override
+        public DefaultWorkflowMonitorMessageEntBuilder setComponentInfo(ComponentNodeAndDescriptionEnt componentInfo) {
+             m_componentInfo = componentInfo;
              return this;
         }
 
@@ -183,6 +193,7 @@ public record DefaultWorkflowMonitorMessageEnt(
         public DefaultWorkflowMonitorMessageEnt build() {
             return new DefaultWorkflowMonitorMessageEnt(
                 immutable(m_templateId),
+                immutable(m_componentInfo),
                 immutable(m_workflowId),
                 immutable(m_nodeId),
                 immutable(m_name),

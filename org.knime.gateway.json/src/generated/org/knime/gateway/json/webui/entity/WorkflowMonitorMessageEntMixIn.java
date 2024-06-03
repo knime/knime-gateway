@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -72,6 +73,10 @@ public interface WorkflowMonitorMessageEntMixIn extends WorkflowMonitorMessageEn
     @Override
     @JsonProperty("templateId")
     public String getTemplateId();
+    
+    @Override
+    @JsonProperty("componentInfo")
+    public ComponentNodeAndDescriptionEnt getComponentInfo();
     
     @Override
     @JsonProperty("workflowId")
@@ -105,6 +110,10 @@ public interface WorkflowMonitorMessageEntMixIn extends WorkflowMonitorMessageEn
         @Override
         @JsonProperty("templateId")
         public WorkflowMonitorMessageEntMixInBuilder setTemplateId(final String templateId);
+        
+        @Override
+        @JsonProperty("componentInfo")
+        public WorkflowMonitorMessageEntMixInBuilder setComponentInfo(final ComponentNodeAndDescriptionEnt componentInfo);
         
         @Override
         @JsonProperty("workflowId")
