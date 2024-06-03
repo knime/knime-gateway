@@ -81,9 +81,11 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @JsonRpcMethod(value = "createSpace")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.IOException.class, code = -32600,
-            data = "IOException" /*per convention the data property contains the exception name*/)
+            data = "IOException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceEnt createSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceGroupName") String spaceGroupName)  throws ServiceExceptions.IOException {
+    public SpaceEnt createSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceGroupName") String spaceGroupName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
         return m_service.get().createSpace(spaceProviderId, spaceGroupName);    
     }
 

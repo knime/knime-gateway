@@ -174,14 +174,17 @@ public class DefaultSpaceService implements SpaceService {
 
     /**
      * {@inheritDoc}
+     * @throws InvalidRequestException
      */
     @Override
     public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName)
-        throws ServiceExceptions.IOException {
+        throws ServiceExceptions.IOException, InvalidRequestException {
         try {
             return m_spaceProviders.getProvidersMap().get(spaceProviderId) //
                 .getSpaceGroup(spaceGroupName).createSpace() //
                 .toEntity();
+        } catch (NoSuchElementException | UnsupportedOperationException e) {
+            throw new InvalidRequestException(e.getMessage(), e);
         } catch (IOException e) {
             throw new ServiceExceptions.IOException(e.getMessage(), e);
         }

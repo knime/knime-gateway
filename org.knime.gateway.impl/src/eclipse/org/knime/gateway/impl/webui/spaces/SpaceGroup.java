@@ -78,6 +78,13 @@ public interface SpaceGroup<S extends Space> {
                 case TEAM -> SpaceGroupEnt.TypeEnum.TEAM;
             };
         }
+
+        public static SpaceGroupType fromEntity(final SpaceGroupEnt.TypeEnum typeEnum) {
+            return switch (typeEnum) {
+                case USER -> USER;
+                case TEAM -> TEAM;
+            };
+        }
     }
 
     /**

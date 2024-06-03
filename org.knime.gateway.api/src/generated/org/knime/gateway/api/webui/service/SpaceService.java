@@ -68,8 +68,9 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
+     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.IOException;
+    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Create a new workflow within a given workflow group.
