@@ -105,7 +105,7 @@ public class EncryptedComponentAndMetanodeTest extends GatewayServiceTest {
     @Test
     public void testWorkflowMonitorStateEntityFactory() {
         m_wfm.getSecond().executeAllAndWaitUntilDone();
-        var state = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm.getSecond());
+        var state = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(m_wfm.getSecond());
         assertThat(state.getErrors(), empty());
         assertThat(state.getWarnings(), empty());
     }

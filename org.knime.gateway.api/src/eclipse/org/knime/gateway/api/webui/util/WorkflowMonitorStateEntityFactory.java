@@ -93,7 +93,7 @@ public final class WorkflowMonitorStateEntityFactory {
      * @param wfm
      * @return the new instance
      */
-    public WorkflowMonitorStateEnt buildWorkflowMonitorStateEnt(final WorkflowManager wfm) {
+    public static WorkflowMonitorStateEnt buildWorkflowMonitorStateEnt(final WorkflowManager wfm) {
         var startTimeDescending = Comparator //
             .<NodeContainer> comparingLong(nc -> nc.getNodeTimer().getStartTime()) //
             .thenComparing(NodeContainer::getID) //
@@ -101,26 +101,11 @@ public final class WorkflowMonitorStateEntityFactory {
 
         var nodesWithMessages = new TreeSet<>(startTimeDescending);
 
-        CoreUtil.iterateNodes(wfm, nc -> {
-            if (nc instanceof WorkflowManager) {
-                return;
-            }
-            if ((nc instanceof NativeNodeContainer nnc)
-                && IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
-                return;
-            }
-            if ((nc instanceof SubNodeContainer snc) && snc.getWorkflowManager().isEncrypted()) {
-                return;
-            }
-            if ((nc instanceof SubNodeContainer snc) && !isLinkedComponent(snc)) {
-                return;
-            }
-
-            var messageType = nc.getNodeMessage().getMessageType();
-            if (messageType != Type.RESET) {
-                nodesWithMessages.add(nc);
-            }
-        }, subWfm -> !subWfm.isEncrypted() && !wfmIsLinkedComponentChild(subWfm));
+        CoreUtil.iterateNodes(
+                wfm, //
+                nc -> collectMessages(nc, nodesWithMessages), //
+                subWfm -> !subWfm.isEncrypted() && !wfmIsLinkedComponentChild(subWfm) //
+        );
 
         var errors = new ArrayList<WorkflowMonitorMessageEnt>();
         var warnings = new ArrayList<WorkflowMonitorMessageEnt>();
@@ -140,12 +125,33 @@ public final class WorkflowMonitorStateEntityFactory {
             .build();
     }
 
-    private boolean isLinkedComponent(final SubNodeContainer snc) {
+    private static void collectMessages(final NodeContainer nc, final TreeSet<NodeContainer> nodesWithMessages) {
+        if (nc instanceof WorkflowManager) {
+            return;
+        }
+        if ((nc instanceof NativeNodeContainer nnc)
+            && IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
+            return;
+        }
+        if ((nc instanceof SubNodeContainer snc) && snc.getWorkflowManager().isEncrypted()) {
+            return;
+        }
+        if ((nc instanceof SubNodeContainer snc) && !isLinkedComponent(snc)) {
+            return;
+        }
+
+        var messageType = nc.getNodeMessage().getMessageType();
+        if (messageType != Type.RESET) {
+            nodesWithMessages.add(nc);
+        }
+    }
+
+    private static boolean isLinkedComponent(final SubNodeContainer snc) {
         return Optional.ofNullable(snc.getTemplateInformation())
             .map(templateInfo -> templateInfo.getRole() == MetaNodeTemplateInformation.Role.Link).orElse(false);
     }
 
-    private boolean wfmIsLinkedComponentChild(final WorkflowManager wfm) {
+    private static boolean wfmIsLinkedComponentChild(final WorkflowManager wfm) {
         if (wfm.getDirectNCParent() instanceof SubNodeContainer snc) {
             return isLinkedComponent(snc);
         } else {
