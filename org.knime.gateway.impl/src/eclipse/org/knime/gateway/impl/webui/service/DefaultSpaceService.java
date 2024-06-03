@@ -181,7 +181,8 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceExceptions.IOException, InvalidRequestException {
         try {
             return m_spaceProviders.getProvidersMap().get(spaceProviderId) //
-                .getSpaceGroup(spaceGroupName).createSpace() //
+                .getSpaceGroup(spaceGroupName) //
+                .createSpace() //
                 .toEntity();
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new InvalidRequestException(e.getMessage(), e);

@@ -98,11 +98,12 @@ public interface SpaceProvider {
     Space getSpace(String spaceId);
 
     /**
-     * @param spaceGroupName space group identifier name
-     * @return spaceGroup found space group that matches with the given name
+     * @param spaceGroupName The name of the space group to obtain
+     * @return spaceGroup The associated space group
      * @throws NoSuchElementException if no group with the given name exists
      */
-    SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName);
+    @SuppressWarnings({"java:S3740", "rawtypes"})
+    SpaceGroup getSpaceGroup(String spaceGroupName);
 
     /**
      * Returns the server address of the current space provider
