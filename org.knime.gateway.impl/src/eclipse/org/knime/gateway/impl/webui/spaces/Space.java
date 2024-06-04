@@ -246,6 +246,20 @@ public interface Space {
             ServiceExceptions.OperationNotAllowedException;
 
     /**
+     * Rename this space
+     *
+     * @param newName The new name
+     * @return {@link SpaceEnt} describing the space after renaming
+     * @throws IOException
+     * @throws ServiceExceptions.OperationNotAllowedException
+     */
+    default SpaceEnt renameSpace(final String newName)
+        throws IOException, ServiceExceptions.OperationNotAllowedException {
+        throw new ServiceExceptions.OperationNotAllowedException(
+            "Renaming of spaces is not supported in this provider");
+    }
+
+    /**
      * Resolves the item with the given ID into a local file, potentially downloading it.
      *
      * @param monitor to report progress, progress messages and for cancellation
