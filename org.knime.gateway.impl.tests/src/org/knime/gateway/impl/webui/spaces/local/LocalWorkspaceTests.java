@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.spaces.local;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.spy;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,6 +63,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
@@ -80,8 +82,18 @@ import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
-@SuppressWarnings("static-method")
+@SuppressWarnings({"static-method", "javadoc"})
 public final class LocalWorkspaceTests {
+
+    /**
+     * The instance under test
+     */
+    private LocalWorkspace m_space;
+
+    @Before
+    public void setUpLocalWorkspace() throws IOException {
+        m_space = spy(new LocalWorkspace(PathUtils.createTempDir("workspace")));
+    }
 
     /**
      * Tests {@link LocalWorkspace#getAncestorItemIds(String)}.
@@ -90,28 +102,25 @@ public final class LocalWorkspaceTests {
      */
     @Test
     public void testGetAncestorItemIds() throws IOException {
-        var workspaceFolder = PathUtils.createTempDir("workspace");
-        var workspace = new LocalWorkspace(workspaceFolder);
+        var dir3 = Files.createDirectories(m_space.getLocalRootPath().resolve("dir1/dir2/dir3"));
+        createFile(m_space.getLocalRootPath().resolve("dir1"), "test.txt");
+        createFile(m_space.getLocalRootPath().resolve("dir1/dir2"), "test2.txt");
+        createWorkflow(m_space, m_space.getLocalRootPath().resolve("dir1/dir2/dir3"), m_space.getItemId(dir3), Space.DEFAULT_WORKFLOW_NAME);
 
-        var dir3 = Files.createDirectories(workspaceFolder.resolve("dir1/dir2/dir3"));
-        createFile(workspaceFolder.resolve("dir1"), "test.txt");
-        createFile(workspaceFolder.resolve("dir1/dir2"), "test2.txt");
-        createWorkflow(workspace, workspaceFolder.resolve("dir1/dir2/dir3"), workspace.getItemId(dir3), Space.DEFAULT_WORKFLOW_NAME);
-
-        var spaceItemsRoot = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
-        assertThat(workspace.getAncestorItemIds(spaceItemsRoot.get(0).getId()),
+        var spaceItemsRoot = m_space.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
+        assertThat(m_space.getAncestorItemIds(spaceItemsRoot.get(0).getId()),
             Matchers.emptyCollectionOf(String.class));
 
-        var spaceItemsDir1 = workspace.listWorkflowGroup(spaceItemsRoot.get(0).getId()).getItems();
-        assertThat(workspace.getAncestorItemIds(spaceItemsDir1.get(1).getId()),
+        var spaceItemsDir1 = m_space.listWorkflowGroup(spaceItemsRoot.get(0).getId()).getItems();
+        assertThat(m_space.getAncestorItemIds(spaceItemsDir1.get(1).getId()),
             equalTo(List.of(spaceItemsRoot.get(0).getId())));
 
-        var spaceItemsDir2 = workspace.listWorkflowGroup(spaceItemsDir1.get(0).getId()).getItems();
-        assertThat(workspace.getAncestorItemIds(spaceItemsDir2.get(1).getId()),
+        var spaceItemsDir2 = m_space.listWorkflowGroup(spaceItemsDir1.get(0).getId()).getItems();
+        assertThat(m_space.getAncestorItemIds(spaceItemsDir2.get(1).getId()),
             equalTo(List.of(spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
 
-        var spaceItemsDir3 = workspace.listWorkflowGroup(spaceItemsDir2.get(0).getId()).getItems();
-        assertThat(workspace.getAncestorItemIds(spaceItemsDir3.get(0).getId()),
+        var spaceItemsDir3 = m_space.listWorkflowGroup(spaceItemsDir2.get(0).getId()).getItems();
+        assertThat(m_space.getAncestorItemIds(spaceItemsDir3.get(0).getId()),
             equalTo(List.of(spaceItemsDir2.get(0).getId(), spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
     }
 
@@ -123,43 +132,40 @@ public final class LocalWorkspaceTests {
      */
     @Test
     public void testMapCleanupOnDelete() throws IOException {
-        var workspaceFolder = PathUtils.createTempDir("workspace");
-        var workspace = new LocalWorkspace(workspaceFolder);
-
         // Add some items to the root
-        var fileNotToBeDeleted = createFile(workspaceFolder, "file_not_to_be_deleted.txt");
-        var fileToBeDeleted = createFile(workspaceFolder, "file_to_be_deleted.txt");
-        var workflowInRootToBeDeleted = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
-        var workflowInRoot = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+        var fileNotToBeDeleted = createFile(m_space.getLocalRootPath(), "file_not_to_be_deleted.txt");
+        var fileToBeDeleted = createFile(m_space.getLocalRootPath(), "file_to_be_deleted.txt");
+        var workflowInRootToBeDeleted = createWorkflow(m_space, m_space.getLocalRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+        var workflowInRoot = createWorkflow(m_space, m_space.getLocalRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
 
         // Create a workflow group
-        var groupToBeDeleted = workspaceFolder.resolve("groupToBeDeleted");
+        var groupToBeDeleted = m_space.getLocalRootPath().resolve("groupToBeDeleted");
         Files.createDirectories(groupToBeDeleted);
-        var groupToBeDeletedId = findItemId(workspace, Space.ROOT_ITEM_ID, groupToBeDeleted.getFileName().toString());
+        var groupToBeDeletedId = findItemId(m_space, Space.ROOT_ITEM_ID, groupToBeDeleted.getFileName().toString());
 
         // Add some items to the group
         var fileInGroup = createFile(groupToBeDeleted, "file_in_group.txt");
-        var workflowInGroup = createWorkflow(workspace, groupToBeDeleted, groupToBeDeletedId, Space.DEFAULT_WORKFLOW_NAME);
+        var workflowInGroup = createWorkflow(m_space, groupToBeDeleted, groupToBeDeletedId, Space.DEFAULT_WORKFLOW_NAME);
 
         // Add another group with one file that gets deleted
-        var groupNotToBeDeleted = workspaceFolder.resolve("groupNotToBeDeleted");
+        var groupNotToBeDeleted = m_space.getLocalRootPath().resolve("groupNotToBeDeleted");
         Files.createDirectories(groupNotToBeDeleted);
         var groupNotToBeDeletedId =
-            findItemId(workspace, Space.ROOT_ITEM_ID, groupNotToBeDeleted.getFileName().toString());
+            findItemId(m_space, Space.ROOT_ITEM_ID, groupNotToBeDeleted.getFileName().toString());
         var fileInGroupToBeDeleted = createFile(groupNotToBeDeleted, "another_file_in_group.txt");
 
         // List the items to give them ids
-        workspace.listWorkflowGroup(Space.ROOT_ITEM_ID);
-        workspace.listWorkflowGroup(groupToBeDeletedId);
-        workspace.listWorkflowGroup(groupNotToBeDeletedId);
+        m_space.listWorkflowGroup(Space.ROOT_ITEM_ID);
+        m_space.listWorkflowGroup(groupToBeDeletedId);
+        m_space.listWorkflowGroup(groupNotToBeDeletedId);
 
         // Assert that the maps contain all files and no more
-        assertIdAndTypeMapContain(workspace, fileNotToBeDeleted, fileToBeDeleted, workflowInRootToBeDeleted,
+        assertIdAndTypeMapContain(m_space, fileNotToBeDeleted, fileToBeDeleted, workflowInRootToBeDeleted,
             workflowInRoot, groupNotToBeDeleted, groupNotToBeDeleted, fileInGroup, workflowInGroup,
             fileInGroupToBeDeleted);
 
         // Delete some items and check that the maps get updated correctly
-        deleteAndCheckMaps(workspace,
+        deleteAndCheckMaps(m_space,
             List.of(fileToBeDeleted, workflowInRootToBeDeleted, groupToBeDeleted, fileInGroupToBeDeleted),
             List.of(fileNotToBeDeleted, workflowInRoot, groupNotToBeDeleted));
     }
@@ -172,35 +178,32 @@ public final class LocalWorkspaceTests {
      */
     @Test
     public void testMoveItemsUpdatesCache() throws IOException {
-        var workspaceFolder = PathUtils.createTempDir("workspace");
-        var workspace = new LocalWorkspace(workspaceFolder);
-
         // Add some items to the root
-        var fileNotToBeMoved = createFile(workspaceFolder, "file_not_to_be_moved.txt");
-        var fileToBeMoved = createFile(workspaceFolder, "file_to_be_moved.txt");
-        var fileToBeMovedId = findItemId(workspace, Space.ROOT_ITEM_ID, fileNotToBeMoved.getFileName().toString());
-        var workflowInRoot = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
-        var workflowInRootToBeMoved = createWorkflow(workspace, workspaceFolder, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME + "1");
+        var fileNotToBeMoved = createFile(m_space.getLocalRootPath(), "file_not_to_be_moved.txt");
+        var fileToBeMoved = createFile(m_space.getLocalRootPath(), "file_to_be_moved.txt");
+        var fileToBeMovedId = findItemId(m_space, Space.ROOT_ITEM_ID, fileNotToBeMoved.getFileName().toString());
+        var workflowInRoot = createWorkflow(m_space, m_space.getLocalRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+        var workflowInRootToBeMoved = createWorkflow(m_space, m_space.getLocalRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME + "1");
         var workflowInRootToBeMovedId =
-            findItemId(workspace, Space.ROOT_ITEM_ID, workflowInRootToBeMoved.getFileName().toString());
+            findItemId(m_space, Space.ROOT_ITEM_ID, workflowInRootToBeMoved.getFileName().toString());
 
         // Create a workflow group
-        var workflowGroup = workspaceFolder.resolve("workflowGroup");
+        var workflowGroup = m_space.getLocalRootPath().resolve("workflowGroup");
         Files.createDirectories(workflowGroup);
-        var workflowGroupId = findItemId(workspace, Space.ROOT_ITEM_ID, workflowGroup.getFileName().toString());
+        var workflowGroupId = findItemId(m_space, Space.ROOT_ITEM_ID, workflowGroup.getFileName().toString());
 
-        assertIdAndTypeMapContain(workspace, fileNotToBeMoved, fileToBeMoved, workflowInRootToBeMoved, workflowInRoot,
+        assertIdAndTypeMapContain(m_space, fileNotToBeMoved, fileToBeMoved, workflowInRootToBeMoved, workflowInRoot,
             workflowGroup);
 
         // Move file and workflow
-        workspace.moveOrCopyItems(List.of(fileToBeMovedId, workflowInRootToBeMovedId), workflowGroupId,
-            Space.NameCollisionHandling.NOOP, false);
+        m_space.moveOrCopyItems(List.of(fileToBeMovedId, workflowInRootToBeMovedId), workflowGroupId,
+            NameCollisionHandling.NOOP, false);
 
         // Assert paths are updated
-        var newfilePath = workspace.m_spaceItemPathAndTypeCache.getPath(fileToBeMovedId);
+        var newfilePath = m_space.m_spaceItemPathAndTypeCache.getPath(fileToBeMovedId);
         assertThat("Workflow path should be the new parent of the moved file path", newfilePath.getParent(),
             equalTo(workflowGroup));
-        var newWorkflowPath = workspace.m_spaceItemPathAndTypeCache.getPath(workflowInRootToBeMovedId);
+        var newWorkflowPath = m_space.m_spaceItemPathAndTypeCache.getPath(workflowInRootToBeMovedId);
         assertThat("Workflow path should be the new parent of the moved workflow path", newWorkflowPath.getParent(),
             equalTo(workflowGroup));
     }
@@ -212,17 +215,14 @@ public final class LocalWorkspaceTests {
      */
     @Test
     public void testToKnimeURl() throws IOException {
-        var workspaceFolder = PathUtils.createTempDir("workspace");
-        var workspace = new LocalWorkspace(workspaceFolder);
+        createFile(m_space.getLocalRootPath(), "test.txt");
+        Files.createDirectories(m_space.getLocalRootPath().resolve("dir"));
+        createWorkflow(m_space, m_space.getLocalRootPath(), m_space.getItemId(m_space.getLocalRootPath()), Space.DEFAULT_WORKFLOW_NAME);
 
-        createFile(workspaceFolder, "test.txt");
-        Files.createDirectories(workspaceFolder.resolve("dir"));
-        createWorkflow(workspace, workspaceFolder, workspace.getItemId(workspaceFolder), Space.DEFAULT_WORKFLOW_NAME);
-
-        var items = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
-        assertThat(workspace.toKnimeUrl(items.get(0).getId()).toString(), equalTo("knime://LOCAL/dir/"));
-        assertThat(workspace.toKnimeUrl(items.get(1).getId()).toString(), equalTo("knime://LOCAL/KNIME_project/"));
-        assertThat(workspace.toKnimeUrl(items.get(2).getId()).toString(), equalTo("knime://LOCAL/test.txt"));
+        var items = m_space.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
+        assertThat(m_space.toKnimeUrl(items.get(0).getId()).toString(), equalTo("knime://LOCAL/dir/"));
+        assertThat(m_space.toKnimeUrl(items.get(1).getId()).toString(), equalTo("knime://LOCAL/KNIME_project/"));
+        assertThat(m_space.toKnimeUrl(items.get(2).getId()).toString(), equalTo("knime://LOCAL/test.txt"));
     }
 
     /**
@@ -234,27 +234,25 @@ public final class LocalWorkspaceTests {
     @Test
     public void testImportFileUpdatesCache() throws IOException {
         var tmpFolder = PathUtils.createTempDir("tmp");
-        var workspaceFolder = PathUtils.createTempDir("workspace");
-        var workspace = new LocalWorkspace(workspaceFolder);
 
         var fileNameTxt = "test.txt";
         var tmpTxtPath = createFile(tmpFolder, fileNameTxt);
-        workspace.importFile(tmpTxtPath, Space.ROOT_ITEM_ID, NameCollisionHandling.NOOP, null);
-        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(fileNameTxt));
-        assertItemIsOfType(workspace, workspaceFolder.resolve(fileNameTxt), TypeEnum.DATA);
+        m_space.importFile(tmpTxtPath, Space.ROOT_ITEM_ID, NameCollisionHandling.NOOP, null);
+        assertIdAndTypeMapContain(m_space, m_space.getLocalRootPath().resolve(fileNameTxt));
+        assertItemIsOfType(m_space, m_space.getLocalRootPath().resolve(fileNameTxt), TypeEnum.DATA);
 
         var fileNameCsv = "collisions.csv";
         var tmpCsvPath = createFile(tmpFolder, fileNameCsv);
-        workspace.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.NOOP, null);
-        workspace.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.OVERWRITE, null);
-        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(fileNameTxt),
-            workspaceFolder.resolve(fileNameCsv));
-        assertItemIsOfType(workspace, workspaceFolder.resolve(fileNameCsv), TypeEnum.DATA);
+        m_space.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.NOOP, null);
+        m_space.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.OVERWRITE, null);
+        assertIdAndTypeMapContain(m_space, m_space.getLocalRootPath().resolve(fileNameTxt),
+            m_space.getLocalRootPath().resolve(fileNameCsv));
+        assertItemIsOfType(m_space, m_space.getLocalRootPath().resolve(fileNameCsv), TypeEnum.DATA);
 
-        workspace.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.AUTORENAME, null);
-        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(fileNameTxt), workspaceFolder.resolve(fileNameCsv),
-            workspaceFolder.resolve("collisions(1).csv"));
-        assertItemIsOfType(workspace, workspaceFolder.resolve("collisions(1).csv"), TypeEnum.DATA);
+        m_space.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.AUTORENAME, null);
+        assertIdAndTypeMapContain(m_space, m_space.getLocalRootPath().resolve(fileNameTxt), m_space.getLocalRootPath().resolve(fileNameCsv),
+            m_space.getLocalRootPath().resolve("collisions(1).csv"));
+        assertItemIsOfType(m_space, m_space.getLocalRootPath().resolve("collisions(1).csv"), TypeEnum.DATA);
     }
 
     /**
@@ -286,46 +284,41 @@ public final class LocalWorkspaceTests {
      */
     @Test
     public void testGetProjectType() throws IOException {
-        var workspaceFolder = PathUtils.createTempDir("workspace");
-        var workspace = new LocalWorkspace(workspaceFolder);
-
-        createFile(workspaceFolder, "data.txt");
-        createWorkflow(workspace, workspaceFolder, workspace.getItemId(workspaceFolder), Space.DEFAULT_WORKFLOW_NAME);
-        var spaceItems = workspace.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
+        createFile(m_space.getLocalRootPath(), "data.txt");
+        createWorkflow(m_space, m_space.getLocalRootPath(), m_space.getItemId(m_space.getLocalRootPath()), Space.DEFAULT_WORKFLOW_NAME);
+        var spaceItems = m_space.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
 
         var workflowItem =
             spaceItems.stream().filter(item -> item.getType() == TypeEnum.WORKFLOW).findFirst().orElseThrow();
-        assertThat("Not a workflow", workspace.getProjectType(workflowItem.getId()).orElseThrow(),
+        assertThat("Not a workflow", m_space.getProjectType(workflowItem.getId()).orElseThrow(),
             equalTo(ProjectTypeEnum.WORKFLOW));
 
         var dataItem = spaceItems.stream().filter(item -> item.getType() == TypeEnum.DATA).findFirst().orElseThrow();
-        assertThat("Not null", workspace.getProjectType(dataItem.getId()).orElse(null), nullValue());
+        assertThat("Not null", m_space.getProjectType(dataItem.getId()).orElse(null), nullValue());
     }
 
-    private static void runTestImportWorkflowOrWorkflowGroupUpdatesCache(final String archiveName,
+    private void runTestImportWorkflowOrWorkflowGroupUpdatesCache(final String archiveName,
         final String itemName, final TypeEnum itemType) throws IOException {
-        var workspaceFolder = PathUtils.createTempDir("workspace");
-        var workspace = new LocalWorkspace(workspaceFolder);
         Consumer<Path> createMetaInfoFileFor = path -> {
             // Do nothing
         };
 
         var archivePath = getFilePath(archiveName);
-        workspace.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
+        m_space.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
             NameCollisionHandling.NOOP, null);
-        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(itemName));
-        assertItemIsOfType(workspace, workspaceFolder.resolve(itemName), itemType);
+        assertIdAndTypeMapContain(m_space, m_space.getLocalRootPath().resolve(itemName));
+        assertItemIsOfType(m_space, m_space.getLocalRootPath().resolve(itemName), itemType);
 
-        workspace.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
+        m_space.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
             NameCollisionHandling.OVERWRITE, null);
-        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(itemName));
-        assertItemIsOfType(workspace, workspaceFolder.resolve(itemName), itemType);
+        assertIdAndTypeMapContain(m_space, m_space.getLocalRootPath().resolve(itemName));
+        assertItemIsOfType(m_space, m_space.getLocalRootPath().resolve(itemName), itemType);
 
-        workspace.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
+        m_space.importWorkflowOrWorkflowGroup(archivePath, Space.ROOT_ITEM_ID, createMetaInfoFileFor,
             NameCollisionHandling.AUTORENAME, null);
-        assertIdAndTypeMapContain(workspace, workspaceFolder.resolve(itemName),
-            workspaceFolder.resolve(itemName + "1"));
-        assertItemIsOfType(workspace, workspaceFolder.resolve(itemName + "1"), itemType);
+        assertIdAndTypeMapContain(m_space, m_space.getLocalRootPath().resolve(itemName),
+            m_space.getLocalRootPath().resolve(itemName + "1"));
+        assertItemIsOfType(m_space, m_space.getLocalRootPath().resolve(itemName + "1"), itemType);
     }
 
     private static void deleteAndCheckMaps(final LocalWorkspace workspace, final List<Path> itemsToDelete,
