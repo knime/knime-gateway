@@ -95,6 +95,7 @@ import org.knime.core.node.workflow.ConnectionUIInformation;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.FlowLoopContext;
 import org.knime.core.node.workflow.LoopStartNode;
+import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerMetadata;
@@ -701,6 +702,38 @@ public final class CoreUtil {
     }
 
     /**
+     * @param nc The node to determine the locked status of
+     * @return Whether the given node is locked
+     */
+    public static boolean isLocked(final NodeContainer nc) {
+        WorkflowManager wfm = null;
+        if (nc instanceof WorkflowManager wm) {
+            wfm = wm;
+        } else if (nc instanceof SubNodeContainer snc) {
+            wfm = snc.getWorkflowManager();
+        }
+        if (wfm == null || !wfm.isEncrypted()) {
+            return false;
+        }
+        return !wfm.isUnlocked();
+    }
+
+    /**
+     * @param nc The node to inspect.
+     * @return Whether this node is linked. {@code false} if not applicable.
+     */
+    public static boolean isLinked(final NodeContainer nc) {
+        MetaNodeTemplateInformation templateInfo = null;
+        if (nc instanceof WorkflowManager metanodeWfm) {
+            templateInfo = metanodeWfm.getTemplateInformation();
+        }
+        if (nc instanceof SubNodeContainer snc) {
+            templateInfo = snc.getTemplateInformation();
+        }
+        return templateInfo != null && templateInfo.getRole() == MetaNodeTemplateInformation.Role.Link;
+    }
+
+    /**
      * The concrete kind of a container node. We assume a 1-to-1 mapping from a {@link ContainerType} to a subclass
      * of {@link NodeContainer} that implements the node's container behaviour.
      * @see CoreUtil#getContainerType(NodeID, WorkflowManager)
@@ -838,23 +871,31 @@ public final class CoreUtil {
     }
 
     /**
-     * Helper to recursively iterate all nodes in a workflow.
-     *
-     * @param wfm the workflow to iterate
-     * @param nodeVisitor callback whenever a node was found
-     * @param doRecurse callback whenever a metanode or component was found; it returns {@code true} if the contained
-     *            nodes are to be iterated, too, otherwise {@code false} to stop there
+     * Traverse nodes in a given workflow manager, potentially recursing into child workflows.
+     * @param wfm The workflow manager to start traversing in.
+     * @param nodeVisitor Predicate return value determines whether to recurse into the node (if possible). Side effects
+     *                    may consume the currently visited node otherwise.
      */
-    public static void iterateNodes(final WorkflowManager wfm, final Consumer<NodeContainer> nodeVisitor,
-        final Predicate<WorkflowManager> doRecurse) {
+    public static void iterateNodes(final WorkflowManager wfm, final Predicate<NodeContainer> nodeVisitor) {
         for (var nc : wfm.getNodeContainers()) {
-            runOnNodeOrWfm(nc, nodeVisitor, subWfm -> {
-                var iterateContainedNodes = doRecurse == null || doRecurse.test(subWfm);
-                if (iterateContainedNodes) {
-                    iterateNodes(subWfm, nodeVisitor, doRecurse);
-                }
-            });
+            var doRecurse = nodeVisitor.test(nc);
+            if (doRecurse) {
+                getChildWfm(nc).ifPresent(childWfm -> iterateNodes(childWfm, nodeVisitor));
+            }
         }
+    }
+
+    private static Optional<WorkflowManager> getChildWfm(final NodeContainer nc) {
+        if (nc instanceof NativeNodeContainer) {
+            return Optional.empty();
+        }
+        if (nc instanceof WorkflowManager metanodeWmf) {
+            return Optional.of(metanodeWmf);
+        }
+        if (nc instanceof SubNodeContainer snc) {
+            return Optional.of(snc.getWorkflowManager());
+        };
+        return Optional.empty();
     }
 
     /**

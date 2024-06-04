@@ -52,11 +52,9 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeMessage.Type;
@@ -93,7 +91,7 @@ public final class WorkflowMonitorStateEntityFactory {
      * @param wfm
      * @return the new instance
      */
-    public static WorkflowMonitorStateEnt buildWorkflowMonitorStateEnt(final WorkflowManager wfm) {
+    public WorkflowMonitorStateEnt buildWorkflowMonitorStateEnt(final WorkflowManager wfm) {
         var startTimeDescending = Comparator //
             .<NodeContainer> comparingLong(nc -> nc.getNodeTimer().getStartTime()) //
             .thenComparing(NodeContainer::getID) //
@@ -103,8 +101,7 @@ public final class WorkflowMonitorStateEntityFactory {
 
         CoreUtil.iterateNodes(
                 wfm, //
-                nc -> collectMessages(nc, nodesWithMessages), //
-                subWfm -> !subWfm.isEncrypted() && !wfmIsLinkedComponentChild(subWfm) //
+                nc -> collectMessages(nc, nodesWithMessages) //
         );
 
         var errors = new ArrayList<WorkflowMonitorMessageEnt>();
@@ -125,38 +122,37 @@ public final class WorkflowMonitorStateEntityFactory {
             .build();
     }
 
-    private static void collectMessages(final NodeContainer nc, final TreeSet<NodeContainer> nodesWithMessages) {
+    private static boolean collectMessages(final NodeContainer nc, final TreeSet<NodeContainer> nodesWithMessages) {
+        var visit = checkNode(nc);
+        if (visit.doReportMessages()) {
+            var messageType = nc.getNodeMessage().getMessageType();
+            if (messageType != Type.RESET) {
+                nodesWithMessages.add(nc);
+            }
+        }
+        return visit.doRecurse();
+    }
+
+    /**
+     * @param doRecurse Whether to recurse into this node (if possible)
+     * @param doReportMessages Whether to report messages for this node
+     */
+    private record NodeVisit(boolean doRecurse, boolean doReportMessages) {
+
+    }
+
+    private static NodeVisit checkNode(final NodeContainer nc) {
         if (nc instanceof WorkflowManager) {
-            return;
+            return new NodeVisit(true, false);
         }
-        if ((nc instanceof NativeNodeContainer nnc)
-            && IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
-            return;
+        if ((nc instanceof NativeNodeContainer nnc) && IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
+            return new NodeVisit(false, false);
+        } else if (CoreUtil.isLocked(nc) || CoreUtil.isLinked(nc)) {
+            return new NodeVisit(false, true);
+        } else if (nc instanceof SubNodeContainer) {
+            return new NodeVisit(true, false);
         }
-        if ((nc instanceof SubNodeContainer snc) && snc.getWorkflowManager().isEncrypted()) {
-            return;
-        }
-        if ((nc instanceof SubNodeContainer snc) && !isLinkedComponent(snc)) {
-            return;
-        }
-
-        var messageType = nc.getNodeMessage().getMessageType();
-        if (messageType != Type.RESET) {
-            nodesWithMessages.add(nc);
-        }
-    }
-
-    private static boolean isLinkedComponent(final SubNodeContainer snc) {
-        return Optional.ofNullable(snc.getTemplateInformation())
-            .map(templateInfo -> templateInfo.getRole() == MetaNodeTemplateInformation.Role.Link).orElse(false);
-    }
-
-    private static boolean wfmIsLinkedComponentChild(final WorkflowManager wfm) {
-        if (wfm.getDirectNCParent() instanceof SubNodeContainer snc) {
-            return isLinkedComponent(snc);
-        } else {
-            return false;
-        }
+        return new NodeVisit(true, true);
     }
 
     private static WorkflowMonitorMessageEnt buildWorkflowMonitorMessageEnt(final NodeContainer nc,

@@ -97,7 +97,7 @@ public class WorkflowMonitorStateEntityFactoryTest {
     public void messageReportedForFailingNode() {
         m_wfm.createAndAddNode(failingNativeNode());
         m_wfm.executeAllAndWaitUntilDone();
-        var result = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(m_wfm);
+        var result = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm);
         assertThat(result.getWarnings()).isEmpty();
         assertThat(result.getErrors()).hasSize(1);
     }
@@ -106,7 +106,7 @@ public class WorkflowMonitorStateEntityFactoryTest {
     public void noMessageForSucceedingNode() {
         m_wfm.createAndAddNode(succeedingNativeNode());
         m_wfm.executeAllAndWaitUntilDone();
-        var result = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(m_wfm);
+        var result = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm);
         assertThat(result.getWarnings()).hasSize(0);
         assertThat(result.getErrors()).hasSize(0);
     }
@@ -116,7 +116,7 @@ public class WorkflowMonitorStateEntityFactoryTest {
         var expectedMessage = "expected failure message";
         var failingNodeId = m_wfm.createAndAddNode(failingNativeNode(expectedMessage));
         m_wfm.executeAllAndWaitUntilDone();
-        var result = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(m_wfm);
+        var result = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm);
         var error = result.getErrors().get(0);
         assertThat(error.getTemplateId()).isNotNull();
         assertThat(error.getComponentInfo()).isNull();
@@ -132,11 +132,10 @@ public class WorkflowMonitorStateEntityFactoryTest {
     public void messageFieldsForComponent() {
         var expectedMessage = "expected failure message";
         var failingNodeId = m_wfm.createAndAddNode(failingNativeNode(expectedMessage));
-        m_wfm.getNodeContainer(failingNodeId).setCustomDescription("foo");
         var containerName = "component name";
         var snc = wrapInComponent(containerName, failingNodeId);
         m_wfm.executeAllAndWaitUntilDone();
-        var result = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(m_wfm);
+        var result = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm);
         assertThat(result.getErrors()).hasSize(1);
         var error = result.getErrors().get(0);
         assertThat(error.getNodeId().toNodeID(m_wfm)).isNotEqualTo(snc.getID());
@@ -160,7 +159,7 @@ public class WorkflowMonitorStateEntityFactoryTest {
         var snc = wrapInComponent(containerName, expectedType, failingNodeId);
         linkComponent(snc, new URI(""));
         m_wfm.executeAllAndWaitUntilDone();
-        var result = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(m_wfm);
+        var result = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm);
         assertThat(result.getErrors()).hasSize(1);
         var error = result.getErrors().get(0);
         assertThat(error.getNodeId().toNodeID(m_wfm)).isEqualTo(snc.getID());
@@ -179,7 +178,7 @@ public class WorkflowMonitorStateEntityFactoryTest {
         var warningNodeId = m_wfm.createAndAddNode(warningNativeNode());
         var snc = wrapInComponent(warningNodeId);
         m_wfm.executeAllAndWaitUntilDone();
-        var result = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(m_wfm);
+        var result = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm);
         assertThat(result.getErrors()).isEmpty();
         assertThat(result.getWarnings()).hasSize(1);
         assertThat(result.getWarnings().get(0).getNodeId().toNodeID(m_wfm)).isNotEqualTo(snc.getID());

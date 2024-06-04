@@ -203,7 +203,7 @@ public final class WorkflowMiddleware {
      */
     public WorkflowMonitorStateSnapshotEnt buildWorkflowMonitorStateSnapshotEnt(final WorkflowKey wfKey) {
         var ws = getWorkflowState(wfKey);
-        var state = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(ws.m_wfm);
+        var state = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(ws.m_wfm);
         return builder(WorkflowMonitorStateSnapshotEntBuilder.class).setState(state)
             .setSnapshotId(m_workflowMonitorStateEntRepo.commit(wfKey, state)).build();
     }
@@ -318,7 +318,7 @@ public final class WorkflowMiddleware {
     public WorkflowMonitorStateChangeEventEnt buildWorkflowMonitorStateChangeEventEnt(final WorkflowKey wfKey,
         final String snapshotId, final PatchCreator<PatchEnt> patchCreator) {
         final var ws = getWorkflowState(wfKey);
-        var monitorState = WorkflowMonitorStateEntityFactory.buildWorkflowMonitorStateEnt(ws.m_wfm);
+        var monitorState = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(ws.m_wfm);
         var patch =
             m_workflowMonitorStateEntRepo.getChangesAndCommit(snapshotId, monitorState, patchCreator).orElse(null);
         if (patch != null) {

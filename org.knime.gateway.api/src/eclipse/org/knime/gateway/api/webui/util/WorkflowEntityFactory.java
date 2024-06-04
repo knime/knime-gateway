@@ -565,7 +565,7 @@ public final class WorkflowEntityFactory {
             .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
-            .setIsLocked(isLocked(nc)) //
+            .setIsLocked(CoreUtil.isLocked(nc) ? Boolean.TRUE : null) //
             .setInputContentVersion(inputContentVersion) //
             .build();
     }
@@ -687,7 +687,7 @@ public final class WorkflowEntityFactory {
             .setLink(buildTemplateLinkEnt(wm, buildContext))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
-            .setIsLocked(isLocked(wm)) //
+            .setIsLocked(CoreUtil.isLocked(wm) ? Boolean.TRUE : null) //
             .build();
     }
 
@@ -1638,20 +1638,6 @@ public final class WorkflowEntityFactory {
 
     private boolean isExecuting(final NodeContainerState ncState) {
         return (ncState.isExecutionInProgress() && !ncState.isWaitingToBeExecuted()) || ncState.isExecutingRemotely();
-    }
-
-    private Boolean isLocked(final NodeContainer nc) {
-        WorkflowManager wfm = null;
-        if (nc instanceof WorkflowManager wm) {
-            wfm = wm;
-        } else if (nc instanceof SubNodeContainer snc) {
-            wfm = snc.getWorkflowManager();
-        }
-        if (wfm == null || !wfm.isEncrypted()) {
-            return null; // NOSONAR
-        }
-
-        return !wfm.isUnlocked();
     }
 
     private Boolean isNodeResetOrCanBeReset(final NodeContainerState state, final NodeID nodeId,
