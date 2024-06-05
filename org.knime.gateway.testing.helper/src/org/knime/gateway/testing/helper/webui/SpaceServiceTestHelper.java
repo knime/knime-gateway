@@ -49,6 +49,7 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -56,7 +57,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -64,15 +64,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.hamcrest.MatcherAssert;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
@@ -816,14 +812,15 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var group = mock(SpaceGroup.class);
         when(group.getName()).thenReturn("some group name");
         var space = mock(Space.class);
-        when(space.toEntity()).thenReturn(mock(SpaceEnt.class));
+        SpaceEnt newSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "some name", "some owner", "", true);
+        when(space.toEntity()).thenReturn(newSpaceEnt);
         when(space.getId()).thenReturn("space id");
         when(group.createSpace()).thenReturn(space);
         when(provider.getSpaceGroup(group.getName())).thenReturn(group);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
-
         // make call to service: create a space in this provider in this group
-        ss().createSpace(provider.getId(), group.getName());
+        assertEquals("Should return the new Space entity", ss().createSpace(provider.getId(), group.getName()),
+            newSpaceEnt);
 
         // verify that method has been called
         verify(group).createSpace();
