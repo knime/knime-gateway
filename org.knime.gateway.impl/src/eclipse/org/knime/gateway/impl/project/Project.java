@@ -137,7 +137,7 @@ public interface Project {
         /**
          * @return The project type of the space item
          */
-        ProjectTypeEnum getProjectType();
+        Optional<ProjectTypeEnum> getProjectType();
 
         /**
          * @return the relative path of the original space item - usually only given for the local space

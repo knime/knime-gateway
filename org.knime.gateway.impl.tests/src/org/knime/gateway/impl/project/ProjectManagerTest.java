@@ -162,8 +162,8 @@ public class ProjectManagerTest {
             }
 
             @Override
-            public ProjectTypeEnum getProjectType() {
-                return null;
+            public Optional<ProjectTypeEnum> getProjectType() {
+                return Optional.empty();
             }
 
             @Override

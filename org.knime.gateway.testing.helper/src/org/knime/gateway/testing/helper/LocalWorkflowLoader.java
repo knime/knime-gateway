@@ -51,6 +51,7 @@ package org.knime.gateway.testing.helper;
 import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -177,8 +178,8 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             }
 
             @Override
-            public ProjectTypeEnum getProjectType() {
-                return ProjectTypeEnum.WORKFLOW;
+            public Optional<ProjectTypeEnum> getProjectType() {
+                return Optional.of(ProjectTypeEnum.WORKFLOW);
             }
         };
     }

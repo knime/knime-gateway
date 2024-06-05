@@ -713,8 +713,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public ProjectTypeEnum getProjectType() {
-                return ProjectTypeEnum.WORKFLOW;
+            public Optional<ProjectTypeEnum> getProjectType() {
+                return Optional.of(ProjectTypeEnum.WORKFLOW);
             }
         };
         return new Project() {

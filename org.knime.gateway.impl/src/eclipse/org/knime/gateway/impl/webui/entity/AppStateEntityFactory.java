@@ -335,7 +335,7 @@ public final class AppStateEntityFactory {
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
-            .setProjectType(origin.getProjectType()) //
+            .setProjectType(origin.getProjectType().orElse(null)) //
             .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }
