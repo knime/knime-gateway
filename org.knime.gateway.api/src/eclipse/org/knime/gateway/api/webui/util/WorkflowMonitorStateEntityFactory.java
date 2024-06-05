@@ -99,9 +99,9 @@ public final class WorkflowMonitorStateEntityFactory {
 
         var nodesWithMessages = new TreeSet<>(startTimeDescending);
 
-        CoreUtil.iterateNodes(
-                wfm, //
-                nc -> collectMessages(nc, nodesWithMessages) //
+        CoreUtil.iterateNodes( //
+            wfm, //
+            nc -> collectMessages(nc, nodesWithMessages) //
         );
 
         var errors = new ArrayList<WorkflowMonitorMessageEnt>();
@@ -142,14 +142,19 @@ public final class WorkflowMonitorStateEntityFactory {
     }
 
     private static NodeVisit checkNode(final NodeContainer nc) {
-        if (nc instanceof WorkflowManager) {
-            return new NodeVisit(true, false);
-        }
         if ((nc instanceof NativeNodeContainer nnc) && IGNORED_NODES.contains(nnc.getNode().getFactory().getClass())) {
             return new NodeVisit(false, false);
-        } else if (CoreUtil.isLocked(nc) || CoreUtil.isLinked(nc)) {
-            return new NodeVisit(false, true);
-        } else if (nc instanceof SubNodeContainer) {
+        } else if (CoreUtil.isLocked(nc).orElse(false) || CoreUtil.isLinked(nc)) {
+            if (nc instanceof WorkflowManager) {
+                // Metanodes do not display failure state in canvas (except for status indicators on potentially
+                // existing out ports). We do not print messages either to avoid inconsistency.
+                // TODO NXT-338 Display different states for metanodes
+                return new NodeVisit(false, false);
+            } else {
+                // Components do have failure state indicators (traffic lights, etc.)
+                return new NodeVisit(false, true);
+            }
+        } else if (nc instanceof SubNodeContainer || nc instanceof WorkflowManager) {
             return new NodeVisit(true, false);
         }
         return new NodeVisit(true, true);
@@ -170,12 +175,11 @@ public final class WorkflowMonitorStateEntityFactory {
             builder.setTemplateId(nnc.getNode().getFactory().getFactoryId());
         }
         if (nc instanceof SubNodeContainer snc) {
-            builder.setComponentInfo(
-                    builder(ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder.class) //
-                            .setName(snc.getName()) //
-                            .setType(WorkflowEntityFactory.buildComponentTypeEnt(snc)) //
-                            .setIcon(WorkflowEntityFactory.buildComponentIconEnt(snc)) //
-                            .build() //
+            builder.setComponentInfo(builder(ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder.class) //
+                .setName(snc.getName()) //
+                .setType(WorkflowEntityFactory.buildComponentTypeEnt(snc)) //
+                .setIcon(WorkflowEntityFactory.buildComponentIconEnt(snc)) //
+                .build() //
             );
         }
         return builder.build();

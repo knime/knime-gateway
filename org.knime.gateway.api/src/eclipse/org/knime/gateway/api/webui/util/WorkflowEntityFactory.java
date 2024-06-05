@@ -565,7 +565,7 @@ public final class WorkflowEntityFactory {
             .setHasDialog(hasDialog)//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
-            .setIsLocked(CoreUtil.isLocked(nc) ? Boolean.TRUE : null) //
+            .setIsLocked(CoreUtil.isLocked(nc).orElse(null)) //
             .setInputContentVersion(inputContentVersion) //
             .build();
     }
@@ -687,7 +687,7 @@ public final class WorkflowEntityFactory {
             .setLink(buildTemplateLinkEnt(wm, buildContext))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
-            .setIsLocked(CoreUtil.isLocked(wm) ? Boolean.TRUE : null) //
+            .setIsLocked(CoreUtil.isLocked(wm).orElse(null)) //
             .build();
     }
 

@@ -48,10 +48,10 @@
  */
 package org.knime.gateway.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -59,10 +59,8 @@ import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.api.webui.util.WorkflowMonitorStateEntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.impl.webui.service.GatewayServiceTest;
@@ -74,9 +72,14 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings({"javadoc", "java:S5960"}) // assertions in production code (this is test code)
 public class EncryptedComponentAndMetanodeTest extends GatewayServiceTest {
 
     private Pair<UUID, WorkflowManager> m_wfm;
+
+    private static final NodeIDEnt ENCRYPTED_COMPONENT = new NodeIDEnt(2);
+
+    private static final NodeIDEnt ENCRYPTED_METANODE = new NodeIDEnt(3);
 
     /**
      * Loads the workflow to test.
@@ -94,37 +97,56 @@ public class EncryptedComponentAndMetanodeTest extends GatewayServiceTest {
     @Test
     public void testDefaultServiceUtil() {
         assertThrows(IllegalStateException.class,
-            () -> DefaultServiceUtil.getWorkflowManager(m_wfm.getFirst().toString(), new NodeIDEnt(2)));
+            () -> DefaultServiceUtil.getWorkflowManager(m_wfm.getFirst().toString(), ENCRYPTED_COMPONENT));
         assertThrows(IllegalStateException.class,
-            () -> DefaultServiceUtil.getWorkflowManager(m_wfm.getFirst().toString(), new NodeIDEnt(3)));
+            () -> DefaultServiceUtil.getWorkflowManager(m_wfm.getFirst().toString(), ENCRYPTED_METANODE));
     }
 
-    /**
-     * Tests the {@link WorkflowMonitorStateEntityFactory}.
-     */
     @Test
-    public void testWorkflowMonitorStateEntityFactory() {
+    public void testMessagesForLockedMetanode() {
         m_wfm.getSecond().executeAllAndWaitUntilDone();
         var state = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm.getSecond());
-        assertThat(state.getErrors(), empty());
-        assertThat(state.getWarnings(), empty());
+
+        var idsWithErrors = state.getErrors().stream().map(WorkflowMonitorMessageEnt::getNodeId);
+        assertThat(idsWithErrors).doesNotContain(ENCRYPTED_METANODE);
+        assertNoMessageForContainedNodes(ENCRYPTED_METANODE, state.getErrors());
+
+        var idsWithWarnings = state.getWarnings().stream().map(WorkflowMonitorMessageEnt::getNodeId);
+        assertThat(idsWithWarnings).doesNotContain(ENCRYPTED_METANODE);
+        assertNoMessageForContainedNodes(ENCRYPTED_METANODE, state.getWarnings());
+    }
+
+    private static void assertNoMessageForContainedNodes(final NodeIDEnt container, final List<WorkflowMonitorMessageEnt> messages) {
+        var haveMessagesOfChildren = messages.stream().anyMatch(m -> {
+            // matches if e.g. m.getNodeId()=[3, 2] and container.getNodeIDs=[3]
+            return m.getNodeId().getNodeIDs()[0] == container.getNodeIDs()[0];
+        });
+        assertThat(!haveMessagesOfChildren);
+    }
+
+    @Test
+    public void testMessagesForLockedComponent() {
+        m_wfm.getSecond().executeAllAndWaitUntilDone();
+        var state = EntityFactory.WorkflowMonitorState.buildWorkflowMonitorStateEnt(m_wfm.getSecond());
+        var idsWithErrors = state.getErrors().stream().map(WorkflowMonitorMessageEnt::getNodeId);
+        assertThat(idsWithErrors).contains(ENCRYPTED_COMPONENT);
+        assertNoMessageForContainedNodes(ENCRYPTED_COMPONENT, state.getErrors());
+        assertNoMessageForContainedNodes(ENCRYPTED_COMPONENT, state.getWarnings());
     }
 
     /**
      * Tests the {@link DefaultWorkflowService}-implementation.
      *
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
      */
     @Test
-    public void testWorkflowService() throws NotASubWorkflowException, NodeNotFoundException {
+    public void testWorkflowService() {
         var ws = DefaultWorkflowService.getInstance();
         var projectId = m_wfm.getFirst().toString();
         assertThrows(IllegalStateException.class, () -> ws.getWorkflow(projectId, new NodeIDEnt(2), Boolean.FALSE));
 
         var monitorState = ws.getWorkflowMonitorState(projectId).getState();
-        assertThat(monitorState.getErrors(), empty());
-        assertThat(monitorState.getWarnings(), empty());
+        assertThat(monitorState.getErrors()).isEmpty();
+        assertThat(monitorState.getWarnings()).isEmpty();
     }
 
 }

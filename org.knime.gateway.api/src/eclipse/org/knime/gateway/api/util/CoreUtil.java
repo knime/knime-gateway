@@ -703,9 +703,9 @@ public final class CoreUtil {
 
     /**
      * @param nc The node to determine the locked status of
-     * @return Whether the given node is locked
+     * @return Whether the given node is locked, or an empty Optional if not applicable
      */
-    public static boolean isLocked(final NodeContainer nc) {
+    public static Optional<Boolean> isLocked(final NodeContainer nc) {
         WorkflowManager wfm = null;
         if (nc instanceof WorkflowManager wm) {
             wfm = wm;
@@ -713,9 +713,9 @@ public final class CoreUtil {
             wfm = snc.getWorkflowManager();
         }
         if (wfm == null || !wfm.isEncrypted()) {
-            return false;
+            return Optional.empty();
         }
-        return !wfm.isUnlocked();
+        return Optional.of(!wfm.isUnlocked());
     }
 
     /**
