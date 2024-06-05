@@ -57,9 +57,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,17 +68,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.core.customization.APCustomization;
-import org.knime.core.customization.APCustomizationProviderService;
-import org.knime.core.customization.APCustomizationProviderServiceImpl;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.impl.GatewayImplPlugin;
-import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkUtil;
+import org.knime.gateway.impl.APCustomizationInjection;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -241,11 +235,6 @@ public class NodeRepositoryTest {
      */
     @Test
     public void testNodeCustomizations() throws JsonMappingException, JsonProcessingException {
-        // Register the test-specific customization service
-        var context = FrameworkUtil.getBundle(GatewayImplPlugin.class).getBundleContext();
-        final Dictionary<String, Object> properties = new Hashtable<>();
-        properties.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE); // Use the highest possible ranking
-
         String customizationYaml = """
                   nodes:
                       filter:
@@ -258,30 +247,20 @@ public class NodeRepositoryTest {
                             - org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory
                           isRegex: false
                 """;
-
-        final APCustomization tempCustomization =
-            new ObjectMapper(new YAMLFactory()).readValue(customizationYaml, APCustomization.class);
-        var customizations =
-            context.registerService(APCustomizationProviderService.class, () -> tempCustomization, properties);
-
-        try {
+        try (var injected = new APCustomizationInjection(customizationYaml)) {
             var nodes = new NodeRepository().getNodes().stream().map(n -> n.templateId).toList();
             assertThat(nodes,
-                Matchers.containsInAnyOrder("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
-                    "org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"));
+                    Matchers.containsInAnyOrder("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
+                            "org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"));
 
             assertThat(NodeRepository.isNodeUsageForbidden(
-                "org.knime.base.node.preproc.autobinner.apply.AutoBinnerApplyNodeFactory"), is(true));
+                    "org.knime.base.node.preproc.autobinner.apply.AutoBinnerApplyNodeFactory"), is(true));
             assertThat(
-                NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"),
-                is(false));
+                    NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"),
+                    is(false));
             assertThat(
-                NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"),
-                is(false));
-        } finally {
-            customizations.unregister();
-            context.registerService(APCustomizationProviderService.class, new APCustomizationProviderServiceImpl(),
-                null);
+                    NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"),
+                    is(false));
         }
     }
 }
