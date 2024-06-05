@@ -817,6 +817,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(group.getName()).thenReturn("some group name");
         var space = mock(Space.class);
         when(space.toEntity()).thenReturn(mock(SpaceEnt.class));
+        when(space.getId()).thenReturn("space id");
         when(group.createSpace()).thenReturn(space);
         when(provider.getSpaceGroup(group.getName())).thenReturn(group);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
