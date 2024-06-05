@@ -283,7 +283,7 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
-        throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException,
+        throws ServiceExceptions.IOException, InvalidRequestException,
         ServiceExceptions.OperationNotAllowedException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameSpace(spaceName);
