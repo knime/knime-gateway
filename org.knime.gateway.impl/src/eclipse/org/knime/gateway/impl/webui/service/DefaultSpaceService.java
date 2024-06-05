@@ -278,6 +278,22 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
+        throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException, InvalidRequestException,
+        ServiceExceptions.OperationNotAllowedException {
+        try {
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameSpace(spaceName);
+        } catch (NoSuchElementException e) {
+            throw new InvalidRequestException("Could not access space", e);
+        } catch (IOException e) {
+            throw new ServiceExceptions.IOException(e.getMessage(), e);
+        }
+    }
+
     private Stream<String> getOpenWorkflowIds() {
         return m_projectManager.getProjectIds().stream()//
             .flatMap(id -> m_projectManager.getProject(id)//
