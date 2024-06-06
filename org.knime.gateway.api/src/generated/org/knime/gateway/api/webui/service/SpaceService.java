@@ -223,7 +223,7 @@ public interface SpaceService extends GatewayService {
      *
      * @param spaceProviderId Identifies a space-provider.
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
-     * @param spaceName New name for the space.
+     * @param spaceName Name given to a space.
      *
      * @return the result
      * @throws ServiceExceptions.IOException If there was an I/O error of some kind.

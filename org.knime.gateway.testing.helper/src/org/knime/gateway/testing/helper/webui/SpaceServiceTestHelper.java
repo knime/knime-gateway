@@ -53,6 +53,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -85,7 +86,6 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.Project.Origin;
@@ -217,13 +217,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         });
     }
 
-    public void testRenameSpace()
-        throws IOException, OperationNotAllowedException, ServiceExceptions.IOException, InvalidRequestException {
+    public void testRenameSpace() throws Exception {
         var provider = Mockito.mock(SpaceProvider.class);
         when(provider.getId()).thenReturn("some provider ID");
         var space = mock(Space.class);
         SpaceEnt renamedSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "test name", "some owner", "", true);
         when(space.renameSpace(any(String.class))).thenReturn(renamedSpaceEnt);
+        when(provider.getSpace(anyString())).thenReturn(space);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
 
         // call service
         assertEquals("Should return an Space entity", //
@@ -231,7 +232,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             renamedSpaceEnt);
 
         // verify the function from the individual space gets called
-        verify(space).renameSpace("new names");
+        verify(space).renameSpace("new name");
     }
 
     /**
