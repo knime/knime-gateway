@@ -241,6 +241,7 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
 
                         @Override
                         public void toNodeSettings(final String textSettings,
+                            final Map<SettingsType, NodeSettingsRO> previousSettings,
                             final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                             //
                         }
