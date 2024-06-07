@@ -55,6 +55,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum.ADD;
+import static org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum.REMOVE;
+import static org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum.REPLACE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -72,6 +75,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -100,9 +104,10 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.testing.node.SourceNodeTestFactory;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
@@ -113,13 +118,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tests {@link SelectionEventSource}.
+ * TODO
+ *
+ * Tests {@link SelectionEventBus}.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("javadoc")
-public class SelectionEventSourceTest {
+public class SelectionEventsTest {
 
     private static final String WORKFLOW_NAME = "workflow";
 
@@ -193,66 +200,65 @@ public class SelectionEventSourceTest {
     }
 
     @Test
-    public void testConsumeHiLiteEvent() {
+    public void testConsumeHiLiteEvent() throws Exception {
 
         @SuppressWarnings("unchecked")
-        final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
+        final Consumer<SelectionEventEnt> consumerMock = mock(Consumer.class);
 
-        registerSelectionEventSource(consumerMock, m_nnc);
+        try (var close = setupSelectionEvents(consumerMock, m_nnc)) {
+            m_nnc.getNodeModel().getInHiLiteHandler(0).fireHiLiteEvent(stringListToRowKeySet(ROWKEYS_1_2));
 
-        m_nnc.getNodeModel().getInHiLiteHandler(0).fireHiLiteEvent(stringListToRowKeySet(ROWKEYS_1_2));
+            await().pollDelay(ONE_HUNDRED_MILLISECONDS).timeout(FIVE_SECONDS).untilAsserted(
+                () -> verify(consumerMock, times(1)).accept(argThat(se -> verifySelectionEvent(se, "root", "root:1"))));
 
-        await().pollDelay(ONE_HUNDRED_MILLISECONDS).timeout(FIVE_SECONDS)
-            .untilAsserted(() -> verify(consumerMock, times(1)).accept(eq("SelectionEvent"),
-                argThat(se -> verifySelectionEvent(se, "root", "root:1"))));
-
-        assertThat(m_hlh.getHiLitKeys(), is(stringListToRowKeySet(ROWKEYS_1_2)));
-        m_hlh.fireClearHiLiteEvent();
+            assertThat(m_hlh.getHiLitKeys(), is(stringListToRowKeySet(ROWKEYS_1_2)));
+            m_hlh.fireClearHiLiteEvent();
+        }
     }
 
     @Test
-    public void testConsumeUnHiLiteEvent() {
+    public void testConsumeUnHiLiteEvent() throws Exception {
 
         m_hlh.fireHiLiteEvent(stringListToRowKeySet(ROWKEYS_1_2));
 
         @SuppressWarnings("unchecked")
-        final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
+        final Consumer<SelectionEventEnt> consumerMock = mock(Consumer.class);
 
-        registerSelectionEventSource(consumerMock, m_nnc);
+        try (var close = setupSelectionEvents(consumerMock, m_nnc)) {
+            m_nnc.getNodeModel().getInHiLiteHandler(0).fireUnHiLiteEvent(stringListToRowKeySet(ROWKEYS_1));
 
-        m_nnc.getNodeModel().getInHiLiteHandler(0).fireUnHiLiteEvent(stringListToRowKeySet(ROWKEYS_1));
+            await().pollDelay(ONE_HUNDRED_MILLISECONDS).timeout(FIVE_SECONDS)
+                .untilAsserted(() -> verify(consumerMock, times(1))
+                    .accept(argThat(se -> se.getSelection().equals(ROWKEYS_1) && se.getMode() == REMOVE)));
 
-        await().pollDelay(ONE_HUNDRED_MILLISECONDS).timeout(FIVE_SECONDS)
-            .untilAsserted(() -> verify(consumerMock, times(1)).accept(eq("SelectionEvent"),
-                argThat(se -> se.getSelection().equals(ROWKEYS_1) && se.getMode() == SelectionEventMode.REMOVE)));
-
-        assertThat(m_hlh.getHiLitKeys(), is(stringListToRowKeySet(ROWKEYS_2)));
-        m_hlh.fireClearHiLiteEvent();
+            assertThat(m_hlh.getHiLitKeys(), is(stringListToRowKeySet(ROWKEYS_2)));
+            m_hlh.fireClearHiLiteEvent();
+        }
     }
 
     @Test
-    public void testConsumeReplaceHiLiteEvent() {
+    public void testConsumeReplaceHiLiteEvent() throws Exception {
 
         m_hlh.fireHiLiteEvent(stringListToRowKeySet(ROWKEYS_1));
 
         @SuppressWarnings("unchecked")
-        final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
+        final Consumer<SelectionEventEnt> consumerMock = mock(Consumer.class);
 
-        registerSelectionEventSource(consumerMock, m_nnc);
+        try (var close = setupSelectionEvents(consumerMock, m_nnc)) {
+            m_nnc.getNodeModel().getInHiLiteHandler(0).fireReplaceHiLiteEvent(stringListToRowKeySet(ROWKEYS_2));
 
-        m_nnc.getNodeModel().getInHiLiteHandler(0).fireReplaceHiLiteEvent(stringListToRowKeySet(ROWKEYS_2));
+            await().pollDelay(ONE_HUNDRED_MILLISECONDS).timeout(FIVE_SECONDS)
+                .untilAsserted(() -> verify(consumerMock, times(1))
+                    .accept(argThat(se -> se.getSelection().equals(ROWKEYS_2) && se.getMode() == REPLACE)));
 
-        await().pollDelay(ONE_HUNDRED_MILLISECONDS).timeout(FIVE_SECONDS)
-            .untilAsserted(() -> verify(consumerMock, times(1)).accept(eq("SelectionEvent"),
-                argThat(se -> se.getSelection().equals(ROWKEYS_2) && se.getMode() == SelectionEventMode.REPLACE)));
-
-        assertThat(m_hlh.getHiLitKeys(), is(stringListToRowKeySet(ROWKEYS_2)));
-        m_hlh.fireClearHiLiteEvent();
+            assertThat(m_hlh.getHiLitKeys(), is(stringListToRowKeySet(ROWKEYS_2)));
+            m_hlh.fireClearHiLiteEvent();
+        }
     }
 
     /**
      * Tests the {@code async}-parameter of the
-     * {@link SelectionEventSource#processSelectionEvent(NativeNodeContainer, SelectionEventMode, boolean, List)}-method.
+     * {@link SelectionEventBus#processSelectionEvent(NativeNodeContainer, SelectionEventMode, boolean, List)}-method.
      */
     @Test
     public void testProcessSelectionEventAsync() {
@@ -263,9 +269,9 @@ public class SelectionEventSourceTest {
 
         // async call
         var rowKeys = stringListToRowKeySet(List.of("1"));
-        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.ADD, true, rowKeys);
-        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REMOVE, true, rowKeys);
-        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REPLACE, true, rowKeys);
+        SelectionEventBus.processSelectionEvent(hiLiteHandler, nodeId, ADD, true, rowKeys);
+        SelectionEventBus.processSelectionEvent(hiLiteHandler, nodeId, REMOVE, true, rowKeys);
+        SelectionEventBus.processSelectionEvent(hiLiteHandler, nodeId, REPLACE, true, rowKeys);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> assertThat(hiLiteListener.m_callerThreadName, is(not(nullValue()))));
         assertThat(hiLiteListener.m_callerThreadName, is(not("INVALID")));
@@ -274,32 +280,33 @@ public class SelectionEventSourceTest {
 
         // sync call
         rowKeys = stringListToRowKeySet(List.of("2"));
-        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.ADD, false, rowKeys);
-        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REMOVE, false, rowKeys);
-        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REPLACE, false, rowKeys);
+        SelectionEventBus.processSelectionEvent(hiLiteHandler, nodeId, ADD, false, rowKeys);
+        SelectionEventBus.processSelectionEvent(hiLiteHandler, nodeId, REMOVE, false, rowKeys);
+        SelectionEventBus.processSelectionEvent(hiLiteHandler, nodeId, REPLACE, false, rowKeys);
         assertThat(hiLiteListener.m_callerThreadName, is(Thread.currentThread().getName()));
     }
 
     /**
      * Makes sure that an event source registered on a node without a view doesn't emit selection events.
+     *
+     * @throws Exception
      */
     @Test
-    public void testNoSelectionEventForNodeWithoutAView() {
+    public void testNoSelectionEventForNodeWithoutAView() throws Exception {
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(m_wfm,
             new VirtualSubNodeInputNodeFactory(null, new PortType[]{BufferedDataTable.TYPE}));
 
         @SuppressWarnings("unchecked")
-        final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
-        registerSelectionEventSource(consumerMock, nnc);
-
-        nnc.getNodeModel().getInHiLiteHandler(0).fireUnHiLiteEvent(new KeyEvent(stringListToRowKeySet(ROWKEYS_1)),
-            false);
-
-        verify(consumerMock, times(0)).accept(eq("SelectionEvent"), any());
+        final Consumer<SelectionEventEnt> consumerMock = mock(Consumer.class);
+        try (var close = setupSelectionEvents(consumerMock, m_nnc)) {
+            nnc.getNodeModel().getInHiLiteHandler(0).fireUnHiLiteEvent(new KeyEvent(stringListToRowKeySet(ROWKEYS_1)),
+                false);
+            verify(consumerMock, times(0)).accept(any());
+        }
     }
 
     @Test
-    public void testSelectionEventWithError() {
+    public void testSelectionEventWithError() throws Exception {
         Function<NodeViewNodeModel, NodeView> viewCreator = m -> { // NOSONAR
             return new NodeTableView() { // NOSONAR
 
@@ -359,13 +366,14 @@ public class SelectionEventSourceTest {
         var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(1, 0, viewCreator));
 
         @SuppressWarnings("unchecked")
-        final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
-        registerSelectionEventSource(consumerMock, nnc);
+        final Consumer<SelectionEventEnt> consumerMock = mock(Consumer.class);
+        try (var close = setupSelectionEvents(consumerMock, nnc)) {
+            var handler = nnc.getNodeModel().getInHiLiteHandler(0);
+            handler.fireHiLiteEvent(new KeyEvent(handler, stringListToRowKeySet(ROWKEYS_1)), false);
 
-        nnc.getNodeModel().getInHiLiteHandler(0).fireHiLiteEvent(new KeyEvent(stringListToRowKeySet(ROWKEYS_1)), false);
-
-        verify(consumerMock, times(1)).accept(eq("SelectionEvent"), argThat(
-            se -> se.getSelection() == null && se.getMode() == SelectionEventMode.ADD && se.getError().equals("foo")));
+            verify(consumerMock, times(1))
+                .accept(argThat(se -> se.getSelection() == null && se.getMode() == ADD && se.getError().equals("foo")));
+        }
     }
 
     private static class TestHiLiteListener implements HiLiteListener {
@@ -398,9 +406,10 @@ public class SelectionEventSourceTest {
 
     }
 
-    private static boolean verifySelectionEvent(final SelectionEvent se, final String workflowId, final String nodeId) {
-        return se.getSelection().equals(ROWKEYS_1_2) && se.getMode() == SelectionEventMode.ADD
-            && se.getNodeId().equals(nodeId) && se.getWorkflowId().equals(workflowId)
+    private static boolean verifySelectionEvent(final SelectionEventEnt se, final String workflowId,
+        final String nodeId) {
+        return se.getSelection().equals(ROWKEYS_1_2) && se.getMode() == SelectionEventEnt.ModeEnum.ADD
+            && se.getNodeId().equals(new NodeIDEnt(nodeId)) && se.getWorkflowId().equals(new NodeIDEnt(workflowId))
             && se.getProjectId().startsWith(WORKFLOW_NAME);
     }
 
@@ -408,40 +417,45 @@ public class SelectionEventSourceTest {
         return keys.stream().map(RowKey::new).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public static SelectionEventSource<NodeWrapper>
-        createSelectionEventSource(final BiConsumer<String, SelectionEvent> selectionEventConsumer) {
-        return new SelectionEventSource<>((s, o) -> selectionEventConsumer.accept(s, (SelectionEvent)o),
+    private static AutoCloseable setupSelectionEvents(final Consumer<SelectionEventEnt> selectionEventConsumer,
+        final NativeNodeContainer nnc) {
+        var selectionEventBus = new SelectionEventBus();
+        selectionEventBus.addSelectionEventListener(selectionEventConsumer);
+        selectionEventBus.addSelectionEventEmitterAndGetInitialEvent(NodeWrapper.of(nnc),
             NodeViewManager.getInstance().getTableViewManager());
-    }
-
-    private static void registerSelectionEventSource(final BiConsumer<String, SelectionEvent> selectionEventConsumer,
-        final NativeNodeContainer node) {
-        createSelectionEventSource(selectionEventConsumer).addEventListenerFor(NodeWrapper.of(node));
+        return () -> {
+            selectionEventBus.removeSelectionEventListener(selectionEventConsumer);
+            selectionEventBus.removeSelectionEventEmitter(NodeWrapper.of(nnc));
+        };
     }
 
     /**
-     * Tests the {@link SelectionEventSource} in conjunction with {@link NodeViewEnt}.
-     *
-     * @throws Exception
+     * Tests the {@link SelectionEventBus} in conjunction with {@link NodeViewEnt}.
      */
     @Test
-    public void testNodeViewEntWithSelectionEventSource() throws Exception {
+    public void testNodeViewEntWithSelectionEvents() {
         var hiLiteHandler = m_nnc.getNodeModel().getInHiLiteHandler(0);
         hiLiteHandler.fireHiLiteEvent(new RowKey("k1"), new RowKey("k2"));
 
         @SuppressWarnings("unchecked")
-        final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
-        var selectionEventSource = SelectionEventSourceTest.createSelectionEventSource(consumerMock);
-        var initialSelection = selectionEventSource.addEventListenerAndGetInitialEventFor(NodeWrapper.of(m_nnc))
-            .map(SelectionEvent::getSelection).orElse(Collections.emptyList());
+        final Consumer<SelectionEventEnt> consumerMock = mock(Consumer.class);
+        var selectionEventBus = new SelectionEventBus();
+        selectionEventBus.addSelectionEventListener(consumerMock);
+        var initialSelection = selectionEventBus
+            .addSelectionEventEmitterAndGetInitialEvent(NodeWrapper.of(m_nnc),
+                NodeViewManager.getInstance().getTableViewManager())
+            .map(SelectionEventEnt::getSelection).orElse(Collections.emptyList());
         var nodeViewEnt = NodeViewEnt.create(m_nnc, () -> initialSelection);
 
         assertThat(nodeViewEnt.getInitialSelection(), is(List.of("k1", "k2")));
 
         hiLiteHandler.fireHiLiteEvent(new RowKey("k3"));
         await().pollDelay(ONE_HUNDRED_MILLISECONDS).timeout(FIVE_SECONDS)
-            .untilAsserted(() -> verify(consumerMock, times(1)).accept(eq("SelectionEvent"),
-                argThat(se -> se.getSelection().equals(List.of("k3")) && se.getMode() == SelectionEventMode.ADD)));
+            .untilAsserted(() -> verify(consumerMock, times(1))
+                .accept(argThat(se -> se.getSelection().equals(List.of("k3")) && se.getMode() == ADD)));
+
+        selectionEventBus.removeSelectionEventEmitter(NodeWrapper.of(m_nnc));
+        selectionEventBus.removeSelectionEventListener(consumerMock);
     }
 
     /**
@@ -452,7 +466,7 @@ public class SelectionEventSourceTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreateNodeViewEntAndSetUpEventSources() throws Exception {
+    public void testCreateNodeViewEntAndSetUpSelectionEvents() throws Exception {
 
         Function<NodeViewNodeModel, NodeView> viewCreator = m -> { // NOSONAR
             return new NodeTableView() { // NOSONAR
@@ -504,50 +518,50 @@ public class SelectionEventSourceTest {
 
         BiConsumer<String, Object> eventConsumer = Mockito.mock(BiConsumer.class);
 
-        /* assert that the selection event source is properly set up */
-        var eventSource =
-            UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, eventConsumer, false).getSecond()[0];
-        fireHiLiteEvent(hlh, "test");
-        verify(eventConsumer).accept(eq("SelectionEvent"),
-            argThat(se -> verifySelectionEvent((SelectionEvent)se, "test")));
+        var selectionEventBus = new SelectionEventBus();
 
-        /* assert that all the listeners are removed from the selection event source on node state change */
-        wfm.resetAndConfigureAll();
-        fireHiLiteEvent(hlh, "test2");
-        verify(eventConsumer, never()).accept(eq("SelectionEvent"),
-            argThat(se -> verifySelectionEvent((SelectionEvent)se, "test2")));
+        /* assert that the selection events are properly set up */
+        try (var dispose =
+            UIExtensionEntityFactory.createNodeViewEntAndSetupEvents(nnc, eventConsumer, false, selectionEventBus)
+                .getSecond()) {
+            fireHiLiteEvent(hlh, "test");
+            verify(eventConsumer).accept(eq("SelectionEvent"),
+                argThat(se -> verifySelectionEvent((SelectionEventEnt)se, "test")));
 
-        eventSource.removeAllEventListeners();
+            /* assert that all the listeners are removed from the selection event registry on node state change */
+            wfm.resetAndConfigureAll();
+            fireHiLiteEvent(hlh, "test2");
+            verify(eventConsumer, never()).accept(eq("SelectionEvent"),
+                argThat(se -> verifySelectionEvent((SelectionEventEnt)se, "test2")));
+        }
 
-        /* test the selection event source in combination with the node view state event source */
+        /* test the selection events in combination with the node view state events */
         // test selection events
         wfm.executeAllAndWaitUntilDone();
-        UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, eventConsumer, true);
-        fireHiLiteEvent(hlh, "test3");
-        verify(eventConsumer).accept(eq("SelectionEvent"),
-            argThat(se -> verifySelectionEvent((SelectionEvent)se, "test3")));
-        // test node view state event: configured
-        wfm.resetAndConfigureAll();
-        awaitUntilAsserted(() -> verify(eventConsumer).accept(eq("NodeViewStateEvent"),
-            argThat(se -> verifyNodeViewStateEvent((NodeViewStateEvent)se, "configured", null))));
-        // make sure no selection events are fired if node is not executed
-        fireHiLiteEvent(hlh, "test4");
-        verify(eventConsumer, never()).accept(eq("SelectionEvent"),
-            argThat(se -> verifySelectionEvent((SelectionEvent)se, "test4")));
-        // test node view state event: executed
-        wfm.executeAllAndWaitUntilDone();
-        awaitUntilAsserted(() -> verify(eventConsumer).accept(eq("NodeViewStateEvent"),
-            argThat(se -> verifyNodeViewStateEvent((NodeViewStateEvent)se, "executed", "the initial data"))));
-        // make sure that selection events are issued again
-        fireHiLiteEvent(hlh, "test5");
-        verify(eventConsumer).accept(eq("SelectionEvent"),
-            argThat(se -> verifySelectionEvent((SelectionEvent)se, "test5")));
-
+        try (var dipose =
+            UIExtensionEntityFactory.createNodeViewEntAndSetupEvents(nnc, eventConsumer, true, selectionEventBus)
+                .getSecond()) {
+            fireHiLiteEvent(hlh, "test3");
+            verify(eventConsumer).accept(eq("SelectionEvent"),
+                argThat(se -> verifySelectionEvent((SelectionEventEnt)se, "test3")));
+            // test node view state event: configured
+            wfm.resetAndConfigureAll();
+            awaitUntilAsserted(() -> verify(eventConsumer).accept(eq("NodeViewStateEvent"),
+                argThat(se -> verifyNodeViewStateEvent((NodeViewStateEvent)se, "configured", null))));
+            // make sure no selection events are fired if node is not executed
+            fireHiLiteEvent(hlh, "test4");
+            verify(eventConsumer, never()).accept(eq("SelectionEvent"),
+                argThat(se -> verifySelectionEvent((SelectionEventEnt)se, "test4")));
+            // test node view state event: executed
+            wfm.executeAllAndWaitUntilDone();
+            awaitUntilAsserted(() -> verify(eventConsumer).accept(eq("NodeViewStateEvent"),
+                argThat(se -> verifyNodeViewStateEvent((NodeViewStateEvent)se, "executed", "the initial data"))));
+        }
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
-    private static boolean verifySelectionEvent(final SelectionEvent se, final String rowKey) {
-        return se.getSelection().equals(List.of(rowKey)) && se.getMode() == SelectionEventMode.ADD;
+    private static boolean verifySelectionEvent(final SelectionEventEnt se, final String rowKey) {
+        return se.getSelection().equals(List.of(rowKey)) && se.getMode() == ADD;
     }
 
     private static boolean verifyNodeViewStateEvent(final NodeViewStateEvent e, final String state,

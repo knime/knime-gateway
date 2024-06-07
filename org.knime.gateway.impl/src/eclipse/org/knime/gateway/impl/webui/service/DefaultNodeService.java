@@ -51,6 +51,7 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeCont
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +68,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeDialogEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
@@ -75,14 +78,14 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
-import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
-import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
  * The default implementation of the {@link NodeService}-interface.
@@ -92,9 +95,10 @@ import org.knime.gateway.impl.webui.service.events.EventConsumer;
  */
 public final class DefaultNodeService implements NodeService {
 
-    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, false);
-
     static final LRUMap<NodeFactoryKeyEnt, NativeNodeDescriptionEnt> m_nodeDescriptionCache = new LRUMap<>(100);
+
+    private final SelectionEventBus m_selectionEventBus =
+        ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -203,13 +207,40 @@ public final class DefaultNodeService implements NodeService {
             throw new InvalidRequestException(
                 "Node view can't be requested. The node " + nnc.getNameWithID() + " is not executed.");
         }
-        if (m_eventConsumer == null) {
-            return NodeViewEnt.create(nnc);
+
+        return NodeViewEnt.create(nnc, createInitialSelectionSupplier(NodeWrapper.of(nnc), projectId,
+            NodeViewManager.getInstance().getTableViewManager(), m_selectionEventBus));
+    }
+
+    static <N extends NodeWrapper> Supplier<List<String>> createInitialSelectionSupplier(final N nodeWrapper,
+        final String projectId, final TableViewManager<N> tableViewManager, final SelectionEventBus selectionEventBus) {
+        if (selectionEventBus == null) {
+            return DefaultNodeService.createInitialSelectionSupplier(nodeWrapper, tableViewManager);
         } else {
-            return UIExtensionEntityFactory.createNodeViewEntAndEventSources(nnc, (n, e) -> {
-                // TODO NXT-2471
-            }, false).getFirst();
+            var initialSelection =
+                selectionEventBus.addSelectionEventEmitterAndGetInitialEvent(nodeWrapper, projectId, tableViewManager)
+                    .map(SelectionEventEnt::getSelection).orElse(null);
+            NodeCleanUpCallback
+                .builder(nodeWrapper.get(), () -> selectionEventBus.removeSelectionEventEmitter(nodeWrapper))
+                .cleanUpOnNodeStateChange(true).build();
+            return () -> initialSelection;
         }
+    }
+
+    private static <N extends NodeWrapper> Supplier<List<String>> createInitialSelectionSupplier(final N nodeWrapper,
+        final TableViewManager<N> tableViewManager) {
+        var handler = tableViewManager.getHiLiteHandler(nodeWrapper).orElse(null);
+        if (handler != null) {
+            return () -> {
+                try {
+                    return tableViewManager.callSelectionTranslationService(nodeWrapper, handler.getHiLitKeys());
+                } catch (IOException ex) { // NOSONAR
+                    return List.of();
+                }
+            };
+        }
+        return null;
+
     }
 
     private static <T> T getNC(final String projectId, final NodeIDEnt workflowId,

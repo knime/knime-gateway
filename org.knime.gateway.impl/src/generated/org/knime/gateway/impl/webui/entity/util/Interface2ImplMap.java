@@ -242,8 +242,8 @@ import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.R
 import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSelectionEventEnt;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt.ShowToastEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
@@ -643,8 +643,8 @@ public class Interface2ImplMap {
         if(clazz == ReplaceNodeCommandEntBuilder.class) {
             return (B)new DefaultReplaceNodeCommandEnt.DefaultReplaceNodeCommandEntBuilder();
         }        
-        if(clazz == SelectionEventTypeEntBuilder.class) {
-            return (B)new DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder();
+        if(clazz == SelectionEventEntBuilder.class) {
+            return (B)new DefaultSelectionEventEnt.DefaultSelectionEventEntBuilder();
         }        
         if(clazz == ShowToastEventEntBuilder.class) {
             return (B)new DefaultShowToastEventEnt.DefaultShowToastEventEntBuilder();

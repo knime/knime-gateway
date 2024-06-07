@@ -63,9 +63,9 @@ import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
+import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
  * Logic shared between web-ui default service implementations.
@@ -119,7 +119,6 @@ final class DefaultServiceUtil {
         final NodeIDEnt nodeId, final String mode, final List<String> selection,
         final Function<NodeContainer, N> getNodeWrapper) throws NodeNotFoundException {
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
-        final var selectionEventMode = SelectionEventMode.valueOf(mode.toUpperCase(Locale.ROOT));
         var nodeWrapper = getNodeWrapper.apply(nc);
         TableViewManager<N> tableViewManager;
         if (nodeWrapper instanceof NodePortWrapper) {
@@ -135,7 +134,8 @@ final class DefaultServiceUtil {
             throw new IllegalStateException("Problem translating selection to row keys", ex);
         }
         var hiLiteHandler = tableViewManager.getHiLiteHandler(nodeWrapper).orElseThrow();
-        SelectionEventSource.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
+        final var selectionEventMode = SelectionEventEnt.ModeEnum.valueOf(mode.toUpperCase(Locale.ROOT));
+        SelectionEventBus.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
     }
 
 }

@@ -65,6 +65,7 @@ import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -148,6 +149,7 @@ public final class ServiceDependencies {
      * @param kaiHandler          handle K-AI related requests
      * @param nodeCollections
      * @param nodeRepo
+     * @param selectionEventBus
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
@@ -161,7 +163,8 @@ public final class ServiceDependencies {
         final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
         final NodeCollections nodeCollections, //
-        final NodeRepository nodeRepo) {
+        final NodeRepository nodeRepo,
+        final SelectionEventBus selectionEventBus) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -175,6 +178,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(KaiHandler.class, kaiHandler);
             ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
+            ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "

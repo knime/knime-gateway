@@ -58,7 +58,7 @@ import org.knime.core.node.workflow.NodeStateChangeListener;
 import org.knime.gateway.api.entity.NodeViewEnt;
 
 /**
- * Emits {@link NodeViewStateEvent NodeViewStateEvents} which signal a node view to update itself (depending on the
+ * Emits {@link NodeViewStateEvent NodeViewStateEvents} which signals a node view to update itself (depending on the
  * underlying node state).
  *
  * Implementation only covers 'single node views' so far and should eventually be extended to composite views, too (see
@@ -74,18 +74,14 @@ public class NodeViewStateEventSource extends EventSource<NativeNodeContainer, N
 
     private final Supplier<List<String>> m_initialSelectionSupplier;
 
-    private final Runnable m_preEventCreationCallback;
-
     /**
      * @param eventConsumer all emitted events are passed to this consumer
-     * @param preEventCreationCallback called right before a new event is created (and passed to the consumer)
      * @param initialSelectionSupplier supplier for the initial selection required to create a
      *            {@link NodeViewEnt}-instance
      */
     public NodeViewStateEventSource(final BiConsumer<String, Object> eventConsumer,
-        final Runnable preEventCreationCallback, final Supplier<List<String>> initialSelectionSupplier) {
+        final Supplier<List<String>> initialSelectionSupplier) {
         super(eventConsumer);
-        m_preEventCreationCallback = preEventCreationCallback;
         m_initialSelectionSupplier = initialSelectionSupplier;
     }
 
@@ -93,7 +89,6 @@ public class NodeViewStateEventSource extends EventSource<NativeNodeContainer, N
     public Optional<NodeViewStateEvent> addEventListenerAndGetInitialEventFor(final NativeNodeContainer nnc) {
         m_nnc = nnc;
         m_nodeStateChangeListener = e -> {
-            m_preEventCreationCallback.run();
             var nodeViewStateEvent = createEvent(m_nnc, m_initialSelectionSupplier);
             sendEvent(nodeViewStateEvent);
         };

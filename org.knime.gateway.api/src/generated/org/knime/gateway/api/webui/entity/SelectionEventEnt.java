@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.EventTypeEnt;
+import org.knime.gateway.api.webui.entity.EventEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,79 +56,153 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event type to register for SelectionEvents.
+ * A selection (aka hiliting) event.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SelectionEventTypeEnt extends GatewayEntity, EventTypeEnt {
+public interface SelectionEventEnt extends GatewayEntity, EventEnt {
+
+  /**
+   * selection mode
+   */
+  public enum ModeEnum {
+    ADD("ADD"),
+    
+    REMOVE("REMOVE"),
+    
+    REPLACE("REPLACE");
+
+    private String value;
+
+    ModeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * The workflow project id to get the selection-events for.
+   * The project emitting the event.
    * @return projectId , never <code>null</code>
    **/
   public String getProjectId();
 
   /**
-   * The top-level (root) or sub-workflow to get the selection-events for.
+   * The (sub-)workflow emitting the event.
    * @return workflowId , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId();
 
   /**
-   * Get nodeId
+   * The node emitting the event.
    * @return nodeId , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
+
+  /**
+   * The port emitting the event (in case of a port view).
+   * @return portIndex 
+   **/
+  public Integer getPortIndex();
+
+  /**
+   * selection mode
+   * @return mode , never <code>null</code>
+   **/
+  public ModeEnum getMode();
+
+  /**
+   * representation of the actual selection (e.g. a list of row keys)
+   * @return selection 
+   **/
+  public java.util.List<String> getSelection();
+
+  /**
+   * an error message if the selection event couldn&#39;t be created
+   * @return error 
+   **/
+  public String getError();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (SelectionEventTypeEnt)other;
-      valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
+      var e = (SelectionEventEnt)other;
       valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
       valueConsumer.accept("workflowId", Pair.create(getWorkflowId(), e.getWorkflowId()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
+      valueConsumer.accept("portIndex", Pair.create(getPortIndex(), e.getPortIndex()));
+      valueConsumer.accept("mode", Pair.create(getMode(), e.getMode()));
+      valueConsumer.accept("selection", Pair.create(getSelection(), e.getSelection()));
+      valueConsumer.accept("error", Pair.create(getError(), e.getError()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface SelectionEventTypeEntBuilder extends GatewayEntityBuilder<SelectionEventTypeEnt> {
+    public interface SelectionEventEntBuilder extends GatewayEntityBuilder<SelectionEventEnt> {
 
         /**
-         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
-         * 
-         * @param typeId the property value,  
-         * @return this entity builder for chaining
-         */
-        SelectionEventTypeEntBuilder setTypeId(String typeId);
-        
-        /**
-         * The workflow project id to get the selection-events for.
+         * The project emitting the event.
          * 
          * @param projectId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SelectionEventTypeEntBuilder setProjectId(String projectId);
+        SelectionEventEntBuilder setProjectId(String projectId);
         
         /**
-         * The top-level (root) or sub-workflow to get the selection-events for.
+         * The (sub-)workflow emitting the event.
          * 
          * @param workflowId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SelectionEventTypeEntBuilder setWorkflowId(org.knime.gateway.api.entity.NodeIDEnt workflowId);
+        SelectionEventEntBuilder setWorkflowId(org.knime.gateway.api.entity.NodeIDEnt workflowId);
         
         /**
-   		 * Set nodeId
+         * The node emitting the event.
          * 
          * @param nodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SelectionEventTypeEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        SelectionEventEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        
+        /**
+         * The port emitting the event (in case of a port view).
+         * 
+         * @param portIndex the property value,  
+         * @return this entity builder for chaining
+         */
+        SelectionEventEntBuilder setPortIndex(Integer portIndex);
+        
+        /**
+         * selection mode
+         * 
+         * @param mode the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SelectionEventEntBuilder setMode(ModeEnum mode);
+        
+        /**
+         * representation of the actual selection (e.g. a list of row keys)
+         * 
+         * @param selection the property value,  
+         * @return this entity builder for chaining
+         */
+        SelectionEventEntBuilder setSelection(java.util.List<String> selection);
+        
+        /**
+         * an error message if the selection event couldn&#39;t be created
+         * 
+         * @param error the property value,  
+         * @return this entity builder for chaining
+         */
+        SelectionEventEntBuilder setError(String error);
         
         
         /**
@@ -138,7 +212,7 @@ public interface SelectionEventTypeEnt extends GatewayEntity, EventTypeEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SelectionEventTypeEnt build();
+        SelectionEventEnt build();
     
     }
 

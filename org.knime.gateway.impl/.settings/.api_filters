@@ -351,9 +351,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultCopyCommandEnt.java">
-        <filter id="0"/>
-    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultCopyCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt">
         <filter id="337768515">
             <message_arguments>
@@ -915,18 +912,6 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultRemovePortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, String, NodeIDEnt, Integer)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSelectionEventTypeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt">
-        <filter id="337768515">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="DefaultSelectionEventTypeEnt(String, String, NodeIDEnt, NodeIDEnt)"/>
             </message_arguments>
         </filter>
     </resource>

@@ -46,31 +46,37 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
-import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 
 /**
- * Event type to register for SelectionEvents.
+ * A selection (aka hiliting) event.
  *
- * @param typeId
  * @param projectId
  * @param workflowId
  * @param nodeId
+ * @param portIndex
+ * @param mode
+ * @param selection
+ * @param error
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultSelectionEventTypeEnt(
-    String typeId,
+public record DefaultSelectionEventEnt(
     String projectId,
     org.knime.gateway.api.entity.NodeIDEnt workflowId,
-    org.knime.gateway.api.entity.NodeIDEnt nodeId) implements SelectionEventTypeEnt {
+    org.knime.gateway.api.entity.NodeIDEnt nodeId,
+    Integer portIndex,
+    ModeEnum mode,
+    java.util.List<String> selection,
+    String error) implements SelectionEventEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultSelectionEventTypeEnt {
+    public DefaultSelectionEventEnt {
         if(projectId == null) {
             throw new IllegalArgumentException("<projectId> must not be null.");
         }
@@ -80,18 +86,16 @@ public record DefaultSelectionEventTypeEnt(
         if(nodeId == null) {
             throw new IllegalArgumentException("<nodeId> must not be null.");
         }
+        if(mode == null) {
+            throw new IllegalArgumentException("<mode> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "SelectionEventType";
+        return "SelectionEvent";
     }
   
-    @Override
-    public String getTypeId() {
-        return typeId;
-    }
-    
     @Override
     public String getProjectId() {
         return projectId;
@@ -107,12 +111,30 @@ public record DefaultSelectionEventTypeEnt(
         return nodeId;
     }
     
+    @Override
+    public Integer getPortIndex() {
+        return portIndex;
+    }
+    
+    @Override
+    public ModeEnum getMode() {
+        return mode;
+    }
+    
+    @Override
+    public java.util.List<String> getSelection() {
+        return selection;
+    }
+    
+    @Override
+    public String getError() {
+        return error;
+    }
+    
     /**
-     * A builder for {@link DefaultSelectionEventTypeEnt}.
+     * A builder for {@link DefaultSelectionEventEnt}.
      */
-    public static class DefaultSelectionEventTypeEntBuilder implements SelectionEventTypeEntBuilder {
-
-        private String m_typeId;
+    public static class DefaultSelectionEventEntBuilder implements SelectionEventEntBuilder {
 
         private String m_projectId;
 
@@ -120,14 +142,16 @@ public record DefaultSelectionEventTypeEnt(
 
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
-        @Override
-        public DefaultSelectionEventTypeEntBuilder setTypeId(String typeId) {
-             m_typeId = typeId;
-             return this;
-        }
+        private Integer m_portIndex;
+
+        private ModeEnum m_mode;
+
+        private java.util.List<String> m_selection;
+
+        private String m_error;
 
         @Override
-        public DefaultSelectionEventTypeEntBuilder setProjectId(String projectId) {
+        public DefaultSelectionEventEntBuilder setProjectId(String projectId) {
              if(projectId == null) {
                  throw new IllegalArgumentException("<projectId> must not be null.");
              }
@@ -136,7 +160,7 @@ public record DefaultSelectionEventTypeEnt(
         }
 
         @Override
-        public DefaultSelectionEventTypeEntBuilder setWorkflowId(org.knime.gateway.api.entity.NodeIDEnt workflowId) {
+        public DefaultSelectionEventEntBuilder setWorkflowId(org.knime.gateway.api.entity.NodeIDEnt workflowId) {
              if(workflowId == null) {
                  throw new IllegalArgumentException("<workflowId> must not be null.");
              }
@@ -145,7 +169,7 @@ public record DefaultSelectionEventTypeEnt(
         }
 
         @Override
-        public DefaultSelectionEventTypeEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
+        public DefaultSelectionEventEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
                  throw new IllegalArgumentException("<nodeId> must not be null.");
              }
@@ -154,12 +178,42 @@ public record DefaultSelectionEventTypeEnt(
         }
 
         @Override
-        public DefaultSelectionEventTypeEnt build() {
-            return new DefaultSelectionEventTypeEnt(
-                immutable(m_typeId),
+        public DefaultSelectionEventEntBuilder setPortIndex(Integer portIndex) {
+             m_portIndex = portIndex;
+             return this;
+        }
+
+        @Override
+        public DefaultSelectionEventEntBuilder setMode(ModeEnum mode) {
+             if(mode == null) {
+                 throw new IllegalArgumentException("<mode> must not be null.");
+             }
+             m_mode = mode;
+             return this;
+        }
+
+        @Override
+        public DefaultSelectionEventEntBuilder setSelection(java.util.List<String> selection) {
+             m_selection = selection;
+             return this;
+        }
+
+        @Override
+        public DefaultSelectionEventEntBuilder setError(String error) {
+             m_error = error;
+             return this;
+        }
+
+        @Override
+        public DefaultSelectionEventEnt build() {
+            return new DefaultSelectionEventEnt(
                 immutable(m_projectId),
                 immutable(m_workflowId),
-                immutable(m_nodeId));
+                immutable(m_nodeId),
+                immutable(m_portIndex),
+                immutable(m_mode),
+                immutable(m_selection),
+                immutable(m_error));
         }
     
     }

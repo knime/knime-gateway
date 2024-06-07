@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
+import org.knime.gateway.json.webui.entity.EventEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt.DefaultSelectionEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSelectionEventEnt.DefaultSelectionEventEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,19 +61,15 @@ import org.knime.gateway.impl.webui.entity.DefaultSelectionEventTypeEnt.DefaultS
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultSelectionEventTypeEntBuilder.class)
-@JsonSerialize(as=SelectionEventTypeEnt.class)
+@JsonDeserialize(builder=DefaultSelectionEventEntBuilder.class)
+@JsonSerialize(as=SelectionEventEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
+public interface SelectionEventEntMixIn extends SelectionEventEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
-    @Override
-    @JsonProperty("typeId")
-    public String getTypeId();
-    
     @Override
     @JsonProperty("projectId")
     public String getProjectId();
@@ -86,6 +82,22 @@ public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
     @JsonProperty("nodeId")
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
+    @Override
+    @JsonProperty("portIndex")
+    public Integer getPortIndex();
+    
+    @Override
+    @JsonProperty("mode")
+    public ModeEnum getMode();
+    
+    @Override
+    @JsonProperty("selection")
+    public java.util.List<String> getSelection();
+    
+    @Override
+    @JsonProperty("error")
+    public String getError();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -94,26 +106,38 @@ public interface SelectionEventTypeEntMixIn extends SelectionEventTypeEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface SelectionEventTypeEntMixInBuilder extends SelectionEventTypeEntBuilder {
+    public static interface SelectionEventEntMixInBuilder extends SelectionEventEntBuilder {
     
         @Override
-        public SelectionEventTypeEntMixIn build();
+        public SelectionEventEntMixIn build();
     
-        @Override
-        @JsonProperty("typeId")
-        public SelectionEventTypeEntMixInBuilder setTypeId(final String typeId);
-        
         @Override
         @JsonProperty("projectId")
-        public SelectionEventTypeEntMixInBuilder setProjectId(final String projectId);
+        public SelectionEventEntMixInBuilder setProjectId(final String projectId);
         
         @Override
         @JsonProperty("workflowId")
-        public SelectionEventTypeEntMixInBuilder setWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt workflowId);
+        public SelectionEventEntMixInBuilder setWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt workflowId);
         
         @Override
         @JsonProperty("nodeId")
-        public SelectionEventTypeEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        public SelectionEventEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        
+        @Override
+        @JsonProperty("portIndex")
+        public SelectionEventEntMixInBuilder setPortIndex(final Integer portIndex);
+        
+        @Override
+        @JsonProperty("mode")
+        public SelectionEventEntMixInBuilder setMode(final ModeEnum mode);
+        
+        @Override
+        @JsonProperty("selection")
+        public SelectionEventEntMixInBuilder setSelection(final java.util.List<String> selection);
+        
+        @Override
+        @JsonProperty("error")
+        public SelectionEventEntMixInBuilder setError(final String error);
         
     }
 

@@ -73,8 +73,6 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuild
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
-import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
-import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt.SelectionEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -87,8 +85,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.service.events.SelectionEvent;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 import org.mockito.Mockito;
@@ -184,56 +180,6 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         var es = DefaultEventService.getInstance();
         es.addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
         verify(m_testConsumer, never()).accept(any(), any());
-    }
-
-    /**
-     * Tests {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} for
-     * {@link SelectionEventTypeEnt}s.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testSelectionEventListener() throws Exception {
-        var idAndWfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
-        var projectId = idAndWfm.getFirst().toString();
-        var wfm = idAndWfm.getSecond();
-        wfm.executeAllAndWaitUntilDone();
-
-        DefaultEventService es = DefaultEventService.getInstance();
-        DefaultNodeService ns = DefaultNodeService.getInstance();
-
-        // start within some initial selection
-        ns.updateDataPointSelection(projectId, NodeIDEnt.getRootID(), new NodeIDEnt(15),
-            "add", List.of("Row2"));
-
-        SelectionEventTypeEnt eventType = builder(SelectionEventTypeEntBuilder.class) //
-            .setProjectId(projectId) //
-            .setWorkflowId(NodeIDEnt.getRootID()) //
-            .setNodeId(new NodeIDEnt(1)) //
-            .build();
-        es.addEventListener(eventType);
-
-        // do a selection and check event consumer
-        ns.updateDataPointSelection(projectId, NodeIDEnt.getRootID(), new NodeIDEnt(15), "add",
-            List.of("Row0", "Row5"));
-        verify(m_testConsumer).accept(eq("SelectionEvent"), argThat(e -> {
-            var se = (SelectionEvent)e;
-            return se.getNodeId().equals("root:1") && //
-            se.getSelection().equals(List.of("Row2")) && //
-            se.getMode() == SelectionEventMode.ADD;//
-        }), eq(null));
-        Awaitility.await().untilAsserted(() -> verify(m_testConsumer).accept(eq("SelectionEvent"), argThat(e -> {
-            var se = (SelectionEvent)e;
-            return se.getNodeId().equals("root:1") && //
-            se.getSelection().equals(List.of("Row0", "Row5")) && //
-            se.getMode() == SelectionEventMode.ADD;//
-        })));
-
-        // remove selection event listener and check event consumer
-        es.removeEventListener(eventType);
-        ns.updateDataPointSelection(projectId, NodeIDEnt.getRootID(), new NodeIDEnt(15), "add", List.of("Row6"));
-        verify(m_testConsumer, never()).accept(eq("SelectionEvent"),
-            argThat(e -> ((SelectionEvent)e).getSelection().equals(List.of("Row6"))));
     }
 
     /**

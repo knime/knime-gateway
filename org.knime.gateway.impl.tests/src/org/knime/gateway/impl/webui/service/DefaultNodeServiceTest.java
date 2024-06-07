@@ -48,17 +48,23 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.junit.After;
@@ -81,9 +87,13 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.NodeServiceTestHelper;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
@@ -275,6 +285,40 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
 
         var nodeView = (NodeViewEnt)ns.getNodeView(wfId, getRootID(), new NodeIDEnt(1));
         assertThat(nodeView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
+    }
+
+    /**
+     * Makes sure that {@link NodeService#getNodeView(String, NodeIDEnt, NodeIDEnt)} returns the initial selection and
+     * subscribes to the {@link SelectionEventBus} if made available as a service dependency.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetNodeViewWithInitialSelectionAndSetUpSelectionEventBus() throws Exception {
+        String wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, wfId);
+        wfm.executeAllAndWaitUntilDone();
+
+        var selectionEventBus = new SelectionEventBus();
+        Consumer<SelectionEventEnt> selectionEventConsumer = mock(Consumer.class);
+        selectionEventBus.addSelectionEventListener(selectionEventConsumer);
+        ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
+
+        var ns = DefaultNodeService.getInstance();
+        ns.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(15), "add", List.of("Row2", "Row5"));
+
+        var nodeView = (NodeViewEnt)ns.getNodeView(wfId, getRootID(), new NodeIDEnt(1));
+        assertThat(nodeView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
+        assertThat(selectionEventBus.getNumEventEmitters(), is(1));
+
+        ns.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(15), "add", List.of("Row3"));
+        await().atMost(2, TimeUnit.SECONDS)
+            .untilAsserted(() -> verify(selectionEventConsumer)
+                .accept(builder(SelectionEventEntBuilder.class).setProjectId(wfId).setWorkflowId(getRootID())
+                    .setNodeId(new NodeIDEnt(1)).setMode(ModeEnum.ADD).setSelection(List.of("Row3")).build()));
+
+        wfm.resetAndConfigureNode(wfm.getID().createChild(1));
+        assertThat(selectionEventBus.getNumEventEmitters(), is(0));
     }
 
 }

@@ -48,9 +48,9 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.impl.webui.service.DefaultNodeService.createInitialSelectionSupplier;
 import static org.knime.gateway.impl.webui.service.DefaultServiceUtil.assertProjectIdAndGetNodeContainer;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -68,8 +68,7 @@ import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.impl.webui.entity.UIExtensionEntityFactory;
-import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
  * Default implementation of the {@link PortService}-interface.
@@ -78,7 +77,8 @@ import org.knime.gateway.impl.webui.service.events.EventConsumer;
  */
 public class DefaultPortService implements PortService {
 
-    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, false);
+    private final SelectionEventBus m_selectionEventBus =
+        ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -127,15 +127,8 @@ public class DefaultPortService implements PortService {
 
         var wrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
         var portViewManager = PortViewManager.getInstance();
-        if (m_eventConsumer == null) {
-            return new PortViewEnt(wrapper, portViewManager, Collections::emptyList);
-        } else {
-            return UIExtensionEntityFactory.createPortViewEntAndInitSelectionEventSource(wrapper, portViewManager,
-                (n, e) -> {
-                    // TODO NXT-2471
-                });
-        }
-
+        return new PortViewEnt(wrapper, portViewManager, createInitialSelectionSupplier(wrapper, projectId,
+            portViewManager.getTableViewManager(), m_selectionEventBus));
     }
 
     private static boolean isExecutionStateValid(final PortViewDescriptor viewDescriptor, final NodeContainer nc,

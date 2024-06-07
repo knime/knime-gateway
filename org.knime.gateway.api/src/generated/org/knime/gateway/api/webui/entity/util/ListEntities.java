@@ -143,7 +143,7 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.SelectionEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -307,7 +307,7 @@ public class ListEntities {
         res.add(RemovePortCommandEnt.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.class);
         res.add(ReplaceNodeCommandEnt.class);
-        res.add(SelectionEventTypeEnt.class);
+        res.add(SelectionEventEnt.class);
         res.add(ShowToastEventEnt.class);
         res.add(SpaceEnt.class);
         res.add(SpaceGroupEnt.class);
@@ -456,7 +456,7 @@ public class ListEntities {
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder.class);
         res.add(ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder.class);
-        res.add(SelectionEventTypeEnt.SelectionEventTypeEntBuilder.class);
+        res.add(SelectionEventEnt.SelectionEventEntBuilder.class);
         res.add(ShowToastEventEnt.ShowToastEventEntBuilder.class);
         res.add(SpaceEnt.SpaceEntBuilder.class);
         res.add(SpaceGroupEnt.SpaceGroupEntBuilder.class);

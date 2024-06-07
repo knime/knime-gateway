@@ -51,23 +51,23 @@ package org.knime.gateway.impl.webui.entity;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeStateChangeListener;
-import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.port.PortViewManager;
+import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.entity.PortViewEnt;
-import org.knime.gateway.impl.webui.service.events.EventSource;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
+import org.knime.gateway.impl.webui.service.events.NodeViewStateEvent;
 import org.knime.gateway.impl.webui.service.events.NodeViewStateEventSource;
-import org.knime.gateway.impl.webui.service.events.SelectionEvent;
-import org.knime.gateway.impl.webui.service.events.SelectionEventSource;
+import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
  * Helper to create instances of {@link NodeViewEnt NodeViewEnts} and {@link PortViewEnt PortViewEnts}.
@@ -81,96 +81,88 @@ public final class UIExtensionEntityFactory {
     }
 
     /**
-     * Creates a new {@link NodeViewEnt}-instance and initializes associated {@link EventSource EventSources}.
+     * Creates a new {@link NodeViewEnt}-instance and registers the passed event consumer to receive respective events
+     * and the node to emit respective events.
      *
-     * Associated event sources are {@link SelectionEventSource} and {@link NodeViewStateEventSource}.
+     * Events that can be received/emitted are {@link SelectionEventEnt} and {@link NodeViewStateEvent}.
      *
      * @param nnc the node to create the node view entity from
-     * @param eventConsumer the event consumer that will receive the events emitted by the initialized event sources
-     * @param createNodeViewStateEventSource if {@code true} the {@link NodeViewStateEventSource} will be initialized,
-     *            too; otherwise it won't
-     * @return the new {@link NodeViewEnt}-instance and the initialized event source(s)
+     * @param eventConsumer the event consumer that will receive the events
+     * @param setupNodeViewStateEvents if {@code true} the {@link NodeViewStateEvent}s will be send via the event
+     *            consumer, too; otherwise it won't
+     * @param selectionEventBus
+     * @return the new {@link NodeViewEnt}-instance and the logic to clean-up stuff
      */
     @SuppressWarnings({"rawtypes", "unused", "java:S2301"})
-    public static Pair<NodeViewEnt, EventSource[]> createNodeViewEntAndEventSources(final NativeNodeContainer nnc,
-        final BiConsumer<String, Object> eventConsumer, final boolean createNodeViewStateEventSource) {
-        var selectionEventSource =
-            new SelectionEventSource<>(eventConsumer, NodeViewManager.getInstance().getTableViewManager());
-        Supplier<List<String>> initialSelectionSupplier =
-            () -> selectionEventSource.addEventListenerAndGetInitialEventFor(NodeWrapper.of(nnc))
-                .map(SelectionEvent::getSelection).orElse(Collections.emptyList());
+    public static Pair<NodeViewEnt, AutoCloseable> createNodeViewEntAndSetupEvents(final NativeNodeContainer nnc,
+        final BiConsumer<String, Object> eventConsumer, final boolean setupNodeViewStateEvents,
+        final SelectionEventBus selectionEventBus) {
+        var initialSelectionSupplierAndSelectionEventCleanUp = createInitialSelectionSupplierAndSetupEvents(
+            NodeWrapper.of(nnc), NodeViewManager.getInstance().getTableViewManager(), eventConsumer, selectionEventBus);
 
-        EventSource[] eventSources;
-        if (createNodeViewStateEventSource) {
+        Runnable nodeViewStateEventCleanUp = null;
+        if (setupNodeViewStateEvents) {
             var nodeViewStateEventSource = new NodeViewStateEventSource(eventConsumer,
-                selectionEventSource::removeAllEventListeners, initialSelectionSupplier);
+                initialSelectionSupplierAndSelectionEventCleanUp.getFirst());
             nodeViewStateEventSource.addEventListenerAndGetInitialEventFor(nnc);
-            eventSources = new EventSource[]{selectionEventSource, nodeViewStateEventSource};
-        } else {
-            new RemoveAllEventListenersOnNodeStateChange(nnc, selectionEventSource);
-            eventSources = new EventSource[]{selectionEventSource};
+            nodeViewStateEventCleanUp = nodeViewStateEventSource::removeAllEventListeners;
         }
 
-        return Pair.create(NodeViewEnt.create(nnc, initialSelectionSupplier), eventSources);
-    }
-
-    static class RemoveAllEventListenersOnNodeStateChange implements NodeStateChangeListener {
-
-        private final NodeContainer m_nc;
-
-        private SelectionEventSource<? extends NodeWrapper> m_eventSource;
-
-        public RemoveAllEventListenersOnNodeStateChange(final NodeContainer nc,
-            final SelectionEventSource<? extends NodeWrapper> eventSource) {
-            m_eventSource = eventSource;
-            m_nc = nc;
-            nc.addNodeStateChangeListener(this); // NOSONAR
-        }
-
-        @Override
-        public void stateChanged(final NodeStateEvent state) {
-            m_eventSource.removeAllEventListeners();
-            m_nc.removeNodeStateChangeListener(this);
-        }
-
+        final var nodeViewStateEventCleanUpFinal = nodeViewStateEventCleanUp;
+        return Pair.create(NodeViewEnt.create(nnc, initialSelectionSupplierAndSelectionEventCleanUp.getFirst()), () -> {
+            initialSelectionSupplierAndSelectionEventCleanUp.getSecond().run();
+            if (nodeViewStateEventCleanUpFinal != null) {
+                nodeViewStateEventCleanUpFinal.run();
+            }
+        });
     }
 
     /**
-     * Helper to create a port with and at the same time initialize the {@link SelectionEventSource} while also
-     * determining the initial selection.
+     * Helper to create a port with and at the same time initialize the passed event consumer to receive
+     * {@link SelectionEventEnt}s while also determining the initial selection.
      *
-     * The listeners for the {@link SelectionEventSource} on the node are removed on node state change.
+     * The listeners for the {@link SelectionEventEnt}s on the node are removed on node state change.
      *
      * @param npw
      * @param manager
-     * @param eventConsumer consumer of the {@link SelectionEventSource}-events
+     * @param eventConsumer consumer of the {@link SelectionEventEnt}s
+     * @param selectionEventBus
      * @return a new port view ent instance
      */
-    public static PortViewEnt createPortViewEntAndInitSelectionEventSource(final NodePortWrapper npw,
-        final PortViewManager manager, final BiConsumer<String, Object> eventConsumer) {
-        var initialSelectionSupplier = createInitialSelectionSupplierAndInitSelectionEventSource(npw, eventConsumer);
-        return new PortViewEnt(npw, manager, initialSelectionSupplier);
+    public static Pair<PortViewEnt, AutoCloseable> createPortViewEntAndSetupEvents(final NodePortWrapper npw,
+        final PortViewManager manager, final BiConsumer<String, Object> eventConsumer,
+        final SelectionEventBus selectionEventBus) {
+        var initialSelectionSupplierAndSelectionEventCleanUp = createInitialSelectionSupplierAndSetupEvents(npw,
+            PortViewManager.getInstance().getTableViewManager(), eventConsumer, selectionEventBus);
+        return Pair.create(new PortViewEnt(npw, manager, initialSelectionSupplierAndSelectionEventCleanUp.getFirst()),
+            initialSelectionSupplierAndSelectionEventCleanUp.getSecond()::run);
     }
 
     /**
-     * Creates a new initial selection supplier and initializes associated {@link SelectionEventSource}.
+     * Creates a new initial selection supplier and initializes associated {@link SelectionEventBus}.
      *
      * @param npw the port to create the selection event source from
      * @param eventConsumer the event consumer that will receive the events emitted by the initialized event source
-     * @return the initial selection supplier
+     * @return the initial selection supplier and the logic to clean-up stuff
      */
     @SuppressWarnings("unused")
-    private static Supplier<List<String>> createInitialSelectionSupplierAndInitSelectionEventSource(
-        final NodePortWrapper npw, final BiConsumer<String, Object> eventConsumer) {
-        var selectionEventSource =
-            new SelectionEventSource<>(eventConsumer, PortViewManager.getInstance().getTableViewManager());
+    private static <N extends NodeWrapper> Pair<Supplier<List<String>>, Runnable>
+        createInitialSelectionSupplierAndSetupEvents(final N nw, final TableViewManager<N> tableViewManager,
+            final BiConsumer<String, Object> eventConsumer, final SelectionEventBus selectionEventBus) {
+
+        Consumer<SelectionEventEnt> selectionEventConsumer = e -> eventConsumer.accept("SelectionEvent", e);
+        selectionEventBus.addSelectionEventListener(selectionEventConsumer);
         Supplier<List<String>> initialSelectionSupplier =
-            () -> selectionEventSource.addEventListenerAndGetInitialEventFor(npw).map(SelectionEvent::getSelection)
-                .orElse(Collections.emptyList());
+            () -> selectionEventBus.addSelectionEventEmitterAndGetInitialEvent(nw, tableViewManager)
+                .map(SelectionEventEnt::getSelection).orElse(Collections.emptyList());
 
-        new RemoveAllEventListenersOnNodeStateChange(npw.get(), selectionEventSource);
+        Runnable selectionEventCleanUp = () -> {
+            selectionEventBus.removeSelectionEventEmitter(nw);
+            selectionEventBus.removeSelectionEventListener(selectionEventConsumer);
+        };
+        NodeCleanUpCallback.builder(nw.get(), selectionEventCleanUp).cleanUpOnNodeStateChange(true).build();
 
-        return initialSelectionSupplier;
+        return Pair.create(initialSelectionSupplier, selectionEventCleanUp);
     }
 
 }

@@ -48,15 +48,21 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.junit.Test;
@@ -83,9 +89,13 @@ import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.PortViewEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
+import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.PortServiceTestHelper;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -253,6 +263,40 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
 
         var portView = (PortViewEnt)ps.getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
         assertThat(portView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
+    }
+
+    /**
+     * Makes sure that {@link PortService#getPortView(String, NodeIDEnt, NodeIDEnt, Integer, Integer)} returns the
+     * initial selection and subscribes to the {@link SelectionEventBus} if made available as a service dependency.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetPortViewWithInitialSelectionAndSetUpSelectionEventBus() throws Exception {
+        String wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
+        wfm.executeAllAndWaitUntilDone();
+
+        var selectionEventBus = new SelectionEventBus();
+        Consumer<SelectionEventEnt> selectionEventConsumer = mock(Consumer.class);
+        selectionEventBus.addSelectionEventListener(selectionEventConsumer);
+        ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
+
+        var ps = DefaultPortService.getInstance();
+        ps.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(2), 1, 1, "add", List.of("Row2", "Row5"));
+
+        var portView = (PortViewEnt)ps.getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
+        assertThat(portView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
+        assertThat(selectionEventBus.getNumEventEmitters(), is(1));
+
+        ps.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(2), 1, 1, "add", List.of("Row3"));
+        await().atMost(2, TimeUnit.SECONDS)
+            .untilAsserted(() -> verify(selectionEventConsumer).accept(builder(SelectionEventEntBuilder.class)
+                .setProjectId(wfId).setWorkflowId(getRootID()).setNodeId(new NodeIDEnt(1)).setPortIndex(1)
+                .setMode(ModeEnum.ADD).setSelection(List.of("Row3")).build()));
+
+        wfm.resetAndConfigureNode(wfm.getID().createChild(1));
+        assertThat(selectionEventBus.getNumEventEmitters(), is(0));
     }
 
 }
