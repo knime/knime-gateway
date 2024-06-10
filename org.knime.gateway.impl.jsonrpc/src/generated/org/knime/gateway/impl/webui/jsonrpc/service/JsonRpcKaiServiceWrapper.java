@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 
@@ -97,6 +98,15 @@ public class JsonRpcKaiServiceWrapper implements KaiService {
     @JsonRpcMethod(value = "makeAiRequest")
     public void makeAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId, @JsonRpcParam(value="kaiRequest") KaiRequestEnt kaiRequest)  {
         m_service.get().makeAiRequest(kaiChainId, kaiRequest);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "submitFeedback")
+    public void submitFeedback(@JsonRpcParam(value="kaiFeedbackId") String kaiFeedbackId, @JsonRpcParam(value="kaiFeedback") KaiFeedbackEnt kaiFeedback)  {
+        m_service.get().submitFeedback(kaiFeedbackId, kaiFeedback);    
     }
 
 }

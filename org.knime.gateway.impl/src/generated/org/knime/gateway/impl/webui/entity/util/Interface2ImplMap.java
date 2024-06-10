@@ -136,6 +136,8 @@ import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommand
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
+import org.knime.gateway.api.webui.entity.KaiFeedbackEnt.KaiFeedbackEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.KaiMessageEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt.KaiRequestEntBuilder;
@@ -481,6 +483,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == JobManagerEntBuilder.class) {
             return (B)new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
+        }        
+        if(clazz == KaiFeedbackEntBuilder.class) {
+            return (B)new DefaultKaiFeedbackEnt.DefaultKaiFeedbackEntBuilder();
         }        
         if(clazz == KaiMessageEntBuilder.class) {
             return (B)new DefaultKaiMessageEnt.DefaultKaiMessageEntBuilder();

@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.Optional;
 
+import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
@@ -110,6 +111,12 @@ public final class DefaultKaiService implements KaiService {
             case USER -> KaiHandler.Role.USER;
             default -> throw new IllegalArgumentException("Unknown role: " + role);
         };
+    }
+
+    @Override
+    public void submitFeedback(final String kaiFeedbackId, final KaiFeedbackEnt kaiFeedback) {
+        getListener().ifPresent(l -> l.onFeedback(kaiFeedbackId, kaiFeedback.getProjectId(), kaiFeedback.isPositive(),
+            kaiFeedback.getComment()));
     }
 
 }

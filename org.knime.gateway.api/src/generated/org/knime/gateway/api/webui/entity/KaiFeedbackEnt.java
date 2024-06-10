@@ -42,58 +42,94 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Operations on K-AI.
- *
+ * Encapsulates user feedback to K-AI.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+public interface KaiFeedbackEnt extends GatewayEntity {
+
+
+  /**
+   * True if the feedback is positive, false if it is negative.
+   * @return isPositive , never <code>null</code>
+   **/
+  public Boolean isPositive();
+
+  /**
+   * A comment provided by the user.
+   * @return comment , never <code>null</code>
+   **/
+  public String getComment();
+
+  /**
+   * Identifies the top-level workflow.
+   * @return projectId , never <code>null</code>
+   **/
+  public String getProjectId();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (KaiFeedbackEnt)other;
+      valueConsumer.accept("isPositive", Pair.create(isPositive(), e.isPositive()));
+      valueConsumer.accept("comment", Pair.create(getComment(), e.getComment()));
+      valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
+  }
 
     /**
-     * Aborts the currently running request to the given chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * The builder for the entity.
      */
-    void abortAiRequest(String kaiChainId) ;
+    public interface KaiFeedbackEntBuilder extends GatewayEntityBuilder<KaiFeedbackEnt> {
+
+        /**
+         * True if the feedback is positive, false if it is negative.
+         * 
+         * @param isPositive the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiFeedbackEntBuilder setIsPositive(Boolean isPositive);
         
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
+        /**
+         * A comment provided by the user.
+         * 
+         * @param comment the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiFeedbackEntBuilder setComment(String comment);
         
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
+        /**
+         * Identifies the top-level workflow.
+         * 
+         * @param projectId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiFeedbackEntBuilder setProjectId(String projectId);
         
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
         
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        KaiFeedbackEnt build();
+    
+    }
+
 }

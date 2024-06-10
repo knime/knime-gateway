@@ -76,6 +76,16 @@ public interface KaiHandler {
     UiStrings getUiStrings();
 
     /**
+     * Invoked if the user provides feedback on one of K-AI's answers.
+     * @param kaiFeedbackId ID of the feedback
+     * @param projectId ID of the top-level workflow
+     * @param isPositive whether the feedback is positive or negative
+     * @param comment the user provided
+     * @param kaiFeedback Id of the feedback
+     */
+    void onFeedback(String kaiFeedbackId, String projectId, boolean isPositive, String comment);
+
+    /**
      * Encapsulates the welcome messages that K-AI displays in the UI.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
