@@ -68,6 +68,8 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
  * Represents a space in order to abstract from different space implementations (e.g. the local workspace or a hub
@@ -389,6 +391,15 @@ public interface Space {
     String getItemName(String itemId);
 
     /**
+     * Returns the type of a space item.
+     *
+     * @param itemId The space item ID
+     * @return The space item's type
+     * @throws NoSuchElementException If no such item is present
+     */
+    SpaceItemEnt.TypeEnum getItemType(String itemId);
+
+    /**
      * Returns the project type of a space item if it is a project.
      *
      * @param itemId The space item ID
@@ -423,6 +434,34 @@ public interface Space {
     }
 
     /**
+     *
+     * @param sourceSpace
+     * @param itemIds
+     * @param targetItemId
+     * @param excludeData
+     * @return
+     * @throws IOException
+     * @throws OperationNotAllowedException
+     */
+    default boolean uploadFrom(final LocalWorkspace sourceSpace, final List<String> itemIds, final String targetItemId,
+            final boolean excludeData) throws IOException, OperationNotAllowedException {
+        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+    }
+
+    /**
+     *
+     * @param itemIds
+     * @param targetSpace
+     * @param targetItemId
+     * @return
+     * @throws OperationNotAllowedException
+     */
+    default boolean downloadInto(final List<String> itemIds, final LocalWorkspace targetSpace,
+            final String targetItemId) throws OperationNotAllowedException {
+        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+    }
+
+    /**
      * Generates unique space item names, preserves file extensions.
      *
      * @param taken predicate for determining whether a name is already taken in a space
@@ -449,5 +488,4 @@ public interface Space {
             return newName + fileExtension;
         }
     }
-
 }

@@ -56,6 +56,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -68,6 +69,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
@@ -89,6 +91,7 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 
 /**
@@ -136,6 +139,15 @@ public final class LocalWorkspace implements Space {
     @Override
     public SpaceEnt toEntity() {
         return EntityFactory.Space.buildSpaceEnt(getId(), getName(), "local user", "", false);
+    }
+
+    @Override
+    public TypeEnum getItemType(final String itemId) {
+        if (!m_spaceItemPathAndTypeCache.containsKey(itemId)) {
+            throw new NoSuchElementException("Unknown item ID for local workspace: " + itemId);
+        }
+        final var path = m_spaceItemPathAndTypeCache.getPath(itemId);
+        return m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(path);
     }
 
     @Override
@@ -481,10 +493,16 @@ public final class LocalWorkspace implements Space {
         return absolutePath;
     }
 
-    private static boolean isValidWorkspaceItem(final Path p) {
+    /**
+     * Checks whether the given path is a valid item or a hidden, internal path.
+     *
+     * @param path file or directory in the workspace
+     * @return {@code true} if the item is a workspace item, {@code false} otherwise
+     */
+    public static boolean isValidWorkspaceItem(final Path path) {
         try {
-            var filename = p.getFileName().toString();
-            return !Files.isHidden(p) //
+            var filename = path.getFileName().toString();
+            return !Files.isHidden(path) //
                 && !WorkflowPersistor.METAINFO_FILE.equals(filename) //
                 && !filename.equals(".metadata");
         } catch (IOException ex) {
@@ -581,5 +599,60 @@ public final class LocalWorkspace implements Space {
         }
         var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(path);
         return EntityUtil.toProjectType(itemType);
+    }
+
+    private static final EnumSet<TypeEnum> WORKFLOW_LIKE = EnumSet.of(
+        TypeEnum.WORKFLOW,
+        TypeEnum.COMPONENT,
+        TypeEnum.WORKFLOWTEMPLATE);
+
+    /**
+     * Checks whether an item exists at the given path below a workflow group and determines how such a collision can
+     * be resolved.
+     *
+     * @param workflowGroupId root workflow group's ID
+     * @param path path below the root group
+     * @param newItemType type of the new item to be added
+     * @return location and type of the colision if one exists, {@link Optional#empty()} otherwise
+     */
+    public Optional<Pair<IPath, Collision>> checkForCollision(final String workflowGroupId, final IPath path,
+        final TypeEnum newItemType) {
+
+        var currentId = workflowGroupId;
+        var current = getAbsolutePath(workflowGroupId);
+        var currentType = getItemType(workflowGroupId);
+
+        // descend the existing tree and check all levels for conflicts
+        for (var level = 0; level < path.segmentCount(); level++) {
+            if (currentType == TypeEnum.WORKFLOWGROUP) {
+                // old and new are folders, descend
+                current = current.resolve(path.segment(level));
+                if (!Files.exists(current)) {
+                    // ancestor item doesn't exist, no conflict
+                    return Optional.empty();
+                }
+                currentId = getItemId(current);
+                currentType = getItemType(currentId);
+            } else {
+                // conflict between a new ancestor folder and an existing non-folder item
+                return Optional.of(Pair.create(path.uptoSegment(level), new Collision(false, false, true)));
+            }
+        }
+
+        // reached the end, and an item at the path already exists
+        final boolean existingIsFolder = currentType == TypeEnum.WORKFLOWGROUP;
+        final boolean newIsFolder = newItemType == TypeEnum.WORKFLOWGROUP;
+        if (existingIsFolder && newIsFolder) {
+            // copying an empty folder over an existing one is not a conflict
+            return Optional.empty();
+        } else if (existingIsFolder || newIsFolder) {
+            // conflict between leaf item and folder
+            return Optional.of(Pair.create(path, new Collision(false, false, true)));
+        } else {
+            // collision between two leaf items
+            final boolean typesCompatible = currentType == newItemType
+                    || WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType);
+            return Optional.of(Pair.create(path, new Collision(typesCompatible, true, true)));
+        }
     }
 }
