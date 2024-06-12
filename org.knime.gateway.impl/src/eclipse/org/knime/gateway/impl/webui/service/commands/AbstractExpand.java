@@ -48,6 +48,7 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -149,11 +150,13 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     }
 
     private Set<NodeID> getExpandedNodes() {
-        return Set.of(m_subNodeExpandResult.getExpandedCopyContent().getNodeIDs());
+        // using `Set.of(T...)` here in combination with external null annotations triggers an Eclipse 2024-03 bug
+        return Set.copyOf(Arrays.asList(m_subNodeExpandResult.getExpandedCopyContent().getNodeIDs()));
     }
 
     private Set<WorkflowAnnotationID> getExpandedAnnotations() {
-        return Set.of(m_subNodeExpandResult.getExpandedCopyContent().getAnnotationIDs());
+        // using `Set.of(T...)` here in combination with external null annotations triggers an Eclipse 2024-03 bug
+        return Set.copyOf(Arrays.asList(m_subNodeExpandResult.getExpandedCopyContent().getAnnotationIDs()));
     }
 
     @Override
