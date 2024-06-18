@@ -168,7 +168,7 @@ public final class LocalWorkspace implements Space {
     @Override
     public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
         var path = m_spaceItemPathAndTypeCache.getPath(itemId);
-        if (!Files.exists(path)) {
+        if (path == null || !Files.exists(path)) {
             return Optional.empty();
         }
         return Optional.ofNullable(path);
