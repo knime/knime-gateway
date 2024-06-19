@@ -72,6 +72,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param fileExtensionToNodeTemplateId
  * @param nodeRepositoryLoaded
  * @param analyticsPlatformDownloadURL
+ * @param isSubnodeLockingEnabled
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -92,7 +93,8 @@ public record DefaultAppStateEnt(
     Boolean devMode,
     java.util.Map<String, String> fileExtensionToNodeTemplateId,
     Boolean nodeRepositoryLoaded,
-    String analyticsPlatformDownloadURL) implements AppStateEnt {
+    String analyticsPlatformDownloadURL,
+    Boolean isSubnodeLockingEnabled) implements AppStateEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -185,6 +187,11 @@ public record DefaultAppStateEnt(
         return analyticsPlatformDownloadURL;
     }
     
+    @Override
+    public Boolean isSubnodeLockingEnabled() {
+        return isSubnodeLockingEnabled;
+    }
+    
     /**
      * A builder for {@link DefaultAppStateEnt}.
      */
@@ -221,6 +228,8 @@ public record DefaultAppStateEnt(
         private Boolean m_nodeRepositoryLoaded;
 
         private String m_analyticsPlatformDownloadURL;
+
+        private Boolean m_isSubnodeLockingEnabled;
 
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<ProjectEnt> openProjects) {
@@ -319,6 +328,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setIsSubnodeLockingEnabled(Boolean isSubnodeLockingEnabled) {
+             m_isSubnodeLockingEnabled = isSubnodeLockingEnabled;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
                 immutable(m_openProjects),
@@ -336,7 +351,8 @@ public record DefaultAppStateEnt(
                 immutable(m_devMode),
                 immutable(m_fileExtensionToNodeTemplateId),
                 immutable(m_nodeRepositoryLoaded),
-                immutable(m_analyticsPlatformDownloadURL));
+                immutable(m_analyticsPlatformDownloadURL),
+                immutable(m_isSubnodeLockingEnabled));
         }
     
     }

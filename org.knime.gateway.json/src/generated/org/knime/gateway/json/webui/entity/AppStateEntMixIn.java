@@ -137,6 +137,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("analyticsPlatformDownloadURL")
     public String getAnalyticsPlatformDownloadURL();
     
+    @Override
+    @JsonProperty("isSubnodeLockingEnabled")
+    public Boolean isSubnodeLockingEnabled();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -213,6 +217,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("analyticsPlatformDownloadURL")
         public AppStateEntMixInBuilder setAnalyticsPlatformDownloadURL(final String analyticsPlatformDownloadURL);
+        
+        @Override
+        @JsonProperty("isSubnodeLockingEnabled")
+        public AppStateEntMixInBuilder setIsSubnodeLockingEnabled(final Boolean isSubnodeLockingEnabled);
         
     }
 

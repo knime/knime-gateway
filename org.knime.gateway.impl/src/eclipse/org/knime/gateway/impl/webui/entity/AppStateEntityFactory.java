@@ -65,6 +65,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortTypeRegistry;
@@ -194,6 +195,7 @@ public final class AppStateEntityFactory {
             ) //
             .setNodeRepositoryLoaded(NodeSpecCollectionProvider.Progress.isDone()) //
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
+            .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled())
             .build();
     }
 
@@ -361,4 +363,14 @@ public final class AppStateEntityFactory {
         return System.getProperty("org.knime.ui.analytics_platform_download_url");
     }
 
+    /**
+     * @return If the context menu option for locking is available for metanodes and components
+     */
+    private static Boolean getIsSubnodeLockingEnabled() {
+        var value = System.getProperty(KNIMEConstants.PROPERTY_SHOW_METANODE_LOCK_ACTION);
+        if (value == null) {
+            return Boolean.FALSE;
+        }
+        return Boolean.valueOf(value);
+    }
 }

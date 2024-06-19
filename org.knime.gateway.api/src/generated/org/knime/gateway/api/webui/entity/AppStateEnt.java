@@ -163,6 +163,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public String getAnalyticsPlatformDownloadURL();
 
+  /**
+   * Wheter to enable the locking of metanodes and components
+   * @return isSubnodeLockingEnabled 
+   **/
+  public Boolean isSubnodeLockingEnabled();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -184,6 +190,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("fileExtensionToNodeTemplateId", Pair.create(getFileExtensionToNodeTemplateId(), e.getFileExtensionToNodeTemplateId()));
       valueConsumer.accept("nodeRepositoryLoaded", Pair.create(isNodeRepositoryLoaded(), e.isNodeRepositoryLoaded()));
       valueConsumer.accept("analyticsPlatformDownloadURL", Pair.create(getAnalyticsPlatformDownloadURL(), e.getAnalyticsPlatformDownloadURL()));
+      valueConsumer.accept("isSubnodeLockingEnabled", Pair.create(isSubnodeLockingEnabled(), e.isSubnodeLockingEnabled()));
   }
 
     /**
@@ -318,6 +325,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setAnalyticsPlatformDownloadURL(String analyticsPlatformDownloadURL);
+        
+        /**
+         * Wheter to enable the locking of metanodes and components
+         * 
+         * @param isSubnodeLockingEnabled the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setIsSubnodeLockingEnabled(Boolean isSubnodeLockingEnabled);
         
         
         /**
