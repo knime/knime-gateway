@@ -48,8 +48,8 @@
             <id>test</id>
             <modules>
                 <module>org.knime.gateway.api</module>
-                <module>org.knime.gateway.api.tests</module>
                 <module>org.knime.gateway.json</module>
+                <module>org.knime.gateway.api.tests</module>
                 <module>org.knime.gateway.json.tests</module>
                 <module>org.knime.gateway.impl</module>
                 <module>org.knime.gateway.impl.tests</module>
