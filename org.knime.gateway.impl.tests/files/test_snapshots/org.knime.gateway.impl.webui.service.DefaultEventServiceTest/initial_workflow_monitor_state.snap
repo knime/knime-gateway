@@ -4,7 +4,7 @@
     "message" : "The comparison value is missing.",
     "name" : "Row Filter",
     "nodeId" : "root:9",
-    "templateId" : "org.knime.base.node.preproc.filter.row3.RowFilter3NodeFactory",
+    "templateId" : "org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory",
     "workflowId" : "root"
   } ]
 }
