@@ -255,27 +255,23 @@ public final class LocalWorkspace implements Space {
         var newName = queriedName.trim();
         assertValidItemNameOrThrow(newName);
 
-        var sourcePath = toLocalAbsolutePath(null, itemId).orElse(null);
-        if (sourcePath == null) {
-            throw new IOException("Unknown item ID");
-        }
+        var sourcePath = toLocalAbsolutePath(null, itemId) //
+                .orElseThrow(() -> new IOException("Unknown item ID: '%s'".formatted(itemId)));
         var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
-        var destinationPath = sourcePath.resolveSibling(Path.of(newName));
+        var destinationPath = sourcePath.resolveSibling(newName);
+        var oldName = sourcePath.getFileName().toString();
         if (sourcePath.equals(destinationPath)) {
-            var oldName = sourcePath.getFileName().toString();
-            return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
-        }
-        var destinationFile = destinationPath.toFile();
-
-        if (destinationFile.exists()) {
+            // file system may be case-insensitive, allow changing the case (upper/lower) in the name anyway
+            if (oldName.equals(newName)) {
+                return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
+            }
+        } else if (Files.exists(destinationPath)) {
             throw new ServiceExceptions.OperationNotAllowedException("There already exists a file of that name");
         }
 
         try {
-            var sourceFile = sourcePath.toFile();
-            var renamingSucceeded = sourceFile.renameTo(destinationFile);
-            if (!renamingSucceeded) {
-                throw new IOException("Could not rename item");
+            if (!sourcePath.toFile().renameTo(destinationPath.toFile())) {
+                throw new IOException("Could not rename item '%s' to '%s'".formatted(toKnimeUrl(itemId), newName));
             }
         } catch (SecurityException e) {
             throw new IOException(e);
@@ -372,16 +368,23 @@ public final class LocalWorkspace implements Space {
     public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
             final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
             final IProgressMonitor progressMonitor) throws IOException {
-        var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
-        var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
-        FileUtil.unzip(srcPath.toFile(), tmpDir);
-        var tmpSrcPath = tmpDir.listFiles()[0].toPath();
-        var fileName = tmpSrcPath.getFileName().toString();
+        final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
 
-        Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
-        var destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
+        // make sure that the temp directory is always deleted
+        final var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
+        final Path destPath;
+        try {
+            FileUtil.unzip(srcPath.toFile(), tmpDir);
+            var tmpSrcPath = tmpDir.listFiles()[0].toPath();
+            var fileName = tmpSrcPath.getFileName().toString();
+            Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
+            destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
 
-        FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
+            FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
+        } finally {
+            FileUtil.deleteRecursively(tmpDir);
+        }
+
         createMetaInfoFileFor.accept(destPath);
 
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
