@@ -69,6 +69,7 @@ import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceItemPathAndTypeCache;
@@ -295,6 +296,38 @@ public final class LocalWorkspaceTests {
 
         var dataItem = spaceItems.stream().filter(item -> item.getType() == TypeEnum.DATA).findFirst().orElseThrow();
         assertThat("Not null", m_space.getProjectType(dataItem.getId()).orElse(null), nullValue());
+    }
+
+    /**
+     * Tests renaming an item (via {@link LocalWorkspace#renameItem(String, String)}) by only change the case of the
+     * item's name from lower to upper case.
+     *
+     * @throws IOException
+     * @throws OperationNotAllowedException
+     */
+    @Test
+    public void testRenameChangingItemCasing() throws IOException, OperationNotAllowedException {
+        final var spaceRootPath = m_space.getLocalRootPath();
+        final var spaceRootId = m_space.getItemId(spaceRootPath);
+
+        // test a data file and a workflow
+        final List<String> itemIds = List.of(m_space.getItemId(createFile(spaceRootPath, "data.txt")),
+            m_space.getItemId(createWorkflow(m_space, spaceRootPath, spaceRootId, "workflow")));
+
+        for (final var itemId : itemIds) {
+            final var itemName = m_space.getItemName(itemId);
+            final var oldPath = m_space.toLocalAbsolutePath(null, itemId).orElseThrow().toRealPath();
+            assertThat(itemName, equalTo(Files.isDirectory(oldPath) ? "workflow" : "data.txt"));
+            assertThat(oldPath.getFileName().toString(), equalTo(itemName));
+
+            // rename the item, which should (1) not fail and (2) actually rename the item on disk and in the space
+            final String newItemName = itemName.toUpperCase();
+            assertThat(m_space.renameItem(itemId, newItemName).getName(), equalTo(newItemName));
+
+            final var newPath = m_space.toLocalAbsolutePath(null, itemId).orElseThrow().toRealPath();
+            assertThat(newPath.getFileName().toString(), equalTo(newItemName));
+            assertThat(m_space.getItemName(itemId), equalTo(newItemName));
+        }
     }
 
     private void runTestImportWorkflowOrWorkflowGroupUpdatesCache(final String archiveName,
