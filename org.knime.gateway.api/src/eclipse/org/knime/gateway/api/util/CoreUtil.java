@@ -108,6 +108,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.shared.workflow.def.AnnotationDataDef;
@@ -410,8 +411,7 @@ public final class CoreUtil {
      * @throws IOException if an I/O error occurs or the file does not exist
      */
     public static File resolveToFile(final String path, final Class<?> clazz) throws IOException {
-        URL url = FileLocator.toFileURL(resolveToURL(path, clazz));
-        return new File(url.getPath()); // NOSONAR vulnerability, because it's for testing purposes only
+        return FileUtil.getFileFromURL(FileLocator.toFileURL(resolveToURL(path, clazz)));
     }
 
     /**

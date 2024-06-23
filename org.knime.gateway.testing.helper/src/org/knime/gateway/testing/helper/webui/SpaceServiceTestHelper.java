@@ -61,6 +61,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.hamcrest.MatcherAssert;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
@@ -262,6 +264,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
+
+        // Windows does not consider all files starting with a dot to be hidden, a special flag has to be set
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setDosHiddenFlagOnDotFiles(testWorkspacePath);
+        }
+
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
@@ -287,6 +295,26 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         assertThrows(InvalidRequestException.class,
             () -> ss().listWorkflowGroup("non-existing-space-id", providerId, "blub"));
+    }
+
+    /**
+     * Windows uses a special flag to make files and folders hidden, we set it here to make the tests work across OSs.
+     *
+     * @param testWorkspacePath workspace root
+     * @throws IOException
+     */
+    private static void setDosHiddenFlagOnDotFiles(Path testWorkspacePath) throws IOException {
+        try (final var stream = Files.walk(testWorkspacePath)) {
+            final var startingWithDot = stream //
+                    .filter(p -> p.getFileName().toString().startsWith(".")) //
+                    .toArray(Path[]::new);
+            for (final var path : startingWithDot) {
+                try {
+                    Files.getFileAttributeView(path, DosFileAttributeView.class).setHidden(true);
+                } catch (final IOException ioe) { // NOSONAR
+                }
+            }
+        }
     }
 
     /**
@@ -572,8 +600,13 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testCreateWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_create_group");
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
 
+        // Windows does not consider all files starting with a dot to be hidden, a special flag has to be set
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setDosHiddenFlagOnDotFiles(testWorkspacePath);
+        }
+
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         try {
             // Create workflow groups and check
             var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
