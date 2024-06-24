@@ -260,8 +260,9 @@ public final class LocalWorkspace implements Space {
         var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
         var destinationPath = sourcePath.resolveSibling(newName);
         var oldName = sourcePath.getFileName().toString();
+        // Path#equals does not distinguish character case on some file systems...
         if (sourcePath.equals(destinationPath)) {
-            // file system may be case-insensitive, allow changing the case (upper/lower) in the name anyway
+            // ...allow changing the case (upper/lower) in the name anyway
             if (oldName.equals(newName)) {
                 return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
             }
