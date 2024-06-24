@@ -369,23 +369,16 @@ public final class LocalWorkspace implements Space {
     public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
             final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
             final IProgressMonitor progressMonitor) throws IOException {
-        final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+        var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+        var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
+        FileUtil.unzip(srcPath.toFile(), tmpDir);
+        var tmpSrcPath = tmpDir.listFiles()[0].toPath();
+        var fileName = tmpSrcPath.getFileName().toString();
 
-        // make sure that the temp directory is always deleted
-        final var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
-        final Path destPath;
-        try {
-            FileUtil.unzip(srcPath.toFile(), tmpDir);
-            var tmpSrcPath = tmpDir.listFiles()[0].toPath();
-            var fileName = tmpSrcPath.getFileName().toString();
-            Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
-            destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
+        Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
+        var destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
 
-            FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
-        } finally {
-            FileUtil.deleteRecursively(tmpDir);
-        }
-
+        FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
         createMetaInfoFileFor.accept(destPath);
 
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
