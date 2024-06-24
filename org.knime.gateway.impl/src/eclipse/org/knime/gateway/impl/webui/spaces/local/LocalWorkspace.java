@@ -91,6 +91,7 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 
@@ -649,7 +650,9 @@ public final class LocalWorkspace implements Space {
             // collision between two leaf items
             final boolean typesCompatible = currentType == newItemType
                     || WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType);
-            return Optional.of(Pair.create(path, new Collision(typesCompatible, true, true)));
+            final var relativeToRoot = m_localWorkspaceRootPath.relativize(current);
+            final var isOpenedAsProject = ProjectManager.getInstance().getLocalProject(relativeToRoot).isPresent();
+            return Optional.of(Pair.create(path, new Collision(typesCompatible, !isOpenedAsProject, true)));
         }
     }
 }
