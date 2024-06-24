@@ -112,7 +112,7 @@ import org.mockito.Mockito;
  * @author Kai Franze, KNIME GmbH
  * @author Benjamin Moser, KNIME GmbH
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "java:S112", "java:S1192", "java:S1188", "java:S1602"})
 public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public SpaceServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
@@ -223,7 +223,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var provider = Mockito.mock(SpaceProvider.class);
         when(provider.getId()).thenReturn("some provider ID");
         var space = mock(Space.class);
-        SpaceEnt renamedSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "test name", "some owner", "", true);
+        var renamedSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "test name", "some owner", "", true);
         when(space.renameSpace(any(String.class))).thenReturn(renamedSpaceEnt);
         when(provider.getSpace(anyString())).thenReturn(space);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
@@ -265,11 +265,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
 
-        // Windows does not consider all files starting with a dot to be hidden, a special flag has to be set
-        if (SystemUtils.IS_OS_WINDOWS) {
-            setDosHiddenFlagOnDotFiles(testWorkspacePath);
-        }
-
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
@@ -304,16 +299,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws IOException
      */
     private static void setDosHiddenFlagOnDotFiles(Path testWorkspacePath) throws IOException {
-        try (final var stream = Files.walk(testWorkspacePath)) {
-            final var startingWithDot = stream //
-                    .filter(p -> p.getFileName().toString().startsWith(".")) //
-                    .toArray(Path[]::new);
-            for (final var path : startingWithDot) {
-                try {
-                    Files.getFileAttributeView(path, DosFileAttributeView.class).setHidden(true);
-                } catch (final IOException ioe) { // NOSONAR
-                }
-            }
+        try (final var traversal = Files.walk(testWorkspacePath)) {
+            traversal.filter(p -> p.getFileName().toString().startsWith(".")) //
+                .forEach(p -> {
+                    try {
+                        Files.getFileAttributeView(p, DosFileAttributeView.class).setHidden(true);
+                    } catch (IOException e) { // NOSONAR
+                    }
+                });
         }
     }
 
@@ -344,6 +337,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Create a trivial space provider implementation that can be used to set up tests.
+     * 
      * @param id
      * @param spaceProviderName
      * @param spaces
@@ -390,7 +384,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static Space mockSpace(final String id, final String name, final String owner, final String description,
-            final boolean isPrivate) {
+        final boolean isPrivate) {
         var space = mock(Space.class);
         when(space.getId()).thenReturn(id);
         when(space.getName()).thenReturn(name);
@@ -479,7 +473,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static Path getTestWorkspacePath(final String name) throws IOException {
-        return CoreUtil.resolveToFile("/files/" + name, SpaceServiceTestHelper.class).toPath();
+        var path =  CoreUtil.resolveToFile("/files/" + name, SpaceServiceTestHelper.class).toPath();
+        // Windows does not consider all files starting with a dot to be hidden; a special flag has to be set
+        if (SystemUtils.IS_OS_WINDOWS) {
+            setDosHiddenFlagOnDotFiles(path);
+        }
+        return path;
     }
 
     /**
@@ -590,7 +589,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ss().listWorkflowGroup(spaceId, providerId, workflowGroupId);
         var rootFiles = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
         ss().deleteItems(spaceId, providerId,
-            rootFiles.getItems().stream().map(SpaceItemEnt::getId).collect(Collectors.toList()));
+            rootFiles.getItems().stream().map(SpaceItemEnt::getId).toList());
     }
 
     /**
@@ -600,11 +599,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testCreateWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_create_group");
-
-        // Windows does not consider all files starting with a dot to be hidden, a special flag has to be set
-        if (SystemUtils.IS_OS_WINDOWS) {
-            setDosHiddenFlagOnDotFiles(testWorkspacePath);
-        }
 
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         try {
@@ -865,7 +859,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var group = mock(SpaceGroup.class);
         when(group.getName()).thenReturn("some group name");
         var space = mock(Space.class);
-        SpaceEnt newSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "some name", "some owner", "", true);
+        var newSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "some name", "some owner", "", true);
         when(space.toEntity()).thenReturn(newSpaceEnt);
         when(space.getId()).thenReturn("space id");
         when(group.createSpace()).thenReturn(space);
