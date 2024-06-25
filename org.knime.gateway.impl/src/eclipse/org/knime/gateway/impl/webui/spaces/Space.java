@@ -62,6 +62,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
+import org.knime.core.util.Pair;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -434,29 +435,59 @@ public interface Space {
     }
 
     /**
+     * Result of an item transfer from/to a Hub.
      *
-     * @param sourceSpace
-     * @param itemIds
-     * @param targetItemId
-     * @param excludeData
-     * @return
-     * @throws IOException
-     * @throws OperationNotAllowedException
+     * @param successful whether the operation was (completely) successful or unsuccessful
+     * @param errorTitleAndDescription description of the error (so it can be presented to the user),
+     *     {@code null} if {@link #successful()} is {@code true} or if the user aborted the operation
      */
-    default boolean uploadFrom(final LocalWorkspace sourceSpace, final List<String> itemIds, final String targetItemId,
-            final boolean excludeData) throws IOException, OperationNotAllowedException {
+    public record TransferResult(boolean successful, Pair<String, String> errorTitleAndDescription) {
+
+        /** A successful transfer. */
+        public static final TransferResult SUCCESS = new TransferResult(true, null);
+
+        /** A cancelled transfer. */
+        public static final TransferResult CANCELLED = new TransferResult(false, null);
+
+        /**
+         * Creates a failure with the given title and description.
+         *
+         * @param title title for the user notification
+         * @param description description for the user notification
+         * @return failure result
+         */
+        public static TransferResult failureWithError(final String title, final String description) {
+            return new TransferResult(false, Pair.create(title, description));
+        }
+    }
+
+    /**
+     * Start an asynchronous upload flow on a Hub space.
+     *
+     * @param sourceSpace source space
+     * @param itemIds IDs of the items to upload
+     * @param targetItemId ID of the target folder to upload to
+     * @param excludeData whether or not to exclude data from uploaded workflows
+     * @return result indicating success or failure of the upload
+     * @throws IOException
+     * @throws OperationNotAllowedException if the method is called for anything but a space on a Hub that supports
+     *     asynchronous uploads
+     */
+    default TransferResult uploadFrom(final LocalWorkspace sourceSpace, final List<String> itemIds,
+            final String targetItemId, final boolean excludeData) throws IOException, OperationNotAllowedException {
         throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
     }
 
     /**
+     * Start an asynchronous download flow on a Hub space.
      *
-     * @param itemIds
-     * @param targetSpace
-     * @param targetItemId
-     * @return
+     * @param itemIds IDs of the items to download
+     * @param targetSpace local space to download to
+     * @param targetItemId item ID of the target folder
+     * @return result indicating success or failure of the download
      * @throws OperationNotAllowedException
      */
-    default boolean downloadInto(final List<String> itemIds, final LocalWorkspace targetSpace,
+    default TransferResult downloadInto(final List<String> itemIds, final LocalWorkspace targetSpace,
             final String targetItemId) throws OperationNotAllowedException {
         throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
     }
