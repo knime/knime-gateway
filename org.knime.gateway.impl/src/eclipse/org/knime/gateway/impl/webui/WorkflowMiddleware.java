@@ -50,12 +50,12 @@ package org.knime.gateway.impl.webui;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -83,7 +83,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEn
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
-import org.knime.gateway.api.webui.util.WorkflowMonitorStateEntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
@@ -117,13 +116,36 @@ public final class WorkflowMiddleware {
      */
     private static final int UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW = 50;
 
-    private final EntityRepository<WorkflowKey, WorkflowEnt> m_workflowEntRepo;
+    private final EntityRepository<WorkflowKey, WorkflowEnt> m_workflowEntRepo =
+        new SimpleRepository<>(1, new SnapshotIdGenerator());
 
-    private final EntityRepository<WorkflowKey, WorkflowMonitorStateEnt> m_workflowMonitorStateEntRepo;
+    private final EntityRepository<WorkflowKey, WorkflowMonitorStateEnt> m_workflowMonitorStateEntRepo =
+        new SimpleRepository<>(1, new SnapshotIdGenerator());
 
-    final Map<WorkflowKey, WorkflowState> m_workflowStateCache;
+    /**
+     * Needs to be a {@link ConcurrentHashMap}!
+     *
+     * Operations on this synchronized map (e.g. {@link Map#computeIfAbsent(Object, Function)} might in turn require
+     * other locks (e.g. {@link WorkflowLock}). Such an operation is performed while the lock on the map is being held
+     * which might lead to a deadlock (NXT-2667).
+     *
+     * <p>
+     * Example:
+     * <ul>
+     * <li>Thread B is in mapping function of {@code computeIfAbsent}. The mapping function (second parameter) is called
+     * <i>while</i> the lock on the map is being held. The mapping function, in turn, requires a WorkflowLock for
+     * {@link WorkflowState#WorkflowState(WorkflowKey)}.</li>
+     * <li>Thread A might come into this method already holding a WorkflowLock.</li>
+     * </ul>
+     * B is blocked by A on its WorkflowLock. A is blocked by B on the map's lock.
+     *
+     * Consequently, we do need to synchronize the map but only on 'key-level'. If synchronized on 'access-level' in
+     * general, deadlocks can happen for different keys. Concurrent hash map prevents that by synchronizing on ~keys.
+     * But deadlock could theoretically still happen on concurrent operations for the same key.
+     */
+    final Map<WorkflowKey, WorkflowState> m_workflowStateCache = new ConcurrentHashMap<>();
 
-    private final WorkflowCommands m_commands;
+    private final WorkflowCommands m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
 
     private final SpaceProviders m_spaceProviders;
 
@@ -132,13 +154,9 @@ public final class WorkflowMiddleware {
      * @param spaceProviders
      */
     public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProviders spaceProviders) {
-        m_workflowEntRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
-        m_workflowMonitorStateEntRepo = new SimpleRepository<>(1, new SnapshotIdGenerator());
-        m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
-        m_workflowStateCache = Collections.synchronizedMap(new HashMap<>());
         m_spaceProviders = spaceProviders;
-        projectManager.addProjectRemovedListener(
-            projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
+        projectManager
+            .addProjectRemovedListener(projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
     }
 
     private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
@@ -349,8 +367,9 @@ public final class WorkflowMiddleware {
     }
 
     /**
-     * Obtain the dependent node properties for the given workflow. Recalculate if the the workflow has pending
-     * changes or use cached data otherwise.
+     * Obtain the dependent node properties for the given workflow. Recalculate if the the workflow has pending changes
+     * or use cached data otherwise.
+     *
      * @param wfKey The workflow key characterising the workflow
      * @return recent {@code DependentNodeProperties}
      */
@@ -358,6 +377,9 @@ public final class WorkflowMiddleware {
         return getWorkflowState(wfKey).getDependentNodeProperties();
     }
 
+    /**
+     * @see WorkflowMiddleware#m_workflowStateCache
+     */
     private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
         return m_workflowStateCache.computeIfAbsent(wfKey, this::createWorkflowStateAndEventuallyClearCache);
     }
@@ -407,7 +429,7 @@ public final class WorkflowMiddleware {
 
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
-        private WorkflowState(final WorkflowKey wfKey)  {
+        private WorkflowState(final WorkflowKey wfKey) {
             m_wfKey = wfKey;
             m_wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
         }
@@ -449,8 +471,8 @@ public final class WorkflowMiddleware {
     }
 
     /**
-     * Wrapper around {@link DependentNodeProperties} that tracks the given workflow for changes affecting
-     * the dependent node properties and recomputes them if needed.
+     * Wrapper around {@link DependentNodeProperties} that tracks the given workflow for changes affecting the dependent
+     * node properties and recomputes them if needed.
      */
     private static final class CachedDependentNodeProperties {
 
@@ -514,6 +536,6 @@ public final class WorkflowMiddleware {
             }
 
         }
-    };
+    }
 
 }
