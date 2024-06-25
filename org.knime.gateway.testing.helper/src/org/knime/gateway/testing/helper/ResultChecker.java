@@ -125,7 +125,7 @@ public class ResultChecker {
     private static void assertEquals(final String snapshotName, final Class<?> testClass, final String expected,
         final String actual) {
         assertThat(String.format("Snapshot '%s' in test '%s' doesn't match", snapshotName, testClass.getSimpleName()),
-            actual, compareWithDiff(expected));
+            actual, compareWithDiff(expected.strip()));
     }
 
     private static Matcher<String> compareWithDiff(final String expected) {
@@ -133,7 +133,7 @@ public class ResultChecker {
 
             @Override
             public boolean matches(final Object item) {
-                return item instanceof String && item.equals(expected);
+                return (item instanceof String str) && str.strip().equals(expected);
             }
 
             @Override
