@@ -469,12 +469,11 @@ public interface Space {
      * @param targetItemId ID of the target folder to upload to
      * @param excludeData whether or not to exclude data from uploaded workflows
      * @return result indicating success or failure of the upload
-     * @throws IOException
      * @throws OperationNotAllowedException if the method is called for anything but a space on a Hub that supports
      *     asynchronous uploads
      */
     default TransferResult uploadFrom(final LocalWorkspace sourceSpace, final List<String> itemIds,
-            final String targetItemId, final boolean excludeData) throws IOException, OperationNotAllowedException {
+            final String targetItemId, final boolean excludeData) throws OperationNotAllowedException {
         throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
     }
 
