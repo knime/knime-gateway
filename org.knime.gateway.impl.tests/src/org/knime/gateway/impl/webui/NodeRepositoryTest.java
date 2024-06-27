@@ -78,8 +78,6 @@ import org.knime.gateway.impl.APCustomizationInjection;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Tests {@link NodeRepository}.
@@ -236,6 +234,7 @@ public class NodeRepositoryTest {
     @Test
     public void testNodeCustomizations() throws JsonMappingException, JsonProcessingException {
         String customizationYaml = """
+                  version: 'customization-v0.1'
                   nodes:
                       filter:
                       - scope: use
