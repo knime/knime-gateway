@@ -109,6 +109,7 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.shared.workflow.def.AnnotationDataDef;
@@ -740,7 +741,21 @@ public final class CoreUtil {
      */
     @SuppressWarnings("javadoc")
     public enum ContainerType {
-        METANODE, COMPONENT
+
+        METANODE("Metanode"),
+
+        COMPONENT("Component");
+
+        private final String m_label;
+
+        ContainerType(final String label) {
+            m_label = label;
+        }
+
+        public String getLabel() {
+            return m_label;
+        }
+
     }
 
     /**
@@ -752,16 +767,24 @@ public final class CoreUtil {
      *         found in the workflow or is not a container node.
      */
     public static Optional<ContainerType> getContainerType(final NodeID nodeId, final WorkflowManager wfm) {
-        var nodeContainer = getNodeContainer(nodeId, wfm);
-        return nodeContainer.map(nc -> {
-            if (nc instanceof WorkflowManager) {
-                return ContainerType.METANODE;
-            } else if (nc instanceof SubNodeContainer) {
-                return ContainerType.COMPONENT;
-            } else {
-                return null;
-            }
-        });
+        return getNodeContainer(nodeId, wfm).flatMap(CoreUtil::getContainerType);
+    }
+
+    /**
+     * Obtain the {@link ContainerType} of a container node.
+     *
+     * @param nc The node container
+     * @return an Optional containing the container type of the node, or an empty Optional if the node could not be
+     *         found in the workflow or is not a container node.
+     */
+    public static Optional<ContainerType> getContainerType(final NodeContainer nc) {
+        if (nc instanceof WorkflowManager) {
+            return Optional.of(ContainerType.METANODE);
+        } else if (nc instanceof SubNodeContainer) {
+            return Optional.of(ContainerType.COMPONENT);
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -772,14 +795,22 @@ public final class CoreUtil {
      * @return The workflow manager instance that is encapsulated by given container node
      */
     public static Optional<WorkflowManager> getContainedWfm(final NodeID nodeId, final WorkflowManager wfm) {
-        return getContainerType(nodeId, wfm).map(type -> {
-            if (type == ContainerType.METANODE) {
-                return wfm.getNodeContainer(nodeId, WorkflowManager.class, false);
-            }
-            if (type == ContainerType.COMPONENT) {
-                return wfm.getNodeContainer(nodeId, SubNodeContainer.class, false).getWorkflowManager();
-            }
-            return null;
+        return getContainerType(nodeId, wfm).map(type -> switch (type) {
+            case METANODE -> wfm.getNodeContainer(nodeId, WorkflowManager.class, false);
+            case COMPONENT -> wfm.getNodeContainer(nodeId, SubNodeContainer.class, false).getWorkflowManager();
+        });
+    }
+
+    /**
+     * Gets the container type and the workflow manager for components and metanodes.
+     *
+     * @param nc The node container
+     * @return The optional container type and workflow manager, empty if not a component or metanode
+     */
+    public static Optional<Pair<ContainerType, WorkflowManager>> getTypeAndContainedWfm(final NodeContainer nc) {
+        return getContainerType(nc).map(type -> switch (type) {
+            case METANODE -> Pair.create(type, (WorkflowManager)nc);
+            case COMPONENT -> Pair.create(type, ((SubNodeContainer)nc).getWorkflowManager());
         });
     }
 
