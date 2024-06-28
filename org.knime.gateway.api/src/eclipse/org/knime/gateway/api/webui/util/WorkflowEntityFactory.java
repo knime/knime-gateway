@@ -448,7 +448,8 @@ public final class WorkflowEntityFactory {
             .setCanReset(depNodeProps.canResetNode(id))//
             .setCanCancel(parent.canCancelNode(id))//
             .setCanOpenDialog((hasLegacyNodeDialog || hasNodeDialog) ? Boolean.TRUE : null)//
-            .setCanOpenLegacyFlowVariableDialog(hasNodeDialog ? Boolean.TRUE : null)//
+            .setCanOpenLegacyFlowVariableDialog(
+                hasNodeDialog && !(nc instanceof SubNodeContainer) ? Boolean.TRUE : null)//
             .setCanOpenView(hasAndCanOpenNodeView(nc))//
             .setCanDelete(canDeleteNode(nc, id, depNodeProps))//
             .setCanCollapse(canCollapseNode(id, buildContext))//

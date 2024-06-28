@@ -54,7 +54,6 @@
     "canExecute" : false,
     "canExpand" : "resetRequired",
     "canOpenDialog" : true,
-    "canOpenLegacyFlowVariableDialog" : true,
     "canReset" : true
   },
   "root:2" : {
