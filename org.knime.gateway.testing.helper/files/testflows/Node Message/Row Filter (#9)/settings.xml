@@ -6,26 +6,16 @@
         <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
     </config>
     <config key="model">
-        <config key="column">
-            <entry key="selected" type="xstring" value="column1"/>
-            <config key="compatibleTypes_Internals">
-                <entry key="array-size" type="xint" value="3"/>
-                <entry key="0" type="xstring" value="org.knime.core.data.StringValue"/>
-                <entry key="1" type="xstring" value="org.knime.core.data.DataValue"/>
-                <entry key="2" type="xstring" value="org.knime.core.data.NominalValue"/>
-            </config>
-        </config>
-        <entry key="operator" type="xstring" value="EQ"/>
-        <entry key="caseMatching" type="xstring" value="CASESENSITIVE"/>
-        <entry key="value" type="xstring" value=""/>
-        <entry key="type_Internals" type="xstring" value="org.knime.core.data.def.StringCell"/>
-        <entry key="outputMode" type="xstring" value="INCLUDE"/>
+        <entry key="outputMode" type="xstring" value="MATCHING"/>
+        <entry key="matchCriteria" type="xstring" value="AND"/>
+        <config key="predicates"/>
+        <entry key="domains" type="xstring" value="RETAIN"/>
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="IDLE"/>
     <config key="nodecontainer_message">
         <entry key="type" type="xstring" value="WARNING"/>
-        <entry key="message" type="xstring" value="The comparison value is missing."/>
+        <entry key="message" type="xstring" value="At least one filter criterion is needed."/>
     </config>
     <entry key="factory" type="xstring" value="org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory"/>
     <entry key="node-name" type="xstring" value="Row Filter"/>
@@ -38,11 +28,6 @@
     <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-version" type="xstring" value="0.0.0"/>
     <config key="factory_settings"/>
-    <config key="node_creation_config">
-        <config key="Input table"/>
-        <config key="Included rows"/>
-        <config key="Excluded rows"/>
-    </config>
     <entry key="name" type="xstring" value="Row Filter"/>
     <entry key="hasContent" type="xboolean" value="false"/>
     <entry key="isInactive" type="xboolean" value="false"/>

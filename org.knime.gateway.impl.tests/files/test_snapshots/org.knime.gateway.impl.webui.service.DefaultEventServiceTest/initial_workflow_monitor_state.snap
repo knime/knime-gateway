@@ -1,7 +1,7 @@
 {
   "errors" : [ ],
   "warnings" : [ {
-    "message" : "The comparison value is missing.",
+    "message" : "At least one filter criterion is needed.",
     "name" : "Row Filter",
     "nodeId" : "root:9",
     "templateId" : "org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory",
