@@ -210,6 +210,7 @@ public class DirectAccessTablePortViewFactoryTest {
                   },
                   "settings" : {
                     "displayedColumns" : {
+                      "selected" : ["int","string","long","double","boolean","mixed-type"],
                       "mode" : "MANUAL",
                       "patternFilter" : {
                         "pattern" : "",
