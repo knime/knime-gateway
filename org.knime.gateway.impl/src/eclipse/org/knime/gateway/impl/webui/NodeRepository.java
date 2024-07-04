@@ -78,6 +78,8 @@ import org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService;
 
 /**
  * Node repository logic and state.
+ * <p>
+ * An instance is stateful in that it caches various sets of nodes.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -86,21 +88,32 @@ public final class NodeRepository {
     private static final String NODE_USAGE_FILE = "/files/node_usage/node_usage.csv";
 
     /**
-     * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is, e.g., in the basic or advanced nodes
+     * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is in the currently active collection.
      */
     private Predicate<String> m_isInCollection;
 
     /**
-     * Nodes of the active collection or all nodes if no collection is active. Loaded/filled once with the call of any
-     * of the non-private methods.
+     * Nodes included by the predicate, or all nodes available in the installation if no predicate is given.
+     * 
+     * @see NodeRepository#m_isInCollection
      */
-    private Map<String, Node> m_nodes;
+    private Map<String, Node> m_inCollection;
 
-    /** Nodes that are not part of the active collection (empty if no collection is active) */
-    private Map<String, Node> m_additionalNodes;
+    /**
+     * Nodes that are not included by the predicate
+     * 
+     * @see NodeRepository#m_isInCollection
+     */
+    private Map<String, Node> m_notInCollection;
 
+    /**
+     * Nodes available in the installation that are marked as hidden in their definition.
+     */
     private Map<String, Node> m_hiddenNodes;
 
+    /**
+     * Nodes available in the installation that are marked as deprecated in their definition.
+     */
     private Map<String, Node> m_deprecatedNodes;
 
     private final Map<String, NodeTemplateEnt> m_fullInfoNodeTemplateEntCache = new ConcurrentHashMap<>(2000);
@@ -117,17 +130,23 @@ public final class NodeRepository {
     }
 
     /**
-     * Create a new node repository without a collection. All nodes are included.
+     * Create a new node repository. All available nodes are included.
      */
     public NodeRepository() {
         this(null);
     }
 
     /**
-     * Create a new node repository with the active collection.
+     * Create a new node repository.
+     * <p>
+     * An instance is optionally based on a predicate on a node. This predicate partitions the set of nodes <i>available</i>
+     * in this AP installation into <i>included</i> and <i>not included</i> nodes. The intuition behind this partition
+     * is to be able to indicate during node searching that additional nodes may be available in a different usage
+     * context.
+     * <p>
      *
-     * @param isInCollection defines which nodes should be included in the active collection by matching the templateId
-     *            of the node. Can be <code>null</code> if no collection is active
+     * @param isInCollection defines which nodes will be included in this instance. If {@code null}, all nodes are
+     *            included.
      */
     public NodeRepository(final Predicate<String> isInCollection) {
         m_isInCollection = isInCollection;
@@ -144,7 +163,7 @@ public final class NodeRepository {
     public Map<String, NodeTemplateEnt> getNodeTemplates(final Collection<String> templateIds,
         final boolean fullTemplateInfo) {
         loadAllNodesAndNodeSets();
-        return templateIds.stream().map(this::getNodeIncludeAdditionalNodes)//
+        return templateIds.stream().map(this::getNode)//
             .filter(Objects::nonNull)//
             .map(n -> getNodeTemplate(n, fullTemplateInfo))//
             .filter(Objects::nonNull)//
@@ -156,11 +175,11 @@ public final class NodeRepository {
      * template id.
      *
      * @param templateId the id to create the entity for
-     * @param fullTemplateInfo whether to innclude the full node template information or not
+     * @param fullTemplateInfo whether to include the full node template information or not
      * @return the template entity or {@code null} if there is none for the given id
      */
     public NodeTemplateEnt getNodeTemplate(final String templateId, final boolean fullTemplateInfo) {
-        return getNodeTemplate(getNodeIncludeAdditionalNodes(templateId), fullTemplateInfo);
+        return getNodeTemplate(getNode(templateId), fullTemplateInfo);
     }
 
     /**
@@ -171,8 +190,8 @@ public final class NodeRepository {
      */
     public void resetIsInCollection(final Predicate<String> isInCollection) {
         m_isInCollection = isInCollection;
-        m_nodes = null;
-        m_additionalNodes = null;
+        m_inCollection = null;
+        m_notInCollection = null;
     }
 
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
@@ -188,11 +207,11 @@ public final class NodeRepository {
      * Find a node by template id if it is part of the active repository.
      *
      * @param templateId
-     * @return the node or <code>null<code> if it is not in the active collection
+     * @return the node or <code>null<code> if it is not included in this node repository.
      */
-    Node getNode(final String templateId) {
+    Node getNodeInCollection(final String templateId) {
         loadAllNodesAndNodeSets();
-        return m_nodes.get(templateId);
+        return m_inCollection.get(templateId);
     }
 
     /**
@@ -201,43 +220,41 @@ public final class NodeRepository {
      * @param templateId
      * @return The node
      */
-    Node getNodeIncludeAdditionalNodes(final String templateId) {
+    Node getNode(final String templateId) {
         loadAllNodesAndNodeSets();
-        var n = m_nodes.get(templateId);
-        if (n != null) {
-            return n;
+        var node = m_inCollection.get(templateId);
+        if (node != null) {
+            return node;
         }
-        n = m_additionalNodes != null ? m_additionalNodes.get(templateId) : null;
-        if (n != null) {
-            return n;
+        node = m_notInCollection != null ? m_notInCollection.get(templateId) : null;
+        if (node != null) {
+            return node;
         }
-        n = m_hiddenNodes != null ? m_hiddenNodes.get(templateId) : null;
-        if (n != null) {
-            return n;
+        node = m_hiddenNodes != null ? m_hiddenNodes.get(templateId) : null;
+        if (node != null) {
+            return node;
         }
         return m_deprecatedNodes != null ? m_deprecatedNodes.get(templateId) : null;
     }
 
     /**
-     * @return nodes available in the node repository. Only the nodes in the active collection if a node collection is
-     *         active.
+     * @return all nodes included in this node repository.
      */
-    Collection<Node> getNodes() {
+    Collection<Node> getNodesInCollection() {
         loadAllNodesAndNodeSets();
-        return m_nodes.values();
+        return m_inCollection.values();
     }
 
     /**
-     * @return nodes that are available in the node repository but are not included in the result from
-     *         {@link #getNodes()} because they are not part of the active collection
+     * @return all nodes not included in this node repository.
      */
-    Collection<Node> getAdditionalNodes() {
+    Collection<Node> getNodesNotInCollection() {
         loadAllNodesAndNodeSets();
-        return m_additionalNodes.values();
+        return m_notInCollection.values();
     }
 
     /**
-     * @return all hidden nodes available in the node repository
+     * @return all hidden nodes included in the node repository
      */
     synchronized Collection<Node> getHiddenNodes() {
         if (m_hiddenNodes == null) {
@@ -249,7 +266,7 @@ public final class NodeRepository {
     }
 
     /**
-     * @return all deprecated nodes available in the node repository
+     * @return all deprecated nodes included in the node repository
      */
     synchronized Collection<Node> getDeprecatedNodes() {
         if (m_deprecatedNodes == null) {
@@ -262,20 +279,20 @@ public final class NodeRepository {
     }
 
     private synchronized void loadAllNodesAndNodeSets() {
-        if (m_nodes == null) { // Do not run this if nodes have already been fetched
+        if (m_inCollection == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
             final var nodesCustomization = GatewayImplPlugin.getInstance().getCustomization().nodes();
             var activeNodes = NodeSpecCollectionProvider.getInstance().getActiveNodes().values().stream() //
                 .filter(ns -> nodesCustomization.isViewAllowed(ns.factory().id())) //
-                .collect(Collectors.toMap(ns -> ns.factory().id(), Node::new));
+                .collect(Collectors.toMap(nodeSpec -> nodeSpec.factory().id(), Node::new));
             addNodeWeights(activeNodes);
 
             if (m_isInCollection == null) {
-                m_nodes = activeNodes;
-                m_additionalNodes = Collections.emptyMap();
+                m_inCollection = activeNodes;
+                m_notInCollection = Collections.emptyMap();
             } else {
-                m_nodes = filterNodes(activeNodes, m_isInCollection);
-                m_additionalNodes = filterNodes(activeNodes, m_isInCollection.negate());
+                m_inCollection = filterNodes(activeNodes, m_isInCollection);
+                m_notInCollection = filterNodes(activeNodes, m_isInCollection.negate());
             }
         }
     }
@@ -323,13 +340,12 @@ public final class NodeRepository {
     @SuppressWarnings("java:S116")
     static final class Node {
 
-        private final LazyInitializer<FuzzySearchable> m_fuzzySearchableInitializer =
-            new LazyInitializer<FuzzySearchable>() {
-                @Override
-                protected FuzzySearchable initialize() throws ConcurrentException {
-                    return new FuzzySearchable(name, nodeSpec.metadata().keywords().toArray(String[]::new));
-                }
-            };
+        private final LazyInitializer<FuzzySearchable> m_fuzzySearchableInitializer = new LazyInitializer<>() {
+            @Override
+            protected FuzzySearchable initialize() throws ConcurrentException {
+                return new FuzzySearchable(name, nodeSpec.metadata().keywords().toArray(String[]::new));
+            }
+        };
 
         final String templateId;
 
@@ -342,7 +358,6 @@ public final class NodeRepository {
          * is, e.g., the node's popularity among the users.
          */
         int weight;
-
 
         private Node(final NodeSpec s) {
             templateId = s.factory().id();

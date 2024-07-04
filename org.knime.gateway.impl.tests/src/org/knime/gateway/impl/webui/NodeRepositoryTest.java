@@ -202,7 +202,7 @@ public class NodeRepositoryTest {
                 sb.append(";name: ");
                 sb.append(entry.getValue().getName());
                 sb.append(";path: ");
-                sb.append(repo.getNodes().stream().filter(node -> node.templateId.equals(entry.getValue().getId()))
+                sb.append(repo.getNodesInCollection().stream().filter(node -> node.templateId.equals(entry.getValue().getId()))
                     .map(node -> node.nodeSpec.metadata().categoryPath()).findFirst().orElse(null));
                 sb.append("\n");
             }
@@ -212,14 +212,14 @@ public class NodeRepositoryTest {
 
     @Test
     public void testNodeCollection() {
-        assertThat("repo without collection should have no additional nodes", repo.getAdditionalNodes(), empty());
-        assertThat("repo with collection should have additional nodes", repoWithCollection.getAdditionalNodes(),
+        assertThat("repo without collection should have no additional nodes", repo.getNodesNotInCollection(), empty());
+        assertThat("repo with collection should have additional nodes", repoWithCollection.getNodesNotInCollection(),
             not(empty()));
 
-        var nodes = repoWithCollection.getNodes().stream().map(n -> n.templateId).collect(Collectors.toList());
+        var nodes = repoWithCollection.getNodesInCollection().stream().map(n -> n.templateId).collect(Collectors.toList());
         var additionalNodes =
-            repoWithCollection.getAdditionalNodes().stream().map(n -> n.templateId).collect(Collectors.toList());
-        assertThat("nodes and additional nodes should be all nodes", repo.getNodes().stream()
+            repoWithCollection.getNodesNotInCollection().stream().map(n -> n.templateId).collect(Collectors.toList());
+        assertThat("nodes and additional nodes should be all nodes", repo.getNodesInCollection().stream()
             .allMatch(n -> nodes.contains(n.templateId) || additionalNodes.contains(n.templateId)));
         assertThat("nodes and additional nodes should be disjoint",
             nodes.stream().noneMatch(additionalNodes::contains));
@@ -247,7 +247,7 @@ public class NodeRepositoryTest {
                           isRegex: false
                 """;
         try (var injected = new APCustomizationInjection(customizationYaml)) {
-            var nodes = new NodeRepository().getNodes().stream().map(n -> n.templateId).toList();
+            var nodes = new NodeRepository().getNodesInCollection().stream().map(n -> n.templateId).toList();
             assertThat(nodes,
                     Matchers.containsInAnyOrder("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
                             "org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"));

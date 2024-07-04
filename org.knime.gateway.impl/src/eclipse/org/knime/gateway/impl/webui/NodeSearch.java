@@ -50,29 +50,22 @@ package org.knime.gateway.impl.webui;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.function.ToDoubleBiFunction;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.sort.AlphanumericComparator;
-import org.knime.core.node.port.PortType;
-import org.knime.core.node.util.CheckUtils;
 import org.knime.core.ui.util.FuzzySearchable;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -81,9 +74,13 @@ import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
  * Logic and state (e.g. caching) required to search for nodes in the {@link NodeRepository}.
+ * <p>
+ * Each node repository search will search in two sets ({@link NodePartition}). This can be used to indicate that
+ * although there were no matches found for some current filtering, matches have been found in some complementary set.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
+ * @author Kai Franze, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, konstanz, Germany
  */
 public class NodeSearch {
 
@@ -100,16 +97,15 @@ public class NodeSearch {
      */
     private static final double KEYWORD_SCORE_WEIGHT = 0.8;
 
-    private static final ToDoubleBiFunction<FuzzySearchable, String> SCORING_FN =
-            // keywords contribute slightly lower similarity values since their influence on the search result is
-            // less obvious to the user
-            (n, q) -> Math.max(n.computeNameSimilarity(q), KEYWORD_SCORE_WEIGHT * n.computeKeywordSimilarity(q));
-
     /**
-     * Which subset of nodes to search in
+     * Score a candidate result. Keywords contribute slightly lower similarity values since their influence on the
+     * search result is less obvious to the user
      */
-    enum NodePartition { // Package scope for testing
-            IN_COLLECTION, NOT_IN_COLLECTION, ALL
+    private static double score(final FuzzySearchable candidate, final String query) {
+        return Math.max( //
+            candidate.computeNameSimilarity(query), //
+            candidate.computeKeywordSimilarity(query) * KEYWORD_SCORE_WEIGHT //
+        );
     }
 
     /*
@@ -132,228 +128,127 @@ public class NodeSearch {
     /**
      * Performs a node search and compiles the result accordingly.
      *
-     * @param portTypeId The port type all returned nodes (and components) have to be compatible with.
-     * @param q the search query or a blank string
-     * @param tags only the nodes which have at least one of the tags are considered in the search result
-     * @param allTagsMatch if <code>true</code>, only the nodes/components that have all of the given tags are included
-     *            in the search result. Otherwise nodes/components that have at least one of the given tags are
-     *            included.
-     * @param offset the number of nodes to skip (in the list of found nodes, which have a fixed order) - for
-     *            pagination
+     * @param queryString the search query or a blank string
+     * @param tags only the nodes which have at least one of the tags are included in the search result
+     * @param allTagsMatch if <code>true</code>, only the nodes/components that have all the given tags are included in
+     *            the search result. Otherwise, nodes/components that have at least one of the given tags are included.
+     * @param offset the number of nodes to skip (in the list of found nodes, which have a fixed order) - for pagination
      * @param limit the maximum number of nodes to include in the search result (mainly for pagination)
-     * @param fullTemplateInfo Whether to include the full node template information or not.
-     * @param nodesPartition If 'IN_COLLECTION' then only nodes that are part of the collection are returned. If
-     *            'NOT_IN_COLLECTION' then only nodes that are not part of the active collection are returned. If 'ALL'
-     *            then all nodes (ignoring collections) are returned. Defaults to 'ALL'.
+     * @param includeFullTemplateInfo Whether to include the full node template information or not.
+     * @param scope Configures the primary and secondary sets of nodes to search in.
+     * @param portTypeId The port type all returned nodes (and components) have to be compatible with.
      *
      * @return the search result entity
      * @throws InvalidRequestException
      */
-    public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String nodesPartition,
-        final String portTypeId) throws InvalidRequestException {
-        var partition = verifyNodePartition(nodesPartition);
-        var portType = verifyPortTypeId(portTypeId);
-        List<String> tagList = tags == null ? Collections.emptyList() : tags;
+    @SuppressWarnings("java:S107")
+    public NodeSearchResultEnt searchNodes(final String queryString, final List<String> tags,
+        final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean includeFullTemplateInfo,
+        final String scope, final String portTypeId) throws InvalidRequestException {
 
-        var fn = Normalizer.identity();
-        final Collection<Node> nodes;
-        Collection<Node> filteredNodes;
-        if (q != null && q.endsWith("//hidden")) {
-            fn = t -> t.replace("//hidden", "");
-            nodes = m_nodeRepo.getHiddenNodes();
-            filteredNodes = null;
-        } else if (q != null && q.endsWith("//deprecated")) {
-            fn = t -> t.replace("//deprecated", "");
-            nodes = m_nodeRepo.getDeprecatedNodes();
-            filteredNodes = null;
-        } else if (partition == NodePartition.IN_COLLECTION) {
-            // Only consider the nodes that are part of the collection
-            nodes = m_nodeRepo.getNodes();
-            filteredNodes = m_nodeRepo.getAdditionalNodes();
-        } else if (partition == NodePartition.NOT_IN_COLLECTION) {
-            // Only consider the nodes that are NOT part of the collection
-            nodes = m_nodeRepo.getAdditionalNodes();
-            filteredNodes = m_nodeRepo.getNodes();
-        } else {
-            // Consider all nodes regardless their collection membership
-            nodes = CollectionUtils.union(m_nodeRepo.getNodes(), m_nodeRepo.getAdditionalNodes());
-            filteredNodes = null;
-        }
-
-        final var searchQuery = new SearchQuery(q, tagList, Boolean.TRUE.equals(allTagsMatch), partition, portType);
-
-        final var normalizer = Normalizer.DEFAULT_NORMALIZATION.compose(fn);
-        final var searchResult = m_nodeSearchResultCache.computeIfAbsent(searchQuery,
-            query -> searchNodes(nodes, filteredNodes, query, normalizer));
-        var foundNodes = searchResult.foundNodes;
+        final var query = new SearchQuery(queryString, tags, allTagsMatch, scope, portTypeId);
+        // the partition is kept separate from the query to allow equals-checks for queries, which makes it simple
+        // to cache them in a map.
+        final var partition = query.partitionNodesOf(m_nodeRepo);
+        final var searchResult = m_nodeSearchResultCache.computeIfAbsent(query, q -> searchNodes(partition, q));
 
         // map templates
-        List<NodeTemplateEnt> templates = foundNodes.stream()
-            .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, Boolean.TRUE.equals(fullTemplateInfo)))//
+        List<NodeTemplateEnt> foundTemplates = searchResult.foundNodes().stream()
+            .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, Boolean.TRUE.equals(includeFullTemplateInfo)))//
             .filter(Objects::nonNull)//
             .skip(offset == null ? 0 : offset)//
             .limit(limit == null ? Long.MAX_VALUE : limit)//
             .toList();
 
         // collect all tags from the templates and sort according to their frequency
-        Map<String, Long> tagFrequencies = foundNodes.stream().flatMap(n -> n.nodeSpec.metadata().tags().stream())
-            .collect(Collectors.groupingBy(t -> t, HashMap::new, Collectors.counting()));
-        List<String> resTags = tagFrequencies.entrySet().stream()//
-            .sorted(Comparator.<Entry<String, Long>, Long> comparing(Entry::getValue).reversed())//
-            .map(Entry::getKey)//
+        var tagFrequencies = searchResult.foundNodes().stream() //
+            .flatMap(n -> n.nodeSpec.metadata().tags().stream()) //
+            .collect(Collectors.groupingBy(t -> t, HashMap::new, Collectors.counting())); //
+        var tagsSortedByFrequencyDescending = tagFrequencies.entrySet().stream() //
+            .sorted(Entry.<String, Long> comparingByValue().reversed()) //
+            .map(Entry::getKey) //
             .toList();
 
         return builder(NodeSearchResultEntBuilder.class)//
-            .setNodes(templates)//
-            .setTags(resTags)//
-            .setTotalNumNodesFound(foundNodes.size())//
-            .setTotalNumFilteredNodesFound(searchResult.numFilteredNodesFound)//
+            .setNodes(foundTemplates)//
+            .setTags(tagsSortedByFrequencyDescending)//
+            .setTotalNumNodesFound(searchResult.foundNodes().size())//
+            .setTotalNumFilteredNodesFound(searchResult.numSecondaryNodesFound)//
             .build();
     }
 
-    private static SearchResult searchNodes(final Collection<Node> nodes, final Collection<Node> filteredNodes,
-        final SearchQuery searchQuery, final Normalizer normalizer) {
-        final var foundNodes = searchNodes(nodes, searchQuery, normalizer);
-
-        Integer numFilteredNodesFound = null;
-        if (filteredNodes != null) {
-            numFilteredNodesFound = searchNodes(filteredNodes, searchQuery, normalizer).size();
-        }
-
-        return new SearchResult(foundNodes, numFilteredNodesFound);
+    private static SearchResult searchNodes(final NodePartition partition, final SearchQuery query) {
+        final var foundNodes = searchNodes(partition.primary(), query);
+        Integer numSecondaryNodesFound = partition.secondary() != null ? //
+            searchNodes(partition.secondary(), query).size() //
+            : null;
+        return new SearchResult(foundNodes, numSecondaryNodesFound);
     }
 
-    private static List<Node> searchNodes(final Collection<Node> nodes, final SearchQuery searchQuery,
-        final Normalizer normalizer) {
-        final var tags = searchQuery.tags();
-        final var allTagsMatch = searchQuery.allTagsMatch();
-        final Predicate<Node> tagFilter = n -> filterByTags(n, tags, allTagsMatch);
-        final var normalizedSearchTerm = normalizer.normalizeSearchTerm(searchQuery.searchTerm());
-        if (normalizedSearchTerm == null) {
-            assert searchQuery.portType() == null;
-
+    private static List<Node> searchNodes(final Collection<Node> nodes, final SearchQuery query) {
+        final Predicate<Node> tagFilter = node -> filterByTags(node, query.tags(), query.allTagsMustMatch());
+        if (query.searchTerm() == null) {
+            assert query.portType() == null;
             // Case 1: no filter, no ranking
-            if (tags == null || tags.isEmpty()) {
-                return Collections.unmodifiableList(new ArrayList<>(nodes));
+            if (query.tags() == null || query.tags().isEmpty()) {
+                return List.copyOf(nodes);
             }
             // Case 2: filter only by tags, rank nodes
-            return nodes.stream().filter(tagFilter)//
+            return nodes.stream() //
+                .filter(tagFilter)//
                 .sorted(//
                     Comparator.<Node> comparingInt(n -> -n.weight)//
                         .thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))//
                 .toList();
         }
         // Case 3: filter by tags, rank by similarity to search term
-        var portType = searchQuery.portType();
-        return nodes.stream().filter(tagFilter)//
+        return nodes.stream() //
+            .filter(tagFilter)//
             .map(n -> new FoundNode(n, //
-                StringUtils.containsIgnoreCase(n.name, normalizedSearchTerm), //
-                SCORING_FN.applyAsDouble(n.getFuzzySearchable(), normalizedSearchTerm)))//
-            .filter(n -> n.m_substringMatch || n.m_score >= SIMILARITY_THRESHOLD)//
-            .filter(n -> portType == null || n.m_node.isCompatibleWith(portType))//
+                StringUtils.containsIgnoreCase(n.name, query.searchTerm()), //
+                score(n.getFuzzySearchable(), query.searchTerm()))) //
+            .filter(n -> n.isSubstringMatch || n.score >= SIMILARITY_THRESHOLD)//
+            .filter(n -> query.portType() == null || n.node.isCompatibleWith(query.portType()))//
             .sorted(//
                 // 1) exact substring matches (only based on names)
-                Comparator.<FoundNode> comparingInt(n -> n.m_substringMatch ? 0 : 1)//
+                Comparator.<FoundNode> comparingInt(n -> n.isSubstringMatch ? 0 : 1)//
                     // 2) then fuzzy matches (also based on "hidden" keywords)
-                    .thenComparingDouble(n -> -n.m_score)//
+                    .thenComparingDouble(n -> -n.score)//
                     // 3) then on manually defined weight
-                    .thenComparingInt(n -> -n.m_node.weight)//
+                    .thenComparingInt(n -> -n.node.weight)//
                     // 4) tie-breaks
-                    .thenComparing(n -> n.m_node.name, ALPHANUMERIC_COMPARATOR))//
-            .map(wn -> wn.m_node)//
+                    .thenComparing(n -> n.node.name, ALPHANUMERIC_COMPARATOR))//
+            .map(wn -> wn.node)//
             .toList();
     }
 
-    private static boolean filterByTags(final Node n, final List<String> tags, final boolean allTagsMatch) {
+    private static boolean filterByTags(final Node node, final List<String> tags, final boolean allTagsMatch) {
         if (tags == null || tags.isEmpty()) {
             return true;
         }
         if (allTagsMatch) {
-            return tags.stream().allMatch(n.nodeSpec.metadata().tags()::contains);
+            return new HashSet<>(node.nodeSpec.metadata().tags()).containsAll(tags);
         }
-        return tags.stream().anyMatch(n.nodeSpec.metadata().tags()::contains);
+        return tags.stream().anyMatch(node.nodeSpec.metadata().tags()::contains);
     }
 
-    private static NodePartition verifyNodePartition(final String nodePartition) throws InvalidRequestException {
-        if (StringUtils.isBlank(nodePartition)) {
-            return NodePartition.ALL;
-        }
-        try {
-            return NodePartition.valueOf(nodePartition);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidRequestException(String.format("<%s> is not a valid node partition", nodePartition), e);
-        }
-    }
-
-    private static PortType verifyPortTypeId(final String portTypeId) throws InvalidRequestException {
-        if (StringUtils.isBlank(portTypeId)) {
-            return null;
-        }
-        return CoreUtil.getPortType(portTypeId)
-            .orElseThrow(() -> new InvalidRequestException(String.format("Not port type found for <%s>", portTypeId)));
-    }
-
-    private static class FoundNode {
-
-        final Node m_node;
-
-        final boolean m_substringMatch;
-
-        final double m_score;
-
-        FoundNode(final Node node, final boolean substringMatch, final double score) {
-            m_node = node;
-            m_substringMatch = substringMatch;
-            m_score = score;
-        }
+    private record FoundNode(Node node, boolean isSubstringMatch, double score) {
     }
 
     /**
-     * This interface exists because UnaryOperator has no covariant overrides of {@code andThen} and {@code compose}.
-     * So either we use {@code Function<String, String>} throughout and silence sonar everywhere, or we use this
-     * interface.
+     *
+     * @param primary
+     * @param secondary
      */
-    interface Normalizer extends UnaryOperator<String> {
+    static record NodePartition(Collection<Node> primary, Collection<Node> secondary) {
 
-        Normalizer DEFAULT_NORMALIZATION = t -> t.strip().toUpperCase(Locale.ROOT);
-
-        static Normalizer identity() {
-            return s -> s;
-        }
-
-        default Normalizer andThen(final Normalizer after) {
-            CheckUtils.checkNotNull(after);
-            return s -> after.apply(apply(s));
-        }
-
-        default Normalizer compose(final Normalizer before) {
-            CheckUtils.checkNotNull(before);
-            return s -> apply(before.apply(s));
-        }
-
-        /**
-         * @param searchTerm The original search term
-         *
-         * @return The normalized search term, can be {@code null}.
-         */
-        default String normalizeSearchTerm(final String searchTerm) {
-            final String normalizedForm = searchTerm == null ? searchTerm : apply(searchTerm);
-            if (StringUtils.isEmpty(normalizedForm)) {
-                return null;
-            }
-            return normalizedForm;
-        }
     }
 
     /**
-     * Simple search query record for bookkeeping
+     * @param foundNodes Nodes found in the primary set of a {@link NodePartition}
+     * @param numSecondaryNodesFound Number of nodes found in the secondary set of a {@link NodePartition}
      */
-    private static record SearchQuery(String searchTerm, List<String> tags, boolean allTagsMatch, // NOSONAR: Parameters not used is fine
-        NodePartition nodePartition, PortType portType) {
-    }
-
-    private record SearchResult(List<Node> foundNodes, Integer numFilteredNodesFound) {
+    private record SearchResult(List<Node> foundNodes, Integer numSecondaryNodesFound) {
     }
 
     /**

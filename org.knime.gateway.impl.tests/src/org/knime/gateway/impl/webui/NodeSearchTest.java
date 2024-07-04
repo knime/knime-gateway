@@ -75,7 +75,6 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.webui.NodeSearch.NodePartition;
 
 /**
  * Tests {@link NodeSearch}.
@@ -177,14 +176,14 @@ public class NodeSearchTest {
     @Test
     public void testSearchCollectionNodes() throws Exception {
         var res = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true,
-            NodePartition.IN_COLLECTION.toString(), null);
+            SearchQuery.Scope.IN_COLLECTION.toString(), null);
         var resFactories = getNodeFactoryNames(res.getNodes());
         assertThat("should return some nodes in the active collection", resFactories.size(), is(greaterThan(0)));
         assertThat("should only contain nodes from the collection",
             resFactories.stream().allMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
 
         var resAdditional = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true,
-            NodePartition.NOT_IN_COLLECTION.toString(), null);
+            SearchQuery.Scope.NOT_IN_COLLECTION.toString(), null);
         var additionalFactories = getNodeFactoryNames(resAdditional.getNodes());
         assertThat("should return some additional nodes", additionalFactories.size(), is(greaterThan(0)));
         assertThat("addtitional nodes should not be in the collection",
@@ -194,18 +193,18 @@ public class NodeSearchTest {
     @Test
     public void testSearchCollectionNodesVerifyResultSets() throws Exception {
         var resInCollection = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null,
-            false, NodePartition.IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
+            false, SearchQuery.Scope.IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
         assertThat("IN_COLLECTION result should not be empty", resInCollection.getTotalNumNodesFound(), is(greaterThan(0)));
 
         var resNotInCollection = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null,
-            false, NodePartition.NOT_IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
+            false, SearchQuery.Scope.NOT_IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
         assertThat("NOT_IN_COLLECTION result should not be empty", resNotInCollection.getTotalNumNodesFound(),
             is(greaterThan(0)));
         assertThat("IN_COLLECTION and NOT_IN_COLLECTION are disjunct",
             CollectionUtils.intersection(resInCollection.getNodes(), resNotInCollection.getNodes()), is(empty()));
 
         var resAll = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            NodePartition.ALL.toString(), TABLE_PORT_TYPE_ID);
+            SearchQuery.Scope.ALL.toString(), TABLE_PORT_TYPE_ID);
         assertThat("ALL result cardinality should be the sum of the other two", resAll.getTotalNumNodesFound(),
             is(resInCollection.getTotalNumNodesFound() + resNotInCollection.getTotalNumNodesFound()));
         assertThat("ALL result should be the union of the other two",
@@ -217,17 +216,17 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesVerifyResultSets() throws Exception {
         var resInCollection = m_search.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            NodePartition.IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
+            SearchQuery.Scope.IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
         assertThat("IN_COLLECTION result should not be empty", resInCollection.getTotalNumNodesFound(), is(greaterThan(0)));
 
         var resNotInCollection = m_search.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            NodePartition.NOT_IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
+            SearchQuery.Scope.NOT_IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
         assertThat("NOT_IN_COLLECTION result should be empty", resNotInCollection.getTotalNumNodesFound(), is(0));
         assertThat("IN_COLLECTION and NOT_IN_COLLECTION are disjunct",
             CollectionUtils.intersection(resInCollection.getNodes(), resNotInCollection.getNodes()), is(empty()));
 
         var resAll = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            NodePartition.ALL.toString(), TABLE_PORT_TYPE_ID);
+            SearchQuery.Scope.ALL.toString(), TABLE_PORT_TYPE_ID);
         assertThat("ALL result cardinality should be the same as the first one", resAll.getTotalNumNodesFound(),
             is(resInCollection.getTotalNumNodesFound()));
         assertThat("ALL result should be same as the first one",

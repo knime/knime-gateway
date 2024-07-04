@@ -139,7 +139,7 @@ public class NodeRecommendations {
      */
     private static boolean initializeNodeRecommendationManager(final NodeRepository nodeRepo) {
         Function<String, NodeType> getNodeType = id -> {
-            var node = nodeRepo.getNodeIncludeAdditionalNodes(id);
+            var node = nodeRepo.getNode(id);
             return node == null ? null : node.nodeSpec.type();
         };
         return NodeRecommendationManager.getInstance().initialize(getNodeType);
@@ -177,7 +177,7 @@ public class NodeRecommendations {
     private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final Stream<NodeRecommendation> recommendations,
         final PortType sourcePortType, final int limit, final boolean fullInfo) {
         return recommendations //
-            .map(r -> m_nodeRepo.getNode(r.getFactoryId())) //
+            .map(r -> m_nodeRepo.getNodeInCollection(r.getFactoryId())) //
             .filter(Objects::nonNull) //
             .filter(n -> sourcePortType == null || n.isCompatibleWith(sourcePortType)) //
             .limit(limit) // Limit the number of results after filtering by port type compatibility

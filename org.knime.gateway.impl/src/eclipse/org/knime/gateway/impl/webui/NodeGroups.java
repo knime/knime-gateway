@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.extension.CategoryExtension;
@@ -145,7 +144,8 @@ public final class NodeGroups {
 
     private synchronized Map<String, List<Node>> getNodesPerCategory() {
         if (m_nodesPerCategory == null) {
-            m_nodesPerCategory = Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
+            m_nodesPerCategory =
+                Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodesInCollection(), m_topLevelCats));
         }
         return m_nodesPerCategory;
     }
