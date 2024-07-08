@@ -52,6 +52,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -64,7 +65,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -112,17 +112,17 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAllNullParameters() throws Exception {
-        m_search.searchNodes(null, null, null, null, null, null, null, null);
-        m_search.searchNodes(null, null, null, null, null, null, null, ""); // Identical to first one
-        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, null, null); // Identical to first one
-        m_search.searchNodes(null, null, false, null, null, null, null, null); // Identical to first one
-        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, null, null);
+        m_search.searchNodes(null, null, null, null, null, null, null);
+        m_search.searchNodes(null, null, null, null, null, null, ""); // Identical to first one
+        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, null); // Identical to first one
+        m_search.searchNodes(null, null, false, null, null, null, null); // Identical to first one
+        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, null);
         assertThat("unexpected cache size", m_search.cacheSize(), is(2));
     }
 
     @Test
     public void testSimpleSearchNodesWithOffsetAndLimitAndMinimumInfo() throws Exception {
-        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null, null, null);
+        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null, null);
         assertThat("unexpected number of nodes", res.getNodes().size(), is(10));
         assertThat("column filter not expected to be the first node (offset)", res.getNodes().get(0).getName(),
             is(not("Column Filter")));
@@ -133,7 +133,7 @@ public class NodeSearchTest {
         assertThat("no in-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
         assertThat("no out-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
 
-        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null, null, null);
+        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null, null);
         assertThat("unexpected number of nodes", res2.getNodes().size(), is(9));
         assertThat("unexpected node", res.getNodes().get(1), is(res2.getNodes().get(0)));
 
@@ -142,7 +142,7 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAndGetFullTemplateInfo() throws Exception {
-        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE, null, null);
+        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE, null);
         assertThat("icon property expected", res.getNodes().get(0).getIcon(), is(notNullValue()));
         assertThat("in-port property expected", res.getNodes().get(0).getInPorts(), is(not((empty()))));
         assertThat("out-port property expected", res.getNodes().get(0).getOutPorts(), is(not((empty()))));
@@ -151,9 +151,9 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesAnyOrAllTagsMatch() throws Exception {
         NodeSearchResultEnt resAll =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE, null, null);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE, null);
         NodeSearchResultEnt resAny =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE, null, null);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE, null);
         assertThat("any match expected to hold more found nodes than all match", resAny.getTotalNumNodesFound(),
             is(greaterThan(resAll.getTotalNumNodesFound())));
 
@@ -163,87 +163,43 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesEasterEggs() throws Exception {
         NodeSearchResultEnt res =
-            m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false, null, null);
+            m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false, null);
         assertThat("some hidden nodes are expected to be found", res.getTotalNumNodesFound(), is(greaterThan(0)));
 
         NodeSearchResultEnt res2 =
-            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false, null, null);
+            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false, null);
         assertThat("some deprecated nodes are expected to be found", res2.getTotalNumNodesFound(), is(greaterThan(0)));
         assertThat("deprecated string expected in node name", res2.getNodes().get(0).getName(),
             containsString("deprecated"));
     }
 
     @Test
-    public void testSearchCollectionNodes() throws Exception {
-        var res = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true,
-            SearchQuery.Scope.IN_COLLECTION.toString(), null);
-        var resFactories = getNodeFactoryNames(res.getNodes());
-        assertThat("should return some nodes in the active collection", resFactories.size(), is(greaterThan(0)));
-        assertThat("should only contain nodes from the collection",
-            resFactories.stream().allMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
-
-        var resAdditional = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true,
-            SearchQuery.Scope.NOT_IN_COLLECTION.toString(), null);
-        var additionalFactories = getNodeFactoryNames(resAdditional.getNodes());
-        assertThat("should return some additional nodes", additionalFactories.size(), is(greaterThan(0)));
-        assertThat("addtitional nodes should not be in the collection",
-            additionalFactories.stream().noneMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
+    public void resultContainsMatchingNodes() throws Exception {
+        var searchResult = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true, null);
+        var resFactories = getNodeFactoryNames(searchResult.getNodes());
+        assertThat("Should return some nodes in the result", searchResult.getNodes().size(), is(greaterThan(0)));
+        assertThat("Result should only contain nodes from the collection",
+                NodeRepositoryTestingUtil.COLLECTION_NODES.containsAll(resFactories), is(true));
+        assertThat("There should be additional matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(greaterThan(0)));
     }
 
     @Test
-    public void testSearchCollectionNodesVerifyResultSets() throws Exception {
-        var resInCollection = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null,
-            false, SearchQuery.Scope.IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
-        assertThat("IN_COLLECTION result should not be empty", resInCollection.getTotalNumNodesFound(), is(greaterThan(0)));
-
-        var resNotInCollection = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null,
-            false, SearchQuery.Scope.NOT_IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
-        assertThat("NOT_IN_COLLECTION result should not be empty", resNotInCollection.getTotalNumNodesFound(),
-            is(greaterThan(0)));
-        assertThat("IN_COLLECTION and NOT_IN_COLLECTION are disjunct",
-            CollectionUtils.intersection(resInCollection.getNodes(), resNotInCollection.getNodes()), is(empty()));
-
-        var resAll = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            SearchQuery.Scope.ALL.toString(), TABLE_PORT_TYPE_ID);
-        assertThat("ALL result cardinality should be the sum of the other two", resAll.getTotalNumNodesFound(),
-            is(resInCollection.getTotalNumNodesFound() + resNotInCollection.getTotalNumNodesFound()));
-        assertThat("ALL result should be the union of the other two",
-            CollectionUtils.isEqualCollection(
-                CollectionUtils.union(resInCollection.getNodes(), resNotInCollection.getNodes()), resAll.getNodes()),
-            is(true));
-    }
-
-    @Test
-    public void testSearchNodesVerifyResultSets() throws Exception {
-        var resInCollection = m_search.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            SearchQuery.Scope.IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
-        assertThat("IN_COLLECTION result should not be empty", resInCollection.getTotalNumNodesFound(), is(greaterThan(0)));
-
-        var resNotInCollection = m_search.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            SearchQuery.Scope.NOT_IN_COLLECTION.toString(), TABLE_PORT_TYPE_ID);
-        assertThat("NOT_IN_COLLECTION result should be empty", resNotInCollection.getTotalNumNodesFound(), is(0));
-        assertThat("IN_COLLECTION and NOT_IN_COLLECTION are disjunct",
-            CollectionUtils.intersection(resInCollection.getNodes(), resNotInCollection.getNodes()), is(empty()));
-
-        var resAll = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null, false,
-            SearchQuery.Scope.ALL.toString(), TABLE_PORT_TYPE_ID);
-        assertThat("ALL result cardinality should be the same as the first one", resAll.getTotalNumNodesFound(),
-            is(resInCollection.getTotalNumNodesFound()));
-        assertThat("ALL result should be same as the first one",
-            CollectionUtils.isEqualCollection(resInCollection.getNodes(), resAll.getNodes()), is(true));
+    public void noFilteredNodesInResult() throws Exception {
+        var searchResult = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null,
+            false, null);
+        assertThat("There should be no additional matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(equalTo(0)));
     }
 
     @Test
     public void testSearchTagsCollectionNodes() throws Exception {
         var res =
-            m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, "IN_COLLECTION", null);
+            m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, null);
         var resFactories = getNodeFactoryNames(res.getNodes());
         assertThat("should return some nodes in the active collection", resFactories.size(), is(greaterThan(0)));
         assertThat("should only contain nodes from the collection",
             resFactories.stream().allMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
 
-        var resAdditional = m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true,
-            "NOT_IN_COLLECTION", null);
+        var resAdditional = m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, null);
         var additionalFactories = getNodeFactoryNames(resAdditional.getNodes());
         assertThat("should return some additional nodes", additionalFactories.size(), is(greaterThan(0)));
         assertThat("addtitional nodes should not be in the collection",
@@ -253,24 +209,24 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesException() {
         assertThrows("Not a valid port type set", InvalidRequestException.class,
-            () -> m_search.searchNodes(null, null, null, null, null, null, null, "porttype.id.does.not.exist"));
+            () -> m_search.searchNodes(null, null, null, null, null, null, "porttype.id.does.not.exist"));
     }
 
     @Test
     public void testSearchNodesDifferentPortTypes() throws Exception {
-        var res1 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, TABLE_PORT_TYPE_ID);
+        var res1 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID);
         assertThat(res1.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res1.getNodes(), TABLE_PORT_TYPE_ID), is(true));
 
-        var res2 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, IMAGE_PORT_TYPE_ID);
+        var res2 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID);
         assertThat(res2.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res2.getNodes(), IMAGE_PORT_TYPE_ID), is(true));
 
-        var res3 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, FLOW_VARIABLE_PORT_TYPE_ID);
+        var res3 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID);
         assertThat(res3.getTotalNumNodesFound(), greaterThan(0));
-        var res4 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, null); // no port type filter!
+        var res4 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null); // no port type filter!
         assertThat(
             "Searching for nodes with a flow-variable-port filter is equivalent to searching for nodes without a port-type filter",
             res3, is(res4));

@@ -135,7 +135,6 @@ public class NodeSearch {
      * @param offset the number of nodes to skip (in the list of found nodes, which have a fixed order) - for pagination
      * @param limit the maximum number of nodes to include in the search result (mainly for pagination)
      * @param includeFullTemplateInfo Whether to include the full node template information or not.
-     * @param scope Configures the primary and secondary sets of nodes to search in.
      * @param portTypeId The port type all returned nodes (and components) have to be compatible with.
      *
      * @return the search result entity
@@ -144,9 +143,9 @@ public class NodeSearch {
     @SuppressWarnings("java:S107")
     public NodeSearchResultEnt searchNodes(final String queryString, final List<String> tags,
         final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean includeFullTemplateInfo,
-        final String scope, final String portTypeId) throws InvalidRequestException {
+        final String portTypeId) throws InvalidRequestException {
 
-        final var query = new SearchQuery(queryString, tags, allTagsMatch, scope, portTypeId);
+        final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId);
         // the partition is kept separate from the query to allow equals-checks for queries, which makes it simple
         // to cache them in a map.
         final var partition = query.partitionNodesOf(m_nodeRepo);

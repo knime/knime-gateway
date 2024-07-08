@@ -107,10 +107,9 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
-        final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String nodesPartition,
-        final String portTypeId) throws InvalidRequestException {
-        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, nodesPartition,
-            portTypeId);
+        final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String portTypeId)
+        throws InvalidRequestException {
+        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId);
     }
 
     /**

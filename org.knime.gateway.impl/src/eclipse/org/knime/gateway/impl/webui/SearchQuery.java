@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.port.PortType;
 import org.knime.core.util.Pair;
@@ -68,8 +67,6 @@ final class SearchQuery {
 
     private final boolean m_allTagsMustMatch;
 
-    private final Scope m_scope;
-
     private final NodeFilter m_nodeFilter;
 
     private final PortType m_portType;
@@ -80,31 +77,16 @@ final class SearchQuery {
      * @param query The query string as entered by the user
      * @param tags Selected tags
      * @param allTagsMustMatch Whether search hits must match all selected tags
-     * @param scope How to partition the nodes available in the node repository for searching. See
-     *            {@link SearchQuery#partitionNodesOf(NodeRepository)}
      * @param portTypeId The port type search hits must be compatible to.
      */
-    SearchQuery(final String query, final List<String> tags, final Boolean allTagsMustMatch, final String scope,
-        final String portTypeId) throws ServiceExceptions.InvalidRequestException {
+    SearchQuery(final String query, final List<String> tags, final Boolean allTagsMustMatch, final String portTypeId)
+        throws ServiceExceptions.InvalidRequestException {
         var parsed = parseQuery(query);
         m_searchTerm = parsed.getFirst();
         m_nodeFilter = parsed.getSecond();
         m_tags = tags == null ? Collections.emptyList() : tags;
         m_allTagsMustMatch = Boolean.TRUE.equals(allTagsMustMatch);
-        m_scope = verifyScope(scope);
         m_portType = verifyPortTypeId(portTypeId);
-    }
-
-    private static Scope verifyScope(final String scope) throws ServiceExceptions.InvalidRequestException {
-        if (StringUtils.isBlank(scope)) {
-            return Scope.ALL;
-        }
-        try {
-            return Scope.valueOf(scope);
-        } catch (IllegalArgumentException e) {
-            throw new ServiceExceptions.InvalidRequestException(
-                String.format("<%s> is not a valid node partition", scope), e);
-        }
     }
 
     private static PortType verifyPortTypeId(final String portTypeId) throws ServiceExceptions.InvalidRequestException {
@@ -126,21 +108,8 @@ final class SearchQuery {
         return switch (m_nodeFilter) {
             case HIDDEN -> new NodeSearch.NodePartition(nodeRepo.getHiddenNodes(), null);
             case DEPRECATED -> new NodeSearch.NodePartition(nodeRepo.getDeprecatedNodes(), null);
-            case NONE -> partitionNodesOf(nodeRepo, m_scope);
-        };
-    }
-
-    private static NodeSearch.NodePartition partitionNodesOf(final NodeRepository nodeRepo,
-        final Scope scope) {
-        return switch (scope) {
-            case ALL -> new NodeSearch.NodePartition( //
-                CollectionUtils.union(nodeRepo.getNodesInCollection(), nodeRepo.getNodesNotInCollection()), //
-                null //
-                );
-            case IN_COLLECTION ->
+            case NONE ->
                 new NodeSearch.NodePartition(nodeRepo.getNodesInCollection(), nodeRepo.getNodesNotInCollection());
-            case NOT_IN_COLLECTION ->
-                new NodeSearch.NodePartition(nodeRepo.getNodesNotInCollection(), nodeRepo.getNodesInCollection());
         };
     }
 
@@ -224,13 +193,12 @@ final class SearchQuery {
         }
         var that = (SearchQuery)obj;
         return Objects.equals(this.m_searchTerm, that.m_searchTerm) && Objects.equals(this.m_tags, that.m_tags)
-            && this.m_allTagsMustMatch == that.m_allTagsMustMatch && Objects.equals(this.m_scope, that.m_scope)
-            && Objects.equals(this.m_nodeFilter, that.m_nodeFilter)
-            && Objects.equals(this.m_portType, that.m_portType);
+            && this.m_allTagsMustMatch == that.m_allTagsMustMatch
+            && Objects.equals(this.m_nodeFilter, that.m_nodeFilter) && Objects.equals(this.m_portType, that.m_portType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_searchTerm, m_tags, m_allTagsMustMatch, m_scope, m_nodeFilter, m_portType);
+        return Objects.hash(m_searchTerm, m_tags, m_allTagsMustMatch, m_nodeFilter, m_portType);
     }
 }

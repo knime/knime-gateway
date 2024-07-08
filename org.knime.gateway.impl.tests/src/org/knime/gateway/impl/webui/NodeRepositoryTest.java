@@ -100,8 +100,8 @@ public class NodeRepositoryTest {
     @Test
     public void testGetNodeTemplates() throws Exception {
         NodeSearch search = new NodeSearch(repo);
-        NodeSearchResultEnt res = search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE,
-            "IN_COLLECTION", null);
+        NodeSearchResultEnt res =
+            search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE, null);
 
         NodeTemplateEnt nodeFromSearch = res.getNodes().get(0);
         List<String> ids = asList(nodeFromSearch.getId());
@@ -127,8 +127,7 @@ public class NodeRepositoryTest {
         assertThat("no factory settings expected", nodeFromSearch.getNodeFactory().getSettings(), is(nullValue()));
 
         // dynamic node
-        res = search.searchNodes("Bar Chart (Java Script)", asList("Views"), null, 0, 1, Boolean.TRUE,
-            "IN_COLLECTION", null);
+        res = search.searchNodes("Bar Chart (Java Script)", asList("Views"), null, 0, 1, Boolean.TRUE, null);
         nodeFromSearch = res.getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplate(nodeFromSearch.getId(), true);
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
@@ -152,13 +151,12 @@ public class NodeRepositoryTest {
         NodeSearch search = new NodeSearch(repo);
 
         NodeTemplateEnt nodeFromSearch =
-            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, "IN_COLLECTION", null).getNodes().get(0);
+            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, null).getNodes().get(0);
         NodeTemplateEnt nodeFromRepo =
             repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
 
-        nodeFromSearch =
-            search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, "IN_COLLECTION", null).getNodes().get(0);
+        nodeFromSearch = search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, null).getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
         assertThat(nodeFromRepo.getName(), containsString("deprecated"));
@@ -174,7 +172,7 @@ public class NodeRepositoryTest {
         NodeSearch search = new NodeSearch(repo);
 
         NodeGroupsEnt groupsRes = select.getNodesGroupedByTags(null, null, null, null);
-        NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null, null, null);
+        NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null, null);
 
         Map<String, NodeTemplateEnt> overplus = new HashMap<>();
         for (NodeTemplateEnt n1 : groupsRes.getGroups().stream().flatMap(s -> s.getNodes().stream())
@@ -202,7 +200,8 @@ public class NodeRepositoryTest {
                 sb.append(";name: ");
                 sb.append(entry.getValue().getName());
                 sb.append(";path: ");
-                sb.append(repo.getNodesInCollection().stream().filter(node -> node.templateId.equals(entry.getValue().getId()))
+                sb.append(repo.getNodesInCollection().stream()
+                    .filter(node -> node.templateId.equals(entry.getValue().getId()))
                     .map(node -> node.nodeSpec.metadata().categoryPath()).findFirst().orElse(null));
                 sb.append("\n");
             }
@@ -216,7 +215,8 @@ public class NodeRepositoryTest {
         assertThat("repo with collection should have additional nodes", repoWithCollection.getNodesNotInCollection(),
             not(empty()));
 
-        var nodes = repoWithCollection.getNodesInCollection().stream().map(n -> n.templateId).collect(Collectors.toList());
+        var nodes =
+            repoWithCollection.getNodesInCollection().stream().map(n -> n.templateId).collect(Collectors.toList());
         var additionalNodes =
             repoWithCollection.getNodesNotInCollection().stream().map(n -> n.templateId).collect(Collectors.toList());
         assertThat("nodes and additional nodes should be all nodes", repo.getNodesInCollection().stream()
@@ -249,17 +249,17 @@ public class NodeRepositoryTest {
         try (var injected = new APCustomizationInjection(customizationYaml)) {
             var nodes = new NodeRepository().getNodesInCollection().stream().map(n -> n.templateId).toList();
             assertThat(nodes,
-                    Matchers.containsInAnyOrder("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
-                            "org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"));
+                Matchers.containsInAnyOrder("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
+                    "org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"));
 
             assertThat(NodeRepository.isNodeUsageForbidden(
-                    "org.knime.base.node.preproc.autobinner.apply.AutoBinnerApplyNodeFactory"), is(true));
+                "org.knime.base.node.preproc.autobinner.apply.AutoBinnerApplyNodeFactory"), is(true));
             assertThat(
-                    NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"),
-                    is(false));
+                NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory"),
+                is(false));
             assertThat(
-                    NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"),
-                    is(false));
+                NodeRepository.isNodeUsageForbidden("org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"),
+                is(false));
         }
     }
 }
