@@ -81,12 +81,12 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "java:S5960", "java:S112"})
 public class NodeSearchTest {
 
     private static NodeRepository repo;
 
-    private static NodeRepository repoWithCollection;
+    private static NodeRepository repoWithFilter;
 
     private static final String TABLE_PORT_TYPE_ID = CoreUtil.getPortTypeId(BufferedDataTable.TYPE);
 
@@ -96,18 +96,18 @@ public class NodeSearchTest {
 
     private NodeSearch m_search;
 
-    private NodeSearch m_searchWithCollection;
+    private NodeSearch m_searchWithFilter;
 
     @BeforeClass
     public static void initRepo() {
         repo = NodeRepositoryTestingUtil.createNodeRepository();
-        repoWithCollection = NodeRepositoryTestingUtil.createNodeRepositoryWithCollection();
+        repoWithFilter = NodeRepositoryTestingUtil.createNodeRepositoryWithFilter();
     }
 
     @Before
     public void initNodeSearch() {
         m_search = new NodeSearch(repo);
-        m_searchWithCollection = new NodeSearch(repoWithCollection);
+        m_searchWithFilter = new NodeSearch(repoWithFilter);
     }
 
     @Test
@@ -175,35 +175,29 @@ public class NodeSearchTest {
 
     @Test
     public void resultContainsMatchingNodes() throws Exception {
-        var searchResult = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, 0, 10, true, null);
+        var searchResult = m_searchWithFilter.searchNodes("table", Collections.emptyList(), null, 0, 10, true, null);
         var resFactories = getNodeFactoryNames(searchResult.getNodes());
         assertThat("Should return some nodes in the result", searchResult.getNodes().size(), is(greaterThan(0)));
-        assertThat("Result should only contain nodes from the collection",
-                NodeRepositoryTestingUtil.COLLECTION_NODES.containsAll(resFactories), is(true));
-        assertThat("There should be additional matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(greaterThan(0)));
+        assertThat("Result should only contain nodes matching the filter",
+                NodeRepositoryTestingUtil.INCLUDED_NODES.containsAll(resFactories), is(true));
+        assertThat("There should be filtered matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(greaterThan(0)));
     }
 
     @Test
     public void noFilteredNodesInResult() throws Exception {
-        var searchResult = m_searchWithCollection.searchNodes("table", Collections.emptyList(), null, null, null,
+        var searchResult = m_search.searchNodes("table", Collections.emptyList(), null, null, null,
             false, null);
-        assertThat("There should be no additional matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(equalTo(0)));
+        assertThat("There should be no filtered matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(equalTo(0)));
     }
 
     @Test
-    public void testSearchTagsCollectionNodes() throws Exception {
+    public void testSearchTagsInFilteredRepo() throws Exception {
         var res =
-            m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, null);
+            m_searchWithFilter.searchNodes("", asList("Manipulation"), null, 0, 10, true, null);
         var resFactories = getNodeFactoryNames(res.getNodes());
-        assertThat("should return some nodes in the active collection", resFactories.size(), is(greaterThan(0)));
-        assertThat("should only contain nodes from the collection",
-            resFactories.stream().allMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
+        assertThat("should only contain nodes matching the filter",
+                NodeRepositoryTestingUtil.INCLUDED_NODES.containsAll(resFactories), is(true));
 
-        var resAdditional = m_searchWithCollection.searchNodes("", asList("Manipulation"), null, 0, 10, true, null);
-        var additionalFactories = getNodeFactoryNames(resAdditional.getNodes());
-        assertThat("should return some additional nodes", additionalFactories.size(), is(greaterThan(0)));
-        assertThat("addtitional nodes should not be in the collection",
-            additionalFactories.stream().noneMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
     }
 
     @Test

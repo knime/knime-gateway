@@ -88,23 +88,23 @@ public final class NodeRepository {
     private static final String NODE_USAGE_FILE = "/files/node_usage/node_usage.csv";
 
     /**
-     * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is in the currently active collection.
+     * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is available through this node repository.
      */
-    private Predicate<String> m_isInCollection;
+    private Predicate<String> m_filter;
 
     /**
      * Nodes included by the predicate, or all nodes available in the installation if no predicate is given.
      * 
-     * @see NodeRepository#m_isInCollection
+     * @see NodeRepository#m_filter
      */
-    private Map<String, Node> m_inCollection;
+    private Map<String, Node> m_nodes;
 
     /**
      * Nodes that are not included by the predicate
      * 
-     * @see NodeRepository#m_isInCollection
+     * @see NodeRepository#m_filter
      */
-    private Map<String, Node> m_notInCollection;
+    private Map<String, Node> m_filteredNodes;
 
     /**
      * Nodes available in the installation that are marked as hidden in their definition.
@@ -145,11 +145,11 @@ public final class NodeRepository {
      * context.
      * <p>
      *
-     * @param isInCollection defines which nodes will be included in this instance. If {@code null}, all nodes are
+     * @param filter defines which nodes will be included in this instance. If {@code null}, all nodes are
      *            included.
      */
-    public NodeRepository(final Predicate<String> isInCollection) {
-        m_isInCollection = isInCollection;
+    public NodeRepository(final Predicate<String> filter) {
+        m_filter = filter;
     }
 
     /**
@@ -163,7 +163,7 @@ public final class NodeRepository {
     public Map<String, NodeTemplateEnt> getNodeTemplates(final Collection<String> templateIds,
         final boolean fullTemplateInfo) {
         loadAllNodesAndNodeSets();
-        return templateIds.stream().map(this::getNode)//
+        return templateIds.stream().map(this::getNodeIncludeFilteredNodes)//
             .filter(Objects::nonNull)//
             .map(n -> getNodeTemplate(n, fullTemplateInfo))//
             .filter(Objects::nonNull)//
@@ -179,19 +179,19 @@ public final class NodeRepository {
      * @return the template entity or {@code null} if there is none for the given id
      */
     public NodeTemplateEnt getNodeTemplate(final String templateId, final boolean fullTemplateInfo) {
-        return getNodeTemplate(getNode(templateId), fullTemplateInfo);
+        return getNodeTemplate(getNodeIncludeFilteredNodes(templateId), fullTemplateInfo);
     }
 
     /**
-     * Resets the 'isInCollection' predicate.
+     * Resets the 'filter' predicate.
      *
-     * @param isInCollection defines which nodes should be included in the active collection by matching the templateId
-     *            of the node. Can be <code>null</code> if no collection is active
+     * @param filter defines which nodes should be included in the node repository by matching the templateId
+     *            of the node. Can be <code>null</code>, which means all nodes are included.
      */
-    public void resetIsInCollection(final Predicate<String> isInCollection) {
-        m_isInCollection = isInCollection;
-        m_inCollection = null;
-        m_notInCollection = null;
+    public void resetFilter(final Predicate<String> filter) {
+        m_filter = filter;
+        m_nodes = null;
+        m_filteredNodes = null;
     }
 
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
@@ -209,9 +209,9 @@ public final class NodeRepository {
      * @param templateId
      * @return the node or <code>null<code> if it is not included in this node repository.
      */
-    Node getNodeInCollection(final String templateId) {
+    Node getNode(final String templateId) {
         loadAllNodesAndNodeSets();
-        return m_inCollection.get(templateId);
+        return m_nodes.get(templateId);
     }
 
     /**
@@ -220,13 +220,13 @@ public final class NodeRepository {
      * @param templateId
      * @return The node
      */
-    Node getNode(final String templateId) {
+    Node getNodeIncludeFilteredNodes(final String templateId) {
         loadAllNodesAndNodeSets();
-        var node = m_inCollection.get(templateId);
+        var node = m_nodes.get(templateId);
         if (node != null) {
             return node;
         }
-        node = m_notInCollection != null ? m_notInCollection.get(templateId) : null;
+        node = m_filteredNodes != null ? m_filteredNodes.get(templateId) : null;
         if (node != null) {
             return node;
         }
@@ -240,17 +240,17 @@ public final class NodeRepository {
     /**
      * @return all nodes included in this node repository.
      */
-    Collection<Node> getNodesInCollection() {
+    Collection<Node> getNodes() {
         loadAllNodesAndNodeSets();
-        return m_inCollection.values();
+        return m_nodes.values();
     }
 
     /**
      * @return all nodes not included in this node repository.
      */
-    Collection<Node> getNodesNotInCollection() {
+    Collection<Node> getFilteredNodes() {
         loadAllNodesAndNodeSets();
-        return m_notInCollection.values();
+        return m_filteredNodes.values();
     }
 
     /**
@@ -279,7 +279,7 @@ public final class NodeRepository {
     }
 
     private synchronized void loadAllNodesAndNodeSets() {
-        if (m_inCollection == null) { // Do not run this if nodes have already been fetched
+        if (m_nodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
             final var nodesCustomization = GatewayImplPlugin.getInstance().getCustomization().nodes();
             var activeNodes = NodeSpecCollectionProvider.getInstance().getActiveNodes().values().stream() //
@@ -287,12 +287,12 @@ public final class NodeRepository {
                 .collect(Collectors.toMap(nodeSpec -> nodeSpec.factory().id(), Node::new));
             addNodeWeights(activeNodes);
 
-            if (m_isInCollection == null) {
-                m_inCollection = activeNodes;
-                m_notInCollection = Collections.emptyMap();
+            if (m_filter == null) {
+                m_nodes = activeNodes;
+                m_filteredNodes = Collections.emptyMap();
             } else {
-                m_inCollection = filterNodes(activeNodes, m_isInCollection);
-                m_notInCollection = filterNodes(activeNodes, m_isInCollection.negate());
+                m_nodes = filterNodes(activeNodes, m_filter);
+                m_filteredNodes = filterNodes(activeNodes, m_filter.negate());
             }
         }
     }

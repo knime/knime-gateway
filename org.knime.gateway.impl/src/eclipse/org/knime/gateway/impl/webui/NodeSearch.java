@@ -148,7 +148,7 @@ public class NodeSearch {
         final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId);
         // the partition is kept separate from the query to allow equals-checks for queries, which makes it simple
         // to cache them in a map.
-        final var partition = query.partitionNodesOf(m_nodeRepo);
+        final var partition = partitionNodesOf(m_nodeRepo, query);
         final var searchResult = m_nodeSearchResultCache.computeIfAbsent(query, q -> searchNodes(partition, q));
 
         // map templates
@@ -229,6 +229,23 @@ public class NodeSearch {
             return new HashSet<>(node.nodeSpec.metadata().tags()).containsAll(tags);
         }
         return tags.stream().anyMatch(node.nodeSpec.metadata().tags()::contains);
+    }
+
+
+    /**
+     * Partition the nodes available in this node repository into a primary and a secondary set to search in. The
+     * partitioning is implied by the search query.
+     *
+     * @param nodeRepo The node repository providing the available nodes.
+     * @return A partition according to the search query.
+     */
+    private static NodeSearch.NodePartition partitionNodesOf(final NodeRepository nodeRepo, final SearchQuery query) {
+        return switch (query.nodeFilter()) {
+            case HIDDEN -> new NodeSearch.NodePartition(nodeRepo.getHiddenNodes(), null);
+            case DEPRECATED -> new NodeSearch.NodePartition(nodeRepo.getDeprecatedNodes(), null);
+            case NONE ->
+                    new NodeSearch.NodePartition(nodeRepo.getNodes(), nodeRepo.getFilteredNodes());
+        };
     }
 
     private record FoundNode(Node node, boolean isSubstringMatch, double score) {

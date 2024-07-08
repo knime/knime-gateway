@@ -98,22 +98,6 @@ final class SearchQuery {
     }
 
     /**
-     * Partition the nodes available in this node repository into a primary and a secondary set to search in. The
-     * partitioning is implied by the search query.
-     *
-     * @param nodeRepo The node repository providing the available nodes.
-     * @return A partition according to the search query.
-     */
-    NodeSearch.NodePartition partitionNodesOf(final NodeRepository nodeRepo) {
-        return switch (m_nodeFilter) {
-            case HIDDEN -> new NodeSearch.NodePartition(nodeRepo.getHiddenNodes(), null);
-            case DEPRECATED -> new NodeSearch.NodePartition(nodeRepo.getDeprecatedNodes(), null);
-            case NONE ->
-                new NodeSearch.NodePartition(nodeRepo.getNodesInCollection(), nodeRepo.getNodesNotInCollection());
-        };
-    }
-
-    /**
      * Parse the query string for a special suffix indicating the requested deprecation status.
      *
      * @param queryString The query string supplied by the frontend.
@@ -142,23 +126,27 @@ final class SearchQuery {
         return new Pair<>(effectiveQuery, nodeFilter);
     }
 
-    public String searchTerm() {
+    String searchTerm() {
         return m_searchTerm;
     }
 
-    public List<String> tags() {
+    List<String> tags() {
         return m_tags;
     }
 
-    public boolean allTagsMustMatch() {
+    boolean allTagsMustMatch() {
         return m_allTagsMustMatch;
     }
 
-    public PortType portType() {
+    PortType portType() {
         return m_portType;
     }
 
-    private enum NodeFilter {
+    NodeFilter nodeFilter() {
+        return m_nodeFilter;
+    }
+
+    enum NodeFilter {
             /**
              * Normal node
              */
@@ -173,14 +161,6 @@ final class SearchQuery {
              * Node is marked as deprecated in its definition
              */
             DEPRECATED
-    }
-
-    /**
-     * @see SearchQuery#partitionNodesOf(NodeRepository)
-     * @see NodeSearch.NodePartition
-     */
-    enum Scope { // Package scope for testing
-            IN_COLLECTION, NOT_IN_COLLECTION, ALL
     }
 
     @Override

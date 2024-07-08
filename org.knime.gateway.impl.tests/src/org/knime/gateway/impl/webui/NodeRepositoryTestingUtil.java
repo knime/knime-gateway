@@ -61,16 +61,16 @@ public final class NodeRepositoryTestingUtil {
         // static utility
     }
 
-    /** The nodes that are included in the active collection for {@link #createNodeRepositoryWithCollection()} */
-    public static final Set<String> COLLECTION_NODES =
+    /** The nodes that are included in the node repository returned by {@link #createNodeRepositoryWithFilter()} */
+    public static final Set<String> INCLUDED_NODES =
         Set.of("org.knime.base.node.preproc.table.cropper.TableCropperNodeFactory",
             "org.knime.base.node.preproc.table.cellextractor.CellExtractorNodeFactory",
             "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory",
             "org.knime.base.node.preproc.table.splitter.TableSplitterNodeFactory");
 
-    /** @return a new {@link NodeRepository} with the {@link #COLLECTION_NODES} */
-    public static NodeRepository createNodeRepositoryWithCollection() {
-        return new NodeRepository(COLLECTION_NODES::contains);
+    /** @return a new {@link NodeRepository} with the {@link #INCLUDED_NODES} */
+    public static NodeRepository createNodeRepositoryWithFilter() {
+        return new NodeRepository(INCLUDED_NODES::contains);
     }
 
     /** @return a new {@link NodeRepository} with no active collection */

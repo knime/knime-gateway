@@ -82,7 +82,7 @@ public class NodeGroupTest {
     @BeforeClass
     public static void initRepo() {
         repo = NodeRepositoryTestingUtil.createNodeRepository();
-        repoWithCollection = NodeRepositoryTestingUtil.createNodeRepositoryWithCollection();
+        repoWithCollection = NodeRepositoryTestingUtil.createNodeRepositoryWithFilter();
     }
 
     @Before
@@ -130,7 +130,7 @@ public class NodeGroupTest {
             .map(n -> n.getNodeFactory().getClassName()).collect(Collectors.toList());
         assertThat("some filtered nodes are expected", resNodeFactories.size(), is(greaterThan(0)));
         assertThat("only filtered nodes included in the result",
-            resNodeFactories.stream().allMatch(NodeRepositoryTestingUtil.COLLECTION_NODES::contains), is(true));
+            resNodeFactories.stream().allMatch(NodeRepositoryTestingUtil.INCLUDED_NODES::contains), is(true));
         assertThat("unexpected number of total nodes", res.getTotalNumGroups(), is(resNodeFactories.size()));
     }
 }

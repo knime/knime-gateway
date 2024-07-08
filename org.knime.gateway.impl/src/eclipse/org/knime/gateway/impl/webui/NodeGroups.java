@@ -145,7 +145,7 @@ public final class NodeGroups {
     private synchronized Map<String, List<Node>> getNodesPerCategory() {
         if (m_nodesPerCategory == null) {
             m_nodesPerCategory =
-                Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodesInCollection(), m_topLevelCats));
+                Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
         }
         return m_nodesPerCategory;
     }
