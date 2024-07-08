@@ -103,6 +103,10 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.Resource;
+import org.knime.gateway.api.entity.RenderingConfigEnt.DefaultRenderingConfigEnt;
+import org.knime.gateway.api.entity.RenderingConfigEnt.ImageRenderingConfigEnt;
+import org.knime.gateway.api.entity.RenderingConfigEnt.RenderingConfigType;
+import org.knime.gateway.api.entity.RenderingConfigEnt.ReportRenderingConfigEnt;
 import org.knime.testing.node.SourceNodeTestFactory;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
@@ -165,7 +169,8 @@ class NodeViewEntTest {
         // test entity  when node is _not_ executed
         var ent = NodeViewEnt.create(nnc, null, "test_action_id");
         assertThat(ent.getInitialData()).isNull();
-        assertThat(ent.getGeneratedImageActionId()).isEqualTo("test_action_id");
+        assertThat(((ImageRenderingConfigEnt)ent.getRenderingConfig()).actionId()).isEqualTo("test_action_id");
+        assertThat(ent.getRenderingConfig().getType()).isEqualTo(RenderingConfigType.IMAGE);
         assertThat(ent.getNodeInfo().getNodeState()).isEqualTo("configured");
         assertThat(ent.getNodeInfo().isCanExecute()).isTrue();
         assertThat(ent.isDeactivationRequired()).isNull();
@@ -186,7 +191,7 @@ class NodeViewEntTest {
         assertThat(ent.getWorkflowId()).isEqualTo("root");
         assertThat(ent.getNodeId()).isEqualTo("root:2");
         assertThat(ent.getInitialData()).contains("view setting key");
-        assertThat(ent.getGeneratedImageActionId()).isNull();
+        assertThat(ent.getRenderingConfig().getType()).isEqualTo(RenderingConfigType.DEFAULT);
         assertThat(ent.getInitialSelection()).isNull();
         assertThat(ent.getColorModels()).isNull();
         assertThat(ent.getColumnNamesColorModel()).isNull();
@@ -299,12 +304,10 @@ class NodeViewEntTest {
         m_wfm.executeAllAndWaitUntilDone();
 
         // isUsedForReportingGeneration=true but the node view doesn't support it
-        var ent = NodeViewEnt.create(nnc, null, true);
-        assertThat(ent.getGeneratedImageActionId()).isNull();
-
-        // isUsedForReportingGeneration=false
-        ent = NodeViewEnt.create(nnc, null, false);
-        assertThat(ent.getGeneratedImageActionId()).isNull();
+        var ent = NodeViewEnt.createForReport(nnc, null);
+        var renderingConfig = ent.getRenderingConfig();
+        assertThat(renderingConfig.getType()).isEqualTo(RenderingConfigType.REPORT);
+        assertThat(((ReportRenderingConfigEnt)ent.getRenderingConfig()).canBeUsedInReport()).isFalse();
 
         nodeViewCreator = m -> new TestNodeView() {
             @Override
@@ -316,12 +319,10 @@ class NodeViewEntTest {
         m_wfm.executeAllAndWaitUntilDone();
 
         // isUsedForReportingGeneration=true and the node view supports it
-        ent = NodeViewEnt.create(nnc, null, true);
-        assertThat(ent.getGeneratedImageActionId()).isEqualTo("generatingReportContent");
-
-        // isUsedForReportingGeneration=false
-        ent = NodeViewEnt.create(nnc, null, false);
-        assertThat(ent.getGeneratedImageActionId()).isNull();
+        ent = NodeViewEnt.createForReport(nnc, null);
+        renderingConfig = ent.getRenderingConfig();
+        assertThat(renderingConfig.getType()).isEqualTo(RenderingConfigType.REPORT);
+        assertThat(((ReportRenderingConfigEnt)ent.getRenderingConfig()).canBeUsedInReport()).isTrue();
     }
 
     private static void initViewSettingsAndExecute(final NativeNodeContainer nnc) throws InvalidSettingsException {
@@ -417,8 +418,8 @@ class NodeViewEntTest {
     }
 
     private static Pair<WorkflowManager, NativeNodeContainer> createExecutedNodeTableView() throws Exception {
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
-            m -> NodeViewTestUtil.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> NodeViewTestUtil
+            .createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
 
         return createExecutedNodeTableView(nodeViewCreator, 0);
     }
@@ -452,9 +453,9 @@ class NodeViewEntTest {
 
         @Override
         public Optional<InitialDataService<String>> createInitialDataService() {
-            return Optional.of(
-                InitialDataService.builder(() -> JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT))
-                    .onDeactivate(() -> {}).build());
+            return Optional.of(InitialDataService
+                .builder(() -> JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT)).onDeactivate(() -> {
+                }).build());
         }
 
         @Override
@@ -570,13 +571,14 @@ class NodeViewEntTest {
     }
 
     private static NodeViewEnt createNodeViewEntWithInputSpec(final WorkflowManager wfm, final DataTableSpec spec) {
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
-            m -> NodeViewTestUtil.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> NodeViewTestUtil
+            .createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0, nodeViewCreator));
         var source = WorkflowManagerUtil.createAndAddNode(wfm, new TestNodeFactory(spec));
         wfm.addConnection(source.getID(), 1, nnc.getID(), 1);
         wfm.executeAllAndWaitUntilDone();
-        return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", true);
+        return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "",
+            new DefaultRenderingConfigEnt(), true);
     }
 
     /**

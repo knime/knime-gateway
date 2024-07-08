@@ -62,6 +62,9 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.gateway.api.entity.RenderingConfigEnt.DefaultRenderingConfigEnt;
+import org.knime.gateway.api.entity.RenderingConfigEnt.ImageRenderingConfigEnt;
+import org.knime.gateway.api.entity.RenderingConfigEnt.ReportRenderingConfigEnt;
 
 /**
  * Node view entity containing the info required by the UI (i.e. frontend) to be able display a node view.
@@ -74,7 +77,7 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
 
     private List<String> m_initialSelection;
 
-    private String m_generatedImageActionId;
+    private RenderingConfigEnt m_renderingConfigEnt;
 
     private Map<String, ColorModelEnt> m_colorModelsEnt;
 
@@ -84,32 +87,34 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
      *            not be called, if the node is not executed)
-     * @param generatedImageActionId if the view is to be used for image generation, it specified a unique action-id
-     *            used to communicate the image back to the java-side; {@code null} if this view is not used for image
-     *            generation
+     * @param renderingConfigEnt represents the context in which the node should be rendered
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final String generatedImageActionId) {
-        return create(nnc, initialSelection, generatedImageActionId, generatedImageActionId != null);
+        final RenderingConfigEnt renderingConfigEnt) {
+        return create(nnc, initialSelection, renderingConfigEnt,
+            !(renderingConfigEnt instanceof DefaultRenderingConfigEnt));
     }
 
     private static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final String generatedImageActionId, final boolean isUsedForImageOrReportGeneration) {
+        final RenderingConfigEnt renderingConfigEnt, final boolean isUsedForImageOrReportGeneration) {
         final var state = nnc.getNodeContainerState();
-        if (state.isExecuted()
-            || (generatedImageActionId != null && state.isExecutionInProgress() && !state.isWaitingToBeExecuted())) {
+        final var isAndCanBeUsedForReportGeneration =
+            renderingConfigEnt instanceof ReportRenderingConfigEnt reportRenderingConfigEnt
+                && reportRenderingConfigEnt.canBeUsedInReport();
+        if (state.isExecuted() || ((isUsedForImageOrReportGeneration || isAndCanBeUsedForReportGeneration)
+            && state.isExecutionInProgress() && !state.isWaitingToBeExecuted())) {
             try {
                 NodeViewManager.getInstance().updateNodeViewSettings(nnc);
-                return new NodeViewEnt(nnc, initialSelection, NodeViewManager.getInstance(), null,
-                    generatedImageActionId, isUsedForImageOrReportGeneration);
+                return new NodeViewEnt(nnc, initialSelection, NodeViewManager.getInstance(), null, renderingConfigEnt,
+                    isUsedForImageOrReportGeneration);
             } catch (InvalidSettingsException ex) {
                 NodeLogger.getLogger(NodeViewEnt.class).error("Failed to update node view settings", ex);
-                return new NodeViewEnt(nnc, null, null, ex.getMessage(), generatedImageActionId,
+                return new NodeViewEnt(nnc, null, null, ex.getMessage(), renderingConfigEnt,
                     isUsedForImageOrReportGeneration);
             }
         } else {
-            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId, isUsedForImageOrReportGeneration);
+            return new NodeViewEnt(nnc, null, null, null, renderingConfigEnt, isUsedForImageOrReportGeneration);
         }
     }
 
@@ -120,30 +125,32 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection) {
-        return create(nnc, initialSelection, null);
+        return create(nnc, initialSelection, new DefaultRenderingConfigEnt());
     }
 
     /**
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
      *            not be called, if the node is not executed)
-     * @param isUsedForReportGeneration indicates whether this view-ent is used for report generation
+     * @return a new instance
+     */
+    public static NodeViewEnt createForReport(final NativeNodeContainer nnc,
+        final Supplier<List<String>> initialSelection) {
+        boolean canBeUsedInReport = NodeViewManager.getInstance().canBeUsedInReport(nnc);
+        return create(nnc, initialSelection, new ReportRenderingConfigEnt(canBeUsedInReport));
+    }
+
+    /**
+     * @param nnc the Native node container to create the node view entity for
+     * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
+     *            not be called, if the node is not executed)
+     * @param actionId if the view is to be used for image generation, it specifies a unique action-id used to
+     *            communicate the image back to the java-side;
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final boolean isUsedForReportGeneration) {
-        boolean canBeUsedInReport = NodeViewManager.getInstance().canBeUsedInReport(nnc);
-        // NOTE on the 'generatingReportContent'-constant:
-        // this is a shortcut to inform the respective node view frontend that it's part
-        // of a report such that it can
-        // optionally do things differently. It's a shortcut because this information is
-        // already provided to the frontend
-        // via 'JSONWebNodePageConfiguration.getGeneratedReportActionId' such that the
-        // frontend could actually take care
-        // of distributing the info to the individual views itself.
-        return create(nnc, initialSelection,
-            isUsedForReportGeneration && canBeUsedInReport ? "generatingReportContent" : null,
-            isUsedForReportGeneration);
+        final String actionId) {
+        return create(nnc, initialSelection, new ImageRenderingConfigEnt(actionId));
     }
 
     /**
@@ -161,15 +168,15 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
      * Package scoped for testing purposes only
      */
     NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
-        final boolean isUsedForImageOrReportGeneration) {
+        final NodeViewManager nodeViewManager, final String customErrorMessage,
+        final RenderingConfigEnt renderingConfigEnt, final boolean isUsedForImageOrReportGeneration) {
         super(NodeWrapper.of(nnc), nodeViewManager == null ? null : nodeViewManager.getPageResourceManager(),
             nodeViewManager == null ? null : nodeViewManager.getDataServiceManager(), PageType.VIEW,
             isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
-        m_generatedImageActionId = generatedImageActionId;
+        m_renderingConfigEnt = renderingConfigEnt;
         final var spec =
             nodeViewManager == null ? null : nodeViewManager.getInputDataTableSpecIfTableView(nnc).orElse(null);
         if (spec != null) {
@@ -208,24 +215,11 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
     }
 
     /**
-     * If the view represented by this view entity is used for the purpose of image or report generation via an image or
-     * report output port. In case of image generation
-     * <ul>
-     * <li>this action-id is used to uniquely communicate the image back to the java-side</li>
-     * <li>indicates that the node view may already be generated while the node is in executing state</li>
-     * </ul>
-     * In case of report generation, the (absence/presence) of the id is used as indication whether this view is able to
-     * generate a report (i.e. can contribute to the report).
-     *
-     * In both cases (report and image generation) the presence of this property also indicates that support for any
-     * kind of interactivity is not needed.
-     *
-     * TODO report and image generation properties should be separated as part of UIEXT-1031
-     *
-     * @return the action-id or {@code null} if view is not used for image generation nor report generation
+     * @return the renderingConfig indicating whether the view represented by this view entity is used for the purpose
+     *         of an interactive view, image generation or report generation via an image or report output port.
      */
-    public String getGeneratedImageActionId() {
-        return m_generatedImageActionId;
+    public RenderingConfigEnt getRenderingConfig() {
+        return m_renderingConfigEnt;
     }
 
     /**
