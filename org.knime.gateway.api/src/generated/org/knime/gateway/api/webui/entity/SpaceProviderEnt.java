@@ -99,6 +99,12 @@ public interface SpaceProviderEnt extends GatewayEntity {
    **/
   public TypeEnum getType();
 
+  /**
+   * host of the SpaceProvider, absent if not applicable
+   * @return hostname 
+   **/
+  public String getHostname();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -106,6 +112,7 @@ public interface SpaceProviderEnt extends GatewayEntity {
       var e = (SpaceProviderEnt)other;
       valueConsumer.accept("spaceGroups", Pair.create(getSpaceGroups(), e.getSpaceGroups()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("hostname", Pair.create(getHostname(), e.getHostname()));
   }
 
     /**
@@ -128,6 +135,14 @@ public interface SpaceProviderEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceProviderEntBuilder setType(TypeEnum type);
+        
+        /**
+         * host of the SpaceProvider, absent if not applicable
+         * 
+         * @param hostname the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setHostname(String hostname);
         
         
         /**

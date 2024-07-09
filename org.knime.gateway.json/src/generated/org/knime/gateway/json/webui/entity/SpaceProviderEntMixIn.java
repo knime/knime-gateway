@@ -78,6 +78,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
     @JsonProperty("type")
     public TypeEnum getType();
     
+    @Override
+    @JsonProperty("hostname")
+    public String getHostname();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -98,6 +102,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
         @Override
         @JsonProperty("type")
         public SpaceProviderEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("hostname")
+        public SpaceProviderEntMixInBuilder setHostname(final String hostname);
         
     }
 

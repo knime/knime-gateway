@@ -55,13 +55,15 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
  *
  * @param spaceGroups
  * @param type
+ * @param hostname
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpaceProviderEnt(
     java.util.List<SpaceGroupEnt> spaceGroups,
-    TypeEnum type) implements SpaceProviderEnt {
+    TypeEnum type,
+    String hostname) implements SpaceProviderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -90,6 +92,11 @@ public record DefaultSpaceProviderEnt(
         return type;
     }
     
+    @Override
+    public String getHostname() {
+        return hostname;
+    }
+    
     /**
      * A builder for {@link DefaultSpaceProviderEnt}.
      */
@@ -98,6 +105,8 @@ public record DefaultSpaceProviderEnt(
         private java.util.List<SpaceGroupEnt> m_spaceGroups = new java.util.ArrayList<>();
 
         private TypeEnum m_type;
+
+        private String m_hostname;
 
         @Override
         public DefaultSpaceProviderEntBuilder setSpaceGroups(java.util.List<SpaceGroupEnt> spaceGroups) {
@@ -118,10 +127,17 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
+        public DefaultSpaceProviderEntBuilder setHostname(String hostname) {
+             m_hostname = hostname;
+             return this;
+        }
+
+        @Override
         public DefaultSpaceProviderEnt build() {
             return new DefaultSpaceProviderEnt(
                 immutable(m_spaceGroups),
-                immutable(m_type));
+                immutable(m_type),
+                immutable(m_hostname));
         }
     
     }
