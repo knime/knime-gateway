@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -45,56 +45,39 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.Test;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 
-/**
- * Provide information about node collections to services.
- *
- * @author Benjamin Moser, KNIME GmbH
- */
-public final class NodeCollections {
+class NodeCollectionsTest {
 
-    private final PreferencesProvider m_preferencesProvider;
-
-    private final WebUIMode m_mode;
-
-    public NodeCollections(final PreferencesProvider preferencesProvider, WebUIMode mode) {
-        this.m_preferencesProvider = preferencesProvider;
-        this.m_mode = mode;
+    @Test
+    void testPlaygroundModeYieldsPreviewCollection() throws Exception {
+        var nodeCollections = new NodeCollections(mock(PreferencesProvider.class), WebUIMode.PLAYGROUND);
+        var result = nodeCollections.getActiveCollection();
+        assertTrue(result.isPresent());
+        assertEquals(result.get().displayName(), "preview");
     }
 
-    /**
-     * @param displayName Must be compatible for an input placeholder "Search in {displayName} nodes"
-     * @param nodeFilter Decides whether a given node factory class name is in this collection
-     */
-    public record NodeCollection(String displayName, Predicate<String> nodeFilter) {
-        public NodeCollection(final String displayName, final Predicate<String> nodeFilter) {
-            this.displayName = Objects.requireNonNull(displayName);
-            this.nodeFilter = Objects.requireNonNull(nodeFilter);
-        }
+    @Test
+    void testDefaultModeAndNoPreferencesYieldsNoCollection() {
+        var mockPreferencesProvider = mock(PreferencesProvider.class);
+        when(mockPreferencesProvider.activeNodeCollection()).thenReturn(null);
+        var nodeCollections = new NodeCollections(mockPreferencesProvider, WebUIMode.DEFAULT);
+        assertTrue(nodeCollections.getActiveCollection().isEmpty());
     }
 
-    /**
-     * @return The currently active collection
-     */
-    public Optional<NodeCollection> getActiveCollection() {
-        if (m_mode == WebUIMode.PLAYGROUND) {
-            return Optional.of(new NodeCollection("preview", id -> true));
-        } else {
-            return getCollectionFromPreferences();
-        }
+    @Test
+    void testDefaultModeAndPreferencesYieldsStarterCollection() {
+        var mockPreferencesProvider = mock(PreferencesProvider.class);
+        when(mockPreferencesProvider.activeNodeCollection()).thenReturn(id -> true);
+        var nodeCollections = new NodeCollections(mockPreferencesProvider, WebUIMode.DEFAULT);
+        var result = nodeCollections.getActiveCollection();
+        assertTrue(result.isPresent());
+        assertEquals(result.get().displayName(), "starter");
     }
-
-    private Optional<NodeCollection> getCollectionFromPreferences() {
-        var configuredPredicate = m_preferencesProvider.activeNodeCollection();
-        if (configuredPredicate == null) {
-            return Optional.empty();
-        }
-        return Optional.of(new NodeCollection("starter", configuredPredicate));
-    }
-
 }
