@@ -82,6 +82,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
     @JsonProperty("hostname")
     public String getHostname();
     
+    @Override
+    @JsonProperty("isCommunityHub")
+    public Boolean isCommunityHub();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -106,6 +110,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
         @Override
         @JsonProperty("hostname")
         public SpaceProviderEntMixInBuilder setHostname(final String hostname);
+        
+        @Override
+        @JsonProperty("isCommunityHub")
+        public SpaceProviderEntMixInBuilder setIsCommunityHub(final Boolean isCommunityHub);
         
     }
 

@@ -105,6 +105,12 @@ public interface SpaceProviderEnt extends GatewayEntity {
    **/
   public String getHostname();
 
+  /**
+   * Whether this provider is the Community Hub
+   * @return isCommunityHub 
+   **/
+  public Boolean isCommunityHub();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -113,6 +119,7 @@ public interface SpaceProviderEnt extends GatewayEntity {
       valueConsumer.accept("spaceGroups", Pair.create(getSpaceGroups(), e.getSpaceGroups()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("hostname", Pair.create(getHostname(), e.getHostname()));
+      valueConsumer.accept("isCommunityHub", Pair.create(isCommunityHub(), e.isCommunityHub()));
   }
 
     /**
@@ -143,6 +150,14 @@ public interface SpaceProviderEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceProviderEntBuilder setHostname(String hostname);
+        
+        /**
+         * Whether this provider is the Community Hub
+         * 
+         * @param isCommunityHub the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setIsCommunityHub(Boolean isCommunityHub);
         
         
         /**

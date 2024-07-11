@@ -185,6 +185,13 @@ public interface SpaceProvider {
     }
 
     /**
+     * @return if this provider is the community Hub
+     */
+    default boolean isCommunityHub() {
+        return false;
+    }
+
+    /**
      * Represents a connection of a space provider to its remote location (e.g. a Hub).
      */
     interface SpaceProviderConnection {
