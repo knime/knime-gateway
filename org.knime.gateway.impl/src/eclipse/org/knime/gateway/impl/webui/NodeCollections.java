@@ -52,7 +52,8 @@ import java.util.function.Predicate;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 
 /**
- * Provide information about node collections to services.
+ * Provide information about node collections to services. A node collection is a subset of all installed nodes.
+ * This can be used to limit the set of nodes displayed to the user.
  *
  * @author Benjamin Moser, KNIME GmbH
  */

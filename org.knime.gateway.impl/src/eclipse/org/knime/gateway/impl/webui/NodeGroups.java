@@ -83,7 +83,7 @@ public final class NodeGroups {
     private static final String UNCATEGORIZED_KEY = "/uncategorized";
 
     /*
-     * ('top-level') tag for nodes that are at root-level, that are without a category or
+     * ('top-level') tag for nodes that are at root-level, that are without a category, or
      * that reference a (first-level) category that is not registered (via the category-extension point).
      */
     private static final String UNCATEGORIZED_NAME = "Uncategorized";
@@ -119,7 +119,7 @@ public final class NodeGroups {
         var nodesPerCategory = getNodesPerCategory();
 
         List<NodeGroupEnt> groups = m_topLevelCats.stream()//
-            .filter(p -> nodesPerCategory.containsKey(p.getFirst()))//
+            .filter(category -> nodesPerCategory.containsKey(category.getFirst()))//
             .skip(tagsOffset == null ? 0 : tagsOffset)//
             .limit(tagsLimit == null ? Integer.MAX_VALUE : tagsLimit)//
             .map(p -> buildNodeGroupEnt(nodesPerCategory.get(p.getFirst()), p.getSecond(), numNodesPerTag,
@@ -132,68 +132,72 @@ public final class NodeGroups {
     private synchronized void initCategories() {
         if (m_topLevelCats == null) {
             // TODO somehow exposed via NodeSpecs-class??
-            Map<String, CategoryExtension> cats = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
-            List<Pair<String, String>> topLevelCats = getSortedCategoriesAtLevel("/", cats.values());
-            Pair<String, String> uncat = Pair.create(UNCATEGORIZED_KEY, UNCATEGORIZED_NAME);
-            if (!topLevelCats.contains(uncat)) {
-                topLevelCats.add(uncat);
+            var categoryExtensions = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
+            var topLevelCategories = getSortedCategoriesAtLevel("/", categoryExtensions.values());
+            var uncategorizedCategory = Pair.create(UNCATEGORIZED_KEY, UNCATEGORIZED_NAME);
+            if (!topLevelCategories.contains(uncategorizedCategory)) {
+                topLevelCategories.add(uncategorizedCategory);
             }
-            m_topLevelCats = Collections.synchronizedList(topLevelCats);
+            m_topLevelCats = Collections.synchronizedList(topLevelCategories);
         }
     }
 
     private synchronized Map<String, List<Node>> getNodesPerCategory() {
         if (m_nodesPerCategory == null) {
-            m_nodesPerCategory =
-                Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
+            m_nodesPerCategory = Collections.synchronizedMap(categorizeNodes(m_nodeRepo.getNodes(), m_topLevelCats));
         }
         return m_nodesPerCategory;
     }
 
-    private static List<Pair<String, String>> getSortedCategoriesAtLevel(final String levelId,
+    private static List<Pair<String, String>> getSortedCategoriesAtLevel(final String targetPath,
         final Collection<CategoryExtension> categories) {
         return NodeAndCategorySorter.sortCategoryExtensions(categories.stream()//
-            .filter(c -> {
-                String p = c.getPath();
-                return p == null || StringUtils.isBlank(p) || p.equals(levelId);
+            .filter(category -> {
+                String categoryPath = category.getPath();
+                // TODO why should null or blank yield true for levelId != "/"?
+                return categoryPath == null || StringUtils.isBlank(categoryPath) || categoryPath.equals(targetPath);
             }))//
-            .map(c -> Pair.create(c.getCompletePath(), c.getName()))//
+            .map(cat -> Pair.create(cat.getCompletePath(), cat.getName()))//
             .toList();
     }
 
-    private static Map<String, List<Node>> categorizeNodes(final Collection<Node> allNodes,
-        final List<Pair<String, String>> categories) {
-        Map<String, List<Node>> res = new HashMap<>();
-        Set<String> categorized = new HashSet<>();
-        for (Pair<String, String> c : categories) {
-            String catPath = c.getFirst();
+    /**
+     * 
+     * @param nodes
+     * @param targetCategories
+     * @return Map of category path to list of nodes in that category
+     */
+    private static Map<String, List<Node>> categorizeNodes(final Collection<Node> nodes,
+        final List<Pair<String, String>> targetCategories) {
+        var categorizedNodes = new HashMap<String, List<Node>>();
+        var alreadyCategorized = new HashSet<>();
+        for (var targetCategory : targetCategories) {
+            String catPath = targetCategory.getFirst();
             if (catPath.equals(UNCATEGORIZED_KEY)) {
                 // 'uncategorized' nodes are handled below
                 continue;
             }
-            List<Node> nodes = allNodes.stream()//
-                .filter(n -> n.nodeSpec.metadata().categoryPath().equals(catPath)
-                    || n.nodeSpec.metadata().categoryPath().startsWith(catPath + "/"))//
-                .sorted(Comparator.<Node> comparingInt(n -> n.weight).reversed())//
-                .map(n -> {
-                    categorized.add(n.templateId);
-                    return n;
-                })//
+            List<Node> nodesMatchingTargetCategory = nodes.stream()//
+                .filter(node -> node.nodeSpec.metadata().categoryPath().equals(catPath)
+                    || node.nodeSpec.metadata().categoryPath().startsWith(catPath + "/"))//
+                .sorted(Comparator.<Node> comparingInt(node -> node.weight).reversed())//
+                .peek(node -> alreadyCategorized.add(node.templateId))//
                 .toList();
             if (!nodes.isEmpty()) {
-                res.put(catPath, nodes);
+                categorizedNodes.put(catPath, nodesMatchingTargetCategory);
             }
         }
 
         // collect all nodes that didn't end up in any of the given categories
         // (e.g. because they are at root level '/' or don't have a category at all)
-        List<Node> uncategorizedNodes = allNodes.stream() //
-            .filter(n -> !categorized.contains(n.templateId)) //
+        List<Node> uncategorizedNodes = nodes.stream() //
+                // TODO can replace with check to categorizedNodes.containsKey?
+            .filter(n -> !alreadyCategorized.contains(n.templateId)) //
             .toList();
         if (!uncategorizedNodes.isEmpty()) {
-            res.put(UNCATEGORIZED_KEY, uncategorizedNodes);
+            categorizedNodes.put(UNCATEGORIZED_KEY, uncategorizedNodes);
         }
-        return res;
+        return categorizedNodes;
     }
 
     private static NodeGroupEnt buildNodeGroupEnt(final List<Node> nodesPerCategory, final String name,
