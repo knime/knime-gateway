@@ -109,7 +109,8 @@ public class NodeSearch {
     }
 
     /*
-     * Maps a search query to the list of found nodes.
+     * Maps a search query to the list of found nodes. Note that this cache depends on the state of the backing
+     * node repository.
      */
     private final Map<SearchQuery, SearchResult> m_nodeSearchResultCache =
         Collections.synchronizedMap(new LRUMap<>(100));
@@ -123,6 +124,7 @@ public class NodeSearch {
      */
     public NodeSearch(final NodeRepository nodeRepo) {
         m_nodeRepo = nodeRepo;
+        m_nodeRepo.onContentChange(m_nodeSearchResultCache::clear);
     }
 
     /**

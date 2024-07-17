@@ -63,6 +63,8 @@ import static org.junit.Assert.assertThrows;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -224,6 +226,23 @@ public class NodeSearchTest {
         assertThat(
             "Searching for nodes with a flow-variable-port filter is equivalent to searching for nodes without a port-type filter",
             res3, is(res4));
+    }
+
+    @Test
+    public void testSearchReactsToRepoFilterChange() {
+        repo.resetFilter(id -> false);
+        Supplier<NodeSearchResultEnt> search = () -> {
+            try {
+                return m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID);
+            } catch (InvalidRequestException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        var resultWithSomeFilter = search.get();
+        repo.resetFilter(id -> true);
+        var resultWithOtherFilter = search.get();
+        assertThat("Result sets should differ", !Objects.equals(resultWithSomeFilter.getTotalNumNodesFound(),
+                resultWithOtherFilter.getTotalNumNodesFound()));
     }
 
     private static boolean everyNodeHasInputPortOfType(final List<NodeTemplateEnt> nodes, final String portTypeId) {

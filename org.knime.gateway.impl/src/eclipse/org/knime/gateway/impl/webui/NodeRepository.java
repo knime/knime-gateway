@@ -54,9 +54,11 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -94,14 +96,14 @@ public final class NodeRepository {
 
     /**
      * Nodes included by the predicate, or all nodes available in the installation if no predicate is given.
-     * 
+     *
      * @see NodeRepository#m_filter
      */
     private Map<String, Node> m_nodes;
 
     /**
      * Nodes that are not included by the predicate
-     * 
+     *
      * @see NodeRepository#m_filter
      */
     private Map<String, Node> m_filteredNodes;
@@ -117,6 +119,12 @@ public final class NodeRepository {
     private Map<String, Node> m_deprecatedNodes;
 
     private final Map<String, NodeTemplateEnt> m_fullInfoNodeTemplateEntCache = new ConcurrentHashMap<>(2000);
+
+    /**
+     * Does not apply to {@link this#m_hiddenNodes} or {@link this#m_deprecatedNodes}, these are assumed to be
+     * static during runtime and not affected by filtering.
+     */
+    private final Set<Runnable> m_contentChangedListeners = new HashSet<>();
 
     /**
      * Determine whether a node is forbidden to be used as per {@link org.knime.core.customization.APCustomization}.
@@ -192,6 +200,15 @@ public final class NodeRepository {
         m_filter = filter;
         m_nodes = null;
         m_filteredNodes = null;
+        notifyContentChanged();
+    }
+
+    void onContentChange(final Runnable onContentChanged) {
+        m_contentChangedListeners.add(onContentChanged);
+    }
+
+    private void notifyContentChanged() {
+        m_contentChangedListeners.forEach(Runnable::run);;
     }
 
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
