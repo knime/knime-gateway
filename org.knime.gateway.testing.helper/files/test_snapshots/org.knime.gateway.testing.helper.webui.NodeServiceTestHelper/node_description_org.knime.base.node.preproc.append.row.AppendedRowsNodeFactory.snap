@@ -1,9 +1,9 @@
 {
-  "description" : "\n            This node concatenates two tables. The table at inport 0 is given as the first\n            input table (top input port), the table at inport 1 is the second table, resp. \n\t\t\tColumns with equal names are concatenated (if the column types differ \n\t\t\tthe column type is the common base type of both input column types). \n\t\t\tIf one input table contains column names that the other table does not, the\n\t\t\tcolumns can either be filled with missing values or\n\t\t\tfiltered out, i.e. they will not be in the output table.\n\t\t\tThe dialog allows setting the following parameters:\n\t\t",
+  "description" : "\n\t\t\tThis node concatenates two or more tables. The table at inport 0 is the\n\t\t\tfirst input table (top input port), and the tables at subsequent\n\t\t\tinports are the additional input tables. Columns with the same names\n\t\t\tare concatenated (if the column types differ, the resulting column type\n\t\t\twill be the common base type of the input column types). If one input\n\t\t\ttable contains column names that the other tables do not, the columns\n\t\t\tcan either be filled with missing values or filtered out, meaning they\n\t\t\twill not appear in the output table. The dialog allows setting the\n\t\t\tfollowing parameters:\n\t\t",
   "dynamicInPortGroupDescriptions" : [ {
-    "description" : "\n        \tTable contributing subsequent rows.\n        ",
+    "description" : "\n        \tTables contributing subsequent rows.\n        ",
     "identifier" : "input",
-    "name" : "Additional table to concatenate",
+    "name" : "Additional tables to concatenate",
     "supportedPortTypes" : [ {
       "optional" : false,
       "typeId" : "org.knime.core.node.BufferedDataTable"
@@ -27,21 +27,21 @@
     "optional" : false,
     "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
-  "links" : [ {
-    "text" : "\n\t\t\tKNIME E-Learning Course: Concatenation\n\t\t",
-    "url" : "https://www.knime.com/knime-introductory-course/chapter3/section3/concatenation"
-  } ],
   "options" : [ {
     "fields" : [ {
       "description" : "\n\t\t\t<ul>\n\t\t\t\t<li><b>Intersection:</b> Use only the columns that appear\n                    in all input tables. Any other column is ignored and won't appear\n                    in the output table. Columns are matched by name.</li>\n                <li><b>Union:</b> Use all columns from all input\n                    tables. Fill rows with missing values if they miss cells for some columns.</li>\n\t\t\t</ul>\n\t\t",
       "name" : "How to combine input columns",
       "optional" : false
     }, {
-      "description" : "\n\t\t\t<ul>\n\t\t\t\t<li><b>Skip:</b> Duplicate row identifiers (RowID) occurring in the \n\t        second table and following tables are not appended to the output table. This option is \n\t        relatively memory intensive as it needs to cache the RowIDs in\n\t        order to find duplicates. Furthermore a full data\n\t\t\tduplication is needed.</li>\n\t\t\t\t<li><b>Append suffix:</b> The output table will contain all rows, but\n            duplicate RowIDs are labeled with a suffix. Similar to\n            the \"Skip\" option this method is also memory intensive.</li>\n            \t<li><b>Fail:</b> The node will fail during execution if duplicate \n            RowIDs are encountered. This option is efficient while checking \n            uniqueness.</li>\n\t\t\t</ul>\n\t\t",
-      "name" : "If there are duplicate RowIDs",
+      "description" : "\n\t\t\tChoose how to handle RowIDs:\n            <ul>\n                <li><b>Create new:</b> Discard the RowIDs of the input tables and generate new RowIDs</li>\n                <li><b>Reuse existing:</b> Reuse the RowIDs of the input tables. This might lead to conflicts due to\n                    duplicate RowIDs, see <em>Duplicate RowID strategy</em> for different ways to resolve them.</li>\n            </ul>\n\t\t",
+      "name" : "RowID handling",
       "optional" : false
     }, {
-      "description" : "\n            Advanced setting that enables hiliting between both inputs and the concatenated output\n            table.\n        ",
+      "description" : "\n\t\t\tSelect how duplicate RowIDs are handled:\n            <ul>\n                <li><b>Skip</b>: Duplicate RowIDs in the additional tables are not added to the output table. This\n                    option is memory intensive because it caches the RowIDs to find duplicates and requires full\n                    data duplication.</li>\n                <li><b>Append suffix</b>: The output table will include all rows, but duplicate RowIDs will have a\n                    suffix added. This method is also memory intensive, similar to the \"Skip\" option.</li>\n                <li><b>Fail</b>: The node will fail during execution if duplicate RowIDs are encountered. This\n                    option is efficient for checking uniqueness.</li>\n            </ul>\n\t\t",
+      "name" : "Duplicate RowID strategy",
+      "optional" : false
+    }, {
+      "description" : "\n            Advanced setting that enables hiliting between the inputs and the concatenated output table.\n        ",
       "name" : "Enable hiliting",
       "optional" : false
     } ]
@@ -52,5 +52,5 @@
     "optional" : false,
     "typeId" : "org.knime.core.node.BufferedDataTable"
   } ],
-  "shortDescription" : "Concatenates two tables row-wise."
+  "shortDescription" : "Concatenates two or more tables row-wise."
 }

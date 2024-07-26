@@ -6,7 +6,7 @@
     "canRemove" : false,
     "connectedVia" : "[  ]",
     "index" : 3,
-    "name" : "Additional table to concatenate",
+    "name" : "Additional tables to concatenate",
     "optional" : false,
     "portGroupId" : "input",
     "typeId" : "org.knime.core.node.BufferedDataTable"
@@ -18,7 +18,7 @@
     "canRemove" : true,
     "connectedVia" : "[  ]",
     "index" : 4,
-    "name" : "Additional table to concatenate",
+    "name" : "Additional tables to concatenate",
     "optional" : false,
     "portGroupId" : "input",
     "typeId" : "org.knime.core.node.BufferedDataTable"
