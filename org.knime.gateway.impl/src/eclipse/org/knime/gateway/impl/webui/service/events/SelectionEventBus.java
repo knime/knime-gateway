@@ -169,7 +169,7 @@ public final class SelectionEventBus {
     public void removeSelectionEventEmitterIf(final Predicate<NodeID> testNodeID) {
         m_eventEmitters.keySet().removeIf(nodeID -> {
             if (testNodeID.test(nodeID)) {
-                m_eventEmitters.get(nodeID).close();
+                m_eventEmitters.get(nodeID).removeHiLiteListenerFromHandler();
                 LOGGER.debug(
                     "Selection event emitter removed for node " + nodeID + ". Num emitters: " + m_eventEmitters.size());
                 return true;
@@ -188,7 +188,7 @@ public final class SelectionEventBus {
         var nodeId = nw.get().getID();
         var listener = m_eventEmitters.remove(nodeId);
         if (listener != null) {
-            listener.close();
+            listener.removeHiLiteListenerFromHandler();
         }
         LOGGER
             .debug("Selection event emitter removed for node " + nodeId + ". Num emitters: " + m_eventEmitters.size());
@@ -221,6 +221,15 @@ public final class SelectionEventBus {
     public void removeSelectionEventListener(final Consumer<SelectionEventEnt> listener) {
         m_eventListeners.remove(listener);
         LOGGER.debug("Selection event listener removed. Num listeners: " + m_eventListeners.size());
+    }
+
+    /**
+     * Removes all selection event listeners and emitters and everything else that is required in the process.
+     */
+    public void clear() {
+        m_eventListeners.clear();
+        m_eventEmitters.values().forEach(PerNodeWrapperEventEmitter::removeHiLiteListenerFromHandler);
+        m_eventEmitters.clear();
     }
 
     /**
@@ -322,7 +331,7 @@ public final class SelectionEventBus {
                 .setError(error).build();
         }
 
-        private void close() {
+        private void removeHiLiteListenerFromHandler() {
             m_hiLiteHandler.removeHiLiteListener(this);
         }
     }
