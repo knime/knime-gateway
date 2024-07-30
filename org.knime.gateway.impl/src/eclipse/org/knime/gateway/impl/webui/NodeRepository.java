@@ -395,10 +395,18 @@ public final class NodeRepository {
          *
          * @return True if there exists a compatible port type, false otherwise.
          */
-        boolean isCompatibleWith(final PortType portType) {
-            return FlowVariablePortObject.TYPE.equals(portType) || nodeSpec.ports().getSupportedInputPortTypes() //
-                .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
+        boolean isCompatibleWith(final PortType portType, final boolean isSourcePort) {
+            if (FlowVariablePortObject.TYPE.equals(portType)) {
+                return true;
+            }
+            if (isSourcePort) {
+                return nodeSpec.ports().getSupportedInputPortTypes() //
+                        .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt)); // was this logic correct?
+            }
+            return nodeSpec.ports().getOutputPortTypes() //
+                    .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
+
     }
 
 }

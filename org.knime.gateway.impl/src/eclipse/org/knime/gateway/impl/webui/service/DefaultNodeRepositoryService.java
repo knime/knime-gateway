@@ -127,9 +127,9 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
-        throws OperationNotAllowedException {
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String direction,
+        final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
-            fullTemplateInfo);
+            direction, fullTemplateInfo);
     }
 }

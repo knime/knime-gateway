@@ -101,12 +101,13 @@ public class NodeRecommendations {
      * @param portIdx The index of your port
      * @param nodesLimit The maximum number of node recommendations to return, 12 by default
      * @param fullTemplateInfo Whether to return complete result or not, true by default
+     * @param direction The direction to check, either for 'successors' recommendations or 'predecessors'
      * @return The node recommendations
      * @throws OperationNotAllowedException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final Boolean fullTemplateInfo)
-        throws OperationNotAllowedException {
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String direction,
+        final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }
@@ -122,13 +123,13 @@ public class NodeRecommendations {
         // This `null` is evaluated in `NodeRecommandationManager#getNodeRecommendationFor(...)`
         var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
-        // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilterByPortType(...)`
-        var sourcePortType = nodeId == null ? null : determineSourcePortType(nc, portIdx);
+        // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilter(...)`
+        var portType = nodeId == null ? null: determinePortType(nc, portIdx, direction.equals("successors"));
 
         var recommendations = nc instanceof NativeNodeContainer nnc
             ? Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes())
             : getFlatStreamOfMostFrequentlyUsedNodes();
-        return getNodeTemplatesAndFilter(recommendations, sourcePortType, limit, fullInfo);
+        return getNodeTemplatesAndFilter(recommendations, portType, direction.equals("successors"), limit, fullInfo);
     }
 
     /**
@@ -145,12 +146,13 @@ public class NodeRecommendations {
         return NodeRecommendationManager.getInstance().initialize(getNodeType);
     }
 
-    private static PortType determineSourcePortType(final NodeContainer nc, final Integer portIdx)
-        throws OperationNotAllowedException {
-        if (portIdx + 1 > nc.getNrOutPorts() || portIdx < 0) {
+    private static PortType determinePortType(final NodeContainer nc, final Integer portIdx,
+        final boolean isSourcePort) throws OperationNotAllowedException {
+        final var numPorts = isSourcePort? nc.getNrOutPorts(): nc.getNrInPorts();
+        if (portIdx + 1 > numPorts || portIdx < 0) {
             throw new OperationNotAllowedException("Cannot recommend nodes for non-existing port");
         }
-        return nc.getOutPort(portIdx).getPortType();
+        return isSourcePort? nc.getOutPort(portIdx).getPortType(): nc.getInPort(portIdx).getPortType();
     }
 
     private static Stream<NodeRecommendation> getFlatStreamOfRecommendations(final NativeNodeContainer nnc) {
@@ -175,11 +177,11 @@ public class NodeRecommendations {
     }
 
     private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final Stream<NodeRecommendation> recommendations,
-        final PortType sourcePortType, final int limit, final boolean fullInfo) {
+        final PortType portType, final boolean isSourcePort, final int limit, final boolean fullInfo) {
         return recommendations //
             .map(r -> m_nodeRepo.getNode(r.getFactoryId())) //
             .filter(Objects::nonNull) //
-            .filter(n -> sourcePortType == null || n.isCompatibleWith(sourcePortType)) //
+            .filter(n -> portType == null || n.isCompatibleWith(portType, isSourcePort)) //
             .limit(limit) // Limit the number of results after filtering by port type compatibility
             .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, fullInfo)) //
             .filter(Objects::nonNull) // `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
