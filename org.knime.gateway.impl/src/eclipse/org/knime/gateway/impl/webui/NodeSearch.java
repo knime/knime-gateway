@@ -209,7 +209,8 @@ public class NodeSearch {
                 StringUtils.containsIgnoreCase(n.name, query.searchTerm()), //
                 score(n.getFuzzySearchable(), query.searchTerm()))) //
             .filter(n -> n.isSubstringMatch || n.score >= SIMILARITY_THRESHOLD)//
-            .filter(n -> query.portType() == null || n.node.isCompatibleWith(query.portType()))//
+            .filter(n -> query.portType() == null //
+                || n.node.isInputCompatibleWith(query.portType()) || n.node.isOutputCompatibleWith(query.portType()))
             .sorted(//
                 // 1) exact substring matches (only based on names)
                 Comparator.<FoundNode> comparingInt(n -> n.isSubstringMatch ? 0 : 1)//

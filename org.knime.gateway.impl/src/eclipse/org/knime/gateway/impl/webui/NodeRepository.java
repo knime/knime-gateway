@@ -391,22 +391,25 @@ public final class NodeRepository {
         }
 
         /**
-         * Checks for compatible port types, considering existing ports and ports that can be added on.
+         * Checks for compatible port types in the input side, considering existing ports and ports that can be added
+         * on.
          *
          * @return True if there exists a compatible port type, false otherwise.
          */
-        boolean isCompatibleWith(final PortType portType, final boolean isSourcePort) {
-            if (FlowVariablePortObject.TYPE.equals(portType)) {
-                return true;
-            }
-            if (isSourcePort) {
-                return nodeSpec.ports().getSupportedInputPortTypes() //
-                        .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt)); // was this logic correct?
-            }
-            return nodeSpec.ports().getOutputPortTypes() //
-                    .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
+        boolean isInputCompatibleWith(final PortType portType) {
+            return FlowVariablePortObject.TYPE.equals(portType) && nodeSpec.ports().getSupportedInputPortTypes() //
+                .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
 
+        /**
+         * Checks for compatible port types in the output side, considering existing ports and ports that can be added
+         * on.
+         *
+         * @return True if there exists a compatible port type, false otherwise.
+         */
+        boolean isOutputCompatibleWith(final PortType portType) {
+            return FlowVariablePortObject.TYPE.equals(portType) && nodeSpec.ports().getOutputPortTypes() //
+                .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
+        }
     }
-
 }
