@@ -397,7 +397,7 @@ public final class NodeRepository {
          * @return True if there exists a compatible port type, false otherwise.
          */
         boolean isInputCompatibleWith(final PortType portType) {
-            return FlowVariablePortObject.TYPE.equals(portType) && nodeSpec.ports().getSupportedInputPortTypes() //
+            return FlowVariablePortObject.TYPE.equals(portType) || nodeSpec.ports().getSupportedInputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
 
@@ -408,7 +408,7 @@ public final class NodeRepository {
          * @return True if there exists a compatible port type, false otherwise.
          */
         boolean isOutputCompatibleWith(final PortType portType) {
-            return FlowVariablePortObject.TYPE.equals(portType) && nodeSpec.ports().getOutputPortTypes() //
+            return FlowVariablePortObject.TYPE.equals(portType) || nodeSpec.ports().getOutputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
     }

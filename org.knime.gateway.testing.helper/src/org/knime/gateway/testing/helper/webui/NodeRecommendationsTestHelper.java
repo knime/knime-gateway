@@ -77,6 +77,8 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
 
     private final NodeIDEnt m_datagenerator = new NodeIDEnt(1);
 
+    private final NodeIDEnt m_columnFilter = new NodeIDEnt(2);
+
     private final NodeIDEnt m_metanode = new NodeIDEnt(6);
 
     private final NodeIDEnt m_component = new NodeIDEnt(12);
@@ -98,7 +100,8 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
      * @throws Exception
      */
     public void testNodeRecommendations() throws Exception {
-        executeRecommendationsTest(m_datagenerator, 1);
+        executeRecommendationsTest(m_datagenerator, 1, "successors");
+        executeRecommendationsTest(m_columnFilter, 1, "predecessors");
     }
 
     /**
@@ -107,20 +110,25 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
      * @throws Exception
      */
     public void testNodeRecommendationsForSourceNodes() throws Exception {
-        executeRecommendationsTest(null, null);
+        executeRecommendationsTest(null, null, null);
     }
 
-    private void executeRecommendationsTest(final NodeIDEnt nodeId, final Integer portIdx) throws Exception {
+    private void executeRecommendationsTest(final NodeIDEnt nodeId, final Integer portIdx, final String direction)
+        throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
-        var resultDefault = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, null, null);
+        var resultDefault = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, null, direction, null);
         assertRecommendations(resultDefault, 12, false);
         // Max number of 13*2 recommendations received
         // (successor recommendation + backfilled 'most frequently used nodes')
-        var resultMinimal26 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 101, false);
+        var resultMinimal26 =
+            nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 101, direction, false);
         assertRecommendations(resultMinimal26, 26, false);
-        var resultFull7 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 7, true);
+        var resultFull7 = nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 7, direction, true);
         assertRecommendations(resultFull7, 7, true);
+        var resultPredecessors =
+            nrs().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, 1, direction, true);
+        assertRecommendations(resultPredecessors, 7, true);
     }
 
     private static void assertRecommendations(final List<NodeTemplateEnt> recommendations, final int nodesLimit,
@@ -145,13 +153,16 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, null, null, null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, null, null, null, null));
         assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, null, null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, null, null, null));
+        assertThrows("<nodeId> and <direction> must either be both null or not null",
+            OperationNotAllowedException.class,
+            () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, 7, null, null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, "succesors", null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, "succesors", null));
     }
 
     /**
@@ -165,12 +176,20 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         var workflowId = getRootID();
         // suggests the most frequently used node(s) - and that's only the 'String Manipulation'-node
         // since it's the only one compatible with the table port (see TestNodeTripleProviderFactory)
-        var recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 1, 7, true);
+        var recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 1, 7, "successors", true);
         assertThat(recommendations, hasSize(1));
         assertThat(recommendations.get(0).getName(), is("String Manipulation"));
-        recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, true);
+        recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, "successors", true);
         assertThat(recommendations, hasSize(1));
         assertThat(recommendations.get(0).getName(), is("String Manipulation"));
+
+        // Suggest most frequently used nodes - as predecessors compatible with table port
+        recommendations =
+            nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 0, null, "predecessors", true);
+        assertThat(recommendations, hasSize(7));
+        recommendations =
+            nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, null, "predecessors", true);
+        assertThat(recommendations, hasSize(7));
     }
 
 }
