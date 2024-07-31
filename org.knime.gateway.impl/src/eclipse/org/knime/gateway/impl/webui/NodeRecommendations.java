@@ -101,7 +101,7 @@ public class NodeRecommendations {
      * @param portIdx The index of your port
      * @param nodesLimit The maximum number of node recommendations to return, 12 by default
      * @param fullTemplateInfo Whether to return complete result or not, true by default
-     * @param direction The direction to check, either for 'successors' recommendations or 'predecessors'
+     * @param direction The direction to check, either recommendations for 'successors' or 'predecessors'
      * @return The node recommendations
      * @throws OperationNotAllowedException
      */
@@ -117,19 +117,25 @@ public class NodeRecommendations {
         if (nodeId == null ^ portIdx == null) {
             throw new OperationNotAllowedException("<nodeId> and <portIdx> must either be both null or not null");
         }
+
+        if (nodeId == null ^ direction == null) {
+            throw new OperationNotAllowedException("<nodeId> and <direction> must either be both null or not null");
+        }
+
         var limit = nodesLimit == null ? DEFAULT_NODES_LIMIT : nodesLimit;
         var fullInfo = fullTemplateInfo == null ? DEFAULT_FULL_TEMPLATE_INFO : fullTemplateInfo;
 
         // This `null` is evaluated in `NodeRecommandationManager#getNodeRecommendationFor(...)`
         var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
+        var isSourcePort = direction == null || direction.equals("successors");
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilter(...)`
-        var portType = nodeId == null ? null: determinePortType(nc, portIdx, direction.equals("successors"));
+        var portType = nodeId == null ? null : determinePortType(nc, portIdx, isSourcePort);
 
         var recommendations = nc instanceof NativeNodeContainer nnc
             ? Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes())
             : getFlatStreamOfMostFrequentlyUsedNodes();
-        return getNodeTemplatesAndFilter(recommendations, portType, direction.equals("successors"), limit, fullInfo);
+        return getNodeTemplatesAndFilter(recommendations, portType, isSourcePort, limit, fullInfo);
     }
 
     /**
