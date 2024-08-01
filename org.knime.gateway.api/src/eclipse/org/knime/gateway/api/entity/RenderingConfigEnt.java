@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.api.entity;
 
-import org.knime.core.node.port.report.ReportUtil.ViewImageFileFormat;
+import org.knime.core.node.port.report.ReportUtil.ImageFormat;
 
 /**
  * Represents the context in which a node view should be rendered. The context can be either the interactive view, the
@@ -76,10 +76,10 @@ interface RenderingConfigEnt {
 
     /**
      *
-     * @param imageFileFormat determines the file format of the corresponding image
+     * @param imageFormat determines the file format of the corresponding image
      * @param actionId this action-id is used to uniquely communicate the image back to the java-side
      */
-    record ImageRenderingConfigEnt(ViewImageFileFormat imageFileFormat, String actionId) implements RenderingConfigEnt {
+    record ImageRenderingConfigEnt(ImageFormat imageFormat, String actionId) implements RenderingConfigEnt {
 
         @Override
         public RenderingConfigType getType() {
@@ -91,11 +91,10 @@ interface RenderingConfigEnt {
     /**
      *
      *
-     * @param imageFileFormat determines the file format of images of views in the report
+     * @param imageFormat determines the format of images of views in the report
      * @param canBeUsedInReport indicates whether this view can contribute to the report
      */
-    record ReportRenderingConfigEnt(ViewImageFileFormat imageFileFormat, boolean canBeUsedInReport)
-        implements RenderingConfigEnt {
+    record ReportRenderingConfigEnt(ImageFormat imageFormat, boolean canBeUsedInReport) implements RenderingConfigEnt {
 
         @Override
         public RenderingConfigType getType() {

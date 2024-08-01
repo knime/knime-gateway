@@ -57,7 +57,7 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.port.report.ReportUtil.ViewImageFileFormat;
+import org.knime.core.node.port.report.ReportUtil.ImageFormat;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
@@ -136,9 +136,9 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final ViewImageFileFormat viewImageFileFormat) {
+        final ImageFormat imageFormat) {
         boolean canBeUsedInReport = NodeViewManager.getInstance().canBeUsedInReport(nnc);
-        return create(nnc, initialSelection, new ReportRenderingConfigEnt(viewImageFileFormat, canBeUsedInReport));
+        return create(nnc, initialSelection, new ReportRenderingConfigEnt(imageFormat, canBeUsedInReport));
     }
 
     /**
@@ -150,8 +150,8 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final ViewImageFileFormat imageFileFormat, final String actionId) {
-        return create(nnc, initialSelection, new ImageRenderingConfigEnt(imageFileFormat, actionId));
+        final ImageFormat imageFormat, final String actionId) {
+        return create(nnc, initialSelection, new ImageRenderingConfigEnt(imageFormat, actionId));
     }
 
     /**
