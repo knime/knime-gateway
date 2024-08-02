@@ -52,6 +52,7 @@ import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
+import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 
@@ -66,6 +67,8 @@ public class NodeDialogEnt extends UIExtensionEnt<NodeWrapper> {
 
     private final boolean m_isWriteProtected;
 
+    private final boolean m_canBeEnlarged;
+
     /**
      * @param nc
      */
@@ -73,9 +76,9 @@ public class NodeDialogEnt extends UIExtensionEnt<NodeWrapper> {
         super(NodeWrapper.of(nc), NodeDialogManager.getInstance().getPageResourceManager(),
             NodeDialogManager.getInstance().getDataServiceManager(), PageType.DIALOG);
         CheckUtils.checkArgument(NodeDialogManager.hasNodeDialog(nc), "The provided node doesn't have a node dialog");
-        NodeViewManager.getInstance();
         m_hasNodeView = NodeViewManager.hasNodeView(nc);
         m_isWriteProtected = nc.getParent().isWriteProtected();
+        m_canBeEnlarged = NodeDialogManager.getInstance().canBeEnlarged(nc);
     }
 
     /**
@@ -91,6 +94,13 @@ public class NodeDialogEnt extends UIExtensionEnt<NodeWrapper> {
      */
     public boolean isWriteProtected() {
         return m_isWriteProtected;
+    }
+
+    /**
+     * @return see {@link NodeDialog#canBeEnlarged()}
+     */
+    public boolean isCanBeEnlarged() {
+        return m_canBeEnlarged;
     }
 
 }

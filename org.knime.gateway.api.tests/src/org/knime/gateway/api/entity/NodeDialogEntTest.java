@@ -55,6 +55,9 @@ import static org.knime.testing.node.ui.NodeDialogTestUtil.createNodeSettingsSer
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +67,10 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.NodeSettingsService;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -90,11 +97,9 @@ class NodeDialogEntTest {
     /**
      * Tests that {@link NodeDialogEnt}-instances can be created without problems even if the input ports of a node are
      * not connected.
-     *
-     * @throws IOException
      */
     @Test
-    void testOpenDialogWithoutConnectedInput() throws IOException {
+    void testOpenDialogWithoutConnectedInput() {
         var nc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeDialogNodeFactory(
             () -> createNodeDialog(Page.builder(() -> "test", "test.html").build(), createNodeSettingsService(), null),
             1));
@@ -110,7 +115,7 @@ class NodeDialogEntTest {
      * @throws URISyntaxException
      */
     @Test
-    public void testIsWriteProtected() throws URISyntaxException {
+    void testIsWriteProtected() throws URISyntaxException {
         var metanode = m_wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "component");
         var nc = WorkflowManagerUtil.createAndAddNode(metanode, new NodeDialogNodeFactory(
             () -> createNodeDialog(Page.builder(() -> "test", "test.html").build(), createNodeSettingsService(), null),
@@ -128,6 +133,45 @@ class NodeDialogEntTest {
         var snc = (SingleNodeContainer) nodeIterator.next();
 
         assertThat(new NodeDialogEnt(snc).isWriteProtected()).isTrue();
+    }
+
+    /**
+     * Tests {@link NodeDialogEnt#isCanBeEnlarged()}
+     */
+    @Test
+    void testCanBeEnlarged() {
+        var canBeEnlarged = new AtomicBoolean();
+        var nc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeDialogNodeFactory(() -> new NodeDialog() {
+
+            @Override
+            public Page getPage() {
+                return Page.builder(() -> "blub", "index.html").build();
+            }
+
+            @Override
+            public Set<SettingsType> getSettingsTypes() {
+                return Set.of(SettingsType.MODEL);
+            }
+
+            @Override
+            public NodeSettingsService getNodeSettingsService() {
+                return null;
+            }
+
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.empty();
+            }
+
+            @Override
+            public boolean canBeEnlarged() {
+                return canBeEnlarged.get();
+            }
+        }));
+        assertThat(new NodeDialogEnt(nc).isCanBeEnlarged()).isFalse();
+
+        canBeEnlarged.set(true);
+        assertThat(new NodeDialogEnt(nc).isCanBeEnlarged()).isTrue();
     }
 
 }
