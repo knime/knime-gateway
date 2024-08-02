@@ -133,7 +133,7 @@ public class NodeRecommendations {
         var portType = nodeId == null ? null : determinePortType(nc, portIdx, isSourcePort);
 
         var recommendations = nc instanceof NativeNodeContainer nnc
-            ? Stream.concat(getFlatStreamOfRecommendations(nnc), getFlatStreamOfMostFrequentlyUsedNodes())
+            ? Stream.concat(getFlatStreamOfRecommendations(isSourcePort, nnc), getFlatStreamOfMostFrequentlyUsedNodes())
             : getFlatStreamOfMostFrequentlyUsedNodes();
         return getNodeTemplatesAndFilter(recommendations, portType, isSourcePort, limit, fullInfo);
     }
@@ -161,10 +161,15 @@ public class NodeRecommendations {
         return isSourcePort? nc.getOutPort(portIdx).getPortType(): nc.getInPort(portIdx).getPortType();
     }
 
-    private static Stream<NodeRecommendation> getFlatStreamOfRecommendations(final NativeNodeContainer nnc) {
-        var recommendations = nnc == null //
-            ? NodeRecommendationManager.getInstance().getNodeRecommendationFor() //
-            : NodeRecommendationManager.getInstance().getNodeRecommendationFor(NativeNodeContainerWrapper.wrap(nnc));
+    private static Stream<NodeRecommendation> getFlatStreamOfRecommendations(final boolean searchForSuccessors,
+        final NativeNodeContainer nnc) {
+        var nodeContainer = nnc == null ? null : NativeNodeContainerWrapper.wrap(nnc);
+        var recommendations = searchForSuccessors ? //
+            NodeRecommendationManager.getInstance()
+                .getSuccessorNodeRecommendationFor(nodeContainer) //
+            : NodeRecommendationManager.getInstance()
+                .getPredecessorNodeRecommendationFor(nodeContainer);
+
         var recommendationsWithoutDups =
             NodeRecommendationManager.joinRecommendationsWithoutDuplications(recommendations);
         return recommendationsWithoutDups.stream() //
