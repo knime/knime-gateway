@@ -93,13 +93,8 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final RenderingConfigEnt renderingConfigEnt) {
-        return create(nnc, initialSelection, renderingConfigEnt,
-            !(renderingConfigEnt instanceof DefaultRenderingConfigEnt));
-    }
-
-    private static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final RenderingConfigEnt renderingConfigEnt, final boolean isUsedForImageOrReportGeneration) {
         final var state = nnc.getNodeContainerState();
+        final var isUsedForImageOrReportGeneration = !(renderingConfigEnt instanceof DefaultRenderingConfigEnt);
         final var isAndCanBeUsedForReportGeneration =
             renderingConfigEnt instanceof ReportRenderingConfigEnt reportRenderingConfigEnt
                 && reportRenderingConfigEnt.canBeUsedInReport();
@@ -130,27 +125,33 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
     }
 
     /**
+     * Creates the node view configured for report generation.
+     *
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
      *            not be called, if the node is not executed)
+     * @param imageFormat the format of the images used within the report
      * @return a new instance
      */
-    public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
+    public static NodeViewEnt createForReportGeneration(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final ImageFormat imageFormat) {
         boolean canBeUsedInReport = NodeViewManager.getInstance().canBeUsedInReport(nnc);
         return create(nnc, initialSelection, new ReportRenderingConfigEnt(imageFormat, canBeUsedInReport));
     }
 
     /**
+     * Creates the node view configured to generate an image from.
+     *
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
      *            not be called, if the node is not executed)
+     * @param imageFormat the format of the to be generated image
      * @param actionId if the view is to be used for image generation, it specifies a unique action-id used to
      *            communicate the image back to the java-side;
      * @return a new instance
      */
-    public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final ImageFormat imageFormat, final String actionId) {
+    public static NodeViewEnt createForImageGeneration(final NativeNodeContainer nnc,
+        final Supplier<List<String>> initialSelection, final ImageFormat imageFormat, final String actionId) {
         return create(nnc, initialSelection, new ImageRenderingConfigEnt(imageFormat, actionId));
     }
 

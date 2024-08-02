@@ -168,7 +168,7 @@ class NodeViewEntTest {
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
 
         // test entity  when node is _not_ executed
-        var ent = NodeViewEnt.create(nnc, null, ImageFormat.SVG, "test_action_id");
+        var ent = NodeViewEnt.createForImageGeneration(nnc, null, ImageFormat.SVG, "test_action_id");
         assertThat(ent.getInitialData()).isNull();
         var renderingConfig = ent.getRenderingConfig();
         assertThat(ent.getRenderingConfig().getType()).isEqualTo(RenderingConfigType.IMAGE);
@@ -294,7 +294,7 @@ class NodeViewEntTest {
             var ent2 = NodeViewEnt.create(nnc, null);
             assertThat(ent2.getResourceInfo().getBaseUrl()).isNull();
 
-            var ent3 = NodeViewEnt.create(nnc, null, ImageFormat.PNG, "blub");
+            var ent3 = NodeViewEnt.createForImageGeneration(nnc, null, ImageFormat.PNG, "blub");
             assertThat(ent3.getResourceInfo().getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
         });
 
@@ -307,7 +307,7 @@ class NodeViewEntTest {
         m_wfm.executeAllAndWaitUntilDone();
 
         // isUsedForReportingGeneration=true but the node view doesn't support it
-        var ent = NodeViewEnt.create(nnc, null, ImageFormat.PNG);
+        var ent = NodeViewEnt.createForReportGeneration(nnc, null, ImageFormat.PNG);
         var renderingConfig = ent.getRenderingConfig();
         assertThat(renderingConfig.getType()).isEqualTo(RenderingConfigType.REPORT);
         assertThat(((ReportRenderingConfigEnt)renderingConfig).canBeUsedInReport()).isFalse();
@@ -323,7 +323,7 @@ class NodeViewEntTest {
         m_wfm.executeAllAndWaitUntilDone();
 
         // isUsedForReportingGeneration=true and the node view supports it
-        ent = NodeViewEnt.create(nnc, null, ImageFormat.PNG);
+        ent = NodeViewEnt.createForReportGeneration(nnc, null, ImageFormat.PNG);
         renderingConfig = ent.getRenderingConfig();
         assertThat(renderingConfig.getType()).isEqualTo(RenderingConfigType.REPORT);
         assertThat(((ReportRenderingConfigEnt)ent.getRenderingConfig()).canBeUsedInReport()).isTrue();
