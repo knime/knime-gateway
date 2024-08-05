@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -82,7 +83,7 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
             data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="nodesLimit") Integer nodesLimit, @JsonRpcParam(value="direction") String direction, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException {
+    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="nodesLimit") Integer nodesLimit, @JsonRpcParam(value="direction") DirectionEnt direction, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException {
         return m_service.get().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit, direction, fullTemplateInfo);    
     }
 
@@ -113,8 +114,8 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
             data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public NodeSearchResultEnt searchNodes(@JsonRpcParam(value="q") String q, @JsonRpcParam(value="tags") java.util.List<String> tags, @JsonRpcParam(value="allTagsMatch") Boolean allTagsMatch, @JsonRpcParam(value="offset") Integer offset, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo, @JsonRpcParam(value="portTypeId") String portTypeId)  throws ServiceExceptions.InvalidRequestException {
-        return m_service.get().searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId);    
+    public NodeSearchResultEnt searchNodes(@JsonRpcParam(value="q") String q, @JsonRpcParam(value="tags") java.util.List<String> tags, @JsonRpcParam(value="allTagsMatch") Boolean allTagsMatch, @JsonRpcParam(value="offset") Integer offset, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo, @JsonRpcParam(value="portTypeId") String portTypeId, @JsonRpcParam(value="searchDirection") DirectionEnt searchDirection)  throws ServiceExceptions.InvalidRequestException {
+        return m_service.get().searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId, searchDirection);    
     }
 
 }

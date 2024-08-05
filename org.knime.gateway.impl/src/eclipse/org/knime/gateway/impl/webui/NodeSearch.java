@@ -66,6 +66,7 @@ import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.sort.AlphanumericComparator;
 import org.knime.core.ui.util.FuzzySearchable;
+import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -138,6 +139,8 @@ public class NodeSearch {
      * @param limit the maximum number of nodes to include in the search result (mainly for pagination)
      * @param includeFullTemplateInfo Whether to include the full node template information or not.
      * @param portTypeId The port type all returned nodes (and components) have to be compatible with.
+     * @param searchDirection if the search should be for successors of predecessors of the given portTypeId, if null it
+     *            will allow any node
      *
      * @return the search result entity
      * @throws InvalidRequestException
@@ -145,9 +148,15 @@ public class NodeSearch {
     @SuppressWarnings("java:S107")
     public NodeSearchResultEnt searchNodes(final String queryString, final List<String> tags,
         final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean includeFullTemplateInfo,
-        final String portTypeId) throws InvalidRequestException {
+        final String portTypeId, final DirectionEnt searchDirection) throws InvalidRequestException {
 
-        final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId);
+        if (portTypeId == null ^ searchDirection == null) {
+            throw new InvalidRequestException(
+                "Both <portTypeId> and <searchDirection> must either be both null or both not null");
+        }
+        final var searchForSuccesors =
+            searchDirection == null || searchDirection.getDirection() == DirectionEnt.DirectionEnum.SUCCESSORS;
+        final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId, searchForSuccesors);
         // the partition is kept separate from the query to allow equals-checks for queries, which makes it simple
         // to cache them in a map.
         final var partition = partitionNodesOf(m_nodeRepo, query);
@@ -209,8 +218,7 @@ public class NodeSearch {
                 StringUtils.containsIgnoreCase(n.name, query.searchTerm()), //
                 score(n.getFuzzySearchable(), query.searchTerm()))) //
             .filter(n -> n.isSubstringMatch || n.score >= SIMILARITY_THRESHOLD)//
-            .filter(n -> query.portType() == null //
-                || n.node.isInputCompatibleWith(query.portType()) || n.node.isOutputCompatibleWith(query.portType()))
+            .filter(n -> filterByCompatiblePort(n, query))
             .sorted(//
                 // 1) exact substring matches (only based on names)
                 Comparator.<FoundNode> comparingInt(n -> n.isSubstringMatch ? 0 : 1)//
@@ -232,6 +240,16 @@ public class NodeSearch {
             return new HashSet<>(node.nodeSpec.metadata().tags()).containsAll(tags);
         }
         return tags.stream().anyMatch(node.nodeSpec.metadata().tags()::contains);
+    }
+
+    private static boolean filterByCompatiblePort(final FoundNode n, final SearchQuery query) {
+        if (query.portType() == null) {
+            return true;
+        } else if (query.isSearchForSuccesors()) {
+            return n.node.isInputCompatibleWith(query.portType());
+        } else {
+            return n.node.isOutputCompatibleWith(query.portType());
+        }
     }
 
 

@@ -71,6 +71,8 @@ final class SearchQuery {
 
     private final PortType m_portType;
 
+    private final boolean m_searchForSuccesors;
+
     /**
      * Construct a search query from the given parameters.
      *
@@ -78,15 +80,17 @@ final class SearchQuery {
      * @param tags Selected tags
      * @param allTagsMustMatch Whether search hits must match all selected tags
      * @param portTypeId The port type search hits must be compatible to.
+     * @param searchForSuccesors if the search look for successors compatible with the given portTypeId
      */
-    SearchQuery(final String query, final List<String> tags, final Boolean allTagsMustMatch, final String portTypeId)
-        throws ServiceExceptions.InvalidRequestException {
+    SearchQuery(final String query, final List<String> tags, final Boolean allTagsMustMatch, final String portTypeId,
+        final boolean searchForSuccesors) throws ServiceExceptions.InvalidRequestException {
         var parsed = parseQuery(query);
         m_searchTerm = parsed.getFirst();
         m_nodeFilter = parsed.getSecond();
         m_tags = tags == null ? Collections.emptyList() : tags;
         m_allTagsMustMatch = Boolean.TRUE.equals(allTagsMustMatch);
         m_portType = verifyPortTypeId(portTypeId);
+        m_searchForSuccesors = searchForSuccesors;
     }
 
     private static PortType verifyPortTypeId(final String portTypeId) throws ServiceExceptions.InvalidRequestException {
@@ -140,6 +144,10 @@ final class SearchQuery {
 
     PortType portType() {
         return m_portType;
+    }
+
+    boolean isSearchForSuccesors() {
+        return m_searchForSuccesors;
     }
 
     NodeFilter nodeFilter() {
