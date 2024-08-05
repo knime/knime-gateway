@@ -52,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
+import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -88,6 +89,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.Selectio
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 
 /**
  * Tests {@link TablePortViewFactory}.
@@ -139,7 +141,9 @@ public class TablePortViewFactoryTest {
             assertThat(settings.get("title").asText(), is(""));
             assertThat(settings.get("selectionMode").asText(), is(SelectionMode.EDIT.toString()));
             assertThat(settings.get("enablePagination").asBoolean(), is(false));
-            assertThat(settings.get("rowHeightMode").asText(), is(RowHeightMode.COMPACT.toString()));
+            assertThat(settings.get("rowHeightMode").asText(), is(RowHeightMode.CUSTOM.toString()));
+            assertThat(settings.get("verticalPaddingMode").asText(), is(VerticalPaddingMode.COMPACT.toString()));
+            assertThat(settings.get("customRowHeight").asInt(), is(LEGACY_CUSTOM_ROW_HEIGHT_COMPACT));
             assertThat(settings.get("showRowKeys").asBoolean(), is(true));
             assertThat(settings.get("showColumnDataType").asBoolean(), is(true));
             assertThat(settings.get("showRowIndices").asBoolean(), is(true));

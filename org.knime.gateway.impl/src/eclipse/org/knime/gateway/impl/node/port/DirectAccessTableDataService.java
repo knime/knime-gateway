@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.node.port;
 
+import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +69,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettingsSeriali
 import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 import org.knime.core.webui.node.view.table.data.DataType;
 import org.knime.core.webui.node.view.table.data.Table;
 import org.knime.core.webui.node.view.table.data.TableViewInitialData;
@@ -192,7 +195,9 @@ public class DirectAccessTableDataService {
         settings.m_enableGlobalSearch = false;
         settings.m_enableSortingByHeader = false;
         settings.m_enableColumnSearch = false;
-        settings.m_rowHeightMode = RowHeightMode.COMPACT;
+        settings.m_rowHeightMode = RowHeightMode.CUSTOM;
+        settings.m_verticalPaddingMode = VerticalPaddingMode.COMPACT;
+        settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
         settings.m_selectionMode = SelectionMode.OFF;
         settings.m_showColumnDataType = true;
         settings.m_title = "";
