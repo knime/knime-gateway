@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.node.port;
 
+import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
+
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -70,6 +72,7 @@ import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
 import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactory;
 import org.knime.core.webui.page.Page;
@@ -134,6 +137,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             settings.m_title = "";
             settings.m_enablePagination = false;
             setRowHeight(settings, spec);
+            settings.m_verticalPaddingMode = VerticalPaddingMode.COMPACT;
             settings.m_showRowIndices = true;
             settings.m_showOnlySelectedRowsConfigurable = true;
             settings.m_skipRemainingColumns = true;
@@ -147,7 +151,8 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
                 settings.m_rowHeightMode = RowHeightMode.CUSTOM;
                 settings.m_customRowHeight = 80;
             } else {
-                settings.m_rowHeightMode = RowHeightMode.COMPACT;
+                settings.m_rowHeightMode = RowHeightMode.CUSTOM;
+                settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
             }
         }
 
