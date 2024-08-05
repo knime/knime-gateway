@@ -101,7 +101,7 @@ public class NodeRepositoryTest {
     public void testGetNodeTemplates() throws Exception {
         NodeSearch search = new NodeSearch(repo);
         NodeSearchResultEnt res =
-            search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE, null);
+            search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE, null, null);
 
         NodeTemplateEnt nodeFromSearch = res.getNodes().get(0);
         List<String> ids = asList(nodeFromSearch.getId());
@@ -127,7 +127,7 @@ public class NodeRepositoryTest {
         assertThat("no factory settings expected", nodeFromSearch.getNodeFactory().getSettings(), is(nullValue()));
 
         // dynamic node
-        res = search.searchNodes("Bar Chart (Java Script)", asList("Views"), null, 0, 1, Boolean.TRUE, null);
+        res = search.searchNodes("Bar Chart (Java Script)", asList("Views"), null, 0, 1, Boolean.TRUE, null, null);
         nodeFromSearch = res.getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplate(nodeFromSearch.getId(), true);
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
@@ -151,12 +151,12 @@ public class NodeRepositoryTest {
         NodeSearch search = new NodeSearch(repo);
 
         NodeTemplateEnt nodeFromSearch =
-            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, null).getNodes().get(0);
+            search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, null, null).getNodes().get(0);
         NodeTemplateEnt nodeFromRepo =
             repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
 
-        nodeFromSearch = search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, null).getNodes().get(0);
+        nodeFromSearch = search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, null, null).getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
         assertThat(nodeFromRepo.getName(), containsString("deprecated"));
@@ -172,7 +172,7 @@ public class NodeRepositoryTest {
         NodeSearch search = new NodeSearch(repo);
 
         NodeGroupsEnt groupsRes = select.getNodesGroupedByTags(null, null, null, null);
-        NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null, null);
+        NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null, null, null);
 
         Map<String, NodeTemplateEnt> overplus = new HashMap<>();
         for (NodeTemplateEnt n1 : groupsRes.getGroups().stream().flatMap(s -> s.getNodes().stream())

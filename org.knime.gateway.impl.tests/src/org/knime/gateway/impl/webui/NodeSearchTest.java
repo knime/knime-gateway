@@ -59,6 +59,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -74,6 +75,9 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.DirectionEnt;
+import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEntBuilder;
+import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEnum;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -114,17 +118,17 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAllNullParameters() throws Exception {
-        m_search.searchNodes(null, null, null, null, null, null, null);
-        m_search.searchNodes(null, null, null, null, null, null, ""); // Identical to first one
-        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, null); // Identical to first one
-        m_search.searchNodes(null, null, false, null, null, null, null); // Identical to first one
-        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, null);
+        m_search.searchNodes(null, null, null, null, null, null, null, null);
+        m_search.searchNodes(null, null, null, null, null, null, "", getDirectionEnt(DirectionEnum.SUCCESSORS)); // Identical to first one
+        m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, null, null); // Identical to first one
+        m_search.searchNodes(null, null, false, null, null, null, null, null); // Identical to first one
+        m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, null, null);
         assertThat("unexpected cache size", m_search.cacheSize(), is(2));
     }
 
     @Test
     public void testSimpleSearchNodesWithOffsetAndLimitAndMinimumInfo() throws Exception {
-        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null, null);
+        NodeSearchResultEnt res = m_search.searchNodes("Column Filter", null, null, 10, 10, null, null, null);
         assertThat("unexpected number of nodes", res.getNodes().size(), is(10));
         assertThat("column filter not expected to be the first node (offset)", res.getNodes().get(0).getName(),
             is(not("Column Filter")));
@@ -135,7 +139,7 @@ public class NodeSearchTest {
         assertThat("no in-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
         assertThat("no out-port property expected", res.getNodes().get(0).getInPorts(), is(nullValue()));
 
-        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null, null);
+        NodeSearchResultEnt res2 = m_search.searchNodes("Column Filter", null, null, 11, 9, null, null, null);
         assertThat("unexpected number of nodes", res2.getNodes().size(), is(9));
         assertThat("unexpected node", res.getNodes().get(1), is(res2.getNodes().get(0)));
 
@@ -144,7 +148,7 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesAndGetFullTemplateInfo() throws Exception {
-        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE, null);
+        NodeSearchResultEnt res = m_search.searchNodes("col", null, null, 0, 2, Boolean.TRUE, null, null);
         assertThat("icon property expected", res.getNodes().get(0).getIcon(), is(notNullValue()));
         assertThat("in-port property expected", res.getNodes().get(0).getInPorts(), is(not((empty()))));
         assertThat("out-port property expected", res.getNodes().get(0).getOutPorts(), is(not((empty()))));
@@ -153,9 +157,9 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesAnyOrAllTagsMatch() throws Exception {
         NodeSearchResultEnt resAll =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE, null);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.TRUE, 0, 1, Boolean.FALSE, null, null);
         NodeSearchResultEnt resAny =
-            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE, null);
+            m_search.searchNodes("er", asList("IO", "Read"), Boolean.FALSE, 0, 1, Boolean.FALSE, null, null);
         assertThat("any match expected to hold more found nodes than all match", resAny.getTotalNumNodesFound(),
             is(greaterThan(resAll.getTotalNumNodesFound())));
 
@@ -165,11 +169,11 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesEasterEggs() throws Exception {
         NodeSearchResultEnt res =
-            m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false, null);
+            m_search.searchNodes("test//hidden", Collections.emptyList(), null, 0, 10, false, null, null);
         assertThat("some hidden nodes are expected to be found", res.getTotalNumNodesFound(), is(greaterThan(0)));
 
         NodeSearchResultEnt res2 =
-            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false, null);
+            m_search.searchNodes("filter//deprecated", Collections.emptyList(), null, 0, 10, false, null, null);
         assertThat("some deprecated nodes are expected to be found", res2.getTotalNumNodesFound(), is(greaterThan(0)));
         assertThat("deprecated string expected in node name", res2.getNodes().get(0).getName(),
             containsString("deprecated"));
@@ -177,55 +181,75 @@ public class NodeSearchTest {
 
     @Test
     public void resultContainsMatchingNodes() throws Exception {
-        var searchResult = m_searchWithFilter.searchNodes("table", Collections.emptyList(), null, 0, 10, true, null);
+        var searchResult =
+            m_searchWithFilter.searchNodes("table", Collections.emptyList(), null, 0, 10, true, null, null);
         var resFactories = getNodeFactoryNames(searchResult.getNodes());
         assertThat("Should return some nodes in the result", searchResult.getNodes().size(), is(greaterThan(0)));
         assertThat("Result should only contain nodes matching the filter",
-                NodeRepositoryTestingUtil.INCLUDED_NODES.containsAll(resFactories), is(true));
-        assertThat("There should be filtered matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(greaterThan(0)));
+            NodeRepositoryTestingUtil.INCLUDED_NODES.containsAll(resFactories), is(true));
+        assertThat("There should be filtered matching nodes", searchResult.getTotalNumFilteredNodesFound(),
+            is(greaterThan(0)));
     }
 
     @Test
     public void noFilteredNodesInResult() throws Exception {
-        var searchResult = m_search.searchNodes("table", Collections.emptyList(), null, null, null,
-            false, null);
-        assertThat("There should be no filtered matching nodes", searchResult.getTotalNumFilteredNodesFound(), is(equalTo(0)));
+        var searchResult = m_search.searchNodes("table", Collections.emptyList(), null, null, null, false, null, null);
+        assertThat("There should be no filtered matching nodes", searchResult.getTotalNumFilteredNodesFound(),
+            is(equalTo(0)));
     }
 
     @Test
     public void testSearchTagsInFilteredRepo() throws Exception {
-        var res =
-            m_searchWithFilter.searchNodes("", asList("Manipulation"), null, 0, 10, true, null);
+        var res = m_searchWithFilter.searchNodes("", asList("Manipulation"), null, 0, 10, true, null, null);
         var resFactories = getNodeFactoryNames(res.getNodes());
         assertThat("should only contain nodes matching the filter",
-                NodeRepositoryTestingUtil.INCLUDED_NODES.containsAll(resFactories), is(true));
+            NodeRepositoryTestingUtil.INCLUDED_NODES.containsAll(resFactories), is(true));
 
     }
 
     @Test
     public void testSearchNodesException() {
-        assertThrows("Not a valid port type set", InvalidRequestException.class,
-            () -> m_search.searchNodes(null, null, null, null, null, null, "porttype.id.does.not.exist"));
+        assertThrows("Not a valid port type set", InvalidRequestException.class, () -> m_search.searchNodes(null, null,
+            null, null, null, null, "porttype.id.does.not.exist", getDirectionEnt(DirectionEnum.SUCCESSORS)));
     }
 
     @Test
-    public void testSearchNodesDifferentPortTypes() throws Exception {
-        var res1 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID);
+    public void testSearchNodesDifferentPortTypesAndDirections() throws Exception {
+        var res1 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID,
+            getDirectionEnt(DirectionEnum.SUCCESSORS));
         assertThat(res1.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res1.getNodes(), TABLE_PORT_TYPE_ID), is(true));
 
-        var res2 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID);
+        var res2 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID,
+            getDirectionEnt(DirectionEnum.SUCCESSORS));
         assertThat(res2.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res2.getNodes(), IMAGE_PORT_TYPE_ID), is(true));
 
-        var res3 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID);
+        var res3 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID,
+            getDirectionEnt(DirectionEnum.SUCCESSORS));
         assertThat(res3.getTotalNumNodesFound(), greaterThan(0));
-        var res4 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null); // no port type filter!
+        var res4 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, null); // no port type filter!
         assertThat(
             "Searching for nodes with a flow-variable-port filter is equivalent to searching for nodes without a port-type filter",
             res3, is(res4));
+
+        var res5 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID,
+            getDirectionEnt(DirectionEnum.PREDECESSORS));
+        assertThat(res5.getTotalNumNodesFound(), greaterThan(0));
+        assertThat("There should only be nodes with at least one compatible port type",
+            everyNodeHasInputPortOfType(res5.getNodes(), TABLE_PORT_TYPE_ID), is(true));
+
+        var res6 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID,
+            getDirectionEnt(DirectionEnum.PREDECESSORS));
+        assertThat(res6.getTotalNumNodesFound(), greaterThan(0));
+        assertThat("There should only be nodes with at least one compatible port type",
+            everyNodeHasInputPortOfType(res6.getNodes(), IMAGE_PORT_TYPE_ID), is(true));
+
+        var res7 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID,
+            getDirectionEnt(DirectionEnum.PREDECESSORS));
+        assertThat(res7.getTotalNumNodesFound(), greaterThan(0));
     }
 
     @Test
@@ -233,7 +257,8 @@ public class NodeSearchTest {
         repo.resetFilter(id -> false);
         Supplier<NodeSearchResultEnt> search = () -> {
             try {
-                return m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID);
+                return m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID,
+                    getDirectionEnt(DirectionEnum.SUCCESSORS));
             } catch (InvalidRequestException e) {
                 throw new RuntimeException(e);
             }
@@ -242,7 +267,7 @@ public class NodeSearchTest {
         repo.resetFilter(id -> true);
         var resultWithOtherFilter = search.get();
         assertThat("Result sets should differ", !Objects.equals(resultWithSomeFilter.getTotalNumNodesFound(),
-                resultWithOtherFilter.getTotalNumNodesFound()));
+            resultWithOtherFilter.getTotalNumNodesFound()));
     }
 
     private static boolean everyNodeHasInputPortOfType(final List<NodeTemplateEnt> nodes, final String portTypeId) {
@@ -253,6 +278,10 @@ public class NodeSearchTest {
         return nodes.stream() //
             .map(n -> n.getNodeFactory().getClassName()) //
             .collect(Collectors.toList());
+    }
+
+    private static DirectionEnt getDirectionEnt(final DirectionEnt.DirectionEnum direction) {
+        return builder(DirectionEntBuilder.class).setDirection(direction).build();
     }
 
 }

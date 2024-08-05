@@ -53,12 +53,16 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.util.List;
 
 import org.hamcrest.core.IsNull;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.DirectionEnt;
+import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEntBuilder;
+import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEnum;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -100,8 +104,8 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
      * @throws Exception
      */
     public void testNodeRecommendations() throws Exception {
-        executeRecommendationsTest(m_datagenerator, 1, "successors");
-        executeRecommendationsTest(m_columnFilter, 1, "predecessors");
+        executeRecommendationsTest(m_datagenerator, 1, getDirectionEnt(DirectionEnum.SUCCESSORS));
+        executeRecommendationsTest(m_columnFilter, 1, getDirectionEnt(DirectionEnum.PREDECESSORS));
     }
 
     /**
@@ -113,7 +117,7 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         executeRecommendationsTest(null, null, null);
     }
 
-    private void executeRecommendationsTest(final NodeIDEnt nodeId, final Integer portIdx, final String direction)
+    private void executeRecommendationsTest(final NodeIDEnt nodeId, final Integer portIdx, final DirectionEnt direction)
         throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
@@ -160,9 +164,11 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
             OperationNotAllowedException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, 7, null, null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, "succesors", null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null,
+                getDirectionEnt(DirectionEnum.SUCCESSORS), null));
         assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
-            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, "succesors", null));
+            () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null,
+                getDirectionEnt(DirectionEnum.SUCCESSORS), null));
     }
 
     /**
@@ -176,20 +182,26 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         var workflowId = getRootID();
         // suggests the most frequently used node(s) - and that's only the 'String Manipulation'-node
         // since it's the only one compatible with the table port (see TestNodeTripleProviderFactory)
-        var recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 1, 7, "successors", true);
+        var recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 1, 7,
+            getDirectionEnt(DirectionEnum.SUCCESSORS), true);
         assertThat(recommendations, hasSize(1));
         assertThat(recommendations.get(0).getName(), is("String Manipulation"));
-        recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7, "successors", true);
+        recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, 7,
+            getDirectionEnt(DirectionEnum.SUCCESSORS), true);
         assertThat(recommendations, hasSize(1));
         assertThat(recommendations.get(0).getName(), is("String Manipulation"));
 
         // Suggest most frequently used nodes - as predecessors compatible with table port
-        recommendations =
-            nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 0, null, "predecessors", true);
+        recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 0, null,
+            getDirectionEnt(DirectionEnum.PREDECESSORS), true);
         assertThat(recommendations, hasSize(7));
-        recommendations =
-            nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, null, "predecessors", true);
+        recommendations = nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, null,
+            getDirectionEnt(DirectionEnum.PREDECESSORS), true);
         assertThat(recommendations, hasSize(7));
+    }
+
+    private static DirectionEnt getDirectionEnt(final DirectionEnt.DirectionEnum direction) {
+        return builder(DirectionEntBuilder.class).setDirection(direction).build();
     }
 
 }
