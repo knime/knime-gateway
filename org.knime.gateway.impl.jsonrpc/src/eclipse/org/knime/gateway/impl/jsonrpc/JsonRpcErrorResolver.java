@@ -74,13 +74,14 @@ final class JsonRpcErrorResolver implements ErrorResolver {
     @Override
     public JsonError resolveError(final Throwable thrownException, final Method method,
         final List<JsonNode> arguments) {
-        JsonRpcError resolver = getResolverForException(thrownException, method);
-        if (resolver == null) {
+        JsonRpcError jsonRpcError = getResolverForException(thrownException, method);
+        if (jsonRpcError == null) {
             NodeLogger.getLogger(getClass()).warn("An unexpected json rpc error occurred", thrownException);
         }
         return new JsonError(
-            resolver != null ? resolver.code() : m_translator.getUnexpectedExceptionErrorCode(thrownException),
-            m_translator.getMessage(thrownException), m_translator.getData(thrownException));
+            jsonRpcError != null ? jsonRpcError.code() : m_translator.getUnexpectedExceptionErrorCode(thrownException),
+            m_translator.getMessage(thrownException, jsonRpcError),
+            m_translator.getData(thrownException, jsonRpcError));
     }
 
     private static JsonRpcError getResolverForException(final Throwable thrownException, final Method method) {

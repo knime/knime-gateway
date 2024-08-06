@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.jsonrpc;
 
+import com.googlecode.jsonrpc4j.JsonRpcError;
+
 /**
  * Turns an exception into the 'message' and 'data' properties of an error object as defined by the json-rpc 2.0
  * standard.
@@ -61,14 +63,40 @@ public interface ExceptionToJsonRpcErrorTranslator {
      * @return a short description of the error - corresponds to the 'message' property in the error object of the json
      *         rpc 2.0 standard
      */
-    String getMessage(Throwable t);
+    default String getMessage(final Throwable t) {
+        return t.getClass().getSimpleName();
+    }
+
+    /**
+     * @param t the thrown exception
+     * @param errorAnnotation the json-rpc-error annotation if there is already a mapping from exception to
+     *            json-rpc-error
+     * @return a short description of the error - corresponds to the 'message' property in the error object of the json
+     *         rpc 2.0 standard
+     */
+    default String getMessage(final Throwable t, final JsonRpcError errorAnnotation) {
+        return getMessage(t);
+    }
 
     /**
      * @param t the thrown exception
      * @return additional information about the error - corresponds to the 'data' property in the error object of the
      *         json-rpc 2.0 standard
      */
-    Object getData(Throwable t);
+    default Object getData(final Throwable t) {
+        return t.getMessage();
+    }
+
+    /**
+     * @param t the thrown exception
+     * @param errorAnnotation the json-rpc-error annotation if there is already a mapping from exception to
+     *            json-rpc-error
+     * @return a short description of the error - corresponds to the 'message' property in the error object of the json
+     *         rpc 2.0 standard
+     */
+    default Object getData(final Throwable t, final JsonRpcError errorAnnotation) {
+        return getData(t);
+    }
 
     /**
      * @param t the thrown exception

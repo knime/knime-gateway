@@ -56,6 +56,7 @@ import org.knime.gateway.json.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.googlecode.jsonrpc4j.JsonRpcError;
 
 /**
  * A default implementation of the exception to jsonrpc error translator.
@@ -76,7 +77,7 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
      * {@inheritDoc}
      */
     @Override
-    public String getMessage(final Throwable t) {
+    public String getMessage(final Throwable t, final JsonRpcError errorAnnotation) {
         return t.getMessage();
     }
 
@@ -84,8 +85,8 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
      * {@inheritDoc}
      */
     @Override
-    public JsonNode getData(final Throwable t) {
-        return getExceptionDetails(t);
+    public Object getData(final Throwable t, final JsonRpcError errorAnnotation) {
+        return errorAnnotation == null ? getExceptionDetails(t) : errorAnnotation.data();
     }
 
     @Override
