@@ -68,6 +68,7 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
@@ -75,6 +76,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
+import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -129,8 +131,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             .trackCreation() //
             .isNodeAddedViaQuickNodeInsertion(isNodeAddedViaQuickNodeInsertion(m_commandEnt)) //
             .withNodeYPosCorrection(-WorkflowEntityFactory.NODE_Y_POS_CORRECTION) //
-            .connect(connector -> connector.connectFrom(m_commandEnt.getSourceNodeId(), m_commandEnt.getSourcePortIdx())
-                .trackCreation()) //
+            .connect(connector -> connectNode(m_commandEnt, connector)) //
             .failOnConnectionAttempt() //
             .create();
         return true; // Workflow changed if no exceptions were thrown
@@ -145,8 +146,20 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     private static boolean isNodeAddedViaQuickNodeInsertion(final AddNodeCommandEnt commandEnt) {
-        // at the moment nodes are added _and_ connected to a source node only via the quick node insertion feature
-        return commandEnt.getSourceNodeId() != null && commandEnt.getSourcePortIdx() != null;
+        // at the moment nodes are added _and_ connected to a node only via the quick node insertion feature
+        return commandEnt.getQuickAddNodeId() != null && commandEnt.getQuickAddPortIdx() != null
+            && commandEnt.getQuickAddDirection() != null;
+    }
+
+    private static void connectNode(final AddNodeCommandEnt commandEnt, final NodeConnector connector) {
+        if (commandEnt.getQuickAddDirection() == null) {
+            return;
+        }
+        if(commandEnt.getQuickAddDirection().getDirection() == DirectionEnum.SUCCESSORS) {
+            connector.connectFrom(commandEnt.getQuickAddNodeId(), commandEnt.getQuickAddPortIdx()).trackCreation();
+        } else {
+            connector.connectTo(commandEnt.getQuickAddNodeId(), commandEnt.getQuickAddPortIdx()).trackCreation();
+        }
     }
 
     private NodeFactoryKeyEnt getNodeFactoryKeyFromUrl(final String url) {

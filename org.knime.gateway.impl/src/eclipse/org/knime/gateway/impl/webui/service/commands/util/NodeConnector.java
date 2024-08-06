@@ -145,6 +145,18 @@ public final class NodeConnector {
     }
 
     /**
+     * Connects an existing upstream node to this node from a set port.
+     *
+     * @param destNodeIdEnt
+     * @param destPortIdx
+     * @return this connector
+     */
+    public NodeConnector connectTo(final NodeIDEnt destNodeIdEnt, final Integer destPortIdx) {
+        var destNodeId = destNodeIdEnt == null ? null : destNodeIdEnt.toNodeID(m_wfm);
+        return connectTo(destNodeId, destPortIdx);
+    }
+
+    /**
      * Turns on to track connection creation.
      *
      * @return this connector

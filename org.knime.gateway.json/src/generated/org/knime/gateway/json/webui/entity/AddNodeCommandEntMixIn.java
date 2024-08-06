@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -94,12 +95,16 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
     public SpaceItemReferenceEnt getSpaceItemReference();
     
     @Override
-    @JsonProperty("sourceNodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
+    @JsonProperty("quickAddNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getQuickAddNodeId();
     
     @Override
-    @JsonProperty("sourcePortIdx")
-    public Integer getSourcePortIdx();
+    @JsonProperty("quickAddPortIdx")
+    public Integer getQuickAddPortIdx();
+    
+    @Override
+    @JsonProperty("quickAddDirection")
+    public DirectionEnt getQuickAddDirection();
     
 
     /**
@@ -135,12 +140,16 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
         public AddNodeCommandEntMixInBuilder setSpaceItemReference(final SpaceItemReferenceEnt spaceItemReference);
         
         @Override
-        @JsonProperty("sourceNodeId")
-        public AddNodeCommandEntMixInBuilder setSourceNodeId(final org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
+        @JsonProperty("quickAddNodeId")
+        public AddNodeCommandEntMixInBuilder setQuickAddNodeId(final org.knime.gateway.api.entity.NodeIDEnt quickAddNodeId);
         
         @Override
-        @JsonProperty("sourcePortIdx")
-        public AddNodeCommandEntMixInBuilder setSourcePortIdx(final Integer sourcePortIdx);
+        @JsonProperty("quickAddPortIdx")
+        public AddNodeCommandEntMixInBuilder setQuickAddPortIdx(final Integer quickAddPortIdx);
+        
+        @Override
+        @JsonProperty("quickAddDirection")
+        public AddNodeCommandEntMixInBuilder setQuickAddDirection(final DirectionEnt quickAddDirection);
         
     }
 
