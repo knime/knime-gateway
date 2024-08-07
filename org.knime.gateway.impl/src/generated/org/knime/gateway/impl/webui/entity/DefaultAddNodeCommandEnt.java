@@ -46,7 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -77,7 +76,7 @@ public record DefaultAddNodeCommandEnt(
     SpaceItemReferenceEnt spaceItemReference,
     org.knime.gateway.api.entity.NodeIDEnt quickAddNodeId,
     Integer quickAddPortIdx,
-    DirectionEnt quickAddDirection) implements AddNodeCommandEnt {
+    String quickAddDirection) implements AddNodeCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -132,7 +131,7 @@ public record DefaultAddNodeCommandEnt(
     }
     
     @Override
-    public DirectionEnt getQuickAddDirection() {
+    public String getQuickAddDirection() {
         return quickAddDirection;
     }
     
@@ -155,7 +154,7 @@ public record DefaultAddNodeCommandEnt(
 
         private Integer m_quickAddPortIdx;
 
-        private DirectionEnt m_quickAddDirection;
+        private String m_quickAddDirection;
 
         @Override
         public DefaultAddNodeCommandEntBuilder setKind(KindEnum kind) {
@@ -206,7 +205,7 @@ public record DefaultAddNodeCommandEnt(
         }
 
         @Override
-        public DefaultAddNodeCommandEntBuilder setQuickAddDirection(DirectionEnt quickAddDirection) {
+        public DefaultAddNodeCommandEntBuilder setQuickAddDirection(String quickAddDirection) {
              m_quickAddDirection = quickAddDirection;
              return this;
         }

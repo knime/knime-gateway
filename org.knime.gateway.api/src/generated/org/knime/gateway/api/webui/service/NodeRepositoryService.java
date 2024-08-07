@@ -45,14 +45,14 @@
 package org.knime.gateway.api.webui.service;
 
 import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.entity.DirectionEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 /**
- *
+ * 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -67,14 +67,14 @@ public interface NodeRepositoryService extends GatewayService {
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param portIdx The port index to be used.
      * @param nodesLimit The maximum number of node recommendations to return.
-     * @param direction The direction to get recommendations from, either for successors or predecessors
+     * @param direction The direction to look for nodes in a workflow, either for predecessors or succesors
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      *
      * @return the result
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, DirectionEnt direction, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
-
+    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, String direction, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
+        
     /**
      * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).
      *
@@ -83,7 +83,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @return the result
      */
     java.util.Map<String, NodeTemplateEnt> getNodeTemplates(java.util.List<String> nodeTemplateIds) ;
-
+        
     /**
      * Returns a pre-defined set of groups (defined by tags) and nodes per group (the most frequently used ones in that group).
      *
@@ -95,7 +95,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @return the result
      */
     NodeGroupsEnt getNodesGroupedByTags(Integer numNodesPerTag, Integer tagsOffset, Integer tagsLimit, Boolean fullTemplateInfo) ;
-
+        
     /**
      * Searches for nodes (and components) in the node repository.
      *
@@ -106,11 +106,11 @@ public interface NodeRepositoryService extends GatewayService {
      * @param limit The maximum number of nodes/components in the search result (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      * @param portTypeId The port type ID of the port type all returned nodes (and components) have to be compatible with.
-     * @param searchDirection The direction to look for compatible nodes, either for predecessors or succesors
+     * @param direction The direction to look for nodes in a workflow, either for predecessors or succesors
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String portTypeId, DirectionEnt searchDirection)  throws ServiceExceptions.InvalidRequestException;
-
+    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String portTypeId, String direction)  throws ServiceExceptions.InvalidRequestException;
+        
 }

@@ -80,7 +80,6 @@ import org.knime.gateway.json.webui.entity.CopyResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CustomJobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.CutCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DeleteCommandEntMixIn;
-import org.knime.gateway.json.webui.entity.DirectionEntMixIn;
 import org.knime.gateway.json.webui.entity.DynamicPortGroupDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.EventEntMixIn;
@@ -243,7 +242,6 @@ public class ListEntities {
         res.add(CustomJobManagerEntMixIn.class);
         res.add(CutCommandEntMixIn.class);
         res.add(DeleteCommandEntMixIn.class);
-        res.add(DirectionEntMixIn.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.class);
         res.add(EditableProjectMetadataEntMixIn.class);
         res.add(EventEntMixIn.class);
@@ -392,7 +390,6 @@ public class ListEntities {
         res.add(CustomJobManagerEntMixIn.CustomJobManagerEntMixInBuilder.class);
         res.add(CutCommandEntMixIn.CutCommandEntMixInBuilder.class);
         res.add(DeleteCommandEntMixIn.DeleteCommandEntMixInBuilder.class);
-        res.add(DirectionEntMixIn.DirectionEntMixInBuilder.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.DynamicPortGroupDescriptionEntMixInBuilder.class);
         res.add(EditableProjectMetadataEntMixIn.EditableProjectMetadataEntMixInBuilder.class);
         res.add(EventEntMixIn.EventEntMixInBuilder.class);

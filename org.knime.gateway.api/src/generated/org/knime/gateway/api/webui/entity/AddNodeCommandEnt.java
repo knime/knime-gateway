@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
@@ -105,10 +104,10 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
   public Integer getQuickAddPortIdx();
 
   /**
-   * Get quickAddDirection
+   * Optional parameter that describe if the new node is a Successor or a predecessor of the given node
    * @return quickAddDirection 
    **/
-  public DirectionEnt getQuickAddDirection();
+  public String getQuickAddDirection();
 
 
   @Override
@@ -187,12 +186,12 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         AddNodeCommandEntBuilder setQuickAddPortIdx(Integer quickAddPortIdx);
         
         /**
-   		 * Set quickAddDirection
+         * Optional parameter that describe if the new node is a Successor or a predecessor of the given node
          * 
          * @param quickAddDirection the property value,  
          * @return this entity builder for chaining
          */
-        AddNodeCommandEntBuilder setQuickAddDirection(DirectionEnt quickAddDirection);
+        AddNodeCommandEntBuilder setQuickAddDirection(String quickAddDirection);
         
         
         /**

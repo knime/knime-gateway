@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -104,7 +103,7 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
     
     @Override
     @JsonProperty("quickAddDirection")
-    public DirectionEnt getQuickAddDirection();
+    public String getQuickAddDirection();
     
 
     /**
@@ -149,7 +148,7 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
         
         @Override
         @JsonProperty("quickAddDirection")
-        public AddNodeCommandEntMixInBuilder setQuickAddDirection(final DirectionEnt quickAddDirection);
+        public AddNodeCommandEntMixInBuilder setQuickAddDirection(final String quickAddDirection);
         
     }
 

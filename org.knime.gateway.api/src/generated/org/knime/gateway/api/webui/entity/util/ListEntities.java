@@ -80,7 +80,6 @@ import org.knime.gateway.api.webui.entity.CopyResultEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
-import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.EventEnt;
@@ -244,7 +243,6 @@ public class ListEntities {
         res.add(CustomJobManagerEnt.class);
         res.add(CutCommandEnt.class);
         res.add(DeleteCommandEnt.class);
-        res.add(DirectionEnt.class);
         res.add(DynamicPortGroupDescriptionEnt.class);
         res.add(EditableProjectMetadataEnt.class);
         res.add(EventEnt.class);
@@ -393,7 +391,6 @@ public class ListEntities {
         res.add(CustomJobManagerEnt.CustomJobManagerEntBuilder.class);
         res.add(CutCommandEnt.CutCommandEntBuilder.class);
         res.add(DeleteCommandEnt.DeleteCommandEntBuilder.class);
-        res.add(DirectionEnt.DirectionEntBuilder.class);
         res.add(DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder.class);
         res.add(EditableProjectMetadataEnt.EditableProjectMetadataEntBuilder.class);
         res.add(EventEnt.EventEntBuilder.class);
