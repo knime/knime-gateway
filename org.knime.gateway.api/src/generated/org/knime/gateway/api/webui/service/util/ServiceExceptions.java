@@ -79,6 +79,19 @@ public final class ServiceExceptions {
     }
 
    /**
+    * The requested element was not found.
+    */
+    public static class NoSuchElementException extends Exception {
+        public NoSuchElementException(String message) {
+            super(message);
+        }
+        
+        public NoSuchElementException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+   /**
     * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
     */
     public static class NotASubWorkflowException extends Exception {

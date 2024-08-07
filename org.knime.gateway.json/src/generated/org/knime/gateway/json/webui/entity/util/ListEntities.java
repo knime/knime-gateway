@@ -63,6 +63,7 @@ import org.knime.gateway.json.webui.entity.AppStateEntMixIn;
 import org.knime.gateway.json.webui.entity.AutoConnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AutoDisconnectCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.BoundsEntMixIn;
+import org.knime.gateway.json.webui.entity.CategoryMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
@@ -104,6 +105,7 @@ import org.knime.gateway.json.webui.entity.NativeNodeDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.NativeNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.NativeNodeInvariantsEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeAnnotationEntMixIn;
+import org.knime.gateway.json.webui.entity.NodeCategoryEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeDialogOptionDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeDialogOptionGroupEntMixIn;
@@ -224,6 +226,7 @@ public class ListEntities {
         res.add(AutoConnectCommandEntMixIn.class);
         res.add(AutoDisconnectCommandEntMixIn.class);
         res.add(BoundsEntMixIn.class);
+        res.add(CategoryMetadataEntMixIn.class);
         res.add(CollapseCommandEntMixIn.class);
         res.add(CollapseResultEntMixIn.class);
         res.add(CommandResultEntMixIn.class);
@@ -265,6 +268,7 @@ public class ListEntities {
         res.add(NativeNodeEntMixIn.class);
         res.add(NativeNodeInvariantsEntMixIn.class);
         res.add(NodeAnnotationEntMixIn.class);
+        res.add(NodeCategoryEntMixIn.class);
         res.add(NodeDescriptionEntMixIn.class);
         res.add(NodeDialogOptionDescriptionEntMixIn.class);
         res.add(NodeDialogOptionGroupEntMixIn.class);
@@ -371,6 +375,7 @@ public class ListEntities {
         res.add(AutoConnectCommandEntMixIn.AutoConnectCommandEntMixInBuilder.class);
         res.add(AutoDisconnectCommandEntMixIn.AutoDisconnectCommandEntMixInBuilder.class);
         res.add(BoundsEntMixIn.BoundsEntMixInBuilder.class);
+        res.add(CategoryMetadataEntMixIn.CategoryMetadataEntMixInBuilder.class);
         res.add(CollapseCommandEntMixIn.CollapseCommandEntMixInBuilder.class);
         res.add(CollapseResultEntMixIn.CollapseResultEntMixInBuilder.class);
         res.add(CommandResultEntMixIn.CommandResultEntMixInBuilder.class);
@@ -412,6 +417,7 @@ public class ListEntities {
         res.add(NativeNodeEntMixIn.NativeNodeEntMixInBuilder.class);
         res.add(NativeNodeInvariantsEntMixIn.NativeNodeInvariantsEntMixInBuilder.class);
         res.add(NodeAnnotationEntMixIn.NodeAnnotationEntMixInBuilder.class);
+        res.add(NodeCategoryEntMixIn.NodeCategoryEntMixInBuilder.class);
         res.add(NodeDescriptionEntMixIn.NodeDescriptionEntMixInBuilder.class);
         res.add(NodeDialogOptionDescriptionEntMixIn.NodeDialogOptionDescriptionEntMixInBuilder.class);
         res.add(NodeDialogOptionGroupEntMixIn.NodeDialogOptionGroupEntMixInBuilder.class);

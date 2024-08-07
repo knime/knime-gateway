@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -71,6 +72,19 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     
     public JsonRpcNodeRepositoryServiceWrapper(java.util.function.Supplier<NodeRepositoryService> service) {
         m_service = service;
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getNodeCategory")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NoSuchElementException.class, code = -32600,
+            data = "NoSuchElementException" /*per convention the data property contains the exception name*/)
+    })
+    public NodeCategoryEnt getNodeCategory(@JsonRpcParam(value="categoryPath") java.util.List<String> categoryPath)  throws ServiceExceptions.NoSuchElementException {
+        return m_service.get().getNodeCategory(categoryPath);    
     }
 
 	/**

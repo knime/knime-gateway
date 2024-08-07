@@ -50,14 +50,18 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.NodeCategories;
 import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRelation;
@@ -79,6 +83,8 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
 
     private final NodeRecommendations m_nodeRecommendations;
 
+    private final NodeCategories m_nodeCategories;
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -92,6 +98,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
+        m_nodeCategories = new NodeCategories(m_nodeRepo);
     }
 
     /**
@@ -120,6 +127,15 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     @Override
     public Map<String, NodeTemplateEnt> getNodeTemplates(final List<String> templateIds) {
         return m_nodeRepo.getNodeTemplates(templateIds, true);
+    }
+
+    @Override
+    public NodeCategoryEnt getNodeCategory(List<String> categoryPath) throws ServiceExceptions.NoSuchElementException {
+        try {
+            return m_nodeCategories.getCategory(categoryPath);
+        } catch (NoSuchElementException e) {
+            throw new ServiceExceptions.NoSuchElementException("The requested category could not be found.", e);
+        }
     }
 
     /**

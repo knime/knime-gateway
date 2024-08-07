@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
+import org.knime.gateway.api.webui.entity.CategoryMetadataEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
@@ -104,6 +105,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
 import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
@@ -225,6 +227,7 @@ public class ListEntities {
         res.add(AutoConnectCommandEnt.class);
         res.add(AutoDisconnectCommandEnt.class);
         res.add(BoundsEnt.class);
+        res.add(CategoryMetadataEnt.class);
         res.add(CollapseCommandEnt.class);
         res.add(CollapseResultEnt.class);
         res.add(CommandResultEnt.class);
@@ -266,6 +269,7 @@ public class ListEntities {
         res.add(NativeNodeEnt.class);
         res.add(NativeNodeInvariantsEnt.class);
         res.add(NodeAnnotationEnt.class);
+        res.add(NodeCategoryEnt.class);
         res.add(NodeDescriptionEnt.class);
         res.add(NodeDialogOptionDescriptionEnt.class);
         res.add(NodeDialogOptionGroupEnt.class);
@@ -372,6 +376,7 @@ public class ListEntities {
         res.add(AutoConnectCommandEnt.AutoConnectCommandEntBuilder.class);
         res.add(AutoDisconnectCommandEnt.AutoDisconnectCommandEntBuilder.class);
         res.add(BoundsEnt.BoundsEntBuilder.class);
+        res.add(CategoryMetadataEnt.CategoryMetadataEntBuilder.class);
         res.add(CollapseCommandEnt.CollapseCommandEntBuilder.class);
         res.add(CollapseResultEnt.CollapseResultEntBuilder.class);
         res.add(CommandResultEnt.CommandResultEntBuilder.class);
@@ -413,6 +418,7 @@ public class ListEntities {
         res.add(NativeNodeEnt.NativeNodeEntBuilder.class);
         res.add(NativeNodeInvariantsEnt.NativeNodeInvariantsEntBuilder.class);
         res.add(NodeAnnotationEnt.NodeAnnotationEntBuilder.class);
+        res.add(NodeCategoryEnt.NodeCategoryEntBuilder.class);
         res.add(NodeDescriptionEnt.NodeDescriptionEntBuilder.class);
         res.add(NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder.class);
         res.add(NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder.class);

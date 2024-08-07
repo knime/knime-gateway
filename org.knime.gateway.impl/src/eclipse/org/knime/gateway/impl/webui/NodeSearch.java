@@ -58,7 +58,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -161,12 +160,11 @@ public class NodeSearch {
         final var searchResult = m_nodeSearchResultCache.computeIfAbsent(query, q -> searchNodes(partition, q));
 
         // map templates
-        List<NodeTemplateEnt> foundTemplates = searchResult.foundNodes().stream()
-            .map(n -> m_nodeRepo.getNodeTemplate(n.templateId, Boolean.TRUE.equals(includeFullTemplateInfo)))//
-            .filter(Objects::nonNull)//
-            .skip(offset == null ? 0 : offset)//
-            .limit(limit == null ? Long.MAX_VALUE : limit)//
-            .toList();
+        List<NodeTemplateEnt> foundTemplates =
+            m_nodeRepo.mapNodeTemplateEnts(searchResult.foundNodes(), includeFullTemplateInfo).stream() //
+                .skip(offset == null ? 0 : offset)//
+                .limit(limit == null ? Long.MAX_VALUE : limit)//
+                .toList();
 
         // collect all tags from the templates and sort according to their frequency
         var tagFrequencies = searchResult.foundNodes().stream() //
@@ -250,7 +248,6 @@ public class NodeSearch {
         }
     }
 
-
     /**
      * Partition the nodes available in this node repository into a primary and a secondary set to search in. The
      * partitioning is implied by the search query.
@@ -262,8 +259,7 @@ public class NodeSearch {
         return switch (query.nodeFilter()) {
             case HIDDEN -> new NodeSearch.NodePartition(nodeRepo.getHiddenNodes(), null);
             case DEPRECATED -> new NodeSearch.NodePartition(nodeRepo.getDeprecatedNodes(), null);
-            case NONE ->
-                    new NodeSearch.NodePartition(nodeRepo.getNodes(), nodeRepo.getFilteredNodes());
+            case NONE -> new NodeSearch.NodePartition(nodeRepo.getNodes(), nodeRepo.getFilteredNodes());
         };
     }
 

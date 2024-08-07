@@ -82,6 +82,8 @@ import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt.AutoDisconnec
 import org.knime.gateway.impl.webui.entity.DefaultAutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
+import org.knime.gateway.api.webui.entity.CategoryMetadataEnt.CategoryMetadataEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCategoryMetadataEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.CollapseCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt.CollapseResultEntBuilder;
@@ -164,6 +166,8 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.NativeNodeInva
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeCategoryEnt.NodeCategoryEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNodeCategoryEnt;
 import org.knime.gateway.api.webui.entity.NodeDescriptionEnt.NodeDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt.NodeDialogOptionDescriptionEntBuilder;
@@ -399,6 +403,9 @@ public class Interface2ImplMap {
         if(clazz == BoundsEntBuilder.class) {
             return (B)new DefaultBoundsEnt.DefaultBoundsEntBuilder();
         }        
+        if(clazz == CategoryMetadataEntBuilder.class) {
+            return (B)new DefaultCategoryMetadataEnt.DefaultCategoryMetadataEntBuilder();
+        }        
         if(clazz == CollapseCommandEntBuilder.class) {
             return (B)new DefaultCollapseCommandEnt.DefaultCollapseCommandEntBuilder();
         }        
@@ -521,6 +528,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeAnnotationEntBuilder.class) {
             return (B)new DefaultNodeAnnotationEnt.DefaultNodeAnnotationEntBuilder();
+        }        
+        if(clazz == NodeCategoryEntBuilder.class) {
+            return (B)new DefaultNodeCategoryEnt.DefaultNodeCategoryEntBuilder();
         }        
         if(clazz == NodeDescriptionEntBuilder.class) {
             return (B)new DefaultNodeDescriptionEnt.DefaultNodeDescriptionEntBuilder();
