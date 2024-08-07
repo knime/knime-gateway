@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -59,6 +60,16 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface NodeRepositoryService extends GatewayService {
 
+    /**
+     * Provides metadata and contents of node categories.
+     *
+     * @param categoryPath 
+     *
+     * @return the result
+     * @throws ServiceExceptions.NoSuchElementException The requested element was not found.
+     */
+    NodeCategoryEnt getNodeCategory(java.util.List<String> categoryPath)  throws ServiceExceptions.NoSuchElementException;
+        
     /**
      * Given a node and a port, it recommends a certain number of compatible successor nodes the user might want to add next to its workflow. If queried with no node and no port, it recommends the most relevant source nodes, that naturally have no predecessor.
      *

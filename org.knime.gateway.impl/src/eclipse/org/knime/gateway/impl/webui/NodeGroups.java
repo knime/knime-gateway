@@ -58,7 +58,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.extension.CategoryExtension;
@@ -79,14 +78,6 @@ import org.knime.gateway.impl.webui.NodeRepository.Node;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class NodeGroups {
-
-    private static final String UNCATEGORIZED_KEY = "/uncategorized";
-
-    /*
-     * ('top-level') tag for nodes that are at root-level, that are without a category, or
-     * that reference a (first-level) category that is not registered (via the category-extension point).
-     */
-    private static final String UNCATEGORIZED_NAME = "Uncategorized";
 
     private final NodeRepository m_nodeRepo;
 
@@ -131,10 +122,10 @@ public final class NodeGroups {
 
     private synchronized void initCategories() {
         if (m_topLevelCats == null) {
-            // TODO somehow exposed via NodeSpecs-class??
             var categoryExtensions = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
             var topLevelCategories = getSortedCategoriesAtLevel("/", categoryExtensions.values());
-            var uncategorizedCategory = Pair.create(UNCATEGORIZED_KEY, UNCATEGORIZED_NAME);
+            var uncategorizedCategory =
+                Pair.create(NodeCategories.UNCATEGORIZED_KEY, NodeCategories.UNCATEGORIZED_NAME);
             if (!topLevelCategories.contains(uncategorizedCategory)) {
                 topLevelCategories.add(uncategorizedCategory);
             }
@@ -154,7 +145,6 @@ public final class NodeGroups {
         return NodeAndCategorySorter.sortCategoryExtensions(categories.stream()//
             .filter(category -> {
                 String categoryPath = category.getPath();
-                // TODO why should null or blank yield true for levelId != "/"?
                 return categoryPath == null || StringUtils.isBlank(categoryPath) || categoryPath.equals(targetPath);
             }))//
             .map(cat -> Pair.create(cat.getCompletePath(), cat.getName()))//
@@ -173,7 +163,7 @@ public final class NodeGroups {
         var alreadyCategorized = new HashSet<>();
         for (var targetCategory : targetCategories) {
             String catPath = targetCategory.getFirst();
-            if (catPath.equals(UNCATEGORIZED_KEY)) {
+            if (catPath.equals(NodeCategories.UNCATEGORIZED_KEY)) {
                 // 'uncategorized' nodes are handled below
                 continue;
             }
@@ -181,8 +171,8 @@ public final class NodeGroups {
                 .filter(node -> node.nodeSpec.metadata().categoryPath().equals(catPath)
                     || node.nodeSpec.metadata().categoryPath().startsWith(catPath + "/"))//
                 .sorted(Comparator.<Node> comparingInt(node -> node.weight).reversed())//
-                .peek(node -> alreadyCategorized.add(node.templateId))//
                 .toList();
+            alreadyCategorized.addAll(nodesMatchingTargetCategory);
             if (!nodes.isEmpty()) {
                 categorizedNodes.put(catPath, nodesMatchingTargetCategory);
             }
@@ -191,11 +181,10 @@ public final class NodeGroups {
         // collect all nodes that didn't end up in any of the given categories
         // (e.g. because they are at root level '/' or don't have a category at all)
         List<Node> uncategorizedNodes = nodes.stream() //
-                // TODO can replace with check to categorizedNodes.containsKey?
             .filter(n -> !alreadyCategorized.contains(n.templateId)) //
             .toList();
         if (!uncategorizedNodes.isEmpty()) {
-            categorizedNodes.put(UNCATEGORIZED_KEY, uncategorizedNodes);
+            categorizedNodes.put(NodeCategories.UNCATEGORIZED_KEY, uncategorizedNodes);
         }
         return categorizedNodes;
     }

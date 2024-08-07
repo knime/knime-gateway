@@ -55,6 +55,7 @@ import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -90,7 +91,8 @@ public final class NodeRepository {
     private static final String NODE_USAGE_FILE = "/files/node_usage/node_usage.csv";
 
     /**
-     * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is available through this node repository.
+     * Determines whether a given {@link NodeFactory#getFactoryId() FactoryId} is available through this node
+     * repository.
      */
     private Predicate<String> m_filter;
 
@@ -121,8 +123,8 @@ public final class NodeRepository {
     private final Map<String, NodeTemplateEnt> m_fullInfoNodeTemplateEntCache = new ConcurrentHashMap<>(2000);
 
     /**
-     * Does not apply to {@link this#m_hiddenNodes} or {@link this#m_deprecatedNodes}, these are assumed to be
-     * static during runtime and not affected by filtering.
+     * Does not apply to {@link this#m_hiddenNodes} or {@link this#m_deprecatedNodes}, these are assumed to be static
+     * during runtime and not affected by filtering.
      */
     private final Set<Runnable> m_contentChangedListeners = new HashSet<>();
 
@@ -147,14 +149,13 @@ public final class NodeRepository {
     /**
      * Create a new node repository.
      * <p>
-     * An instance is optionally based on a predicate on a node. This predicate partitions the set of nodes <i>available</i>
-     * in this AP installation into <i>included</i> and <i>not included</i> nodes. The intuition behind this partition
-     * is to be able to indicate during node searching that additional nodes may be available in a different usage
-     * context.
+     * An instance is optionally based on a predicate on a node. This predicate partitions the set of nodes
+     * <i>available</i> in this AP installation into <i>included</i> and <i>not included</i> nodes. The intuition behind
+     * this partition is to be able to indicate during node searching that additional nodes may be available in a
+     * different usage context.
      * <p>
      *
-     * @param filter defines which nodes will be included in this instance. If {@code null}, all nodes are
-     *            included.
+     * @param filter defines which nodes will be included in this instance. If {@code null}, all nodes are included.
      */
     public NodeRepository(final Predicate<String> filter) {
         m_filter = filter;
@@ -193,8 +194,8 @@ public final class NodeRepository {
     /**
      * Resets the 'filter' predicate.
      *
-     * @param filter defines which nodes should be included in the node repository by matching the templateId
-     *            of the node. Can be <code>null</code>, which means all nodes are included.
+     * @param filter defines which nodes should be included in the node repository by matching the templateId of the
+     *            node. Can be <code>null</code>, which means all nodes are included.
      */
     public void resetFilter(final Predicate<String> filter) {
         m_filter = filter;
@@ -208,7 +209,7 @@ public final class NodeRepository {
     }
 
     private void notifyContentChanged() {
-        m_contentChangedListeners.forEach(Runnable::run);;
+        m_contentChangedListeners.forEach(Runnable::run);
     }
 
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
@@ -321,13 +322,13 @@ public final class NodeRepository {
     }
 
     private static void addNodeWeights(final Map<String, Node> nodes) {
-        Map<Integer, Node> tmpMap = nodes.values().stream() //
+        Map<Integer, Node> templateIdsToNodes = nodes.values().stream() //
             .collect(Collectors.toMap(n -> (n.templateId).hashCode(), n -> n));
         try (Stream<int[]> lines = readNodeUsageFile()) {
-            lines.forEach(l -> {
-                Node n = tmpMap.get(l[0]);
-                if (n != null) {
-                    n.weight = l[1];
+            lines.forEach(line -> {
+                var node = templateIdsToNodes.get(line[0]);
+                if (node != null) {
+                    node.weight = line[1];
                 }
             });
         }
@@ -349,6 +350,12 @@ public final class NodeRepository {
                 throw new UncheckedIOException(ex);
             }
         });
+    }
+
+    List<NodeTemplateEnt> mapNodeTemplateEnts(final Collection<Node> nodes, final Boolean includeFullTemplateInfo) {
+        return nodes.stream().map(n -> getNodeTemplate(n.templateId, Boolean.TRUE.equals(includeFullTemplateInfo)))//
+            .filter(Objects::nonNull)//
+            .toList();
     }
 
     /**
@@ -376,10 +383,10 @@ public final class NodeRepository {
          */
         int weight;
 
-        private Node(final NodeSpec s) {
-            templateId = s.factory().id();
-            name = s.metadata().nodeName();
-            nodeSpec = s;
+        Node(final NodeSpec spec) {
+            templateId = spec.factory().id();
+            name = spec.metadata().nodeName();
+            nodeSpec = spec;
         }
 
         FuzzySearchable getFuzzySearchable() {
