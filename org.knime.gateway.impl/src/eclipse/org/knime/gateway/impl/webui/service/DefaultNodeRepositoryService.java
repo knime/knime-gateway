@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -109,7 +108,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     @Override
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
         final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String portTypeId,
-        final DirectionEnt direction)
+        final String direction)
         throws InvalidRequestException {
         return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId, direction);
     }
@@ -129,7 +128,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final DirectionEnt direction,
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String direction,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
             direction, fullTemplateInfo);

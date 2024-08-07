@@ -63,7 +63,6 @@ import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendation;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -107,7 +106,7 @@ public class NodeRecommendations {
      * @throws OperationNotAllowedException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final DirectionEnt direction,
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String direction,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
@@ -130,7 +129,7 @@ public class NodeRecommendations {
         var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
         var isSourcePort =
-            direction == null || direction.getDirection() == DirectionEnt.DirectionEnum.SUCCESSORS;
+            direction == null || direction.equals("SUCCESSORS");
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilter(...)`
         var portType = nodeId == null ? null : determinePortType(nc, portIdx, isSourcePort);
 

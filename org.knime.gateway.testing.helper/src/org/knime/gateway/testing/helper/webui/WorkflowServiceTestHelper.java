@@ -123,9 +123,6 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
-import org.knime.gateway.api.webui.entity.DirectionEnt;
-import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEntBuilder;
-import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEnum;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
@@ -891,7 +888,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(normalizerFactory, null, 32, 64, null, null, null))).getNewNodeId();
         var result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 1, getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 1, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowFilterFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
 
@@ -911,7 +908,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // try to connect to an incompatible port
         var ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2, getDirectionEnt(DirectionEnum.SUCCESSORS))));
+            buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2, "SUCCESSORS")));
         assertThat(ex.getMessage(), is("Node couldn't be created because a connection couldn't be added."));
 
         // redo adding the row filter
@@ -921,7 +918,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // try to connect to a port that is already used
         var rowSplitterFactory = "org.knime.base.node.preproc.filter.row2.RowSplitterNodeFactory";
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, 1, getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(rowSplitterFactory, null, 128, 256, sourceNodeId, 1, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), rowSplitterFactory, 128, 256, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true); // this extra connection is allowed
 
@@ -944,14 +941,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowSplitterFactory, null, 32, 64, null, null, null))).getNewNodeId();
         var result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(columnAppenderFactory, null, 64, 128, sourceNodeId, null, getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(columnAppenderFactory, null, 64, 128, sourceNodeId, null, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), columnAppenderFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true); // got auto-connected
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, true); // got auto-connected
 
         // add a another node and try to auto-connect auto-guessed ports
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(normalizerFactory, null, 128, 256, sourceNodeId, null, getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(normalizerFactory, null, 128, 256, sourceNodeId, null, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), normalizerFactory, 128, 256, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, false); // not auto-connected
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false); // not auto-connected
@@ -974,8 +971,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 32, 64, null, null, null))).getNewNodeId();
         var result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1,
-                getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), caseSwitchStartFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
 
@@ -989,8 +985,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(tableColToFlowVariableFactory, null, 256, 512, null, null, null))).getNewNodeId();
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1,
-                getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(caseSwitchStartFactory, null, 64, 128, sourceNodeId, 1, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), caseSwitchStartFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
 
@@ -1018,8 +1013,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(tableColToVariableFactory, null, 32, 64, null, null, null))).getNewNodeId();
         var result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(variableToTableRowFactory, null, 64, 128, sourceNodeId, 1,
-                getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(variableToTableRowFactory, null, 64, 128, sourceNodeId, 1, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), variableToTableRowFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true);
 
@@ -1033,8 +1027,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 128, 256, null, null, null))).getNewNodeId();
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(variableToTableRowFactory, null, 64, 128, sourceNodeId, 0,
-                getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(variableToTableRowFactory, null, 64, 128, sourceNodeId, 0, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), variableToTableRowFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 0, result, true);
 
@@ -1048,14 +1041,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(imageToTableFactory, null, 256, 512, null, null, null))).getNewNodeId();
         result = ws().executeWorkflowCommand(wfId, getRootID(),
-            buildAddNodeCommand(tableRowToImageFactory, null, 64, 128, sourceNodeId, 0, getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            buildAddNodeCommand(tableRowToImageFactory, null, 64, 128, sourceNodeId, 0, "SUCCESSORS"));
         checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), tableRowToImageFactory, 64, 128, result);
         checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 0, result, true);
     }
 
     private static AddNodeCommandEnt buildAddNodeCommand(final String factoryClassName, final String factorySettings,
         final int x, final int y, final NodeIDEnt quickAddNodeId, final Integer quickAddPortIdx,
-        final DirectionEnt quickAddDirection) {
+        final String quickAddDirection) {
         return builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
             .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class).setClassName(factoryClassName)
                 .setSettings(factorySettings).build())//
@@ -2812,10 +2805,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static NativeNodeEnt getNativeNode(final Map<String, NodeEnt> nodes, final String id) {
         return (NativeNodeEnt)nodes.get(id);
-    }
-
-    private static DirectionEnt getDirectionEnt(final DirectionEnt.DirectionEnum direction) {
-        return builder(DirectionEntBuilder.class).setDirection(direction).build();
     }
 
     private Map<String, NodeEnt> executeWorkflowAndGetNodes(final TestWorkflowCollection workflow) throws Exception {

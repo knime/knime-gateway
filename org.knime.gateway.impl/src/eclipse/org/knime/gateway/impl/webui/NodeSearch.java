@@ -66,7 +66,6 @@ import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.sort.AlphanumericComparator;
 import org.knime.core.ui.util.FuzzySearchable;
-import org.knime.gateway.api.webui.entity.DirectionEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
@@ -148,14 +147,14 @@ public class NodeSearch {
     @SuppressWarnings("java:S107")
     public NodeSearchResultEnt searchNodes(final String queryString, final List<String> tags,
         final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean includeFullTemplateInfo,
-        final String portTypeId, final DirectionEnt searchDirection) throws InvalidRequestException {
+        final String portTypeId, final String searchDirection) throws InvalidRequestException {
 
         if (portTypeId == null ^ searchDirection == null) {
             throw new InvalidRequestException(
                 "Both <portTypeId> and <searchDirection> must either be both null or both not null");
         }
         final var searchForSuccesors =
-            searchDirection == null || searchDirection.getDirection() == DirectionEnt.DirectionEnum.SUCCESSORS;
+            searchDirection == null || searchDirection.equals("SUCCESSORS");
         final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId, searchForSuccesors);
         // the partition is kept separate from the query to allow equals-checks for queries, which makes it simple
         // to cache them in a map.

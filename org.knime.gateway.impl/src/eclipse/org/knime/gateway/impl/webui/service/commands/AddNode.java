@@ -68,7 +68,6 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
-import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
@@ -155,7 +154,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         if (commandEnt.getQuickAddDirection() == null) {
             return;
         }
-        if(commandEnt.getQuickAddDirection().getDirection() == DirectionEnum.SUCCESSORS) {
+        if(commandEnt.getQuickAddDirection().equals("SUCCESSORS")) {
             connector.connectFrom(commandEnt.getQuickAddNodeId(), commandEnt.getQuickAddPortIdx()).trackCreation();
         } else {
             connector.connectTo(commandEnt.getQuickAddNodeId(), commandEnt.getQuickAddPortIdx()).trackCreation();

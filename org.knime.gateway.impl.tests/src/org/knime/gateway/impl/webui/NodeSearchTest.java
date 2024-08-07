@@ -59,7 +59,6 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThrows;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,9 +74,6 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.DirectionEnt;
-import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEntBuilder;
-import org.knime.gateway.api.webui.entity.DirectionEnt.DirectionEnum;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -119,7 +115,7 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesAllNullParameters() throws Exception {
         m_search.searchNodes(null, null, null, null, null, null, null, null);
-        m_search.searchNodes(null, null, null, null, null, null, "", getDirectionEnt(DirectionEnum.SUCCESSORS)); // Identical to first one
+        m_search.searchNodes(null, null, null, null, null, null, "", "SUCCESSORS"); // Identical to first one
         m_search.searchNodes(null, Collections.emptyList(), null, null, null, null, null, null); // Identical to first one
         m_search.searchNodes(null, null, false, null, null, null, null, null); // Identical to first one
         m_search.searchNodes(null, Arrays.asList("IO"), null, null, null, null, null, null);
@@ -210,45 +206,41 @@ public class NodeSearchTest {
     @Test
     public void testSearchNodesException() {
         assertThrows("Not a valid port type set", InvalidRequestException.class, () -> m_search.searchNodes(null, null,
-            null, null, null, null, "porttype.id.does.not.exist", getDirectionEnt(DirectionEnum.SUCCESSORS)));
+            null, null, null, null, "porttype.id.does.not.exist", "SUCCESSORS"));
     }
 
     @Test
     public void testSearchNodesDifferentPortTypesAndDirections() throws Exception {
-        var res1 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID,
-            getDirectionEnt(DirectionEnum.SUCCESSORS));
+        var res1 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID, "SUCCESSORS");
         assertThat(res1.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res1.getNodes(), TABLE_PORT_TYPE_ID), is(true));
 
-        var res2 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID,
-            getDirectionEnt(DirectionEnum.SUCCESSORS));
+        var res2 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID, "SUCCESSORS");
         assertThat(res2.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res2.getNodes(), IMAGE_PORT_TYPE_ID), is(true));
 
-        var res3 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID,
-            getDirectionEnt(DirectionEnum.SUCCESSORS));
+        var res3 =
+            m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID, "SUCCESSORS");
         assertThat(res3.getTotalNumNodesFound(), greaterThan(0));
         var res4 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, null, null); // no port type filter!
         assertThat(
             "Searching for nodes with a flow-variable-port filter is equivalent to searching for nodes without a port-type filter",
             res3, is(res4));
 
-        var res5 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID,
-            getDirectionEnt(DirectionEnum.PREDECESSORS));
+        var res5 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID, "PREDECESSORS");
         assertThat(res5.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res5.getNodes(), TABLE_PORT_TYPE_ID), is(true));
 
-        var res6 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID,
-            getDirectionEnt(DirectionEnum.PREDECESSORS));
+        var res6 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, IMAGE_PORT_TYPE_ID, "PREDECESSORS");
         assertThat(res6.getTotalNumNodesFound(), greaterThan(0));
         assertThat("There should only be nodes with at least one compatible port type",
             everyNodeHasInputPortOfType(res6.getNodes(), IMAGE_PORT_TYPE_ID), is(true));
 
-        var res7 = m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID,
-            getDirectionEnt(DirectionEnum.PREDECESSORS));
+        var res7 =
+            m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, FLOW_VARIABLE_PORT_TYPE_ID, "PREDECESSORS");
         assertThat(res7.getTotalNumNodesFound(), greaterThan(0));
     }
 
@@ -258,7 +250,7 @@ public class NodeSearchTest {
         Supplier<NodeSearchResultEnt> search = () -> {
             try {
                 return m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID,
-                    getDirectionEnt(DirectionEnum.SUCCESSORS));
+                    "SUCCESSORS");
             } catch (InvalidRequestException e) {
                 throw new RuntimeException(e);
             }
@@ -278,10 +270,6 @@ public class NodeSearchTest {
         return nodes.stream() //
             .map(n -> n.getNodeFactory().getClassName()) //
             .collect(Collectors.toList());
-    }
-
-    private static DirectionEnt getDirectionEnt(final DirectionEnt.DirectionEnum direction) {
-        return builder(DirectionEntBuilder.class).setDirection(direction).build();
     }
 
 }
