@@ -138,7 +138,7 @@ public class NodeSearch {
      * @param limit the maximum number of nodes to include in the search result (mainly for pagination)
      * @param includeFullTemplateInfo Whether to include the full node template information or not.
      * @param portTypeId The port type all returned nodes (and components) have to be compatible with.
-     * @param searchDirection if the search should be for successors of predecessors of the given portTypeId, if null it
+     * @param nodeRelation if the search should be for successors of predecessors of the given portTypeId, if null it
      *            will allow any node
      *
      * @return the search result entity
@@ -147,14 +147,14 @@ public class NodeSearch {
     @SuppressWarnings("java:S107")
     public NodeSearchResultEnt searchNodes(final String queryString, final List<String> tags,
         final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean includeFullTemplateInfo,
-        final String portTypeId, final String searchDirection) throws InvalidRequestException {
+        final String portTypeId, final String nodeRelation) throws InvalidRequestException {
 
-        if (portTypeId == null ^ searchDirection == null) {
+        if (portTypeId == null ^ nodeRelation == null) {
             throw new InvalidRequestException(
                 "Both <portTypeId> and <searchDirection> must either be both null or both not null");
         }
         final var searchForSuccesors =
-            searchDirection == null || searchDirection.equals("SUCCESSORS");
+                nodeRelation == null || nodeRelation.equals("SUCCESSORS");
         final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId, searchForSuccesors);
         // the partition is kept separate from the query to allow equals-checks for queries, which makes it simple
         // to cache them in a map.

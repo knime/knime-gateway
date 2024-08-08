@@ -67,13 +67,13 @@ public interface NodeRepositoryService extends GatewayService {
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param portIdx The port index to be used.
      * @param nodesLimit The maximum number of node recommendations to return.
-     * @param direction The direction to look for nodes in a workflow, either for predecessors or succesors
+     * @param nodeRelation The relation between connected nodes, either predecessors or succesors
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      *
      * @return the result
      * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, String direction, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
+    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, String nodeRelation, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
         
     /**
      * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).
@@ -106,11 +106,11 @@ public interface NodeRepositoryService extends GatewayService {
      * @param limit The maximum number of nodes/components in the search result (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      * @param portTypeId The port type ID of the port type all returned nodes (and components) have to be compatible with.
-     * @param direction The direction to look for nodes in a workflow, either for predecessors or succesors
+     * @param nodeRelation The relation between connected nodes, either predecessors or succesors
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String portTypeId, String direction)  throws ServiceExceptions.InvalidRequestException;
+    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String portTypeId, String nodeRelation)  throws ServiceExceptions.InvalidRequestException;
         
 }

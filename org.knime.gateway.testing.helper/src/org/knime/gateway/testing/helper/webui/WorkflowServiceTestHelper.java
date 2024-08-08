@@ -1048,14 +1048,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static AddNodeCommandEnt buildAddNodeCommand(final String factoryClassName, final String factorySettings,
         final int x, final int y, final NodeIDEnt quickAddNodeId, final Integer quickAddPortIdx,
-        final String quickAddDirection) {
+        final String nodeRelation) {
         return builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//
             .setNodeFactory(builder(NodeFactoryKeyEntBuilder.class).setClassName(factoryClassName)
                 .setSettings(factorySettings).build())//
             .setPosition(builder(XYEntBuilder.class).setX(x).setY(y).build())//
-            .setQuickAddNodeId(quickAddNodeId)//
-            .setQuickAddPortIdx(quickAddPortIdx)//
-            .setQuickAddDirection(quickAddDirection).build();
+            .setSourceNodeId(quickAddNodeId)//
+            .setSourcePortIdx(quickAddPortIdx)//
+            .setNodeRelation(nodeRelation).build();
     }
 
     /**

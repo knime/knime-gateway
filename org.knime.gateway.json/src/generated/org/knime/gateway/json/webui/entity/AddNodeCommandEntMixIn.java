@@ -94,16 +94,16 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
     public SpaceItemReferenceEnt getSpaceItemReference();
     
     @Override
-    @JsonProperty("quickAddNodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getQuickAddNodeId();
+    @JsonProperty("sourceNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
     
     @Override
-    @JsonProperty("quickAddPortIdx")
-    public Integer getQuickAddPortIdx();
+    @JsonProperty("sourcePortIdx")
+    public Integer getSourcePortIdx();
     
     @Override
-    @JsonProperty("quickAddDirection")
-    public String getQuickAddDirection();
+    @JsonProperty("nodeRelation")
+    public String getNodeRelation();
     
 
     /**
@@ -139,16 +139,16 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
         public AddNodeCommandEntMixInBuilder setSpaceItemReference(final SpaceItemReferenceEnt spaceItemReference);
         
         @Override
-        @JsonProperty("quickAddNodeId")
-        public AddNodeCommandEntMixInBuilder setQuickAddNodeId(final org.knime.gateway.api.entity.NodeIDEnt quickAddNodeId);
+        @JsonProperty("sourceNodeId")
+        public AddNodeCommandEntMixInBuilder setSourceNodeId(final org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
         
         @Override
-        @JsonProperty("quickAddPortIdx")
-        public AddNodeCommandEntMixInBuilder setQuickAddPortIdx(final Integer quickAddPortIdx);
+        @JsonProperty("sourcePortIdx")
+        public AddNodeCommandEntMixInBuilder setSourcePortIdx(final Integer sourcePortIdx);
         
         @Override
-        @JsonProperty("quickAddDirection")
-        public AddNodeCommandEntMixInBuilder setQuickAddDirection(final String quickAddDirection);
+        @JsonProperty("nodeRelation")
+        public AddNodeCommandEntMixInBuilder setNodeRelation(final String nodeRelation);
         
     }
 

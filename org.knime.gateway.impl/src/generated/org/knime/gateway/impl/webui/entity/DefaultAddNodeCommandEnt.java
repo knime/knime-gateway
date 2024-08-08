@@ -61,9 +61,9 @@ import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
  * @param nodeFactory
  * @param url
  * @param spaceItemReference
- * @param quickAddNodeId
- * @param quickAddPortIdx
- * @param quickAddDirection
+ * @param sourceNodeId
+ * @param sourcePortIdx
+ * @param nodeRelation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -74,9 +74,9 @@ public record DefaultAddNodeCommandEnt(
     NodeFactoryKeyEnt nodeFactory,
     String url,
     SpaceItemReferenceEnt spaceItemReference,
-    org.knime.gateway.api.entity.NodeIDEnt quickAddNodeId,
-    Integer quickAddPortIdx,
-    String quickAddDirection) implements AddNodeCommandEnt {
+    org.knime.gateway.api.entity.NodeIDEnt sourceNodeId,
+    Integer sourcePortIdx,
+    String nodeRelation) implements AddNodeCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -121,18 +121,18 @@ public record DefaultAddNodeCommandEnt(
     }
     
     @Override
-    public org.knime.gateway.api.entity.NodeIDEnt getQuickAddNodeId() {
-        return quickAddNodeId;
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
+        return sourceNodeId;
     }
     
     @Override
-    public Integer getQuickAddPortIdx() {
-        return quickAddPortIdx;
+    public Integer getSourcePortIdx() {
+        return sourcePortIdx;
     }
     
     @Override
-    public String getQuickAddDirection() {
-        return quickAddDirection;
+    public String getNodeRelation() {
+        return nodeRelation;
     }
     
     /**
@@ -150,11 +150,11 @@ public record DefaultAddNodeCommandEnt(
 
         private SpaceItemReferenceEnt m_spaceItemReference;
 
-        private org.knime.gateway.api.entity.NodeIDEnt m_quickAddNodeId;
+        private org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
 
-        private Integer m_quickAddPortIdx;
+        private Integer m_sourcePortIdx;
 
-        private String m_quickAddDirection;
+        private String m_nodeRelation;
 
         @Override
         public DefaultAddNodeCommandEntBuilder setKind(KindEnum kind) {
@@ -193,20 +193,20 @@ public record DefaultAddNodeCommandEnt(
         }
 
         @Override
-        public DefaultAddNodeCommandEntBuilder setQuickAddNodeId(org.knime.gateway.api.entity.NodeIDEnt quickAddNodeId) {
-             m_quickAddNodeId = quickAddNodeId;
+        public DefaultAddNodeCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId) {
+             m_sourceNodeId = sourceNodeId;
              return this;
         }
 
         @Override
-        public DefaultAddNodeCommandEntBuilder setQuickAddPortIdx(Integer quickAddPortIdx) {
-             m_quickAddPortIdx = quickAddPortIdx;
+        public DefaultAddNodeCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx) {
+             m_sourcePortIdx = sourcePortIdx;
              return this;
         }
 
         @Override
-        public DefaultAddNodeCommandEntBuilder setQuickAddDirection(String quickAddDirection) {
-             m_quickAddDirection = quickAddDirection;
+        public DefaultAddNodeCommandEntBuilder setNodeRelation(String nodeRelation) {
+             m_nodeRelation = nodeRelation;
              return this;
         }
 
@@ -218,9 +218,9 @@ public record DefaultAddNodeCommandEnt(
                 immutable(m_nodeFactory),
                 immutable(m_url),
                 immutable(m_spaceItemReference),
-                immutable(m_quickAddNodeId),
-                immutable(m_quickAddPortIdx),
-                immutable(m_quickAddDirection));
+                immutable(m_sourceNodeId),
+                immutable(m_sourcePortIdx),
+                immutable(m_nodeRelation));
         }
     
     }

@@ -146,18 +146,18 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
     private static boolean isNodeAddedViaQuickNodeInsertion(final AddNodeCommandEnt commandEnt) {
         // at the moment nodes are added _and_ connected to a node only via the quick node insertion feature
-        return commandEnt.getQuickAddNodeId() != null && commandEnt.getQuickAddPortIdx() != null
-            && commandEnt.getQuickAddDirection() != null;
+        return commandEnt.getSourceNodeId() != null && commandEnt.getSourcePortIdx() != null
+            && commandEnt.getNodeRelation() != null;
     }
 
     private static void connectNode(final AddNodeCommandEnt commandEnt, final NodeConnector connector) {
-        if (commandEnt.getQuickAddDirection() == null) {
+        if (commandEnt.getNodeRelation() == null) {
             return;
         }
-        if(commandEnt.getQuickAddDirection().equals("SUCCESSORS")) {
-            connector.connectFrom(commandEnt.getQuickAddNodeId(), commandEnt.getQuickAddPortIdx()).trackCreation();
+        if(commandEnt.getNodeRelation().equals("SUCCESSORS")) {
+            connector.connectFrom(commandEnt.getSourceNodeId(), commandEnt.getSourcePortIdx()).trackCreation();
         } else {
-            connector.connectTo(commandEnt.getQuickAddNodeId(), commandEnt.getQuickAddPortIdx()).trackCreation();
+            connector.connectTo(commandEnt.getSourceNodeId(), commandEnt.getSourcePortIdx()).trackCreation();
         }
     }
 

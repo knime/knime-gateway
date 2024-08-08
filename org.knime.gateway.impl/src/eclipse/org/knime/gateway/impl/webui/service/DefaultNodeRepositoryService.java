@@ -108,9 +108,9 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     @Override
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
         final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String portTypeId,
-        final String direction)
+        final String nodeRelation)
         throws InvalidRequestException {
-        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId, direction);
+        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId, nodeRelation);
     }
 
     /**
@@ -128,9 +128,9 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
      */
     @Override
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String direction,
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String nodeRelation,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
-            direction, fullTemplateInfo);
+            nodeRelation, fullTemplateInfo);
     }
 }

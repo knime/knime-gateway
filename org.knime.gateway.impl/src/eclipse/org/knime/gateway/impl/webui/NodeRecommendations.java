@@ -101,12 +101,12 @@ public class NodeRecommendations {
      * @param portIdx The index of your port
      * @param nodesLimit The maximum number of node recommendations to return, 12 by default
      * @param fullTemplateInfo Whether to return complete result or not, true by default
-     * @param direction The direction to check, either recommendations for 'successors' or 'predecessors'
+     * @param nodeRelation The relation of the recommended nodes, either recommendations for 'successors' or 'predecessors'
      * @return The node recommendations
      * @throws OperationNotAllowedException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String direction,
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String nodeRelation,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
@@ -118,7 +118,7 @@ public class NodeRecommendations {
             throw new OperationNotAllowedException("<nodeId> and <portIdx> must either be both null or not null");
         }
 
-        if (nodeId == null ^ direction == null) {
+        if (nodeId == null ^ nodeRelation == null) {
             throw new OperationNotAllowedException("<nodeId> and <direction> must either be both null or not null");
         }
 
@@ -129,7 +129,7 @@ public class NodeRecommendations {
         var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
         var isSourcePort =
-            direction == null || direction.equals("SUCCESSORS");
+                nodeRelation == null || nodeRelation.equals("SUCCESSORS");
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilter(...)`
         var portType = nodeId == null ? null : determinePortType(nc, portIdx, isSourcePort);
 

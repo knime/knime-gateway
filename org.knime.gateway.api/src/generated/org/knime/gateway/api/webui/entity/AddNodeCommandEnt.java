@@ -93,21 +93,21 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
   /**
    * Optional parameter identifying the existing node to connect to
-   * @return quickAddNodeId 
+   * @return sourceNodeId 
    **/
-  public org.knime.gateway.api.entity.NodeIDEnt getQuickAddNodeId();
+  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
 
   /**
    * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
-   * @return quickAddPortIdx 
+   * @return sourcePortIdx 
    **/
-  public Integer getQuickAddPortIdx();
+  public Integer getSourcePortIdx();
 
   /**
-   * Optional parameter that describe if the new node is a Successor or a predecessor of the given node
-   * @return quickAddDirection 
+   * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
+   * @return nodeRelation 
    **/
-  public String getQuickAddDirection();
+  public String getNodeRelation();
 
 
   @Override
@@ -119,9 +119,9 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
       valueConsumer.accept("nodeFactory", Pair.create(getNodeFactory(), e.getNodeFactory()));
       valueConsumer.accept("url", Pair.create(getUrl(), e.getUrl()));
       valueConsumer.accept("spaceItemReference", Pair.create(getSpaceItemReference(), e.getSpaceItemReference()));
-      valueConsumer.accept("quickAddNodeId", Pair.create(getQuickAddNodeId(), e.getQuickAddNodeId()));
-      valueConsumer.accept("quickAddPortIdx", Pair.create(getQuickAddPortIdx(), e.getQuickAddPortIdx()));
-      valueConsumer.accept("quickAddDirection", Pair.create(getQuickAddDirection(), e.getQuickAddDirection()));
+      valueConsumer.accept("sourceNodeId", Pair.create(getSourceNodeId(), e.getSourceNodeId()));
+      valueConsumer.accept("sourcePortIdx", Pair.create(getSourcePortIdx(), e.getSourcePortIdx()));
+      valueConsumer.accept("nodeRelation", Pair.create(getNodeRelation(), e.getNodeRelation()));
   }
 
     /**
@@ -172,26 +172,26 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         /**
          * Optional parameter identifying the existing node to connect to
          * 
-         * @param quickAddNodeId the property value,  
+         * @param sourceNodeId the property value,  
          * @return this entity builder for chaining
          */
-        AddNodeCommandEntBuilder setQuickAddNodeId(org.knime.gateway.api.entity.NodeIDEnt quickAddNodeId);
+        AddNodeCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
         
         /**
          * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
          * 
-         * @param quickAddPortIdx the property value,  
+         * @param sourcePortIdx the property value,  
          * @return this entity builder for chaining
          */
-        AddNodeCommandEntBuilder setQuickAddPortIdx(Integer quickAddPortIdx);
+        AddNodeCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx);
         
         /**
-         * Optional parameter that describe if the new node is a Successor or a predecessor of the given node
+         * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
          * 
-         * @param quickAddDirection the property value,  
+         * @param nodeRelation the property value,  
          * @return this entity builder for chaining
          */
-        AddNodeCommandEntBuilder setQuickAddDirection(String quickAddDirection);
+        AddNodeCommandEntBuilder setNodeRelation(String nodeRelation);
         
         
         /**
