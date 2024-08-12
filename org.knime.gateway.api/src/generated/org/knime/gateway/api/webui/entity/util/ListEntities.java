@@ -127,7 +127,6 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
-import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
@@ -290,7 +289,6 @@ public class ListEntities {
         res.add(PasteResultEnt.class);
         res.add(PatchEnt.class);
         res.add(PatchOpEnt.class);
-        res.add(PermissionsEnt.class);
         res.add(PortCommandEnt.class);
         res.add(PortGroupEnt.class);
         res.add(PortTypeEnt.class);
@@ -438,7 +436,6 @@ public class ListEntities {
         res.add(PasteResultEnt.PasteResultEntBuilder.class);
         res.add(PatchEnt.PatchEntBuilder.class);
         res.add(PatchOpEnt.PatchOpEntBuilder.class);
-        res.add(PermissionsEnt.PermissionsEntBuilder.class);
         res.add(PortCommandEnt.PortCommandEntBuilder.class);
         res.add(PortGroupEnt.PortGroupEntBuilder.class);
         res.add(PortTypeEnt.PortTypeEntBuilder.class);

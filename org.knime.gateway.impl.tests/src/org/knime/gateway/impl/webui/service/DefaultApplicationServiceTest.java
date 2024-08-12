@@ -69,8 +69,10 @@ import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
+import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -173,49 +175,31 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
     }
 
     /**
-     * Makes sure that permissions applied by system properties are correctly added to the AppState.
+     * Makes sure the set {@link WebUIMode} is supplied via the app state as expected.
      *
      * @throws Exception
      */
     @Test
-    public void testGetAppStateWithPermissionsDefault() throws Exception {
+    public void testGetAppStateWithMode() throws Exception {
         String workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
 
         var appService = DefaultApplicationService.getInstance();
 
+        var modeSysProp = "org.knime.ui.mode";
+        System.setProperty(modeSysProp, "DEFAULT");
         var appStateEnt = appService.getState();
-        assertThat(appStateEnt.getPermissions().isCanEditWorkflow(), is(true));
-        assertThat(appStateEnt.getPermissions().isCanConfigureNodes(), is(true));
-        assertThat(appStateEnt.getPermissions().isCanAccessSpaceExplorer(), is(true));
-        assertThat(appStateEnt.getPermissions().isCanAccessNodeRepository(), is(true));
-        assertThat(appStateEnt.getPermissions().isCanAccessKAIPanel(), is(true));
-    }
+        assertThat(appStateEnt.getAppMode(), is(AppModeEnum.DEFAULT));
 
-    /**
-     * Makes sure that permissions related to the job viewer are applied correctly.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testGetAppStateWithPermissionsJobViewer() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+        System.setProperty(modeSysProp, "JOB-VIEWER");
+        appStateEnt = appService.getState();
+        assertThat(appStateEnt.getAppMode(), is(AppModeEnum.JOB_VIEWER));
 
-        var appService = DefaultApplicationService.getInstance();
+        System.setProperty(modeSysProp, "PLAYGROUND");
+        appStateEnt = appService.getState();
+        assertThat(appStateEnt.getAppMode(), is(AppModeEnum.PLAYGROUND));
 
-        var permissionsFlagKey = "org.knime.ui.mode";
-
-        System.setProperty(permissionsFlagKey, "JOB-VIEWER");
-
-        var appStateEnt = appService.getState();
-        assertThat(appStateEnt.getPermissions().isCanEditWorkflow(), is(false));
-        assertThat(appStateEnt.getPermissions().isCanConfigureNodes(), is(false));
-        assertThat(appStateEnt.getPermissions().isCanAccessSpaceExplorer(), is(false));
-        assertThat(appStateEnt.getPermissions().isCanAccessNodeRepository(), is(false));
-        assertThat(appStateEnt.getPermissions().isCanAccessKAIPanel(), is(false));
-
-        System.clearProperty(permissionsFlagKey);
+        System.clearProperty(modeSysProp);
     }
 
     @Override
@@ -244,6 +228,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         }
 
         return builder(AppStateEnt.AppStateEntBuilder.class) //
+            .setAppMode(appStateEnt.getAppMode()) //
             .setOpenProjects(appStateEnt.getOpenProjects()) //
             .setAvailablePortTypes(availablePortTypes) //
             .setAvailableComponentTypes(appStateEnt.getAvailableComponentTypes())

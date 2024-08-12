@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 
@@ -91,7 +90,7 @@ public interface AppStateEnt extends GatewayEntity {
 
   /**
    * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
-   * @return appMode , never <code>null</code>
+   * @return appMode 
    **/
   public AppModeEnum getAppMode();
 
@@ -130,12 +129,6 @@ public interface AppStateEnt extends GatewayEntity {
    * @return featureFlags 
    **/
   public java.util.Map<String, Object> getFeatureFlags();
-
-  /**
-   * Get permissions
-   * @return permissions 
-   **/
-  public PermissionsEnt getPermissions();
 
   /**
    * If true, scrolling in the workflow canvas will be interpreted as zooming
@@ -203,7 +196,6 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("availableComponentTypes", Pair.create(getAvailableComponentTypes(), e.getAvailableComponentTypes()));
       valueConsumer.accept("hasNodeRecommendationsEnabled", Pair.create(hasNodeRecommendationsEnabled(), e.hasNodeRecommendationsEnabled()));
       valueConsumer.accept("featureFlags", Pair.create(getFeatureFlags(), e.getFeatureFlags()));
-      valueConsumer.accept("permissions", Pair.create(getPermissions(), e.getPermissions()));
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("activeNodeCollection", Pair.create(getActiveNodeCollection(), e.getActiveNodeCollection()));
@@ -223,7 +215,7 @@ public interface AppStateEnt extends GatewayEntity {
         /**
          * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
          * 
-         * @param appMode the property value, NOT <code>null</code>! 
+         * @param appMode the property value,  
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setAppMode(AppModeEnum appMode);
@@ -275,14 +267,6 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags);
-        
-        /**
-   		 * Set permissions
-         * 
-         * @param permissions the property value,  
-         * @return this entity builder for chaining
-         */
-        AppStateEntBuilder setPermissions(PermissionsEnt permissions);
         
         /**
          * If true, scrolling in the workflow canvas will be interpreted as zooming

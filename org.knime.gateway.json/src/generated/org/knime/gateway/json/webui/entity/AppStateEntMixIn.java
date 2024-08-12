@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 
@@ -99,10 +98,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @Override
     @JsonProperty("featureFlags")
     public java.util.Map<String, Object> getFeatureFlags();
-    
-    @Override
-    @JsonProperty("permissions")
-    public PermissionsEnt getPermissions();
     
     @Override
     @JsonProperty("scrollToZoomEnabled")
@@ -180,10 +175,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("featureFlags")
         public AppStateEntMixInBuilder setFeatureFlags(final java.util.Map<String, Object> featureFlags);
-        
-        @Override
-        @JsonProperty("permissions")
-        public AppStateEntMixInBuilder setPermissions(final PermissionsEnt permissions);
         
         @Override
         @JsonProperty("scrollToZoomEnabled")

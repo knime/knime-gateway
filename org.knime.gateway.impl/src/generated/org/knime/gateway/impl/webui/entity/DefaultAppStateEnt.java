@@ -46,7 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.PermissionsEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 
@@ -62,7 +61,6 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param availableComponentTypes
  * @param hasNodeRecommendationsEnabled
  * @param featureFlags
- * @param permissions
  * @param scrollToZoomEnabled
  * @param hasNodeCollectionActive
  * @param activeNodeCollection
@@ -84,7 +82,6 @@ public record DefaultAppStateEnt(
     java.util.List<String> availableComponentTypes,
     Boolean hasNodeRecommendationsEnabled,
     java.util.Map<String, Object> featureFlags,
-    PermissionsEnt permissions,
     Boolean scrollToZoomEnabled,
     Boolean hasNodeCollectionActive,
     String activeNodeCollection,
@@ -99,9 +96,6 @@ public record DefaultAppStateEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultAppStateEnt {
-        if(appMode == null) {
-            throw new IllegalArgumentException("<appMode> must not be null.");
-        }
     }
 
     @Override
@@ -142,11 +136,6 @@ public record DefaultAppStateEnt(
     @Override
     public java.util.Map<String, Object> getFeatureFlags() {
         return featureFlags;
-    }
-    
-    @Override
-    public PermissionsEnt getPermissions() {
-        return permissions;
     }
     
     @Override
@@ -213,8 +202,6 @@ public record DefaultAppStateEnt(
 
         private java.util.Map<String, Object> m_featureFlags;
 
-        private PermissionsEnt m_permissions;
-
         private Boolean m_scrollToZoomEnabled;
 
         private Boolean m_hasNodeCollectionActive;
@@ -235,9 +222,6 @@ public record DefaultAppStateEnt(
 
         @Override
         public DefaultAppStateEntBuilder setAppMode(AppModeEnum appMode) {
-             if(appMode == null) {
-                 throw new IllegalArgumentException("<appMode> must not be null.");
-             }
              m_appMode = appMode;
              return this;
         }
@@ -275,12 +259,6 @@ public record DefaultAppStateEnt(
         @Override
         public DefaultAppStateEntBuilder setFeatureFlags(java.util.Map<String, Object> featureFlags) {
              m_featureFlags = featureFlags;
-             return this;
-        }
-
-        @Override
-        public DefaultAppStateEntBuilder setPermissions(PermissionsEnt permissions) {
-             m_permissions = permissions;
              return this;
         }
 
@@ -348,7 +326,6 @@ public record DefaultAppStateEnt(
                 immutable(m_availableComponentTypes),
                 immutable(m_hasNodeRecommendationsEnabled),
                 immutable(m_featureFlags),
-                immutable(m_permissions),
                 immutable(m_scrollToZoomEnabled),
                 immutable(m_hasNodeCollectionActive),
                 immutable(m_activeNodeCollection),
