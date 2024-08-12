@@ -116,7 +116,7 @@ final class MatchingPortsUtil {
         }
 
         if (destPortIdx != null) { // Looks for matching sourcePort, supports dynamic nodes and flow variables
-            var sourcePort = getSourcePortIdxFromDestPortIdx(sourceNode, destNode, destPortIdx);
+            var sourcePort = getSourcePortIdxFromDestPortIdx(sourceNode, destNode, destPortIdx, wfm);
             return Map.of(sourcePort, destPortIdx);
         }
 
@@ -145,7 +145,7 @@ final class MatchingPortsUtil {
         }
 
         try {
-            return createAndGetDestPortIdx(sourcePortType, destNode.getID(), wfm).orElseThrow();
+            return createAndGetPortIdx(true, sourcePortType, destNode.getID(), wfm).orElseThrow();
         } catch (IllegalArgumentException | NoSuchElementException e) { // NOSONAR
 
             // Third, consider the default flow variable port if compatible
@@ -162,7 +162,7 @@ final class MatchingPortsUtil {
      * @return Port index of best matching destination port or {@code -1} if there is none
      */
     private static Integer getSourcePortIdxFromDestPortIdx(final NodeContainer sourceNode, final NodeContainer destNode,
-        final Integer destPortIdx) {
+        final Integer destPortIdx, final WorkflowManager wfm) {
         var destPortType = destNode.getInPort(destPortIdx).getPortType();
 
         var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1;
@@ -173,35 +173,39 @@ final class MatchingPortsUtil {
             }
         }
 
-        // check default flow variable if compatible with destination port
-        if (CoreUtil.arePortTypesCompatible(FlowVariablePortObject.TYPE, destPortType)) {
-            return 0;
-        }
+        try {
+            return createAndGetPortIdx(false, destPortType, sourceNode.getID(), wfm).orElseThrow();
+        } catch (IllegalArgumentException | NoSuchElementException e) { // NOSONAR
+            if (CoreUtil.arePortTypesCompatible(FlowVariablePortObject.TYPE, destPortType)) {
+                return 0;
+            }
 
-        return -1;
+            return -1;
+        }
     }
 
     /**
      * Optionally creates the best matching port and returns it's index
      */
-    private static Optional<Integer> createAndGetDestPortIdx(final PortType sourcePortType, final NodeID destNodeId,
-        final WorkflowManager wfm) throws IllegalArgumentException, NoSuchElementException {
+    private static Optional<Integer> createAndGetPortIdx(final boolean createInputPort, final PortType portType,
+        final NodeID nodeId, final WorkflowManager wfm) throws IllegalArgumentException, NoSuchElementException {
 
-        var creationConfig = CoreUtil.getCopyOfCreationConfig(wfm, destNodeId).orElseThrow();
+        var creationConfig = CoreUtil.getCopyOfCreationConfig(wfm, nodeId).orElseThrow();
         var portsConfig = creationConfig.getPortConfig().orElseThrow();
         var portGroupIds = portsConfig.getPortGroupNames();
 
-        var inPortGroups = portGroupIds.stream()//
+        var portGroups = portGroupIds.stream()//
             .filter(portsConfig::isInteractive) //
             .map(portsConfig::getGroup)//
-            .filter(PortGroupConfiguration::definesInputPorts)//
+            .filter(createInputPort ? PortGroupConfiguration::definesInputPorts
+                : PortGroupConfiguration::definesOutputPorts)//
             .toList();
 
-        var portGroupToCompatibleTypes = inPortGroups.stream()//
+        var portGroupToCompatibleTypes = portGroups.stream()//
             .filter(ConfigurablePortGroup.class::isInstance)//
             .map(ConfigurablePortGroup.class::cast)//
             .flatMap(cpg -> Arrays.stream(cpg.getSupportedPortTypes())//
-                .filter(pt -> CoreUtil.arePortTypesCompatible(sourcePortType, pt))//
+                .filter(pt -> CoreUtil.arePortTypesCompatible(portType, pt))//
                 .map(pt -> ImmutablePair.of(cpg, pt)))//
             .toList();
 
@@ -212,17 +216,18 @@ final class MatchingPortsUtil {
 
         // Determine which port group to use
         var portGroup = portGroupToCompatibleTypes.stream()//
-            .filter(pair -> sourcePortType.equals(pair.getValue()))//
+            .filter(pair -> portType.equals(pair.getValue()))//
             .map(ImmutablePair::getKey).findFirst() // If there is an equal port type, use its port group
             .orElse(portGroupToCompatibleTypes.get(0).getKey()); // Otherwise use the first compatible port group
 
         // Create port and return index
-        var destPortIdx =
-            doCreatePortAndReturnPortIdx(portGroup, sourcePortType, destNodeId, creationConfig, inPortGroups, wfm);
-        return Optional.of(destPortIdx);
+        var newPortIdx =
+            doCreatePortAndReturnPortIdx(createInputPort, portGroup, portType, nodeId, creationConfig, portGroups, wfm);
+        return Optional.of(newPortIdx);
     }
 
-    private static int doCreatePortAndReturnPortIdx(final ConfigurablePortGroup portGroup, final PortType destPortType,
+    private static int doCreatePortAndReturnPortIdx(final boolean createInputPort,
+        final ConfigurablePortGroup portGroup, final PortType destPortType,
         final NodeID destNodeId, final ModifiableNodeCreationConfiguration creationConfig,
         final List<PortGroupConfiguration> inPortGroups, final WorkflowManager wfm) {
         if (portGroup instanceof ExtendablePortGroup extendablePortGroup) {
@@ -233,7 +238,7 @@ final class MatchingPortsUtil {
         wfm.replaceNode(destNodeId, creationConfig);
         return IntStream.range(0, inPortGroups.indexOf(portGroup) + 1)//
             .mapToObj(inPortGroups::get)//
-            .mapToInt(group -> group.getInputPorts().length)//
+            .mapToInt(group -> createInputPort? group.getInputPorts().length: group.getOutputPorts().length)//
             .sum();
     }
 
