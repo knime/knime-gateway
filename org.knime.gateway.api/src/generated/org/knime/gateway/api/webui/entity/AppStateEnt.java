@@ -65,6 +65,35 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AppStateEnt extends GatewayEntity {
 
+  /**
+   * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
+   */
+  public enum AppModeEnum {
+    DEFAULT("default"),
+    
+    JOB_VIEWER("job-viewer"),
+    
+    PLAYGROUND("playground");
+
+    private String value;
+
+    AppModeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
+   * @return appMode , never <code>null</code>
+   **/
+  public AppModeEnum getAppMode();
 
   /**
    * List of all opened workflow projects.
@@ -167,6 +196,7 @@ public interface AppStateEnt extends GatewayEntity {
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (AppStateEnt)other;
+      valueConsumer.accept("appMode", Pair.create(getAppMode(), e.getAppMode()));
       valueConsumer.accept("openProjects", Pair.create(getOpenProjects(), e.getOpenProjects()));
       valueConsumer.accept("availablePortTypes", Pair.create(getAvailablePortTypes(), e.getAvailablePortTypes()));
       valueConsumer.accept("suggestedPortTypeIds", Pair.create(getSuggestedPortTypeIds(), e.getSuggestedPortTypeIds()));
@@ -190,6 +220,14 @@ public interface AppStateEnt extends GatewayEntity {
      */
     public interface AppStateEntBuilder extends GatewayEntityBuilder<AppStateEnt> {
 
+        /**
+         * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
+         * 
+         * @param appMode the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setAppMode(AppModeEnum appMode);
+        
         /**
          * List of all opened workflow projects.
          * 

@@ -73,6 +73,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public String getTypeID();
 
     @Override
+    @JsonProperty("appMode")
+    public AppModeEnum getAppMode();
+    
+    @Override
     @JsonProperty("openProjects")
     public java.util.List<ProjectEnt> getOpenProjects();
     
@@ -149,6 +153,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         public AppStateEntMixIn build();
     
+        @Override
+        @JsonProperty("appMode")
+        public AppStateEntMixInBuilder setAppMode(final AppModeEnum appMode);
+        
         @Override
         @JsonProperty("openProjects")
         public AppStateEntMixInBuilder setOpenProjects(final java.util.List<ProjectEnt> openProjects);

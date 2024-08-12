@@ -62,7 +62,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.KNIMEConstants;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ComponentMetadata;
@@ -70,6 +69,7 @@ import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
+import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
@@ -83,6 +83,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.modes.Permissions;
+import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -154,6 +155,7 @@ public final class AppStateEntityFactory {
         var activeCollection =
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         return builder(AppStateEntBuilder.class) //
+            .setAppMode(getAppModeEnum())
             .setOpenProjects(projects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
@@ -179,6 +181,14 @@ public final class AppStateEntityFactory {
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled())
             .build();
+    }
+
+    private static AppModeEnum getAppModeEnum() {
+        return switch (WebUIMode.getMode()) {
+            case DEFAULT -> AppModeEnum.DEFAULT;
+            case JOB_VIEWER -> AppModeEnum.JOB_VIEWER;
+            case PLAYGROUND -> AppModeEnum.PLAYGROUND;
+        };
     }
 
     /**

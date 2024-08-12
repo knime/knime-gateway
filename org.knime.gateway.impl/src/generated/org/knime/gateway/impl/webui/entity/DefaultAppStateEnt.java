@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
 /**
  * Represents the global application state.
  *
+ * @param appMode
  * @param openProjects
  * @param availablePortTypes
  * @param suggestedPortTypeIds
@@ -76,6 +77,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultAppStateEnt(
+    AppModeEnum appMode,
     java.util.List<ProjectEnt> openProjects,
     java.util.Map<String, PortTypeEnt> availablePortTypes,
     java.util.List<String> suggestedPortTypeIds,
@@ -97,6 +99,9 @@ public record DefaultAppStateEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultAppStateEnt {
+        if(appMode == null) {
+            throw new IllegalArgumentException("<appMode> must not be null.");
+        }
     }
 
     @Override
@@ -104,6 +109,11 @@ public record DefaultAppStateEnt(
         return "AppState";
     }
   
+    @Override
+    public AppModeEnum getAppMode() {
+        return appMode;
+    }
+    
     @Override
     public java.util.List<ProjectEnt> getOpenProjects() {
         return openProjects;
@@ -189,6 +199,8 @@ public record DefaultAppStateEnt(
      */
     public static class DefaultAppStateEntBuilder implements AppStateEntBuilder {
 
+        private AppModeEnum m_appMode;
+
         private java.util.List<ProjectEnt> m_openProjects;
 
         private java.util.Map<String, PortTypeEnt> m_availablePortTypes;
@@ -220,6 +232,15 @@ public record DefaultAppStateEnt(
         private String m_analyticsPlatformDownloadURL;
 
         private Boolean m_isSubnodeLockingEnabled;
+
+        @Override
+        public DefaultAppStateEntBuilder setAppMode(AppModeEnum appMode) {
+             if(appMode == null) {
+                 throw new IllegalArgumentException("<appMode> must not be null.");
+             }
+             m_appMode = appMode;
+             return this;
+        }
 
         @Override
         public DefaultAppStateEntBuilder setOpenProjects(java.util.List<ProjectEnt> openProjects) {
@@ -320,6 +341,7 @@ public record DefaultAppStateEnt(
         @Override
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
+                immutable(m_appMode),
                 immutable(m_openProjects),
                 immutable(m_availablePortTypes),
                 immutable(m_suggestedPortTypeIds),
