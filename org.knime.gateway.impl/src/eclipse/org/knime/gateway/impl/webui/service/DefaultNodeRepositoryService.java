@@ -110,7 +110,8 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String portTypeId,
         final String nodeRelation)
         throws InvalidRequestException {
-        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId, nodeRelation);
+        return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId,
+            nodeRelation);
     }
 
     /**

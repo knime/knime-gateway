@@ -101,7 +101,8 @@ public class NodeRecommendations {
      * @param portIdx The index of your port
      * @param nodesLimit The maximum number of node recommendations to return, 12 by default
      * @param fullTemplateInfo Whether to return complete result or not, true by default
-     * @param nodeRelation The relation of the recommended nodes, either recommendations for 'successors' or 'predecessors'
+     * @param nodeRelation The relation of the recommended nodes, either recommendations for 'successors' or
+     *            'predecessors'
      * @return The node recommendations
      * @throws OperationNotAllowedException
      */
