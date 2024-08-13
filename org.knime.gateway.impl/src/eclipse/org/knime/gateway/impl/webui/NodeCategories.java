@@ -216,7 +216,7 @@ public final class NodeCategories {
         public CategoryTree(final Collection<Node> nodes) {
             super(new CategoryTreeNode(null), CategoryTree::createNode);
             // Since the tree should contain only the given nodes and the given collection is unordered,
-            // insert nodes one-by-one and upsert categories as required.
+            // iterate over the given nodes and create category tree nodes as needed.
             nodes.forEach(this::insertNode);
         }
 
