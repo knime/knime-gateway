@@ -62,14 +62,14 @@ public final class Lazy {
      * A lazy initializer with the capability to reset it.
      * 
      * @implNote Not thread-safe.
-     * @param <Value> The type of the provided value.
+     * @param <V> The type of the provided value.
      */
-    public static final class Init<Value> {
-        private final Supplier<Value> m_supplier;
+    public static final class Init<V> {
+        private final Supplier<V> m_supplier;
 
-        private Value m_value;
+        private V m_value;
 
-        public Init(Supplier<Value> supplier) {
+        public Init(Supplier<V> supplier) {
             this.m_supplier = supplier;
         }
 
@@ -79,7 +79,7 @@ public final class Lazy {
          *
          * @return the value
          */
-        public Value initialised() {
+        public V initialised() {
             if (m_value == null) {
                 m_value = m_supplier.get();
             }
@@ -98,26 +98,26 @@ public final class Lazy {
      * Lazy transformation of the wrapped value.
      * 
      * @implNote Not thread-safe.
-     * @param <Value> The type of the contained value.
+     * @param <V> The type of the contained value.
      */
-    public static class Transform<Value> {
-        private final UnaryOperator<Value> m_transformation;
+    public static class Transform<V> {
+        private final UnaryOperator<V> m_transformation;
 
-        private final Value m_value;
+        private final V m_value;
 
-        private final Init<Value> m_transformed;
+        private final Init<V> m_transformed;
 
-        public Transform(Value value, UnaryOperator<Value> transformation) {
+        public Transform(V value, UnaryOperator<V> transformation) {
             this.m_transformation = transformation;
             this.m_value = value;
             this.m_transformed = new Init<>(() -> m_transformation.apply(m_value));
         }
 
-        public Value original() {
+        public V original() {
             return m_value;
         }
 
-        public Value transformed() {
+        public V transformed() {
             return m_transformed.initialised();
         }
 
