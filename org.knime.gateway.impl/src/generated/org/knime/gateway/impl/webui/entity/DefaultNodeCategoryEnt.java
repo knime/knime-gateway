@@ -56,7 +56,7 @@ import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
  *
  * @param metadata
  * @param nodes
- * @param children
+ * @param childCategories
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -64,7 +64,7 @@ import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
 public record DefaultNodeCategoryEnt(
     CategoryMetadataEnt metadata,
     java.util.List<NodeTemplateEnt> nodes,
-    java.util.List<CategoryMetadataEnt> children) implements NodeCategoryEnt {
+    java.util.List<CategoryMetadataEnt> childCategories) implements NodeCategoryEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -88,8 +88,8 @@ public record DefaultNodeCategoryEnt(
     }
     
     @Override
-    public java.util.List<CategoryMetadataEnt> getChildren() {
-        return children;
+    public java.util.List<CategoryMetadataEnt> getChildCategories() {
+        return childCategories;
     }
     
     /**
@@ -101,7 +101,7 @@ public record DefaultNodeCategoryEnt(
 
         private java.util.List<NodeTemplateEnt> m_nodes;
 
-        private java.util.List<CategoryMetadataEnt> m_children;
+        private java.util.List<CategoryMetadataEnt> m_childCategories;
 
         @Override
         public DefaultNodeCategoryEntBuilder setMetadata(CategoryMetadataEnt metadata) {
@@ -116,8 +116,8 @@ public record DefaultNodeCategoryEnt(
         }
 
         @Override
-        public DefaultNodeCategoryEntBuilder setChildren(java.util.List<CategoryMetadataEnt> children) {
-             m_children = children;
+        public DefaultNodeCategoryEntBuilder setChildCategories(java.util.List<CategoryMetadataEnt> childCategories) {
+             m_childCategories = childCategories;
              return this;
         }
 
@@ -126,7 +126,7 @@ public record DefaultNodeCategoryEnt(
             return new DefaultNodeCategoryEnt(
                 immutable(m_metadata),
                 immutable(m_nodes),
-                immutable(m_children));
+                immutable(m_childCategories));
         }
     
     }

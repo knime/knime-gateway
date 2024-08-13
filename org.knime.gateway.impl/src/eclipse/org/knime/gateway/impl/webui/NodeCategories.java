@@ -158,7 +158,7 @@ public final class NodeCategories {
         var categoryMetadata = treeNode.metadata();
         return builder(NodeCategoryEnt.NodeCategoryEntBuilder.class) //
             .setMetadata(categoryMetadata != null ? categoryMetadata.toEntity() : null) //
-            .setChildren(children) //
+            .setChildCategories(children) //
             .setNodes(nodes) //
             .build();
     }
