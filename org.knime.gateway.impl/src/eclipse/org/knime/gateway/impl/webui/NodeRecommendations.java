@@ -107,7 +107,7 @@ public class NodeRecommendations {
      * @throws OperationNotAllowedException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String nodeRelation,
+        final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final NodeRelation nodeRelation,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
@@ -129,8 +129,7 @@ public class NodeRecommendations {
         // This `null` is evaluated in `NodeRecommandationManager#getNodeRecommendationFor(...)`
         var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
-        var isSourcePort =
-                nodeRelation == null || nodeRelation.equals("SUCCESSORS");
+        var isSourcePort = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilter(...)`
         var portType = nodeId == null ? null : determinePortType(nc, portIdx, isSourcePort);
 

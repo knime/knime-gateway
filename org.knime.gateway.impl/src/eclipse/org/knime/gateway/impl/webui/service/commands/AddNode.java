@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.NodeCreationType;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.NodeRelationEnum;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
@@ -154,7 +155,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         if (commandEnt.getNodeRelation() == null) {
             return;
         }
-        if(commandEnt.getNodeRelation().equals("SUCCESSORS")) {
+        if(commandEnt.getNodeRelation() == NodeRelationEnum.SUCCESSORS) {
             connector.connectFrom(commandEnt.getSourceNodeId(), commandEnt.getSourcePortIdx()).trackCreation();
         } else {
             connector.connectTo(commandEnt.getSourceNodeId(), commandEnt.getSourcePortIdx()).trackCreation();

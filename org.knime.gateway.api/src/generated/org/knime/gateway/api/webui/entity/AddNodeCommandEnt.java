@@ -66,6 +66,27 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
+  /**
+   * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
+   */
+  public enum NodeRelationEnum {
+    PREDECESSORS("PREDECESSORS"),
+    
+    SUCCESSORS("SUCCESSORS");
+
+    private String value;
+
+    NodeRelationEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Get position
@@ -107,7 +128,7 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
    * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
    * @return nodeRelation 
    **/
-  public String getNodeRelation();
+  public NodeRelationEnum getNodeRelation();
 
 
   @Override
@@ -191,7 +212,7 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @param nodeRelation the property value,  
          * @return this entity builder for chaining
          */
-        AddNodeCommandEntBuilder setNodeRelation(String nodeRelation);
+        AddNodeCommandEntBuilder setNodeRelation(NodeRelationEnum nodeRelation);
         
         
         /**

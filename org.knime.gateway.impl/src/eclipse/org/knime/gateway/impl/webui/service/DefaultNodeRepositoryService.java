@@ -60,6 +60,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
+import org.knime.gateway.impl.webui.NodeRelation;
 import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.NodeSearch;
 
@@ -108,10 +109,9 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     @Override
     public NodeSearchResultEnt searchNodes(final String q, final List<String> tags, final Boolean allTagsMatch,
         final Integer offset, final Integer limit, final Boolean fullTemplateInfo, final String portTypeId,
-        final String nodeRelation)
-        throws InvalidRequestException {
+        final String nodeRelation) throws InvalidRequestException {
         return m_nodeSearch.searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId,
-            nodeRelation);
+            nodeRelation == null ? null : NodeRelation.valueOf(nodeRelation));
     }
 
     /**
@@ -132,6 +132,6 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String nodeRelation,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
-            nodeRelation, fullTemplateInfo);
+            nodeRelation == null ? null : NodeRelation.valueOf(nodeRelation), fullTemplateInfo);
     }
 }

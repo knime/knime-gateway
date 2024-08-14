@@ -103,7 +103,7 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
     
     @Override
     @JsonProperty("nodeRelation")
-    public String getNodeRelation();
+    public NodeRelationEnum getNodeRelation();
     
 
     /**
@@ -148,7 +148,7 @@ public interface AddNodeCommandEntMixIn extends AddNodeCommandEnt {
         
         @Override
         @JsonProperty("nodeRelation")
-        public AddNodeCommandEntMixInBuilder setNodeRelation(final String nodeRelation);
+        public AddNodeCommandEntMixInBuilder setNodeRelation(final NodeRelationEnum nodeRelation);
         
     }
 

@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 public interface NodeRepositoryService extends GatewayService {
 
     /**
-     * Given a node, a port and a direction it recommends a certain number of compatible nodes the user might want to add next to its workflow. If queried with no node, no port and no direction, it recommends the most relevant source nodes, that naturally have no predecessor.
+     * Given a node, a port and a node-relation it recommends a certain number of compatible nodes the user might want to add next to its workflow. If queried with no node, no port and no node-relation, it recommends the most relevant source nodes, that naturally have no predecessor.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.

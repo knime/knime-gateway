@@ -147,14 +147,13 @@ public class NodeSearch {
     @SuppressWarnings("java:S107")
     public NodeSearchResultEnt searchNodes(final String queryString, final List<String> tags,
         final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean includeFullTemplateInfo,
-        final String portTypeId, final String nodeRelation) throws InvalidRequestException {
+        final String portTypeId, final NodeRelation nodeRelation) throws InvalidRequestException {
 
         if (portTypeId == null ^ nodeRelation == null) {
             throw new InvalidRequestException(
                 "Both <portTypeId> and <searchDirection> must either be both null or both not null");
         }
-        final var searchForSuccesors =
-                nodeRelation == null || nodeRelation.equals("SUCCESSORS");
+        final var searchForSuccesors = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
         final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId, searchForSuccesors);
         // the partition is kept separate from the query to allow equals-checks for queries, which makes it simple
         // to cache them in a map.

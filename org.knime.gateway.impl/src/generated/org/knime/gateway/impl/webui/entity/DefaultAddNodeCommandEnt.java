@@ -76,7 +76,7 @@ public record DefaultAddNodeCommandEnt(
     SpaceItemReferenceEnt spaceItemReference,
     org.knime.gateway.api.entity.NodeIDEnt sourceNodeId,
     Integer sourcePortIdx,
-    String nodeRelation) implements AddNodeCommandEnt {
+    NodeRelationEnum nodeRelation) implements AddNodeCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -131,7 +131,7 @@ public record DefaultAddNodeCommandEnt(
     }
     
     @Override
-    public String getNodeRelation() {
+    public NodeRelationEnum getNodeRelation() {
         return nodeRelation;
     }
     
@@ -154,7 +154,7 @@ public record DefaultAddNodeCommandEnt(
 
         private Integer m_sourcePortIdx;
 
-        private String m_nodeRelation;
+        private NodeRelationEnum m_nodeRelation;
 
         @Override
         public DefaultAddNodeCommandEntBuilder setKind(KindEnum kind) {
@@ -205,7 +205,7 @@ public record DefaultAddNodeCommandEnt(
         }
 
         @Override
-        public DefaultAddNodeCommandEntBuilder setNodeRelation(String nodeRelation) {
+        public DefaultAddNodeCommandEntBuilder setNodeRelation(NodeRelationEnum nodeRelation) {
              m_nodeRelation = nodeRelation;
              return this;
         }

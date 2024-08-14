@@ -1,0 +1,101 @@
+{
+  "ops" : [ {
+  "op" : "add",
+  "path" : "/connections/root:3:0:5_1/label",
+  "value" : "3"
+}, {
+  "op" : "add",
+  "path" : "/connections/root:3:0:5_1/streaming",
+  "value" : false
+}, {
+  "op" : "add",
+  "path" : "/connections/root:3:0:6_1/label",
+  "value" : "0"
+}, {
+  "op" : "add",
+  "path" : "/connections/root:3:0:6_1/streaming",
+  "value" : true
+}, {
+  "op" : "add",
+  "path" : "/connections/root:3:0:7_1/label",
+  "value" : "0"
+}, {
+  "op" : "add",
+  "path" : "/connections/root:3:0:7_1/streaming",
+  "value" : false
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:3:0:3/state/progressMessages",
+  "value" : [ "Creating execution result" ]
+}, {
+  "op" : "add",
+  "path" : "/nodes/root:3:0:5/state/progressMessages",
+  "value" : [ "Row 2 (\"Row2\"))" ]
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:3:0:3/state/resolutions"
+}, {
+  "op" : "remove",
+  "path" : "/nodes/root:3:0:3/state/warning"
+}, {
+  "op" : "replace",
+  "path" : "/allowedActions/canCancel",
+  "value" : true
+}, {
+  "op" : "replace",
+  "path" : "/connections/root:3:0:5_1/allowedActions/canDelete",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/connections/root:3:0:6_1/allowedActions/canDelete",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/connections/root:3:0:7_1/allowedActions/canDelete",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/dirty",
+  "value" : true
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:3/allowedActions/canCollapse",
+  "value" : "false"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:3/state/executionState",
+  "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:5/allowedActions/canCollapse",
+  "value" : "false"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:5/allowedActions/canDelete",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:5/state/executionState",
+  "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:6/allowedActions/canCollapse",
+  "value" : "false"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:6/state/executionState",
+  "value" : "EXECUTING"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:7/allowedActions/canCollapse",
+  "value" : "false"
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:7/allowedActions/canDelete",
+  "value" : false
+}, {
+  "op" : "replace",
+  "path" : "/nodes/root:3:0:7/state/executionState",
+  "value" : "EXECUTING"
+} ]
+}
