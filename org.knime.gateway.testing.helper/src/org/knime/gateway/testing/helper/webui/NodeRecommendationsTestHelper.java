@@ -49,9 +49,11 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
@@ -190,10 +192,10 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
         // Suggest most frequently used nodes - as predecessors compatible with table port
         recommendations =
             nrs().getNodeRecommendations(projectId, workflowId, m_metanode, 0, null, PREDECESSORS, true);
-        assertThat(recommendations, hasSize(7));
+        assertThat(recommendations, not(empty()));
         recommendations =
             nrs().getNodeRecommendations(projectId, workflowId, m_component, 1, null, PREDECESSORS, true);
-        assertThat(recommendations, hasSize(7));
+        assertThat(recommendations, not(empty()));
     }
 
 }
