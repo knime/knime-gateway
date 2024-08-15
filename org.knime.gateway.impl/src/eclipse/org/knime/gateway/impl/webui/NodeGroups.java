@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -58,6 +59,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.extension.CategoryExtension;
@@ -152,28 +154,30 @@ public final class NodeGroups {
     }
 
     /**
-     * 
      * @param nodes
      * @param targetCategories
      * @return Map of category path to list of nodes in that category
      */
     private static Map<String, List<Node>> categorizeNodes(final Collection<Node> nodes,
         final List<Pair<String, String>> targetCategories) {
-        var categorizedNodes = new HashMap<String, List<Node>>();
-        var alreadyCategorized = new HashSet<>();
+        Map<String, List<Node>> categorizedNodes = new HashMap<>();
+        Set<String> alreadyCategorized = new HashSet<>();
         for (var targetCategory : targetCategories) {
             String catPath = targetCategory.getFirst();
             if (catPath.equals(NodeCategories.UNCATEGORIZED_KEY)) {
                 // 'uncategorized' nodes are handled below
                 continue;
             }
-            List<Node> nodesMatchingTargetCategory = nodes.stream()//
-                .filter(node -> node.nodeSpec.metadata().categoryPath().equals(catPath)
-                    || node.nodeSpec.metadata().categoryPath().startsWith(catPath + "/"))//
-                .sorted(Comparator.<Node> comparingInt(node -> node.weight).reversed())//
-                .toList();
-            alreadyCategorized.addAll(nodesMatchingTargetCategory);
-            if (!nodes.isEmpty()) {
+            List<Node> nodesMatchingTargetCategory = new ArrayList<>();
+            nodes.stream()//
+                .filter(n -> n.nodeSpec.metadata().categoryPath().equals(catPath)
+                    || n.nodeSpec.metadata().categoryPath().startsWith(catPath + "/"))//
+                .sorted(Comparator.<Node> comparingInt(n -> n.weight).reversed())//
+                .forEach(n -> { // No `collect(...)` here, nodes are collected in two different ways at the same time
+                    alreadyCategorized.add(n.templateId);
+                    nodesMatchingTargetCategory.add(n);
+                });
+            if (!nodesMatchingTargetCategory.isEmpty()) {
                 categorizedNodes.put(catPath, nodesMatchingTargetCategory);
             }
         }
