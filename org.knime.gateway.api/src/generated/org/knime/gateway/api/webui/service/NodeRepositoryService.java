@@ -71,7 +71,7 @@ public interface NodeRepositoryService extends GatewayService {
     NodeCategoryEnt getNodeCategory(java.util.List<String> categoryPath)  throws ServiceExceptions.NoSuchElementException;
         
     /**
-     * Given a node and a port, it recommends a certain number of compatible successor nodes the user might want to add next to its workflow. If queried with no node and no port, it recommends the most relevant source nodes, that naturally have no predecessor.
+     * Given a node, a port and a node-relation it recommends a certain number of compatible nodes the user might want to add next to its workflow. If queried with no node, no port and no node-relation, it recommends the most relevant source nodes, that naturally have no predecessor.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.

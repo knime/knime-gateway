@@ -79,9 +79,9 @@ public interface NodeCategoryEnt extends GatewayEntity {
 
   /**
    * Child categories of this category.
-   * @return children 
+   * @return childCategories 
    **/
-  public java.util.List<CategoryMetadataEnt> getChildren();
+  public java.util.List<CategoryMetadataEnt> getChildCategories();
 
 
   @Override
@@ -90,7 +90,7 @@ public interface NodeCategoryEnt extends GatewayEntity {
       var e = (NodeCategoryEnt)other;
       valueConsumer.accept("metadata", Pair.create(getMetadata(), e.getMetadata()));
       valueConsumer.accept("nodes", Pair.create(getNodes(), e.getNodes()));
-      valueConsumer.accept("children", Pair.create(getChildren(), e.getChildren()));
+      valueConsumer.accept("childCategories", Pair.create(getChildCategories(), e.getChildCategories()));
   }
 
     /**
@@ -117,10 +117,10 @@ public interface NodeCategoryEnt extends GatewayEntity {
         /**
          * Child categories of this category.
          * 
-         * @param children the property value,  
+         * @param childCategories the property value,  
          * @return this entity builder for chaining
          */
-        NodeCategoryEntBuilder setChildren(java.util.List<CategoryMetadataEnt> children);
+        NodeCategoryEntBuilder setChildCategories(java.util.List<CategoryMetadataEnt> childCategories);
         
         
         /**

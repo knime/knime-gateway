@@ -75,14 +75,14 @@ public class NodeCategoriesTest {
     @Test
     public void testGetRootCategory() {
         var result = m_categories.getCategory(List.of());
-        assertThat("The returned category should contain some child categories", !result.getChildren().isEmpty());
+        assertThat("The returned category should contain some child categories", !result.getChildCategories().isEmpty());
     }
 
     @Test
     public void testExistingCategoryIsReturned() {
         var result = m_categories.getCategory(List.of("io"));
         assertThat("The returned category should contain some nodes", !result.getNodes().isEmpty());
-        assertThat("The returned category should contain some child categories", !result.getChildren().isEmpty());
+        assertThat("The returned category should contain some child categories", !result.getChildCategories().isEmpty());
     }
 
     @Test

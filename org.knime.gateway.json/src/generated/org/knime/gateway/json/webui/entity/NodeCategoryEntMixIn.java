@@ -80,8 +80,8 @@ public interface NodeCategoryEntMixIn extends NodeCategoryEnt {
     public java.util.List<NodeTemplateEnt> getNodes();
     
     @Override
-    @JsonProperty("children")
-    public java.util.List<CategoryMetadataEnt> getChildren();
+    @JsonProperty("childCategories")
+    public java.util.List<CategoryMetadataEnt> getChildCategories();
     
 
     /**
@@ -105,8 +105,8 @@ public interface NodeCategoryEntMixIn extends NodeCategoryEnt {
         public NodeCategoryEntMixInBuilder setNodes(final java.util.List<NodeTemplateEnt> nodes);
         
         @Override
-        @JsonProperty("children")
-        public NodeCategoryEntMixInBuilder setChildren(final java.util.List<CategoryMetadataEnt> children);
+        @JsonProperty("childCategories")
+        public NodeCategoryEntMixInBuilder setChildCategories(final java.util.List<CategoryMetadataEnt> childCategories);
         
     }
 
