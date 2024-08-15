@@ -91,7 +91,7 @@ public final class NodeCategories {
 
     /**
      * Build the node category hierarchy based on the given nodes
-     * 
+     *
      * @param nodeRepository The nodes that will span this category hierarchy
      */
     public NodeCategories(final NodeRepository nodeRepository) {
@@ -196,7 +196,7 @@ public final class NodeCategories {
      * The tree hierarchically organises values of the type {@link CategoryTreeNode}. Such a tree node corresponds to
      * one node category, constituted of nodes contained in this hierarchy and child categories.
      * <p>
-     * 
+     *
      * @implNote An instance of this class is intended to be used as if it was fully immutable. It is in fact not
      *           because {@link CategoryTreeNode#m_nodes} and {@link CategoryTreeNode#m_children} have to be mutable
      *           collections for the way the tree is constructed -- see {@link Tree#getOrInsert(Iterable)}.
@@ -222,7 +222,7 @@ public final class NodeCategories {
 
         /**
          * Special category for nodes that could not be assigned a category.
-         * 
+         *
          * @implNote This is expected to correspond to an actually defined, installed category, see
          *           {@link NodeCategories#UNCATEGORIZED_KEY}.
          */
@@ -239,7 +239,7 @@ public final class NodeCategories {
 
         /**
          * Find (optionally create) the category tree node this node should go into and insert the given node there.
-         * 
+         *
          * @param node to insert
          */
         private void insertNode(final Node node) {
@@ -248,9 +248,8 @@ public final class NodeCategories {
                 categoryToInsertInto =
                     this.getOrInsert(CategoryId.toCategoryPath(node.nodeSpec.metadata().categoryPath()));
             } catch (NodeCreationException e) { // NOSONAR
-                if (m_uncategorized.initialised().isPresent()) {
-                    categoryToInsertInto = m_uncategorized.initialised().get();
-                } else {
+                categoryToInsertInto = m_uncategorized.initialised().orElse(null);
+                if (categoryToInsertInto == null) {
                     NodeLogger.getLogger(this.getClass()).error("Could not find metadata for 'uncategorized' category");
                     return;
                 }
