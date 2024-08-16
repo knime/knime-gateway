@@ -52,22 +52,25 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"javadoc","java:S5960"})
+@SuppressWarnings({"javadoc", "java:S5960"})
 class TreeTest {
 
     @Test
-    void testGetOrInsertCreatesKey() throws Tree.NodeCreationException {
+    void testGetOrInsertCreatesKey() throws Tree.TreeNodeCreationException {
         var tree = setUpTree();
         var queryPath = List.of("1", "1");
-        tree.getOrInsert(queryPath); // does not already exist
+        tree.getOrGrowBranchAlong( //
+            queryPath, // does not already exist
+            context -> createNode(context.path()) //
+        );
         var created = tree.root().children().get("1").children().get("1");
         Assertions.assertNotNull(created);
         Assertions.assertIterableEquals(queryPath, created.path());
     }
 
-    private Tree<String, TreeNode> setUpTree() {
+    private static Tree<String, TreeNode> setUpTree() {
         // set up tree structure (without using methods of the class under test)
-        Tree<String, TreeNode> tree = new Tree<>(createNode(List.of()), TreeTest::createNode);
+        Tree<String, TreeNode> tree = new Tree<>(createNode(List.of()));
         var root = tree.root();
         var node0 = createNode(List.of("0"));
         root.children().put("0", node0);

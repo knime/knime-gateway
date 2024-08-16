@@ -56,9 +56,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.CategoryExtension;
 import org.knime.core.node.extension.NodeAndCategorySorter;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
@@ -101,11 +101,27 @@ public final class NodeCategories {
         nodeRepository.onContentChange(m_tree::clear);
     }
 
-    @SuppressWarnings("java:S3398")
-    private static Optional<CategoryMetadata> getCategoryMetadata(final List<CategoryId> path) {
+    private static Optional<CategoryExtension> getCategoryExtension(List<CategoryId> path) {
         var categoryExtensions = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
-        var extensionAtPath = categoryExtensions.get(CategoryId.categoryPathToString(path));
-        return Optional.ofNullable(extensionAtPath).map(CategoryMetadata::new);
+        return Optional.ofNullable(categoryExtensions.get(CategoryId.categoryPathToString(path)));
+    }
+
+    private static boolean allowsChild(String parentPluginId, String childPluginId) {
+        return childPluginId.equals(parentPluginId) //
+            || childPluginId.equals("org.knime.") // child is contributed by KNIME
+            || childPluginId.equals("com.knime.") // child is contributed by KNIME
+            || vendorEqual(parentPluginId, childPluginId);
+    }
+
+    private static boolean vendorEqual(String plugInId, String otherPlugInId) {
+        if (plugInId == null || otherPlugInId == null) {
+            return false;
+        }
+        int secondDotIndex = plugInId.indexOf('.', plugInId.indexOf('.') + 1);
+        if (secondDotIndex == -1) {
+            secondDotIndex = 0;
+        }
+        return plugInId.regionMatches(0, otherPlugInId, 0, secondDotIndex);
     }
 
     /**
@@ -115,14 +131,41 @@ public final class NodeCategories {
      */
     private record CategoryId(String value) implements Comparable<CategoryId> {
 
-        static CategoryId of(final String string) {
-            return toCategoryPath(string).get(0);
+        /**
+         * Parse a single category ID out of the given string.
+         * 
+         * @param string Assumed to be a valid id, method throws otherwise.
+         * @return The category ID
+         * @throws NoSuchElementException if not parseable.
+         */
+        static CategoryId of(final String string) throws NoSuchElementException {
+            return toCategoryPath(string).orElseThrow().get(0);
         }
 
-        static List<CategoryId> toCategoryPath(final String pathString) {
-            return Arrays.stream(pathString.split("/")) //
+        /**
+         * Parse a single category ID out of the given string.
+         * 
+         * @param string
+         * @return The category ID, or an empty Optional if not parseable.
+         */
+        static Optional<CategoryId> optionalOf(final String string) {
+            return toCategoryPath(string).map(path -> path.get(0));
+        }
+
+        /**
+         * Parse a category path from the given string.
+         * 
+         * @param string
+         * @return Empty optional if {@code pathString} is null, empty or blank. Optional of empty list if the assigned
+         *         category is the root.
+         */
+        static Optional<List<CategoryId>> toCategoryPath(final String string) {
+            if (string == null || string.isBlank()) {
+                return Optional.empty();
+            }
+            return Optional.of(Arrays.stream(string.split("/")) //
                 .filter(segment -> !segment.isEmpty()) //
-                .map(CategoryId::new).toList();
+                .map(CategoryId::new).toList());
         }
 
         static String categoryPathToString(final List<CategoryId> path) {
@@ -147,6 +190,7 @@ public final class NodeCategories {
      * @throws NoSuchElementException if no category is found at this path
      * @return the category at this path
      */
+    @SuppressWarnings("java:S3242")
     public NodeCategoryEnt getCategory(final List<String> path) throws NoSuchElementException {
         var treeNode = m_tree //
             .initialised() // lazily build category hierarchy tree on first access
@@ -163,21 +207,50 @@ public final class NodeCategories {
             .build();
     }
 
-    private record CategoryMetadata(CategoryExtension extension) implements Comparable<CategoryMetadata> {
+    private record CategoryMetadata(CategoryId id, String displayName, List<CategoryId> path,
+            Optional<CategoryId> afterId, Optional<String> contributingPlugin) implements Comparable<CategoryMetadata> {
 
-        CategoryId id() {
-            return CategoryId.of(extension().getLevelId());
+        /**
+         * Infer category metadata from the path and a node in the subtree rooted at the end of this path.
+         */
+        static Optional<CategoryMetadata> fromInsertionContext(CategoryTree.CategoryInsertionContext context) {
+            return Optional.of(new CategoryMetadata( //
+                context.categoryIdentifier(), //
+                context.categoryIdentifier().toString(), //
+                context.path(), //
+                Optional.empty(), //
+                Optional.ofNullable(context.contributingPlugin()) //
+            ));
         }
 
-        String displayName() {
-            return extension().getName();
+        /**
+         * Fetch metadata from pre-defined category extensions
+         */
+        static CategoryMetadata fromCategoryExtension(CategoryExtension extension) {
+            return new CategoryMetadata( //
+                CategoryId.of(extension.getLevelId()), //
+                extension.getName(), //
+                CategoryId.toCategoryPath(extension.getCompletePath()).orElseThrow(),
+                CategoryId.optionalOf(extension.getAfterID()), //
+                Optional.ofNullable(extension.getContributingPlugin()) //
+            );
+        }
+
+        static CategoryMetadata uncategorized() {
+            return getCategoryExtension(List.of(CategoryId.of(UNCATEGORIZED_KEY))) //
+                .map(CategoryMetadata::fromCategoryExtension) //
+                .orElse(new CategoryMetadata( //
+                    CategoryId.of(UNCATEGORIZED_KEY), //
+                    UNCATEGORIZED_NAME, //
+                    List.of(), //
+                    Optional.empty(), //
+                    Optional.empty() //
+                ));
         }
 
         CategoryMetadataEnt toEntity() {
-            var path = CategoryId.toCategoryPath(extension().getCompletePath()) //
-                .stream().map(CategoryId::toString).toList();
             return builder(CategoryMetadataEnt.CategoryMetadataEntBuilder.class) //
-                .setPath(path) //
+                .setPath(path().stream().map(CategoryId::toString).toList()) //
                 .setDisplayName(this.displayName()) //
                 .build();
         }
@@ -199,14 +272,10 @@ public final class NodeCategories {
      *
      * @implNote An instance of this class is intended to be used as if it was fully immutable. It is in fact not
      *           because {@link CategoryTreeNode#m_nodes} and {@link CategoryTreeNode#m_children} have to be mutable
-     *           collections for the way the tree is constructed -- see {@link Tree#getOrInsert(Iterable)}.
+     *           collections for the way the tree is constructed -- see
+     *           {@link Tree#getOrGrowBranchAlong(List, TreeNodeCreator)}.
      */
     private static final class CategoryTree extends Tree<CategoryId, CategoryTreeNode> {
-
-        private static CategoryTreeNode createNode(final List<CategoryId> path) throws NodeCreationException {
-            var metadata = getCategoryMetadata(path).orElseThrow(NodeCreationException::new);
-            return new CategoryTreeNode(metadata);
-        }
 
         /**
          * Create a category tree that organises the given nodes.
@@ -214,7 +283,7 @@ public final class NodeCategories {
          * @param nodes The nodes that will be leaves of the category tree, inner nodes are categories.
          */
         public CategoryTree(final Collection<Node> nodes) {
-            super(new CategoryTreeNode(null), CategoryTree::createNode);
+            super(new CategoryTreeNode(null));
             // Since the tree should contain only the given nodes and the given collection is unordered,
             // iterate over the given nodes and create category tree nodes as needed.
             nodes.forEach(this::insertNode);
@@ -226,16 +295,61 @@ public final class NodeCategories {
          * @implNote This is expected to correspond to an actually defined, installed category, see
          *           {@link NodeCategories#UNCATEGORIZED_KEY}.
          */
-        Lazy.Init<Optional<CategoryTreeNode>> m_uncategorized = new Lazy.Init<>(() -> {
-            CategoryTreeNode uncategorized = null;
-            try {
-                uncategorized = createNode(List.of(CategoryId.of(UNCATEGORIZED_KEY)));
-            } catch (NodeCreationException e) { // NOSONAR
-                return Optional.empty();
-            }
-            root().children().put(uncategorized.metadata().id(), uncategorized);
-            return Optional.of(uncategorized);
+
+        Lazy.Init<CategoryTreeNode> m_uncategorized = new Lazy.Init<>(() -> {
+            var treeNode = new CategoryTreeNode(CategoryMetadata.uncategorized());
+            root().children().put(treeNode.metadata().id(), treeNode);
+            return treeNode;
         });
+
+        /**
+         * Context under which the current insertion operation is performed. This is required in some cases for
+         * computing a value to insert.
+         */
+        record CategoryInsertionContext(TreeInsertionContext<CategoryId, CategoryTreeNode> treeInsertionContext,
+                Node node) {
+
+            List<CategoryId> path() {
+                return treeInsertionContext().path();
+            }
+
+            Optional<CategoryTreeNode> parent() {
+                return treeInsertionContext().parent();
+            }
+
+            boolean parentLocked() {
+                return parent().map(CategoryTreeNode::locked).orElse(false);
+            }
+
+            boolean allowsChild() {
+                return parent().flatMap(p -> p.metadata().contributingPlugin()) //
+                    .map(parentPlugin -> NodeCategories.allowsChild(parentPlugin, contributingPlugin())) //
+                    .orElse(true);
+            }
+
+            CategoryId categoryIdentifier() {
+                var path = treeInsertionContext().path();
+                return path.get(path.size() - 1);
+            }
+
+            String contributingPlugin() {
+                return this.node().nodeSpec.metadata().vendor().bundle().getSymbolicName();
+            }
+        }
+
+        private static CategoryTreeNode createTreeNode(CategoryInsertionContext context)
+            throws TreeNodeCreationException {
+            var canInsert = context.allowsChild() // cheaper criteria first
+                // in legacy code the below criterion is only applied to node sets
+                || !Objects.equals(context.contributingPlugin(), "org.knime.python3.nodes") || !context.parentLocked();
+            if (!canInsert) {
+                throw new TreeNodeCreationException();
+            }
+            var metadata = getCategoryExtension(context.path()).map(CategoryMetadata::fromCategoryExtension) //
+                .or(() -> CategoryMetadata.fromInsertionContext(context)) //
+                .orElseThrow(TreeNodeCreationException::new);
+            return new CategoryTreeNode(metadata);
+        }
 
         /**
          * Find (optionally create) the category tree node this node should go into and insert the given node there.
@@ -243,20 +357,31 @@ public final class NodeCategories {
          * @param node to insert
          */
         private void insertNode(final Node node) {
-            CategoryTreeNode categoryToInsertInto = null;
-            try {
-                categoryToInsertInto =
-                    this.getOrInsert(CategoryId.toCategoryPath(node.nodeSpec.metadata().categoryPath()));
-            } catch (NodeCreationException e) { // NOSONAR
-                categoryToInsertInto = m_uncategorized.initialised().orElse(null);
-                if (categoryToInsertInto == null) {
-                    NodeLogger.getLogger(this.getClass()).error("Could not find metadata for 'uncategorized' category");
-                    return;
-                }
-            }
-            categoryToInsertInto.nodes().original().add(node);
+            var nodeCategoryPath = CategoryId.toCategoryPath(node.nodeSpec.metadata().categoryPath());
+            findCategoryToInsertInto(nodeCategoryPath, node) //
+                .nodes().original() //
+                .add(node); //
         }
 
+        @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "java:S3553"})
+        private CategoryTreeNode findCategoryToInsertInto(Optional<List<CategoryId>> nodeCategoryPath, Node node) {
+            // Providing an empty string or omitting the category-path attribute in the plugin.xml
+            // file defaults to the root category path. Consequently, an empty Optional is not expected here.
+            if (nodeCategoryPath.isEmpty() || nodeCategoryPath.get().isEmpty()) {
+                return m_uncategorized.initialised();
+            }
+            try {
+                return getOrGrowBranchAlong( //
+                    nodeCategoryPath.get(), //
+                    treeInsertionContext -> createTreeNode( //
+                        new CategoryInsertionContext(treeInsertionContext, node) //
+                    ) //
+                );
+            } catch (TreeNodeCreationException e) { // NOSONAR
+                return m_uncategorized.initialised();
+            }
+
+        }
     }
 
     /**
@@ -287,7 +412,7 @@ public final class NodeCategories {
 
         @Override
         public String getContributingPlugin() {
-            return category().metadata().extension().getContributingPlugin();
+            return category().metadata().contributingPlugin().orElse("");
         }
 
         @Override
@@ -297,7 +422,7 @@ public final class NodeCategories {
 
         @Override
         public String getAfterID() {
-            return category().metadata().extension().getAfterID();
+            return category().metadata().afterId().map(CategoryId::toString).orElse("");
         }
 
         @Override
@@ -339,7 +464,10 @@ public final class NodeCategories {
 
         @Override
         public String getAfterID() {
-            return node().nodeSpec.metadata().afterID();
+            // May default to "/". This value does not apply for nodes (factory ID expected). `NodeAndCategorySorter`
+            // uses `null` as absence value.
+            var metadata = node().nodeSpec.metadata().afterID();
+            return Objects.equals(metadata, "/") ? null : metadata;
         }
 
         @Override
@@ -357,6 +485,8 @@ public final class NodeCategories {
 
         private final Lazy.Transform<Map<CategoryId, CategoryTreeNode>> m_children;
 
+        private final Lazy.Init<Boolean> m_locked;
+
         /**
          * @param metadata Metadata for this category
          * @param nodes Nodes directly in this category (i.e., not including nodes in child categories)
@@ -370,6 +500,8 @@ public final class NodeCategories {
             this.m_metadata = metadata;
             this.m_nodes = new Lazy.Transform<>(nodes, SortableNode::sort);
             this.m_children = new Lazy.Transform<>(children, SortableCategory::sortCategories);
+            this.m_locked = new Lazy.Init<>(
+                () -> getCategoryExtension(metadata.path()).map(CategoryExtension::isLocked).orElse(false));
         }
 
         CategoryTreeNode(final CategoryMetadata metadata) {
@@ -395,6 +527,10 @@ public final class NodeCategories {
 
         public Lazy.Transform<Map<CategoryId, CategoryTreeNode>> categories() {
             return m_children;
+        }
+
+        public boolean locked() {
+            return m_locked.initialised();
         }
 
     }
