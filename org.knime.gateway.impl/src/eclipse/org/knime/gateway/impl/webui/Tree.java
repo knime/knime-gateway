@@ -63,8 +63,7 @@ import org.apache.commons.lang3.function.FailableFunction;
  * @param <V> The type of values stored in this tree
  */
 @SuppressWarnings({ //
-    "java:S3242", // more general type for method parameter possible
-    "java:S1602" // curly braces around lambdas
+    "java:S3242" // more general type for method parameter possible
 })
 class Tree<K, V extends Tree.TreeNode<K, V>> {
 
@@ -105,42 +104,48 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
     public V getOrGrowBranchAlong(final List<K> path, final TreeNodeCreator<K, V> createTreeNode)
         throws TreeNodeCreationException {
         // Suppose tree contains path [x1, x2]
-        // path = [x1, x2, x3, x4, x5]
+        // Let path = [x1, x2, x3, x4, x5]
         var difference = difference(path);
         // difference.contained() = [x1, x2]
-        // difference.notContained = [x3, x4, x5]
-        // foldAppend(difference.notContained()) = [ [x3], [x3, x4], [x3, x4, x5] ]
+        // difference.notContained() = [x3, x4, x5]
+        // For creating values (tree nodes), we need their full future path in the tree. This means for each
+        //   path segment not currently contained in the tree (i.e. in difference.notContained()), we need to
+        //   construct a full path.
         // pathsToInsert = [ [x1, x2, x3], [x1, x2, x3, x4], [x1, x2, x3, x4, x5] ]
         var pathsToInsert = foldAppend(difference.contained(), difference.notContained());
-        var keysToInsert = difference.notContained();
-        // try creating all values to insert beforehand. If any fails, this method throws.
+        // Assemble keys and values to insert at these paths
+        var keysToInsert = difference.notContained();  // path is just a list of keys
+        // Try creating all values to insert beforehand. If any creation fails, this method throws.
         List<V> valuesToInsert = mapWithPrevious( //
             pathsToInsert, //
-            (previouslyCreatedValue, pathToInsert) -> { //
-                return createTreeNode.apply(new TreeInsertionContext<>(previouslyCreatedValue, pathToInsert)); // throws
-            } //
-        );
-        // need to keep the keys in order to link values
-        var toInsert = zipToEntry(keysToInsert, valuesToInsert);
-        // link the created values s.t. the next is a child of the previous, producing a new branch
+            (previouslyCreatedValue, pathToInsert) -> {
+                var insertionContext = new TreeInsertionContext<K, V>(previouslyCreatedValue, pathToInsert);
+                return createTreeNode.apply(insertionContext); // throws
+            });
+        // link the created values s.t. the current is a child of the previous, producing a new branch
+        // For example, given [ x1={child:null}, x2={child:null}, x3={child:null} ],
+        // this produces      [ x1={child:null}, x2={child:x1},   x3={child:x2} ]
+        // (except for that in actuality there may be additional children)
+        var toInsert = zip(keysToInsert, valuesToInsert);
         var newBranch = mapWithNext(toInsert, (current, maybeNext) -> {
             maybeNext.ifPresent(next -> current.value().children().put(next.key(), next.value()));
             return current;
         });
-        // attach the new branch to the tree
-        var leafInTree = get(difference.contained()).orElseThrow(); // contained in tree by definition of `difference`
+        // attach the new branch (linked values) to the tree, i.e. link the first value of the new branch to the
+        // proper leaf value of the tree.
+        var leafToAttachTo = get(difference.contained()).orElseThrow(); // contained in tree by definition of `difference`
         if (!newBranch.isEmpty()) {
             // if `path` is already fully contained in tree, all operations above collapse to maps on empty lists
             var firstOfNewBranch = newBranch.get(0);
-            leafInTree.children().put(firstOfNewBranch.key(), firstOfNewBranch.value());
+            leafToAttachTo.children().put(firstOfNewBranch.key(), firstOfNewBranch.value());
         }
         // return the leaf of the new branch
         return get(path).orElseThrow(); // now fully contained in tree
     }
 
     /**
-     * Apply a mapping function S -> T to the list. The mapping function additionally receives the result of its
-     * application to the previous element in the list. The mapping function may throw.
+     * Apply a mapping function {@code S -> T} to the list. The mapping function additionally receives the result of its
+     * application to the previous element in the list. The mapping function may throw exceptions of type {@code E}.
      */
     private static <S, T, E extends Throwable> List<T> mapWithPrevious(List<S> list,
         FailableBiFunction<Optional<T>, S, T, E> mapper) throws E {
@@ -154,6 +159,10 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
         return result;
     }
 
+    /**
+     * Apply a mapping function {@code E -> E} to the list. The mapping function additionally receives the next element
+     * in the list.
+     */
     private static <E> List<E> mapWithNext(List<E> list, BiFunction<E, Optional<E>, E> mapper) {
         return IntStream.range(0, list.size()).mapToObj(i -> {
             var current = list.get(i);
@@ -197,9 +206,13 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
 
     }
 
-    private static <S, T> List<Entry<S, T>> zipToEntry(List<S> keys, List<T> values) {
-        return IntStream.range(0, Math.min(keys.size(), values.size()))
-            .mapToObj(i -> new Entry<>(keys.get(i), values.get(i))).toList();
+    /**
+     * Given two lists [ x1, x2, x3 ] and [ y1, y2, y3 ], yields
+     * [ {x1, y1}, {x2, y2}, {x3, y3} ]
+     */
+    private static <S, T> List<Entry<S, T>> zip(List<S> list, List<T> otherList) {
+        return IntStream.range(0, Math.min(list.size(), otherList.size()))
+            .mapToObj(i -> new Entry<>(list.get(i), otherList.get(i))).toList();
     }
 
     private record Entry<S, T>(S key, T value) {
