@@ -43,7 +43,7 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.gateway.impl.service.util;
+package org.knime.gateway.impl.util;
 
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;

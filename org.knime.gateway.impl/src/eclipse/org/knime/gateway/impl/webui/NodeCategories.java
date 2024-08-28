@@ -58,14 +58,17 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.CategoryExtension;
 import org.knime.core.node.extension.NodeAndCategorySorter;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.gateway.api.webui.entity.CategoryMetadataEnt;
 import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
-import org.knime.gateway.impl.service.util.Lazy;
+import org.knime.gateway.impl.util.Functional;
+import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
@@ -81,6 +84,11 @@ public final class NodeCategories {
      * Note that this is a real category like any other.
      */
     static final String UNCATEGORIZED_NAME = "Uncategorized";
+
+    /**
+     * These Plug-Ins are not allowed to dynamically create categories.
+     */
+    static final Set<String> CATEGORY_CREATION_BLACKLIST = Set.of("org.knime.python3.nodes");
 
     /**
      * tree with null-ish root
@@ -101,27 +109,9 @@ public final class NodeCategories {
         nodeRepository.onContentChange(m_tree::clear);
     }
 
-    private static Optional<CategoryExtension> getCategoryExtension(List<CategoryId> path) {
+    private static Optional<CategoryExtension> getCategoryExtension(final List<CategoryId> path) {
         var categoryExtensions = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
         return Optional.ofNullable(categoryExtensions.get(CategoryId.categoryPathToString(path)));
-    }
-
-    private static boolean allowsChild(String parentPluginId, String childPluginId) {
-        return childPluginId.equals(parentPluginId) //
-            || childPluginId.equals("org.knime.") // child is contributed by KNIME
-            || childPluginId.equals("com.knime.") // child is contributed by KNIME
-            || vendorEqual(parentPluginId, childPluginId);
-    }
-
-    private static boolean vendorEqual(String plugInId, String otherPlugInId) {
-        if (plugInId == null || otherPlugInId == null) {
-            return false;
-        }
-        int secondDotIndex = plugInId.indexOf('.', plugInId.indexOf('.') + 1);
-        if (secondDotIndex == -1) {
-            secondDotIndex = 0;
-        }
-        return plugInId.regionMatches(0, otherPlugInId, 0, secondDotIndex);
     }
 
     /**
@@ -133,7 +123,7 @@ public final class NodeCategories {
 
         /**
          * Parse a single category ID out of the given string.
-         * 
+         *
          * @param string Assumed to be a valid id, method throws otherwise.
          * @return The category ID
          * @throws NoSuchElementException if not parseable.
@@ -144,7 +134,7 @@ public final class NodeCategories {
 
         /**
          * Parse a single category ID out of the given string.
-         * 
+         *
          * @param string
          * @return The category ID, or an empty Optional if not parseable.
          */
@@ -154,9 +144,8 @@ public final class NodeCategories {
 
         /**
          * Parse a category path from the given string.
-         * 
-         * @param string
-         * @return Empty optional if {@code pathString} is null, empty or blank. Optional of empty list if the assigned
+         *
+         * @return Empty optional if {@code string} is null, empty or blank. Optional of empty list if the assigned
          *         category is the root.
          */
         static Optional<List<CategoryId>> toCategoryPath(final String string) {
@@ -213,20 +202,20 @@ public final class NodeCategories {
         /**
          * Infer category metadata from the path and a node in the subtree rooted at the end of this path.
          */
-        static Optional<CategoryMetadata> fromInsertionContext(CategoryTree.CategoryInsertionContext context) {
-            return Optional.of(new CategoryMetadata( //
+        static CategoryMetadata fromInsertionContext(final CategoryTree.CategoryInsertionContext context) {
+            return new CategoryMetadata( //
                 context.categoryIdentifier(), //
                 context.categoryIdentifier().toString(), //
                 context.path(), //
                 Optional.empty(), //
                 Optional.ofNullable(context.contributingPlugin()) //
-            ));
+            );
         }
 
         /**
          * Fetch metadata from pre-defined category extensions
          */
-        static CategoryMetadata fromCategoryExtension(CategoryExtension extension) {
+        static CategoryMetadata fromCategoryExtension(final CategoryExtension extension) {
             return new CategoryMetadata( //
                 CategoryId.of(extension.getLevelId()), //
                 extension.getName(), //
@@ -272,8 +261,7 @@ public final class NodeCategories {
      *
      * @implNote An instance of this class is intended to be used as if it was fully immutable. It is in fact not
      *           because {@link CategoryTreeNode#m_nodes} and {@link CategoryTreeNode#m_children} have to be mutable
-     *           collections for the way the tree is constructed -- see
-     *           {@link Tree#getOrGrowBranchAlong(List, TreeNodeCreator)}.
+     *           collections for the way the tree is constructed.
      */
     private static final class CategoryTree extends Tree<CategoryId, CategoryTreeNode> {
 
@@ -303,52 +291,98 @@ public final class NodeCategories {
         });
 
         /**
-         * Context under which the current insertion operation is performed. This is required in some cases for
-         * computing a value to insert.
+         * Context under which the current insertion operation is performed.
          */
-        record CategoryInsertionContext(TreeInsertionContext<CategoryId, CategoryTreeNode> treeInsertionContext,
-                Node node) {
+        record CategoryInsertionContext(Optional<CategoryTreeNode> parent, List<CategoryId> path, Node node) {
 
-            List<CategoryId> path() {
-                return treeInsertionContext().path();
+            private static boolean isContributedByKNIME(final String plugInId) {
+                return vendorEqual(plugInId, "org.knime.") //
+                    || vendorEqual(plugInId, "com.knime.");
             }
 
-            Optional<CategoryTreeNode> parent() {
-                return treeInsertionContext().parent();
-            }
-
-            boolean parentLocked() {
-                return parent().map(CategoryTreeNode::locked).orElse(false);
-            }
-
-            boolean allowsChild() {
-                return parent().flatMap(p -> p.metadata().contributingPlugin()) //
-                    .map(parentPlugin -> NodeCategories.allowsChild(parentPlugin, contributingPlugin())) //
-                    .orElse(true);
+            /**
+             * @return Whether the vendor part (substring up to second dot) of the given plugin IDs is equal.
+             */
+            private static boolean vendorEqual(final String plugInId, final String otherPlugInId) {
+                if (plugInId == null || otherPlugInId == null) {
+                    return false;
+                }
+                int secondDotIndex = plugInId.indexOf('.', plugInId.indexOf('.') + 1);
+                if (secondDotIndex == -1) {
+                    secondDotIndex = 0;
+                }
+                return plugInId.regionMatches(0, otherPlugInId, 0, secondDotIndex);
             }
 
             CategoryId categoryIdentifier() {
-                var path = treeInsertionContext().path();
-                return path.get(path.size() - 1);
+                return path().get(path().size() - 1);
             }
 
             String contributingPlugin() {
                 return this.node().nodeSpec.metadata().vendor().bundle().getSymbolicName();
             }
+
+            private void mayCreateCategory() throws CategoryCreationException {
+                var allowed = !NodeCategories.CATEGORY_CREATION_BLACKLIST.contains(this.contributingPlugin());
+                if (!allowed) {
+                    throw new CategoryCreationException("Contributing Plug-In %s may not dynamically create categories"
+                        .formatted(this.contributingPlugin()));
+                }
+            }
+
+            private void isAllowedByParentLock() throws CategoryCreationException {
+                var allowed = !parent().map(CategoryTreeNode::locked).orElse(false) //
+                    || isContributedByKNIME(this.contributingPlugin());
+                if (!allowed) {
+                    var parentId = parent().flatMap(p -> Optional.ofNullable(p.metadata())).map(CategoryMetadata::id)
+                        .map(CategoryId::toString).orElse("unknown");
+                    var message = "Parent category %s is locked and child is not contributed by KNIME but %s";
+                    throw new CategoryCreationException(message.formatted(parentId, contributingPlugin()));
+                }
+            }
+
+            private void isCompatibleToParentVendor() throws CategoryCreationException {
+                var allowed = true;
+                var parentPluginId = parent() //
+                    .map(CategoryTreeNode::metadata) //
+                    .flatMap(CategoryMetadata::contributingPlugin);
+                if (parentPluginId.isPresent()) {
+                    var childPluginId = this.contributingPlugin();
+                    allowed = childPluginId.equals(parentPluginId.get()) //
+                        || vendorEqual(childPluginId, parentPluginId.get()) //
+                        || isContributedByKNIME(childPluginId);
+                    if (!allowed) {
+                        var message = "Vendor of child category %s is not compatible to vendor of parent category %s";
+                        throw new CategoryCreationException(message.formatted(childPluginId, parentPluginId));
+                    }
+                }
+            }
+
+            /**
+             * Check whether this category insertion context is valid, i.e. the operation it describes is allowed. If
+             * not, throw.
+             */
+            void canInsertOrThrow() throws CategoryCreationException {
+                mayCreateCategory();
+                isAllowedByParentLock();
+                isCompatibleToParentVendor();
+            }
         }
 
-        private static CategoryTreeNode createTreeNode(CategoryInsertionContext context)
-            throws TreeNodeCreationException {
-            var canInsert = context.allowsChild() // cheaper criteria first
-                // in legacy code the below criterion is only applied to node sets
-                || !Objects.equals(context.contributingPlugin(), "org.knime.python3.nodes") || !context.parentLocked();
-            if (!canInsert) {
-                throw new TreeNodeCreationException();
-            }
-            var metadata = getCategoryExtension(context.path()).map(CategoryMetadata::fromCategoryExtension) //
-                .or(() -> CategoryMetadata.fromInsertionContext(context)) //
-                .orElseThrow(TreeNodeCreationException::new);
+        private static CategoryTreeNode createTreeNode(final CategoryInsertionContext context)
+            throws CategoryCreationException {
+            context.canInsertOrThrow();
+            var metadata = getCategoryExtension(context.path()) //
+                .map(CategoryMetadata::fromCategoryExtension) //
+                .orElse(CategoryMetadata.fromInsertionContext(context));
             return new CategoryTreeNode(metadata);
+        }
+
+        static class CategoryCreationException extends Exception {
+
+            public CategoryCreationException(final String message) {
+                super(message);
+            }
         }
 
         /**
@@ -364,23 +398,51 @@ public final class NodeCategories {
         }
 
         @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "java:S3553"})
-        private CategoryTreeNode findCategoryToInsertInto(Optional<List<CategoryId>> nodeCategoryPath, Node node) {
+        private CategoryTreeNode findCategoryToInsertInto(final Optional<List<CategoryId>> nodeCategoryPath,
+            final Node node) {
             // Providing an empty string or omitting the category-path attribute in the plugin.xml
             // file defaults to the root category path. Consequently, an empty Optional is not expected here.
             if (nodeCategoryPath.isEmpty() || nodeCategoryPath.get().isEmpty()) {
                 return m_uncategorized.initialised();
             }
             try {
-                return getOrGrowBranchAlong( //
-                    nodeCategoryPath.get(), //
-                    treeInsertionContext -> createTreeNode( //
-                        new CategoryInsertionContext(treeInsertionContext, node) //
-                    ) //
-                );
-            } catch (TreeNodeCreationException e) { // NOSONAR
+                return insertParentCategoriesFor(nodeCategoryPath.get(), node);
+            } catch (CategoryCreationException e) { // NOSONAR
+                NodeLogger.getLogger(NodeCategories.class).info(e);
                 return m_uncategorized.initialised();
             }
+        }
 
+        private CategoryTreeNode insertParentCategoriesFor(final List<CategoryId> nodeCategoryPath, final Node node)
+            throws CategoryCreationException {
+            // Suppose tree contains path [x1, x2]
+            // Let path = [x1, x2, x3, x4, x5]
+            var difference = this.difference(nodeCategoryPath);
+            // difference.contained() = [x1, x2]
+            // difference.notContained() = [x3, x4, x5]
+            CategoryTreeNode treeLeaf = this.get(difference.contained())
+                // contained in the tree by definition of `difference`, else this is an implementation error
+                .orElseThrow();
+            if (difference.notContained().isEmpty()) {
+                // all required categories are already in the tree
+                return treeLeaf;
+            }
+            // Otherwise, insert parent categories as needed. Try creating all categories first. If any creation fails,
+            //  the tree is not modified.
+            // For creating tree nodes, we need their *full* path. This means for each
+            //   path segment not currently contained in the tree (i.e. in difference.notContained()), we need to
+            //   construct a full path.
+            // pathsToInsert = [ [x1, x2, x3], [x1, x2, x3, x4], [x1, x2, x3, x4, x5] ]
+            var pathsToInsert = Functional.foldAppend(difference.contained(), difference.notContained());
+            List<CategoryTreeNode> values = Functional.mapWithPrevious(pathsToInsert, (previouslyCreated, path) -> {
+                var parent = previouslyCreated.or(() -> Optional.of(treeLeaf));
+                var insertionContext = new CategoryInsertionContext(parent, path, node);
+                return createTreeNode(insertionContext); // throws
+            });
+            var keys = difference.notContained();
+            var newBranch = new Branch<>(keys, values);
+            treeLeaf.attach(newBranch);
+            return newBranch.lastValue();
         }
     }
 
@@ -500,8 +562,8 @@ public final class NodeCategories {
             this.m_metadata = metadata;
             this.m_nodes = new Lazy.Transform<>(nodes, SortableNode::sort);
             this.m_children = new Lazy.Transform<>(children, SortableCategory::sortCategories);
-            this.m_locked = new Lazy.Init<>(
-                () -> getCategoryExtension(metadata.path()).map(CategoryExtension::isLocked).orElse(false));
+            this.m_locked = new Lazy.Init<>(() -> Optional.ofNullable(metadata).map(CategoryMetadata::path)
+                .flatMap(NodeCategories::getCategoryExtension).map(CategoryExtension::isLocked).orElse(false));
         }
 
         CategoryTreeNode(final CategoryMetadata metadata) {

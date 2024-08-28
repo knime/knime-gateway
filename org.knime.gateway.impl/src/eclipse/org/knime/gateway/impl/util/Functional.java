@@ -43,64 +43,76 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.apache.commons.lang3.function.FailableBiFunction;
 
-@SuppressWarnings({"javadoc", "java:S5960"})
-class TreeTest {
+public final class Functional {
 
-    private static Tree<String, TreeNode> setUpTree() {
-        // set up tree structure (without using methods of the class under test)
-        Tree<String, TreeNode> tree = new Tree<>(createNode(List.of()));
-        var root = tree.root();
-        var node0 = createNode(List.of("0"));
-        root.children().put("0", node0);
-        var node1 = createNode(List.of("1"));
-        root.children().put("1", node1);
+    private Functional() {
 
-        var node00 = createNode(List.of("0", "0"));
-        var node01 = createNode(List.of("0", "1"));
-        node0.children().put("0", node00);
-        node0.children().put("1", node01);
-
-        var node10 = createNode(List.of("1", "0"));
-        node1.children().put("0", node10);
-        return tree;
     }
 
-    private static TreeNode createNode(final List<String> path) {
-        return new TreeNode(new ArrayList<>(path), new HashMap<>());
+    /**
+     * Apply a mapping function {@code S -> T} to the list. The mapping function additionally receives the result of its
+     * application to the previous element in the list. The mapping function may throw exceptions of type {@code E}.
+     */
+    public static <S, T, E extends Throwable> List<T> mapWithPrevious(List<S> list,
+            FailableBiFunction<Optional<T>, S, T, E> mapper) throws E {
+        var result = new ArrayList<T>();
+        for (var index = 0; index < list.size(); index++) {
+            var previous = getOptional(result, index);
+            var current = list.get(index);
+            var mapped = mapper.apply(previous, current); // potentially throws and exits
+            result.add(mapped);
+        }
+        return result;
     }
 
-    @Test
-    void testGetFindsValue() {
-        var tree = setUpTree();
-        var queryPath = List.of("0", "1");
-        var foundValue = tree.get(queryPath);
-        Assertions.assertTrue(foundValue.isPresent());
-        Assertions.assertIterableEquals(queryPath, foundValue.get().path());
+    public static <E> Optional<E> getOptional(List<E> list, int index) {
+        try {
+            return Optional.of(list.get(index));
+        } catch (IndexOutOfBoundsException e) { // NOSONAR
+            return Optional.empty();
+        }
     }
 
-    @Test
-    void testGetReturnsEmptyForNonExistingValue() {
-        var tree = setUpTree();
-        var queryPath = List.of("1", "1"); // does not exist in tree
-        var foundValue = tree.get(queryPath);
-        Assertions.assertFalse(foundValue.isPresent());
+    /**
+     * Left fold the append operator over a list. Given a list of <code>[x1, x2, x3, ...]</code> and identity value of
+     * <code>[y1, y2]</code>, the result is a list of lists <code>
+     * [
+     *  [y1, y2, x1],
+     *  [y1, y2, x1, x2],
+     *  [y1, y2, x1, x2, x3],
+     *  ...
+     * ]
+     * </code>
+     */
+    public static <E> List<List<E>> foldAppend(List<E> identity, Iterable<E> list) {
+        var result = new ArrayList<List<E>>();
+        var accumulator = new ArrayList<>(identity);
+        for (var element : list) {
+            accumulator.add(element);
+            result.add(accumulator.stream().toList());
+        }
+        return result;
     }
 
-    record TreeNode(
-            // save what we think is node's full path into node at creation time to verify in testing that it is indeed
-            // at this path in the tree
-            ArrayList<String> path, //
-            HashMap<String, TreeNode> children //
-    ) implements Tree.TreeNode<String, TreeNode> {
+    /**
+     * Given two lists [ x1, x2, x3 ] and [ y1, y2, y3 ], yields
+     * [ {x1, y1}, {x2, y2}, {x3, y3} ]
+     */
+    public static <S, T> List<Entry<S, T>> zip(List<S> list, List<T> otherList) {
+        return IntStream.range(0, Math.min(list.size(), otherList.size()))
+            .mapToObj(i -> new Entry<>(list.get(i), otherList.get(i))).toList();
+    }
+
+    public record Entry<S, T>(S key, T value) {
 
     }
 }

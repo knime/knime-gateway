@@ -50,14 +50,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.function.FailableBiFunction;
-import org.apache.commons.lang3.function.FailableFunction;
+import org.knime.gateway.impl.util.Functional;
 
 /**
- * @implNote The tree is assumed to remain reasonably small, if this is used for larger amounts of data, methods should
+ * @implNote The tree is assumed to remain reasonably shallow, if this is used for deeper trees, methods should
  *           be reviewed w.r.t their complexity.
  * @param <K> The type used for lookups in this tree
  * @param <V> The type of values stored in this tree
@@ -70,20 +67,6 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
     private final V m_root;
 
     /**
-     * Create node for this tree.
-     *
-     * @implNote Not an abstract method to enable testing this class independently.
-     */
-    interface TreeNodeCreator<K, V> extends FailableFunction<TreeInsertionContext<K, V>, V, TreeNodeCreationException> {
-        @Override
-        V apply(TreeInsertionContext<K, V> context) throws TreeNodeCreationException;
-    }
-
-    record TreeInsertionContext<K, V>(Optional<V> parent, List<K> path) {
-
-    }
-
-    /**
      * Initialise a tree.
      */
     public Tree(final V root) {
@@ -91,91 +74,37 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
     }
 
     /**
-     * Traverse the tree along the {@code path}, inserting child nodes until {@code path} is fully contained in the
-     * tree. If the path is already fully contained in the tree, this corresponds to a simple lookup. If creation of any
-     * new child nodes fails, this method throws and does not modify the tree.
-     *
-     * @param path List of {@link K}eys to traverse the tree along.
-     * @param createTreeNode Supplier to create new nodes
-     * @return The {@link V}alues at the given {@code path} (possibly newly created).
-     * @throws TreeNodeCreationException if a child node could not be created
+     * A sequence of linked tree nodes.
      */
-    @SuppressWarnings({"java:S1941"}) // early declaration of local variables
-    public V getOrGrowBranchAlong(final List<K> path, final TreeNodeCreator<K, V> createTreeNode)
-        throws TreeNodeCreationException {
-        // Suppose tree contains path [x1, x2]
-        // Let path = [x1, x2, x3, x4, x5]
-        var difference = difference(path);
-        // difference.contained() = [x1, x2]
-        // difference.notContained() = [x3, x4, x5]
-        // For creating values (tree nodes), we need their full future path in the tree. This means for each
-        //   path segment not currently contained in the tree (i.e. in difference.notContained()), we need to
-        //   construct a full path.
-        // pathsToInsert = [ [x1, x2, x3], [x1, x2, x3, x4], [x1, x2, x3, x4, x5] ]
-        var pathsToInsert = foldAppend(difference.contained(), difference.notContained());
-        // Assemble keys and values to insert at these paths
-        var keysToInsert = difference.notContained();  // path is just a list of keys
-        // Try creating all values to insert beforehand. If any creation fails, this method throws.
-        List<V> valuesToInsert = mapWithPrevious( //
-            pathsToInsert, //
-            (previouslyCreatedValue, pathToInsert) -> {
-                var insertionContext = new TreeInsertionContext<K, V>(previouslyCreatedValue, pathToInsert);
-                return createTreeNode.apply(insertionContext); // throws
-            });
-        // link the created values s.t. the current is a child of the previous, producing a new branch
-        // For example, given [ x1={child:null}, x2={child:null}, x3={child:null} ],
-        // this produces      [ x1={child:null}, x2={child:x1},   x3={child:x2} ]
-        // (except for that in actuality there may be additional children)
-        var toInsert = zip(keysToInsert, valuesToInsert);
-        var newBranch = mapWithNext(toInsert, (current, maybeNext) -> {
-            maybeNext.ifPresent(next -> current.value().children().put(next.key(), next.value()));
-            return current;
-        });
-        // attach the new branch (linked values) to the tree, i.e. link the first value of the new branch to the
-        // proper leaf value of the tree.
-        var leafToAttachTo = get(difference.contained()).orElseThrow(); // contained in tree by definition of `difference`
-        if (!newBranch.isEmpty()) {
-            // if `path` is already fully contained in tree, all operations above collapse to maps on empty lists
-            var firstOfNewBranch = newBranch.get(0);
-            leafToAttachTo.children().put(firstOfNewBranch.key(), firstOfNewBranch.value());
+    static class Branch<K, V extends Tree.TreeNode<K,V>> {
+        private final ArrayDeque<V> m_values;
+
+        private final K m_firstKey;
+
+        public Branch(List<K> keys, List<V> values) {
+            m_values = new ArrayDeque<>();
+            m_firstKey = keys.get(0);
+            Functional.zip(keys, values)
+                    .forEach(toInsert -> this.insert(toInsert.key(), toInsert.value())
+            );
         }
-        // return the leaf of the new branch
-        return get(path).orElseThrow(); // now fully contained in tree
-    }
 
-    /**
-     * Apply a mapping function {@code S -> T} to the list. The mapping function additionally receives the result of its
-     * application to the previous element in the list. The mapping function may throw exceptions of type {@code E}.
-     */
-    private static <S, T, E extends Throwable> List<T> mapWithPrevious(List<S> list,
-        FailableBiFunction<Optional<T>, S, T, E> mapper) throws E {
-        var result = new ArrayList<T>();
-        for (var index = 0; index < list.size(); index++) {
-            var previous = getOptional(result, index);
-            var current = list.get(index);
-            var mapped = mapper.apply(previous, current); // potentially throws and exits
-            result.add(mapped);
+        private void insert(K key, V value) {
+            var previous = Optional.ofNullable(m_values.peekLast());
+            previous.ifPresent(prev -> prev.addChild(key, value));
+            m_values.addLast(value);
         }
-        return result;
-    }
 
-    /**
-     * Apply a mapping function {@code E -> E} to the list. The mapping function additionally receives the next element
-     * in the list.
-     */
-    private static <E> List<E> mapWithNext(List<E> list, BiFunction<E, Optional<E>, E> mapper) {
-        return IntStream.range(0, list.size()).mapToObj(i -> {
-            var current = list.get(i);
-            var next = getOptional(list, i + 1);
-            return mapper.apply(current, next);
-        }).toList();
-    }
+        V firstValue() {
+            return m_values.peekFirst();
+        }
 
-    private static <E> Optional<E> getOptional(List<E> list, int index) {
-        try {
-            return Optional.of(list.get(index));
-        } catch (IndexOutOfBoundsException e) { // NOSONAR
-            return Optional.empty();
+        K firstKey() {
+            return m_firstKey;
+        }
+
+        V lastValue() {
+            return  m_values.peekLast();
         }
     }
 
@@ -186,7 +115,7 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
      * <li>The suffix that is not contained in the tree</li>
      * </ul>
      */
-    private Difference<K> difference(List<K> queryPath) {
+    Difference<K> difference(List<K> queryPath) {
         var queue = new ArrayDeque<>(queryPath);
         var contained = new ArrayList<K>();
         var currentValue = m_root;
@@ -202,42 +131,8 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
         return new Difference<>(contained, queue.stream().toList());
     }
 
-    private record Difference<V>(List<V> contained, List<V> notContained) {
+    record Difference<V>(List<V> contained, List<V> notContained) {
 
-    }
-
-    /**
-     * Given two lists [ x1, x2, x3 ] and [ y1, y2, y3 ], yields
-     * [ {x1, y1}, {x2, y2}, {x3, y3} ]
-     */
-    private static <S, T> List<Entry<S, T>> zip(List<S> list, List<T> otherList) {
-        return IntStream.range(0, Math.min(list.size(), otherList.size()))
-            .mapToObj(i -> new Entry<>(list.get(i), otherList.get(i))).toList();
-    }
-
-    private record Entry<S, T>(S key, T value) {
-
-    }
-
-    /**
-     * Left fold the append operator over a list. Given a list of <code>[x1, x2, x3, ...]</code> and identity value of
-     * <code>[y1, y2]</code>, the result is a list of lists <code>
-     * [
-     *  [y1, y2, x1],
-     *  [y1, y2, x1, x2],
-     *  [y1, y2, x1, x2, x3],
-     *  ...
-     * ]
-     * </code>
-     */
-    private List<List<K>> foldAppend(List<K> identity, List<K> list) {
-        var result = new ArrayList<List<K>>();
-        var accumulator = new ArrayList<>(identity);
-        for (var element : list) {
-            accumulator.add(element);
-            result.add(accumulator.stream().toList());
-        }
-        return result;
     }
 
     /**
@@ -261,14 +156,20 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
         return m_root;
     }
 
-    interface TreeNode<K, V> {
+    interface TreeNode<K, V extends TreeNode<K, V>> {
 
         /**
          * Has to be mutable
          */
         Map<K, V> children();
+
+        default void attach(Branch<K,V> branch) {
+            this.addChild(branch.firstKey(), branch.firstValue());
+        }
+
+        default void addChild(final K key, final V value) {
+            this.children().put(key, value);
+        }
     }
 
-    static class TreeNodeCreationException extends Exception {
-    }
 }
