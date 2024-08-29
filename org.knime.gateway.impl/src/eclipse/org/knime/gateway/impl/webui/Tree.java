@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.knime.gateway.impl.util.Functional;
+import org.knime.gateway.impl.util.ListFunctions;
 
 /**
  * @implNote The tree is assumed to remain reasonably shallow, if this is used for deeper trees, methods should
@@ -67,9 +67,9 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
     private final V m_root;
 
     /**
-     * Initialise a tree.
+     * Initialize a tree.
      */
-    public Tree(final V root) {
+    Tree(final V root) {
         m_root = root;
     }
 
@@ -77,19 +77,20 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
      * A sequence of linked tree nodes.
      */
     static class Branch<K, V extends Tree.TreeNode<K,V>> {
+
         private final ArrayDeque<V> m_values;
 
         private final K m_firstKey;
 
-        public Branch(List<K> keys, List<V> values) {
+        Branch(final List<K> keys, final List<V> values) {
             m_values = new ArrayDeque<>();
             m_firstKey = keys.get(0);
-            Functional.zip(keys, values)
-                    .forEach(toInsert -> this.insert(toInsert.key(), toInsert.value())
+            ListFunctions.zip(keys, values)
+                    .forEach(toInsert -> this.insert(toInsert.getKey(), toInsert.getValue())
             );
         }
 
-        private void insert(K key, V value) {
+        private void insert(final K key, final V value) {
             var previous = Optional.ofNullable(m_values.peekLast());
             previous.ifPresent(prev -> prev.addChild(key, value));
             m_values.addLast(value);
@@ -115,7 +116,7 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
      * <li>The suffix that is not contained in the tree</li>
      * </ul>
      */
-    Difference<K> difference(List<K> queryPath) {
+    Difference<K> difference(final List<K> queryPath) {
         var queue = new ArrayDeque<>(queryPath);
         var contained = new ArrayList<K>();
         var currentValue = m_root;
@@ -136,12 +137,12 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
     }
 
     /**
-     * @param path List of {@link K}eys to traverse the tree along.
-     * @return The {@link V}alue at the given {@code path}, or an empty optional if there is no value at that path in
+     * @param path List of {@code K}eys to traverse the tree along.
+     * @return The {@code V}alue at the given {@code path}, or an empty optional if there is no value at that path in
      *         the tree.
      */
 
-    public Optional<V> get(final List<K> path) {
+    Optional<V> get(final List<K> path) {
         var currentValue = m_root;
         for (var id : path) {
             if (!currentValue.children().containsKey(id)) {
@@ -152,18 +153,18 @@ class Tree<K, V extends Tree.TreeNode<K, V>> {
         return Optional.of(currentValue);
     }
 
-    public V root() {
+    V root() {
         return m_root;
     }
 
     interface TreeNode<K, V extends TreeNode<K, V>> {
 
         /**
-         * Has to be mutable
+         * @return A mutable (!) map of all the child tree nodes
          */
         Map<K, V> children();
 
-        default void attach(Branch<K,V> branch) {
+        default void attach(final Branch<K,V> branch) {
             this.addChild(branch.firstKey(), branch.firstValue());
         }
 

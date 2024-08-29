@@ -47,23 +47,32 @@ package org.knime.gateway.impl.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.function.FailableBiFunction;
 
-public final class Functional {
+/**
+ * Contains utility methods for specialized list operations.
+ */
+public final class ListFunctions {
 
-    private Functional() {
-
+    private ListFunctions() {
+        // Utility class
     }
 
     /**
      * Apply a mapping function {@code S -> T} to the list. The mapping function additionally receives the result of its
      * application to the previous element in the list. The mapping function may throw exceptions of type {@code E}.
+     *
+     * @param list The input list
+     * @param mapper The function to be mapped
+     * @return The result list
+     * @throws E The exception it might throw
      */
-    public static <S, T, E extends Throwable> List<T> mapWithPrevious(List<S> list,
-            FailableBiFunction<Optional<T>, S, T, E> mapper) throws E {
+    public static <S, T, E extends Throwable> List<T> mapWithPrevious(final List<S> list,
+        final FailableBiFunction<Optional<T>, S, T, E> mapper) throws E {
         var result = new ArrayList<T>();
         for (var index = 0; index < list.size(); index++) {
             var previous = getOptional(result, index);
@@ -74,7 +83,7 @@ public final class Functional {
         return result;
     }
 
-    public static <E> Optional<E> getOptional(List<E> list, int index) {
+    private static <T> Optional<T> getOptional(final List<T> list, final int index) {
         try {
             return Optional.of(list.get(index));
         } catch (IndexOutOfBoundsException e) { // NOSONAR
@@ -92,8 +101,12 @@ public final class Functional {
      *  ...
      * ]
      * </code>
+     *
+     * @param identity The list of items to append
+     * @param list The list to iterate on
+     * @return The result list
      */
-    public static <E> List<List<E>> foldAppend(List<E> identity, Iterable<E> list) {
+    public static <E> List<List<E>> foldAppend(final List<E> identity, final Iterable<E> list) {
         var result = new ArrayList<List<E>>();
         var accumulator = new ArrayList<>(identity);
         for (var element : list) {
@@ -104,15 +117,16 @@ public final class Functional {
     }
 
     /**
-     * Given two lists [ x1, x2, x3 ] and [ y1, y2, y3 ], yields
-     * [ {x1, y1}, {x2, y2}, {x3, y3} ]
+     * Given two lists [ x1, x2, x3 ] and [ y1, y2, y3 ], yields [ {x1, y1}, {x2, y2}, {x3, y3} ]
+     *
+     * @param left The list of left-side elements
+     * @param right The list of right-side elements
+     * @return The result list
      */
-    public static <S, T> List<Entry<S, T>> zip(List<S> list, List<T> otherList) {
-        return IntStream.range(0, Math.min(list.size(), otherList.size()))
-            .mapToObj(i -> new Entry<>(list.get(i), otherList.get(i))).toList();
+    public static <S, T> List<Map.Entry<S, T>> zip(final List<S> left, final List<T> right) {
+        return IntStream.range(0, Math.min(left.size(), right.size())) //
+            .mapToObj(i -> Map.entry(left.get(i), right.get(i))) //
+            .toList();
     }
 
-    public record Entry<S, T>(S key, T value) {
-
-    }
 }

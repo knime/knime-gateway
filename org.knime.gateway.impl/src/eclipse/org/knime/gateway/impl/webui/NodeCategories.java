@@ -67,12 +67,14 @@ import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.gateway.api.webui.entity.CategoryMetadataEnt;
 import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
-import org.knime.gateway.impl.util.Functional;
 import org.knime.gateway.impl.util.Lazy;
+import org.knime.gateway.impl.util.ListFunctions;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
  * The hierarchy of node categories
+ *
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 public final class NodeCategories {
 
@@ -179,7 +181,7 @@ public final class NodeCategories {
      * @throws NoSuchElementException if no category is found at this path
      * @return the category at this path
      */
-    @SuppressWarnings("java:S3242")
+    @SuppressWarnings("java:S3242") // more general type for method parameter possible
     public NodeCategoryEnt getCategory(final List<String> path) throws NoSuchElementException {
         var treeNode = m_tree //
             .initialised() // lazily build category hierarchy tree on first access
@@ -255,7 +257,7 @@ public final class NodeCategories {
     /**
      * A node category hierarchy.
      * <p>
-     * The tree hierarchically organises values of the type {@link CategoryTreeNode}. Such a tree node corresponds to
+     * The tree hierarchically organizes values of the type {@link CategoryTreeNode}. Such a tree node corresponds to
      * one node category, constituted of nodes contained in this hierarchy and child categories.
      * <p>
      *
@@ -266,11 +268,11 @@ public final class NodeCategories {
     private static final class CategoryTree extends Tree<CategoryId, CategoryTreeNode> {
 
         /**
-         * Create a category tree that organises the given nodes.
+         * Create a category tree that organizes the given nodes.
          *
          * @param nodes The nodes that will be leaves of the category tree, inner nodes are categories.
          */
-        public CategoryTree(final Collection<Node> nodes) {
+        CategoryTree(final Collection<Node> nodes) {
             super(new CategoryTreeNode(null));
             // Since the tree should contain only the given nodes and the given collection is unordered,
             // iterate over the given nodes and create category tree nodes as needed.
@@ -369,15 +371,23 @@ public final class NodeCategories {
             }
         }
 
+        /**
+         * Creates a the new {@link CategoryTreeNode} if possible, else throws.
+         *
+         * @param context
+         * @return The new {@link CategoryTreeNode}
+         * @throws CategoryCreationException If the new node could not be inserted into its context
+         */
         private static CategoryTreeNode createTreeNode(final CategoryInsertionContext context)
             throws CategoryCreationException {
-            context.canInsertOrThrow();
+            context.canInsertOrThrow(); // throws
             var metadata = getCategoryExtension(context.path()) //
                 .map(CategoryMetadata::fromCategoryExtension) //
                 .orElse(CategoryMetadata.fromInsertionContext(context));
             return new CategoryTreeNode(metadata);
         }
 
+        @SuppressWarnings("serial")
         static class CategoryCreationException extends Exception {
 
             public CategoryCreationException(final String message) {
@@ -433,8 +443,8 @@ public final class NodeCategories {
             //   path segment not currently contained in the tree (i.e. in difference.notContained()), we need to
             //   construct a full path.
             // pathsToInsert = [ [x1, x2, x3], [x1, x2, x3, x4], [x1, x2, x3, x4, x5] ]
-            var pathsToInsert = Functional.foldAppend(difference.contained(), difference.notContained());
-            List<CategoryTreeNode> values = Functional.mapWithPrevious(pathsToInsert, (previouslyCreated, path) -> {
+            var pathsToInsert = ListFunctions.foldAppend(difference.contained(), difference.notContained());
+            List<CategoryTreeNode> values = ListFunctions.mapWithPrevious(pathsToInsert, (previouslyCreated, path) -> {
                 var parent = previouslyCreated.or(() -> Optional.of(treeLeaf));
                 var insertionContext = new CategoryInsertionContext(parent, path, node);
                 return createTreeNode(insertionContext); // throws
@@ -574,11 +584,11 @@ public final class NodeCategories {
             );
         }
 
-        public CategoryMetadata metadata() {
+        CategoryMetadata metadata() {
             return m_metadata;
         }
 
-        public Lazy.Transform<List<Node>> nodes() {
+        Lazy.Transform<List<Node>> nodes() {
             return m_nodes;
         }
 
@@ -587,11 +597,11 @@ public final class NodeCategories {
             return m_children.original();
         }
 
-        public Lazy.Transform<Map<CategoryId, CategoryTreeNode>> categories() {
+        Lazy.Transform<Map<CategoryId, CategoryTreeNode>> categories() {
             return m_children;
         }
 
-        public boolean locked() {
+        boolean locked() {
             return m_locked.initialised();
         }
 
