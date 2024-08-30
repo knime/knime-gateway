@@ -295,12 +295,14 @@ public class WorkflowChangesListener implements Closeable {
             // already listening
             return;
         }
+
         startListening(m_wfm);
         if (m_recurse) {
             for (var nc : m_wfm.getNodeContainers()) {
                 CoreUtil.runOnNodeOrWfm(nc, null, this::startListening);
             }
         }
+
         m_isListening = true;
     }
 
@@ -416,6 +418,8 @@ public class WorkflowChangesListener implements Closeable {
                 CoreUtil.runOnNodeOrWfm(nc, null, this::stopListening);
             }
         }
+        stopListening(m_wfm);
+
         m_isListening = false;
     }
 
