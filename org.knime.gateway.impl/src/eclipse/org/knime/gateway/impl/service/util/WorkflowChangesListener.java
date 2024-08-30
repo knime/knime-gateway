@@ -315,78 +315,59 @@ public class WorkflowChangesListener implements Closeable {
         m_connectionUIInformationListener.attachTo(connectionContainers);
     }
 
-    @SuppressWarnings("java:S1541") // Complexity: Simple 1:1 matching
-    private void trackChange(final WorkflowEvent e) {
+    private void trackChange(final WorkflowEvent e) { // NOSONAR: Simple 1:1 matching, not too complex
         switch (e.getType()) {
-            case NODE_ADDED:
-                updateWorkflowChangesTrackers(WorkflowChange.NODE_ADDED);
-                break;
-            case NODE_REMOVED:
-                updateWorkflowChangesTrackers(WorkflowChange.NODE_REMOVED);
-                break;
-            case CONNECTION_ADDED:
-                updateWorkflowChangesTrackers(WorkflowChange.CONNECTION_ADDED);
-                break;
-            case CONNECTION_REMOVED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.CONNECTION_REMOVED);
-                break;
-            case NODE_COLLAPSED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED);
-                break;
-            case NODE_EXPANDED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED);
-                break;
-            case ANNOTATION_ADDED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
-                break;
-            case ANNOTATION_REMOVED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_REMOVED);
-                break;
-            case NODE_PORTS_CHANGED:
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_PORTS_CHANGED);
-                break;
-            case PORTS_BAR_UI_INFO_CHANGED:
-                updateWorkflowChangesTrackers(WorkflowChange.PORTS_BAR_MOVED);
-                break;
-            default:
+            case NODE_ADDED -> updateWorkflowChangesTrackers(WorkflowChange.NODE_ADDED);
+            case NODE_REMOVED -> updateWorkflowChangesTrackers(WorkflowChange.NODE_REMOVED);
+            case CONNECTION_ADDED -> updateWorkflowChangesTrackers(WorkflowChange.CONNECTION_ADDED);
+            case CONNECTION_REMOVED -> updateWorkflowChangesTrackers(
+                WorkflowChangesTracker.WorkflowChange.CONNECTION_REMOVED);
+            case NODE_COLLAPSED -> updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED);
+            case NODE_EXPANDED -> updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED);
+            case ANNOTATION_ADDED -> updateWorkflowChangesTrackers(
+                WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
+            case ANNOTATION_REMOVED -> updateWorkflowChangesTrackers(
+                WorkflowChangesTracker.WorkflowChange.ANNOTATION_REMOVED);
+            case NODE_PORTS_CHANGED -> updateWorkflowChangesTrackers(
+                WorkflowChangesTracker.WorkflowChange.NODE_PORTS_CHANGED);
+            case PORTS_BAR_UI_INFO_CHANGED -> updateWorkflowChangesTrackers(WorkflowChange.PORTS_BAR_MOVED);
+            default -> {
                 //
+            }
         }
     }
 
     private void addOrRemoveListenersFromNodeOrWorkflowAnnotation(final WorkflowEvent e) {
         switch (e.getType()) {
-            case NODE_ADDED:
+            case NODE_ADDED -> {
                 var nc = (NodeContainer)e.getNewValue();
                 addNodeListeners(nc);
                 if (m_recurse) {
                     CoreUtil.runOnNodeOrWfm(nc, null, wfm -> wfm.addListener(m_workflowListener));
                 }
-                break;
-            case NODE_REMOVED:
-                nc = (NodeContainer)e.getOldValue();
+            }
+            case NODE_REMOVED -> {
+                var nc = (NodeContainer)e.getOldValue();
                 removeNodeListeners(nc);
                 if (m_recurse) {
                     CoreUtil.runOnNodeOrWfm(nc, null, wfm -> wfm.removeListener(m_workflowListener));
                 }
-                break;
-            case ANNOTATION_ADDED:
-                m_workflowAnnotationListener.attachTo((WorkflowAnnotation)e.getNewValue());
-                break;
-            case ANNOTATION_REMOVED:
-                m_workflowAnnotationListener.detachFrom((WorkflowAnnotation)e.getOldValue());
-                break;
-            case CONNECTION_ADDED:
+            }
+            case ANNOTATION_ADDED -> m_workflowAnnotationListener.attachTo((WorkflowAnnotation)e.getNewValue());
+            case ANNOTATION_REMOVED -> m_workflowAnnotationListener.detachFrom((WorkflowAnnotation)e.getOldValue());
+            case CONNECTION_ADDED -> {
                 var cc = (ConnectionContainer)e.getNewValue();
                 m_connectionUIInformationListener.attachTo(cc);
                 m_connectionProgressListener.attachTo(cc);
-                break;
-            case CONNECTION_REMOVED:
-                cc = (ConnectionContainer)e.getOldValue();
+            }
+            case CONNECTION_REMOVED -> {
+                var cc = (ConnectionContainer)e.getOldValue();
                 m_connectionUIInformationListener.detachFrom(cc);
                 m_connectionProgressListener.detachFrom(cc);
-                break;
-            default:
+            }
+            default -> {
                 //
+            }
         }
     }
 
