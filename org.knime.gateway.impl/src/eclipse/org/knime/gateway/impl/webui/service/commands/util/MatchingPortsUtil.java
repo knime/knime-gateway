@@ -116,7 +116,7 @@ final class MatchingPortsUtil {
         }
 
         if (destPortIdx != null) { // Looks for matching sourcePort, supports dynamic nodes and flow variables
-            var sourcePort = getSourcePortIdxFromDestPortIdx(sourceNode, destNode, destPortIdx);
+            var sourcePort = getSourcePortIdxFromDestPortIdx(sourceNode, destNode, destPortIdx, wfm);
             return Map.of(sourcePort, destPortIdx);
         }
 
@@ -133,7 +133,12 @@ final class MatchingPortsUtil {
      */
     private static Integer getDestPortIdxFromSourcePortIdx(final NodeContainer sourceNode, final Integer sourcePortIdx,
         final NodeContainer destNode, final WorkflowManager wfm) {
-        var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+        PortType sourcePortType;
+        if(sourceNode ==  wfm) { // We are inside a metanode, the connection source is an 'in' port of the metanode
+            sourcePortType = sourceNode.getInPort(sourcePortIdx).getPortType();
+        } else {
+            sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
+        }
 
         // First try to find an existing matching port
         var destPortFirst = (destNode instanceof WorkflowManager) ? 0 : 1;
@@ -162,8 +167,13 @@ final class MatchingPortsUtil {
      * @return Port index of best matching destination port or {@code -1} if there is none
      */
     private static Integer getSourcePortIdxFromDestPortIdx(final NodeContainer sourceNode, final NodeContainer destNode,
-        final Integer destPortIdx) {
-        var destPortType = destNode.getInPort(destPortIdx).getPortType();
+        final Integer destPortIdx, final WorkflowManager wfm) {
+        PortType destPortType;
+        if(destNode == wfm) { // We are inside a metanode, the connection destination is an 'out' port of the metanode
+            destPortType = destNode.getOutPort(destPortIdx).getPortType();
+        } else {
+            destPortType = destNode.getInPort(destPortIdx).getPortType();
+        }
 
         var sourcePortFirst = (sourceNode instanceof WorkflowManager) ? 0 : 1;
         for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
