@@ -134,7 +134,7 @@ final class MatchingPortsUtil {
     private static Integer getDestPortIdxFromSourcePortIdx(final NodeContainer sourceNode, final Integer sourcePortIdx,
         final NodeContainer destNode, final WorkflowManager wfm) {
         PortType sourcePortType;
-        if(sourceNode ==  wfm) { // We are inside a metanode, the connection source is an 'in' port of the metanode
+        if(sourceNode == wfm) { // We are inside a metanode, the connection source is an 'in' port of the metanode
             sourcePortType = sourceNode.getInPort(sourcePortIdx).getPortType();
         } else {
             sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
