@@ -48,16 +48,13 @@ package org.knime.gateway.impl.webui.jsonrpc.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -71,6 +68,7 @@ import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeRepository;
@@ -91,7 +89,6 @@ import org.knime.js.core.JSCorePlugin;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.googlecode.jsonrpc4j.ExceptionResolver;
@@ -163,8 +160,7 @@ public class GatewayJsonRpcWrapperServiceTests {
         DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler();
         ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
-        JsonRpcClient jsonRpcClient =
-            new JsonRpcClient(mapper, new TestExceptionResolver(notNullValue(String.class), is(-32600)));
+        JsonRpcClient jsonRpcClient = new JsonRpcClient(mapper, new TestExceptionResolver());
         m_serviceProvider = new ServiceProvider() {
 
             @Override
@@ -281,41 +277,35 @@ public class GatewayJsonRpcWrapperServiceTests {
             });
     }
 
-    public static class TestExceptionResolver implements ExceptionResolver {
-
-        private Matcher<String> m_messageMatcher;
-
-        private Matcher<Integer> m_codeMatcher;
-
-        /**
-         * @param messageMatcher
-         * @param codeMatcher
-         */
-        public TestExceptionResolver(final Matcher<String> messageMatcher, final Matcher<Integer> codeMatcher) {
-            m_messageMatcher = messageMatcher;
-            m_codeMatcher = codeMatcher;
-        }
+    private static class TestExceptionResolver implements ExceptionResolver {
 
         @Override
         public Throwable resolveException(final ObjectNode response) {
             assertThat(response.get("jsonrpc").asText(), is("2.0"));
-            JsonNode error = response.get("error");
-            assertThat("unexpected error code", error.get("code").asInt(), m_codeMatcher);
-            JsonNode data = error.get("data");
-            String name = data.get("name").asText();
-            assertNotNull("no stacktrace given", data.get("stackTrace"));
-            String message = error.get("message").asText();
-            assertThat("unexpected exception message", message, m_messageMatcher);
-            try {
-                @SuppressWarnings("unchecked")
-                Class<? extends Exception> cl = (Class<? extends Exception>)Class.forName(name);
-                Constructor<? extends Exception> cons = cl.getConstructor(String.class);
-                return cons.newInstance(message);
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-                    | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                throw new AssertionError("Exception couldn't be created from the json-rpc error", ex);
-            }
+            var error = response.get("error");
+            assertThat("unexpected error code", error.get("code").asInt(), is(-32600));
+            var message = error.get("message").asText();
+            assertThat("unexpected exception message", message, is(notNullValue()));
+            return createExceptionInstance(error.get("data").asText(), message);
         }
+
+        private static Throwable createExceptionInstance(final String exceptionName, final String message) {
+            var knownExceptionClasses = ServiceExceptions.class.getDeclaredClasses();
+            for (var knownExceptionClass : knownExceptionClasses) {
+                if (knownExceptionClass.getSimpleName().equals(exceptionName)) {
+                    try {
+                        return (Throwable)knownExceptionClass.getConstructor(String.class).newInstance(message);
+                    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                            | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+                        throw new AssertionError("Exception couldn't be created from the json-rpc error", ex);
+                    }
+                }
+            }
+            throw new AssertionError("Exception couldn't be created from the json-rpc error");
+        }
+
     }
+
+
 
 }

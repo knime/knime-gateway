@@ -48,26 +48,34 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.impl.webui.jsonrpc.service.GatewayJsonRpcWrapperServiceTests.createClientProxy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.webui.jsonrpc.service.GatewayJsonRpcWrapperServiceTests.TestExceptionResolver;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.googlecode.jsonrpc4j.ExceptionResolver;
 import com.googlecode.jsonrpc4j.JsonRpcClient;
 
 /**
@@ -92,10 +100,45 @@ public class UnexpectedJsonRpcErrorTest {
         serviceMocks.put(WorkflowService.class, () -> workflowServiceMock);
         DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler(serviceMocks);
         ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
-        JsonRpcClient jsonRpcClient = new JsonRpcClient(mapper,
-            new TestExceptionResolver(Matchers.is("an unexpected exception"), Matchers.is(-32601)));
+        JsonRpcClient jsonRpcClient =
+            new JsonRpcClient(mapper, new TestExceptionResolver(Matchers.is("an unexpected exception")));
         WorkflowService workflowServiceProxy = createClientProxy(WorkflowService.class, handler, jsonRpcClient);
         assertThrows(UnsupportedOperationException.class,
             () -> workflowServiceProxy.getWorkflow(null, null, Boolean.FALSE));
     }
+
+    private static class TestExceptionResolver implements ExceptionResolver {
+
+        private Matcher<String> m_messageMatcher;
+
+        /**
+         * @param messageMatcher
+         * @param codeMatcher
+         */
+        public TestExceptionResolver(final Matcher<String> messageMatcher) {
+            m_messageMatcher = messageMatcher;
+        }
+
+        @Override
+        public Throwable resolveException(final ObjectNode response) {
+            assertThat(response.get("jsonrpc").asText(), is("2.0"));
+            JsonNode error = response.get("error");
+            assertThat("unexpected error code", error.get("code").asInt(), Matchers.is(-32601));
+            JsonNode data = error.get("data");
+            String name = data.get("name").asText();
+            assertNotNull("no stacktrace given", data.get("stackTrace"));
+            String message = error.get("message").asText();
+            assertThat("unexpected exception message", message, m_messageMatcher);
+            try {
+                @SuppressWarnings("unchecked")
+                Class<? extends Exception> cl = (Class<? extends Exception>)Class.forName(name);
+                Constructor<? extends Exception> cons = cl.getConstructor(String.class);
+                return cons.newInstance(message);
+            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+                    | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new AssertionError("Exception couldn't be created from the json-rpc error", ex);
+            }
+        }
+    }
+
 }
