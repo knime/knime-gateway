@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.node.port;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,8 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
+import org.knime.core.webui.node.view.flowvariable.FlowVariable;
+import org.knime.core.webui.node.view.flowvariable.FlowVariableViewUtil;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -76,9 +79,9 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
     public PortView createPortView(final FlowVariablePortObject portObject) {
         var port = (NodeOutPort)PortContext.getContext().getNodePort();
         var fos = port.getFlowObjectStack();
-        List<FlowVariable> variables;
+        Collection<org.knime.core.node.workflow.FlowVariable> variables;
         if (fos != null) {
-            variables = fos.getAllAvailableFlowVariables().values().stream().map(FlowVariable::create).toList();
+            variables = fos.getAllAvailableFlowVariables().values();
         } else {
             variables = Collections.emptyList();
         }
@@ -86,7 +89,7 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
 
             @Override
             public Optional<InitialDataService<List<FlowVariable>>> createInitialDataService() {
-                return Optional.of(InitialDataService.builder(() -> variables).build());
+                return Optional.of(FlowVariableViewUtil.createInitialDataService(variables));
             }
 
             @Override
