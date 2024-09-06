@@ -90,7 +90,6 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         var nodePort = (NodeOutPort)PortContext.getContext().getNodePort();
         var snc = nodePort.getConnectedNodeContainer();
         var tableId = "table_" + TableViewUtil.toTableId(snc.getID()) + "_" + table.getBufferedTableId();
-        TableViewUtil.registerRendererRegistryCleanup(tableId, snc);
         var portIndex = getPortIndex(nodePort);
         var hiLiteHandler = TableViewManager.getOutHiLiteHandler(snc, portIndex - 1).orElse(null);
         Supplier<Set<RowKey>> selectionSupplier;
