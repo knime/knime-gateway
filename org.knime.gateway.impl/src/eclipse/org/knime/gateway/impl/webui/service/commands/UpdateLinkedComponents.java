@@ -53,6 +53,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.knime.core.node.ExecutionMonitor;
@@ -97,9 +98,11 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     private List<UpdateLog> m_updateLogs;
 
     /**
-     * The aggregate status to return with the command result entity
+     * The aggregate status properties to return with the command result entity
      */
     private StatusEnum m_status;
+
+    private List<String> m_details;
 
     UpdateLinkedComponents(final UpdateLinkedComponentsCommandEnt commandEnt) {
         m_nodeIdEnts = commandEnt.getNodeIds();
@@ -122,6 +125,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             .map(UpdateLinkedComponents::updateLinkedComponent)//
             .toList();
         m_status = determineAggregateStatus(m_updateLogs);
+        m_details = getDetails(m_status, m_updateLogs);
 
         if (m_status == StatusEnum.ERROR) { // Undo everything if there was an error
             m_updateLogs.forEach(UpdateLinkedComponents::undoInternal);
@@ -137,6 +141,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         }
         m_updateLogs = null;
         m_status = null;
+        m_details = null;
     }
 
     private static void undoInternal(final UpdateLog log) {
@@ -161,6 +166,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             .setKind(CommandResultEnt.KindEnum.UPDATE_LINKED_COMPONENTS_RESULT)//
             .setSnapshotId(snapshotId)//
             .setStatus(m_status)//
+            .setDetails(m_details)//
             .build();
     }
 
@@ -193,6 +199,17 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             });
     }
 
+    private static List<String> getDetails(final StatusEnum status, final List<UpdateLog> updateLogs) {
+        if (status == StatusEnum.ERROR) {
+            return updateLogs.stream()//
+                .map(UpdateLog::message)//
+                .filter(Objects::nonNull)//
+                .toList();
+        }
+
+        return null;
+    }
+
     private static UpdateLog updateLinkedComponent(final SubNodeContainer component) {
         final var oldComponentId = component.getID();
         final var wfm = component.getParent();
@@ -201,8 +218,13 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         LOGGER.debug("Attempting to update <%s> from <%s>"//
             .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
 
-        if (!needsUpdate(oldComponentId, wfm)) {
-            return new UpdateLog(oldComponentId, wfm, null, StatusEnum.UNCHANGED);
+        try {
+            if (!needsUpdate(oldComponentId, wfm)) {
+                return new UpdateLog(oldComponentId, wfm, null, StatusEnum.UNCHANGED, null);
+            }
+        } catch (IOException e) {
+            LOGGER.debug("Node with ID <%s> unexpectedly doesn't need an update.".formatted(oldComponentId), e);
+            return logErrorAndReturnUpdateLog(nct, "Error while checking for update availability.", e);
         }
 
         final NodeContainerTemplateLinkUpdateResult updateResult;
@@ -212,36 +234,36 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             // This will return an update result even if no update was necessary or possible
             updateResult = nct.getParent().updateMetaNodeLink(oldComponentId, exec, loadHelper);
         } catch (Throwable e) {
-            return logErrorAndReturnEmptyUpdateLog(nct, e); // If f.e. the network is unreachable
+            return logErrorAndReturnUpdateLog(nct, null, e); // If f.e. the network is unreachable
         }
 
         final var persistor = updateResult.getUndoPersistor();
         if (persistor == null) {
-            return logErrorAndReturnEmptyUpdateLog(nct, null); // If f.e. the linked component could not be found
+            return logErrorAndReturnUpdateLog(nct, null, null); // If f.e. the linked component could not be found
         }
 
         final var componentId = updateResult.getNCTemplate().getID();
         var status = updateResult.getType() == LoadResultEntryType.Ok ? StatusEnum.SUCCESS : StatusEnum.ERROR;
-        return new UpdateLog(componentId, wfm, persistor, status);
+        return new UpdateLog(componentId, wfm, persistor, status, null);
     }
 
-    private static boolean needsUpdate(final NodeID componentId, final WorkflowManager parent) {
-        try {
-            return parent.checkUpdateMetaNodeLink(componentId, new WorkflowLoadHelper(true, parent.getContextV2()));
-        } catch (IOException e) {
-            LOGGER.debug("Node with ID <%s> unexpectedly doesn't need an update.".formatted(componentId), e);
-            return false;
-        }
+    private static boolean needsUpdate(final NodeID componentId, final WorkflowManager parent) throws IOException {
+        return parent.checkUpdateMetaNodeLink(componentId, new WorkflowLoadHelper(true, parent.getContextV2()));
     }
 
-    private static UpdateLog logErrorAndReturnEmptyUpdateLog(final NodeContainerTemplate nct, final Throwable t) {
-        LOGGER.error("Could not update <%s> from <%s>"//
-            .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()), t);
-        return new UpdateLog(null, null, null, StatusEnum.ERROR);
+    private static UpdateLog logErrorAndReturnUpdateLog(final NodeContainerTemplate nct, final String reason,
+        final Throwable t) {
+        var message = "Could not update <%s> from <%s>%s".formatted(//
+            nct.getNameWithID(), //
+            nct.getTemplateInformation().getSourceURI(), //
+            reason != null ? (": " + reason) : "."//
+        );
+        LOGGER.error(message, t);
+        return new UpdateLog(null, null, null, StatusEnum.ERROR, message);
     }
 
     private static record UpdateLog(NodeID componentId, WorkflowManager wfm, WorkflowPersistor persistor,
-        StatusEnum status) {
+        StatusEnum status, String message) {
         //
     }
 
