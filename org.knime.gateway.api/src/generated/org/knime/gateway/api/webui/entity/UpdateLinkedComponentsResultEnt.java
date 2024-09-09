@@ -64,7 +64,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandResultEnt {
 
   /**
-   * Whether the updated succeeded or an error occured and no component link was updated.
+   * Whether the update succeeded or an error occured and no component link was updated.
    */
   public enum StatusEnum {
     SUCCESS("success"),
@@ -88,10 +88,16 @@ public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandR
 
 
   /**
-   * Whether the updated succeeded or an error occured and no component link was updated.
+   * Whether the update succeeded or an error occured and no component link was updated.
    * @return status , never <code>null</code>
    **/
   public StatusEnum getStatus();
+
+  /**
+   * Optional detail messages describing the update results
+   * @return details 
+   **/
+  public java.util.List<String> getDetails();
 
 
   @Override
@@ -101,6 +107,7 @@ public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandR
       valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("status", Pair.create(getStatus(), e.getStatus()));
+      valueConsumer.accept("details", Pair.create(getDetails(), e.getDetails()));
   }
 
     /**
@@ -125,12 +132,20 @@ public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandR
         UpdateLinkedComponentsResultEntBuilder setKind(KindEnum kind);
         
         /**
-         * Whether the updated succeeded or an error occured and no component link was updated.
+         * Whether the update succeeded or an error occured and no component link was updated.
          * 
          * @param status the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         UpdateLinkedComponentsResultEntBuilder setStatus(StatusEnum status);
+        
+        /**
+         * Optional detail messages describing the update results
+         * 
+         * @param details the property value,  
+         * @return this entity builder for chaining
+         */
+        UpdateLinkedComponentsResultEntBuilder setDetails(java.util.List<String> details);
         
         
         /**

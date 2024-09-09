@@ -82,6 +82,10 @@ public interface UpdateLinkedComponentsResultEntMixIn extends UpdateLinkedCompon
     @JsonProperty("status")
     public StatusEnum getStatus();
     
+    @Override
+    @JsonProperty("details")
+    public java.util.List<String> getDetails();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -106,6 +110,10 @@ public interface UpdateLinkedComponentsResultEntMixIn extends UpdateLinkedCompon
         @Override
         @JsonProperty("status")
         public UpdateLinkedComponentsResultEntMixInBuilder setStatus(final StatusEnum status);
+        
+        @Override
+        @JsonProperty("details")
+        public UpdateLinkedComponentsResultEntMixInBuilder setDetails(final java.util.List<String> details);
         
     }
 

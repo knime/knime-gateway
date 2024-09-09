@@ -56,6 +56,7 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
  * @param snapshotId
  * @param kind
  * @param status
+ * @param details
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,7 +64,8 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
 public record DefaultUpdateLinkedComponentsResultEnt(
     String snapshotId,
     KindEnum kind,
-    StatusEnum status) implements UpdateLinkedComponentsResultEnt {
+    StatusEnum status,
+    java.util.List<String> details) implements UpdateLinkedComponentsResultEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -94,6 +96,11 @@ public record DefaultUpdateLinkedComponentsResultEnt(
         return status;
     }
     
+    @Override
+    public java.util.List<String> getDetails() {
+        return details;
+    }
+    
     /**
      * A builder for {@link DefaultUpdateLinkedComponentsResultEnt}.
      */
@@ -104,6 +111,8 @@ public record DefaultUpdateLinkedComponentsResultEnt(
         private KindEnum m_kind;
 
         private StatusEnum m_status;
+
+        private java.util.List<String> m_details;
 
         @Override
         public DefaultUpdateLinkedComponentsResultEntBuilder setSnapshotId(String snapshotId) {
@@ -127,11 +136,18 @@ public record DefaultUpdateLinkedComponentsResultEnt(
         }
 
         @Override
+        public DefaultUpdateLinkedComponentsResultEntBuilder setDetails(java.util.List<String> details) {
+             m_details = details;
+             return this;
+        }
+
+        @Override
         public DefaultUpdateLinkedComponentsResultEnt build() {
             return new DefaultUpdateLinkedComponentsResultEnt(
                 immutable(m_snapshotId),
                 immutable(m_kind),
-                immutable(m_status));
+                immutable(m_status),
+                immutable(m_details));
         }
     
     }
