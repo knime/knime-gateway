@@ -258,15 +258,12 @@ final class MatchingPortsUtil {
         var destPortFirst = determineFirstNonFlowVariablePort(destNode);
         var matchingPorts = new TreeMap<Integer, Integer>();
         for (var destPortIdx = destPortFirst; destPortIdx < destNode.getNrInPorts(); destPortIdx++) {
-            var destPortType = destNode.getInPort(destPortIdx).getPortType();
             for (var sourcePortIdx = sourcePortFirst; sourcePortIdx < sourceNode.getNrOutPorts(); sourcePortIdx++) {
-                var sourcePortType = sourceNode.getOutPort(sourcePortIdx).getPortType();
-                var arePortsCompatible = CoreUtil.arePortTypesCompatible(sourcePortType, destPortType);
-                var isSourcePortUnconnected =
-                    wfm.getOutgoingConnectionsFor(sourceNode.getID(), sourcePortIdx).isEmpty();
+                var canAddConnection =
+                    wfm.canAddNewConnection(sourceNode.getID(), sourcePortIdx, destNode.getID(), destPortIdx);
                 var arePortsAbsentInMap =
                     !matchingPorts.containsKey(sourcePortIdx) && !matchingPorts.containsValue(destPortIdx);
-                if (arePortsCompatible && isSourcePortUnconnected && arePortsAbsentInMap) {
+                if (canAddConnection && arePortsAbsentInMap) {
                     matchingPorts.put(sourcePortIdx, destPortIdx);
                 }
             }

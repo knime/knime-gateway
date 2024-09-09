@@ -937,22 +937,33 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var rowSplitterFactory = "org.knime.base.node.preproc.filter.row2.RowSplitterNodeFactory";
         var columnAppenderFactory = "org.knime.base.node.preproc.columnappend.ColumnAppenderNodeFactory";
         var normalizerFactory = "org.knime.base.node.preproc.pmml.normalize.NormalizerPMMLNodeFactory2";
+        var columnFilter = "org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory";
 
         // add a node and auto-connect all compatible ports
         var sourceNodeId = ((AddNodeResultEnt)ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowSplitterFactory, null, 32, 64, null, null, null))).getNewNodeId();
         var result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(columnAppenderFactory, null, 64, 128, sourceNodeId, null, NodeRelationEnum.SUCCESSORS));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), columnAppenderFactory, 64, 128, result);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, true); // got auto-connected
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, true); // got auto-connected
+        var snapshot = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE);
+        checkForNode(snapshot, columnAppenderFactory, 64, 128, result);
+        checkForConnection(snapshot, sourceNodeId, 1, result, true); // got auto-connected
+        checkForConnection(snapshot, sourceNodeId, 2, result, true); // got auto-connected
 
         // add a another node and try to auto-connect auto-guessed ports
         result = ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(normalizerFactory, null, 128, 256, sourceNodeId, null, NodeRelationEnum.SUCCESSORS));
-        checkForNode(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), normalizerFactory, 128, 256, result);
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 1, result, false); // not auto-connected
-        checkForConnection(ws().getWorkflow(wfId, getRootID(), Boolean.FALSE), sourceNodeId, 2, result, false); // not auto-connected
+        snapshot = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE);
+        checkForNode(snapshot, normalizerFactory, 128, 256, result);
+        checkForConnection(snapshot, sourceNodeId, 1, result, true); // got auto-connected, port with 2 connections
+        checkForConnection(snapshot, sourceNodeId, 2, result, false); // not auto-connected
+
+        // add a node as a predecessor and auto-connect auto-guessed ports
+        result = ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand(columnFilter, null, 128, 256, sourceNodeId, null, NodeRelationEnum.PREDECESSORS));
+        snapshot = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE);
+        checkForNode(snapshot, columnFilter, 128, 256, result);
+        var predecessorId = ((AddNodeResultEnt)result).getNewNodeId();
+        checkForConnection(snapshot, predecessorId, 1, sourceNodeId, true); // got auto-connected
 
     }
 
