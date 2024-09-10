@@ -29,7 +29,7 @@
   } ],
   "options" : [ {
     "fields" : [ {
-      "description" : "\n\t\t\t<ul>\n\t\t\t\t<li><b>Intersection:</b> Use only the columns that appear\n                    in all input tables. Any other column is ignored and won't appear\n                    in the output table. Columns are matched by name.</li>\n                <li><b>Union:</b> Use all columns from all input\n                    tables. Fill rows with missing values if they miss cells for some columns.</li>\n\t\t\t</ul>\n\t\t",
+      "description" : "\n\t\t\t<ul>\n                <li><b>Union:</b> Use all columns from all input\n                    tables. Fill rows with missing values if they miss cells for some columns.</li>\n\t\t\t\t<li><b>Intersection:</b> Use only the columns that appear\n                    in all input tables. Any other column is ignored and won't appear\n                    in the output table. Columns are matched by name.</li>\n\t\t\t</ul>\n\t\t",
       "name" : "How to combine input columns",
       "optional" : false
     }, {
@@ -37,7 +37,7 @@
       "name" : "RowID handling",
       "optional" : false
     }, {
-      "description" : "\n\t\t\tSelect how duplicate RowIDs are handled:\n            <ul>\n                <li><b>Skip</b>: Duplicate RowIDs in the additional tables are not added to the output table. This\n                    option is memory intensive because it caches the RowIDs to find duplicates and requires full\n                    data duplication.</li>\n                <li><b>Append suffix</b>: The output table will include all rows, but duplicate RowIDs will have a\n                    suffix added. This method is also memory intensive, similar to the \"Skip\" option.</li>\n                <li><b>Fail</b>: The node will fail during execution if duplicate RowIDs are encountered. This\n                    option is efficient for checking uniqueness.</li>\n            </ul>\n\t\t",
+      "description" : "\n\t\t\tSelect how duplicate RowIDs are handled:\n            <ul>\n                <li><b>Append suffix</b>: The output table will include all rows, but duplicate RowIDs will have a\n                    suffix added. This method is also memory intensive, similar to the \"Skip\" option.</li>\n                <li><b>Skip</b>: Duplicate RowIDs in the additional tables are not added to the output table. This\n                    option is memory intensive because it caches the RowIDs to find duplicates and requires full\n                    data duplication.</li>\n                <li><b>Fail</b>: The node will fail during execution if duplicate RowIDs are encountered. This\n                    option is efficient for checking uniqueness.</li>\n            </ul>\n\t\t",
       "name" : "Duplicate RowID strategy",
       "optional" : false
     }, {
