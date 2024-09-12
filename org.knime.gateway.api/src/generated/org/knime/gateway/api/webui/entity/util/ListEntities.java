@@ -149,6 +149,7 @@ import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
@@ -313,6 +314,7 @@ public class ListEntities {
         res.add(SpaceGroupEnt.class);
         res.add(SpaceItemEnt.class);
         res.add(SpaceItemReferenceEnt.class);
+        res.add(SpaceItemVersionEnt.class);
         res.add(SpacePathSegmentEnt.class);
         res.add(SpaceProviderEnt.class);
         res.add(StyleRangeEnt.class);
@@ -462,6 +464,7 @@ public class ListEntities {
         res.add(SpaceGroupEnt.SpaceGroupEntBuilder.class);
         res.add(SpaceItemEnt.SpaceItemEntBuilder.class);
         res.add(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class);
+        res.add(SpaceItemVersionEnt.SpaceItemVersionEntBuilder.class);
         res.add(SpacePathSegmentEnt.SpacePathSegmentEntBuilder.class);
         res.add(SpaceProviderEnt.SpaceProviderEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);

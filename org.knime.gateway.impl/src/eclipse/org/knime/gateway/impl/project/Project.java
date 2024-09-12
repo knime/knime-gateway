@@ -49,6 +49,7 @@ import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 
 /**
  * Represents a workflow or component project.
@@ -143,6 +144,14 @@ public interface Project {
          * @return the relative path of the original space item - usually only given for the local space
          */
         default Optional<String> getRelativePath() {
+            return Optional.empty();
+        }
+
+        /**
+         * @return The item version of the workflow/component project, or absent for latest version
+         * @since 5.4
+         */
+        default Optional<SpaceItemVersionEnt> getItemVersion() {
             return Optional.empty();
         }
     }

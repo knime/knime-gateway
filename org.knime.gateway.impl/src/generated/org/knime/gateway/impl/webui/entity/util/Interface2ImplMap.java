@@ -254,6 +254,8 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt.SpaceItemVersionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemVersionEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
@@ -660,6 +662,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == SpaceItemReferenceEntBuilder.class) {
             return (B)new DefaultSpaceItemReferenceEnt.DefaultSpaceItemReferenceEntBuilder();
+        }        
+        if(clazz == SpaceItemVersionEntBuilder.class) {
+            return (B)new DefaultSpaceItemVersionEnt.DefaultSpaceItemVersionEntBuilder();
         }        
         if(clazz == SpacePathSegmentEntBuilder.class) {
             return (B)new DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder();

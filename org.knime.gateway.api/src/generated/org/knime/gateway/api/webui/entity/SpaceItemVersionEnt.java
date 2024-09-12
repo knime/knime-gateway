@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,136 +55,115 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Describes from where a workflow or component project originates.
+ * SpaceItemVersionEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceItemReferenceEnt extends GatewayEntity {
+public interface SpaceItemVersionEnt extends GatewayEntity {
 
-  /**
-   * Gets or Sets projectType
-   */
-  public enum ProjectTypeEnum {
-    WORKFLOW("Workflow"),
-    
-    COMPONENT("Component");
-
-    private String value;
-
-    ProjectTypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-
-  /**
-   * Get providerId
-   * @return providerId , never <code>null</code>
-   **/
-  public String getProviderId();
-
-  /**
-   * Get spaceId
-   * @return spaceId , never <code>null</code>
-   **/
-  public String getSpaceId();
-
-  /**
-   * Get itemId
-   * @return itemId , never <code>null</code>
-   **/
-  public String getItemId();
-
-  /**
-   * Get projectType
-   * @return projectType 
-   **/
-  public ProjectTypeEnum getProjectType();
 
   /**
    * Get version
    * @return version 
    **/
-  public SpaceItemVersionEnt getVersion();
+  public Integer getVersion();
 
   /**
-   * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
-   * @return ancestorItemIds 
+   * Get title
+   * @return title 
    **/
-  public java.util.List<String> getAncestorItemIds();
+  public String getTitle();
+
+  /**
+   * Get description
+   * @return description 
+   **/
+  public String getDescription();
+
+  /**
+   * Get author
+   * @return author 
+   **/
+  public String getAuthor();
+
+  /**
+   * Get authorAccountId
+   * @return authorAccountId 
+   **/
+  public String getAuthorAccountId();
+
+  /**
+   * Get createdOn
+   * @return createdOn 
+   **/
+  public String getCreatedOn();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (SpaceItemReferenceEnt)other;
-      valueConsumer.accept("providerId", Pair.create(getProviderId(), e.getProviderId()));
-      valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
-      valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
-      valueConsumer.accept("projectType", Pair.create(getProjectType(), e.getProjectType()));
+      var e = (SpaceItemVersionEnt)other;
       valueConsumer.accept("version", Pair.create(getVersion(), e.getVersion()));
-      valueConsumer.accept("ancestorItemIds", Pair.create(getAncestorItemIds(), e.getAncestorItemIds()));
+      valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("author", Pair.create(getAuthor(), e.getAuthor()));
+      valueConsumer.accept("authorAccountId", Pair.create(getAuthorAccountId(), e.getAuthorAccountId()));
+      valueConsumer.accept("createdOn", Pair.create(getCreatedOn(), e.getCreatedOn()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface SpaceItemReferenceEntBuilder extends GatewayEntityBuilder<SpaceItemReferenceEnt> {
+    public interface SpaceItemVersionEntBuilder extends GatewayEntityBuilder<SpaceItemVersionEnt> {
 
-        /**
-   		 * Set providerId
-         * 
-         * @param providerId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        SpaceItemReferenceEntBuilder setProviderId(String providerId);
-        
-        /**
-   		 * Set spaceId
-         * 
-         * @param spaceId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        SpaceItemReferenceEntBuilder setSpaceId(String spaceId);
-        
-        /**
-   		 * Set itemId
-         * 
-         * @param itemId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        SpaceItemReferenceEntBuilder setItemId(String itemId);
-        
-        /**
-   		 * Set projectType
-         * 
-         * @param projectType the property value,  
-         * @return this entity builder for chaining
-         */
-        SpaceItemReferenceEntBuilder setProjectType(ProjectTypeEnum projectType);
-        
         /**
    		 * Set version
          * 
          * @param version the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemReferenceEntBuilder setVersion(SpaceItemVersionEnt version);
+        SpaceItemVersionEntBuilder setVersion(Integer version);
         
         /**
-         * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
+   		 * Set title
          * 
-         * @param ancestorItemIds the property value,  
+         * @param title the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemReferenceEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
+        SpaceItemVersionEntBuilder setTitle(String title);
+        
+        /**
+   		 * Set description
+         * 
+         * @param description the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceItemVersionEntBuilder setDescription(String description);
+        
+        /**
+   		 * Set author
+         * 
+         * @param author the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceItemVersionEntBuilder setAuthor(String author);
+        
+        /**
+   		 * Set authorAccountId
+         * 
+         * @param authorAccountId the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceItemVersionEntBuilder setAuthorAccountId(String authorAccountId);
+        
+        /**
+   		 * Set createdOn
+         * 
+         * @param createdOn the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceItemVersionEntBuilder setCreatedOn(String createdOn);
         
         
         /**
@@ -195,7 +173,7 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SpaceItemReferenceEnt build();
+        SpaceItemVersionEnt build();
     
     }
 

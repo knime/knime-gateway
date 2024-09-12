@@ -46,152 +46,133 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
-
 /**
- * Describes from where a workflow or component project originates.
+ * DefaultSpaceItemVersionEnt
  *
- * @param providerId
- * @param spaceId
- * @param itemId
- * @param projectType
  * @param version
- * @param ancestorItemIds
+ * @param title
+ * @param description
+ * @param author
+ * @param authorAccountId
+ * @param createdOn
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultSpaceItemReferenceEnt(
-    String providerId,
-    String spaceId,
-    String itemId,
-    ProjectTypeEnum projectType,
-    SpaceItemVersionEnt version,
-    java.util.List<String> ancestorItemIds) implements SpaceItemReferenceEnt {
+public record DefaultSpaceItemVersionEnt(
+    Integer version,
+    String title,
+    String description,
+    String author,
+    String authorAccountId,
+    String createdOn) implements SpaceItemVersionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultSpaceItemReferenceEnt {
-        if(providerId == null) {
-            throw new IllegalArgumentException("<providerId> must not be null.");
-        }
-        if(spaceId == null) {
-            throw new IllegalArgumentException("<spaceId> must not be null.");
-        }
-        if(itemId == null) {
-            throw new IllegalArgumentException("<itemId> must not be null.");
-        }
+    public DefaultSpaceItemVersionEnt {
     }
 
     @Override
     public String getTypeID() {
-        return "SpaceItemReference";
+        return "SpaceItemVersion";
     }
   
     @Override
-    public String getProviderId() {
-        return providerId;
-    }
-    
-    @Override
-    public String getSpaceId() {
-        return spaceId;
-    }
-    
-    @Override
-    public String getItemId() {
-        return itemId;
-    }
-    
-    @Override
-    public ProjectTypeEnum getProjectType() {
-        return projectType;
-    }
-    
-    @Override
-    public SpaceItemVersionEnt getVersion() {
+    public Integer getVersion() {
         return version;
     }
     
     @Override
-    public java.util.List<String> getAncestorItemIds() {
-        return ancestorItemIds;
+    public String getTitle() {
+        return title;
+    }
+    
+    @Override
+    public String getDescription() {
+        return description;
+    }
+    
+    @Override
+    public String getAuthor() {
+        return author;
+    }
+    
+    @Override
+    public String getAuthorAccountId() {
+        return authorAccountId;
+    }
+    
+    @Override
+    public String getCreatedOn() {
+        return createdOn;
     }
     
     /**
-     * A builder for {@link DefaultSpaceItemReferenceEnt}.
+     * A builder for {@link DefaultSpaceItemVersionEnt}.
      */
-    public static class DefaultSpaceItemReferenceEntBuilder implements SpaceItemReferenceEntBuilder {
+    public static class DefaultSpaceItemVersionEntBuilder implements SpaceItemVersionEntBuilder {
 
-        private String m_providerId;
+        private Integer m_version;
 
-        private String m_spaceId;
+        private String m_title;
 
-        private String m_itemId;
+        private String m_description;
 
-        private ProjectTypeEnum m_projectType;
+        private String m_author;
 
-        private SpaceItemVersionEnt m_version;
+        private String m_authorAccountId;
 
-        private java.util.List<String> m_ancestorItemIds;
-
-        @Override
-        public DefaultSpaceItemReferenceEntBuilder setProviderId(String providerId) {
-             if(providerId == null) {
-                 throw new IllegalArgumentException("<providerId> must not be null.");
-             }
-             m_providerId = providerId;
-             return this;
-        }
+        private String m_createdOn;
 
         @Override
-        public DefaultSpaceItemReferenceEntBuilder setSpaceId(String spaceId) {
-             if(spaceId == null) {
-                 throw new IllegalArgumentException("<spaceId> must not be null.");
-             }
-             m_spaceId = spaceId;
-             return this;
-        }
-
-        @Override
-        public DefaultSpaceItemReferenceEntBuilder setItemId(String itemId) {
-             if(itemId == null) {
-                 throw new IllegalArgumentException("<itemId> must not be null.");
-             }
-             m_itemId = itemId;
-             return this;
-        }
-
-        @Override
-        public DefaultSpaceItemReferenceEntBuilder setProjectType(ProjectTypeEnum projectType) {
-             m_projectType = projectType;
-             return this;
-        }
-
-        @Override
-        public DefaultSpaceItemReferenceEntBuilder setVersion(SpaceItemVersionEnt version) {
+        public DefaultSpaceItemVersionEntBuilder setVersion(Integer version) {
              m_version = version;
              return this;
         }
 
         @Override
-        public DefaultSpaceItemReferenceEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds) {
-             m_ancestorItemIds = ancestorItemIds;
+        public DefaultSpaceItemVersionEntBuilder setTitle(String title) {
+             m_title = title;
              return this;
         }
 
         @Override
-        public DefaultSpaceItemReferenceEnt build() {
-            return new DefaultSpaceItemReferenceEnt(
-                immutable(m_providerId),
-                immutable(m_spaceId),
-                immutable(m_itemId),
-                immutable(m_projectType),
+        public DefaultSpaceItemVersionEntBuilder setDescription(String description) {
+             m_description = description;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemVersionEntBuilder setAuthor(String author) {
+             m_author = author;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemVersionEntBuilder setAuthorAccountId(String authorAccountId) {
+             m_authorAccountId = authorAccountId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemVersionEntBuilder setCreatedOn(String createdOn) {
+             m_createdOn = createdOn;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemVersionEnt build() {
+            return new DefaultSpaceItemVersionEnt(
                 immutable(m_version),
-                immutable(m_ancestorItemIds));
+                immutable(m_title),
+                immutable(m_description),
+                immutable(m_author),
+                immutable(m_authorAccountId),
+                immutable(m_createdOn));
         }
     
     }

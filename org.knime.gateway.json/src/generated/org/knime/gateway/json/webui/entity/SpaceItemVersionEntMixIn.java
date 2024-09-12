@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemReferenceEnt.DefaultSpaceItemReferenceEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemVersionEnt.DefaultSpaceItemVersionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,38 +60,38 @@ import org.knime.gateway.impl.webui.entity.DefaultSpaceItemReferenceEnt.DefaultS
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultSpaceItemReferenceEntBuilder.class)
-@JsonSerialize(as=SpaceItemReferenceEnt.class)
+@JsonDeserialize(builder=DefaultSpaceItemVersionEntBuilder.class)
+@JsonSerialize(as=SpaceItemVersionEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
+public interface SpaceItemVersionEntMixIn extends SpaceItemVersionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("providerId")
-    public String getProviderId();
-    
-    @Override
-    @JsonProperty("spaceId")
-    public String getSpaceId();
-    
-    @Override
-    @JsonProperty("itemId")
-    public String getItemId();
-    
-    @Override
-    @JsonProperty("projectType")
-    public ProjectTypeEnum getProjectType();
-    
-    @Override
     @JsonProperty("version")
-    public SpaceItemVersionEnt getVersion();
+    public Integer getVersion();
     
     @Override
-    @JsonProperty("ancestorItemIds")
-    public java.util.List<String> getAncestorItemIds();
+    @JsonProperty("title")
+    public String getTitle();
+    
+    @Override
+    @JsonProperty("description")
+    public String getDescription();
+    
+    @Override
+    @JsonProperty("author")
+    public String getAuthor();
+    
+    @Override
+    @JsonProperty("authorAccountId")
+    public String getAuthorAccountId();
+    
+    @Override
+    @JsonProperty("createdOn")
+    public String getCreatedOn();
     
 
     /**
@@ -102,34 +101,34 @@ public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface SpaceItemReferenceEntMixInBuilder extends SpaceItemReferenceEntBuilder {
+    public static interface SpaceItemVersionEntMixInBuilder extends SpaceItemVersionEntBuilder {
     
         @Override
-        public SpaceItemReferenceEntMixIn build();
+        public SpaceItemVersionEntMixIn build();
     
-        @Override
-        @JsonProperty("providerId")
-        public SpaceItemReferenceEntMixInBuilder setProviderId(final String providerId);
-        
-        @Override
-        @JsonProperty("spaceId")
-        public SpaceItemReferenceEntMixInBuilder setSpaceId(final String spaceId);
-        
-        @Override
-        @JsonProperty("itemId")
-        public SpaceItemReferenceEntMixInBuilder setItemId(final String itemId);
-        
-        @Override
-        @JsonProperty("projectType")
-        public SpaceItemReferenceEntMixInBuilder setProjectType(final ProjectTypeEnum projectType);
-        
         @Override
         @JsonProperty("version")
-        public SpaceItemReferenceEntMixInBuilder setVersion(final SpaceItemVersionEnt version);
+        public SpaceItemVersionEntMixInBuilder setVersion(final Integer version);
         
         @Override
-        @JsonProperty("ancestorItemIds")
-        public SpaceItemReferenceEntMixInBuilder setAncestorItemIds(final java.util.List<String> ancestorItemIds);
+        @JsonProperty("title")
+        public SpaceItemVersionEntMixInBuilder setTitle(final String title);
+        
+        @Override
+        @JsonProperty("description")
+        public SpaceItemVersionEntMixInBuilder setDescription(final String description);
+        
+        @Override
+        @JsonProperty("author")
+        public SpaceItemVersionEntMixInBuilder setAuthor(final String author);
+        
+        @Override
+        @JsonProperty("authorAccountId")
+        public SpaceItemVersionEntMixInBuilder setAuthorAccountId(final String authorAccountId);
+        
+        @Override
+        @JsonProperty("createdOn")
+        public SpaceItemVersionEntMixInBuilder setCreatedOn(final String createdOn);
         
     }
 
