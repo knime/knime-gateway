@@ -50,6 +50,8 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -65,6 +67,7 @@ import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
+import org.knime.shared.workflow.storage.multidir.loader.StandaloneLoader;
 import org.knime.shared.workflow.storage.text.util.ObjectMapperUtil;
 import org.knime.shared.workflow.storage.util.PasswordRedactor;
 
@@ -149,6 +152,18 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
         } catch (JsonProcessingException | ObfuscatorException e) {
             LOGGER.error("Cannot copy to system clipboard: ", e);
         }
+
+        try {
+            var nodeContainerDir = wfm.getProjectWFM().getNodeContainerDirectory();
+            if (nodeContainerDir != null) {
+                var inputDir = nodeContainerDir.getFile();
+                var wf = StandaloneLoader.load(inputDir).getContents();
+                mapper.writeValue(new File(inputDir, "workflow.json"), wf);
+            }
+        } catch (IOException ex) {
+            throw new OperationNotAllowedException(ex.getMessage());
+        }
+
         return false; // The workflow didn't change
     }
 
