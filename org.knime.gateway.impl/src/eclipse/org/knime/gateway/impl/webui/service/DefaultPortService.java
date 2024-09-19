@@ -65,6 +65,7 @@ import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
+import org.knime.gateway.api.entity.DataValueViewEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.webui.service.PortService;
@@ -148,9 +149,8 @@ public class DefaultPortService implements PortService {
                 String.format("No port view available because the port at index %d for node %s is inactive.", portIdx,
                     nc.getNameWithID()));
         }
+        return new DataValueViewEnt(DataValueWrapper.of(nc, portIdx, rowIdx, colIdx, viewIdx), DataValueViewManager.getInstance());
 
-        return DataValueViewManager.getInstance()
-            .getDataValueView(DataValueWrapper.of(nc, portIdx, rowIdx, colIdx, viewIdx));
     }
 
     private static boolean isExecutionStateValid(final PortViewDescriptor viewDescriptor, final NodeContainer nc,

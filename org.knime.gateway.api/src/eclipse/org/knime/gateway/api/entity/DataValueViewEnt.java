@@ -64,7 +64,7 @@ public class DataValueViewEnt extends UIExtensionEnt<DataValueWrapper> {
      * @param dataServiceManager
      * @param pageType
      */
-    protected DataValueViewEnt(final DataValueWrapper wrapper, final DataValueViewManager manager) {
+    public DataValueViewEnt(final DataValueWrapper wrapper, final DataValueViewManager manager) {
         super(wrapper, manager.getPageResourceManager(), manager.getDataServiceManager(), PageType.DATA_VALUE);
     }
 
