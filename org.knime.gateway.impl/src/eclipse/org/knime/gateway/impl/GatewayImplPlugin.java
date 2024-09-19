@@ -54,10 +54,12 @@ import java.util.Optional;
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
 import org.knime.core.data.StringValue;
+import org.knime.core.data.json.JSONValue;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
+import org.knime.core.webui.node.view.table.TableView;
 import org.knime.core.webui.node.view.table.datavalue.DataValueView;
 import org.knime.core.webui.node.view.table.datavalue.DataValueViewFactory;
 import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
@@ -82,8 +84,7 @@ public class GatewayImplPlugin implements BundleActivator {
 
     private static GatewayImplPlugin instance;
 
-    private ServiceTracker<APCustomizationProviderService, APCustomizationProviderService>
-            m_customizationServiceTracker;
+    private ServiceTracker<APCustomizationProviderService, APCustomizationProviderService> m_customizationServiceTracker;
 
     @Override
     public void start(final BundleContext context) throws Exception {
@@ -144,6 +145,32 @@ public class GatewayImplPlugin implements BundleActivator {
 
         });
 
+        DataValueViewManager.registerDataValueViewFactory(JSONValue.class, new DataValueViewFactory<JSONValue>() {
+
+            @Override
+            public DataValueView[] createDataValueViews(final JSONValue value) {
+                return new DataValueView[]{new DataValueView() {
+
+                    @Override
+                    public Optional<RpcDataService> createRpcDataService() {
+                        return Optional.empty();
+                    }
+
+                    @Override
+                    public Optional<InitialDataService<String>> createInitialDataService() {
+                        return Optional.of(InitialDataService.builder(() -> value.getJsonValue().toString()).build());
+                    }
+
+                    @Override
+                    public Page getPage() {
+                        return Page.builder(TableView.class, "js-src/data-value-renderers/dist", "JSONView.html")
+                            .addResourceDirectory("assets").build();
+                    }
+                }};
+            }
+
+        });
+
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();
     }
@@ -156,7 +183,7 @@ public class GatewayImplPlugin implements BundleActivator {
     /** @return The currently active customisation, not null. */
     public APCustomization getCustomization() {
         return Optional.ofNullable(m_customizationServiceTracker.getService())
-                .map(APCustomizationProviderService::getCustomization).orElse(APCustomization.DEFAULT);
+            .map(APCustomizationProviderService::getCustomization).orElse(APCustomization.DEFAULT);
     }
 
     @Override
