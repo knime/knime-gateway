@@ -71,6 +71,7 @@ import org.knime.gateway.impl.node.port.ImagePortViewFactory;
 import org.knime.gateway.impl.node.port.StatisticsPortViewFactory;
 import org.knime.gateway.impl.node.port.TablePortViewFactory;
 import org.knime.gateway.impl.node.port.TableSpecViewFactory;
+import org.knime.geospatial.core.data.GeoValue;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -121,7 +122,6 @@ public class GatewayImplPlugin implements BundleActivator {
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
 
         DataValueViewManager.registerDataValueViewFactory(StringValue.class, new DataValueViewFactory<StringValue>() {
-
             @Override
             public DataValueView[] createDataValueViews(final StringValue value) {
                 return new DataValueView[]{new DataValueView() {
@@ -138,11 +138,37 @@ public class GatewayImplPlugin implements BundleActivator {
 
                     @Override
                     public Page getPage() {
-                        return Page.builder(() -> "blub", "index.html").build();
+//                        return Page.builder(() -> "blub", "index.html").build();
+                        return Page.builder(GatewayImplPlugin.class, "js-src/", "StringCellRenderer.html").addResourceDirectory("assets")
+                                .build();
+
                     }
                 }};
             }
+        });
 
+        DataValueViewManager.registerDataValueViewFactory(GeoValue.class, new DataValueViewFactory<GeoValue>() {
+            @Override
+            public DataValueView[] createDataValueViews(final GeoValue value) {
+                return new DataValueView[]{new DataValueView() {
+
+                    @Override
+                    public Optional<RpcDataService> createRpcDataService() {
+                        return Optional.empty();
+                    }
+
+                    @Override
+                    public Optional<InitialDataService<String>> createInitialDataService() {
+                        return Optional.of(InitialDataService.builder(() -> value.getWKT()).build());
+                    }
+
+                    @Override
+                    public Page getPage() {
+                        return Page.builder(GatewayImplPlugin.class, "js-src/", "GeoCellRenderer.html").addResourceDirectory("assets")
+                                .build();
+                    }
+                }};
+            }
         });
 
         DataValueViewManager.registerDataValueViewFactory(JSONValue.class, new DataValueViewFactory<JSONValue>() {
