@@ -138,8 +138,7 @@ public class GatewayImplPlugin implements BundleActivator {
 
                     @Override
                     public Page getPage() {
-//                        return Page.builder(() -> "blub", "index.html").build();
-                        return Page.builder(GatewayImplPlugin.class, "js-src/", "StringCellRenderer.html").addResourceDirectory("assets")
+                        return Page.builder(TableView.class, "js-src/data-value-renderers/dist", "StringCellRenderer.html").addResourceDirectory("assets")
                                 .build();
 
                     }
@@ -164,7 +163,7 @@ public class GatewayImplPlugin implements BundleActivator {
 
                     @Override
                     public Page getPage() {
-                        return Page.builder(GatewayImplPlugin.class, "js-src/", "GeoCellRenderer.html").addResourceDirectory("assets")
+                        return Page.builder(TableView.class, "js-src/data-value-renderers/dist", "GeoCellRenderer.html").addResourceDirectory("assets")
                                 .build();
                     }
                 }};
