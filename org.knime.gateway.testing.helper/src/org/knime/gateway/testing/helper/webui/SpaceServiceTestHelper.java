@@ -67,7 +67,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -78,7 +77,6 @@ import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.core.util.Version;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
@@ -298,7 +296,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param testWorkspacePath workspace root
      * @throws IOException
      */
-    private static void setDosHiddenFlagOnDotFiles(Path testWorkspacePath) throws IOException {
+    private static void setDosHiddenFlagOnDotFiles(final Path testWorkspacePath) throws IOException {
         try (final var traversal = Files.walk(testWorkspacePath)) {
             traversal.filter(p -> p.getFileName().toString().startsWith(".")) //
                 .forEach(p -> {
@@ -337,7 +335,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Create a trivial space provider implementation that can be used to set up tests.
-     * 
+     *
      * @param id
      * @param spaceProviderName
      * @param spaces
@@ -737,7 +735,39 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
                     Space.NameCollisionHandling.NOOP.toString(), false));
         } finally {
-            ProjectManager.getInstance().removeProject("some_id", WorkflowManagerUtil::disposeWorkflow);
+            ProjectManager.getInstance().removeProject(wfId, WorkflowManagerUtil::disposeWorkflow);
+        }
+    }
+
+    /**
+     * Bug NXT-2929: make sure that local items can be moved when there is a non-local workflow open.
+     *
+     * @throws Exception
+     */
+    public void testMoveItemsLocalWithOpenHubWorkflow() throws Exception {
+        var testWorkspacePath = FileUtil.createTempDir("move").toPath();
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var wfName = "workflow";
+        var wfGroupName = "EmptyGroup";
+        ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, wfName);
+        var workflowGroupPath = testWorkspacePath.resolve(wfGroupName);
+        Files.createDirectory(workflowGroupPath);
+
+        // Find space IDs
+        var wfId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), wfName);
+        var wfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), wfGroupName);
+
+        // Add open project to workflow project manager
+        var hubWorkflowProject = createWorkflowProject("bli", "bla", "blub");
+        ProjectManager.getInstance().addProject(hubWorkflowProject);
+
+        try {
+            ss().moveOrCopyItems(spaceId, providerId, List.of(wfId), wfGroupId,
+                Space.NameCollisionHandling.NOOP.toString(), false);
+        } finally {
+            ProjectManager.getInstance().removeProject(wfId, WorkflowManagerUtil::disposeWorkflow);
+            FileUtils.deleteQuietly(testWorkspacePath.resolve(wfGroupName).toFile());
         }
     }
 

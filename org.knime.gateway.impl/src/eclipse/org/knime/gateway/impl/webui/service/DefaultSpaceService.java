@@ -245,7 +245,7 @@ public class DefaultSpaceService implements SpaceService {
         try {
             var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             if (space instanceof LocalWorkspace) {
-                var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(), itemIds, space);
+                var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(space), itemIds, space);
                 if (!workflowsToClose.isEmpty()) {
                     throw new InvalidRequestException(
                         "Not all items can be moved. The following workflows need to be closed first: "
@@ -294,10 +294,16 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    private Stream<String> getOpenWorkflowIds() {
+    /**
+     * Get the IDs of all open workflows, optionally filtered to those belonging to a certain space.
+     * @param space Filter for workflows belonging to this space. Set `null` to disable.
+     * @return Stream of open workflow IDs
+     */
+    private Stream<String> getOpenWorkflowIds(final Space space) {
         return m_projectManager.getProjectIds().stream()//
             .flatMap(id -> m_projectManager.getProject(id)//
                 .flatMap(Project::getOrigin)//
+                .filter(origin -> space == null || origin.getSpaceId().equals(space.getId()))
                 .map(Origin::getItemId)//
                 .stream());
     }
