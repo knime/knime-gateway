@@ -65,13 +65,13 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
 
   /**
    * Get version
-   * @return version 
+   * @return version , never <code>null</code>
    **/
   public Integer getVersion();
 
   /**
    * Get title
-   * @return title 
+   * @return title , never <code>null</code>
    **/
   public String getTitle();
 
@@ -120,7 +120,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
         /**
    		 * Set version
          * 
-         * @param version the property value,  
+         * @param version the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         SpaceItemVersionEntBuilder setVersion(Integer version);
@@ -128,7 +128,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
         /**
    		 * Set title
          * 
-         * @param title the property value,  
+         * @param title the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         SpaceItemVersionEntBuilder setTitle(String title);

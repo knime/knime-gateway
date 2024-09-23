@@ -74,6 +74,12 @@ public record DefaultSpaceItemVersionEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultSpaceItemVersionEnt {
+        if(version == null) {
+            throw new IllegalArgumentException("<version> must not be null.");
+        }
+        if(title == null) {
+            throw new IllegalArgumentException("<title> must not be null.");
+        }
     }
 
     @Override
@@ -130,12 +136,18 @@ public record DefaultSpaceItemVersionEnt(
 
         @Override
         public DefaultSpaceItemVersionEntBuilder setVersion(Integer version) {
+             if(version == null) {
+                 throw new IllegalArgumentException("<version> must not be null.");
+             }
              m_version = version;
              return this;
         }
 
         @Override
         public DefaultSpaceItemVersionEntBuilder setTitle(String title) {
+             if(title == null) {
+                 throw new IllegalArgumentException("<title> must not be null.");
+             }
              m_title = title;
              return this;
         }
