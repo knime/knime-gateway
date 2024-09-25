@@ -2672,6 +2672,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var notLinkedComponent = new NodeIDEnt(9);
         var updatableComponents = Set.of(updatableComponent1, updatableComponent2, updatableComponent3);
 
+        // Try to update a component with a broken link
+        var command = buildUpdateLinkedComponentsCommand(List.of(new NodeIDEnt(13)));
+        var result = (UpdateLinkedComponentsResultEnt)ws().executeWorkflowCommand(projectId, getRootID(), command);
+        assertThat(result.getStatus(), is(UpdateLinkedComponentsResultEnt.StatusEnum.ERROR));
+        assertThat(result.getDetails().get(0),
+            Matchers.startsWith("Could not update <Linked Component with broken Link"));
+
         // Mock URI to file resolver
         var mockedResolver = Mockito.mock(URIToFileResolve.class);
         var oldResolver = URIToFileResolveTestUtil.replaceURIToFileResolveService(mockedResolver);
@@ -2684,8 +2691,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("List of updatable nodes unexpected", Set.copyOf(cc1), is(updatableComponents));
 
         // Update the nodes
-        var command = buildUpdateLinkedComponentsCommand(cc1);
-        var result = (UpdateLinkedComponentsResultEnt)ws().executeWorkflowCommand(projectId, getRootID(), command);
+        command = buildUpdateLinkedComponentsCommand(cc1);
+        result = (UpdateLinkedComponentsResultEnt)ws().executeWorkflowCommand(projectId, getRootID(), command);
         assertThat("Component update status unexpected", result.getStatus(), is(StatusEnum.SUCCESS));
         var componentsAndStateAfterUpdate = ws().getUpdatableLinkedComponents(projectId, getRootID());
         assertThat("There shouldn't be any updatable components", Set.copyOf(componentsAndStateAfterUpdate),
