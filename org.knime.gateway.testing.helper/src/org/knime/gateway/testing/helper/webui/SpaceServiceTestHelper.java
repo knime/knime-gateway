@@ -84,8 +84,8 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.Project.Origin;
@@ -201,7 +201,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // note that we explicitly do not allow overwriting items of same type
         // see legacy GlobalRenameAction
-        assertThrows(ServiceExceptions.OperationNotAllowedException.class, () -> {
+        assertThrows(ServiceCallException.class, () -> {
             ss().renameItem(providerId, space.getId(), group1.getId(), newName);
         });
     }
@@ -212,7 +212,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             () -> Map.of(p.getFirst().getId(), p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
-        assertThrows(ServiceExceptions.OperationNotAllowedException.class, () -> {
+        assertThrows(ServiceCallException.class, () -> {
             ss().renameItem(providerId, space.getId(), Space.ROOT_ITEM_ID, "newName");
         });
     }
@@ -281,12 +281,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         cr(emptyGroup, "workspace_to_list_empty_group");
 
         var dataTxtId = findItemId(root, "data.txt");
-        assertThrows(InvalidRequestException.class, () -> ss().listWorkflowGroup(spaceId, providerId, dataTxtId));
+        assertThrows(ServiceCallException.class, () -> ss().listWorkflowGroup(spaceId, providerId, dataTxtId));
 
-        assertThrows(InvalidRequestException.class,
+        assertThrows(ServiceCallException.class,
             () -> ss().listWorkflowGroup(null, "non-existing-provider-id", "blub"));
 
-        assertThrows(InvalidRequestException.class,
+        assertThrows(ServiceCallException.class,
             () -> ss().listWorkflowGroup("non-existing-space-id", providerId, "blub"));
     }
 
@@ -330,7 +330,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         spaceProvider = ss().getSpaceProvider("id2");
         cr(spaceProvider, "space_provider2");
 
-        assertThrows(InvalidRequestException.class, () -> ss().getSpaceProvider("non_existing_id"));
+        assertThrows(ServiceCallException.class, () -> ss().getSpaceProvider("non_existing_id"));
     }
 
     /**
@@ -561,11 +561,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("File must not exist anymore", !Files.exists(filePath));
 
         // Call delete on the root
-        assertThrows("Deleting root must fail", InvalidRequestException.class,
+        assertThrows("Deleting root must fail", ServiceCallException.class,
             () -> ss().deleteItems(spaceId, providerId, List.of("root")));
 
         // Call delete with an item id that does not exist
-        assertThrows("Deleting unknown item must fail", InvalidRequestException.class,
+        assertThrows("Deleting unknown item must fail", ServiceCallException.class,
             () -> ss().deleteItems(spaceId, providerId, List.of("0")));
 
         // Call delete on a workflow that was deleted by another application
@@ -692,17 +692,17 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             assertThat("The workflow was not duplicated at <level2>", Files.exists(duplicatedName));
 
             // Moving items that do not exist
-            assertThrows("Invalid IDs cannot be moved", InvalidRequestException.class,
+            assertThrows("Invalid IDs cannot be moved", ServiceCallException.class,
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of("a", "b", "c"), Space.ROOT_ITEM_ID,
                     Space.NameCollisionHandling.NOOP.toString(), false));
 
             // Moving the root
-            assertThrows("The workspace root cannot be moved", InvalidRequestException.class,
+            assertThrows("The workspace root cannot be moved", ServiceCallException.class,
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(Space.ROOT_ITEM_ID), level1Id,
                     Space.NameCollisionHandling.NOOP.toString(), false));
 
             // Move item to itself
-            assertThrows("Cannot move an item to itself", InvalidRequestException.class,
+            assertThrows("Cannot move an item to itself", ServiceCallException.class,
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(level1Id), level1Id,
                     Space.NameCollisionHandling.NOOP.toString(), false));
         } finally {
@@ -731,7 +731,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         try {
             // Try to move data file and open workflow
-            assertThrows("Moving an open workflow should not work", ServiceExceptions.InvalidRequestException.class,
+            assertThrows("Moving an open workflow should not work", ServiceCallException.class,
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
                     Space.NameCollisionHandling.NOOP.toString(), false));
         } finally {
@@ -838,10 +838,10 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             // Try to move without name collision handling
             var fileIdLevel0 = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
             assertThrows("Cannot move a file that already exists at the destination",
-                ServiceExceptions.IOException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
+                ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
                     List.of(fileIdLevel0), level1Id, Space.NameCollisionHandling.NOOP.toString(), false));
             assertThrows("Cannot move a workflow that already exists at the destination",
-                ServiceExceptions.IOException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
+                ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
                     List.of(wfLevel0.getId()), level1Id, Space.NameCollisionHandling.NOOP.toString(), false));
 
             // Move with overwrite collision handling
