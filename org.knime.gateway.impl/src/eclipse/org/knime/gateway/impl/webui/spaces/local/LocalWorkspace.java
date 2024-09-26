@@ -172,10 +172,15 @@ public final class LocalWorkspace implements Space {
     public SpaceItemEnt createWorkflowGroup(final String workflowGroupItemId) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var workflowGroupName =
-                generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_GROUP_NAME, false);
-        var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowGroupName));
-        // TODO(NXT-1484) create a meta info file for the folder
-        return getSpaceItemEntFromPathAndUpdateCache(directoryPath);
+            generateUniqueSpaceItemName(parentWorkflowGroupPath, DEFAULT_WORKFLOW_GROUP_NAME, false);
+        var pathToCreate = parentWorkflowGroupPath.resolve(workflowGroupName);
+        try {
+            var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(workflowGroupName));
+            // TODO(NXT-1484) create a meta info file for the folder
+            return getSpaceItemEntFromPathAndUpdateCache(directoryPath);
+        } catch (IOException e) {
+            throw new IOException("Cannot create folders in '%s'.".formatted(pathToCreate.toString()), e.getCause());
+        }
     }
 
     @Override

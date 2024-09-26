@@ -67,10 +67,9 @@ public interface SpaceService extends GatewayService {
      * @param spaceGroupName Identifier name of a space-group.
      *
      * @return the result
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Create a new workflow within a given workflow group.
@@ -81,10 +80,9 @@ public interface SpaceService extends GatewayService {
      * @param itemName Name given to a space item.
      *
      * @return the result
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId, String itemName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Create a new workflow group within a given workflow group.
@@ -94,10 +92,9 @@ public interface SpaceService extends GatewayService {
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceItemEnt createWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    SpaceItemEnt createWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Deletes items from the space.
@@ -107,10 +104,9 @@ public interface SpaceService extends GatewayService {
      * @param itemIds A list of identifiers of items in the space.
      *
      * 
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Deletes job from the space.
@@ -121,10 +117,9 @@ public interface SpaceService extends GatewayService {
      * @param jobId The ID of the job to delete
      *
      * 
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void deleteJobsForWorkflow(String spaceId, String spaceProviderId, String itemId, String jobId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    void deleteJobsForWorkflow(String spaceId, String spaceProviderId, String itemId, String jobId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Deletes schedule from the space.
@@ -135,10 +130,9 @@ public interface SpaceService extends GatewayService {
      * @param scheduleId The ID of the schedule to delete
      *
      * 
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Mainly returns the spaces provided by this space-provider.
@@ -146,9 +140,9 @@ public interface SpaceService extends GatewayService {
      * @param spaceProviderId Identifies a space-provider.
      *
      * @return the result
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceProviderEnt getSpaceProvider(String spaceProviderId)  throws ServiceExceptions.InvalidRequestException;
+    SpaceProviderEnt getSpaceProvider(String spaceProviderId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Lists the available jobs for the given workflow.
@@ -158,9 +152,9 @@ public interface SpaceService extends GatewayService {
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    java.util.List<Object> listJobsForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException;
+    java.util.List<Object> listJobsForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Lists the available schedules for the given workflow.
@@ -170,9 +164,9 @@ public interface SpaceService extends GatewayService {
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    java.util.List<Object> listSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException;
+    java.util.List<Object> listSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Get shallow list of workflows, components and data-files within a given workflow group.
@@ -182,10 +176,9 @@ public interface SpaceService extends GatewayService {
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.IOException;
+    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Move or copy space items to a different workflow group within its space.
@@ -198,10 +191,9 @@ public interface SpaceService extends GatewayService {
      * @param copy Copy instead of move items.
      *
      * 
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destWorkflowGroupItemId, String collisionHandling, Boolean copy)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException;
+    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destWorkflowGroupItemId, String collisionHandling, Boolean copy)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Rename a space Item
@@ -212,11 +204,9 @@ public interface SpaceService extends GatewayService {
      * @param itemName Name given to a space item.
      *
      * @return the result
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException, ServiceExceptions.OperationNotAllowedException;
+    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Rename a space
@@ -226,10 +216,8 @@ public interface SpaceService extends GatewayService {
      * @param spaceName Name given to a space.
      *
      * @return the result
-     * @throws ServiceExceptions.IOException If there was an I/O error of some kind.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException, ServiceExceptions.OperationNotAllowedException;
+    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.ServiceCallException;
         
 }

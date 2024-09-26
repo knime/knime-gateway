@@ -313,7 +313,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws InvalidRequestException
      */
-    public void testGetSpaceProvider() throws InvalidRequestException {
+    public void testGetSpaceProvider() throws Exception {
         var spaces = new Space[5];
         for (var i = 0; i < 4; i++) {
             spaces[i] = mockSpace("id" + i, "name" + i, "owner" + i, "description" + i, i % 2 == 0);
@@ -879,10 +879,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * @throws ServiceExceptions.IOException
-     * @throws InvalidRequestException
+     * Tests creating a space
      */
-    public void testCreateSpace() throws ServiceExceptions.IOException, InvalidRequestException, IOException {
+    public void testCreateSpace() throws Exception {
         // set up mocked provider, group and created space
         var provider = Mockito.mock(SpaceProvider.class);
         when(provider.getId()).thenReturn("some provider ID");

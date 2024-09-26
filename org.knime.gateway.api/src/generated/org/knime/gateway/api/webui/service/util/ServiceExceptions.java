@@ -53,6 +53,19 @@ package org.knime.gateway.api.webui.service.util;
 public final class ServiceExceptions {
 
    /**
+    * If a Gateway service call failed for some reason.
+    */
+    public static class ServiceCallException extends Exception {
+        public ServiceCallException(String message) {
+            super(message);
+        }
+        
+        public ServiceCallException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+   /**
     * A description for a given node could not be determined.
     */
     public static class NodeDescriptionNotAvailableException extends Exception {

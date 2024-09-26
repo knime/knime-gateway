@@ -51,7 +51,6 @@ package org.knime.gateway.impl.webui.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.util.exception.ResourceAccessException;
@@ -60,8 +59,8 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.Project.Origin;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -101,15 +100,15 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public SpaceProviderEnt getSpaceProvider(final String spaceProviderId) throws InvalidRequestException {
+    public SpaceProviderEnt getSpaceProvider(final String spaceProviderId) throws ServiceCallException {
         if (spaceProviderId != null && !spaceProviderId.isBlank()) {
             var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
             if (spaceProvider == null) {
-                throw new InvalidRequestException("No space provider available for id '" + spaceProviderId + "'");
+                throw new ServiceCallException("No space provider available for id '" + spaceProviderId + "'");
             }
             return spaceProvider.toEntity();
         } else {
-            throw new InvalidRequestException("Invalid space-provider-id (empty/null)");
+            throw new ServiceCallException("Invalid space-provider-id (empty/null)");
         }
     }
 
@@ -118,76 +117,73 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
-        final String workflowGroupId) throws InvalidRequestException, ServiceExceptions.IOException {
+        final String workflowGroupId) throws ServiceCallException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId)
                 .listWorkflowGroup(workflowGroupId);
         } catch (NoSuchElementException e) {
-            throw new InvalidRequestException("Problem fetching space items", e);
+            throw new ServiceCallException("Problem fetching space items", e);
         } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
     @Override
     public List<Object> listJobsForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
-        throws InvalidRequestException {
+        throws ServiceCallException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).listJobsForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
-            throw new InvalidRequestException("Problem fetching jobs", e);
+            throw new ServiceCallException("Problem fetching jobs", e);
         }
     }
 
     @Override
     public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
-            final String jobId) throws ServiceExceptions.IOException, ServiceExceptions.InvalidRequestException {
+            final String jobId) throws ServiceCallException {
         final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
         try {
             space.deleteJobsForWorkflow(itemId, List.of(jobId));
         } catch (final ResourceAccessException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
     @Override
-    public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
-        throws InvalidRequestException {
+    public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId,
+        final String workflowId) throws ServiceCallException {
         try {
-            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).listSchedulesForWorkflow(workflowId);
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId)
+                .listSchedulesForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
-            throw new InvalidRequestException("Problem fetching jobs", e);
+            throw new ServiceCallException("Problem fetching jobs", e);
         }
     }
 
     @Override
     public void deleteSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
-            final String scheduleId) throws org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException,
-            InvalidRequestException {
+        final String scheduleId) throws ServiceCallException {
         final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
         try {
             space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
         } catch (final ResourceAccessException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
     /**
      * {@inheritDoc}
-     * @throws InvalidRequestException
      */
     @Override
     public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName)
-        throws ServiceExceptions.IOException, InvalidRequestException {
+        throws ServiceCallException {
         try {
             return m_spaceProviders.getProvidersMap().get(spaceProviderId) //
                 .getSpaceGroup(spaceGroupName) //
                 .createSpace() //
                 .toEntity();
-        } catch (NoSuchElementException | UnsupportedOperationException e) {
-            throw new InvalidRequestException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+        } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
@@ -196,14 +192,14 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId,
-            final String name) throws InvalidRequestException, ServiceExceptions.IOException {
+        final String name) throws ServiceCallException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId) //
-                    .createWorkflow(workflowGroupId, name);
+                .createWorkflow(workflowGroupId, name);
         } catch (NoSuchElementException e) {
-            throw new InvalidRequestException("Problem fetching space items", e);
+            throw new ServiceCallException("Problem fetching space items", e);
         } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
@@ -212,14 +208,12 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
-        throws ServiceExceptions.IOException, InvalidRequestException {
+        throws ServiceCallException {
         try {
             // TODO: Check for open workflows in local workspace (included in NXT-1481)
             SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).deleteItems(spaceItemIds);
-        } catch (NoSuchElementException | UnsupportedOperationException e) {
-            throw new InvalidRequestException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+        } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
@@ -228,36 +222,35 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceItemEnt createWorkflowGroup(final String spaceId, final String spaceProviderId, final String itemId)
-        throws ServiceExceptions.IOException, InvalidRequestException {
+        throws ServiceCallException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).createWorkflowGroup(itemId);
-        } catch (NoSuchElementException | UnsupportedOperationException e) {
-            throw new InvalidRequestException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+        } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void moveOrCopyItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
         final String destWorkflowGroupItemId, final String collisionHandling, final Boolean copy)
-        throws ServiceExceptions.IOException, InvalidRequestException {
+        throws ServiceCallException {
         try {
             var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             if (space instanceof LocalWorkspace) {
                 var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(space), itemIds, space);
                 if (!workflowsToClose.isEmpty()) {
-                    throw new InvalidRequestException(
+                    throw new ServiceCallException(
                         "Not all items can be moved. The following workflows need to be closed first: "
                             + workflowsToClose);
                 }
             }
             space.moveOrCopyItems(itemIds, destWorkflowGroupItemId, NameCollisionHandling.valueOf(collisionHandling),
                 copy);
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            throw new InvalidRequestException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+        } catch (NoSuchElementException | IllegalArgumentException | IOException e) {
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
@@ -266,15 +259,14 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
-        final String newName)
-        throws ServiceExceptions.IOException, InvalidRequestException, ServiceExceptions.OperationNotAllowedException {
+        final String newName) throws ServiceCallException {
         try {
             // TODO: Check for open workflows in local workspace (included in NXT-1481)
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameItem(itemId, newName);
         } catch (NoSuchElementException e) {
-            throw new InvalidRequestException("Could not access space", e);
-        } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceCallException("Could not access space", e);
+        } catch (OperationNotAllowedException | IOException e) {
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
@@ -283,19 +275,19 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
-        throws ServiceExceptions.IOException, InvalidRequestException,
-        ServiceExceptions.OperationNotAllowedException {
+        throws ServiceCallException {
         try {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameSpace(spaceName);
         } catch (NoSuchElementException e) {
-            throw new InvalidRequestException("Could not access space", e);
-        } catch (IOException e) {
-            throw new ServiceExceptions.IOException(e.getMessage(), e);
+            throw new ServiceCallException("Could not access space", e);
+        } catch (OperationNotAllowedException | IOException e) {
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
     /**
      * Get the IDs of all open workflows, optionally filtered to those belonging to a certain space.
+     *
      * @param space Filter for workflows belonging to this space. Set `null` to disable.
      * @return Stream of open workflow IDs
      */
@@ -303,8 +295,7 @@ public class DefaultSpaceService implements SpaceService {
         return m_projectManager.getProjectIds().stream()//
             .flatMap(id -> m_projectManager.getProject(id)//
                 .flatMap(Project::getOrigin)//
-                .filter(origin -> space == null || origin.getSpaceId().equals(space.getId()))
-                .map(Origin::getItemId)//
+                .filter(origin -> space == null || origin.getSpaceId().equals(space.getId())).map(Origin::getItemId)//
                 .stream());
     }
 
@@ -318,7 +309,7 @@ public class DefaultSpaceService implements SpaceService {
                 var ancestorsItemIds = space.getAncestorItemIds(workflowId);
                 return ancestorsItemIds.stream().anyMatch(itemIds::contains);
             })//
-            .collect(Collectors.toList());
+            .toList();
     }
 
 }
