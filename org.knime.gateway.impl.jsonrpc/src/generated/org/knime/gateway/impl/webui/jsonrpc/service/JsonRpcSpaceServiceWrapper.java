@@ -159,9 +159,11 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @JsonRpcMethod(value = "getSpaceProvider")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceProviderEnt getSpaceProvider(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.ServiceCallException {
+    public SpaceProviderEnt getSpaceProvider(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
         return m_service.get().getSpaceProvider(spaceProviderId);    
     }
 
@@ -198,9 +200,11 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @JsonRpcMethod(value = "listWorkflowGroup")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException {
+    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
         return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, itemId);    
     }
 

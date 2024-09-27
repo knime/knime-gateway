@@ -166,6 +166,15 @@ public interface SpaceProvider {
     }
 
     /**
+     * Returns whether this provider is reachable or not.
+     *
+     * @return {@code true} if reachable, {@code false} otherwise
+     */
+    default boolean isReachable() {
+        return true;
+    }
+
+    /**
      * Gets the path to the server's REST interface.
      *
      * @return the REST path if known, or an empty optional if not available

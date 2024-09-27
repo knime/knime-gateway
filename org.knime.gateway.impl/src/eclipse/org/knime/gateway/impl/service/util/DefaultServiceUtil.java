@@ -70,8 +70,11 @@ import org.knime.gateway.impl.project.ProjectManager;
  * java-ui, web-ui and webportal).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
  */
 public final class DefaultServiceUtil {
+
+    private static final String KNIME_WEBSITE_URL = "https://www.knime.com";
 
     private DefaultServiceUtil() {
         //utility class

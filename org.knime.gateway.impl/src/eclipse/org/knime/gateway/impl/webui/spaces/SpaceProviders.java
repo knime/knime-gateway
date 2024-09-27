@@ -65,6 +65,30 @@ import org.knime.gateway.impl.webui.service.ServiceDependencies;
  */
 public interface SpaceProviders {
 
+    private static SpaceProvider getSpaceProvider(final SpaceProviders spaceProviders, final String spaceProviderId)
+        throws NoSuchElementException {
+        final var spaceProvider = spaceProviders.getProvidersMap().get(spaceProviderId);
+        if (spaceProvider == null) {
+            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
+        }
+        return spaceProvider;
+    }
+
+    /**
+     * @param spaceProviders
+     * @param spaceProviderId
+     * @return The space provider for the given ID if available
+     * @throws NoSuchElementException If there is no space provider for the given ID
+     */
+    static Optional<SpaceProvider> getSpaceProviderOptional(final SpaceProviders spaceProviders,
+        final String spaceProviderId) {
+        try {
+            return Optional.of(getSpaceProvider(spaceProviders, spaceProviderId));
+        } catch (NoSuchElementException e) { // NOSONAR
+            return Optional.empty();
+        }
+    }
+
     /**
      * @param spaceProviders
      * @param spaceId
@@ -72,11 +96,9 @@ public interface SpaceProviders {
      * @return the space for the given id if available
      * @throws NoSuchElementException if there is no space or space-provider for the given ids
      */
-    static Space getSpace(final SpaceProviders spaceProviders, final String spaceProviderId, final String spaceId) {
-        var spaceProvider = spaceProviders.getProvidersMap().get(spaceProviderId);
-        if (spaceProvider == null) {
-            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
-        }
+    static Space getSpace(final SpaceProviders spaceProviders, final String spaceProviderId, final String spaceId)
+        throws NoSuchElementException {
+        final var spaceProvider = getSpaceProvider(spaceProviders, spaceProviderId);
         return spaceProvider.getSpace(spaceId);
     }
 
@@ -84,7 +106,7 @@ public interface SpaceProviders {
      * @param spaceProviders
      * @param spaceProviderId
      * @param spaceId
-     * @return
+     * @return The optional space requested
      */
     static Optional<Space> getSpaceOptional(final SpaceProviders spaceProviders, final String spaceProviderId,
         final String spaceId) {

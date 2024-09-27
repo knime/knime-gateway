@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Project;
@@ -66,6 +67,7 @@ import org.knime.gateway.impl.project.Project.Origin;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -100,16 +102,13 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public SpaceProviderEnt getSpaceProvider(final String spaceProviderId) throws ServiceCallException {
-        if (spaceProviderId != null && !spaceProviderId.isBlank()) {
-            var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
-            if (spaceProvider == null) {
-                throw new ServiceCallException("No space provider available for id '" + spaceProviderId + "'");
-            }
-            return spaceProvider.toEntity();
-        } else {
+    public SpaceProviderEnt getSpaceProvider(final String spaceProviderId)
+        throws ServiceCallException, NetworkException {
+        if (spaceProviderId == null || spaceProviderId.isBlank()) {
             throw new ServiceCallException("Invalid space-provider-id (empty/null)");
         }
+        final var spaceProvider = getSpaceProviderAndAssertConnection(spaceProviderId);
+        return spaceProvider.toEntity();
     }
 
     /**
@@ -117,10 +116,10 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
-        final String workflowGroupId) throws ServiceCallException {
+        final String workflowGroupId) throws ServiceCallException, NetworkException {
+        final var space = getSpaceAndAssertConnection(spaceProviderId, spaceId);
         try {
-            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId)
-                .listWorkflowGroup(workflowGroupId);
+            return space.listWorkflowGroup(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching space items", e);
         } catch (IOException e) {
@@ -310,6 +309,39 @@ public class DefaultSpaceService implements SpaceService {
                 return ancestorsItemIds.stream().anyMatch(itemIds::contains);
             })//
             .toList();
+    }
+
+    /**
+     * @return The space provider
+     * @throws ServiceCallException If the space provider could not be retrieved
+     * @throws NetworkException If there is no connection to the space provider
+     */
+    private SpaceProvider getSpaceProviderAndAssertConnection(final String spaceProviderId)
+        throws ServiceCallException, NetworkException {
+        final var spaceProvider = SpaceProviders.getSpaceProviderOptional(m_spaceProviders, spaceProviderId)//
+            .orElseThrow(
+                () -> new ServiceCallException("No space provider available for id '%s'".formatted(spaceProviderId)));
+        if (!spaceProvider.isReachable()) {
+            throw new NetworkException(
+                "Could not access space provider '%s'. Please make sure you have network connection!"
+                    .formatted(spaceProvider.getName()));
+        }
+        return spaceProvider;
+    }
+
+    /**
+     * @return The space
+     * @throws ServiceCallException If the space provider could not be retrieved
+     * @throws NetworkException If there is no connection to the space provider
+     */
+    private Space getSpaceAndAssertConnection(final String spaceProviderId, final String spaceId)
+        throws ServiceCallException, NetworkException { // TODO: NXT-2935 Use this everywhere to retrieve the space
+        final var spaceProvider = getSpaceProviderAndAssertConnection(spaceProviderId);
+        try {
+            return spaceProvider.getSpace(spaceId);
+        } catch (NoSuchElementException e) {
+            throw new ServiceCallException("Problem fetching space", e);
+        }
     }
 
 }
