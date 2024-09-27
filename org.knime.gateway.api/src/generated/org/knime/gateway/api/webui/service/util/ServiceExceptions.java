@@ -66,6 +66,19 @@ public final class ServiceExceptions {
     }
 
    /**
+    * If a Gateway service failed due to a network error.
+    */
+    public static class NetworkException extends Exception {
+        public NetworkException(String message) {
+            super(message);
+        }
+        
+        public NetworkException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+   /**
     * A description for a given node could not be determined.
     */
     public static class NodeDescriptionNotAvailableException extends Exception {
