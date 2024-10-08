@@ -85,6 +85,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Project;
@@ -132,7 +133,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var newSpaceItemEnt = EntityFactory.Space.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
         when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
 
-        var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", mockedSpace);
+        var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", true, mockedSpace);
         var spaceProviders = Map.of(providerId, spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
 
@@ -291,6 +292,18 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests {@link SpaceService#listJobsForWorkflow(String, String, String)} being not reachable.
+     */
+    public void testListWorkflowGroupNotReachable() {
+        var space = mockSpace("id0", "name0", "owner0", "description0", true);
+        var provider = createSpaceProvider("id0", "name0", false, space);
+
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
+
+        assertThrows(NetworkException.class, () -> ss().listWorkflowGroup("id0", "id0", "blub"));
+    }
+
+    /**
      * Windows uses a special flag to make files and folders hidden, we set it here to make the tests work across OSs.
      *
      * @param testWorkspacePath workspace root
@@ -318,8 +331,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         for (var i = 0; i < 4; i++) {
             spaces[i] = mockSpace("id" + i, "name" + i, "owner" + i, "description" + i, i % 2 == 0);
         }
-        var provider1 = createSpaceProvider("id1", "name1", spaces[0], spaces[1]);
-        var provider2 = createSpaceProvider("id2", "name2", spaces[2], spaces[3]);
+        var provider1 = createSpaceProvider("id1", "name1", true, spaces[0], spaces[1]);
+        var provider2 = createSpaceProvider("id2", "name2", true, spaces[2], spaces[3]);
 
         ServiceDependencies.setServiceDependency(SpaceProviders.class,
             () -> Map.of(provider1.getId(), provider1, provider2.getId(), provider2));
@@ -334,15 +347,28 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests {@link SpaceService#getSpaceProvider(String)} being not reachable.
+     */
+    public void testGetSpaceProviderNotReachable() {
+        var space = mockSpace("id0", "name0", "owner0", "description0", true);
+        var provider = createSpaceProvider("id0", "name0", false, space);
+
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
+
+        assertThrows(NetworkException.class, () -> ss().getSpaceProvider("id0"));
+    }
+
+    /**
      * Create a trivial space provider implementation that can be used to set up tests.
      *
      * @param id
      * @param spaceProviderName
      * @param spaces
+     * @param isReachable
      * @return
      */
     private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
-        final Space... spaces) {
+        final boolean isReachable, final Space... spaces) {
         return new SpaceProvider() {
 
             @Override
@@ -377,6 +403,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
                 return getLocalSpaceGroupForTesting(spaces);
+            }
+
+            @Override
+            public boolean isReachable() {
+                return isReachable;
             }
         };
     }
