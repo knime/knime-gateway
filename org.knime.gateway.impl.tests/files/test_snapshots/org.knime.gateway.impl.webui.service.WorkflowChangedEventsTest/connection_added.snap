@@ -22,6 +22,10 @@
   "value" : "root:26_1"
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:26/outPorts/0/portContentVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:26/state/executionState",
   "value" : "CONFIGURED"
 } ]
