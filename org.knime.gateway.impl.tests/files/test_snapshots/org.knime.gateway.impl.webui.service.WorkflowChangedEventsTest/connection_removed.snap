@@ -10,6 +10,10 @@
   "path" : "/nodes/root:26/inPorts/1/connectedVia/0"
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:26/outPorts/0/portContentVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:26/state/executionState",
   "value" : "IDLE"
 } ]

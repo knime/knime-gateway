@@ -158,6 +158,10 @@
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:8/outPorts/0/portContentVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:8/state/executionState",
   "value" : "IDLE"
 }, {
