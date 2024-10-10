@@ -65,6 +65,7 @@ import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ComponentMetadata;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
@@ -84,7 +85,6 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
-import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -296,17 +296,28 @@ public final class AppStateEntityFactory {
             .build();
     }
 
+//    private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders) {
+//        return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
+//            // ancestor item ids are only required for local projects because it's used to
+//            // * mark folders that contain open projects
+//            // * disallow folders to be moved if they contain opened local projects
+//            //   (because they can't be moved while open)
+//            // ... in the space explorer.
+//            // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
+//            .filter(LocalWorkspace.class::isInstance) //
+//            .map(space -> space.getAncestorItemIds(origin.getItemId())) //
+//            .orElse(null);
+//    }
+
     private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders) {
         return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
-            // ancestor item ids are only required for local projects because it's used to
-            // * mark folders that contain open projects
-            // * disallow folders to be moved if they contain opened local projects
-            //   (because they can't be moved while open)
-            // ... in the space explorer.
-            // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
-            .filter(LocalWorkspace.class::isInstance) //
-            .map(space -> space.getAncestorItemIds(origin.getItemId())) //
-            .orElse(null);
+            .map(space -> {
+                try {
+                    return space.getAncestorItemIds(origin.getItemId());
+                } catch (ResourceAccessException e) { // NOSONAR: No need to log or re-throw
+                    return null;
+                }
+            }).orElse(null);
     }
 
     /**

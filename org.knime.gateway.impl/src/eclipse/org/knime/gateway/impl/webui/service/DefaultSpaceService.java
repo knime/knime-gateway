@@ -286,6 +286,19 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getAncestorItemIds(final String spaceProviderId, final String spaceId, final String itemId)
+        throws ServiceCallException {
+        try {
+            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).getAncestorItemIds(itemId);
+        } catch (ResourceAccessException e) {
+            throw new ServiceCallException("Item could not be located, perhaps it was recently moved or deleted?", e);
+        }
+    }
+
+    /**
      * Get the IDs of all open workflows, optionally filtered to those belonging to a certain space.
      *
      * @param space Filter for workflows belonging to this space. Set `null` to disable.
@@ -306,8 +319,13 @@ public class DefaultSpaceService implements SpaceService {
                 if (itemIds.contains(workflowId)) {
                     return true;
                 }
-                var ancestorsItemIds = space.getAncestorItemIds(workflowId);
-                return ancestorsItemIds.stream().anyMatch(itemIds::contains);
+                List<String> ancestorItemIds;
+                try {
+                    ancestorItemIds = space.getAncestorItemIds(workflowId);
+                } catch (ResourceAccessException e) { // NOSONAR: No need to log or re-throw
+                    ancestorItemIds = List.of(); // Never happens, `LocalSpace.getAncestorItemIds(...)` doesn't throw
+                }
+                return ancestorItemIds.stream().anyMatch(itemIds::contains);
             })//
             .toList();
     }

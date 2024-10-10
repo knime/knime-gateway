@@ -135,6 +135,18 @@ public interface SpaceService extends GatewayService {
     void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
         
     /**
+     * Get a list of ancestor item IDs for a given space item.
+     *
+     * @param spaceProviderId Identifies a space-provider.
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
+     *
+     * @return the result
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     */
+    java.util.List<String> getAncestorItemIds(String spaceProviderId, String spaceId, String itemId)  throws ServiceExceptions.ServiceCallException;
+        
+    /**
      * Mainly returns the spaces provided by this space-provider.
      *
      * @param spaceProviderId Identifies a space-provider.
