@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -135,7 +136,7 @@ public interface SpaceService extends GatewayService {
     void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
         
     /**
-     * Get a list of ancestor item IDs for a given space item.
+     * Get space item reference for a given space item.
      *
      * @param spaceProviderId Identifies a space-provider.
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
@@ -144,7 +145,7 @@ public interface SpaceService extends GatewayService {
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    java.util.List<String> getAncestorItemIds(String spaceProviderId, String spaceId, String itemId)  throws ServiceExceptions.ServiceCallException;
+    SpaceItemReferenceEnt getSpaceItemReference(String spaceProviderId, String spaceId, String itemId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Mainly returns the spaces provided by this space-provider.

@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.impl.webui.entity.AppStateEntityFactory.buildSpaceItemReferenceEnt;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -56,6 +58,7 @@ import java.util.stream.Stream;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
@@ -289,12 +292,20 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public List<String> getAncestorItemIds(final String spaceProviderId, final String spaceId, final String itemId)
-        throws ServiceCallException {
+    public SpaceItemReferenceEnt getSpaceItemReference(final String spaceProviderId, final String spaceId,
+        final String itemId) throws ServiceCallException {
+        final var origin = m_projectManager.getProjectIds().stream()//
+            .flatMap(id -> m_projectManager.getProject(id)//
+                .flatMap(Project::getOrigin)//
+                .filter(o -> o.getProviderId().equals(spaceProviderId) && o.getSpaceId().equals(spaceId)
+                    && o.getItemId().equals(itemId))//
+                .stream())//
+            .findFirst()//
+            .orElseThrow(() -> new ServiceCallException("No project origin found"));
         try {
-            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).getAncestorItemIds(itemId);
+            return buildSpaceItemReferenceEnt(origin, m_spaceProviders);
         } catch (ResourceAccessException e) {
-            throw new ServiceCallException("Item could not be located, perhaps it was recently moved or deleted?", e);
+            throw new ServiceCallException("Could not retrieve space items ancestors", e);
         }
     }
 
