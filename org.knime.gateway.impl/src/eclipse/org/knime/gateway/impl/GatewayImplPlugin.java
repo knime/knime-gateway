@@ -53,8 +53,16 @@ import java.util.Optional;
 
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
+import org.knime.core.data.json.JSONValue;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
+import org.knime.core.webui.node.view.table.TableView;
+import org.knime.core.webui.node.view.table.datavalue.DataValueView;
+import org.knime.core.webui.node.view.table.datavalue.DataValueViewFactory;
+import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
+import org.knime.core.webui.page.Page;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariableSpecViewFactory;
@@ -111,6 +119,33 @@ public class GatewayImplPlugin implements BundleActivator {
 
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
+
+
+        DataValueViewManager.registerDataValueViewFactory(JSONValue.class, new DataValueViewFactory<JSONValue>() {
+
+            @Override
+            public DataValueView[] createDataValueViews(final JSONValue value) {
+                return new DataValueView[]{new DataValueView() {
+
+                    @Override
+                    public Optional<RpcDataService> createRpcDataService() {
+                        return Optional.empty();
+                    }
+
+                    @Override
+                    public Optional<InitialDataService<String>> createInitialDataService() {
+                        return Optional.of(InitialDataService.builder(() -> value.getJsonValue().toString()).build());
+                    }
+
+                    @Override
+                    public Page getPage() {
+                        return Page.builder(TableView.class, "js-src/data-value-renderers/dist", "JSONView.html")
+                            .addResourceDirectory("assets").build();
+                    }
+                }};
+            }
+
+        });
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();
