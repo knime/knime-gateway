@@ -77,4 +77,9 @@ public interface PreferencesProvider {
      * @return whether to always confirm node configuration changes or not
      */
     boolean confirmNodeConfigChanges();
+
+    /**
+     * @return whether node dialogs are embedded or detached
+     */
+    boolean useEmbeddedDialogs();
 }
