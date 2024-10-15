@@ -170,6 +170,7 @@ public final class AppStateEntityFactory {
             .setHasNodeRecommendationsEnabled(dependencies.preferencesProvider().hasNodeRecommendationsEnabled()) //
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
+            .setUseEmbeddedDialogs(dependencies.preferencesProvider().useEmbeddedDialogs()) //
             .setFileExtensionToNodeTemplateId( //
                 dependencies.nodeFactoryProvider() == null //
                     ? Collections.emptyMap() //
@@ -215,6 +216,8 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::isScrollToZoomEnabled, builder::setScrollToZoomEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isConfirmNodeConfigChanges,
                 builder::setConfirmNodeConfigChanges);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isUseEmbeddedDialogs,
+                builder::setUseEmbeddedDialogs);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
             return builder.build();
