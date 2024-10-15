@@ -128,18 +128,15 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
 
         var appService = DefaultApplicationService.getInstance();
 
-        var featureFlagKeyF1 = "org.knime.ui.feature.embedded_views_and_dialogs";
-        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant";
-        var featureFlagKeyF3 = "org.knime.ui.feature.ai_assistant_installed";
+        var featureFlagKeyF1 = "org.knime.ui.feature.ai_assistant";
+        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant_installed";
 
         var appStateEnt = appService.getState();
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF1), is(false));
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF2), is(true));
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF3), is(false));
+        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF1), is(true));
+        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF2), is(false));
 
         System.clearProperty(featureFlagKeyF1);
         System.clearProperty(featureFlagKeyF2);
-        System.clearProperty(featureFlagKeyF3);
     }
 
     /**
@@ -155,23 +152,19 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
 
         var appService = DefaultApplicationService.getInstance();
 
-        var featureFlagKeyF1 = "org.knime.ui.feature.embedded_views_and_dialogs";
-        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant";
-        var featureFlagKeyF3 = "org.knime.ui.feature.ai_assistant_installed";
+        var featureFlagKeyF1 = "org.knime.ui.feature.ai_assistant";
+        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant_installed";
 
         System.setProperty(featureFlagKeyF1, "true");
-        System.setProperty(featureFlagKeyF2, "true");
 
         FeatureFlags.setAiAssistantBackendAvailabe();
 
         var appStateEnt = appService.getState();
         assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF1), is(true));
         assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF2), is(true));
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF3), is(true));
 
         System.clearProperty(featureFlagKeyF1);
         System.clearProperty(featureFlagKeyF2);
-        System.clearProperty(featureFlagKeyF3);
     }
 
     /**

@@ -59,8 +59,6 @@ public final class FeatureFlags {
 
     private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
 
-    private static final String EMBEDDED_DIALOGS = "embedded_views_and_dialogs";
-
     private static boolean isAiAssistantBackendAvailable;
 
     private FeatureFlags() {
@@ -71,10 +69,9 @@ public final class FeatureFlags {
      * @return the available feature flags
      */
     public static Map<String, Object> getFeatureFlags() {
-        var f1 = FEATURE_FLAGS_PREFIX + EMBEDDED_DIALOGS;
-        var f2 = FEATURE_FLAGS_PREFIX + "ai_assistant";
-        var f3 = FEATURE_FLAGS_PREFIX + "ai_assistant_installed";
-        return Map.of(f1, Boolean.getBoolean(f1), f2, System.getProperty(f2) == null || Boolean.getBoolean(f2), f3,
+        var f1 = FEATURE_FLAGS_PREFIX + "ai_assistant";
+        var f2 = FEATURE_FLAGS_PREFIX + "ai_assistant_installed";
+        return Map.of(f1, System.getProperty(f1) == null || Boolean.getBoolean(f1), f2,
             isAiAssistantBackendAvailable);
     }
 
@@ -85,12 +82,4 @@ public final class FeatureFlags {
     public static void setAiAssistantBackendAvailabe() {
         isAiAssistantBackendAvailable = true;
     }
-
-    /**
-     * @return embedded-dialogs feature flag
-     */
-    public static boolean embedDialogs() {
-        return Boolean.getBoolean(FEATURE_FLAGS_PREFIX + EMBEDDED_DIALOGS);
-    }
-
 }

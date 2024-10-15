@@ -49,8 +49,7 @@
   },
   "featureFlags" : {
     "org.knime.ui.feature.ai_assistant" : true,
-    "org.knime.ui.feature.ai_assistant_installed" : false,
-    "org.knime.ui.feature.embedded_views_and_dialogs" : false
+    "org.knime.ui.feature.ai_assistant_installed" : false
   },
   "openProjects" : [ {
     "activeWorkflowId" : "root",
