@@ -62,6 +62,7 @@ import org.knime.gateway.impl.node.port.ImagePortViewFactory;
 import org.knime.gateway.impl.node.port.StatisticsPortViewFactory;
 import org.knime.gateway.impl.node.port.TablePortViewFactory;
 import org.knime.gateway.impl.node.port.TableSpecViewFactory;
+import org.knime.geospatial.core.data.GeoValue;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -111,6 +112,30 @@ public class GatewayImplPlugin implements BundleActivator {
 
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
+
+        DataValueViewManager.registerDataValueViewFactory(GeoValue.class, new DataValueViewFactory<GeoValue>() {
+            @Override
+            public DataValueView[] createDataValueViews(final GeoValue value) {
+                return new DataValueView[]{new DataValueView() {
+
+                    @Override
+                    public Optional<RpcDataService> createRpcDataService() {
+                        return Optional.empty();
+                    }
+
+                    @Override
+                    public Optional<InitialDataService<String>> createInitialDataService() {
+                        return Optional.of(InitialDataService.builder(() -> value.getWKT()).build());
+                    }
+
+                    @Override
+                    public Page getPage() {
+                        return Page.builder(TableView.class, "js-src/data-value-renderers/dist", "GeoCellRenderer.html").addResourceDirectory("assets")
+                                .build();
+                    }
+                }};
+            }
+        });
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();
