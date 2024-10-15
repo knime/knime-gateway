@@ -8,11 +8,10 @@
       "canCollapse" : "true",
       "canDelete" : true,
       "canExecute" : false,
-      "canOpenDialog" : true,
       "canOpenLegacyFlowVariableDialog" : true,
       "canReset" : false
     },
-    "hasDialog" : true,
+    "dialogType" : "web",
     "id" : "root:186",
     "inPorts" : [ {
       "canRemove" : false,

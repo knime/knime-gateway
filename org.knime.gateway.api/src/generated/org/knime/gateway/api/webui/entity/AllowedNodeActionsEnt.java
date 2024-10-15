@@ -111,12 +111,6 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
 
 
   /**
-   * Indicates whether the dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
-   * @return canOpenDialog 
-   **/
-  public Boolean isCanOpenDialog();
-
-  /**
    * Indicates  whether a legacy flow variable dialog can be opened. If the property is absent, there is no legacy flow variable dialog.
    * @return canOpenLegacyFlowVariableDialog 
    **/
@@ -154,7 +148,6 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
       valueConsumer.accept("canExecute", Pair.create(isCanExecute(), e.isCanExecute()));
       valueConsumer.accept("canCancel", Pair.create(isCanCancel(), e.isCanCancel()));
       valueConsumer.accept("canReset", Pair.create(isCanReset(), e.isCanReset()));
-      valueConsumer.accept("canOpenDialog", Pair.create(isCanOpenDialog(), e.isCanOpenDialog()));
       valueConsumer.accept("canOpenLegacyFlowVariableDialog", Pair.create(isCanOpenLegacyFlowVariableDialog(), e.isCanOpenLegacyFlowVariableDialog()));
       valueConsumer.accept("canOpenView", Pair.create(isCanOpenView(), e.isCanOpenView()));
       valueConsumer.accept("canDelete", Pair.create(isCanDelete(), e.isCanDelete()));
@@ -190,14 +183,6 @@ public interface AllowedNodeActionsEnt extends GatewayEntity, AllowedActionsEnt 
          * @return this entity builder for chaining
          */
         AllowedNodeActionsEntBuilder setCanReset(Boolean canReset);
-        
-        /**
-         * Indicates whether the dialog can be opened (extra window) or not. If the property is absent, no dialog is available altogether.
-         * 
-         * @param canOpenDialog the property value,  
-         * @return this entity builder for chaining
-         */
-        AllowedNodeActionsEntBuilder setCanOpenDialog(Boolean canOpenDialog);
         
         /**
          * Indicates  whether a legacy flow variable dialog can be opened. If the property is absent, there is no legacy flow variable dialog.

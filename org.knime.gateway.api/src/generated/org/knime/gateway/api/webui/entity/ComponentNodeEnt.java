@@ -101,7 +101,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
       valueConsumer.accept("annotation", Pair.create(getAnnotation(), e.getAnnotation()));
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("hasDialog", Pair.create(hasDialog(), e.hasDialog()));
+      valueConsumer.accept("dialogType", Pair.create(getDialogType(), e.getDialogType()));
       valueConsumer.accept("inputContentVersion", Pair.create(getInputContentVersion(), e.getInputContentVersion()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
@@ -167,12 +167,12 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         ComponentNodeEntBuilder setKind(KindEnum kind);
         
         /**
-         * Indicates whether this node has a dialog. Not present if the node has no dialog. Not true if only a legacy dialog is available.
+         * Indicates whether and type of dialog a node has. Not present if the node has no dialog.
          * 
-         * @param hasDialog the property value,  
+         * @param dialogType the property value,  
          * @return this entity builder for chaining
          */
-        ComponentNodeEntBuilder setHasDialog(Boolean hasDialog);
+        ComponentNodeEntBuilder setDialogType(DialogTypeEnum dialogType);
         
         /**
          * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.

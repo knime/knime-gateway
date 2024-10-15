@@ -74,6 +74,7 @@
   },
   "nodes" : {
     "root:23:0:10" : {
+      "dialogType" : "swing",
       "id" : "root:23:0:10",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -111,6 +112,7 @@
       "templateId" : "org.knime.js.base.node.viz.pagedTable.PagedTableViewNodeFactory"
     },
     "root:23:0:8" : {
+      "dialogType" : "swing",
       "id" : "root:23:0:8",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -143,6 +145,7 @@
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input"
     },
     "root:23:0:9" : {
+      "dialogType" : "swing",
       "id" : "root:23:0:9",
       "inPorts" : [ {
         "connectedVia" : "[  ]",

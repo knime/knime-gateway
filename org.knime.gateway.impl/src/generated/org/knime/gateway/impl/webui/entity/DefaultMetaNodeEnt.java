@@ -66,7 +66,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
  * @param annotation
  * @param position
  * @param kind
- * @param hasDialog
+ * @param dialogType
  * @param inputContentVersion
  * @param allowedActions
  * @param executionInfo
@@ -85,7 +85,7 @@ public record DefaultMetaNodeEnt(
     NodeAnnotationEnt annotation,
     XYEnt position,
     KindEnum kind,
-    Boolean hasDialog,
+    DialogTypeEnum dialogType,
     Integer inputContentVersion,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
@@ -157,8 +157,8 @@ public record DefaultMetaNodeEnt(
     }
     
     @Override
-    public Boolean hasDialog() {
-        return hasDialog;
+    public DialogTypeEnum getDialogType() {
+        return dialogType;
     }
     
     @Override
@@ -213,7 +213,7 @@ public record DefaultMetaNodeEnt(
 
         private KindEnum m_kind;
 
-        private Boolean m_hasDialog;
+        private DialogTypeEnum m_dialogType;
 
         private Integer m_inputContentVersion;
 
@@ -281,8 +281,8 @@ public record DefaultMetaNodeEnt(
         }
 
         @Override
-        public DefaultMetaNodeEntBuilder setHasDialog(Boolean hasDialog) {
-             m_hasDialog = hasDialog;
+        public DefaultMetaNodeEntBuilder setDialogType(DialogTypeEnum dialogType) {
+             m_dialogType = dialogType;
              return this;
         }
 
@@ -343,7 +343,7 @@ public record DefaultMetaNodeEnt(
                 immutable(m_annotation),
                 immutable(m_position),
                 immutable(m_kind),
-                immutable(m_hasDialog),
+                immutable(m_dialogType),
                 immutable(m_inputContentVersion),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),

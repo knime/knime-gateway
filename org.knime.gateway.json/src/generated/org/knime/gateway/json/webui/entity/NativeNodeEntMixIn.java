@@ -103,8 +103,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("hasDialog")
-    public Boolean hasDialog();
+    @JsonProperty("dialogType")
+    public DialogTypeEnum getDialogType();
     
     @Override
     @JsonProperty("inputContentVersion")
@@ -180,8 +180,8 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         public NativeNodeEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("hasDialog")
-        public NativeNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        @JsonProperty("dialogType")
+        public NativeNodeEntMixInBuilder setDialogType(final DialogTypeEnum dialogType);
         
         @Override
         @JsonProperty("inputContentVersion")

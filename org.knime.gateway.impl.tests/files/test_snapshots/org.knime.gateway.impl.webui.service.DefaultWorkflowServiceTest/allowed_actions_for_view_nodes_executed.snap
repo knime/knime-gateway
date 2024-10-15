@@ -4,7 +4,6 @@
     "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
-    "canOpenDialog" : true,
     "canOpenLegacyFlowVariableDialog" : true,
     "canOpenView" : true,
     "canReset" : true
@@ -15,7 +14,6 @@
     "canDelete" : true,
     "canExecute" : false,
     "canExpand" : "resetRequired",
-    "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   },
@@ -24,7 +22,6 @@
     "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
-    "canOpenDialog" : true,
     "canOpenLegacyFlowVariableDialog" : true,
     "canReset" : true
   },
@@ -34,7 +31,6 @@
     "canDelete" : true,
     "canExecute" : false,
     "canExpand" : "resetRequired",
-    "canOpenDialog" : true,
     "canReset" : true
   },
   "root:15" : {
@@ -42,7 +38,6 @@
     "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
-    "canOpenDialog" : true,
     "canOpenLegacyFlowVariableDialog" : true,
     "canOpenView" : true,
     "canReset" : true
@@ -53,7 +48,6 @@
     "canDelete" : true,
     "canExecute" : false,
     "canExpand" : "resetRequired",
-    "canOpenDialog" : true,
     "canReset" : true
   },
   "root:2" : {
@@ -61,7 +55,6 @@
     "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
-    "canOpenDialog" : true,
     "canReset" : true
   },
   "root:3" : {
@@ -69,7 +62,6 @@
     "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
-    "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   },
@@ -78,7 +70,6 @@
     "canCollapse" : "resetRequired",
     "canDelete" : true,
     "canExecute" : false,
-    "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   },
@@ -88,7 +79,6 @@
     "canDelete" : true,
     "canExecute" : false,
     "canExpand" : "resetRequired",
-    "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   },
@@ -98,7 +88,6 @@
     "canDelete" : true,
     "canExecute" : false,
     "canExpand" : "resetRequired",
-    "canOpenDialog" : true,
     "canOpenView" : true,
     "canReset" : true
   }

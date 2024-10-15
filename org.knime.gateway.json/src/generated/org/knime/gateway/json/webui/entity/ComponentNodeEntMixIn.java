@@ -103,8 +103,8 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("hasDialog")
-    public Boolean hasDialog();
+    @JsonProperty("dialogType")
+    public DialogTypeEnum getDialogType();
     
     @Override
     @JsonProperty("inputContentVersion")
@@ -180,8 +180,8 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         public ComponentNodeEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("hasDialog")
-        public ComponentNodeEntMixInBuilder setHasDialog(final Boolean hasDialog);
+        @JsonProperty("dialogType")
+        public ComponentNodeEntMixInBuilder setDialogType(final DialogTypeEnum dialogType);
         
         @Override
         @JsonProperty("inputContentVersion")

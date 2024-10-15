@@ -1,8 +1,8 @@
 {
+  "dialogType" : "web",
   "executionInfo" : {
     "streamable" : false
   },
-  "hasDialog" : true,
   "id" : "root:3:0:7",
   "inPorts" : [ {
     "connectedVia" : "[  ]",

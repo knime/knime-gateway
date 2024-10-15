@@ -120,7 +120,6 @@
         "canDelete" : true,
         "canExecute" : true,
         "canExpand" : "true",
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -131,6 +130,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "id" : "root:5",
       "inPorts" : [ {
         "canRemove" : false,
@@ -164,9 +164,9 @@
         "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:6",
       "inPorts" : [ {
         "canRemove" : false,
@@ -207,9 +207,9 @@
         "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:7",
       "inPorts" : [ {
         "canRemove" : false,
@@ -250,11 +250,10 @@
         "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
-      "hasDialog" : true,
+      "dialogType" : "web",
       "id" : "root:8",
       "inPorts" : [ {
         "canRemove" : false,
@@ -303,9 +302,9 @@
         "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:9",
       "inPorts" : [ {
         "canRemove" : false,

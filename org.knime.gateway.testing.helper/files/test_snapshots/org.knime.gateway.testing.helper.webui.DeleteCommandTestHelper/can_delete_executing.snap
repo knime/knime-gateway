@@ -81,7 +81,6 @@
         "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -93,6 +92,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "id" : "root:1",
       "inPorts" : [ {
         "canRemove" : false,
@@ -139,7 +139,6 @@
         "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -151,6 +150,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "id" : "root:2",
       "inPorts" : [ {
         "canRemove" : false,
@@ -200,7 +200,6 @@
         "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -212,6 +211,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "id" : "root:3",
       "inPorts" : [ {
         "canRemove" : false,
@@ -259,7 +259,6 @@
         "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -271,6 +270,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "id" : "root:4",
       "inPorts" : [ {
         "canRemove" : false,
@@ -322,7 +322,6 @@
         "canDelete" : false,
         "canExecute" : false,
         "canExpand" : "false",
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -339,6 +338,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "executionInfo" : {
         "jobManager" : {
           "type" : "streaming"
@@ -378,7 +378,6 @@
         "canDelete" : false,
         "canExecute" : false,
         "canExpand" : "false",
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -390,6 +389,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "executionInfo" : {
         "jobManager" : {
           "type" : "streaming"

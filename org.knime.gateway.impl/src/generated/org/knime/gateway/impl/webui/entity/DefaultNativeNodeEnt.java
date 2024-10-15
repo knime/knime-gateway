@@ -67,7 +67,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param annotation
  * @param position
  * @param kind
- * @param hasDialog
+ * @param dialogType
  * @param inputContentVersion
  * @param allowedActions
  * @param executionInfo
@@ -88,7 +88,7 @@ public record DefaultNativeNodeEnt(
     NodeAnnotationEnt annotation,
     XYEnt position,
     KindEnum kind,
-    Boolean hasDialog,
+    DialogTypeEnum dialogType,
     Integer inputContentVersion,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
@@ -159,8 +159,8 @@ public record DefaultNativeNodeEnt(
     }
     
     @Override
-    public Boolean hasDialog() {
-        return hasDialog;
+    public DialogTypeEnum getDialogType() {
+        return dialogType;
     }
     
     @Override
@@ -225,7 +225,7 @@ public record DefaultNativeNodeEnt(
 
         private KindEnum m_kind;
 
-        private Boolean m_hasDialog;
+        private DialogTypeEnum m_dialogType;
 
         private Integer m_inputContentVersion;
 
@@ -297,8 +297,8 @@ public record DefaultNativeNodeEnt(
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setHasDialog(Boolean hasDialog) {
-             m_hasDialog = hasDialog;
+        public DefaultNativeNodeEntBuilder setDialogType(DialogTypeEnum dialogType) {
+             m_dialogType = dialogType;
              return this;
         }
 
@@ -368,7 +368,7 @@ public record DefaultNativeNodeEnt(
                 immutable(m_annotation),
                 immutable(m_position),
                 immutable(m_kind),
-                immutable(m_hasDialog),
+                immutable(m_dialogType),
                 immutable(m_inputContentVersion),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),

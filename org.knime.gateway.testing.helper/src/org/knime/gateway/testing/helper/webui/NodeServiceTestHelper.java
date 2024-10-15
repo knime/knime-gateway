@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt.DialogTypeEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
@@ -384,9 +385,9 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
 
         var workflow = ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow();
-        assertThat(((NativeNodeEnt)workflow.getNodes().get("root:1")).hasDialog(), is(Boolean.TRUE));
-        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).hasDialog(), is(nullValue()));
-        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:17")).hasDialog(), is(Boolean.TRUE));
+        assertThat(((NativeNodeEnt)workflow.getNodes().get("root:1")).getDialogType(), is(DialogTypeEnum.WEB));
+        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).getDialogType(), is(DialogTypeEnum.SWING));
+        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:17")).getDialogType(), is(DialogTypeEnum.WEB));
 
         // dialog of a native node
         var dialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(1));

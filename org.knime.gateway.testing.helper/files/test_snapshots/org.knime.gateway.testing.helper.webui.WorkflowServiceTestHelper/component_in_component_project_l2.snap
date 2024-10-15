@@ -56,9 +56,9 @@
         "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:5:0:7:0:4",
       "inPorts" : [ {
         "canRemove" : false,
@@ -106,9 +106,9 @@
         "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:5:0:7:0:5",
       "inPorts" : [ {
         "canRemove" : false,
@@ -142,9 +142,9 @@
         "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:5:0:7:0:6",
       "inPorts" : [ {
         "canRemove" : false,

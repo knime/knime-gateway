@@ -105,9 +105,9 @@
         "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:6:3",
       "inPorts" : [ {
         "canRemove" : false,

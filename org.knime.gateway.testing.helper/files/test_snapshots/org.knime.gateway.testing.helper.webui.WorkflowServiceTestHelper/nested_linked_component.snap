@@ -51,7 +51,6 @@
         "canDelete" : true,
         "canExecute" : false,
         "canExpand" : "true",
-        "canOpenDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -62,6 +61,7 @@
         },
         "textAlign" : "center"
       },
+      "dialogType" : "swing",
       "id" : "root:2:0:1",
       "inPorts" : [ {
         "canRemove" : false,
@@ -114,9 +114,9 @@
         "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:2:0:2",
       "inPorts" : [ {
         "canRemove" : false,
@@ -150,9 +150,9 @@
         "canCollapse" : "true",
         "canDelete" : false,
         "canExecute" : true,
-        "canOpenDialog" : true,
         "canReset" : false
       },
+      "dialogType" : "swing",
       "id" : "root:2:0:3",
       "inPorts" : [ {
         "canRemove" : false,

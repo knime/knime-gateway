@@ -155,6 +155,7 @@ import org.knime.gateway.api.webui.entity.NodeAnnotationEnt.NodeAnnotationEntBui
 import org.knime.gateway.api.webui.entity.NodeDialogOptionDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt.DialogTypeEnum;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt.NodeExecutionInfoEntBuilder;
@@ -442,12 +443,10 @@ public final class WorkflowEntityFactory {
         WorkflowManager parent = nc.getParent();
         NodeID id = nc.getID();
         boolean hasNodeDialog = NodeDialogManager.hasNodeDialog(nc);
-        boolean hasLegacyNodeDialog = nc.hasDialog();
         return builder(AllowedNodeActionsEntBuilder.class)//
             .setCanExecute(depNodeProps.canExecuteNode(id))//
             .setCanReset(depNodeProps.canResetNode(id))//
             .setCanCancel(parent.canCancelNode(id))//
-            .setCanOpenDialog((hasLegacyNodeDialog || hasNodeDialog) ? Boolean.TRUE : null)//
             .setCanOpenLegacyFlowVariableDialog(
                 hasNodeDialog && !(nc instanceof SubNodeContainer) ? Boolean.TRUE : null)//
             .setCanOpenView(hasAndCanOpenNodeView(nc))//
@@ -549,7 +548,6 @@ public final class WorkflowEntityFactory {
         ComponentMetadata metadata = nc.getMetadata();
         var type =
             metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
-        var hasDialog = NodeDialogManager.hasNodeDialog(nc) ? Boolean.TRUE : null;
         var inputContentVersion = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(nc)
             ? ContentVersions.getInputContentVersion(nc) : null;
         return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
@@ -563,12 +561,22 @@ public final class WorkflowEntityFactory {
             .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
             .setLink(buildTemplateLinkEnt(nc, buildContext))//
-            .setHasDialog(hasDialog)//
+            .setDialogType(getDialogType(nc)) //
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
             .setIsLocked(CoreUtil.isLocked(nc).orElse(null)) //
             .setInputContentVersion(inputContentVersion) //
             .build();
+    }
+
+    private static DialogTypeEnum getDialogType(final NodeContainer nc) {
+        if (NodeDialogManager.hasNodeDialog(nc)) {
+            return DialogTypeEnum.WEB;
+        } else if (nc.hasDialog()) {
+            return DialogTypeEnum.SWING;
+        } else {
+            return null;
+        }
     }
 
     private List<NodePortDescriptionEnt> buildComponentOutNodePortDescriptionEnts(final ComponentMetadata metadata,
@@ -689,6 +697,7 @@ public final class WorkflowEntityFactory {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .setIsLocked(CoreUtil.isLocked(wm).orElse(null)) //
+            .setDialogType(null) //
             .build();
     }
 
@@ -755,7 +764,6 @@ public final class WorkflowEntityFactory {
         var inPorts = buildNodePortEnts(nnc, true, buildContext);
         var outPorts = buildNodePortEnts(nnc, false, buildContext);
         var portGroups = buildPortGroupEntsMapOptional(nnc, inPorts, outPorts, buildContext).orElse(null);
-        var hasDialog = NodeDialogManager.hasNodeDialog(nnc) ? Boolean.TRUE : null;
         var hasView = NodeViewManager.hasNodeView(nnc) ? Boolean.TRUE : null;
         Boolean isReexecutable = null;
         if (nnc.getNodeModel() instanceof ReExecutable) {
@@ -776,7 +784,7 @@ public final class WorkflowEntityFactory {
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(nnc))//
             .setLoopInfo(buildLoopInfoEnt(nnc, buildContext))//
-            .setHasDialog(hasDialog) //
+            .setDialogType(getDialogType(nnc)) //
             .setHasView(hasView)//
             .setIsReexecutable(isReexecutable)//
             .setInputContentVersion(inputContentVersion) //

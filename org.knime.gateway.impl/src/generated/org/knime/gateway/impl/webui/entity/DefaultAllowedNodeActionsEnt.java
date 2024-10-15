@@ -56,7 +56,6 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
  * @param canExecute
  * @param canCancel
  * @param canReset
- * @param canOpenDialog
  * @param canOpenLegacyFlowVariableDialog
  * @param canOpenView
  * @param canDelete
@@ -70,7 +69,6 @@ public record DefaultAllowedNodeActionsEnt(
     Boolean canExecute,
     Boolean canCancel,
     Boolean canReset,
-    Boolean canOpenDialog,
     Boolean canOpenLegacyFlowVariableDialog,
     Boolean canOpenView,
     Boolean canDelete,
@@ -113,11 +111,6 @@ public record DefaultAllowedNodeActionsEnt(
     }
     
     @Override
-    public Boolean isCanOpenDialog() {
-        return canOpenDialog;
-    }
-    
-    @Override
     public Boolean isCanOpenLegacyFlowVariableDialog() {
         return canOpenLegacyFlowVariableDialog;
     }
@@ -152,8 +145,6 @@ public record DefaultAllowedNodeActionsEnt(
         private Boolean m_canCancel;
 
         private Boolean m_canReset;
-
-        private Boolean m_canOpenDialog;
 
         private Boolean m_canOpenLegacyFlowVariableDialog;
 
@@ -193,12 +184,6 @@ public record DefaultAllowedNodeActionsEnt(
         }
 
         @Override
-        public DefaultAllowedNodeActionsEntBuilder setCanOpenDialog(Boolean canOpenDialog) {
-             m_canOpenDialog = canOpenDialog;
-             return this;
-        }
-
-        @Override
         public DefaultAllowedNodeActionsEntBuilder setCanOpenLegacyFlowVariableDialog(Boolean canOpenLegacyFlowVariableDialog) {
              m_canOpenLegacyFlowVariableDialog = canOpenLegacyFlowVariableDialog;
              return this;
@@ -234,7 +219,6 @@ public record DefaultAllowedNodeActionsEnt(
                 immutable(m_canExecute),
                 immutable(m_canCancel),
                 immutable(m_canReset),
-                immutable(m_canOpenDialog),
                 immutable(m_canOpenLegacyFlowVariableDialog),
                 immutable(m_canOpenView),
                 immutable(m_canDelete),

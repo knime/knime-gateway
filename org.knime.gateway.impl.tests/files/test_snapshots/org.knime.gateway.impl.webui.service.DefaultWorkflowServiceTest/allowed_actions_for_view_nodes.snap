@@ -4,7 +4,6 @@
     "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
-    "canOpenDialog" : true,
     "canOpenLegacyFlowVariableDialog" : true,
     "canOpenView" : false,
     "canReset" : false
@@ -15,7 +14,6 @@
     "canDelete" : true,
     "canExecute" : true,
     "canExpand" : "true",
-    "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   },
@@ -24,7 +22,6 @@
     "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
-    "canOpenDialog" : true,
     "canOpenLegacyFlowVariableDialog" : true,
     "canReset" : false
   },
@@ -34,7 +31,6 @@
     "canDelete" : true,
     "canExecute" : true,
     "canExpand" : "true",
-    "canOpenDialog" : true,
     "canReset" : false
   },
   "root:15" : {
@@ -42,7 +38,6 @@
     "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
-    "canOpenDialog" : true,
     "canOpenLegacyFlowVariableDialog" : true,
     "canOpenView" : false,
     "canReset" : false
@@ -53,7 +48,6 @@
     "canDelete" : true,
     "canExecute" : true,
     "canExpand" : "true",
-    "canOpenDialog" : true,
     "canReset" : false
   },
   "root:2" : {
@@ -61,7 +55,6 @@
     "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
-    "canOpenDialog" : true,
     "canReset" : false
   },
   "root:3" : {
@@ -69,7 +62,6 @@
     "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
-    "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   },
@@ -78,7 +70,6 @@
     "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
-    "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   },
@@ -88,7 +79,6 @@
     "canDelete" : true,
     "canExecute" : true,
     "canExpand" : "true",
-    "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   },
@@ -98,7 +88,6 @@
     "canDelete" : true,
     "canExecute" : true,
     "canExpand" : "true",
-    "canOpenDialog" : true,
     "canOpenView" : false,
     "canReset" : false
   }

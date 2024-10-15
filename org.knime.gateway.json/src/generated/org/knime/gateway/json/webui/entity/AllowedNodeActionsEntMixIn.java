@@ -83,10 +83,6 @@ public interface AllowedNodeActionsEntMixIn extends AllowedNodeActionsEnt {
     public Boolean isCanReset();
     
     @Override
-    @JsonProperty("canOpenDialog")
-    public Boolean isCanOpenDialog();
-    
-    @Override
     @JsonProperty("canOpenLegacyFlowVariableDialog")
     public Boolean isCanOpenLegacyFlowVariableDialog();
     
@@ -130,10 +126,6 @@ public interface AllowedNodeActionsEntMixIn extends AllowedNodeActionsEnt {
         @Override
         @JsonProperty("canReset")
         public AllowedNodeActionsEntMixInBuilder setCanReset(final Boolean canReset);
-        
-        @Override
-        @JsonProperty("canOpenDialog")
-        public AllowedNodeActionsEntMixInBuilder setCanOpenDialog(final Boolean canOpenDialog);
         
         @Override
         @JsonProperty("canOpenLegacyFlowVariableDialog")
