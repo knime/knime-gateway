@@ -53,8 +53,15 @@ import java.util.Optional;
 
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
+import org.knime.core.data.StringValue;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
+import org.knime.core.webui.node.view.table.datavalue.DataValueView;
+import org.knime.core.webui.node.view.table.datavalue.DataValueViewFactory;
+import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
+import org.knime.core.webui.page.Page;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariableSpecViewFactory;
@@ -111,6 +118,31 @@ public class GatewayImplPlugin implements BundleActivator {
 
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
+
+        DataValueViewManager.registerDataValueViewFactory(StringValue.class, new DataValueViewFactory<StringValue>() {
+            @Override
+            public DataValueView[] createDataValueViews(final StringValue value) {
+                return new DataValueView[]{new DataValueView() {
+
+                    @Override
+                    public Optional<RpcDataService> createRpcDataService() {
+                        return Optional.empty();
+                    }
+
+                    @Override
+                    public Optional<InitialDataService<String>> createInitialDataService() {
+                        return Optional.of(InitialDataService.builder(() -> value.getStringValue()).build());
+                    }
+
+                    @Override
+                    public Page getPage() {
+                        return Page.builder(TableView.class, "js-src/data-value-renderers/dist", "StringCellRenderer.html").addResourceDirectory("assets")
+                                .build();
+
+                    }
+                }};
+            }
+        });
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();
