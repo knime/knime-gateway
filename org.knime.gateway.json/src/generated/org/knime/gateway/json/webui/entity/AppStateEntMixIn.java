@@ -108,6 +108,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public Boolean hasNodeCollectionActive();
     
     @Override
+    @JsonProperty("useEmbeddedDialogs")
+    public Boolean isUseEmbeddedDialogs();
+    
+    @Override
     @JsonProperty("activeNodeCollection")
     public String getActiveNodeCollection();
     
@@ -183,6 +187,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("hasNodeCollectionActive")
         public AppStateEntMixInBuilder setHasNodeCollectionActive(final Boolean hasNodeCollectionActive);
+        
+        @Override
+        @JsonProperty("useEmbeddedDialogs")
+        public AppStateEntMixInBuilder setUseEmbeddedDialogs(final Boolean useEmbeddedDialogs);
         
         @Override
         @JsonProperty("activeNodeCollection")

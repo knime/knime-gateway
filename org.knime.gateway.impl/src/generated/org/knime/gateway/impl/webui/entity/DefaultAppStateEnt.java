@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param featureFlags
  * @param scrollToZoomEnabled
  * @param hasNodeCollectionActive
+ * @param useEmbeddedDialogs
  * @param activeNodeCollection
  * @param confirmNodeConfigChanges
  * @param devMode
@@ -84,6 +85,7 @@ public record DefaultAppStateEnt(
     java.util.Map<String, Object> featureFlags,
     Boolean scrollToZoomEnabled,
     Boolean hasNodeCollectionActive,
+    Boolean useEmbeddedDialogs,
     String activeNodeCollection,
     Boolean confirmNodeConfigChanges,
     Boolean devMode,
@@ -149,6 +151,11 @@ public record DefaultAppStateEnt(
     }
     
     @Override
+    public Boolean isUseEmbeddedDialogs() {
+        return useEmbeddedDialogs;
+    }
+    
+    @Override
     public String getActiveNodeCollection() {
         return activeNodeCollection;
     }
@@ -205,6 +212,8 @@ public record DefaultAppStateEnt(
         private Boolean m_scrollToZoomEnabled;
 
         private Boolean m_hasNodeCollectionActive;
+
+        private Boolean m_useEmbeddedDialogs;
 
         private String m_activeNodeCollection;
 
@@ -275,6 +284,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setUseEmbeddedDialogs(Boolean useEmbeddedDialogs) {
+             m_useEmbeddedDialogs = useEmbeddedDialogs;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEntBuilder setActiveNodeCollection(String activeNodeCollection) {
              m_activeNodeCollection = activeNodeCollection;
              return this;
@@ -328,6 +343,7 @@ public record DefaultAppStateEnt(
                 immutable(m_featureFlags),
                 immutable(m_scrollToZoomEnabled),
                 immutable(m_hasNodeCollectionActive),
+                immutable(m_useEmbeddedDialogs),
                 immutable(m_activeNodeCollection),
                 immutable(m_confirmNodeConfigChanges),
                 immutable(m_devMode),

@@ -143,6 +143,12 @@ public interface AppStateEnt extends GatewayEntity {
   public Boolean hasNodeCollectionActive();
 
   /**
+   * Whether the application should use embedded dialogs or detached dialogs.
+   * @return useEmbeddedDialogs 
+   **/
+  public Boolean isUseEmbeddedDialogs();
+
+  /**
    * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.
    * @return activeNodeCollection 
    **/
@@ -198,6 +204,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("featureFlags", Pair.create(getFeatureFlags(), e.getFeatureFlags()));
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
+      valueConsumer.accept("useEmbeddedDialogs", Pair.create(isUseEmbeddedDialogs(), e.isUseEmbeddedDialogs()));
       valueConsumer.accept("activeNodeCollection", Pair.create(getActiveNodeCollection(), e.getActiveNodeCollection()));
       valueConsumer.accept("confirmNodeConfigChanges", Pair.create(isConfirmNodeConfigChanges(), e.isConfirmNodeConfigChanges()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
@@ -283,6 +290,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setHasNodeCollectionActive(Boolean hasNodeCollectionActive);
+        
+        /**
+         * Whether the application should use embedded dialogs or detached dialogs.
+         * 
+         * @param useEmbeddedDialogs the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setUseEmbeddedDialogs(Boolean useEmbeddedDialogs);
         
         /**
          * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.
