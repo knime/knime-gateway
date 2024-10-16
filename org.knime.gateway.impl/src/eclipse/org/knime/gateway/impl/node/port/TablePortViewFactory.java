@@ -146,13 +146,8 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
         private static void setRowHeight(final TableViewViewSettings settings, final DataTableSpec spec) {
             final var rendererFactory = new SwingBasedRendererFactory();
-            if (spec.stream().anyMatch(colSpec -> isRendererdAsImage(colSpec, rendererFactory))) {
-                settings.m_rowHeightMode = RowHeightMode.CUSTOM;
-                settings.m_customRowHeight = 80;
-            } else {
-                settings.m_rowHeightMode = RowHeightMode.CUSTOM;
-                settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
-            }
+            settings.m_rowHeightMode = RowHeightMode.CUSTOM;
+            settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
         }
 
         private static boolean isRendererdAsImage(final DataColumnSpec colSpec2,

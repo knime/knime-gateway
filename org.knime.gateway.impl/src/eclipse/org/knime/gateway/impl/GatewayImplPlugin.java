@@ -54,6 +54,7 @@ import java.util.Optional;
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
 import org.knime.core.data.StringValue;
+import org.knime.core.data.image.png.PNGImageValue;
 import org.knime.core.data.json.JSONValue;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
@@ -194,6 +195,30 @@ public class GatewayImplPlugin implements BundleActivator {
                 }};
             }
 
+        });
+
+        DataValueViewManager.registerDataValueViewFactory(PNGImageValue.class, new DataValueViewFactory<PNGImageValue>() {
+            @Override
+            public DataValueView[] createDataValueViews(final PNGImageValue value) {
+                return new DataValueView[]{new DataValueView() {
+
+                    @Override
+                    public Optional<RpcDataService> createRpcDataService() {
+                        return Optional.empty();
+                    }
+
+                    @Override
+                    public Optional<InitialDataService<byte[]>> createInitialDataService() {
+                        return Optional.of(InitialDataService.builder(() -> value.getImageContent().getByteArray()).build());
+                    }
+
+                    @Override
+                    public Page getPage() {
+                        return Page.builder(TableView.class, "js-src/data-value-renderers/dist", "ImageCellRenderer.html").addResourceDirectory("assets")
+                                .build();
+                    }
+                }};
+            }
         });
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
