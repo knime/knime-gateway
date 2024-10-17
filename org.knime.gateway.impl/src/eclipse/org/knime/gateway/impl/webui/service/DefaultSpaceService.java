@@ -112,7 +112,7 @@ public class DefaultSpaceService implements SpaceService {
             final var spaceProvider = SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId);
             final var message = "Could not access space provider '" + spaceProvider.getName()
                 + "' Please make sure you have network connection!";
-            return NetworkExceptions.callWithCatch(spaceProvider::toEntity, message, 5);
+            return NetworkExceptions.callWithCatch(spaceProvider::toEntity, message);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -129,7 +129,7 @@ public class DefaultSpaceService implements SpaceService {
             final var space = spaceProvider.getSpace(spaceId);
             final var message = "Could not list space items from space provider '" + spaceProvider.getName()
                 + "'. Please make sure you have network conntection!";
-            return NetworkExceptions.callWithCatch(() -> space.listWorkflowGroup(workflowGroupId), message, 5);
+            return NetworkExceptions.callWithCatch(() -> space.listWorkflowGroup(workflowGroupId), message);
         } catch (NoSuchElementException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
