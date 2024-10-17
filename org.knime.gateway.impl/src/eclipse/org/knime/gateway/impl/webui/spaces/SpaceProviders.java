@@ -65,28 +65,19 @@ import org.knime.gateway.impl.webui.service.ServiceDependencies;
  */
 public interface SpaceProviders {
 
-    private static SpaceProvider getSpaceProvider(final SpaceProviders spaceProviders, final String spaceProviderId)
+    /**
+     * @param spaceProviders
+     * @param spaceProviderId
+     * @return The space provider for the given ID if available
+     * @throws NoSuchElementException
+     */
+    static SpaceProvider getSpaceProvider(final SpaceProviders spaceProviders, final String spaceProviderId)
         throws NoSuchElementException {
         final var spaceProvider = spaceProviders.getProvidersMap().get(spaceProviderId);
         if (spaceProvider == null) {
             throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
         }
         return spaceProvider;
-    }
-
-    /**
-     * @param spaceProviders
-     * @param spaceProviderId
-     * @return The space provider for the given ID if available
-     * @throws NoSuchElementException If there is no space provider for the given ID
-     */
-    static Optional<SpaceProvider> getSpaceProviderOptional(final SpaceProviders spaceProviders,
-        final String spaceProviderId) {
-        try {
-            return Optional.of(getSpaceProvider(spaceProviders, spaceProviderId));
-        } catch (NoSuchElementException e) { // NOSONAR
-            return Optional.empty();
-        }
     }
 
     /**

@@ -59,6 +59,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
@@ -133,7 +135,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var newSpaceItemEnt = EntityFactory.Space.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
         when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
 
-        var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", true, mockedSpace);
+        var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", mockedSpace);
         var spaceProviders = Map.of(providerId, spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
 
@@ -294,13 +296,22 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Tests {@link SpaceService#listJobsForWorkflow(String, String, String)} being not reachable.
      */
-    public void testListWorkflowGroupNotReachable() {
-        var space = mockSpace("id0", "name0", "owner0", "description0", true);
-        var provider = createSpaceProvider("id0", "name0", false, space);
+    public void testListWorkflowGroupNotReachable() throws Exception {
+        var space = mockSpaceWithFailingListWorkflowGroup("id0", "name0");
+        var provider = createSpaceProvider("id0", "name0", space);
 
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
 
         assertThrows(NetworkException.class, () -> ss().listWorkflowGroup("id0", "id0", "blub"));
+    }
+
+    private static Space mockSpaceWithFailingListWorkflowGroup(final String id, final String name) throws Exception {
+        var space = mock(Space.class);
+        when(space.getId()).thenReturn(id);
+        when(space.getName()).thenReturn(name);
+        when(space.listWorkflowGroup(any())).thenThrow(new RuntimeException("message", new SocketException()));
+        // not mocked methods will return `null` or an appropriate empty/primitive value
+        return space;
     }
 
     /**
@@ -331,8 +342,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         for (var i = 0; i < 4; i++) {
             spaces[i] = mockSpace("id" + i, "name" + i, "owner" + i, "description" + i, i % 2 == 0);
         }
-        var provider1 = createSpaceProvider("id1", "name1", true, spaces[0], spaces[1]);
-        var provider2 = createSpaceProvider("id2", "name2", true, spaces[2], spaces[3]);
+        var provider1 = createSpaceProvider("id1", "name1", spaces[0], spaces[1]);
+        var provider2 = createSpaceProvider("id2", "name2", spaces[2], spaces[3]);
 
         ServiceDependencies.setServiceDependency(SpaceProviders.class,
             () -> Map.of(provider1.getId(), provider1, provider2.getId(), provider2));
@@ -350,12 +361,21 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests {@link SpaceService#getSpaceProvider(String)} being not reachable.
      */
     public void testGetSpaceProviderNotReachable() {
-        var space = mockSpace("id0", "name0", "owner0", "description0", true);
-        var provider = createSpaceProvider("id0", "name0", false, space);
+        var space = mockSpaceWithFailingToEntity("id0", "name0");
+        var provider = createSpaceProvider("id0", "name0", space);
 
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
 
         assertThrows(NetworkException.class, () -> ss().getSpaceProvider("id0"));
+    }
+
+    private static Space mockSpaceWithFailingToEntity(final String id, final String name) {
+        var space = mock(Space.class);
+        when(space.getId()).thenReturn(id);
+        when(space.getName()).thenReturn(name);
+        when(space.toEntity()).thenThrow(new RuntimeException("message", new UnknownHostException()));
+        // not mocked methods will return `null` or an appropriate empty/primitive value
+        return space;
     }
 
     /**
@@ -368,7 +388,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @return
      */
     private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
-        final boolean isReachable, final Space... spaces) {
+        final Space... spaces) {
         return new SpaceProvider() {
 
             @Override
@@ -403,11 +423,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             @Override
             public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
                 return getLocalSpaceGroupForTesting(spaces);
-            }
-
-            @Override
-            public boolean isReachable() {
-                return isReachable;
             }
         };
     }
