@@ -59,10 +59,13 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.node.DataValueWrapper;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
+import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
+import org.knime.gateway.api.entity.DataValueViewEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.webui.service.PortService;
@@ -129,6 +132,19 @@ public class DefaultPortService implements PortService {
         var portViewManager = PortViewManager.getInstance();
         return new PortViewEnt(wrapper, portViewManager, createInitialSelectionSupplier(wrapper, projectId,
             portViewManager.getTableViewManager(), m_selectionEventBus));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object getDataValueView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Integer portIdx, final Integer rowIdx, final Integer colIdx)
+        throws NodeNotFoundException, InvalidRequestException {
+        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        return new DataValueViewEnt(DataValueWrapper.of(nc, portIdx, rowIdx, colIdx),
+            DataValueViewManager.getInstance());
+
     }
 
     private static boolean isExecutionStateValid(final PortViewDescriptor viewDescriptor, final NodeContainer nc,
