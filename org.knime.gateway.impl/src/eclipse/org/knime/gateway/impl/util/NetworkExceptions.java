@@ -60,7 +60,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.function.FailableCallable;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 
@@ -101,10 +100,11 @@ public final class NetworkExceptions {
      * @param <E> The exception type thrown by the callable
      * @param callable The task to execute
      * @param errorMessage The error message to show
-     * @param timeout The timeout in seconds, if the timeout is reached, a {@link NetworkException} is thrown
+     * @param timeout The timeout. If the timeout is reached, a {@link NetworkException} is thrown
      *
      * @return The result of the call
      * @throws NetworkException If a network related exception was caught, a network exception will be thrown
+     * @throws E Re-thrown exception in case it's not network-related
      */
     public static <R, E extends Throwable> R callWithCatch(final FailableCallable<R, E> callable,
         final String errorMessage, final Duration timeout) throws E, NetworkException {
@@ -112,7 +112,8 @@ public final class NetworkExceptions {
             return CompletableFuture.supplyAsync(unchecked(callable)) //
                 .get(timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (ExecutionException e) { // NOSONAR: Exception is logged and re-thrown
-            var cause = (E)e.getCause(); // NOSONAR: cause can only be of type E, as thrown by the future's callable.
+            @SuppressWarnings("unchecked") // Cause can only be of type E, as thrown by the future's callable.
+            var cause = (E)e.getCause();
             return mapToNetworkException(cause, errorMessage);
         } catch (InterruptedException | CancellationException e) {
             Thread.currentThread().interrupt();
@@ -131,7 +132,7 @@ public final class NetworkExceptions {
         if (throwableToInspect instanceof ResourceAccessException) {
             throw new NetworkException(message, throwableToInspect);
         }
-        // network-related exceptions such as the below may appear wrapped in runtime exceptions
+        // Network-related exceptions such as the below may appear wrapped in runtime exceptions
         if (throwableToInspect instanceof SocketException) {
             throw new NetworkException(message + "No connection.", throwableToInspect);
         }
@@ -141,7 +142,7 @@ public final class NetworkExceptions {
         throw throwable;
     }
 
-    private static <R, E extends Throwable> Supplier<R> unchecked(FailableCallable<R, E> callable) {
+    private static <R, E extends Throwable> Supplier<R> unchecked(final FailableCallable<R, E> callable) {
         return () -> {
             try {
                 return callable.call();
