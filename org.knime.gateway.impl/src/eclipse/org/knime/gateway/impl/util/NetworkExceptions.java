@@ -50,106 +50,105 @@ package org.knime.gateway.impl.util;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.function.FailableCallable;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
- * Utility methods for network calls
+ * Handle failure cases around network operations.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
 public final class NetworkExceptions {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(NetworkExceptions.class);
-
-    private static final int DEFAULT_TIMEOUT = 5;
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
 
     private NetworkExceptions() {
         // Utility class
     }
 
     /**
-     * Invokes given callable while catching network related runtime exceptions using the default timeout.
+     * Invokes given callable while catching network related exceptions using the a timeout.
      *
      * @param <R> The return type
      * @param <E> The exception type thrown by the callable
-     * @param callable The function to call that might throw a network related runtime exception
+     * @param callable The task to execute
      * @param errorMessage The error message to show
      *
      * @return The result of the call
      * @throws NetworkException If a network related exception was caught, a network exception will be thrown
-     * @throws ServiceCallException If the call was interrupted
-     * @throws Exception Re-thrown exception in case it's not network related
+     * @throws E Re-thrown exception in case it's not network-related
      */
-    public static <R, E extends Exception> R callWithCatch(final FailableCallable<R, E> callable,
-        final String errorMessage) throws E, NetworkException, ServiceCallException {
+    public static <R, E extends Throwable> R callWithCatch(final FailableCallable<R, E> callable,
+        final String errorMessage) throws E, NetworkException {
         return callWithCatch(callable, errorMessage, DEFAULT_TIMEOUT);
     }
 
     /**
-     * Invokes given callable while catching network related runtime exceptions.
+     * Invokes given callable while catching network related exceptions.
      *
      * @param <R> The return type
      * @param <E> The exception type thrown by the callable
-     * @param callable The function to call that might throw a network related runtime exception
+     * @param callable The task to execute
      * @param errorMessage The error message to show
      * @param timeout The timeout in seconds, if the timeout is reached, a {@link NetworkException} is thrown
      *
      * @return The result of the call
      * @throws NetworkException If a network related exception was caught, a network exception will be thrown
-     * @throws ServiceCallException If the call was interrupted
-     * @throws Exception Re-thrown exception in case it's not network related
      */
-    public static <R, E extends Exception> R callWithCatch(final FailableCallable<R, E> callable,
-        final String errorMessage, final int timeout) throws E, NetworkException, ServiceCallException { // NOSONAR: 'E' can indeed be thrown
+    public static <R, E extends Throwable> R callWithCatch(final FailableCallable<R, E> callable,
+        final String errorMessage, final Duration timeout) throws E, NetworkException {
         try {
-            final var future = CompletableFuture.supplyAsync(() -> {
-                try {
-                    return callable.call();
-                } catch (Exception e) { // NOSONAR: We must catch all exceptions here in order to wrap them
-                    throw ExceptionUtils.asRuntimeException(e);
-                }
-            });
-            return future.get(timeout, TimeUnit.SECONDS);
+            return CompletableFuture.supplyAsync(unchecked(callable)) //
+                .get(timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (ExecutionException e) { // NOSONAR: Exception is logged and re-thrown
-            final var unwrappedException = e.getCause();
-            LOGGER.error("The request threw an exception. " + errorMessage, unwrappedException);
-            return rethrowAsExposableException(unwrappedException, errorMessage); // Might throw 'E'
-        } catch (InterruptedException e) {
+            var cause = (E)e.getCause(); // NOSONAR: cause can only be of type E, as thrown by the future's callable.
+            return mapToNetworkException(cause, errorMessage);
+        } catch (InterruptedException | CancellationException e) {
             Thread.currentThread().interrupt();
-            throw new ServiceCallException("The request was interrupted. ", e);
+            throw new NetworkException("The request was interrupted. ", e);
         } catch (TimeoutException e) {
-            LOGGER.error("The request timed out. " + errorMessage, e);
             throw new NetworkException("The request timed out. " + errorMessage, e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <R, E extends Exception> R rethrowAsExposableException(final Throwable throwable,
-        final String errorMessage) throws E, NetworkException {
-        if (throwable instanceof RuntimeException runtimeException) {
-            if (runtimeException.getCause() instanceof SocketException) {
-                throw new NetworkException("No connection. " + errorMessage, runtimeException.getCause());
-            }
-
-            if (runtimeException.getCause() instanceof UnknownHostException) {
-                throw new NetworkException("Host could not be found. " + errorMessage, runtimeException.getCause());
-            }
-
-            // If we can identify more causes indicating a network error, we should add them here
-
-            throw runtimeException;
+    private static <R, E extends Throwable> R mapToNetworkException(final E throwable, final String message)
+        throws E, NetworkException {
+        Throwable throwableToInspect = throwable;
+        if (throwable instanceof RuntimeException) {
+            throwableToInspect = throwable.getCause();
         }
+        if (throwableToInspect instanceof ResourceAccessException) {
+            throw new NetworkException(message, throwableToInspect);
+        }
+        // network-related exceptions such as the below may appear wrapped in runtime exceptions
+        if (throwableToInspect instanceof SocketException) {
+            throw new NetworkException(message + "No connection.", throwableToInspect);
+        }
+        if (throwableToInspect instanceof UnknownHostException) {
+            throw new NetworkException(message + "Host could not be found.", throwableToInspect);
+        }
+        throw throwable;
+    }
 
-        throw (E)throwable; // Unchecked type cast acceptable
+    private static <R, E extends Throwable> Supplier<R> unchecked(FailableCallable<R, E> callable) {
+        return () -> {
+            try {
+                return callable.call();
+            } catch (Throwable e) {  // NOSONAR
+                throw new CompletionException(e);
+            }
+        };
     }
 
 }

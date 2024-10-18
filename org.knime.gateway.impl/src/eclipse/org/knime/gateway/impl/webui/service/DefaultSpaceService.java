@@ -107,11 +107,9 @@ public class DefaultSpaceService implements SpaceService {
         if (spaceProviderId == null || spaceProviderId.isBlank()) {
             throw new ServiceCallException("Invalid space-provider-id (empty/null)");
         }
-
         try {
             final var spaceProvider = SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId);
-            final var message = "Could not access space provider '" + spaceProvider.getName()
-                + "' Please make sure you have network connection!";
+            final var message = "Could not access '" + spaceProvider.getName() + ". ";
             return NetworkExceptions.callWithCatch(spaceProvider::toEntity, message);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
@@ -127,8 +125,7 @@ public class DefaultSpaceService implements SpaceService {
         try {
             final var spaceProvider = SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId);
             final var space = spaceProvider.getSpace(spaceId);
-            final var message = "Could not list space items from space provider '" + spaceProvider.getName()
-                + "'. Please make sure you have network conntection!";
+            final var message = "Could not list spaces of '" + spaceProvider.getName();
             return NetworkExceptions.callWithCatch(() -> space.listWorkflowGroup(workflowGroupId), message);
         } catch (NoSuchElementException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
@@ -217,7 +214,6 @@ public class DefaultSpaceService implements SpaceService {
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
         throws ServiceCallException {
         try {
-            // TODO: Check for open workflows in local workspace (included in NXT-1481)
             SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).deleteItems(spaceItemIds);
         } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
@@ -268,7 +264,6 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
         final String newName) throws ServiceCallException {
         try {
-            // TODO: Check for open workflows in local workspace (included in NXT-1481)
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameItem(itemId, newName);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);

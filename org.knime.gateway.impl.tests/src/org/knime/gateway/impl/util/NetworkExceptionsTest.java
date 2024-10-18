@@ -51,12 +51,15 @@ package org.knime.gateway.impl.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.function.FailableCallable;
 import org.junit.Test;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 
 /**
@@ -64,6 +67,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkExcepti
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
+@SuppressWarnings({"java:S112", "java:S5960", "java:S5612"})
 public class NetworkExceptionsTest {
 
     /**
@@ -73,66 +77,63 @@ public class NetworkExceptionsTest {
      */
     @Test
     public void testHappyPath() throws Exception {
-        final var result = NetworkExceptions.callWithCatch(() -> "success", "failure", 1);
+        final var result = NetworkExceptions.callWithCatch(() -> "success", "failure", Duration.ofSeconds(1));
         assertThat(result).as("Check for the correct result").isEqualTo("success");
     }
 
     /**
-     * Tests the timeout path
-     *
-     * @throws Exception
+     * Asserts that a NetworkException with a TimeoutException as its cause is thrown if the callable takes too long to
+     * complete.
      */
     @Test
-    public void testTimeout() throws Exception {
+    public void testTimeout() {
+        var callableDuration = Duration.ofMillis(500);
         final FailableCallable<String, InterruptedException> callable = () -> {
-            Thread.sleep(1500);
+            Thread.sleep(callableDuration.toMillis());
             return "success";
         };
-
-        // Does not timeout
-        final var result = NetworkExceptions.callWithCatch(callable, "failure", 2);
-        assertThat(result).as("Check for the correct result").isEqualTo("success");
-
-        // Should timeout
-        final var exception = assertThrows(NetworkException.class, () -> NetworkExceptions.callWithCatch(callable, "failure", 1));
-        assertThat(exception.getMessage()).as("Check the exception message").contains("failure");
-        assertThat(exception.getMessage()).as("Check the exception message").contains("The request timed out.");
+        var insufficientTimeout = callableDuration.minusMillis(200);
+        final var exception = assertThrows(NetworkException.class, //
+            () -> NetworkExceptions.callWithCatch(callable, "failure", insufficientTimeout) //
+        );
+        assertThat(exception.getCause()).isInstanceOf(TimeoutException.class);
     }
 
     /**
-     * Tests the runtime exception path
+     * Assert that some RuntimeExceptions of the callable result in NetworkExceptions, with the cause of the
+     * RuntimeException being supplied as the cause of the NetworkException.
      */
     @Test
-    public void testRuntimeExceptions() {
-        final var exception = assertThrows(NetworkException.class, () -> NetworkExceptions.callWithCatch(() -> {
-            throw new RuntimeException(new SocketException("network"));
-        }, "failure", 1));
-        assertThat(exception.getMessage()).as("Check the exception message").contains("failure");
-        assertThat(exception.getMessage()).as("Check the exception message").contains("No connection.");
-
-        final var exception2 = assertThrows(NetworkException.class, () -> NetworkExceptions.callWithCatch(() -> {
-            throw new RuntimeException(new UnknownHostException("network"));
-        }, "failure", 1));
-        assertThat(exception2.getMessage()).as("Check the exception message").contains("failure");
-        assertThat(exception2.getMessage()).as("Check the exception message").contains("Host could not be found.");
-
-        final var exception3 = assertThrows(RuntimeException.class, () -> NetworkExceptions.callWithCatch(() -> {
-            throw new RuntimeException(new Exception("unknown"));
-        }, "failure", 1));
-        assertThat(exception3.getMessage()).as("Check the exception message").doesNotContain("failure");
-        assertThat(exception3.getMessage()).as("Check the exception message").contains("unknown");
+    public void testSomeRuntimeExceptionCausesAreRethrown() {
+        var timeout = Duration.ofSeconds(1);
+        List.of(new SocketException(), new UnknownHostException(), new ResourceAccessException("")) //
+            .forEach(expectedException -> {
+                FailableCallable<Void, Throwable> callable = () -> {
+                    throw new RuntimeException(expectedException);
+                };
+                final var exception = assertThrows( //
+                    NetworkException.class, //
+                    () -> NetworkExceptions.callWithCatch(callable, "failure", timeout) //
+                );
+                assertThat(exception.getCause()) //
+                    .isInstanceOf(expectedException.getClass()) //
+                    .as("Specific causes of runtime exceptions are re-thrown");
+            });
     }
 
     /**
-     * Tests the exception forwarding
+     * Assert that any checked exceptions thrown by the callable which are not explicitly caught to produce a
+     * NetworkException are re-thrown by `callWithCatch`.
      */
     @Test
-    public void testExceptionForwarding() {
-        final var exception = assertThrows(IOException.class, () -> NetworkExceptions.callWithCatch(() -> {
-            throw new IOException("forwarded");
-        }, "failure", 1));
-        assertThat(exception.getMessage()).as("Check the exception message").doesNotContain("failure");
-        assertThat(exception.getMessage()).as("Check the exception message").contains("forwarded");
+    public void testOtherCheckedExceptionsAreStillThrown() {
+        var checkedException = new Exception() {
+            // anonymous subclass
+        };
+        assertThrows( //
+            checkedException.getClass(), //
+            () -> NetworkExceptions.callWithCatch(() -> {
+                throw checkedException;
+            }, "failure", Duration.ofSeconds(1)));
     }
-
 }
