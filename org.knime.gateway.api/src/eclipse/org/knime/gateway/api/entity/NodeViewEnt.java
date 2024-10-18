@@ -60,6 +60,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.report.ReportUtil.ImageFormat;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.view.NodeViewManager;
@@ -120,7 +121,7 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
      *            not be called, if the node is not executed)
      * @return a new instance
      */
-    public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection) {
+    public static NodeViewEnt create(final NativeNodeContainerUI nnc, final Supplier<List<String>> initialSelection) {
         return create(nnc, initialSelection, new DefaultRenderingConfigEnt());
     }
 

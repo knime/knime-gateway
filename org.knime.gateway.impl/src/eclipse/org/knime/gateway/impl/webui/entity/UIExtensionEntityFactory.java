@@ -54,7 +54,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.NodeWrapper;
@@ -94,7 +94,7 @@ public final class UIExtensionEntityFactory {
      * @return the new {@link NodeViewEnt}-instance and the logic to clean-up stuff
      */
     @SuppressWarnings({"rawtypes", "unused", "java:S2301"})
-    public static Pair<NodeViewEnt, AutoCloseable> createNodeViewEntAndSetupEvents(final NativeNodeContainer nnc,
+    public static Pair<NodeViewEnt, AutoCloseable> createNodeViewEntAndSetupEvents(final NativeNodeContainerUI nnc,
         final BiConsumer<String, Object> eventConsumer, final boolean setupNodeViewStateEvents,
         final SelectionEventBus selectionEventBus) {
         var initialSelectionSupplierAndSelectionEventCleanUp = createInitialSelectionSupplierAndSetupEvents(

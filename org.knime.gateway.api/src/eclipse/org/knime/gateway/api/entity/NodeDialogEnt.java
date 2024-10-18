@@ -49,7 +49,8 @@
 package org.knime.gateway.api.entity;
 
 import org.knime.core.node.util.CheckUtils;
-import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
+import org.knime.core.ui.wrapper.Wrapper;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.dialog.NodeDialog;
@@ -72,11 +73,11 @@ public class NodeDialogEnt extends UIExtensionEnt<NodeWrapper> {
     /**
      * @param nc
      */
-    public NodeDialogEnt(final SingleNodeContainer nc) {
+    public NodeDialogEnt(final SingleNodeContainerUI nc) {
         super(NodeWrapper.of(nc), NodeDialogManager.getInstance().getPageResourceManager(),
             NodeDialogManager.getInstance().getDataServiceManager(), PageType.DIALOG);
         CheckUtils.checkArgument(NodeDialogManager.hasNodeDialog(nc), "The provided node doesn't have a node dialog");
-        m_hasNodeView = NodeViewManager.hasNodeView(nc);
+        m_hasNodeView = NodeViewManager.hasNodeView(Wrapper.unwrapNC(nc));
         m_isWriteProtected = nc.getParent().isWriteProtected();
         m_canBeEnlarged = NodeDialogManager.getInstance().canBeEnlarged(nc);
     }
