@@ -46,7 +46,6 @@ package org.knime.gateway.impl.webui.jsonrpc.service;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -151,19 +150,6 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     })
     public void deleteSchedulesForWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="scheduleId") String scheduleId)  throws ServiceExceptions.ServiceCallException {
         m_service.get().deleteSchedulesForWorkflow(spaceId, spaceProviderId, itemId, scheduleId);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getSpaceItemReference")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
-    })
-    public SpaceItemReferenceEnt getSpaceItemReference(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException {
-        return m_service.get().getSpaceItemReference(spaceProviderId, spaceId, itemId);    
     }
 
 	/**

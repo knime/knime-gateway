@@ -370,7 +370,7 @@ public interface Space {
      * @return the list of ids of the ancestor items; with the first element being the direct parent, the second the
      *         parent of the parent etc. Returns an empty list if the item is at root-level.
      * @throws ResourceAccessException If the ancestors could not be fetched, e.g. if the remote item was deleted
-     *             meanwhile
+     *             meanwhile. The exception cannot be thrown by the local space.
      */
     List<String> getAncestorItemIds(String itemId) throws ResourceAccessException;
 

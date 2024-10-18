@@ -67,16 +67,27 @@ public interface SpaceProviders {
 
     /**
      * @param spaceProviders
+     * @param spaceProviderId
+     * @return The space provider for the ID given if available
+     * @throws NoSuchElementException if there is no space-provider for the given ID
+     */
+    static SpaceProvider getSpaceProvider(final SpaceProviders spaceProviders, final String spaceProviderId) {
+        var spaceProvider = spaceProviders.getProvidersMap().get(spaceProviderId);
+        if (spaceProvider == null) {
+            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
+        }
+        return spaceProvider;
+    }
+
+    /**
+     * @param spaceProviders
      * @param spaceId
      * @param spaceProviderId
      * @return the space for the given id if available
      * @throws NoSuchElementException if there is no space or space-provider for the given ids
      */
     static Space getSpace(final SpaceProviders spaceProviders, final String spaceProviderId, final String spaceId) {
-        var spaceProvider = spaceProviders.getProvidersMap().get(spaceProviderId);
-        if (spaceProvider == null) {
-            throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
-        }
+        var spaceProvider = getSpaceProvider(spaceProviders, spaceProviderId);
         return spaceProvider.getSpace(spaceId);
     }
 

@@ -85,6 +85,7 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -153,6 +154,9 @@ public final class AppStateEntityFactory {
         );
         var activeCollection =
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
+
+        // TODO: Add extra property for provider type: local, hub, server ? `SpaceProvider.getType()` already gives you that
+
         return builder(AppStateEntBuilder.class) //
             .setAppMode(getAppModeEnum())
             .setOpenProjects(projects) //
@@ -278,28 +282,14 @@ public final class AppStateEntityFactory {
         }
 
         p.getOrigin().ifPresent(origin -> {
-            SpaceItemReferenceEnt originEnt;
-            try {
-                originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders);
-            } catch (ResourceAccessException e) { // NOSONAR: Logging or re-throwing not needed
-                originEnt = buildSpaceItemReferenceEnt(origin);
-            }
-
+            var originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders);
             projectEntBuilder.setOrigin(originEnt);
         });
         return projectEntBuilder.build();
     }
 
-    /**
-     * TODO: ...
-     *
-     * @param origin
-     * @param spaceProviders
-     * @return ...
-     * @throws ResourceAccessException
-     */
-    public static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
-        final SpaceProviders spaceProviders) throws ResourceAccessException {
+    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
+        final SpaceProviders spaceProviders) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
@@ -310,25 +300,23 @@ public final class AppStateEntityFactory {
             .build();
     }
 
-    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin) {
-        return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
-            .setProviderId(origin.getProviderId()) //
-            .setSpaceId(origin.getSpaceId()) //
-            .setItemId(origin.getItemId()) //
-            .setProjectType(origin.getProjectType().orElse(null)) //
-            .setVersion(origin.getItemVersion().orElse(null)) //
-            .build();
-    }
-
-    private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders)
-        throws ResourceAccessException {
-        final var spaceOptional =
-            SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId());
-        if (spaceOptional.isEmpty()) {
-            throw new ResourceAccessException("Could not access space");
-        }
-        final var space = spaceOptional.get();
-        return space.getAncestorItemIds(origin.getItemId()); // Throws
+    private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders) {
+        return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
+            // ancestor item ids are only required for local projects because it's used to
+            // * mark folders that contain open projects
+            // * disallow folders to be moved if they contain opened local projects
+            //   (because they can't be moved while open)
+            // ... in the space explorer.
+            // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
+            .filter(LocalWorkspace.class::isInstance) //
+            .map(space -> {
+                try {
+                    return space.getAncestorItemIds(origin.getItemId());
+                } catch (ResourceAccessException e) { // NOSONAR: Should not happen for local space items
+                    return null;
+                }
+            }) //
+            .orElse(null);
     }
 
     /**

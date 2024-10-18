@@ -49,7 +49,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -134,18 +133,6 @@ public interface SpaceService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
     void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
-        
-    /**
-     * Get space item reference for a given space item.
-     *
-     * @param spaceProviderId Identifies a space-provider.
-     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
-     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
-     *
-     * @return the result
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     */
-    SpaceItemReferenceEnt getSpaceItemReference(String spaceProviderId, String spaceId, String itemId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Mainly returns the spaces provided by this space-provider.
