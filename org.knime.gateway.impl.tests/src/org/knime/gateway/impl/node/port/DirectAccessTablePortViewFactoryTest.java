@@ -247,7 +247,8 @@ public class DirectAccessTablePortViewFactoryTest {
                     "skipRemainingColumns" : false,
                     "showTableSize" : false,
                     "showOnlySelectedRows" : false,
-                    "showOnlySelectedRowsConfigurable": false
+                    "showOnlySelectedRowsConfigurable": false,
+                    "enableDataValueViews" : false
                   },
                   "columnDomainValues" : { }
                 }
