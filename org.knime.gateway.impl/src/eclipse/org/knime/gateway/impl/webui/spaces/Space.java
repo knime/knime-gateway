@@ -369,8 +369,10 @@ public interface Space {
      * @param itemId the id of the item to get the ancestors for
      * @return the list of ids of the ancestor items; with the first element being the direct parent, the second the
      *         parent of the parent etc. Returns an empty list if the item is at root-level.
+     * @throws ResourceAccessException If the ancestors could not be fetched, e.g. if the remote item was deleted
+     *             meanwhile. The exception cannot be thrown by the local space.
      */
-    List<String> getAncestorItemIds(String itemId);
+    List<String> getAncestorItemIds(String itemId) throws ResourceAccessException;
 
     /**
      * Checks whether a certain workflow group (or the workspace root) already contains an item with the given name.
@@ -518,4 +520,5 @@ public interface Space {
             return newName + fileExtension;
         }
     }
+
 }

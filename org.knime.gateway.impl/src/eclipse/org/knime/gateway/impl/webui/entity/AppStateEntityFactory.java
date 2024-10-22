@@ -305,6 +305,7 @@ public final class AppStateEntityFactory {
             // ... in the space explorer.
             // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
             .filter(LocalWorkspace.class::isInstance) //
+            .map(LocalWorkspace.class::cast) //
             .map(space -> space.getAncestorItemIds(origin.getItemId())) //
             .orElse(null);
     }
