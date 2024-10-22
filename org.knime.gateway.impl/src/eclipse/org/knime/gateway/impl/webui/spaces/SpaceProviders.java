@@ -68,11 +68,10 @@ public interface SpaceProviders {
     /**
      * @param spaceProviders
      * @param spaceProviderId
-     * @return The space provider for the given ID if available
-     * @throws NoSuchElementException
+     * @return The space provider for the ID given if available
+     * @throws NoSuchElementException if there is no space-provider for the given ID
      */
-    static SpaceProvider getSpaceProvider(final SpaceProviders spaceProviders, final String spaceProviderId)
-        throws NoSuchElementException {
+    static SpaceProvider getSpaceProvider(final SpaceProviders spaceProviders, final String spaceProviderId) {
         final var spaceProvider = spaceProviders.getProvidersMap().get(spaceProviderId);
         if (spaceProvider == null) {
             throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");

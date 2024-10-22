@@ -242,8 +242,9 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException {
         try {
             var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
-            if (space instanceof LocalWorkspace) {
-                var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(space), itemIds, space);
+            if (space instanceof LocalWorkspace localWorkspace) {
+                var workflowsToClose =
+                    checkForWorkflowsToClose(getOpenWorkflowIds(localWorkspace), itemIds, localWorkspace);
                 if (!workflowsToClose.isEmpty()) {
                     throw new ServiceCallException(
                         "Not all items can be moved. The following workflows need to be closed first: "
@@ -302,14 +303,14 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private static List<String> checkForWorkflowsToClose(final Stream<String> openWorkflowIds,
-        final List<String> itemIds, final Space space) {
+        final List<String> itemIds, final LocalWorkspace localWorkspace) {
         return openWorkflowIds//
             .filter(workflowId -> {
                 if (itemIds.contains(workflowId)) {
                     return true;
                 }
-                var ancestorsItemIds = space.getAncestorItemIds(workflowId);
-                return ancestorsItemIds.stream().anyMatch(itemIds::contains);
+                var ancestorItemIds = localWorkspace.getAncestorItemIds(workflowId);
+                return ancestorItemIds.stream().anyMatch(itemIds::contains);
             })//
             .toList();
     }
