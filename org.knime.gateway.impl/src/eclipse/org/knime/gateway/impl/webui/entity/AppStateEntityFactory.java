@@ -133,7 +133,6 @@ public final class AppStateEntityFactory {
      * Properties added here potentially also need to be considered in
      * {@link #buildAppStateEntDiff(AppStateEnt, AppStateEnt)}.
      *
-     * @param previousAppState the previously created app state, or {@code null} if there is none
      * @param dependencies Service dependencies needed for building this application state
      * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if
      *            all projects are to be included
@@ -142,9 +141,8 @@ public final class AppStateEntityFactory {
      *            {@link ProjectManager#isActiveProject(String)} is used
      * @return a new application state entity instance
      */
-    public static AppStateEnt buildAppStateEnt(final AppStateEnt previousAppState,
-        final Predicate<String> workflowProjectFilter, final Predicate<String> isActiveProject,
-        final ServiceDependencies dependencies) {
+    public static AppStateEnt buildAppStateEnt(final Predicate<String> workflowProjectFilter,
+        final Predicate<String> isActiveProject, final ServiceDependencies dependencies) {
         var projects = getProjectEnts( //
             dependencies.projectManager(), //
             dependencies.spaceProviders(), //
@@ -154,8 +152,7 @@ public final class AppStateEntityFactory {
         var activeCollection =
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         return builder(AppStateEntBuilder.class) //
-            .setAppMode(getAppModeEnum())
-            .setOpenProjects(projects) //
+            .setAppMode(getAppModeEnum()).setOpenProjects(projects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
             .setAvailableComponentTypes(AVAILABLE_COMPONENT_TYPES) //
@@ -178,8 +175,7 @@ public final class AppStateEntityFactory {
             ) //
             .setNodeRepositoryLoaded(NodeSpecCollectionProvider.Progress.isDone()) //
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
-            .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled())
-            .build();
+            .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()).build();
     }
 
     private static AppModeEnum getAppModeEnum() {
