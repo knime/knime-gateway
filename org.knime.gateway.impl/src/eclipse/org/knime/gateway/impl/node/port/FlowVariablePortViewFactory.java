@@ -50,19 +50,28 @@ package org.knime.gateway.impl.node.port;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.RowKey;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.ui.CoreUIPlugin;
+import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.node.view.flowvariable.FlowVariable;
-import org.knime.core.webui.node.view.flowvariable.FlowVariableViewUtil;
+import org.knime.core.webui.node.view.table.TableViewUtil;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.AUTO_SIZE_COLUMNS;
+import org.knime.core.webui.node.view.table.data.TableViewInitialData;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -78,6 +87,7 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
     @Override
     public PortView createPortView(final FlowVariablePortObject portObject) {
         var port = (NodeOutPort)PortContext.getContext().getNodePort();
+        var tableId = "flowvariableview" + port.getConnectedNodeContainer().getID();
         var fos = port.getFlowObjectStack();
         Collection<org.knime.core.node.workflow.FlowVariable> variables;
         if (fos != null) {
@@ -85,26 +95,54 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
         } else {
             variables = Collections.emptyList();
         }
+        DataTableSpec tableSpec = new DataTableSpec(new String[]{"Owner ID", "Data Type", "Variable Name", "Value"},
+            new DataType[]{StringCell.TYPE, StringCell.TYPE, StringCell.TYPE, StringCell.TYPE});
+        Supplier<BufferedDataTable> bufferedTableSupplier = getFlowVariablesTableSupplier(variables, tableSpec);
+        var tableSettings = TableSpecViewFactory.getSettingsForDataTable(tableSpec);
+        tableSettings.m_showColumnDataType = false;
+        tableSettings.m_showTableSize = false;
+        tableSettings.m_autoSizeColumnsToContent = AUTO_SIZE_COLUMNS.FIT_CONTENT_AND_HEADER;
+
         return new PortView() {
 
             @Override
-            public Optional<InitialDataService<List<FlowVariable>>> createInitialDataService() {
-                return Optional.of(FlowVariableViewUtil.createInitialDataService(variables));
+            public Optional<InitialDataService<TableViewInitialData>> createInitialDataService() {
+                return Optional.of(TableViewUtil.createInitialDataService(() -> tableSettings, bufferedTableSupplier,
+                    null, tableId));
             }
 
             @Override
             public Optional<RpcDataService> createRpcDataService() {
-                return Optional.empty();
+                return Optional.of(TableViewUtil.createRpcDataService(
+                    TableViewUtil.createTableViewDataService(bufferedTableSupplier, null, tableId), tableId));
             }
 
             @Override
             public Page getPage() {
-                return Page.builder(CoreUIPlugin.class, "js-src/dist", "FlowVariableView.js") //
+                return Page.builder(CoreUIPlugin.class, "js-src/dist", "TableView.js") //
                     .markAsReusable("flowvariableview") //
                     .build();
             }
 
         };
+    }
+
+    private static Supplier<BufferedDataTable> getFlowVariablesTableSupplier(
+        final Collection<org.knime.core.node.workflow.FlowVariable> variables, final DataTableSpec tableSpec) {
+        Supplier<BufferedDataTable> bufferedTableSupplier = () -> {
+            var container = DataServiceContext.get().getExecutionContext().createDataContainer(tableSpec);
+
+            var i = 0L;
+            for (var v : variables) {
+                var flowVariable = FlowVariable.create(v);
+                container.addRowToTable(new DefaultRow(RowKey.createRowKey(i), flowVariable.getOwnerNodeId(), flowVariable.getType(),
+                    flowVariable.getName(), flowVariable.getValue()));
+                i++;
+            }
+            container.close();
+            return container.getTable();
+        };
+        return bufferedTableSupplier;
     }
 
 }
