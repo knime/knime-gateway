@@ -121,7 +121,7 @@ public final class DefaultApplicationService implements ApplicationService {
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
             m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections);
         var appState =
-            AppStateEntityFactory.buildAppStateEnt(null, workflowProjectFilter, isActiveProject, dependencies);
+            AppStateEntityFactory.buildAppStateEnt(workflowProjectFilter, isActiveProject, dependencies);
         if (m_appStateUpdater != null) {
             m_appStateUpdater.setLastAppState(appState);
         }
