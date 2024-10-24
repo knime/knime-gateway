@@ -72,7 +72,13 @@ public final class DefaultVersionService implements VersionService {
         final Integer limit) throws ServiceCallException {
         LOGGER.info("VersionService::getProjectVersions: <%s>, <%s>, <%s>".formatted(projectId, workflowId, limit));
 
-        // TODO: Implement this
+        // Get the item ID
+
+        // Get the versions of the item, but how exactly?
+
+        // Debug in the FE if we can get the item ID easily, or the triplet providerId, spaceId, itemId?
+
+        // Build the list of possible version entities
 
         return Collections.emptyList();
     }

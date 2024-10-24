@@ -62,7 +62,6 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 
 /**
@@ -121,21 +120,9 @@ public final class DefaultServiceUtil {
      * @return the {@link WorkflowManager} instance
      * @throws NoSuchElementException if there is no workflow manager for the id registered
      */
-    public static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) {
+    private static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) {
         return ProjectManager.getInstance().openAndCacheProject(rootWorkflowID).orElseThrow(
             () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-    }
-
-    /**
-     * Gets the {@link Project} from the {@link ProjectManager} for a corresponding workflow project id.
-     *
-     * @param workflowProjectID the id to get the project for
-     * @return the {@link Project} instance
-     * @throws NoSuchElementException if there is no workflow project for the id registered
-     */
-    public static Project getWorkflowProject(final String workflowProjectID) {
-        return ProjectManager.getInstance().getProject(workflowProjectID).orElseThrow(
-            () -> new NoSuchElementException("Workflow project for ID \"" + workflowProjectID + "\" not found."));
     }
 
     /**
