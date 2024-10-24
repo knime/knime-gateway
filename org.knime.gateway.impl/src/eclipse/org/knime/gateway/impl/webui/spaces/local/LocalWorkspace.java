@@ -88,8 +88,6 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.spaces.Collision;
@@ -253,10 +251,10 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt renameItem(final String itemId, final String queriedName)
-            throws IOException, ServiceExceptions.OperationNotAllowedException {
+            throws IOException {
 
         if (itemId.equals(Space.ROOT_ITEM_ID)) {
-            throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
+            throw new IOException("Can not rename root item");
         }
 
         var newName = queriedName.trim();
@@ -274,7 +272,7 @@ public final class LocalWorkspace implements Space {
                 return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
             }
         } else if (Files.exists(destinationPath)) {
-            throw new ServiceExceptions.OperationNotAllowedException("There already exists a file of that name");
+            throw new IOException("There already exists a file of that name");
         }
 
         try {
@@ -561,22 +559,22 @@ public final class LocalWorkspace implements Space {
      * @see ExplorerFileSystem#validateFilename
      * @param name The candidate new name.
      */
-    private static void assertValidItemNameOrThrow(final String name) throws OperationNotAllowedException {
+    private static void assertValidItemNameOrThrow(final String name) throws IOException {
         if (name == null || name.trim().isEmpty()) {
-            throw new OperationNotAllowedException("Please choose a name");
+            throw new IOException("Please choose a name");
         }
         if (Path.of(name).getParent() != null) {
-            throw new OperationNotAllowedException("Name cannot be a path");
+            throw new IOException("Name cannot be a path");
         }
         if (name.startsWith(".")) {
-            throw new OperationNotAllowedException("Name cannot start with dot.");
+            throw new IOException("Name cannot start with dot.");
         }
         if (name.endsWith(".")) {
-            throw new OperationNotAllowedException("Name cannot end with dot.");
+            throw new IOException("Name cannot end with dot.");
         }
         var matcher = FileUtil.ILLEGAL_FILENAME_CHARS_PATTERN.matcher(name);
         if (matcher.find()) {
-            throw new OperationNotAllowedException(
+            throw new IOException(
                     "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
         }
     }

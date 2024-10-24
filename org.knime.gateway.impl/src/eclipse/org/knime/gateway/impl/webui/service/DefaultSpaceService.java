@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.Project.Origin;
@@ -267,7 +266,7 @@ public class DefaultSpaceService implements SpaceService {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameItem(itemId, newName);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);
-        } catch (OperationNotAllowedException | IOException e) {
+        } catch (IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
     }
@@ -282,7 +281,7 @@ public class DefaultSpaceService implements SpaceService {
             return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId).renameSpace(spaceName);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);
-        } catch (OperationNotAllowedException | IOException e) {
+        } catch (UnsupportedOperationException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
     }

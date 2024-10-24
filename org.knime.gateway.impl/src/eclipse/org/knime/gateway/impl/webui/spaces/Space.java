@@ -68,8 +68,6 @@ import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
 /**
@@ -243,10 +241,8 @@ public interface Space {
      * @param newName The new name
      * @return {@link SpaceItemEnt} describing the item after renaming
      * @throws IOException
-     * @throws ServiceExceptions.OperationNotAllowedException
      */
-    SpaceItemEnt renameItem(String itemId, String newName) throws IOException,
-            ServiceExceptions.OperationNotAllowedException;
+    SpaceItemEnt renameItem(String itemId, String newName) throws IOException;
 
     /**
      * Rename this space
@@ -254,12 +250,9 @@ public interface Space {
      * @param newName The new name
      * @return {@link SpaceEnt} describing the space after renaming
      * @throws IOException
-     * @throws ServiceExceptions.OperationNotAllowedException
      */
-    default SpaceEnt renameSpace(final String newName)
-        throws IOException, ServiceExceptions.OperationNotAllowedException {
-        throw new ServiceExceptions.OperationNotAllowedException(
-            "Renaming of spaces is not supported in this provider");
+    default SpaceEnt renameSpace(final String newName) throws IOException {
+        throw new UnsupportedOperationException("Renaming of spaces is not supported in this provider");
     }
 
     /**
@@ -469,12 +462,10 @@ public interface Space {
      * @param targetItemId ID of the target folder to upload to
      * @param excludeData whether or not to exclude data from uploaded workflows
      * @return result indicating success or failure of the upload
-     * @throws OperationNotAllowedException if the method is called for anything but a space on a Hub that supports
-     *     asynchronous uploads
      */
     default TransferResult uploadFrom(final LocalWorkspace sourceSpace, final List<String> itemIds,
-            final String targetItemId, final boolean excludeData) throws OperationNotAllowedException {
-        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+        final String targetItemId, final boolean excludeData) {
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
     }
 
     /**
@@ -484,11 +475,10 @@ public interface Space {
      * @param targetSpace local space to download to
      * @param targetItemId item ID of the target folder
      * @return result indicating success or failure of the download
-     * @throws OperationNotAllowedException
      */
     default TransferResult downloadInto(final List<String> itemIds, final LocalWorkspace targetSpace,
-            final String targetItemId) throws OperationNotAllowedException {
-        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+        final String targetItemId) {
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
     }
 
     /**
