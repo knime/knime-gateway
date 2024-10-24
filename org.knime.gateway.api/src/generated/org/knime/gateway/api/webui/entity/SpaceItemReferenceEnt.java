@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
 
 import java.util.function.BiConsumer;
 
@@ -113,7 +113,7 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
    * Get version
    * @return version 
    **/
-  public SpaceItemVersionEnt getVersion();
+  public ProjectVersionEnt getVersion();
 
   /**
    * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.
@@ -177,7 +177,7 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
          * @param version the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemReferenceEntBuilder setVersion(SpaceItemVersionEnt version);
+        SpaceItemReferenceEntBuilder setVersion(ProjectVersionEnt version);
         
         /**
          * List of ids of the ancestors. The element at the first position in the list is the direct parent of this item, the second the parent of the parent etc. An empty list if the item is at root level.

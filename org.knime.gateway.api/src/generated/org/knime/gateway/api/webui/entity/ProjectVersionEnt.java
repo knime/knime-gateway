@@ -55,12 +55,12 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * SpaceItemVersionEnt
+ * ProjectVersionEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceItemVersionEnt extends GatewayEntity {
+public interface ProjectVersionEnt extends GatewayEntity {
 
 
   /**
@@ -103,7 +103,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (SpaceItemVersionEnt)other;
+      var e = (ProjectVersionEnt)other;
       valueConsumer.accept("version", Pair.create(getVersion(), e.getVersion()));
       valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
@@ -115,7 +115,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface SpaceItemVersionEntBuilder extends GatewayEntityBuilder<SpaceItemVersionEnt> {
+    public interface ProjectVersionEntBuilder extends GatewayEntityBuilder<ProjectVersionEnt> {
 
         /**
    		 * Set version
@@ -123,7 +123,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
          * @param version the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemVersionEntBuilder setVersion(Integer version);
+        ProjectVersionEntBuilder setVersion(Integer version);
         
         /**
    		 * Set title
@@ -131,7 +131,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
          * @param title the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemVersionEntBuilder setTitle(String title);
+        ProjectVersionEntBuilder setTitle(String title);
         
         /**
    		 * Set description
@@ -139,7 +139,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
          * @param description the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemVersionEntBuilder setDescription(String description);
+        ProjectVersionEntBuilder setDescription(String description);
         
         /**
    		 * Set author
@@ -147,7 +147,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
          * @param author the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemVersionEntBuilder setAuthor(String author);
+        ProjectVersionEntBuilder setAuthor(String author);
         
         /**
    		 * Set authorAccountId
@@ -155,7 +155,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
          * @param authorAccountId the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemVersionEntBuilder setAuthorAccountId(String authorAccountId);
+        ProjectVersionEntBuilder setAuthorAccountId(String authorAccountId);
         
         /**
    		 * Set createdOn
@@ -163,7 +163,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
          * @param createdOn the property value,  
          * @return this entity builder for chaining
          */
-        SpaceItemVersionEntBuilder setCreatedOn(String createdOn);
+        ProjectVersionEntBuilder setCreatedOn(String createdOn);
         
         
         /**
@@ -173,7 +173,7 @@ public interface SpaceItemVersionEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SpaceItemVersionEnt build();
+        ProjectVersionEnt build();
     
     }
 

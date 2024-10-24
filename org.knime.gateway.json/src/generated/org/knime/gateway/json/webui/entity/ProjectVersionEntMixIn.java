@@ -51,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemVersionEnt.DefaultSpaceItemVersionEntBuilder;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultProjectVersionEnt.DefaultProjectVersionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,10 +60,10 @@ import org.knime.gateway.impl.webui.entity.DefaultSpaceItemVersionEnt.DefaultSpa
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultSpaceItemVersionEntBuilder.class)
-@JsonSerialize(as=SpaceItemVersionEnt.class)
+@JsonDeserialize(builder=DefaultProjectVersionEntBuilder.class)
+@JsonSerialize(as=ProjectVersionEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface SpaceItemVersionEntMixIn extends SpaceItemVersionEnt {
+public interface ProjectVersionEntMixIn extends ProjectVersionEnt {
 
     @Override
     @JsonIgnore
@@ -101,34 +101,34 @@ public interface SpaceItemVersionEntMixIn extends SpaceItemVersionEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface SpaceItemVersionEntMixInBuilder extends SpaceItemVersionEntBuilder {
+    public static interface ProjectVersionEntMixInBuilder extends ProjectVersionEntBuilder {
     
         @Override
-        public SpaceItemVersionEntMixIn build();
+        public ProjectVersionEntMixIn build();
     
         @Override
         @JsonProperty("version")
-        public SpaceItemVersionEntMixInBuilder setVersion(final Integer version);
+        public ProjectVersionEntMixInBuilder setVersion(final Integer version);
         
         @Override
         @JsonProperty("title")
-        public SpaceItemVersionEntMixInBuilder setTitle(final String title);
+        public ProjectVersionEntMixInBuilder setTitle(final String title);
         
         @Override
         @JsonProperty("description")
-        public SpaceItemVersionEntMixInBuilder setDescription(final String description);
+        public ProjectVersionEntMixInBuilder setDescription(final String description);
         
         @Override
         @JsonProperty("author")
-        public SpaceItemVersionEntMixInBuilder setAuthor(final String author);
+        public ProjectVersionEntMixInBuilder setAuthor(final String author);
         
         @Override
         @JsonProperty("authorAccountId")
-        public SpaceItemVersionEntMixInBuilder setAuthorAccountId(final String authorAccountId);
+        public ProjectVersionEntMixInBuilder setAuthorAccountId(final String authorAccountId);
         
         @Override
         @JsonProperty("createdOn")
-        public SpaceItemVersionEntMixInBuilder setCreatedOn(final String createdOn);
+        public ProjectVersionEntMixInBuilder setCreatedOn(final String createdOn);
         
     }
 

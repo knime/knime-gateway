@@ -46,7 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
 
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
@@ -68,7 +68,7 @@ public record DefaultSpaceItemReferenceEnt(
     String spaceId,
     String itemId,
     ProjectTypeEnum projectType,
-    SpaceItemVersionEnt version,
+    ProjectVersionEnt version,
     java.util.List<String> ancestorItemIds) implements SpaceItemReferenceEnt {
 
     /**
@@ -112,7 +112,7 @@ public record DefaultSpaceItemReferenceEnt(
     }
     
     @Override
-    public SpaceItemVersionEnt getVersion() {
+    public ProjectVersionEnt getVersion() {
         return version;
     }
     
@@ -134,7 +134,7 @@ public record DefaultSpaceItemReferenceEnt(
 
         private ProjectTypeEnum m_projectType;
 
-        private SpaceItemVersionEnt m_version;
+        private ProjectVersionEnt m_version;
 
         private java.util.List<String> m_ancestorItemIds;
 
@@ -172,7 +172,7 @@ public record DefaultSpaceItemReferenceEnt(
         }
 
         @Override
-        public DefaultSpaceItemReferenceEntBuilder setVersion(SpaceItemVersionEnt version) {
+        public DefaultSpaceItemReferenceEntBuilder setVersion(ProjectVersionEnt version) {
              m_version = version;
              return this;
         }

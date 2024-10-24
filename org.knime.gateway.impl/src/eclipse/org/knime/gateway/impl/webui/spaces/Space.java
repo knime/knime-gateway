@@ -64,6 +64,7 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.Pair;
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
@@ -401,6 +402,15 @@ public interface Space {
      * @throws NoSuchElementException If no such item is present
      */
     Optional<ProjectTypeEnum> getProjectType(final String itemId);
+
+    /**
+     * Returns the
+     * @param itemId
+     * @return The optional project version of the space item, if it is a project.
+     */
+    default Optional<List<ProjectVersionEnt>> getProjectVersions(final String itemId) {
+        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other than 'HubSpaces'");
+    }
 
     /**
      * Creates a {@link SpaceEnt} for this space.

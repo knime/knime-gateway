@@ -141,7 +141,7 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.NetworkException If a Gateway service failed due to a network error.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
     SpaceProviderEnt getSpaceProvider(String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
@@ -178,7 +178,7 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.NetworkException If a Gateway service failed due to a network error.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
     WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         

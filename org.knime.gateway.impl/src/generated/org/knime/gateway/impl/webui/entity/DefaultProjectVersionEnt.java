@@ -47,10 +47,10 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
 
 /**
- * DefaultSpaceItemVersionEnt
+ * DefaultProjectVersionEnt
  *
  * @param version
  * @param title
@@ -62,18 +62,18 @@ import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultSpaceItemVersionEnt(
+public record DefaultProjectVersionEnt(
     Integer version,
     String title,
     String description,
     String author,
     String authorAccountId,
-    String createdOn) implements SpaceItemVersionEnt {
+    String createdOn) implements ProjectVersionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultSpaceItemVersionEnt {
+    public DefaultProjectVersionEnt {
         if(version == null) {
             throw new IllegalArgumentException("<version> must not be null.");
         }
@@ -84,7 +84,7 @@ public record DefaultSpaceItemVersionEnt(
 
     @Override
     public String getTypeID() {
-        return "SpaceItemVersion";
+        return "ProjectVersion";
     }
   
     @Override
@@ -118,9 +118,9 @@ public record DefaultSpaceItemVersionEnt(
     }
     
     /**
-     * A builder for {@link DefaultSpaceItemVersionEnt}.
+     * A builder for {@link DefaultProjectVersionEnt}.
      */
-    public static class DefaultSpaceItemVersionEntBuilder implements SpaceItemVersionEntBuilder {
+    public static class DefaultProjectVersionEntBuilder implements ProjectVersionEntBuilder {
 
         private Integer m_version;
 
@@ -135,7 +135,7 @@ public record DefaultSpaceItemVersionEnt(
         private String m_createdOn;
 
         @Override
-        public DefaultSpaceItemVersionEntBuilder setVersion(Integer version) {
+        public DefaultProjectVersionEntBuilder setVersion(Integer version) {
              if(version == null) {
                  throw new IllegalArgumentException("<version> must not be null.");
              }
@@ -144,7 +144,7 @@ public record DefaultSpaceItemVersionEnt(
         }
 
         @Override
-        public DefaultSpaceItemVersionEntBuilder setTitle(String title) {
+        public DefaultProjectVersionEntBuilder setTitle(String title) {
              if(title == null) {
                  throw new IllegalArgumentException("<title> must not be null.");
              }
@@ -153,32 +153,32 @@ public record DefaultSpaceItemVersionEnt(
         }
 
         @Override
-        public DefaultSpaceItemVersionEntBuilder setDescription(String description) {
+        public DefaultProjectVersionEntBuilder setDescription(String description) {
              m_description = description;
              return this;
         }
 
         @Override
-        public DefaultSpaceItemVersionEntBuilder setAuthor(String author) {
+        public DefaultProjectVersionEntBuilder setAuthor(String author) {
              m_author = author;
              return this;
         }
 
         @Override
-        public DefaultSpaceItemVersionEntBuilder setAuthorAccountId(String authorAccountId) {
+        public DefaultProjectVersionEntBuilder setAuthorAccountId(String authorAccountId) {
              m_authorAccountId = authorAccountId;
              return this;
         }
 
         @Override
-        public DefaultSpaceItemVersionEntBuilder setCreatedOn(String createdOn) {
+        public DefaultProjectVersionEntBuilder setCreatedOn(String createdOn) {
              m_createdOn = createdOn;
              return this;
         }
 
         @Override
-        public DefaultSpaceItemVersionEnt build() {
-            return new DefaultSpaceItemVersionEnt(
+        public DefaultProjectVersionEnt build() {
+            return new DefaultProjectVersionEnt(
                 immutable(m_version),
                 immutable(m_title),
                 immutable(m_description),

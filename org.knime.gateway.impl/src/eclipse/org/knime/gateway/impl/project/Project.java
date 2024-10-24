@@ -48,8 +48,8 @@ package org.knime.gateway.impl.project;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 
 /**
  * Represents a workflow or component project.
@@ -148,10 +148,10 @@ public interface Project {
         }
 
         /**
-         * @return The item version of the workflow/component project, or absent for latest version
+         * @return The version of the workflow/component project, or absent for latest version
          * @since 5.4
          */
-        default Optional<SpaceItemVersionEnt> getItemVersion() {
+        default Optional<ProjectVersionEnt> getProjectVersion() {
             return Optional.empty();
         }
     }

@@ -291,7 +291,7 @@ public final class AppStateEntityFactory {
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
             .setProjectType(origin.getProjectType().orElse(null)) //
-            .setVersion(origin.getItemVersion().orElse(null))
+            .setVersion(origin.getProjectVersion().orElse(null))
             .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }

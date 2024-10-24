@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -88,7 +88,7 @@ public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
     
     @Override
     @JsonProperty("version")
-    public SpaceItemVersionEnt getVersion();
+    public ProjectVersionEnt getVersion();
     
     @Override
     @JsonProperty("ancestorItemIds")
@@ -125,7 +125,7 @@ public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
         
         @Override
         @JsonProperty("version")
-        public SpaceItemReferenceEntMixInBuilder setVersion(final SpaceItemVersionEnt version);
+        public SpaceItemReferenceEntMixInBuilder setVersion(final ProjectVersionEnt version);
         
         @Override
         @JsonProperty("ancestorItemIds")

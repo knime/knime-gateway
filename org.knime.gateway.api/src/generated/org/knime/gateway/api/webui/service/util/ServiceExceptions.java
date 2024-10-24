@@ -66,7 +66,7 @@ public final class ServiceExceptions {
     }
 
    /**
-    * If a Gateway service failed due to a network error.
+    * If a Gateway service call failed due to a network error.
     */
     public static class NetworkException extends Exception {
         public NetworkException(String message) {

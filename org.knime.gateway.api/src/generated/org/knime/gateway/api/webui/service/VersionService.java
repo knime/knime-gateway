@@ -42,51 +42,31 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
-
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.VersionService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+package org.knime.gateway.api.webui.service;
 
 import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Operations on workflow versions.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+public interface VersionService extends GatewayService {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Returns the list of all versions of a project.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param limit Limits the number of versions to be returned. If set, it will only return the first &#39;n &#x3D; limit&#39;  versions of a project.
+     *
+     * @return the result
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(VersionService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
-    }
+    java.util.List<ProjectVersionEnt> getProjectVersions(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Integer limit)  throws ServiceExceptions.ServiceCallException;
+        
 }

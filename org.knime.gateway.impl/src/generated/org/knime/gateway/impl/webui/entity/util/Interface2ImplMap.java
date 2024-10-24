@@ -236,6 +236,8 @@ import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.ProjectVersionEnt.ProjectVersionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProjectVersionEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
@@ -254,8 +256,6 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemReferenceEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt.SpaceItemVersionEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemVersionEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
@@ -636,6 +636,9 @@ public class Interface2ImplMap {
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
         }        
+        if(clazz == ProjectVersionEntBuilder.class) {
+            return (B)new DefaultProjectVersionEnt.DefaultProjectVersionEntBuilder();
+        }        
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();
         }        
@@ -662,9 +665,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == SpaceItemReferenceEntBuilder.class) {
             return (B)new DefaultSpaceItemReferenceEnt.DefaultSpaceItemReferenceEntBuilder();
-        }        
-        if(clazz == SpaceItemVersionEntBuilder.class) {
-            return (B)new DefaultSpaceItemVersionEnt.DefaultSpaceItemVersionEntBuilder();
         }        
         if(clazz == SpacePathSegmentEntBuilder.class) {
             return (B)new DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder();
