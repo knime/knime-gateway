@@ -404,12 +404,16 @@ public interface Space {
     Optional<ProjectTypeEnum> getProjectType(final String itemId);
 
     /**
-     * Returns the
+     * Returns the all project versions of a space item if available.
+     *
      * @param itemId
-     * @return The optional project version of the space item, if it is a project.
+     * @param limit
+     * @return The project version of the space item, if it is a project.
+     * @throws ResourceAccessException
      */
-    default Optional<List<ProjectVersionEnt>> getProjectVersions(final String itemId) {
-        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other than 'HubSpaces'");
+    default List<ProjectVersionEnt> getProjectVersions(final String itemId, final Integer limit)
+        throws ResourceAccessException {
+        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other than 'HubSpaces'.");
     }
 
     /**

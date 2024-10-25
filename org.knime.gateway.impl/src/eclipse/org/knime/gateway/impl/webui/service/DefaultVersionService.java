@@ -48,14 +48,19 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ProjectVersionEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.service.VersionService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * The default implementation of the {@link VersionService}.
@@ -67,20 +72,49 @@ public final class DefaultVersionService implements VersionService {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultVersionService.class);
 
+    private final ProjectManager m_projectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+
+    private final SpaceProviders m_spaceProviders =
+            ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+
+    /**
+     * ...
+     *
+     * @return ...
+     */
+    public static DefaultVersionService getInstance() {
+        return ServiceInstances.getDefaultServiceInstance(DefaultVersionService.class);
+    }
+
+    DefaultVersionService() {
+        // Singleton
+    }
+
     @Override
     public List<ProjectVersionEnt> getProjectVersions(final String projectId, final NodeIDEnt workflowId,
         final Integer limit) throws ServiceCallException {
-        LOGGER.info("VersionService::getProjectVersions: <%s>, <%s>, <%s>".formatted(projectId, workflowId, limit));
+        if (!workflowId.equals(NodeIDEnt.getRootID())) {
+            LOGGER.info("'getProjectVersions()' wasn't called for a root workflow ID," //
+                + " is this a special case to handle?");
+        }
+        DefaultServiceContext.assertWorkflowProjectId(projectId); // Throws if workflow project not registered
 
-        // Get the item ID
+        final var origin = m_projectManager.getProject(projectId)//
+            .flatMap(Project::getOrigin)//
+            .orElseThrow(() -> new NoSuchElementException("No origin found for project '%s'".formatted(projectId)));
 
-        // Get the versions of the item, but how exactly?
+        final var provider = SpaceProviders.getSpaceProvider(m_spaceProviders, origin.getProviderId());
+        if (provider.getType() != SpaceProviderEnt.TypeEnum.HUB) {
+            throw new UnsupportedOperationException("'getProjectVersions()' is only supported for Hub spaces'");
+        }
 
-        // Debug in the FE if we can get the item ID easily, or the triplet providerId, spaceId, itemId?
-
-        // Build the list of possible version entities
-
-        return Collections.emptyList();
+        final var space = provider.getSpace(origin.getSpaceId());
+        try {
+            return space.getProjectVersions(origin.getItemId(), limit);
+        } catch (ResourceAccessException e) {
+            throw new ServiceCallException("Failed to get project versions for project '%s'".formatted(projectId), e);
+        }
     }
 
 }
