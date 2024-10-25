@@ -49,16 +49,22 @@
 package org.knime.gateway.impl.node.port;
 
 import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeOutPortWrapper;
+import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
@@ -72,6 +78,15 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 import org.knime.core.webui.page.Page;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 
 /**
  * Factory for the {@link PortView} of a {@link BufferedDataTable}.
@@ -86,6 +101,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         var nodePort = (NodeOutPort)PortContext.getContext().getNodePort();
         var snc = nodePort.getConnectedNodeContainer();
         var tableId = "table_" + TableViewUtil.toTableId(snc.getID()) + "_" + table.getBufferedTableId();
+
         var portIndex = getPortIndex(nodePort);
         var hiLiteHandler = TableViewManager.getOutHiLiteHandler(snc, portIndex - 1).orElse(null);
         Supplier<Set<RowKey>> selectionSupplier;
@@ -94,7 +110,48 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         } else {
             selectionSupplier = hiLiteHandler::getHiLitKeys;
         }
-        return new TablePortView(table, tableId, selectionSupplier, portIndex);
+        return new TablePortView(table, tableId, selectionSupplier, portIndex, createDummyAddNodeCommand(snc));
+    }
+
+    private Consumer<String> createDummyAddNodeCommand(final SingleNodeContainer snc) {
+        final var command = builder(AddNodeCommandEntBuilder.class).setNodeFactory(//
+            builder(NodeFactoryKeyEntBuilder.class)//
+                .setClassName("org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory")//
+                //.setClassName("org.knime.base.node.preproc.sorter.SorterNodeFactory")//
+                //.setClassName("org.knime.base.node.preproc.filter.hilite.HiliteFilterNodeFactory")//
+                .build()//
+        )//
+            .setPosition(builder(XYEntBuilder.class)//
+                .setX(100)//
+                .setY(100)//
+                .build())
+            .setKind(KindEnum.ADD_NODE)//
+            .build();
+
+        WorkflowManager wfm = snc.getParent();
+        WorkflowManager projectWfm = wfm.getProjectWFM();
+
+        NodeContainerParent ncParent = wfm.getDirectNCParent();
+        boolean isComponentProject = projectWfm.isComponentProjectWFM();
+        final NodeIDEnt workflowId;
+        if (ncParent instanceof SubNodeContainer subnc) {
+            // it's a component's workflow
+            workflowId = new NodeIDEnt(subnc.getID(), isComponentProject);
+        } else {
+            workflowId = new NodeIDEnt(wfm.getID(), isComponentProject);
+        }
+
+        return projectId -> {
+            try {
+                DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, workflowId, command);
+            } catch (NotASubWorkflowException ex) {
+                // TODO Auto-generated catch block
+            } catch (NodeNotFoundException ex) {
+                // TODO Auto-generated catch block
+            } catch (OperationNotAllowedException ex) {
+                // TODO Auto-generated catch block
+            }
+        };
     }
 
     private static int getPortIndex(final NodeOutPort port) {
@@ -114,12 +171,16 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
         private final int m_portIndex;
 
+        private final Consumer<String> m_dummyAddNodeCommand;
+
         TablePortView(final BufferedDataTable table, final String tableId,
-            final Supplier<Set<RowKey>> selectionSupplier, final int portIndex) {
+            final Supplier<Set<RowKey>> selectionSupplier, final int portIndex,
+            final Consumer<String> dummyAddNodeCommand) {
             m_table = table;
             m_tableId = tableId;
             m_selectionSupplier = selectionSupplier;
             m_portIndex = portIndex;
+            m_dummyAddNodeCommand = dummyAddNodeCommand;
 
         }
 
@@ -137,15 +198,16 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             settings.m_showRowIndices = true;
             settings.m_showOnlySelectedRowsConfigurable = true;
             settings.m_skipRemainingColumns = true;
-            settings.m_enableDataValueViews = true;
+            //settings.m_enableDataValueViews = true;
             return Optional.of(
                 TableViewUtil.createInitialDataService(() -> settings, () -> m_table, m_selectionSupplier, m_tableId));
         }
 
         @Override
         public Optional<RpcDataService> createRpcDataService() {
-            return Optional.of(TableViewUtil.createRpcDataService(
-                TableViewUtil.createTableViewDataService(() -> m_table, m_selectionSupplier, m_tableId), m_tableId));
+            return Optional
+                .of(TableViewUtil.createRpcDataService(TableViewUtil.createTableViewDataService(() -> m_table,
+                    m_selectionSupplier, m_tableId, m_dummyAddNodeCommand), m_tableId));
         }
 
         @Override
