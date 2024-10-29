@@ -55,8 +55,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeOutPort;
@@ -73,8 +71,6 @@ import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
-import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
-import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactory;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -135,7 +131,8 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             settings.m_selectionMode = SelectionMode.EDIT;
             settings.m_title = "";
             settings.m_enablePagination = false;
-            setRowHeight(settings, spec);
+            settings.m_rowHeightMode = RowHeightMode.CUSTOM;
+            settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
             settings.m_verticalPaddingMode = VerticalPaddingMode.COMPACT;
             settings.m_showRowIndices = true;
             settings.m_showOnlySelectedRowsConfigurable = true;
@@ -143,23 +140,6 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             settings.m_enableDataValueViews = true;
             return Optional.of(
                 TableViewUtil.createInitialDataService(() -> settings, () -> m_table, m_selectionSupplier, m_tableId));
-        }
-
-        private static void setRowHeight(final TableViewViewSettings settings, final DataTableSpec spec) {
-            final var rendererFactory = new SwingBasedRendererFactory();
-            if (spec.stream().anyMatch(colSpec -> isRendererdAsImage(colSpec, rendererFactory))) {
-                settings.m_rowHeightMode = RowHeightMode.CUSTOM;
-                settings.m_customRowHeight = 80;
-            } else {
-                settings.m_rowHeightMode = RowHeightMode.CUSTOM;
-                settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
-            }
-        }
-
-        private static boolean isRendererdAsImage(final DataColumnSpec colSpec2,
-            final SwingBasedRendererFactory rendererFactory) {
-            return rendererFactory.createDataValueRenderer(colSpec2, null)
-                .getContentType() == DataCellContentType.IMG_PATH;
         }
 
         @Override

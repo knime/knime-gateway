@@ -72,7 +72,6 @@ import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.filestore.internal.NotInWorkflowDataRepository;
-import org.knime.core.data.image.png.PNGImageCellFactory;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.DefaultNodeProgressMonitor;
@@ -154,31 +153,6 @@ public class TablePortViewFactoryTest {
             assertThat(settings.get("skipRemainingColumns").asBoolean(), is(true));
             assertThat(settings.get("showOnlySelectedRowsConfigurable").asBoolean(), is(true));
             assertThat(settings.get("enableDataValueViews").asBoolean(), is(true));
-        } finally {
-            PortContext.removeLastContext();
-            port.dispose();
-        }
-    }
-
-    /**
-     * Checks the {@link InitialDataService} of the {@link PortView} created by the {@link TablePortViewFactory}.
-     *
-     * @throws IOException
-     */
-    @Test
-    public void testTablePortViewRowHeightOnImages() throws IOException {
-        var specWithImages = new DataTableSpec(
-            new DataColumnSpecCreator("imageCol", new PNGImageCellFactory().getDataType()).createSpec());
-        var bdt = TestingUtilities.createTable(specWithImages);
-        var port = TestingUtilities.createNodeOutPort(bdt);
-        PortContext.pushContext(port.get());
-        try {
-            var initialData =
-                new TablePortViewFactory().createPortView(bdt).createInitialDataService().get().getInitialData();
-            var initialDataTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
-            var settings = initialDataTree.get("result").get("settings");
-            assertThat(settings.get("rowHeightMode").asText(), is(RowHeightMode.CUSTOM.toString()));
-            assertThat(settings.get("customRowHeight").asInt(), is(80));
         } finally {
             PortContext.removeLastContext();
             port.dispose();
