@@ -175,7 +175,8 @@ public final class AppStateEntityFactory {
             ) //
             .setNodeRepositoryLoaded(NodeSpecCollectionProvider.Progress.isDone()) //
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
-            .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()).build();
+            .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
+            .build();
     }
 
     private static AppModeEnum getAppModeEnum() {
