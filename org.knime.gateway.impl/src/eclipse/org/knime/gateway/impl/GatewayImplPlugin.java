@@ -54,12 +54,15 @@ import java.util.Optional;
 import org.knime.base.data.xml.SvgValue;
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
+import org.knime.core.data.StringValue;
 import org.knime.core.data.image.png.PNGImageValue;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
+import org.knime.gateway.impl.node.datavalueview.code.XMLCodeValueView;
 import org.knime.gateway.impl.node.datavalueview.image.PNGImageValueView;
 import org.knime.gateway.impl.node.datavalueview.image.SvgValueView;
+import org.knime.gateway.impl.node.datavalueview.string.StringValueView;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariableSpecViewFactory;
@@ -77,6 +80,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class GatewayImplPlugin implements BundleActivator {
+
 
     private static GatewayImplPlugin instance;
 
@@ -116,9 +120,15 @@ public class GatewayImplPlugin implements BundleActivator {
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
 
-        DataValueViewManager.registerDataValueViewFactory(PNGImageValue.class, PNGImageValueView::new);
+        DataValueViewManager.registerDataValueViewFactory(PNGImageValue.class,
+            (value, colSpec) -> new PNGImageValueView(value));
 
-        DataValueViewManager.registerDataValueViewFactory(SvgValue.class, SvgValueView::new);
+        DataValueViewManager.registerDataValueViewFactory(SvgValue.class, (value, colSpec) -> new SvgValueView(value));
+
+        DataValueViewManager.registerDataValueViewFactory(StringValue.class, StringValueView::new);
+
+        DataValueViewManager.registerDataValueViewFactory(XMLValue.class,
+            (value, colSpec) -> new XMLCodeValueView(value));
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();

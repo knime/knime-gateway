@@ -310,7 +310,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
         String wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
         wfm.executeAllAndWaitUntilDone();
-        DataValueViewManager.registerDataValueViewFactory(DoubleValue.class, (cell) -> new DataValueView() {
+        DataValueViewManager.registerDataValueViewFactory(DoubleValue.class, (cell, colSpec) -> new DataValueView() {
 
             @Override
             public Page getPage() {
