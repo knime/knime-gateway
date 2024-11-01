@@ -96,13 +96,22 @@ public interface KaiHandler {
     }
 
     /**
+     * Encapsulates the UI strings for the code assistant.
+     *
+     * @param disclaimer users have to accept before they can use the code generation
+     */
+    record CodeAssistant(String disclaimer) {
+    }
+
+    /**
      * Container for the disclaimer and welcome messages that K-AI displays in the UI.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      * @param disclaimer users have to accept before they can chat with K-AI
      * @param welcomeMessages the messages K-AI starts the conversation with
+     * @param codeAssistant the UI strings for the code assistant
      */
-    record UiStrings(String disclaimer, WelcomeMessages welcomeMessages) {
+    record UiStrings(String disclaimer, WelcomeMessages welcomeMessages, CodeAssistant codeAssistant) {
     }
 
     /**
