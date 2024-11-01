@@ -51,6 +51,9 @@ package org.knime.gateway.impl.node.port;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.knime.core.data.DataTableSpec;
@@ -129,20 +132,21 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
 
     private static Supplier<BufferedDataTable> getFlowVariablesTableSupplier(
         final Collection<org.knime.core.node.workflow.FlowVariable> variables, final DataTableSpec tableSpec) {
-        Supplier<BufferedDataTable> bufferedTableSupplier = () -> {
+        return () -> {
             var container = DataServiceContext.get().getExecutionContext().createDataContainer(tableSpec);
-
-            var i = 0L;
-            for (var v : variables) {
-                var flowVariable = FlowVariable.create(v);
-                container.addRowToTable(new DefaultRow(RowKey.createRowKey(i), flowVariable.getOwnerNodeId(), flowVariable.getType(),
-                    flowVariable.getName(), flowVariable.getValue()));
-                i++;
-            }
+            variables.forEach(withCounter((counter, variable) -> {
+                var flowVariable = FlowVariable.create(variable);
+                container.addRowToTable(new DefaultRow(RowKey.createRowKey(counter), flowVariable.getOwnerNodeId(),
+                    flowVariable.getType(), flowVariable.getName(), flowVariable.getValue()));
+            }));
             container.close();
             return container.getTable();
         };
-        return bufferedTableSupplier;
+    }
+
+    private static <T> Consumer<T> withCounter(final BiConsumer<Long, T> consumer) {
+        final var counter = new AtomicLong(0);
+        return item -> consumer.accept(counter.getAndIncrement(), item);
     }
 
 }
