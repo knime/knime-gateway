@@ -48,9 +48,11 @@
  */
 package org.knime.gateway.api.entity;
 
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.ui.wrapper.Wrapper;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
@@ -99,28 +101,43 @@ public class UIExtensionEnt<N extends NodeWrapper> {
      */
     protected UIExtensionEnt(final N nodeWrapper, final PageResourceManager<N> pageResourceManager,
         final DataServiceManager<N> dataServiceManager, final PageType pageType, final boolean includeBaseUrl) {
-        var nc = nodeWrapper.get();
-        WorkflowManager wfm = nc.getParent();
-        WorkflowManager projectWfm = wfm.getProjectWFM();
+        var ncUI = nodeWrapper.getNCUI();
+        var nc = Wrapper.unwrapOptional(ncUI, NodeContainer.class).orElse(null);
+        if (nc != null) {
+            WorkflowManager wfm = nc.getParent();
+            WorkflowManager projectWfm = wfm.getProjectWFM();
 
-        m_projectId = projectWfm.getNameWithID();
+            m_projectId = projectWfm.getNameWithID();
 
-        NodeContainerParent ncParent = wfm.getDirectNCParent();
-        boolean isComponentProject = projectWfm.isComponentProjectWFM();
-        if (ncParent instanceof SubNodeContainer snc) {
-            // it's a component's workflow
-            m_workflowId = new NodeIDEnt(snc.getID(), isComponentProject).toString();
+            NodeContainerParent ncParent = wfm.getDirectNCParent();
+            boolean isComponentProject = projectWfm.isComponentProjectWFM();
+            if (ncParent instanceof SubNodeContainer snc) {
+                // it's a component's workflow
+                m_workflowId = new NodeIDEnt(snc.getID(), isComponentProject).toString();
+            } else {
+                m_workflowId = new NodeIDEnt(wfm.getID(), isComponentProject).toString();
+            }
+            m_nodeId = new NodeIDEnt(nc.getID(), isComponentProject).toString();
+
+            if (dataServiceManager != null
+                && dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
+                m_initialData = dataServiceManager.callInitialDataService(nodeWrapper);
+                m_deactivationRequired = dataServiceManager.hasDeactivateRunnable(nodeWrapper);
+            } else {
+                m_initialData = null;
+                m_deactivationRequired = false;
+            }
         } else {
-            m_workflowId = new NodeIDEnt(wfm.getID(), isComponentProject).toString();
-        }
-        m_nodeId = new NodeIDEnt(nc.getID(), isComponentProject).toString();
-
-        if (dataServiceManager != null
-            && dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
-            m_initialData = dataServiceManager.callInitialDataService(nodeWrapper);
-            m_deactivationRequired = dataServiceManager.hasDeactivateRunnable(nodeWrapper);
-        } else {
-            m_initialData = null;
+            // dialogs in the remote workflow editor
+            assert pageType == PageType.DIALOG;
+            var projectId = ncUI.getProjectId();
+            m_projectId = projectId.toString();
+            m_workflowId = ncUI.getParentNodeID();
+            m_nodeId = new NodeIDEnt(ncUI.getID()).toString();
+            m_initialData =
+                ncUI.callNodeDataService(projectId, m_workflowId, m_nodeId, pageType.toString(), "initial_data", "");
+            // only default node dialogs are supported in the remote workflow editor for now and these don't
+            // require data service deactivation
             m_deactivationRequired = false;
         }
 

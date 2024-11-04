@@ -50,6 +50,8 @@ package org.knime.gateway.api.entity;
 
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
+import org.knime.core.ui.node.workflow.SingleNodeContainerUI;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.dialog.NodeDialog;
@@ -77,6 +79,21 @@ public class NodeDialogEnt extends UIExtensionEnt<NodeWrapper> {
             NodeDialogManager.getInstance().getDataServiceManager(), PageType.DIALOG);
         CheckUtils.checkArgument(NodeDialogManager.hasNodeDialog(nc), "The provided node doesn't have a node dialog");
         m_hasNodeView = NodeViewManager.hasNodeView(nc);
+        m_isWriteProtected = nc.getParent().isWriteProtected();
+        m_canBeEnlarged = NodeDialogManager.getInstance().canBeEnlarged(nc);
+    }
+
+    /**
+     * Constructor if the dialog is being used in the context of the remote workflow editor.
+     *
+     * @param nc
+     */
+    public NodeDialogEnt(final SingleNodeContainerUI nc) {
+        super(NodeWrapper.of(nc), NodeDialogManager.getInstance().getPageResourceManager(),
+            NodeDialogManager.getInstance().getDataServiceManager(), PageType.DIALOG);
+        CheckUtils.checkArgument(nc instanceof NativeNodeContainerUI nnc && nnc.getNodeDialog().isPresent(),
+            "The provided node doesn't have a node dialog");
+        m_hasNodeView = false;
         m_isWriteProtected = nc.getParent().isWriteProtected();
         m_canBeEnlarged = NodeDialogManager.getInstance().canBeEnlarged(nc);
     }
