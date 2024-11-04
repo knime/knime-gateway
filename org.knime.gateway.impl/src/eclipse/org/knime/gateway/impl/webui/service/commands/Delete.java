@@ -126,6 +126,7 @@ final class Delete extends AbstractWorkflowCommand {
                 cc.setUIInfo(uiInfo);
             }
         });
+        wfm.setDirty();
     }
 
     @Override
