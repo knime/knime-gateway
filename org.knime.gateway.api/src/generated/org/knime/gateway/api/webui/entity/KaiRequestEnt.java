@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.KaiMessageEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
 
@@ -89,6 +90,12 @@ public interface KaiRequestEnt extends GatewayEntity {
   public java.util.List<String> getSelectedNodes();
 
   /**
+   * Get startPosition
+   * @return startPosition 
+   **/
+  public XYEnt getStartPosition();
+
+  /**
    * Get messages
    * @return messages , never <code>null</code>
    **/
@@ -103,6 +110,7 @@ public interface KaiRequestEnt extends GatewayEntity {
       valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
       valueConsumer.accept("workflowId", Pair.create(getWorkflowId(), e.getWorkflowId()));
       valueConsumer.accept("selectedNodes", Pair.create(getSelectedNodes(), e.getSelectedNodes()));
+      valueConsumer.accept("startPosition", Pair.create(getStartPosition(), e.getStartPosition()));
       valueConsumer.accept("messages", Pair.create(getMessages(), e.getMessages()));
   }
 
@@ -142,6 +150,14 @@ public interface KaiRequestEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         KaiRequestEntBuilder setSelectedNodes(java.util.List<String> selectedNodes);
+        
+        /**
+   		 * Set startPosition
+         * 
+         * @param startPosition the property value,  
+         * @return this entity builder for chaining
+         */
+        KaiRequestEntBuilder setStartPosition(XYEnt startPosition);
         
         /**
    		 * Set messages

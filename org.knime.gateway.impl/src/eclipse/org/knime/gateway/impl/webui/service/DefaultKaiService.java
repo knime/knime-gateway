@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.service.KaiService;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
+import org.knime.gateway.impl.webui.kai.KaiHandler.Position;
 import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
 
 /**
@@ -100,8 +101,10 @@ public final class DefaultKaiService implements KaiService {
     public void makeAiRequest(final String kaiChainId, final KaiRequestEnt kaiRequestEnt) {
         var messages = kaiRequestEnt.getMessages().stream()//
             .map(m -> new KaiHandler.Message(fromRoleEnum(m.getRole()), m.getContent())).toList();
+        var startPosition = kaiRequestEnt.getStartPosition();
         var request = new KaiHandler.Request(kaiRequestEnt.getConversationId(), kaiChainId,
-            kaiRequestEnt.getProjectId(), kaiRequestEnt.getWorkflowId(), kaiRequestEnt.getSelectedNodes(), messages);
+            kaiRequestEnt.getProjectId(), kaiRequestEnt.getWorkflowId(), kaiRequestEnt.getSelectedNodes(), messages,
+            startPosition == null ? null : new Position(startPosition.getX(), startPosition.getY()));
         getListener().ifPresent(l -> l.onNewRequest(request));
     }
 

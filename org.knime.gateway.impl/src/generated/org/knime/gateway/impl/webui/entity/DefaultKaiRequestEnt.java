@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.KaiMessageEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 
@@ -57,6 +58,7 @@ import org.knime.gateway.api.webui.entity.KaiRequestEnt;
  * @param projectId
  * @param workflowId
  * @param selectedNodes
+ * @param startPosition
  * @param messages
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -67,6 +69,7 @@ public record DefaultKaiRequestEnt(
     String projectId,
     String workflowId,
     java.util.List<String> selectedNodes,
+    XYEnt startPosition,
     java.util.List<KaiMessageEnt> messages) implements KaiRequestEnt {
 
     /**
@@ -113,6 +116,11 @@ public record DefaultKaiRequestEnt(
     }
     
     @Override
+    public XYEnt getStartPosition() {
+        return startPosition;
+    }
+    
+    @Override
     public java.util.List<KaiMessageEnt> getMessages() {
         return messages;
     }
@@ -129,6 +137,8 @@ public record DefaultKaiRequestEnt(
         private String m_workflowId;
 
         private java.util.List<String> m_selectedNodes = new java.util.ArrayList<>();
+
+        private XYEnt m_startPosition;
 
         private java.util.List<KaiMessageEnt> m_messages = new java.util.ArrayList<>();
 
@@ -166,6 +176,12 @@ public record DefaultKaiRequestEnt(
         }
 
         @Override
+        public DefaultKaiRequestEntBuilder setStartPosition(XYEnt startPosition) {
+             m_startPosition = startPosition;
+             return this;
+        }
+
+        @Override
         public DefaultKaiRequestEntBuilder setMessages(java.util.List<KaiMessageEnt> messages) {
              if(messages == null) {
                  throw new IllegalArgumentException("<messages> must not be null.");
@@ -181,6 +197,7 @@ public record DefaultKaiRequestEnt(
                 immutable(m_projectId),
                 immutable(m_workflowId),
                 immutable(m_selectedNodes),
+                immutable(m_startPosition),
                 immutable(m_messages));
         }
     

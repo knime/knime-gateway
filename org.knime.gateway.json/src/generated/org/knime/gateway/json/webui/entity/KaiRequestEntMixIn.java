@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.KaiMessageEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -87,6 +88,10 @@ public interface KaiRequestEntMixIn extends KaiRequestEnt {
     public java.util.List<String> getSelectedNodes();
     
     @Override
+    @JsonProperty("startPosition")
+    public XYEnt getStartPosition();
+    
+    @Override
     @JsonProperty("messages")
     public java.util.List<KaiMessageEnt> getMessages();
     
@@ -118,6 +123,10 @@ public interface KaiRequestEntMixIn extends KaiRequestEnt {
         @Override
         @JsonProperty("selectedNodes")
         public KaiRequestEntMixInBuilder setSelectedNodes(final java.util.List<String> selectedNodes);
+        
+        @Override
+        @JsonProperty("startPosition")
+        public KaiRequestEntMixInBuilder setStartPosition(final XYEnt startPosition);
         
         @Override
         @JsonProperty("messages")

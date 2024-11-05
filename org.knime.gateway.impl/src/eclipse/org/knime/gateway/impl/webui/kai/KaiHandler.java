@@ -155,8 +155,20 @@ public interface KaiHandler {
      * @param workflowId ID of the subworkflow the user is interacting with
      * @param selectedNodes IDs of the nodes the user selected
      * @param messages of the conversation
+     * @param startPosition the position to start adding nodes (in case of build mode)
      */
     record Request(String conversationId, String chainType, String projectId, String workflowId,
-        List<String> selectedNodes, List<Message> messages) {
+        List<String> selectedNodes, List<Message> messages, Position startPosition) {
+    }
+
+    /**
+     * Represents a 2-dim position.
+     *
+     * @param x
+     * @param y
+     *
+     * @since 5.4
+     */
+    record Position(int x, int y) {
     }
 }
