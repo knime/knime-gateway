@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
+import org.knime.gateway.impl.webui.kai.KaiHandler.CodeAssistant;
 import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
 import org.knime.gateway.impl.webui.kai.KaiHandler.WelcomeMessages;
 import org.mockito.Mock;
@@ -92,7 +93,8 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     @Test
     public void testGetUiStrings() throws Exception {
         var uiStrings =
-            new UiStrings("my disclaimer", new WelcomeMessages("Qa welcome message", "Build welcome message"));
+            new UiStrings("my disclaimer", new WelcomeMessages("Qa welcome message", "Build welcome message"),
+                new CodeAssistant("disclaimer test"));
         Mockito.when(m_kaiHandler.getUiStrings()).thenReturn(uiStrings);
         var returnedUiStrings = DefaultKaiService.getInstance().getUiStrings();
         assertEquals(uiStrings.disclaimer(), returnedUiStrings.getDisclaimer());
