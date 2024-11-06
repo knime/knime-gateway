@@ -82,4 +82,5 @@ public interface PreferencesProvider {
      * @return whether node dialogs are embedded or detached
      */
     boolean useEmbeddedDialogs();
+
 }

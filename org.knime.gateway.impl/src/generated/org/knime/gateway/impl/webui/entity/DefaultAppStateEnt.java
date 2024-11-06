@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param scrollToZoomEnabled
  * @param hasNodeCollectionActive
  * @param useEmbeddedDialogs
+ * @param disableKai
  * @param activeNodeCollection
  * @param confirmNodeConfigChanges
  * @param devMode
@@ -86,6 +87,7 @@ public record DefaultAppStateEnt(
     Boolean scrollToZoomEnabled,
     Boolean hasNodeCollectionActive,
     Boolean useEmbeddedDialogs,
+    Boolean disableKai,
     String activeNodeCollection,
     Boolean confirmNodeConfigChanges,
     Boolean devMode,
@@ -156,6 +158,11 @@ public record DefaultAppStateEnt(
     }
     
     @Override
+    public Boolean isDisableKai() {
+        return disableKai;
+    }
+    
+    @Override
     public String getActiveNodeCollection() {
         return activeNodeCollection;
     }
@@ -214,6 +221,8 @@ public record DefaultAppStateEnt(
         private Boolean m_hasNodeCollectionActive;
 
         private Boolean m_useEmbeddedDialogs;
+
+        private Boolean m_disableKai;
 
         private String m_activeNodeCollection;
 
@@ -290,6 +299,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setDisableKai(Boolean disableKai) {
+             m_disableKai = disableKai;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEntBuilder setActiveNodeCollection(String activeNodeCollection) {
              m_activeNodeCollection = activeNodeCollection;
              return this;
@@ -344,6 +359,7 @@ public record DefaultAppStateEnt(
                 immutable(m_scrollToZoomEnabled),
                 immutable(m_hasNodeCollectionActive),
                 immutable(m_useEmbeddedDialogs),
+                immutable(m_disableKai),
                 immutable(m_activeNodeCollection),
                 immutable(m_confirmNodeConfigChanges),
                 immutable(m_devMode),

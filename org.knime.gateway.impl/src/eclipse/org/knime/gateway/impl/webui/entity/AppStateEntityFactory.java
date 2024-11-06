@@ -82,6 +82,7 @@ import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
+import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
@@ -125,7 +126,8 @@ public final class AppStateEntityFactory {
         PreferencesProvider preferencesProvider, //
         SpaceProviders spaceProviders, //
         NodeFactoryProvider nodeFactoryProvider, //
-        NodeCollections nodeCollections //
+        NodeCollections nodeCollections, //
+        KaiHandler kaiHandler //
     ) {
     }
 
@@ -151,6 +153,7 @@ public final class AppStateEntityFactory {
         );
         var activeCollection =
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
+        var kaiHandler = dependencies.kaiHandler();
         return builder(AppStateEntBuilder.class) //
             .setAppMode(getAppModeEnum()).setOpenProjects(projects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
@@ -168,6 +171,7 @@ public final class AppStateEntityFactory {
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setUseEmbeddedDialogs(dependencies.preferencesProvider().useEmbeddedDialogs()) //
+            .setDisableKai(kaiHandler == null ? Boolean.TRUE : kaiHandler.isDisabled()) //
             .setFileExtensionToNodeTemplateId( //
                 dependencies.nodeFactoryProvider() == null //
                     ? Collections.emptyMap() //
@@ -215,6 +219,7 @@ public final class AppStateEntityFactory {
                 builder::setConfirmNodeConfigChanges);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isUseEmbeddedDialogs,
                 builder::setUseEmbeddedDialogs);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isDisableKai, builder::setDisableKai);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
             return builder.build();

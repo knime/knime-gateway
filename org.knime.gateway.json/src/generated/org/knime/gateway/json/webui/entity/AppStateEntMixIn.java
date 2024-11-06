@@ -112,6 +112,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public Boolean isUseEmbeddedDialogs();
     
     @Override
+    @JsonProperty("disableKai")
+    public Boolean isDisableKai();
+    
+    @Override
     @JsonProperty("activeNodeCollection")
     public String getActiveNodeCollection();
     
@@ -191,6 +195,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("useEmbeddedDialogs")
         public AppStateEntMixInBuilder setUseEmbeddedDialogs(final Boolean useEmbeddedDialogs);
+        
+        @Override
+        @JsonProperty("disableKai")
+        public AppStateEntMixInBuilder setDisableKai(final Boolean disableKai);
         
         @Override
         @JsonProperty("activeNodeCollection")

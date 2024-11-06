@@ -86,6 +86,20 @@ public interface KaiHandler {
     void onFeedback(String kaiFeedbackId, String projectId, boolean isPositive, String comment);
 
     /**
+     * TODO
+     *
+     * @return
+     */
+    boolean isDisabled();
+
+    /**
+     * TODO
+     *
+     * @param listener
+     */
+    void addDisableStateChange();
+
+    /**
      * Encapsulates the welcome messages that K-AI displays in the UI.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany

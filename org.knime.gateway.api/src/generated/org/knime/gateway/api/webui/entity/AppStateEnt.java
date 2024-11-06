@@ -149,6 +149,12 @@ public interface AppStateEnt extends GatewayEntity {
   public Boolean isUseEmbeddedDialogs();
 
   /**
+   * TODO
+   * @return disableKai 
+   **/
+  public Boolean isDisableKai();
+
+  /**
    * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.
    * @return activeNodeCollection 
    **/
@@ -205,6 +211,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("useEmbeddedDialogs", Pair.create(isUseEmbeddedDialogs(), e.isUseEmbeddedDialogs()));
+      valueConsumer.accept("disableKai", Pair.create(isDisableKai(), e.isDisableKai()));
       valueConsumer.accept("activeNodeCollection", Pair.create(getActiveNodeCollection(), e.getActiveNodeCollection()));
       valueConsumer.accept("confirmNodeConfigChanges", Pair.create(isConfirmNodeConfigChanges(), e.isConfirmNodeConfigChanges()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
@@ -298,6 +305,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setUseEmbeddedDialogs(Boolean useEmbeddedDialogs);
+        
+        /**
+         * TODO
+         * 
+         * @param disableKai the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setDisableKai(Boolean disableKai);
         
         /**
          * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.

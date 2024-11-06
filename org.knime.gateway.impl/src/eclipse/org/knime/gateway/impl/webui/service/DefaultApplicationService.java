@@ -58,6 +58,7 @@ import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -86,6 +87,8 @@ public final class DefaultApplicationService implements ApplicationService {
 
     private final NodeCollections m_nodeCollections =
         ServiceDependencies.getServiceDependency(NodeCollections.class, false);
+
+    private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -119,7 +122,7 @@ public final class DefaultApplicationService implements ApplicationService {
             DefaultServiceContext.getWorkflowProjectId().<Predicate<String>> map(id -> id::equals).orElse(null);
         Predicate<String> isActiveProject = workflowProjectFilter == null ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-            m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections);
+            m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
         var appState =
             AppStateEntityFactory.buildAppStateEnt(workflowProjectFilter, isActiveProject, dependencies);
         if (m_appStateUpdater != null) {
