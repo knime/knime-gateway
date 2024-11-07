@@ -52,7 +52,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -113,12 +112,8 @@ public final class ProjectManager {
      * opened projects are considered <b>not</b> active after this call.
      *
      * @param projectId the id to add
-     * @throws NoSuchElementException if there is no project open/loaded for the given project id
      */
     public void setProjectActive(final String projectId) {
-        if (getCachedProject(projectId).isEmpty()) {
-            throw new NoSuchElementException("No loaded project for id " + projectId);
-        }
         if (!m_projectsMap.get(projectId).hasUIConsumer) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
