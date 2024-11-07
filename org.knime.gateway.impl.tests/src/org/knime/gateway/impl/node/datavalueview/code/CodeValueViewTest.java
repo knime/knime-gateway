@@ -51,8 +51,6 @@ package org.knime.gateway.impl.node.datavalueview.code;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.knime.core.data.json.JSONCellFactory;
-import org.knime.core.data.json.JSONValue;
 import org.knime.core.data.xml.XMLCellFactory;
 import org.knime.core.data.xml.XMLValue;
 import org.knime.gateway.impl.node.datavalueview.code.CodeValueView.CodeValueViewLanguages;
@@ -62,19 +60,6 @@ import org.knime.gateway.impl.node.datavalueview.code.CodeValueView.CodeValueVie
  * @author Robin Gerling
  */
 public class CodeValueViewTest {
-    /**
-     * Test that the initial data of the {@link JSONCodeValueView} is the pretty-printed string representation of the
-     * {@link JSONValue}.
-     */
-    @Test
-    public void testJSONCodeValueView() {
-        final var jsonCell = new JSONCellFactory().createCell("{\"key\": \"value\", \"bool\": true}");
-        final var jsonValue = (JSONValue)jsonCell;
-
-        final var initialData = new JSONCodeValueView(jsonValue).getInitialData();
-        assertThat(initialData.language()).isEqualTo(CodeValueViewLanguages.JSON);
-        assertThat(initialData.code()).isEqualTo("{\n    \"key\": \"value\",\n    \"bool\": true\n}");
-    }
 
     /**
      * Test that the initial data of the {@link XMLCodeValueView} is the string representation of the {@link XMLValue}.

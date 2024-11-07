@@ -51,7 +51,6 @@ package org.knime.gateway.impl.node.datavalueview.code;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.knime.core.data.json.JSONValue;
 import org.knime.core.data.xml.XMLValue;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
@@ -60,7 +59,7 @@ import org.knime.core.webui.node.view.table.datavalue.DataValueView;
 import org.knime.core.webui.page.Page;
 
 /**
- * A view showing a read-only code editor, which is associated to a {@link JSONValue} or {@link XMLValue}.
+ * A view showing a read-only code editor, which is associated to an {@link XMLValue}.
  *
  * @author Robin Gerling
  */
