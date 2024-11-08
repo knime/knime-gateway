@@ -81,6 +81,7 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddin
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.NodeRelationEnum;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -127,6 +128,8 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
                 .setX(100)//
                 .setY(100)//
                 .build())
+            .setSourceNodeId(new NodeIDEnt(snc.getID()))
+            .setNodeRelation(NodeRelationEnum.SUCCESSORS)
             .setKind(KindEnum.ADD_NODE)//
             .build();
 
@@ -146,7 +149,6 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         return projectId -> {
             try {
                 final var addCommandResult = (AddNodeResultEnt) DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, workflowId, addCommand);
-                System.out.println("addCommandResult = " + addCommandResult);
                 final var newNodeId = addCommandResult.getNewNodeId().toNodeID(snc);
                 final var newNode = wfm.getNodeContainer(newNodeId);
                 configureSorter((SingleNodeContainer)newNode, wfm);
@@ -165,7 +167,6 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
     private static void configureSorter(final SingleNodeContainer nc, final WorkflowManager wfm) throws InvalidSettingsException {
         final var nodeSettings = nc.getNodeSettings();
         final var modelSettings = nodeSettings.getNodeSettings("model");
-        System.out.println("modelSettings = " + modelSettings);
         final var sortingCriteria = modelSettings.getNodeSettings("sortingCriteria");
         final var firstCriterion = sortingCriteria.getNodeSettings("0");
         firstCriterion.getNodeSettings("column").addString("selected", "some column name");
