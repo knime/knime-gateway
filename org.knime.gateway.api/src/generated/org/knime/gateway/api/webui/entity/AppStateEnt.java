@@ -149,10 +149,10 @@ public interface AppStateEnt extends GatewayEntity {
   public Boolean isUseEmbeddedDialogs();
 
   /**
-   * TODO
-   * @return disableKai 
+   * Whether all K-AI-related features (chat sidebar, build mode, scripting assistance, etc.) are enabled.
+   * @return isKaiEnabled 
    **/
-  public Boolean isDisableKai();
+  public Boolean isKaiEnabled();
 
   /**
    * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.
@@ -211,7 +211,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("useEmbeddedDialogs", Pair.create(isUseEmbeddedDialogs(), e.isUseEmbeddedDialogs()));
-      valueConsumer.accept("disableKai", Pair.create(isDisableKai(), e.isDisableKai()));
+      valueConsumer.accept("isKaiEnabled", Pair.create(isKaiEnabled(), e.isKaiEnabled()));
       valueConsumer.accept("activeNodeCollection", Pair.create(getActiveNodeCollection(), e.getActiveNodeCollection()));
       valueConsumer.accept("confirmNodeConfigChanges", Pair.create(isConfirmNodeConfigChanges(), e.isConfirmNodeConfigChanges()));
       valueConsumer.accept("devMode", Pair.create(isDevMode(), e.isDevMode()));
@@ -307,12 +307,12 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setUseEmbeddedDialogs(Boolean useEmbeddedDialogs);
         
         /**
-         * TODO
+         * Whether all K-AI-related features (chat sidebar, build mode, scripting assistance, etc.) are enabled.
          * 
-         * @param disableKai the property value,  
+         * @param isKaiEnabled the property value,  
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setDisableKai(Boolean disableKai);
+        AppStateEntBuilder setIsKaiEnabled(Boolean isKaiEnabled);
         
         /**
          * Display name of currently active node collection. Compatible with \&quot;Search in {activeNodeCollection} nodes\&quot;.
