@@ -70,6 +70,7 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
@@ -117,6 +118,9 @@ public final class DefaultEventService implements EventService {
     private final NodeCollections m_nodeCollections =
         ServiceDependencies.getServiceDependency(NodeCollections.class, false);
 
+    private final KaiHandler m_kaiHandler =
+            ServiceDependencies.getServiceDependency(KaiHandler.class, false);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -145,7 +149,7 @@ public final class DefaultEventService implements EventService {
             if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
                     var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager,
-                        m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections);
+                        m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
             } else {
