@@ -59,6 +59,7 @@ import java.util.function.Supplier;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeOutPortWrapper;
@@ -80,6 +81,7 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddin
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -114,10 +116,10 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
     }
 
     private Consumer<String> createDummyAddNodeCommand(final SingleNodeContainer snc) {
-        final var command = builder(AddNodeCommandEntBuilder.class).setNodeFactory(//
+        final var addCommand = builder(AddNodeCommandEntBuilder.class).setNodeFactory(//
             builder(NodeFactoryKeyEntBuilder.class)//
-                .setClassName("org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory")//
-                //.setClassName("org.knime.base.node.preproc.sorter.SorterNodeFactory")//
+                // .setClassName("org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory")//
+                .setClassName("org.knime.base.node.preproc.sorter.SorterNodeFactory")//
                 //.setClassName("org.knime.base.node.preproc.filter.hilite.HiliteFilterNodeFactory")//
                 .build()//
         )//
@@ -143,16 +145,34 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
         return projectId -> {
             try {
-                DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, workflowId, command);
+                final var addCommandResult = (AddNodeResultEnt) DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, workflowId, addCommand);
+                System.out.println("addCommandResult = " + addCommandResult);
+                final var newNodeId = addCommandResult.getNewNodeId().toNodeID(snc);
+                final var newNode = wfm.getNodeContainer(newNodeId);
+                configureSorter((SingleNodeContainer)newNode, wfm);
             } catch (NotASubWorkflowException ex) {
                 // TODO Auto-generated catch block
             } catch (NodeNotFoundException ex) {
                 // TODO Auto-generated catch block
             } catch (OperationNotAllowedException ex) {
                 // TODO Auto-generated catch block
+            } catch (InvalidSettingsException ex) {
+                throw new RuntimeException(ex);
             }
         };
     }
+
+    private static void configureSorter(final SingleNodeContainer nc, final WorkflowManager wfm) throws InvalidSettingsException {
+        final var nodeSettings = nc.getNodeSettings();
+        final var modelSettings = nodeSettings.getNodeSettings("model");
+        System.out.println("modelSettings = " + modelSettings);
+        final var sortingCriteria = modelSettings.getNodeSettings("sortingCriteria");
+        final var firstCriterion = sortingCriteria.getNodeSettings("0");
+        firstCriterion.getNodeSettings("column").addString("selected", "some column name");
+       wfm.loadNodeSettings(nc.getID(), nodeSettings);
+
+    }
+
 
     private static int getPortIndex(final NodeOutPort port) {
         if (port instanceof NodeOutPortWrapper wrapper) {
