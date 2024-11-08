@@ -82,6 +82,7 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 import org.knime.core.webui.node.view.table.actions.ActionParameters;
 import org.knime.core.webui.node.view.table.actions.ActionType;
+import org.knime.core.webui.node.view.table.actions.FilterActionParameters;
 import org.knime.core.webui.node.view.table.actions.SortActionParameters;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -156,6 +157,7 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             case SORT:
                 return new TableViewSortActionToNodeTransformer((SortActionParameters) actionParameters, projectId, workflowId, wfm);
             case FILTER:
+                return new TableViewFilterActionToNodeTransformer((FilterActionParameters) actionParameters, projectId, workflowId, wfm);
 //                return new AddNodeCommandAndConfiguration(createFilterNodeCommand(actionParameters),
 //                    configureSorter((SortActionParameters) actionParameters));
             case SELECTED_ROWS:
