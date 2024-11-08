@@ -88,7 +88,7 @@ public abstract class TableViewActionToNodeTranformer {
     }
 
     public final SingleNodeContainer toNode(final SingleNodeContainer sourceNode) {
-        var command = toAddNodeCommand(new NodeIDEnt(sourceNode.getID()));
+        var command = toAddNodeCommand(sourceNode);
 
         AddNodeResultEnt addCommandResult;
         try {
@@ -104,21 +104,19 @@ public abstract class TableViewActionToNodeTranformer {
         }
     }
 
-    private final AddNodeCommandEnt toAddNodeCommand(final NodeIDEnt sourceNode) {
+    private final AddNodeCommandEnt toAddNodeCommand(final SingleNodeContainer sourceNode) {
+        var bounds = sourceNode.getUIInformation().getBounds();
         final var addCommandBuilder = builder(AddNodeCommandEntBuilder.class).setNodeFactory(//
             builder(NodeFactoryKeyEntBuilder.class)//
-                // .setClassName("org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory")//
-                // .setClassName("org.knime.base.node.preproc.sorter.SorterNodeFactory")//
-                //.setClassName("org.knime.base.node.preproc.filter.hilite.HiliteFilterNodeFactory")//
                 .setClassName(className)//
                 .build()//
         )//
              .setPosition(builder(XYEntBuilder.class)//
-                    .setX(100)//
-                    .setY(100)//
+                    .setX(bounds[0] + 100)//
+                    .setY(bounds[1])//
                     .build())
             .setNodeRelation(NodeRelationEnum.SUCCESSORS)
-            .setKind(KindEnum.ADD_NODE).setSourceNodeId(sourceNode)
+            .setKind(KindEnum.ADD_NODE).setSourceNodeId(new NodeIDEnt(sourceNode.getID()))
             .build();
         return addCommandBuilder;
     }
