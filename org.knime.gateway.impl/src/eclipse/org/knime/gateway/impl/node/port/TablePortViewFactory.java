@@ -53,7 +53,10 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -61,7 +64,6 @@ import java.util.function.Supplier;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodeOutPortWrapper;
@@ -86,12 +88,10 @@ import org.knime.core.webui.node.view.table.actions.FilterActionParameters;
 import org.knime.core.webui.node.view.table.actions.SortActionParameters;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.NodeRelationEnum;
-import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
+import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt.AddWorkflowAnnotationCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
-import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
+import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 
 /**
  * Factory for the {@link PortView} of a {@link BufferedDataTable}.
@@ -118,7 +118,8 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
         return new TablePortView(table, tableId, selectionSupplier, portIndex, createDummyAddNodeCommand(snc));
     }
 
-    private BiConsumer<String, Map<ActionType, ActionParameters>> createDummyAddNodeCommand(final SingleNodeContainer snc) {
+    private BiConsumer<String, Map<ActionType, ActionParameters>>
+        createDummyAddNodeCommand(final SingleNodeContainer snc) {
 
         WorkflowManager wfm = snc.getParent();
         WorkflowManager projectWfm = wfm.getProjectWFM();
@@ -135,78 +136,84 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
 
         return (projectId, actionMap) -> {
             var transformers = new ArrayList<TableViewActionToNodeTranformer>();
-            actionMap.forEach((actionType, actionParameters) -> {
-                transformers.add(createAddNodeCommand(snc, actionType, actionParameters, projectId, workflowId, wfm));
-            });
-            // ToDo sort commands to what order makes sense
+            actionMap.entrySet().stream().sorted(Comparator.comparing(TablePortViewFactory::actionPriority))
+                .forEach((entry) -> transformers
+                    .add(createAddNodeCommand(snc, entry.getKey(), entry.getValue(), projectId, workflowId, wfm)));
 
-
-            var lastCreatedNodeId = snc;
+            var lastCreatedNode = snc;
+            final List<int[]> createdNodesBounds = new ArrayList<>();
             for (var transformer : transformers) {
-                var newNodeId = transformer.toNode(lastCreatedNodeId);
-                lastCreatedNodeId = newNodeId;
+                lastCreatedNode = transformer.toNode(lastCreatedNode);
+                createdNodesBounds.add(lastCreatedNode.getUIInformation().getBounds());
             }
+
+            wfm.executeUpToHere(lastCreatedNode.getID());
+            addWorfklowAnnotation(workflowId, projectId, createdNodesBounds);
+
         };
     }
 
-    private static TableViewActionToNodeTranformer createAddNodeCommand(final SingleNodeContainer sourceNode, final ActionType actionType,
-        final ActionParameters actionParameters, final String projectId, final NodeIDEnt workflowId,
-        final WorkflowManager wfm) {
+    private static void addWorfklowAnnotation(final NodeIDEnt workflowId, final String projectId,
+        final List<int[]> createdNodesBounds) {
+        if (createdNodesBounds.isEmpty()) {
+            return;
+        }
+        final var NODE_WIDTH = 35;
+        final var NODE_HEIGHT = 35;
 
-        switch (actionType) {
-            case SORT:
-                return new TableViewSortActionToNodeTransformer((SortActionParameters) actionParameters, projectId, workflowId, wfm);
-            case FILTER:
-                return new TableViewFilterActionToNodeTransformer((FilterActionParameters) actionParameters, projectId, workflowId, wfm);
-//                return new AddNodeCommandAndConfiguration(createFilterNodeCommand(actionParameters),
-//                    configureSorter((SortActionParameters) actionParameters));
-            case SELECTED_ROWS:
-                return new TableViewSelectionSplitterActionToNodeTransformer(projectId, workflowId, wfm);
-            default:
-                return null;
-//                throw new IllegalArgumentException("Unknown action type: " + actionType);
+        final var minimumY = createdNodesBounds.stream().mapToInt(bounds -> bounds[1]).min().getAsInt();
+        final var maximumY = createdNodesBounds.stream().mapToInt(bounds -> bounds[1] + NODE_HEIGHT).max().getAsInt();
+        final var firstX = createdNodesBounds.get(0)[0];
+        final var lastX = createdNodesBounds.get(createdNodesBounds.size() - 1)[0] + NODE_WIDTH;
+        final var padding = 50;
+        final var upperLeftCornerX = firstX - padding;
+        final var upperLeftCornerY = minimumY - padding;
+        final var height = 2 * padding + maximumY - minimumY;
+        final var width = 2 * padding + lastX - firstX;
+        try {
+            final var addAnnotationCommand =
+                builder(AddWorkflowAnnotationCommandEntBuilder.class).setBounds(builder(BoundsEntBuilder.class)
+                    .setX(upperLeftCornerX).setY(upperLeftCornerY).setWidth(width).setHeight(height).build()//
+                ).setKind(KindEnum.ADD_WORKFLOW_ANNOTATION).setBorderColor("#2f97d5").build();
+            final var x = DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, workflowId,
+                addAnnotationCommand);
+            System.out.println(x);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
-    /**
-     * @param snc
-     */
-    private static AddNodeCommandEnt createAddSorterNodeCommand(final SingleNodeContainer snc) {
-        final var addCommand = builder(AddNodeCommandEntBuilder.class).setNodeFactory(//
-            builder(NodeFactoryKeyEntBuilder.class)//
-                // .setClassName("org.knime.base.node.preproc.filter.row3.RowFilterNodeFactory")//
-                .setClassName("org.knime.base.node.preproc.sorter.SorterNodeFactory")//
-                //.setClassName("org.knime.base.node.preproc.filter.hilite.HiliteFilterNodeFactory")//
-                .build()//
-        )//
-             .setPosition(builder(XYEntBuilder.class)//
-                    .setX(100)//
-                    .setY(100)//
-                    .build())
-            .setSourceNodeId(new NodeIDEnt(snc.getID()))
-            .setNodeRelation(NodeRelationEnum.SUCCESSORS)
-            .setKind(KindEnum.ADD_NODE)//
-            .build();
-        return addCommand;
+    static int actionPriority(final Entry<ActionType, ActionParameters> entry) {
+        switch (entry.getKey()) {
+            case SELECTED_ROWS:
+                return 1;
+            case SORT:
+                return 2;
+            case FILTER:
+                return 3;
+            default:
+                return 4;
+        }
     }
 
-    private static BiConsumer<SingleNodeContainer, WorkflowManager> configureSorter(final SortActionParameters parameters) {
-        return (nc, wfm) -> {
-            try {
-                final var nodeSettings = nc.getNodeSettings();
-                final var modelSettings = nodeSettings.getNodeSettings("model");
-                final var sortingCriteria = modelSettings.getNodeSettings("sortingCriteria");
-                final var firstCriterion = sortingCriteria.getNodeSettings("0");
-                firstCriterion.getNodeSettings("column").addString("selected",
-                    parameters.isRowId() ? "<row-keys>" : parameters.columnName());
-                firstCriterion.addString("sortingOrder", parameters.isAscending() ? "ASCENDING" : "DESCENDING");
-                wfm.loadNodeSettings(nc.getID(), nodeSettings);
-            } catch (InvalidSettingsException ex) {
-                // TODO Auto-generated catch
-            }
-        };
-    }
+    private static TableViewActionToNodeTranformer createAddNodeCommand(final SingleNodeContainer sourceNode,
+        final ActionType actionType, final ActionParameters actionParameters, final String projectId,
+        final NodeIDEnt workflowId, final WorkflowManager wfm) {
 
+        switch (actionType) {
+            case SORT:
+                return new TableViewSortActionToNodeTransformer((SortActionParameters)actionParameters, projectId,
+                    workflowId, wfm);
+            case FILTER:
+                return new TableViewFilterActionToNodeTransformer((FilterActionParameters)actionParameters, projectId,
+                    workflowId, wfm);
+
+            case SELECTED_ROWS:
+                return new TableViewSelectionSplitterActionToNodeTransformer(projectId, workflowId, wfm);
+            default:
+                throw new IllegalArgumentException("Unknown action type: " + actionType);
+        }
+    }
 
     private static int getPortIndex(final NodeOutPort port) {
         if (port instanceof NodeOutPortWrapper wrapper) {

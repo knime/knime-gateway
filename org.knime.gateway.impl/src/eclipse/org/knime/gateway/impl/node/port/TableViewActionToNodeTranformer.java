@@ -72,8 +72,11 @@ import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 public abstract class TableViewActionToNodeTranformer {
 
     String className;
+
     String projectId;
+
     NodeIDEnt workflowId;
+
     WorkflowManager wfm;
 
     /**
@@ -97,7 +100,7 @@ public abstract class TableViewActionToNodeTranformer {
             var newNodeId = addCommandResult.getNewNodeId();
             var newNode = wfm.getNodeContainer(newNodeId.toNodeID(sourceNode));
             toConfigure((SingleNodeContainer)newNode, wfm);
-            return (SingleNodeContainer) newNode;
+            return (SingleNodeContainer)newNode;
         } catch (NotASubWorkflowException | NodeNotFoundException | OperationNotAllowedException ex) {
             // TODO Auto-generated catch block
             throw new RuntimeException(ex);
@@ -106,19 +109,17 @@ public abstract class TableViewActionToNodeTranformer {
 
     private final AddNodeCommandEnt toAddNodeCommand(final SingleNodeContainer sourceNode) {
         var bounds = sourceNode.getUIInformation().getBounds();
-        final var addCommandBuilder = builder(AddNodeCommandEntBuilder.class).setNodeFactory(//
+        return builder(AddNodeCommandEntBuilder.class).setNodeFactory(//
             builder(NodeFactoryKeyEntBuilder.class)//
                 .setClassName(className)//
                 .build()//
         )//
-             .setPosition(builder(XYEntBuilder.class)//
-                    .setX(bounds[0] + 100)//
-                    .setY(bounds[1])//
-                    .build())
-            .setNodeRelation(NodeRelationEnum.SUCCESSORS)
-            .setKind(KindEnum.ADD_NODE).setSourceNodeId(new NodeIDEnt(sourceNode.getID()))
-            .build();
-        return addCommandBuilder;
+            .setPosition(builder(XYEntBuilder.class)//
+                .setX(bounds[0] + 100)//
+                .setY(bounds[1])//
+                .build())
+            .setNodeRelation(NodeRelationEnum.SUCCESSORS).setKind(KindEnum.ADD_NODE)
+            .setSourceNodeId(new NodeIDEnt(sourceNode.getID())).build();
     }
 
     /**
