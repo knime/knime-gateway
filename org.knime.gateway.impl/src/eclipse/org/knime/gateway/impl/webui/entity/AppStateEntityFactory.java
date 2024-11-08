@@ -171,7 +171,7 @@ public final class AppStateEntityFactory {
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setUseEmbeddedDialogs(dependencies.preferencesProvider().useEmbeddedDialogs()) //
-            .setDisableKai(kaiHandler == null ? Boolean.TRUE : kaiHandler.isDisabled()) //
+            .setIsKaiEnabled(kaiHandler == null ? Boolean.FALSE : kaiHandler.isKaiEnabled()) //
             .setFileExtensionToNodeTemplateId( //
                 dependencies.nodeFactoryProvider() == null //
                     ? Collections.emptyMap() //
@@ -219,7 +219,7 @@ public final class AppStateEntityFactory {
                 builder::setConfirmNodeConfigChanges);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isUseEmbeddedDialogs,
                 builder::setUseEmbeddedDialogs);
-            setIfChanged(oldAppState, newAppState, AppStateEnt::isDisableKai, builder::setDisableKai);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isKaiEnabled, builder::setIsKaiEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
             return builder.build();

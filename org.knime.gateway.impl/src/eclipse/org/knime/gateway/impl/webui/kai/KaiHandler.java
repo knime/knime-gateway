@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.kai;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
@@ -86,18 +87,17 @@ public interface KaiHandler {
     void onFeedback(String kaiFeedbackId, String projectId, boolean isPositive, String comment);
 
     /**
-     * TODO
-     *
-     * @return
+     * @return whether K-AI is enabled
+     * @since 5.4
      */
-    boolean isDisabled();
+    boolean isKaiEnabled();
 
     /**
-     * TODO
-     *
+     * Adds a listener for K-AI enable state changes
      * @param listener
+     * @since 5.4
      */
-    void addDisableStateChange();
+    void addIsKaiEnabledStateChangeListener(Consumer<Boolean> listener);
 
     /**
      * Encapsulates the welcome messages that K-AI displays in the UI.
