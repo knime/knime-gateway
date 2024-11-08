@@ -48,10 +48,8 @@
  */
 package org.knime.gateway.impl.node.datavalueview.string;
 
-import java.util.Locale;
 import java.util.Optional;
 
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.renderer.StringValueRenderer;
 import org.knime.core.webui.data.InitialDataService;
@@ -64,18 +62,18 @@ import org.knime.core.webui.page.Page;
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 @SuppressWarnings("restriction")
-public class StringValueView implements DataValueView {
+public final class StringValueView implements DataValueView {
+
+    record StringValueViewInitialData(String value) {
+    }
 
     private static final int TRUNCATED_LENGTH = 10_000;
 
     private StringValue m_value;
 
-    private DataColumnSpec m_colSpec;
-
     @SuppressWarnings("javadoc")
-    public StringValueView(final StringValue value, final DataColumnSpec colSpec) {
+    public StringValueView(final StringValue value) {
         m_value = value;
-        m_colSpec = colSpec;
     }
 
     @Override
@@ -84,30 +82,15 @@ public class StringValueView implements DataValueView {
             .build();
     }
 
-    enum StringValueViewFormats {
-            STRING, HTML;
-
-        @Override
-        public String toString() {
-            return name().toLowerCase(Locale.getDefault());
-        }
-    }
-
-    record StringValueViewInitialData(String value, StringValueViewFormats format) {
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<InitialDataService<StringValueViewInitialData>> createInitialDataService() {
         return Optional.of(InitialDataService.builder(this::getInitialData).build());
     }
 
     StringValueViewInitialData getInitialData() {
-        var handler = m_colSpec.getValueFormatHandler();
-        return handler == null
-            ? new StringValueViewInitialData(
-                StringValueRenderer.truncateOverlyLongStrings(m_value.getStringValue(), TRUNCATED_LENGTH),
-                StringValueViewFormats.STRING)
-            : new StringValueViewInitialData(handler.getFormatModel().getHTML(m_value), StringValueViewFormats.HTML);
+        return new StringValueViewInitialData(
+            StringValueRenderer.truncateOverlyLongStrings(m_value.getStringValue(), TRUNCATED_LENGTH));
     }
 
     @Override

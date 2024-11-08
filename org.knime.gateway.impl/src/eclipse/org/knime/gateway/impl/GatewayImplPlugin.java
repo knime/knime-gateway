@@ -81,7 +81,6 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class GatewayImplPlugin implements BundleActivator {
 
-
     private static GatewayImplPlugin instance;
 
     private ServiceTracker<APCustomizationProviderService, APCustomizationProviderService> m_customizationServiceTracker;
@@ -120,15 +119,13 @@ public class GatewayImplPlugin implements BundleActivator {
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
 
-        DataValueViewManager.registerDataValueViewFactory(PNGImageValue.class,
-            (value, colSpec) -> new PNGImageValueView(value));
+        DataValueViewManager.registerDataValueViewFactory(PNGImageValue.class, PNGImageValueView::new);
 
-        DataValueViewManager.registerDataValueViewFactory(SvgValue.class, (value, colSpec) -> new SvgValueView(value));
+        DataValueViewManager.registerDataValueViewFactory(SvgValue.class, SvgValueView::new);
 
         DataValueViewManager.registerDataValueViewFactory(StringValue.class, StringValueView::new);
 
-        DataValueViewManager.registerDataValueViewFactory(XMLValue.class,
-            (value, colSpec) -> new XMLCodeValueView(value));
+        DataValueViewManager.registerDataValueViewFactory(XMLValue.class, XMLCodeValueView::new);
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();

@@ -53,11 +53,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.data.property.ValueFormatHandler;
-import org.knime.gateway.impl.node.datavalueview.string.StringValueView.StringValueViewFormats;
 
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
@@ -71,26 +68,7 @@ public class StringValueViewTest {
         final var stringCell = new StringCell("foo");
         final var stringValue = (StringValue)stringCell;
 
-        final var colSpecCreator = new DataColumnSpecCreator("name", StringCell.TYPE);
-        final var colSpec = colSpecCreator.createSpec();
-
-        final var initialData = new StringValueView(stringValue, colSpec).getInitialData();
-        assertThat(initialData.format()).isEqualTo(StringValueViewFormats.STRING);
+        final var initialData = new StringValueView(stringValue).getInitialData();
         assertThat(initialData.value()).isEqualTo("foo");
-    }
-
-    @Test
-    public void testStringValueViewWithFormatter() throws IOException {
-
-        final var stringCell = new StringCell("foo");
-        final var stringValue = (StringValue)stringCell;
-
-        final var colSpecCreator = new DataColumnSpecCreator("name", StringCell.TYPE);
-        colSpecCreator.setValueFormatHandler(new ValueFormatHandler(value -> "bar"));
-        final var colSpec = colSpecCreator.createSpec();
-
-        final var initialData = new StringValueView(stringValue, colSpec).getInitialData();
-        assertThat(initialData.format()).isEqualTo(StringValueViewFormats.HTML);
-        assertThat(initialData.value()).isEqualTo("bar");
     }
 }
