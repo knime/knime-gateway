@@ -61,6 +61,7 @@ import java.util.function.Predicate;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.Pair;
 import org.knime.core.util.exception.ResourceAccessException;
@@ -118,6 +119,19 @@ public interface Space {
 
             /** Overwrite any existing items with the same identifier */
             OVERWRITE;
+
+        public static Optional<NameCollisionHandling> of(final String string) {
+            if (string == null) {
+                return Optional.empty();
+            }
+            try {
+                return Optional.of(NameCollisionHandling.valueOf(string));
+            } catch (IllegalArgumentException e) { // NOSONAR
+                NodeLogger.getLogger(NameCollisionHandling.class).info("Could not parse given NameCollisionHandling",
+                    e);
+                return Optional.empty();
+            }
+        }
 
     }
 
