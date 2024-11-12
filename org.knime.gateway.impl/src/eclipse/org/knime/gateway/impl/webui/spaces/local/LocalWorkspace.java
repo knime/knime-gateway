@@ -73,8 +73,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.NodeTimer;
-import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
@@ -167,7 +165,6 @@ public final class LocalWorkspace implements Space {
         var realWorkflowName = generateUniqueSpaceItemName(parentWorkflowGroupPath, workflowName, true);
         var directoryPath = Files.createDirectory(parentWorkflowGroupPath.resolve(realWorkflowName));
         Files.createFile(directoryPath.resolve(WorkflowPersistor.WORKFLOW_FILE));
-        NodeTimer.GLOBAL_TIMER.incWorkflowCreate(WorkflowType.LOCAL);
         return getSpaceItemEntFromPathAndUpdateCache(directoryPath);
     }
 

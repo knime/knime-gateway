@@ -53,10 +53,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
+import org.knime.core.node.workflow.NodeTimer;
+import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
+import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
@@ -191,15 +195,18 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId,
         final String name) throws ServiceCallException {
         try {
-            return SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId) //
+            final var item = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId) //
                 .createWorkflow(workflowGroupId, name);
+            if (GlobalNodeStats.isEnabled()) {
+                NodeTimer.GLOBAL_TIMER.incWorkflowCreate(
+                    SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId).getType() == TypeEnum.LOCAL
+                        ? WorkflowType.LOCAL : WorkflowType.REMOTE);
+            }
+            return item;
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching space items", e);
         } catch (IOException e) {
