@@ -133,6 +133,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             .withNodeYPosCorrection(-WorkflowEntityFactory.NODE_Y_POS_CORRECTION) //
             .connect(connector -> connectNode(m_commandEnt, connector)) //
             .failOnConnectionAttempt() //
+            .callOnApplyModifier(url != null) //
             .create();
         return true; // Workflow changed if no exceptions were thrown
     }

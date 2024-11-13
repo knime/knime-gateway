@@ -54,11 +54,14 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 import org.knime.core.node.ConfigurableNodeFactory;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.NodeCreationType;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -93,6 +96,8 @@ public final class NodeCreator {
     private boolean m_failOnConnectionAttempt;
 
     private NodeConnector m_nodeConnector;
+
+    private boolean m_callOnApplyModifier;
 
     /**
      * @param wfm the workflow to add the node to
@@ -142,6 +147,11 @@ public final class NodeCreator {
      */
     public NodeCreator isNodeAddedViaQuickNodeInsertion(final boolean isNodeAddedViaQuickNodeInsertion) {
         m_isNodeAddedViaQuickNodeInsertion = isNodeAddedViaQuickNodeInsertion;
+        return this;
+    }
+
+    public NodeCreator callOnApplyModifier(final boolean call) {
+        m_callOnApplyModifier = call;
         return this;
     }
 
@@ -204,6 +214,23 @@ public final class NodeCreator {
         if (m_nodeConnector != null && !m_nodeConnector.connect(nodeId) && m_failOnConnectionAttempt) {
             m_wfm.removeNode(nodeId);
             throw new OperationNotAllowedException("Node couldn't be created because a connection couldn't be added.");
+        }
+
+
+        if (m_callOnApplyModifier) {
+            var nc = m_wfm.getNodeContainer(nodeId); // TODO check with nested node
+            if (nc instanceof NativeNodeContainer nnc && nnc.getNode().getFactory() instanceof ConfigurableNodeFactory
+                && NodeDialogManager.hasNodeDialog(nc)) {
+                NodeDialogManager.getInstance().getOnApplyModifier(nc).ifPresent(oam -> {
+                    oam.onApply(null, null, null, null, null);
+                });
+
+                nc.getNodeSettings().getNodeSettings(SettingsType.MODEL.getConfigKey());
+                nc.getNodeSettings().getNodeSettings(SettingsType.VIEW.getConfigKey());
+
+                nnc.getViewSettingsUsingFlowObjectStack();
+                nnc.getModelSettingsUsingFlowObjectStack();
+            }
         }
 
         return nodeId;
