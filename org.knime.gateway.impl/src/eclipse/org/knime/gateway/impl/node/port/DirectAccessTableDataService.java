@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
@@ -163,6 +164,11 @@ public class DirectAccessTableDataService {
                     @Override
                     public String[] getColumnNamesColors() {
                         return new String[0];
+                    }
+
+                    @Override
+                    public long[] getRowIndices() {
+                        return LongStream.range(0, rows.size()).toArray();
                     }
 
                 };
