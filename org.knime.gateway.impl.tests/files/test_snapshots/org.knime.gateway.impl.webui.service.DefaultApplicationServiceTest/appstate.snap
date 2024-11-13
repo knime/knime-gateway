@@ -47,10 +47,7 @@
       "name" : "Shape"
     }
   },
-  "featureFlags" : {
-    "org.knime.ui.feature.ai_assistant" : true,
-    "org.knime.ui.feature.ai_assistant_installed" : false
-  },
+  "featureFlags" : { },
   "openProjects" : [ {
     "activeWorkflowId" : "root",
     "name" : "hollow",
