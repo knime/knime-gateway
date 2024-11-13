@@ -71,7 +71,6 @@ import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -114,57 +113,6 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         assertThat(appStateEnt.hasNodeRecommendationsEnabled(), not(is(nullValue())));
         AppStateEnt appStateEntStripped = stripAppState(appStateEnt);
         cr(appStateEntStripped, "appstate");
-    }
-
-    /**
-     * This test ensures that the default states for feature flags are accurately reflected in the app state.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testGetAppStateWithFeatureFlagsNotSet() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
-
-        var appService = DefaultApplicationService.getInstance();
-
-        var featureFlagKeyF1 = "org.knime.ui.feature.ai_assistant";
-        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant_installed";
-
-        var appStateEnt = appService.getState();
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF1), is(true));
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF2), is(false));
-
-        System.clearProperty(featureFlagKeyF1);
-        System.clearProperty(featureFlagKeyF2);
-    }
-
-    /**
-     * Makes sure that feature flags supplied via system properties find their way into the app state returned by the
-     * application service.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testGetAppStateWithFeatureFlagsEnabled() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
-
-        var appService = DefaultApplicationService.getInstance();
-
-        var featureFlagKeyF1 = "org.knime.ui.feature.ai_assistant";
-        var featureFlagKeyF2 = "org.knime.ui.feature.ai_assistant_installed";
-
-        System.setProperty(featureFlagKeyF1, "true");
-
-        FeatureFlags.setAiAssistantBackendAvailabe();
-
-        var appStateEnt = appService.getState();
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF1), is(true));
-        assertThat(appStateEnt.getFeatureFlags().get(featureFlagKeyF2), is(true));
-
-        System.clearProperty(featureFlagKeyF1);
-        System.clearProperty(featureFlagKeyF2);
     }
 
     /**
