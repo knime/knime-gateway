@@ -59,8 +59,6 @@ public final class FeatureFlags {
 
     private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
 
-    private static boolean isAiAssistantBackendAvailable;
-
     private FeatureFlags() {
         // utility
     }
@@ -69,17 +67,7 @@ public final class FeatureFlags {
      * @return the available feature flags
      */
     public static Map<String, Object> getFeatureFlags() {
-        var f1 = FEATURE_FLAGS_PREFIX + "ai_assistant";
-        var f2 = FEATURE_FLAGS_PREFIX + "ai_assistant_installed";
-        return Map.of(f1, System.getProperty(f1) == null || Boolean.getBoolean(f1), f2,
-            isAiAssistantBackendAvailable);
-    }
-
-    /**
-     * Sets the 'ai_assistant'-feature flag which is not controlled by a system property but by the
-     * 'org.knime.ai.assistant.java'-plugin calling this.
-     */
-    public static void setAiAssistantBackendAvailabe() {
-        isAiAssistantBackendAvailable = true;
+        var f1 = FEATURE_FLAGS_PREFIX + "placeholder_feature";
+        return Map.of(f1, Boolean.TRUE);
     }
 }
