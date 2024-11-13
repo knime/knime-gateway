@@ -107,32 +107,34 @@ public class FlowVariablePortViewFactoryTest {
      * @throws JsonMappingException
      */
     @Test
-    public void testFlowVariablePortViewInitialData() throws JsonMappingException, JsonProcessingException {
+    public void testFlowVariablePortViewInitialData() throws JsonProcessingException {
         PortView portView;
         PortContext.pushContext(mockNodeOutPort());
         try {
             portView = new FlowVariablePortViewFactory().createPortView(FlowVariablePortObject.INSTANCE);
+            var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
+            var jsonNode = MAPPER.readTree(initialData);
+            var res = jsonNode.get("result");
+            var table = res.get("table").get("rows");
+            assertThat(table.size(), is(3)); // 3 because it also includes the global 'knime.workspace' variable
+            assertThat(table.get(0).get(4).textValue(), is("test2")); // name
+            assertThat(table.get(1).get(4).textValue(), is("test1")); // name
+            assertThat(table.get(0).get(2).textValue(), is("4")); // ownerNodeId
+            assertThat(table.get(0).get(3).textValue(), is("StringType")); // type
+            assertThat(table.get(1).get(3).textValue(), is("DoubleType")); // type
+            assertThat(table.get(0).get(5).textValue(), is("foobar")); // value
+            assertThat(table.get(1).get(5).textValue(), is("NaN")); // value
         } finally {
             PortContext.removeLastContext();
         }
 
-        var initialData = ((InitialDataService)portView.createInitialDataService().get()).getInitialData();
-        var jsonNode = MAPPER.readTree(initialData);
-        var res = jsonNode.get("result");
-        assertThat(res.size(), is(3)); // 3 because it also includes the global 'knime.workspace' variable
-        assertThat(res.get(0).get("name").textValue(), is("test2"));
-        assertThat(res.get(1).get("name").textValue(), is("test1"));
-        assertThat(res.get(0).get("ownerNodeId").textValue(), is("4"));
-        assertThat(res.get(0).get("type").textValue(), is("StringType"));
-        assertThat(res.get(1).get("type").textValue(), is("DoubleType"));
-        assertThat(res.get(0).get("value").textValue(), is("foobar"));
-        assertThat(res.get(1).get("value").textValue(), is("NaN"));
     }
 
     private static NodeOutPort mockNodeOutPort() {
         NodeOutPort port = mock(NodeOutPort.class);
         SingleNodeContainer snc = mock(SingleNodeContainer.class);
         when(snc.getOutPort(0)).thenReturn(port);
+        when(snc.createExecutionContext()).thenReturn(TestingUtilities.EXEC);
         when(port.getFlowObjectStack()).thenReturn(createTestFlowObjectStack());
         when(port.getConnectedNodeContainer()).thenReturn(snc);
         return port;

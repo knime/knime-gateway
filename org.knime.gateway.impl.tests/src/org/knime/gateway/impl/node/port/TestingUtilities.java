@@ -104,7 +104,7 @@ final class TestingUtilities {
         new VirtualParallelizedChunkPortObjectInNodeFactory(new PortType[0]);
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static final ExecutionContext EXEC =
+    static final ExecutionContext EXEC =
         new ExecutionContext(new DefaultNodeProgressMonitor(), new Node((NodeFactory)FACTORY),
             SingleNodeContainer.MemoryPolicy.CacheSmallInMemory, NotInWorkflowDataRepository.newInstance());
 
