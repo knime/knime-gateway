@@ -38,12 +38,53 @@
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory"/>
+                <message_argument value="buildAppStateEnt(AppStateEnt, Predicate&lt;String&gt;, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory"/>
                 <message_argument value="buildAppStateEnt(AppStateEnt, WorkflowProjectManager, PreferencesProvider, ExampleProjects, SpaceProviders)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="buildAppStateEnt(AppStateEnt, WorkflowProjectManager, PreferencesProvider, ExampleProjects, SpaceProviders, NodeFactoryProvider)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildAppStateEnt(Predicate&lt;String&gt;, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory$ServiceDependencies">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
+                <message_argument value="ServiceDependencies(ProjectManager, PreferencesProvider, SpaceProviders, NodeFactoryProvider, NodeCollections)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/featureflags/FeatureFlags.java" type="org.knime.gateway.impl.webui.featureflags.FeatureFlags">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.featureflags.FeatureFlags"/>
+                <message_argument value="setAiAssistantBackendAvailabe()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandler.java" type="org.knime.gateway.impl.webui.kai.KaiHandler">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
+                <message_argument value="addIsKaiEnabledStateChangeListener(Consumer&lt;Boolean&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
+                <message_argument value="isKaiEnabled()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -226,6 +267,17 @@
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultAppStateEnt(List&lt;WorkflowProjectEnt&gt;, List&lt;ExampleProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, Map&lt;String,String&gt;)"/>
@@ -236,6 +288,11 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setFileExtensionToNodeTemplateId(Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setIsKaiEnabled(Boolean)"/>
             </message_arguments>
         </filter>
     </resource>

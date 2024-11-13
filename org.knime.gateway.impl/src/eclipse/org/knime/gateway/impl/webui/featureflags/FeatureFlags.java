@@ -57,6 +57,7 @@ import java.util.Map;
  */
 public final class FeatureFlags {
 
+    @SuppressWarnings("unused")
     private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
 
     private FeatureFlags() {
