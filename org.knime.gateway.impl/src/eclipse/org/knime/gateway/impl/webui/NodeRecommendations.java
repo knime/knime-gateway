@@ -48,6 +48,9 @@
  */
 package org.knime.gateway.impl.webui;
 
+import static org.knime.core.ui.workflowcoach.NodeRecommendationManager.joinRecommendations;
+import static org.knime.core.ui.workflowcoach.NodeRecommendationManager.removeDuplicates;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -112,30 +115,28 @@ public class NodeRecommendations {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }
+
         if (!m_nodeRecommendationManagerIsInitialized) {
             throw new OperationNotAllowedException("Node recommendation manager was not initialized properly");
         }
         if (nodeId == null ^ portIdx == null) {
             throw new OperationNotAllowedException("<nodeId> and <portIdx> must either be both null or not null");
         }
-
         if (nodeId == null ^ nodeRelation == null) {
             throw new OperationNotAllowedException("<nodeId> and <direction> must either be both null or not null");
         }
 
         var limit = nodesLimit == null ? DEFAULT_NODES_LIMIT : nodesLimit;
         var fullInfo = fullTemplateInfo == null ? DEFAULT_FULL_TEMPLATE_INFO : fullTemplateInfo;
+        var isSourcePort = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
 
         // This `null` is evaluated in `NodeRecommandationManager#getNodeRecommendationFor(...)`
         var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
-        var isSourcePort = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
         // This `null` is evaluated in `NodeRecommendations#getNodeTemplatesAndFilter(...)`
         var portType = nodeId == null ? null : determinePortType(nc, portIdx, isSourcePort);
 
-        var recommendations = nc instanceof NativeNodeContainer nnc
-            ? Stream.concat(getFlatStreamOfRecommendations(isSourcePort, nnc), getFlatStreamOfMostFrequentlyUsedNodes())
-            : getFlatStreamOfMostFrequentlyUsedNodes();
+        var recommendations = getFlatStreamOfRecommendations(isSourcePort, nc);
         return getNodeTemplatesAndFilter(recommendations, portType, isSourcePort, limit, fullInfo);
     }
 
@@ -163,29 +164,33 @@ public class NodeRecommendations {
     }
 
     private static Stream<NodeRecommendation> getFlatStreamOfRecommendations(final boolean searchForSuccessors,
-        final NativeNodeContainer nnc) {
-        var nodeContainer = nnc == null ? null : NativeNodeContainerWrapper.wrap(nnc);
-        var recommendations = searchForSuccessors ? //
-            NodeRecommendationManager.getInstance()
-                .getSuccessorNodeRecommendationFor(nodeContainer) //
-            : NodeRecommendationManager.getInstance()
-                .getPredecessorNodeRecommendationFor(nodeContainer);
-
-        var recommendationsWithoutDups =
-            NodeRecommendationManager.joinRecommendationsWithoutDuplications(recommendations);
-        return recommendationsWithoutDups.stream() //
-            .map(ObjectUtils::firstNonNull);
+        final NodeContainer nc) {
+        final Stream<NodeRecommendation[]> streamOfRecommendations = (nc instanceof NativeNodeContainer nnc) //
+            ? getStreamOfRecommendations(searchForSuccessors, nnc) //
+            : Stream.of();
+        final var recommendations = Stream.concat(streamOfRecommendations, getStreamOfMostFrequentlyUsedNodes());
+        return removeDuplicates(recommendations).map(ObjectUtils::firstNonNull);
     }
 
-    private static Stream<NodeRecommendation> getFlatStreamOfMostFrequentlyUsedNodes() {
-        Supplier<List<NodeRecommendation[]>> supplier = () -> {
-            var recommendations = NodeRecommendationManager.getInstance().getMostFrequentlyUsedNodes();
-            return NodeRecommendationManager.joinRecommendationsWithoutDuplications(recommendations);
+    private static Stream<NodeRecommendation[]> getStreamOfRecommendations(final boolean searchForSuccessors,
+        final NativeNodeContainer nnc) {
+        final var nodeContainer = (nnc == null) ? null : NativeNodeContainerWrapper.wrap(nnc);
+        final var recommendations = searchForSuccessors //
+            ? NodeRecommendationManager.getInstance().getSuccessorNodeRecommendationFor(nodeContainer) //
+            : NodeRecommendationManager.getInstance().getPredecessorNodeRecommendationFor(nodeContainer);
+        return joinRecommendations(recommendations).stream();
+    }
+
+    private static Stream<NodeRecommendation[]> getStreamOfMostFrequentlyUsedNodes() {
+        final Supplier<List<NodeRecommendation[]>> supplier = () -> {
+            final var recommendations = NodeRecommendationManager.getInstance().getMostFrequentlyUsedNodes();
+            return joinRecommendations(recommendations);
         };
+
         // This construct makes sure that the above supplier is only being called if the stream is
         // processed until this point (which is not the case, if there are sufficiently many node recommendations
         // such that the result doesn't need to be backfilled with the most frequently used nodes).
-        return Stream.of(supplier).flatMap(s -> s.get().stream()).map(ObjectUtils::firstNonNull);
+        return Stream.of(supplier).flatMap(s -> s.get().stream());
     }
 
     private List<NodeTemplateEnt> getNodeTemplatesAndFilter(final Stream<NodeRecommendation> recommendations,
@@ -200,4 +205,5 @@ public class NodeRecommendations {
             .filter(Objects::nonNull) // `EntityBuilderUtil.buildNodeTemplateEnt(...)` could return null
             .toList();
     }
+
 }
