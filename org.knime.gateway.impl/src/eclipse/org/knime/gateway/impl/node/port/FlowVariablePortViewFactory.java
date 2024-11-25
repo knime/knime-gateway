@@ -89,7 +89,9 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
             .orElse(Collections.emptyList());
 
         final Supplier<BufferedDataTable> bufferedTableSupplier = //
-            () -> FlowVariableViewUtil.getBufferedTable(variables);
+            () -> {
+                return FlowVariableViewUtil.getBufferedTable(variables);
+            };
         final Supplier<TableViewViewSettings> settingsSupplier = FlowVariableViewUtil::getSettings;
 
         return new PortView() {
