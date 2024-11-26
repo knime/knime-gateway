@@ -111,10 +111,11 @@ public final class ProjectManager {
      * Marks the given project as being active (e.g., meaning that it's visible to the user in an opened tab). All other
      * opened projects are considered <b>not</b> active after this call.
      *
-     * @param projectId the id to add
+     * @param projectId the id to add or {@code null} to unset the active project
      */
     public void setProjectActive(final String projectId) {
-        if (!m_projectsMap.get(projectId).hasUIConsumer) {
+        var project = m_projectsMap.get(projectId);
+        if (project != null && !project.hasUIConsumer) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
         m_activeProjectId = projectId;
