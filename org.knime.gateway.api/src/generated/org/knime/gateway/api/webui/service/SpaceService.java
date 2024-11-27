@@ -146,6 +146,14 @@ public interface SpaceService extends GatewayService {
     SpaceProviderEnt getSpaceProvider(String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
+     * Triggers the async. fetching of all available space providers.
+     *
+     *
+     * 
+     */
+    void getSpaceProviders() ;
+        
+    /**
      * Lists the available jobs for the given workflow.
      *
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.

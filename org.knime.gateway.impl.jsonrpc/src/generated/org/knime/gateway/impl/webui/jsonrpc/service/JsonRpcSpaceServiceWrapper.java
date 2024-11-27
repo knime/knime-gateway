@@ -171,6 +171,15 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "getSpaceProviders")
+    public void getSpaceProviders()  {
+        m_service.get().getSpaceProviders();    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "listJobsForWorkflow")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
