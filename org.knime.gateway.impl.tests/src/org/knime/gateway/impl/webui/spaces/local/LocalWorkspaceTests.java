@@ -224,6 +224,10 @@ public final class LocalWorkspaceTests {
         assertThat(m_space.toKnimeUrl(items.get(0).getId()).toString(), equalTo("knime://LOCAL/dir/"));
         assertThat(m_space.toKnimeUrl(items.get(1).getId()).toString(), equalTo("knime://LOCAL/KNIME_project/"));
         assertThat(m_space.toKnimeUrl(items.get(2).getId()).toString(), equalTo("knime://LOCAL/test.txt"));
+
+        // for historical reasons: consistency with workbench `AbstractContentProvider#getRootStore()`'s
+        // KNIME URI representation
+        assertThat(m_space.toKnimeUrl(Space.ROOT_ITEM_ID).toString(), equalTo("knime://LOCAL/"));
     }
 
     /**

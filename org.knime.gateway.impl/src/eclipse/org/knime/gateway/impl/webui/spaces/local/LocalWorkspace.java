@@ -195,6 +195,10 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public URI toKnimeUrl(final String itemId) {
+        if (Space.ROOT_ITEM_ID.equals(itemId)) {
+            // for historical reasons, the local space root gets mapped to "knime://LOCAL/" (note the trailing slash!)
+            return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_WORKSPACE_ID.toUpperCase(Locale.ROOT) + "/");
+        }
         var absolutePath = toLocalAbsolutePath(null, itemId).orElse(null);
         if (absolutePath == null) {
             throw new IllegalStateException("No item found for id " + itemId);
