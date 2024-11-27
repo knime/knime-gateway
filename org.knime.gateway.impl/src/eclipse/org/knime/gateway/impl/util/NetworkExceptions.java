@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkExcepti
  */
 public final class NetworkExceptions {
 
-    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofMinutes(2);
 
     private NetworkExceptions() {
         // Utility class
