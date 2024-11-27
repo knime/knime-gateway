@@ -50,7 +50,10 @@ package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.node.workflow.NodeTimer;
@@ -59,6 +62,8 @@ import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt.ConnectionModeEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
@@ -70,8 +75,14 @@ import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.Project.Origin;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.util.NetworkExceptions;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderAndConnectionEnt.DefaultSpaceProviderAndConnectionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceProvidersChangedEventEnt.DefaultSpaceProvidersChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUserEnt.DefaultUserEntBuilder;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
 
@@ -98,8 +109,41 @@ public class DefaultSpaceService implements SpaceService {
     private final ProjectManager m_projectManager =
             ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
+    private final EventConsumer m_eventConsumer = ServiceDependencies.getServiceDependency(EventConsumer.class, true);
+
     DefaultSpaceService() {
         //
+    }
+
+    @Override
+    public void getSpaceProviders() {
+        // TODO: Do the following asynchronously?! Otherwise, we might as well send the providers directly in the
+        // response.
+        final Map<String, SpaceProviderAndConnectionEnt> spaceProviders =
+            m_spaceProviders.getProvidersMap().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> toSpaceProviderAndConnection(entry.getValue())));
+        final var spaceProvidersChangedEvent =
+            new DefaultSpaceProvidersChangedEventEntBuilder().setResult(spaceProviders).build();
+        m_eventConsumer.accept("SpaceProvidersChangedEvent", spaceProvidersChangedEvent);
+    }
+
+    private static SpaceProviderAndConnectionEnt toSpaceProviderAndConnection(final SpaceProvider spaceProvider) {
+        final var connectionOpt = spaceProvider.getConnection(false);
+        final var user = connectionOpt.map(SpaceProviderConnection::getUsername)
+            .filter(Predicate.not(String::isEmpty))
+            .map(username -> new DefaultUserEntBuilder().setName(username).build())
+            .orElse(null);
+        return new DefaultSpaceProviderAndConnectionEntBuilder()
+            .setId(spaceProvider.getId())
+            .setName(spaceProvider.getName())
+            .setType(spaceProvider.getType())
+            .setConnected(connectionOpt.isPresent())
+            .setConnectionMode(ConnectionModeEnum.AUTHENTICATED)
+            .setHostname(spaceProvider.getServerAddress().orElse(null))
+            .setUser(user)
+            .setIsCommunityHub(spaceProvider.isCommunityHub())
+            .setSpaceGroups(spaceProvider.toEntity().getSpaceGroups())
+            .build();
     }
 
     /**

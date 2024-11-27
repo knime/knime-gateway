@@ -48,63 +48,30 @@ package org.knime.gateway.json.webui.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceProvidersChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeRepositoryLoadingProgressEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorStateChangeEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProjectDisposedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.UserEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUserEnt.DefaultUserEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "typeId",
-    visible = true,
-    defaultImpl = DefaultEventTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultEventTypeEnt.class, name="EventType")
-,
-  @Type(value = DefaultSpaceProvidersChangedEventTypeEnt.class, name = "SpaceProvidersChangedEventType")
-,
-  @Type(value = DefaultUpdateAvailableEventTypeEnt.class, name = "UpdateAvailableEventType")
-,
-  @Type(value = DefaultNodeRepositoryLoadingProgressEventTypeEnt.class, name = "NodeRepositoryLoadingProgressEventType")
-,
-  @Type(value = DefaultWorkflowMonitorStateChangeEventTypeEnt.class, name = "WorkflowMonitorStateChangeEventType")
-,
-  @Type(value = DefaultProjectDisposedEventTypeEnt.class, name = "ProjectDisposedEventType")
-,
-  @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
-,
-  @Type(value = DefaultAppStateChangedEventTypeEnt.class, name = "AppStateChangedEventType")
-})
-@JsonDeserialize(builder=DefaultEventTypeEntBuilder.class)
-@JsonSerialize(as=EventTypeEnt.class)
+
+@JsonDeserialize(builder=DefaultUserEntBuilder.class)
+@JsonSerialize(as=UserEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface EventTypeEntMixIn extends EventTypeEnt {
+public interface UserEntMixIn extends UserEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("typeId")
-    public String getTypeId();
+    @JsonProperty("name")
+    public String getName();
     
 
     /**
@@ -112,38 +79,16 @@ public interface EventTypeEntMixIn extends EventTypeEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "typeId",
-    visible = true,
-    defaultImpl = DefaultEventTypeEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultEventTypeEnt.class, name="EventType")
-,
-  @Type(value = DefaultSpaceProvidersChangedEventTypeEnt.class, name = "SpaceProvidersChangedEventType")
-,
-  @Type(value = DefaultUpdateAvailableEventTypeEnt.class, name = "UpdateAvailableEventType")
-,
-  @Type(value = DefaultNodeRepositoryLoadingProgressEventTypeEnt.class, name = "NodeRepositoryLoadingProgressEventType")
-,
-  @Type(value = DefaultWorkflowMonitorStateChangeEventTypeEnt.class, name = "WorkflowMonitorStateChangeEventType")
-,
-  @Type(value = DefaultProjectDisposedEventTypeEnt.class, name = "ProjectDisposedEventType")
-,
-  @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
-,
-  @Type(value = DefaultAppStateChangedEventTypeEnt.class, name = "AppStateChangedEventType")
-})
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface EventTypeEntMixInBuilder extends EventTypeEntBuilder {
+    public static interface UserEntMixInBuilder extends UserEntBuilder {
     
         @Override
-        public EventTypeEntMixIn build();
+        public UserEntMixIn build();
     
         @Override
-        @JsonProperty("typeId")
-        public EventTypeEntMixInBuilder setTypeId(final String typeId);
+        @JsonProperty("name")
+        public UserEntMixInBuilder setName(final String name);
         
     }
 

@@ -258,8 +258,14 @@ import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt.SpaceItemVersionEn
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemVersionEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt.SpaceProviderAndConnectionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderAndConnectionEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProvidersChangedEventEnt.SpaceProvidersChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceProvidersChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceProvidersChangedEventTypeEnt.SpaceProvidersChangedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceProvidersChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder;
@@ -294,6 +300,8 @@ import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt.Update
 import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.UserEnt.UserEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultUserEnt;
 import org.knime.gateway.api.webui.entity.VendorEnt.VendorEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultVendorEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder;
@@ -669,8 +677,17 @@ public class Interface2ImplMap {
         if(clazz == SpacePathSegmentEntBuilder.class) {
             return (B)new DefaultSpacePathSegmentEnt.DefaultSpacePathSegmentEntBuilder();
         }        
+        if(clazz == SpaceProviderAndConnectionEntBuilder.class) {
+            return (B)new DefaultSpaceProviderAndConnectionEnt.DefaultSpaceProviderAndConnectionEntBuilder();
+        }        
         if(clazz == SpaceProviderEntBuilder.class) {
             return (B)new DefaultSpaceProviderEnt.DefaultSpaceProviderEntBuilder();
+        }        
+        if(clazz == SpaceProvidersChangedEventEntBuilder.class) {
+            return (B)new DefaultSpaceProvidersChangedEventEnt.DefaultSpaceProvidersChangedEventEntBuilder();
+        }        
+        if(clazz == SpaceProvidersChangedEventTypeEntBuilder.class) {
+            return (B)new DefaultSpaceProvidersChangedEventTypeEnt.DefaultSpaceProvidersChangedEventTypeEntBuilder();
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
@@ -722,6 +739,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == UpdateWorkflowAnnotationCommandEntBuilder.class) {
             return (B)new DefaultUpdateWorkflowAnnotationCommandEnt.DefaultUpdateWorkflowAnnotationCommandEntBuilder();
+        }        
+        if(clazz == UserEntBuilder.class) {
+            return (B)new DefaultUserEnt.DefaultUserEntBuilder();
         }        
         if(clazz == VendorEntBuilder.class) {
             return (B)new DefaultVendorEnt.DefaultVendorEntBuilder();
