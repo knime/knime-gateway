@@ -66,7 +66,6 @@ import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
-import org.knime.core.node.wizard.page.WizardPageUtil;
 import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.AnnotationData.TextAlignment;
@@ -449,7 +448,7 @@ public final class WorkflowEntityFactory {
             .setCanCancel(parent.canCancelNode(id))//
             .setCanOpenLegacyFlowVariableDialog(
                 hasNodeDialog && !(nc instanceof SubNodeContainer) ? Boolean.TRUE : null)//
-            .setCanOpenView(hasAndCanOpenNodeView(nc))//
+            .setCanOpenView(CoreUtil.hasAndCanOpenNodeView(nc))//
             .setCanDelete(canDeleteNode(nc, id, depNodeProps))//
             .setCanCollapse(canCollapseNode(id, buildContext))//
             .setCanExpand(canExpandNode(nc, id, buildContext))//
@@ -1597,22 +1596,6 @@ public final class WorkflowEntityFactory {
     private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
         NodeContainerParent parent = wfm.getDirectNCParent();
         return parent instanceof SubNodeContainer snc ? snc.getParent() : (WorkflowManager)parent;
-    }
-
-    /*
-     * Returns null if the node has no node view; false, if there is a node view but there is nothing to display,
-     * true, if there is a node view which also has something to display.
-     */
-    private Boolean hasAndCanOpenNodeView(final NodeContainer nc) {
-        var hasNodeView = NodeViewManager.hasNodeView(nc);
-        var hasCompositeView =
-            nc instanceof SubNodeContainer && WizardPageUtil.isWizardPage(nc.getParent(), nc.getID());
-        var hasLegacyJSNodeView = nc instanceof NativeNodeContainer && nc.getInteractiveWebViews().size() > 0;
-        var hasSwingNodeView = nc.getNrNodeViews() > 0;
-        if (hasNodeView || hasCompositeView || hasLegacyJSNodeView || hasSwingNodeView) {
-            return nc.getNodeContainerState().isExecuted();
-        }
-        return null; // NOSONAR
     }
 
     String hexStringColor(final int color) {

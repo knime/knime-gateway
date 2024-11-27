@@ -89,6 +89,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.streamable.PartitionInfo;
+import org.knime.core.node.wizard.page.WizardPageUtil;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.core.node.workflow.ConnectionUIInformation;
@@ -110,6 +111,7 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
+import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.shared.workflow.def.AnnotationDataDef;
@@ -992,6 +994,27 @@ public final class CoreUtil {
             };
         }
 
+    }
+
+    /**
+     * @return {@code null} if the node has no node view; {@code false}, if there is a node view but there is nothing to
+     *         display; {@code true}, if there is a node view which also has something to display.
+     */
+    public static Boolean hasAndCanOpenNodeView(final NodeContainer nc) {
+        var hasNodeView = NodeViewManager.hasNodeView(nc);
+        var hasCompositeView =
+            nc instanceof SubNodeContainer && WizardPageUtil.isWizardPage(nc.getParent(), nc.getID());
+        var hasLegacyJSNodeView = nc instanceof NativeNodeContainer && nc.getInteractiveWebViews().size() > 0;
+        var hasSwingNodeView = nc.getNrNodeViews() > 0;
+        if (hasNodeView || hasCompositeView || hasLegacyJSNodeView) {
+            return nc.getNodeContainerState().isExecuted();
+        } else if (hasSwingNodeView) {
+            // there are nodes that have data to display even if the node is
+            // still executing (for swing-based views only)
+            var state = nc.getNodeContainerState();
+            return state.isExecuted() || state.isExecutionInProgress();
+        }
+        return null; // NOSONAR
     }
 
 }
