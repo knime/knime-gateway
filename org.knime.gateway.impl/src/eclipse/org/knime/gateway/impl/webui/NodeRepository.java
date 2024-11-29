@@ -276,9 +276,7 @@ public final class NodeRepository {
      */
     synchronized Collection<Node> getHiddenNodes() {
         if (m_hiddenNodes == null) {
-            m_hiddenNodes = NodeSpecCollectionProvider.getInstance().getHiddenNodes().values().stream() //
-                .map(Node::new) //
-                .collect(Collectors.toMap(n -> n.templateId, n -> n));
+            m_hiddenNodes = mapFromNodeSpecToNodeAndFilter(NodeSpecCollectionProvider.getInstance().getHiddenNodes());
         }
         return m_hiddenNodes.values();
     }
@@ -288,9 +286,8 @@ public final class NodeRepository {
      */
     synchronized Collection<Node> getDeprecatedNodes() {
         if (m_deprecatedNodes == null) {
-            m_deprecatedNodes = NodeSpecCollectionProvider.getInstance().getDeprecatedNodes().values().stream() //
-                .map(Node::new) //
-                .collect(Collectors.toMap(n -> n.templateId, n -> n));
+            m_deprecatedNodes =
+                mapFromNodeSpecToNodeAndFilter(NodeSpecCollectionProvider.getInstance().getDeprecatedNodes());
             addNodeWeights(m_deprecatedNodes);
         }
         return m_deprecatedNodes.values();
@@ -299,10 +296,7 @@ public final class NodeRepository {
     private synchronized void loadAllNodesAndNodeSets() {
         if (m_nodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
-            final var nodesCustomization = GatewayImplPlugin.getInstance().getCustomization().nodes();
-            var activeNodes = NodeSpecCollectionProvider.getInstance().getActiveNodes().values().stream() //
-                .filter(ns -> nodesCustomization.isViewAllowed(ns.factory().id())) //
-                .collect(Collectors.toMap(nodeSpec -> nodeSpec.factory().id(), Node::new));
+            var activeNodes = mapFromNodeSpecToNodeAndFilter(NodeSpecCollectionProvider.getInstance().getActiveNodes());
             addNodeWeights(activeNodes);
 
             if (m_filter == null) {
@@ -313,6 +307,13 @@ public final class NodeRepository {
                 m_filteredNodes = filterNodes(activeNodes, m_filter.negate());
             }
         }
+    }
+
+    private static Map<String, Node> mapFromNodeSpecToNodeAndFilter(final Map<String, NodeSpec> nodes) {
+        final var nodesCustomization = GatewayImplPlugin.getInstance().getCustomization().nodes();
+        return nodes.values().stream() //
+            .filter(ns -> nodesCustomization.isViewAllowed(ns.factory().id())) //
+            .collect(Collectors.toMap(nodeSpec -> nodeSpec.factory().id(), Node::new));
     }
 
     private static Map<String, Node> filterNodes(final Map<String, Node> nodes, final Predicate<String> filter) {
