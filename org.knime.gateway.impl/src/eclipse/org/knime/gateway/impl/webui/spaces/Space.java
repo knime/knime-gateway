@@ -286,11 +286,6 @@ public interface Space {
     Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId);
 
     /**
-     * @return the local root path of the space
-     */
-    Path getLocalRootPath();
-
-    /**
      * @param itemId
      * @return the location info for the given item
      */

@@ -219,7 +219,6 @@ public final class LocalWorkspace implements Space {
         }
     }
 
-    @Override
     public Path getLocalRootPath() {
         return m_localWorkspaceRootPath;
     }
