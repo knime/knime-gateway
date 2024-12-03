@@ -306,7 +306,7 @@ public final class WorkflowMiddleware {
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
         if (m_spaceProviders != null) {
-            buildContextBuilder.setSpaceProviderTypes(m_spaceProviders.getProviderTypes());
+            buildContextBuilder.setSpaceProviderTypes(m_spaceProviders.getProviderTypes(wfKey.getProjectId()));
         }
         final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {

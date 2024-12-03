@@ -85,7 +85,6 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -280,13 +279,13 @@ public final class AppStateEntityFactory {
         }
 
         p.getOrigin().ifPresent(origin -> {
-            var originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders);
+            var originEnt = buildSpaceItemReferenceEnt(p.getID(), origin, spaceProviders);
             projectEntBuilder.setOrigin(originEnt);
         });
         return projectEntBuilder.build();
     }
 
-    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
+    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final String projectId, final Project.Origin origin,
         final SpaceProviders spaceProviders) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
             .setProviderId(origin.getProviderId()) //
@@ -294,22 +293,25 @@ public final class AppStateEntityFactory {
             .setItemId(origin.getItemId()) //
             .setProjectType(origin.getProjectType().orElse(null)) //
             .setVersion(origin.getItemVersion().orElse(null))
-            .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
+            .setAncestorItemIds(getAncestorItemIds(projectId, origin, spaceProviders)) //
             .build();
     }
 
-    private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders) {
-        return SpaceProviders.getSpaceOptional(spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
-            // ancestor item ids are only required for local projects because it's used to
-            // * mark folders that contain open projects
-            // * disallow folders to be moved if they contain opened local projects
-            //   (because they can't be moved while open)
-            // ... in the space explorer.
-            // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
-            .filter(LocalSpace.class::isInstance) //
-            .map(LocalSpace.class::cast) //
-            .map(space -> space.getAncestorItemIds(origin.getItemId())) //
-            .orElse(null);
+    private static List<String> getAncestorItemIds(final String projectId, final Project.Origin origin,
+        final SpaceProviders spaceProviders) {
+        // TODO don't fetch hub space!!
+        return null;
+        //        return SpaceProviders.getSpaceOptional(projectId, spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
+        //            // ancestor item ids are only required for local projects because it's used to
+        //            // * mark folders that contain open projects
+        //            // * disallow folders to be moved if they contain opened local projects
+        //            //   (because they can't be moved while open)
+        //            // ... in the space explorer.
+        //            // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
+        //            .filter(LocalSpace.class::isInstance) //
+        //            .map(LocalSpace.class::cast) //
+        //            .map(space -> space.getAncestorItemIds(origin.getItemId())) //
+        //            .orElse(null);
     }
 
     /**

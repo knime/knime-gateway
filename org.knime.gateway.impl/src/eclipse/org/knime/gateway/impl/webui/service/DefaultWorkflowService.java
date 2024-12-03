@@ -121,7 +121,8 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .includeInteractionInfo(true)//
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
-                .setSpaceProviderTypes(m_spaceProviders == null ? Map.of() : m_spaceProviders.getProviderTypes());
+                .setSpaceProviderTypes(
+                    m_spaceProviders == null ? Map.of() : m_spaceProviders.getProviderTypes(wfKey.getProjectId()));
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
             var buildConext = WorkflowBuildContext.builder().includeInteractionInfo(false);

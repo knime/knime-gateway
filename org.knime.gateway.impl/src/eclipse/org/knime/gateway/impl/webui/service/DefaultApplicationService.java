@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.function.Predicate;
 
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -118,8 +119,15 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public AppStateEnt getState() {
+        var projectId = DefaultServiceContext.getWorkflowProjectId();
+        if (projectId.isPresent()) {
+            var wfm = org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(projectId.get(),
+                NodeIDEnt.getRootID());
+            m_spaceProviders.update(projectId.get(), wfm.getContextV2());
+        }
+
         var workflowProjectFilter =
-            DefaultServiceContext.getWorkflowProjectId().<Predicate<String>> map(id -> id::equals).orElse(null);
+            projectId.<Predicate<String>> map(id -> id::equals).orElse(null);
         Predicate<String> isActiveProject = workflowProjectFilter == null ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
             m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);

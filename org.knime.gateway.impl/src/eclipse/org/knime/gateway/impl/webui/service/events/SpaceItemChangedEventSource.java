@@ -81,7 +81,8 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
     }
 
     private Optional<SpaceItemChangeNotifier> getNotifierForProvider(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        return m_spaceProviders.getSpaceProvider(eventTypeEnt.getProviderId()).getChangeNotifier();
+        // TODO projectId if available?
+        return m_spaceProviders.getSpaceProvider((String)null, eventTypeEnt.getProviderId()).getChangeNotifier();
     }
 
     private void onSubscriptionNotification(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
@@ -111,7 +112,8 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
 
     @Override
     public void removeAllEventListeners() {
-        m_spaceProviders.getProvidersMap().values()
+        // TODO projectId if available?
+        m_spaceProviders.getProvidersMap(null).values()
             .forEach(provider -> provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll));
     }
 

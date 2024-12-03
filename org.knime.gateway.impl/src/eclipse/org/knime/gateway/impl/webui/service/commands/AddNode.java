@@ -187,7 +187,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         final var spaceId = spaceItemId.getSpaceId();
         final var itemId = spaceItemId.getItemId();
         try {
-            var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
+            // TODO projectId if available?
+            var space = m_spaceProviders.getSpace(null, spaceProviderId, spaceId);
             return space.toPathBasedKnimeUrl(itemId).toURL();
         } catch (MalformedURLException | ResourceAccessException ex) {
             NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
