@@ -174,6 +174,14 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
+    @Override
+    public void disconnectSpaceProvider(final String spaceProviderId) {
+        final var spaceProvider = SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId);
+        if (spaceProvider != null) {
+            spaceProvider.getConnection(false).ifPresent(SpaceProviderConnection::disconnect);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

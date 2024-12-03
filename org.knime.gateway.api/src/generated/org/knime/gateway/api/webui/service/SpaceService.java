@@ -146,6 +146,15 @@ public interface SpaceService extends GatewayService {
     void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
         
     /**
+     * Disconnects the space provider with the given ID from its remote location.
+     *
+     * @param spaceProviderId Identifies a space-provider.
+     *
+     * 
+     */
+    void disconnectSpaceProvider(String spaceProviderId) ;
+        
+    /**
      * Mainly returns the spaces provided by this space-provider.
      *
      * @param spaceProviderId Identifies a space-provider.
