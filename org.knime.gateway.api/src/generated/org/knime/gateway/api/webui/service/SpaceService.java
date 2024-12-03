@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -60,6 +61,16 @@ import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface SpaceService extends GatewayService {
 
+    /**
+     * Connects the space provider with the given ID to its remote location.
+     *
+     * @param spaceProviderId Identifies a space-provider.
+     *
+     * @return the result
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     */
+    SpaceProviderAndConnectionEnt connectSpaceProvider(String spaceProviderId)  throws ServiceExceptions.ServiceCallException;
+        
     /**
      * Create a new space within a given space provider.
      *

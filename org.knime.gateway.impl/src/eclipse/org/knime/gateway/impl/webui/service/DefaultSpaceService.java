@@ -146,6 +146,34 @@ public class DefaultSpaceService implements SpaceService {
             .build();
     }
 
+    @Override
+    public SpaceProviderAndConnectionEnt connectSpaceProvider(final String spaceProviderId)
+        throws ServiceCallException {
+        try {
+            final var spaceProvider = SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId);
+            // TOOD: fail if connectionOpt is empty?
+            final var connectionOpt = spaceProvider.getConnection(true);
+            // TODO: wrap the rest in NetworkExceptions.callWithCatch?
+            final var user = connectionOpt.map(SpaceProviderConnection::getUsername)
+                .filter(Predicate.not(String::isEmpty))
+                .map(username -> new DefaultUserEntBuilder().setName(username).build())
+                .orElse(null);
+            return new DefaultSpaceProviderAndConnectionEntBuilder()
+                .setId(spaceProvider.getId())
+                .setName(spaceProvider.getName())
+                .setType(spaceProvider.getType())
+                .setConnected(connectionOpt.isPresent())
+                .setConnectionMode(ConnectionModeEnum.AUTHENTICATED)
+                .setHostname(spaceProvider.getServerAddress().orElse(null))
+                .setUser(user)
+                .setIsCommunityHub(spaceProvider.isCommunityHub())
+                .setSpaceGroups(spaceProvider.toEntity().getSpaceGroups())
+                .build();
+        } catch (final NoSuchElementException e) {
+            throw new ServiceCallException(e.getMessage(), e);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */

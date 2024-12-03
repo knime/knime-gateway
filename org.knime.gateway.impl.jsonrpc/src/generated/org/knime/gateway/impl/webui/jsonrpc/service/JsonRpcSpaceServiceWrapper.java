@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.jsonrpc.service;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
@@ -72,6 +73,19 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     
     public JsonRpcSpaceServiceWrapper(java.util.function.Supplier<SpaceService> service) {
         m_service = service;
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "connectSpaceProvider")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public SpaceProviderAndConnectionEnt connectSpaceProvider(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.ServiceCallException {
+        return m_service.get().connectSpaceProvider(spaceProviderId);    
     }
 
 	/**
