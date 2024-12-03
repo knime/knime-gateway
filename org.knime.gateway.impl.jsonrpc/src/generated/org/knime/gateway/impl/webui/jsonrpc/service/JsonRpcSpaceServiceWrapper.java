@@ -170,6 +170,15 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "disconnectSpaceProvider")
+    public void disconnectSpaceProvider(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  {
+        m_service.get().disconnectSpaceProvider(spaceProviderId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getSpaceProvider")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
