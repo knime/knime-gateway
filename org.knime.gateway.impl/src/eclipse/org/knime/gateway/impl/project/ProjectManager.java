@@ -82,7 +82,6 @@ public final class ProjectManager {
 
     private final Map<String, ProjectInternal> m_projectsMap = new LinkedHashMap<>();
 
-
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
     /**
@@ -237,6 +236,20 @@ public final class ProjectManager {
      */
     public Optional<Project> getProject(final String projectId) {
         return Optional.ofNullable(m_projectsMap.get(projectId)).map(ProjectInternal::project);
+    }
+
+    /**
+     * @return A currently open project matching the given IDs in its {@link Origin}.
+     */
+    @SuppressWarnings({"java:S1602", "javadoc"})
+    public Optional<Project> getProject(final String providerId, final String spaceId, final String itemId) {
+        return m_projectsMap.values().stream().filter(p -> {
+            return p.project().getOrigin().map(origin -> //
+            origin.getProviderId().equals(providerId) //
+                && origin.getSpaceId().equals(spaceId) //
+                && origin.getItemId().equals(itemId) //
+            ).orElse(false);
+        }).findFirst().map(ProjectInternal::project);
     }
 
     /**
