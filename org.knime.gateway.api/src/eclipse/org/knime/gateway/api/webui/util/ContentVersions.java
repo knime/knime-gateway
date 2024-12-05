@@ -58,7 +58,7 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.webui.data.util.InputSpecUtil;
+import org.knime.core.webui.data.util.InputPortUtil;
 
 /**
  * A reference will yield a different <i>content version</i> if its "content" has changed. The definition of "content"
@@ -99,7 +99,7 @@ class ContentVersions {
      * @return A value identifying the input provided to the node
      */
     public static Integer getInputContentVersion(final NodeContainer nc) {
-        var inPortSpecs = InputSpecUtil.getInputSpecsIncludingVariablePort(nc);
+        var inPortSpecs = InputPortUtil.getInputSpecsIncludingVariablePort(nc);
         return getContentVersion(inPortSpecs);
     }
 
