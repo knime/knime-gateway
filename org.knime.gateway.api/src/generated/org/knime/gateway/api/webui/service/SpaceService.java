@@ -68,8 +68,9 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.ServiceCallException;
+    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Create a new workflow within a given workflow group.
@@ -81,8 +82,9 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException;
+    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Create a new workflow group within a given workflow group.
@@ -93,8 +95,9 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceItemEnt createWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
+    SpaceItemEnt createWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Deletes items from the space.
@@ -105,8 +108,9 @@ public interface SpaceService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds)  throws ServiceExceptions.ServiceCallException;
+    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Deletes job from the space.
@@ -118,8 +122,9 @@ public interface SpaceService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void deleteJobsForWorkflow(String spaceId, String spaceProviderId, String itemId, String jobId)  throws ServiceExceptions.ServiceCallException;
+    void deleteJobsForWorkflow(String spaceId, String spaceProviderId, String itemId, String jobId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Deletes schedule from the space.
@@ -131,8 +136,9 @@ public interface SpaceService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
+    void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Mainly returns the spaces provided by this space-provider.
@@ -154,8 +160,9 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    java.util.List<Object> listJobsForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
+    java.util.List<Object> listJobsForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Lists the available schedules for the given workflow.
@@ -166,8 +173,9 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    java.util.List<Object> listSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
+    java.util.List<Object> listSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Get shallow list of workflows, components and data-files within a given workflow group.
@@ -194,8 +202,9 @@ public interface SpaceService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destWorkflowGroupItemId, String collisionHandling, Boolean copy)  throws ServiceExceptions.ServiceCallException;
+    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destWorkflowGroupItemId, String collisionHandling, Boolean copy)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Rename a space Item
@@ -207,8 +216,9 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException;
+    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Rename a space
@@ -219,7 +229,8 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.ServiceCallException;
+    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
 }
