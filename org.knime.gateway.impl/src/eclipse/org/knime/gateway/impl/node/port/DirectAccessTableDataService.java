@@ -72,10 +72,10 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 import org.knime.core.webui.node.view.table.data.DataType;
+import org.knime.core.webui.node.view.table.data.ImageDimension;
 import org.knime.core.webui.node.view.table.data.Table;
 import org.knime.core.webui.node.view.table.data.TableViewInitialData;
 import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
-import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
 
 /**
  * The {@link RpcDataService} for the {@linke PortView} created by {@link DirectAccessTablePortViewFactory}.
