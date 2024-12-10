@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
@@ -67,6 +68,7 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.webui.SpaceItemChangeProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
@@ -76,6 +78,7 @@ import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
 import org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource;
 import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
+import org.knime.gateway.impl.webui.service.events.SpaceItemChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
@@ -121,6 +124,10 @@ public final class DefaultEventService implements EventService {
     private final KaiHandler m_kaiHandler =
             ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
+    // TODO: Is this required or not?
+    private final SpaceItemChangeProvider m_spaceItemChangeProvider =
+        ServiceDependencies.getServiceDependency(SpaceItemChangeProvider.class, false);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -142,6 +149,7 @@ public final class DefaultEventService implements EventService {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
         // TODO replace with switch
+        // Set the event source depending on the event type
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_projectManager));
@@ -174,9 +182,14 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowMonitorStateChangedEventSource(m_eventConsumer, m_projectManager,
                     m_workflowMiddleware));
+        } else if (eventTypeEnt instanceof SpaceItemChangedEventTypeEnt) {
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceItemChangeProvider));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
+
+        // After setting the event source, try to add an event listener for the event type
         try {
             eventSource.addEventListenerFor(eventTypeEnt, DefaultServiceContext.getWorkflowProjectId().orElse(null));
         } catch (IllegalArgumentException e) {

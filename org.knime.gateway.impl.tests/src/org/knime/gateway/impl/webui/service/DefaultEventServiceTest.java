@@ -73,6 +73,10 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuild
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -84,6 +88,7 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.impl.webui.SpaceItemChangeProvider;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
@@ -98,9 +103,16 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
+    private final SpaceItemChangeProvider m_spaceItemChangeProvider = new SpaceItemChangeProvider();
+
     @Override
     protected EventConsumer createEventConsumer() {
         return m_testConsumer;
+    }
+
+    @Override
+    protected SpaceItemChangeProvider createSpaceItemChangeProvider() {
+        return m_spaceItemChangeProvider;
     }
 
     /**
@@ -204,7 +216,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // error message added
         ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "execute");
-        var expectedEvent1 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
+        var expectedEvent1 = buildWorkflowMonitorStateChangeEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
             "Fail in execution", NodeIDEnt.getRootID(), "org.knime.testing.node.failing.FailingNodeFactory",
             new NodeIDEnt(6));
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
@@ -214,7 +226,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // error message removed
         ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "reset");
-        var expectedEvent2 = buildEvent(OpEnum.REMOVE, "/errors/0", null, null, null, null, null);
+        var expectedEvent2 = buildWorkflowMonitorStateChangeEvent(OpEnum.REMOVE, "/errors/0", null, null, null, null, null);
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent2.equals(e);
@@ -222,7 +234,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // error message within component added
         ns.changeNodeStates(projectId, new NodeIDEnt(8), List.of(new NodeIDEnt(8, 0, 7)), "execute");
-        var expectedEvent3 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
+        var expectedEvent3 = buildWorkflowMonitorStateChangeEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
             "Fail in execution", new NodeIDEnt(8), "org.knime.testing.node.failing.FailingNodeFactory",
             new NodeIDEnt(8, 0, 7));
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
@@ -234,7 +246,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(),
             builder(DeleteCommandEntBuilder.class).setKind(KindEnum.DELETE).setNodeIds(List.of(new NodeIDEnt(9)))
                 .build());
-        var expectedEvent4 = buildEvent(OpEnum.REMOVE, "/warnings/0", null, null, null, null, null);
+        var expectedEvent4 = buildWorkflowMonitorStateChangeEvent(OpEnum.REMOVE, "/warnings/0", null, null, null, null, null);
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent4.equals(e);
@@ -250,7 +262,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         verify(m_testConsumer, times(0)).accept(any(), any());
     }
 
-    private static WorkflowMonitorStateChangeEventEnt buildEvent(final OpEnum opEnum, final String path,
+    private static WorkflowMonitorStateChangeEventEnt buildWorkflowMonitorStateChangeEvent(final OpEnum opEnum, final String path,
         final String message, final String nodeName, final NodeIDEnt workflowId, final String templateId,
         final NodeIDEnt nodeId) {
         var value = message == null ? null : builder(WorkflowMonitorMessageEntBuilder.class).setMessage(message)
@@ -259,6 +271,45 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         var ops = List.of(op);
         var patch = builder(PatchEntBuilder.class).setOps(ops).build();
         return builder(WorkflowMonitorStateChangeEventEntBuilder.class).setPatch(patch).build();
+    }
+
+    /**
+     * Tests {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} for the
+     * {@link SpaceItemChangedEventTypeEnt}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSpaceItemChangedEventListener() throws Exception {
+        var es = DefaultEventService.getInstance();
+        // Note: The 'SpaceItemChangedEventTypeEnt' has 'getTypeID()' and 'getTypeId()'
+        var eventType = builder(SpaceItemChangedEventTypeEntBuilder.class) //
+                .setProviderId("providerId") //
+                .setSpaceId("spaceId") //
+                .setItemId("itemId") //
+                .build();
+
+        es.addEventListener(eventType);
+
+        // Notify listeners and check for event
+        m_spaceItemChangeProvider.notifyListeners("foo");
+        var expectedEvent1 = buildSpaceItemChangedEvent(eventType, "foo");
+        verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent1);
+        m_spaceItemChangeProvider.notifyListeners("bar");
+        var expectedEvent2 = buildSpaceItemChangedEvent(eventType, "bar");
+        verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent2);
+
+        es.removeEventListener(eventType);
+    }
+
+    private static SpaceItemChangedEventEnt buildSpaceItemChangedEvent(final SpaceItemChangedEventTypeEnt eventTypeEnt,
+        final String payload) {
+        return builder(SpaceItemChangedEventEntBuilder.class) //
+            .setProviderId(eventTypeEnt.getProviderId()) //
+            .setSpaceId(eventTypeEnt.getSpaceId()) //
+            .setItemId(eventTypeEnt.getItemId()) //
+            .setPayload(payload) //
+            .build();
     }
 
 }
