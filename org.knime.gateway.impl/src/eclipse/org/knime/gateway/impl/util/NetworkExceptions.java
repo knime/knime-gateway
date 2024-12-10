@@ -59,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.function.FailableCallable;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
@@ -127,7 +128,7 @@ public final class NetworkExceptions {
         throws E, NetworkException {
         Throwable throwableToInspect = throwable;
         if (throwable instanceof RuntimeException) {
-            throwableToInspect = throwable.getCause();
+            throwableToInspect = ExceptionUtils.getRootCause(throwable);
         }
         if (throwableToInspect instanceof ResourceAccessException) {
             throw new NetworkException(message, throwableToInspect);
