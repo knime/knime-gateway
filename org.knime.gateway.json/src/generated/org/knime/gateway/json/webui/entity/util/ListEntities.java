@@ -140,6 +140,8 @@ import org.knime.gateway.json.webui.entity.ProjectDisposedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectDisposedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.ProviderResourceChangedEventEntMixIn;
+import org.knime.gateway.json.webui.entity.ProviderResourceChangedEventTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationsCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReplaceNodeCommandEntMixIn;
@@ -304,6 +306,8 @@ public class ListEntities {
         res.add(ProjectDisposedEventTypeEntMixIn.class);
         res.add(ProjectEntMixIn.class);
         res.add(ProjectMetadataEntMixIn.class);
+        res.add(ProviderResourceChangedEventEntMixIn.class);
+        res.add(ProviderResourceChangedEventTypeEntMixIn.class);
         res.add(RemovePortCommandEntMixIn.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.class);
         res.add(ReplaceNodeCommandEntMixIn.class);
@@ -454,6 +458,8 @@ public class ListEntities {
         res.add(ProjectDisposedEventTypeEntMixIn.ProjectDisposedEventTypeEntMixInBuilder.class);
         res.add(ProjectEntMixIn.ProjectEntMixInBuilder.class);
         res.add(ProjectMetadataEntMixIn.ProjectMetadataEntMixInBuilder.class);
+        res.add(ProviderResourceChangedEventEntMixIn.ProviderResourceChangedEventEntMixInBuilder.class);
+        res.add(ProviderResourceChangedEventTypeEntMixIn.ProviderResourceChangedEventTypeEntMixInBuilder.class);
         res.add(RemovePortCommandEntMixIn.RemovePortCommandEntMixInBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.ReorderWorkflowAnnotationsCommandEntMixInBuilder.class);
         res.add(ReplaceNodeCommandEntMixIn.ReplaceNodeCommandEntMixInBuilder.class);

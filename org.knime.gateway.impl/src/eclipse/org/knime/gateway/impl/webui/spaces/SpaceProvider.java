@@ -182,6 +182,22 @@ public interface SpaceProvider {
         return Optional.empty();
     }
 
+    default Optional<ProviderResourceChangedNotifier> getChangeNotifier() {
+        return Optional.empty();
+    }
+
+    interface ProviderResourceChangedNotifier {
+        /**
+         * If an item already has a subscription, it is removed.
+         */
+        void subscribeToItem(final String space, final String item, Runnable callback);
+
+        void unsubscribe(String spaceId, String itemId);
+
+        void unsubscribeAll();
+
+    }
+
     /**
      * Gets the server version.
      *

@@ -143,7 +143,6 @@ public final class ServiceDependencies {
      * @param spaceProviders      The space providers
      * @param updateStateProvider The update state provider
      * @param preferencesProvider
-     * @param exampleProjects
      * @param nodeFactoryProvider
      * @param kaiHandler          handle K-AI related requests
      * @param nodeCollections
@@ -161,8 +160,9 @@ public final class ServiceDependencies {
         final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
         final NodeCollections nodeCollections, //
-        final NodeRepository nodeRepo,
-        final SelectionEventBus selectionEventBus) {
+        final NodeRepository nodeRepo, //
+        final SelectionEventBus selectionEventBus //
+    ) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);

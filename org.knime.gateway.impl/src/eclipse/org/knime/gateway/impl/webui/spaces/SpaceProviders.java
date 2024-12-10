@@ -79,6 +79,10 @@ public interface SpaceProviders {
         return spaceProvider;
     }
 
+    default SpaceProvider getSpaceProvider(final String spaceProviderId) {
+        return this.getProvidersMap().get(spaceProviderId);
+    }
+
     /**
      * @param spaceProviders
      * @param spaceId

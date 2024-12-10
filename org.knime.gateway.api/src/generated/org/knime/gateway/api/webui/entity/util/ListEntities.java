@@ -140,6 +140,8 @@ import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -305,6 +307,8 @@ public class ListEntities {
         res.add(ProjectDisposedEventTypeEnt.class);
         res.add(ProjectEnt.class);
         res.add(ProjectMetadataEnt.class);
+        res.add(ProviderResourceChangedEventEnt.class);
+        res.add(ProviderResourceChangedEventTypeEnt.class);
         res.add(RemovePortCommandEnt.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.class);
         res.add(ReplaceNodeCommandEnt.class);
@@ -455,6 +459,8 @@ public class ListEntities {
         res.add(ProjectDisposedEventTypeEnt.ProjectDisposedEventTypeEntBuilder.class);
         res.add(ProjectEnt.ProjectEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
+        res.add(ProviderResourceChangedEventEnt.ProviderResourceChangedEventEntBuilder.class);
+        res.add(ProviderResourceChangedEventTypeEnt.ProviderResourceChangedEventTypeEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder.class);
         res.add(ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder.class);

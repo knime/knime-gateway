@@ -98,6 +98,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
+
     @Override
     protected EventConsumer createEventConsumer() {
         return m_testConsumer;

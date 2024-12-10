@@ -92,6 +92,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -118,6 +119,9 @@ public final class LocalSpace implements Space {
     final LocalSpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache; // Package scope for testing
 
     private final Path m_rootPath;
+
+    private final Lazy.Init<LocalResourceChangedNotifier> m_sourceChangedNotifier =
+            new Lazy.Init<>(() -> new LocalResourceChangedNotifier(this));
 
     /**
      * @param rootPath the path to the root of the local workspace
@@ -509,7 +513,7 @@ public final class LocalSpace implements Space {
         return EntityFactory.Space.buildLocalSpaceItemEnt(absolutePath, m_rootPath, id, type);
     }
 
-    private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
+    Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
         var absolutePath = m_spaceItemPathAndTypeCache.getPath(workflowGroupItemId);
         if (absolutePath == null) {
             throw new NoSuchElementException("Unknown item id '" + workflowGroupItemId + "'");
@@ -686,4 +690,9 @@ public final class LocalSpace implements Space {
             return Optional.of(Pair.create(path, new Collision(typesCompatible, !isOpenedAsProject, true)));
         }
     }
+
+    public SpaceProvider.ProviderResourceChangedNotifier getResourceChangeDispatcher() {
+        return m_sourceChangedNotifier.initialised();
+    }
+
 }

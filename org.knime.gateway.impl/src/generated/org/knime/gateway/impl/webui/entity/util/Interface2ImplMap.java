@@ -236,6 +236,10 @@ import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventEnt.ProviderResourceChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt.ProviderResourceChangedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
@@ -635,6 +639,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
+        }        
+        if(clazz == ProviderResourceChangedEventEntBuilder.class) {
+            return (B)new DefaultProviderResourceChangedEventEnt.DefaultProviderResourceChangedEventEntBuilder();
+        }        
+        if(clazz == ProviderResourceChangedEventTypeEntBuilder.class) {
+            return (B)new DefaultProviderResourceChangedEventTypeEnt.DefaultProviderResourceChangedEventTypeEntBuilder();
         }        
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();

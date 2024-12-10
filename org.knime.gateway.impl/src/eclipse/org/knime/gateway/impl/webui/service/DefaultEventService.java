@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
@@ -74,6 +75,7 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
+import org.knime.gateway.impl.webui.service.events.ProviderResourceChanged;
 import org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource;
 import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
@@ -141,7 +143,8 @@ public final class DefaultEventService implements EventService {
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
-        // TODO replace with switch
+
+        // Set the event source depending on the event type
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_projectManager));
@@ -174,9 +177,14 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowMonitorStateChangedEventSource(m_eventConsumer, m_projectManager,
                     m_workflowMiddleware));
+        } else if (eventTypeEnt instanceof ProviderResourceChangedEventTypeEnt) {
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                t -> new ProviderResourceChanged(m_eventConsumer, m_spaceProviders));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
+
+        // After setting the event source, try to add an event listener for the event type
         try {
             eventSource.addEventListenerFor(eventTypeEnt, DefaultServiceContext.getWorkflowProjectId().orElse(null));
         } catch (IllegalArgumentException e) {
@@ -215,6 +223,7 @@ public final class DefaultEventService implements EventService {
     /*
      * For testing purposes only!
      */
+    @SuppressWarnings("java:S1452")
     EventSource<?, ?> getEventSource(final Class<? extends EventTypeEnt> eventTypeEnt) {
         return m_eventSources.get(eventTypeEnt);
     }
