@@ -154,9 +154,8 @@ public class DefaultSpaceService implements SpaceService {
         try {
             final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             final var message = "Could not delete jobs for workflow '" + itemId + "'. ";
-            //TODO
-            NetworkExceptions.callWithCatch(()-> {space.deleteJobsForWorkflow(itemId, List.of(jobId)); return null;}, message);
-          //space.deleteJobsForWorkflow(itemId, List.of(jobId));
+            NetworkExceptions.callWithCatch(()-> {space.deleteJobsForWorkflow(itemId, List.of(jobId));
+            return null;}, message);
         } catch (final ResourceAccessException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -180,7 +179,8 @@ public class DefaultSpaceService implements SpaceService {
         try {
             final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             final var message = "Could not delete schedules for workflow '" + itemId + "'. ";
-            NetworkExceptions.callWithCatch(() -> {space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId)); return null;}, message);
+            NetworkExceptions.callWithCatch(() -> {space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
+            return null;}, message);
         } catch (final ResourceAccessException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -205,9 +205,10 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId,
         final String name) throws ServiceCallException, NetworkException {
         try {
-            final var space = NetworkExceptions.callWithCatch(() -> SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId), name);
+            final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             final var message = "Could not create workflow. ";
-            final var item = NetworkExceptions.callWithCatch(() -> space.createWorkflow(workflowGroupId, name), message);
+            final var item = NetworkExceptions.callWithCatch(() -> space.createWorkflow(workflowGroupId, name),
+                message);
             if (GlobalNodeStats.isEnabled()) {
                 NodeTimer.GLOBAL_TIMER.incWorkflowCreate(
                     SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId).getType() == TypeEnum.LOCAL
@@ -270,7 +271,8 @@ public class DefaultSpaceService implements SpaceService {
                 }
             }
             final var message = "Could not move or copy items. ";
-            NetworkExceptions.callWithCatch(() -> {space.moveOrCopyItems(itemIds, destWorkflowGroupItemId, NameCollisionHandling.valueOf(collisionHandling), copy); return null;}, message);
+            NetworkExceptions.callWithCatch(() -> {space.moveOrCopyItems(itemIds, destWorkflowGroupItemId,
+                NameCollisionHandling.valueOf(collisionHandling), copy); return null;}, message);
         } catch (NoSuchElementException | IllegalArgumentException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -302,7 +304,6 @@ public class DefaultSpaceService implements SpaceService {
         try {
             final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             final var message = "Could not rename space '" + spaceName + "' .";
-            //return space.renameSpace(spaceName);
             return NetworkExceptions.callWithCatch(() -> space.renameSpace(spaceName), message);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);
