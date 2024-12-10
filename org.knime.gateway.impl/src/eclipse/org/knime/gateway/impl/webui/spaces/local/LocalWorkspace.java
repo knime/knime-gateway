@@ -107,29 +107,29 @@ public final class LocalWorkspace implements Space {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalWorkspace.class);
 
     /**
-     * ID of the local workspace.
+     * ID of the single {@link Space} provider by the {@link }
      */
-    public static final String LOCAL_WORKSPACE_ID = "local";
+    public static final String LOCAL_SPACE_ID = "local";
 
     /**
      * Holds both, the item ID to path map and the path to type map
      */
     final LocalSpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache; // Package scope for testing
 
-    private final Path m_localWorkspaceRootPath;
+    private final Path m_rootPath;
 
     /**
-     * @param localWorkspaceRootPath the path to the root of the local workspace
+     * @param rootPath the path to the root of the local workspace
      */
-    public LocalWorkspace(final Path localWorkspaceRootPath) {
-        m_localWorkspaceRootPath = localWorkspaceRootPath;
+    public LocalWorkspace(final Path rootPath) {
+        m_rootPath = rootPath;
         // To make sure the path of the root item ID can also be retrieved from the cache
-        m_spaceItemPathAndTypeCache = new LocalSpaceItemPathAndTypeCache(Space.ROOT_ITEM_ID, localWorkspaceRootPath);
+        m_spaceItemPathAndTypeCache = new LocalSpaceItemPathAndTypeCache(Space.ROOT_ITEM_ID, rootPath);
     }
 
     @Override
     public String getId() {
-        return LOCAL_WORKSPACE_ID;
+        return LOCAL_SPACE_ID;
     }
 
     @Override
@@ -154,7 +154,7 @@ public final class LocalWorkspace implements Space {
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
         var absolutePath = getAbsolutePath(workflowGroupItemId);
-        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_localWorkspaceRootPath,
+        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_rootPath,
             this::getItemId, m_spaceItemPathAndTypeCache::determineTypeOrGetFromCache,
             LocalWorkspace::isValidWorkspaceItem, ITEM_COMPARATOR);
     }
@@ -176,9 +176,8 @@ public final class LocalWorkspace implements Space {
         var pathToCreate = parentWorkflowGroupPath.resolve(workflowGroupName);
         try {
             var directoryPath = Files.createDirectory(pathToCreate);
-            // TODO(NXT-1484) create a meta info file for the folder
             return getSpaceItemEntFromPathAndUpdateCache(directoryPath);
-        } catch (IOException e) {
+        } catch (IOException e) { // NOSONAR
             throw new IOException("Cannot create folders in '%s'.".formatted(parentWorkflowGroupPath.toString()),
                 e.getCause());
         }
@@ -190,29 +189,28 @@ public final class LocalWorkspace implements Space {
         if (path == null || !Files.exists(path)) {
             return Optional.empty();
         }
-        return Optional.ofNullable(path);
+        return Optional.of(path);
     }
 
     @Override
     public URI toKnimeUrl(final String itemId) {
         if (Space.ROOT_ITEM_ID.equals(itemId)) {
             // for historical reasons, the local space root gets mapped to "knime://LOCAL/" (note the trailing slash!)
-            return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_WORKSPACE_ID.toUpperCase(Locale.ROOT) + "/");
+            return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_SPACE_ID.toUpperCase(Locale.ROOT) + "/");
         }
         var absolutePath = toLocalAbsolutePath(null, itemId).orElse(null);
         if (absolutePath == null) {
             throw new IllegalStateException("No item found for id " + itemId);
         }
-        final var rootUri = m_localWorkspaceRootPath.toUri();
-        final var itemRelUri = rootUri.relativize(absolutePath.toUri());
-        if (itemRelUri.isAbsolute()) {
+        final var relativeUri = m_rootPath.toUri().relativize(absolutePath.toUri());
+        if (relativeUri.isAbsolute()) {
             throw new IllegalStateException(
-                "Space item '" + absolutePath + "' is not inside root '" + m_localWorkspaceRootPath + "'");
+                "Space item '" + absolutePath + "' is not inside root '" + m_rootPath + "'");
         }
         try {
-            return new URIBuilder(itemRelUri) //
+            return new URIBuilder(relativeUri) //
                 .setScheme(KnimeUrlType.SCHEME) //
-                .setHost(LOCAL_WORKSPACE_ID.toUpperCase(Locale.ROOT)) //
+                .setHost(LOCAL_SPACE_ID.toUpperCase(Locale.ROOT)) //
                 .build();
         } catch (URISyntaxException ex) {
             throw new IllegalStateException(ex);
@@ -220,7 +218,7 @@ public final class LocalWorkspace implements Space {
     }
 
     public Path getLocalRootPath() {
-        return m_localWorkspaceRootPath;
+        return m_rootPath;
     }
 
     @Override
@@ -350,7 +348,7 @@ public final class LocalWorkspace implements Space {
                 var destination = parentPath.resolve(fileName);
                 try {
                     deleteItems(List.of(getItemId(destination)));
-                } catch (Exception ex) {
+                } catch (Exception ex) { // NOSONAR
                     LOGGER.error(ex);
                     throw new IOException(
                         String.format("There was an error overwriting \"%s\". Check that it is not currently open.",
@@ -403,13 +401,13 @@ public final class LocalWorkspace implements Space {
         if (path == null) {
             throw new NoSuchElementException("No item for id '" + itemId + "'");
         }
-        if (!path.startsWith(m_localWorkspaceRootPath)) {
+        if (!path.startsWith(m_rootPath)) {
             // item not below the root (happens with Team Spaces opened in Classic AP, startup crash reported by Bernd)
             return List.of();
         }
         final var res = new ArrayList<String>();
         var parent = path;
-        while (!(parent = parent.getParent()).equals(m_localWorkspaceRootPath)) {
+        while (!(parent = parent.getParent()).equals(m_rootPath)) {
             res.add(getItemId(parent));
         }
         return res;
@@ -486,7 +484,7 @@ public final class LocalWorkspace implements Space {
     private SpaceItemEnt getSpaceItemEntFromPathAndUpdateCache(final Path absolutePath) {
         var id = m_spaceItemPathAndTypeCache.determineItemIdOrGetFromCache(absolutePath);
         var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath);
-        return EntityFactory.Space.buildLocalSpaceItemEnt(absolutePath, m_localWorkspaceRootPath, id, type);
+        return EntityFactory.Space.buildLocalSpaceItemEnt(absolutePath, m_rootPath, id, type);
     }
 
     private Path getAbsolutePath(final String workflowGroupItemId) throws NoSuchElementException {
@@ -625,7 +623,7 @@ public final class LocalWorkspace implements Space {
     public Optional<Pair<IPath, Collision>> checkForCollision(final String workflowGroupId, final IPath path,
         final TypeEnum newItemType) {
 
-        var currentId = workflowGroupId;
+        var currentId = workflowGroupId;  // NOSONAR: assignment is useful
         var current = getAbsolutePath(workflowGroupId);
         var currentType = getItemType(workflowGroupId);
 

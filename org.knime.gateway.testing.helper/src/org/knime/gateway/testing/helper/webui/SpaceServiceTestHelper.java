@@ -153,7 +153,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String workspaceName) throws IOException {
         var tempPath = PathUtils.createTempDir(directoryNamePrefix);
         var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
-        var space = spaceProvider.getSpace(LocalWorkspace.LOCAL_WORKSPACE_ID);
+        var space = spaceProvider.getSpace(LocalWorkspace.LOCAL_SPACE_ID);
         PathUtils.copyDirectory(getTestWorkspacePath(workspaceName), tempPath);
         return new Pair<>(spaceProvider, space);
     }
@@ -267,7 +267,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
 
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
-        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_to_list_root");
 
@@ -536,7 +536,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         try {
             // Create workflows and check
-            var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+            var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
             var wf0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
             cr(wf0, "created_workflow_0");
             var level0 = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
@@ -578,7 +578,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testDeleteItemForLocalWorkspace() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("delete").toPath();
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
-        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
         var workflowGroupName = "workflow_group";
         var fileName = "testfile.txt";
 
@@ -647,7 +647,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         try {
             // Create workflow groups and check
-            var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+            var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
             var wfg0 = ss().createWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
             cr(wfg0, "created_workflow_group_0");
             var level0 = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
@@ -683,7 +683,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testMoveItemsLocal() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("move").toPath();
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
-        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
         var fileName = "testfile.txt";
         var level1 = "level1";
         var level1Path = testWorkspacePath.resolve(level1);
@@ -761,7 +761,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testMoveItemsWithOpenWorkflowLocal() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
-        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
         var wfName = "workflow";
         var wfGroupName = "EmptyGroup";
         var fileName = "data.txt";
@@ -793,7 +793,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testMoveItemsLocalWithOpenHubWorkflow() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("move").toPath();
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
-        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
         var wfName = "workflow";
         var wfGroupName = "EmptyGroup";
         ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, wfName);
@@ -867,7 +867,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testMoveItemsWithNameCollisionsLocal() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("move-with-collisions").toPath();
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
-        var spaceId = LocalWorkspace.LOCAL_WORKSPACE_ID;
+        var spaceId = LocalWorkspace.LOCAL_SPACE_ID;
         var level1 = "level1";
         var level1Path = testWorkspacePath.resolve(level1);
         var fileName = "testfile.txt";
