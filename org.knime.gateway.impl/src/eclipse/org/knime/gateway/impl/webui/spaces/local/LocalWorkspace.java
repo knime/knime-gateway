@@ -238,10 +238,11 @@ public final class LocalWorkspace implements Space {
 
         var deletedPaths = new ArrayList<Path>(itemIds.size());
         try {
-            for (var stringItemId : itemIds) {
-                // NB: Should not be null because we checked this before
-                var itemId = stringItemId;
+            for (var itemId : itemIds) {
                 var path = m_spaceItemPathAndTypeCache.getPath(itemId);
+                if (path == null) {
+                    continue;
+                }
                 // NB: This also works for files
                 PathUtils.deleteDirectoryIfExists(path);
                 deletedPaths.add(path);
@@ -657,7 +658,7 @@ public final class LocalWorkspace implements Space {
             // collision between two leaf items
             final boolean typesCompatible = currentType == newItemType
                     || WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType);
-            final var relativeToRoot = m_localWorkspaceRootPath.relativize(current);
+            final var relativeToRoot = m_rootPath.relativize(current);
             final var isOpenedAsProject = ProjectManager.getInstance().getLocalProject(relativeToRoot).isPresent();
             return Optional.of(Pair.create(path, new Collision(typesCompatible, !isOpenedAsProject, true)));
         }
