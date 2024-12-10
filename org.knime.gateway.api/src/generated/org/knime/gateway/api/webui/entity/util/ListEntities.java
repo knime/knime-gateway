@@ -147,6 +147,8 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
@@ -312,6 +314,8 @@ public class ListEntities {
         res.add(ShowToastEventEnt.class);
         res.add(SpaceEnt.class);
         res.add(SpaceGroupEnt.class);
+        res.add(SpaceItemChangedEventEnt.class);
+        res.add(SpaceItemChangedEventTypeEnt.class);
         res.add(SpaceItemEnt.class);
         res.add(SpaceItemReferenceEnt.class);
         res.add(SpaceItemVersionEnt.class);
@@ -462,6 +466,8 @@ public class ListEntities {
         res.add(ShowToastEventEnt.ShowToastEventEntBuilder.class);
         res.add(SpaceEnt.SpaceEntBuilder.class);
         res.add(SpaceGroupEnt.SpaceGroupEntBuilder.class);
+        res.add(SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder.class);
+        res.add(SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder.class);
         res.add(SpaceItemEnt.SpaceItemEntBuilder.class);
         res.add(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class);
         res.add(SpaceItemVersionEnt.SpaceItemVersionEntBuilder.class);

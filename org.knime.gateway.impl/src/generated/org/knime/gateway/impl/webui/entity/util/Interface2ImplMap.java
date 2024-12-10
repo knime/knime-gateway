@@ -250,6 +250,10 @@ import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt.SpaceGroupEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
@@ -656,6 +660,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == SpaceGroupEntBuilder.class) {
             return (B)new DefaultSpaceGroupEnt.DefaultSpaceGroupEntBuilder();
+        }        
+        if(clazz == SpaceItemChangedEventEntBuilder.class) {
+            return (B)new DefaultSpaceItemChangedEventEnt.DefaultSpaceItemChangedEventEntBuilder();
+        }        
+        if(clazz == SpaceItemChangedEventTypeEntBuilder.class) {
+            return (B)new DefaultSpaceItemChangedEventTypeEnt.DefaultSpaceItemChangedEventTypeEntBuilder();
         }        
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();
