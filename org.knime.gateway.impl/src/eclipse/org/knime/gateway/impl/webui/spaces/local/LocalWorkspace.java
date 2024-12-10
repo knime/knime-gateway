@@ -102,6 +102,7 @@ import org.knime.gateway.impl.webui.spaces.Space;
  * @author Kai Franze, KNIME GmbH
  * @author Benjamin Moser, KNIME GmbH
  */
+// TOOD rename to LocalSpace (consistent wiht e.g. HubSpace) and "workspace" should be avoided
 public final class LocalWorkspace implements Space {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalWorkspace.class);
@@ -195,6 +196,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public URI toKnimeUrl(final String itemId) {
+        // TODO can this be avoided?
         if (Space.ROOT_ITEM_ID.equals(itemId)) {
             // for historical reasons, the local space root gets mapped to "knime://LOCAL/" (note the trailing slash!)
             return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_WORKSPACE_ID.toUpperCase(Locale.ROOT) + "/");
@@ -657,9 +659,11 @@ public final class LocalWorkspace implements Space {
             return Optional.of(Pair.create(path, new Collision(false, false, true)));
         } else {
             // collision between two leaf items
-            final boolean typesCompatible = currentType == newItemType
-                    || WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType);
-            final var relativeToRoot = m_localWorkspaceRootPath.relativize(current);
+            final boolean typesCompatible = (currentType == newItemType)
+                    || (WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType));
+            // TODO do we really need to relative path here? would absolute also do?
+            // might be able to get rid of getLocalProject and Origin.relativePath then
+            final var relativeToRoot = m_rootPath.relativize(current);
             final var isOpenedAsProject = ProjectManager.getInstance().getLocalProject(relativeToRoot).isPresent();
             return Optional.of(Pair.create(path, new Collision(typesCompatible, !isOpenedAsProject, true)));
         }

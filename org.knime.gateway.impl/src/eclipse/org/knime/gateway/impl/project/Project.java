@@ -138,11 +138,15 @@ public interface Project {
         /**
          * @return The project type of the space item
          */
+        // TODO could thiis be method of `Project`? seems more intuitive to me.
         Optional<ProjectTypeEnum> getProjectType();
 
         /**
          * @return the relative path of the original space item - usually only given for the local space
          */
+        // TODO what is this needed for?  I think we can work around it
+        // can certainly be made specific for LocalWorkspace
+        // could just instead Space#getAbsolutePath and relativize w/ root path
         default Optional<String> getRelativePath() {
             return Optional.empty();
         }
