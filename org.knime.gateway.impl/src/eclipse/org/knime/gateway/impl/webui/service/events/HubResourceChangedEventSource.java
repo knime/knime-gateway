@@ -101,7 +101,7 @@ public class HubResourceChangedEventSource
 
     @Override
     protected String getName() {
-        return "SpaceItemChangedEvent";
+        return "HubResourceChangedEvent";
     }
 
     private static HubResourceChangedEventEnt buildEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
