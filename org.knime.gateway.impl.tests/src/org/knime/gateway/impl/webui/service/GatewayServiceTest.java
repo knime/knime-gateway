@@ -62,7 +62,7 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.SpaceItemChangeProvider;
+import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
@@ -111,7 +111,7 @@ public abstract class GatewayServiceTest {
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, createNodeFactoryProvider());
-        ServiceDependencies.setServiceDependency(SpaceItemChangeProvider.class, createSpaceItemChangeProvider());
+        ServiceDependencies.setServiceDependency(HubResourceChangeProvider.class, createHubResourceChangeProvider());
     }
 
     /**
@@ -136,10 +136,10 @@ public abstract class GatewayServiceTest {
     }
 
     /**
-     * @return the {@link SpaceItemChangeProvider} service dependency
+     * @return the {@link HubResourceChangeProvider} service dependency
      */
-    protected SpaceItemChangeProvider createSpaceItemChangeProvider() {
-        return mock(SpaceItemChangeProvider.class);
+    protected HubResourceChangeProvider createHubResourceChangeProvider() {
+        return mock(HubResourceChangeProvider.class);
     }
 
     @SuppressWarnings("javadoc")

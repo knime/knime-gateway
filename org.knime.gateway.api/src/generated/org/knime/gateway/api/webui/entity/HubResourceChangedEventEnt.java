@@ -61,7 +61,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
+public interface HubResourceChangedEventEnt extends GatewayEntity, EventEnt {
 
 
   /**
@@ -92,7 +92,7 @@ public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (SpaceItemChangedEventEnt)other;
+      var e = (HubResourceChangedEventEnt)other;
       valueConsumer.accept("providerId", Pair.create(getProviderId(), e.getProviderId()));
       valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
       valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
@@ -102,7 +102,7 @@ public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
     /**
      * The builder for the entity.
      */
-    public interface SpaceItemChangedEventEntBuilder extends GatewayEntityBuilder<SpaceItemChangedEventEnt> {
+    public interface HubResourceChangedEventEntBuilder extends GatewayEntityBuilder<HubResourceChangedEventEnt> {
 
         /**
    		 * Set providerId
@@ -110,7 +110,7 @@ public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
          * @param providerId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemChangedEventEntBuilder setProviderId(String providerId);
+        HubResourceChangedEventEntBuilder setProviderId(String providerId);
         
         /**
    		 * Set spaceId
@@ -118,7 +118,7 @@ public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
          * @param spaceId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemChangedEventEntBuilder setSpaceId(String spaceId);
+        HubResourceChangedEventEntBuilder setSpaceId(String spaceId);
         
         /**
    		 * Set itemId
@@ -126,7 +126,7 @@ public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
          * @param itemId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemChangedEventEntBuilder setItemId(String itemId);
+        HubResourceChangedEventEntBuilder setItemId(String itemId);
         
         /**
    		 * Set payload
@@ -134,7 +134,7 @@ public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
          * @param payload the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceItemChangedEventEntBuilder setPayload(String payload);
+        HubResourceChangedEventEntBuilder setPayload(String payload);
         
         
         /**
@@ -144,7 +144,7 @@ public interface SpaceItemChangedEventEnt extends GatewayEntity, EventEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        SpaceItemChangedEventEnt build();
+        HubResourceChangedEventEnt build();
     
     }
 

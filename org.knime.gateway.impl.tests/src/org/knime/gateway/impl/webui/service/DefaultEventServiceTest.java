@@ -70,13 +70,13 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt.HubResourceChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -88,7 +88,7 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.webui.SpaceItemChangeProvider;
+import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
@@ -103,7 +103,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
-    private final SpaceItemChangeProvider m_spaceItemChangeProvider = new SpaceItemChangeProvider();
+    private final HubResourceChangeProvider m_hubResourceChangeProvider = new HubResourceChangeProvider();
 
     @Override
     protected EventConsumer createEventConsumer() {
@@ -111,8 +111,8 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
     }
 
     @Override
-    protected SpaceItemChangeProvider createSpaceItemChangeProvider() {
-        return m_spaceItemChangeProvider;
+    protected HubResourceChangeProvider createHubResourceChangeProvider() {
+        return m_hubResourceChangeProvider;
     }
 
     /**
@@ -275,36 +275,44 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
     /**
      * Tests {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} for the
-     * {@link SpaceItemChangedEventTypeEnt}.
+     * {@link HubResourceChangedEventTypeEnt}.
      *
      * @throws Exception
      */
     @Test
-    public void testSpaceItemChangedEventListener() throws Exception {
+    public void testHubResourceChangedEventListener() throws Exception {
+        // Notify listeners and check for no event
+        m_hubResourceChangeProvider.notifyEventListeners("nothing");
+        verify(m_testConsumer, times(0)).accept(any(), any());
+
         var es = DefaultEventService.getInstance();
-        // Note: The 'SpaceItemChangedEventTypeEnt' has 'getTypeID()' and 'getTypeId()'
-        var eventType = builder(SpaceItemChangedEventTypeEntBuilder.class) //
+        // Note: The 'HubResourceChangedEventTypeEnt' has 'getTypeID()' and 'getTypeId()'
+        var eventType = builder(HubResourceChangedEventTypeEntBuilder.class) //
                 .setProviderId("providerId") //
                 .setSpaceId("spaceId") //
                 .setItemId("itemId") //
                 .build();
-
         es.addEventListener(eventType);
 
         // Notify listeners and check for event
-        m_spaceItemChangeProvider.notifyListeners("foo");
+        m_hubResourceChangeProvider.notifyEventListeners("foo");
         var expectedEvent1 = buildSpaceItemChangedEvent(eventType, "foo");
         verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent1);
-        m_spaceItemChangeProvider.notifyListeners("bar");
+        m_hubResourceChangeProvider.notifyEventListeners("bar");
         var expectedEvent2 = buildSpaceItemChangedEvent(eventType, "bar");
         verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent2);
 
         es.removeEventListener(eventType);
+        Mockito.clearInvocations(m_testConsumer);
+
+        // Notify listeners and check for no event
+        m_hubResourceChangeProvider.notifyEventListeners("nothing");
+        verify(m_testConsumer, times(0)).accept(any(), any());
     }
 
-    private static SpaceItemChangedEventEnt buildSpaceItemChangedEvent(final SpaceItemChangedEventTypeEnt eventTypeEnt,
+    private static HubResourceChangedEventEnt buildSpaceItemChangedEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
         final String payload) {
-        return builder(SpaceItemChangedEventEntBuilder.class) //
+        return builder(HubResourceChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
             .setSpaceId(eventTypeEnt.getSpaceId()) //
             .setItemId(eventTypeEnt.getItemId()) //
