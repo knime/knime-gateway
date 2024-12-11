@@ -81,7 +81,7 @@ public class HubResourceChangedEventSource
 
     @Override
     public Optional<HubResourceChangedEventEnt>
-        addEventListenerAndGetInitialEventFor(final HubResourceChangedEventTypeEnt eventTypeEnt) {
+        addEventListenerAndGetInitialEventFor(final HubResourceChangedEventTypeEnt eventTypeEnt) { // Has subtypes, like space item changed event type, ...
         m_hubResourceChangeProvider.addEventListener(eventTypeEnt, payload -> {
             final var event = buildEvent(eventTypeEnt, payload);
             sendEvent(event);
