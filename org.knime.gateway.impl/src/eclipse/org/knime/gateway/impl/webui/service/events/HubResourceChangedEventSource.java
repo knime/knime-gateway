@@ -52,50 +52,51 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Optional;
 
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.SpaceItemChangeProvider;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
+import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 
 /**
  * ...
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
-public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEventTypeEnt, SpaceItemChangedEventEnt> {
+public class HubResourceChangedEventSource
+    extends EventSource<HubResourceChangedEventTypeEnt, HubResourceChangedEventEnt> {
 
-    private final SpaceItemChangeProvider m_spaceItemChangeProvider;
+    private final HubResourceChangeProvider m_hubResourceChangeProvider;
 
     /**
      * ...
      *
      * @param eventConsumer ...
-     * @param spaceItemChangeProvider ...
+     * @param hubResourceChangeProvider ...
      */
-    public SpaceItemChangedEventSource(final EventConsumer eventConsumer,
-        final SpaceItemChangeProvider spaceItemChangeProvider) {
+    public HubResourceChangedEventSource(final EventConsumer eventConsumer,
+        final HubResourceChangeProvider hubResourceChangeProvider) {
         super(eventConsumer);
-        m_spaceItemChangeProvider = spaceItemChangeProvider;
+        m_hubResourceChangeProvider = hubResourceChangeProvider;
     }
 
     @Override
-    public Optional<SpaceItemChangedEventEnt>
-        addEventListenerAndGetInitialEventFor(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        m_spaceItemChangeProvider.addListener(eventTypeEnt, payload -> {
-            final var event = buildSpaceItemChangedEvent(eventTypeEnt, payload);
+    public Optional<HubResourceChangedEventEnt>
+        addEventListenerAndGetInitialEventFor(final HubResourceChangedEventTypeEnt eventTypeEnt) {
+        m_hubResourceChangeProvider.addEventListener(eventTypeEnt, payload -> {
+            final var event = buildEvent(eventTypeEnt, payload);
             sendEvent(event);
         });
         return Optional.empty();
     }
 
     @Override
-    public void removeEventListener(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        m_spaceItemChangeProvider.removeListener(eventTypeEnt);
+    public void removeEventListener(final HubResourceChangedEventTypeEnt eventTypeEnt) {
+        m_hubResourceChangeProvider.removeEventListener(eventTypeEnt);
     }
 
     @Override
     public void removeAllEventListeners() {
-        // TODO
+        m_hubResourceChangeProvider.removeAllEventListeners();
     }
 
     @Override
@@ -103,9 +104,9 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
         return "SpaceItemChangedEvent";
     }
 
-    private static SpaceItemChangedEventEnt buildSpaceItemChangedEvent(final SpaceItemChangedEventTypeEnt eventTypeEnt,
+    private static HubResourceChangedEventEnt buildEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
         final String payload) {
-        return builder(SpaceItemChangedEventEntBuilder.class) //
+        return builder(HubResourceChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
             .setSpaceId(eventTypeEnt.getSpaceId()) //
             .setItemId(eventTypeEnt.getItemId()) //

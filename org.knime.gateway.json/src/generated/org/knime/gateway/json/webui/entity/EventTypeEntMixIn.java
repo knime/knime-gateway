@@ -57,7 +57,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultHubResourceChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorStateChangeEventTypeEnt;
@@ -79,7 +79,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
 @JsonSubTypes({
     @Type(value = DefaultEventTypeEnt.class, name="EventType")
 ,
-  @Type(value = DefaultSpaceItemChangedEventTypeEnt.class, name = "SpaceItemChangedEventType")
+  @Type(value = DefaultHubResourceChangedEventTypeEnt.class, name = "HubResourceChangedEventType")
 ,
   @Type(value = DefaultUpdateAvailableEventTypeEnt.class, name = "UpdateAvailableEventType")
 ,
@@ -121,7 +121,7 @@ public interface EventTypeEntMixIn extends EventTypeEnt {
 @JsonSubTypes({
     @Type(value = DefaultEventTypeEnt.class, name="EventType")
 ,
-  @Type(value = DefaultSpaceItemChangedEventTypeEnt.class, name = "SpaceItemChangedEventType")
+  @Type(value = DefaultHubResourceChangedEventTypeEnt.class, name = "HubResourceChangedEventType")
 ,
   @Type(value = DefaultUpdateAvailableEventTypeEnt.class, name = "UpdateAvailableEventType")
 ,

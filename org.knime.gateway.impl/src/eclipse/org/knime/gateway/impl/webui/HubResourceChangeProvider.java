@@ -52,16 +52,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.core.node.NodeLogger;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
 
 /**
  * ...
  *
  * Kai Franze, KNIME GmbH, Germany
  */
-public class SpaceItemChangeProvider {
+public class HubResourceChangeProvider {
 
-    private final Map<SpaceItemChangedEventTypeEnt, Consumer<String>> m_listeners = new HashMap<>();
+    private final Map<HubResourceChangedEventTypeEnt, Consumer<String>> m_listeners = new HashMap<>();
 
     /**
      * ...
@@ -69,7 +70,7 @@ public class SpaceItemChangeProvider {
      * @param eventTypeEnt ...
      * @param consumer ...
      */
-    public void addListener(final SpaceItemChangedEventTypeEnt eventTypeEnt, final Consumer<String> consumer) {
+    public void addEventListener(final HubResourceChangedEventTypeEnt eventTypeEnt, final Consumer<String> consumer) {
         m_listeners.put(eventTypeEnt, consumer);
     }
 
@@ -79,8 +80,16 @@ public class SpaceItemChangeProvider {
      *
      * @param eventTypeEnt ...
      */
-    public void removeListener(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+    public void removeEventListener(final HubResourceChangedEventTypeEnt eventTypeEnt) {
         m_listeners.remove(eventTypeEnt);
+        NodeLogger.getLogger("Shit").info(m_listeners.toString());
+    }
+
+    /**
+     * ...
+     */
+    public void removeAllEventListeners() {
+        m_listeners.clear();
     }
 
     /**
@@ -88,7 +97,7 @@ public class SpaceItemChangeProvider {
      *
      * @param payload ...
      */
-    public void notifyListeners(final String payload) {
+    public void notifyEventListeners(final String payload) {
         m_listeners.values().forEach(listener -> listener.accept(payload));
     }
 

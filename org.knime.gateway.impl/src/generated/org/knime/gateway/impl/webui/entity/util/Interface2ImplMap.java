@@ -132,6 +132,10 @@ import org.knime.gateway.api.webui.entity.ExpandResultEnt.ExpandResultEntBuilder
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
 import org.knime.gateway.api.webui.entity.ExtensionEnt.ExtensionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultExtensionEnt;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultHubResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt.HubResourceChangedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultHubResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
@@ -250,10 +254,6 @@ import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt.SpaceGroupEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
@@ -484,6 +484,12 @@ public class Interface2ImplMap {
         if(clazz == ExtensionEntBuilder.class) {
             return (B)new DefaultExtensionEnt.DefaultExtensionEntBuilder();
         }        
+        if(clazz == HubResourceChangedEventEntBuilder.class) {
+            return (B)new DefaultHubResourceChangedEventEnt.DefaultHubResourceChangedEventEntBuilder();
+        }        
+        if(clazz == HubResourceChangedEventTypeEntBuilder.class) {
+            return (B)new DefaultHubResourceChangedEventTypeEnt.DefaultHubResourceChangedEventTypeEntBuilder();
+        }        
         if(clazz == InsertNodeCommandEntBuilder.class) {
             return (B)new DefaultInsertNodeCommandEnt.DefaultInsertNodeCommandEntBuilder();
         }        
@@ -660,12 +666,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == SpaceGroupEntBuilder.class) {
             return (B)new DefaultSpaceGroupEnt.DefaultSpaceGroupEntBuilder();
-        }        
-        if(clazz == SpaceItemChangedEventEntBuilder.class) {
-            return (B)new DefaultSpaceItemChangedEventEnt.DefaultSpaceItemChangedEventEntBuilder();
-        }        
-        if(clazz == SpaceItemChangedEventTypeEntBuilder.class) {
-            return (B)new DefaultSpaceItemChangedEventTypeEnt.DefaultSpaceItemChangedEventTypeEntBuilder();
         }        
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();

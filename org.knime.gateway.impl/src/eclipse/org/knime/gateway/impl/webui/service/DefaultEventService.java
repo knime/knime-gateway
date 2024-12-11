@@ -55,9 +55,9 @@ import java.util.Map;
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
@@ -68,7 +68,7 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.SpaceItemChangeProvider;
+import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
@@ -76,9 +76,9 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
+import org.knime.gateway.impl.webui.service.events.HubResourceChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource;
 import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
-import org.knime.gateway.impl.webui.service.events.SpaceItemChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
@@ -125,8 +125,8 @@ public final class DefaultEventService implements EventService {
             ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
     // TODO: Is this required or not?
-    private final SpaceItemChangeProvider m_spaceItemChangeProvider =
-        ServiceDependencies.getServiceDependency(SpaceItemChangeProvider.class, false);
+    private final HubResourceChangeProvider m_hubResourceChangeProvider =
+        ServiceDependencies.getServiceDependency(HubResourceChangeProvider.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -148,7 +148,9 @@ public final class DefaultEventService implements EventService {
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
+
         // TODO replace with switch
+
         // Set the event source depending on the event type
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
@@ -182,9 +184,9 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowMonitorStateChangedEventSource(m_eventConsumer, m_projectManager,
                     m_workflowMiddleware));
-        } else if (eventTypeEnt instanceof SpaceItemChangedEventTypeEnt) {
+        } else if (eventTypeEnt instanceof HubResourceChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceItemChangeProvider));
+                t -> new HubResourceChangedEventSource(m_eventConsumer, m_hubResourceChangeProvider));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
