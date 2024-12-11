@@ -281,36 +281,47 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testHubResourceChangedEventListener() throws Exception {
-        // Notify listeners and check for no event
+        // No listener, no event
         m_hubResourceChangeProvider.notifyEventListeners("nothing");
         verify(m_testConsumer, times(0)).accept(any(), any());
 
         var es = DefaultEventService.getInstance();
         // Note: The 'HubResourceChangedEventTypeEnt' has 'getTypeID()' and 'getTypeId()'
-        var eventType = builder(HubResourceChangedEventTypeEntBuilder.class) //
-                .setProviderId("providerId") //
-                .setSpaceId("spaceId") //
-                .setItemId("itemId") //
-                .build();
-        es.addEventListener(eventType);
+        var eventType1 = buildHubResourceChangedEventType("providerId1", "spaceId1", "itemId1");
+        es.addEventListener(eventType1);
 
-        // Notify listeners and check for event
+        // One listener, one event
         m_hubResourceChangeProvider.notifyEventListeners("foo");
-        var expectedEvent1 = buildSpaceItemChangedEvent(eventType, "foo");
-        verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent1);
-        m_hubResourceChangeProvider.notifyEventListeners("bar");
-        var expectedEvent2 = buildSpaceItemChangedEvent(eventType, "bar");
-        verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent2);
+        var expectedEvent1 = buildHubResourceChangedEvent(eventType1, "foo");
+        verify(m_testConsumer, times(1)).accept("HubResourceChangedEvent", expectedEvent1);
 
-        es.removeEventListener(eventType);
+        var eventType2 = buildHubResourceChangedEventType("providerId2", "spaceId2", "itemId2");
+        es.addEventListener(eventType2);
         Mockito.clearInvocations(m_testConsumer);
 
-        // Notify listeners and check for no event
+        // Two listeners, two events
+        m_hubResourceChangeProvider.notifyEventListeners("bar");
+        verify(m_testConsumer, times(2)).accept(eq("HubResourceChangedEvent"), any());
+
+        es.removeEventListener(eventType1);
+        es.removeEventListener(eventType2);
+        Mockito.clearInvocations(m_testConsumer);
+
+        // No listener, no event
         m_hubResourceChangeProvider.notifyEventListeners("nothing");
         verify(m_testConsumer, times(0)).accept(any(), any());
     }
 
-    private static HubResourceChangedEventEnt buildSpaceItemChangedEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
+    private static HubResourceChangedEventTypeEnt buildHubResourceChangedEventType(final String providerId,
+        final String spaceId, final String itemId) {
+        return builder(HubResourceChangedEventTypeEntBuilder.class) //
+            .setProviderId(providerId) //
+            .setSpaceId(spaceId) //
+            .setItemId(itemId) //
+            .build();
+    }
+
+    private static HubResourceChangedEventEnt buildHubResourceChangedEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
         final String payload) {
         return builder(HubResourceChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
