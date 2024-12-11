@@ -56,6 +56,7 @@ import java.util.Map;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.NodeRepository;
@@ -143,12 +144,12 @@ public final class ServiceDependencies {
      * @param spaceProviders      The space providers
      * @param updateStateProvider The update state provider
      * @param preferencesProvider
-     * @param exampleProjects
      * @param nodeFactoryProvider
      * @param kaiHandler          handle K-AI related requests
      * @param nodeCollections
      * @param nodeRepo
      * @param selectionEventBus
+     * @param hubResourceChangeProvider
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
@@ -161,8 +162,9 @@ public final class ServiceDependencies {
         final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
         final NodeCollections nodeCollections, //
-        final NodeRepository nodeRepo,
-        final SelectionEventBus selectionEventBus) {
+        final NodeRepository nodeRepo, //
+        final SelectionEventBus selectionEventBus, //
+        final HubResourceChangeProvider hubResourceChangeProvider) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -176,6 +178,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
+            ServiceDependencies.setServiceDependency(HubResourceChangeProvider.class, hubResourceChangeProvider);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "
