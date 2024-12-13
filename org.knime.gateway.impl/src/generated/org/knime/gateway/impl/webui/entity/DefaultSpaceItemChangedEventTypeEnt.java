@@ -46,40 +46,120 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultHubResourceChangedEventTypeEnt;
 
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 
 /**
- * Abstract event for all events related to hub resource changed events.
+ * The event type to register for the respective event.
  *
+ * @param typeId
+ * @param providerId
+ * @param spaceId
+ * @param itemId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultHubResourceChangedEventEnt(
-    ) implements HubResourceChangedEventEnt {
+public record DefaultSpaceItemChangedEventTypeEnt(
+    String typeId,
+    String providerId,
+    String spaceId,
+    String itemId) implements SpaceItemChangedEventTypeEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultHubResourceChangedEventEnt {
+    public DefaultSpaceItemChangedEventTypeEnt {
+        if(providerId == null) {
+            throw new IllegalArgumentException("<providerId> must not be null.");
+        }
+        if(spaceId == null) {
+            throw new IllegalArgumentException("<spaceId> must not be null.");
+        }
+        if(itemId == null) {
+            throw new IllegalArgumentException("<itemId> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "HubResourceChangedEvent";
+        return "SpaceItemChangedEventType";
     }
   
+    @Override
+    public String getTypeId() {
+        return typeId;
+    }
+    
+    @Override
+    public String getProviderId() {
+        return providerId;
+    }
+    
+    @Override
+    public String getSpaceId() {
+        return spaceId;
+    }
+    
+    @Override
+    public String getItemId() {
+        return itemId;
+    }
+    
     /**
-     * A builder for {@link DefaultHubResourceChangedEventEnt}.
+     * A builder for {@link DefaultSpaceItemChangedEventTypeEnt}.
      */
-    public static class DefaultHubResourceChangedEventEntBuilder implements HubResourceChangedEventEntBuilder {
+    public static class DefaultSpaceItemChangedEventTypeEntBuilder implements SpaceItemChangedEventTypeEntBuilder {
+
+        private String m_typeId;
+
+        private String m_providerId;
+
+        private String m_spaceId;
+
+        private String m_itemId;
 
         @Override
-        public DefaultHubResourceChangedEventEnt build() {
-            return new DefaultHubResourceChangedEventEnt(
-                );
+        public DefaultSpaceItemChangedEventTypeEntBuilder setTypeId(String typeId) {
+             m_typeId = typeId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemChangedEventTypeEntBuilder setProviderId(String providerId) {
+             if(providerId == null) {
+                 throw new IllegalArgumentException("<providerId> must not be null.");
+             }
+             m_providerId = providerId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemChangedEventTypeEntBuilder setSpaceId(String spaceId) {
+             if(spaceId == null) {
+                 throw new IllegalArgumentException("<spaceId> must not be null.");
+             }
+             m_spaceId = spaceId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemChangedEventTypeEntBuilder setItemId(String itemId) {
+             if(itemId == null) {
+                 throw new IllegalArgumentException("<itemId> must not be null.");
+             }
+             m_itemId = itemId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemChangedEventTypeEnt build() {
+            return new DefaultSpaceItemChangedEventTypeEnt(
+                immutable(m_typeId),
+                immutable(m_providerId),
+                immutable(m_spaceId),
+                immutable(m_itemId));
         }
     
     }

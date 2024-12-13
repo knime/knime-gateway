@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The event type to register for the respective event.
+ * Abstract type for all events related to hub resource changed events.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -64,33 +64,12 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface HubResourceChangedEventTypeEnt extends GatewayEntity, EventTypeEnt {
 
 
-  /**
-   * Get providerId
-   * @return providerId , never <code>null</code>
-   **/
-  public String getProviderId();
-
-  /**
-   * Get spaceId
-   * @return spaceId , never <code>null</code>
-   **/
-  public String getSpaceId();
-
-  /**
-   * Get itemId
-   * @return itemId , never <code>null</code>
-   **/
-  public String getItemId();
-
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (HubResourceChangedEventTypeEnt)other;
       valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
-      valueConsumer.accept("providerId", Pair.create(getProviderId(), e.getProviderId()));
-      valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
-      valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
   }
 
     /**
@@ -105,30 +84,6 @@ public interface HubResourceChangedEventTypeEnt extends GatewayEntity, EventType
          * @return this entity builder for chaining
          */
         HubResourceChangedEventTypeEntBuilder setTypeId(String typeId);
-        
-        /**
-   		 * Set providerId
-         * 
-         * @param providerId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        HubResourceChangedEventTypeEntBuilder setProviderId(String providerId);
-        
-        /**
-   		 * Set spaceId
-         * 
-         * @param spaceId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        HubResourceChangedEventTypeEntBuilder setSpaceId(String spaceId);
-        
-        /**
-   		 * Set itemId
-         * 
-         * @param itemId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        HubResourceChangedEventTypeEntBuilder setItemId(String itemId);
         
         
         /**

@@ -53,8 +53,9 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.util.Optional;
 
 import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 
 /**
@@ -81,9 +82,9 @@ public class HubResourceChangedEventSource
 
     @Override
     public Optional<HubResourceChangedEventEnt>
-        addEventListenerAndGetInitialEventFor(final HubResourceChangedEventTypeEnt eventTypeEnt) { // Has subtypes, like space item changed event type, ...
-        m_hubResourceChangeProvider.addEventListener(eventTypeEnt, payload -> {
-            final var event = buildEvent(eventTypeEnt, payload);
+        addEventListenerAndGetInitialEventFor(final HubResourceChangedEventTypeEnt eventTypeEnt) {
+        m_hubResourceChangeProvider.addEventListener(eventTypeEnt, () -> {
+            final var event = buildEvent(eventTypeEnt);
             sendEvent(event);
         });
         return Optional.empty();
@@ -104,13 +105,18 @@ public class HubResourceChangedEventSource
         return "HubResourceChangedEvent";
     }
 
-    private static HubResourceChangedEventEnt buildEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
-        final String payload) {
-        return builder(HubResourceChangedEventEntBuilder.class) //
+    private static HubResourceChangedEventEnt buildEvent(final HubResourceChangedEventTypeEnt eventTypeEnt) {
+        if (eventTypeEnt instanceof SpaceItemChangedEventTypeEnt spaceItemChangedEventTypeEnt) {
+            return buildEvent(spaceItemChangedEventTypeEnt);
+        }
+        throw new IllegalArgumentException("Not implemented for type '" + eventTypeEnt + "'");
+    }
+
+    private static HubResourceChangedEventEnt buildEvent(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        return builder(SpaceItemChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
             .setSpaceId(eventTypeEnt.getSpaceId()) //
             .setItemId(eventTypeEnt.getItemId()) //
-            .setPayload(payload) //
             .build();
     }
 

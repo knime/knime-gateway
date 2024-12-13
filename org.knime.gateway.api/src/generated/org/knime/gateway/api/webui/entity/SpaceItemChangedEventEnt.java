@@ -42,45 +42,94 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.entity;
-
-import static org.knime.gateway.api.util.EntityUtil.immutable;
-
-import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
+package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
 
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
+
 /**
- * Abstract event for all events related to hub resource changed events.
- *
- *
+ * Event for changes to a hub space item.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultHubResourceChangedEventEnt(
-    ) implements HubResourceChangedEventEnt {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface SpaceItemChangedEventEnt extends GatewayEntity, HubResourceChangedEventEnt {
+
+
+  /**
+   * Get providerId
+   * @return providerId , never <code>null</code>
+   **/
+  public String getProviderId();
+
+  /**
+   * Get spaceId
+   * @return spaceId , never <code>null</code>
+   **/
+  public String getSpaceId();
+
+  /**
+   * Get itemId
+   * @return itemId , never <code>null</code>
+   **/
+  public String getItemId();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (SpaceItemChangedEventEnt)other;
+      valueConsumer.accept("providerId", Pair.create(getProviderId(), e.getProviderId()));
+      valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
+      valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
+  }
 
     /**
-     * Validation for required parameters not being {@code null}.
+     * The builder for the entity.
      */
-    public DefaultHubResourceChangedEventEnt {
-    }
+    public interface SpaceItemChangedEventEntBuilder extends GatewayEntityBuilder<SpaceItemChangedEventEnt> {
 
-    @Override
-    public String getTypeID() {
-        return "HubResourceChangedEvent";
-    }
-  
-    /**
-     * A builder for {@link DefaultHubResourceChangedEventEnt}.
-     */
-    public static class DefaultHubResourceChangedEventEntBuilder implements HubResourceChangedEventEntBuilder {
-
+        /**
+   		 * Set providerId
+         * 
+         * @param providerId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceItemChangedEventEntBuilder setProviderId(String providerId);
+        
+        /**
+   		 * Set spaceId
+         * 
+         * @param spaceId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceItemChangedEventEntBuilder setSpaceId(String spaceId);
+        
+        /**
+   		 * Set itemId
+         * 
+         * @param itemId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceItemChangedEventEntBuilder setItemId(String itemId);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
         @Override
-        public DefaultHubResourceChangedEventEnt build() {
-            return new DefaultHubResourceChangedEventEnt(
-                );
-        }
+        SpaceItemChangedEventEnt build();
     
     }
 

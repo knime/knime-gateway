@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.EventEnt;
+import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,26 +56,80 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Abstract event for all events related to hub resource changed events.
+ * The event type to register for the respective event.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface HubResourceChangedEventEnt extends GatewayEntity, EventEnt {
+public interface SpaceItemChangedEventTypeEnt extends GatewayEntity, HubResourceChangedEventTypeEnt {
 
+
+  /**
+   * Get providerId
+   * @return providerId , never <code>null</code>
+   **/
+  public String getProviderId();
+
+  /**
+   * Get spaceId
+   * @return spaceId , never <code>null</code>
+   **/
+  public String getSpaceId();
+
+  /**
+   * Get itemId
+   * @return itemId , never <code>null</code>
+   **/
+  public String getItemId();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (HubResourceChangedEventEnt)other;
+      var e = (SpaceItemChangedEventTypeEnt)other;
+      valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
+      valueConsumer.accept("providerId", Pair.create(getProviderId(), e.getProviderId()));
+      valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
+      valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface HubResourceChangedEventEntBuilder extends GatewayEntityBuilder<HubResourceChangedEventEnt> {
+    public interface SpaceItemChangedEventTypeEntBuilder extends GatewayEntityBuilder<SpaceItemChangedEventTypeEnt> {
 
+        /**
+         * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
+         * 
+         * @param typeId the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceItemChangedEventTypeEntBuilder setTypeId(String typeId);
+        
+        /**
+   		 * Set providerId
+         * 
+         * @param providerId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceItemChangedEventTypeEntBuilder setProviderId(String providerId);
+        
+        /**
+   		 * Set spaceId
+         * 
+         * @param spaceId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceItemChangedEventTypeEntBuilder setSpaceId(String spaceId);
+        
+        /**
+   		 * Set itemId
+         * 
+         * @param itemId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceItemChangedEventTypeEntBuilder setItemId(String itemId);
+        
         
         /**
         * Creates the entity from the builder.
@@ -84,7 +138,7 @@ public interface HubResourceChangedEventEnt extends GatewayEntity, EventEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        HubResourceChangedEventEnt build();
+        SpaceItemChangedEventTypeEnt build();
     
     }
 

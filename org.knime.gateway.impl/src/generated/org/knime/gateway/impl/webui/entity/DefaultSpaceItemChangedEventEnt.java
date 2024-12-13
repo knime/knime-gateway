@@ -46,40 +46,104 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultHubResourceChangedEventEnt;
 
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
 
 /**
- * Abstract event for all events related to hub resource changed events.
+ * Event for changes to a hub space item.
  *
+ * @param providerId
+ * @param spaceId
+ * @param itemId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultHubResourceChangedEventEnt(
-    ) implements HubResourceChangedEventEnt {
+public record DefaultSpaceItemChangedEventEnt(
+    String providerId,
+    String spaceId,
+    String itemId) implements SpaceItemChangedEventEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultHubResourceChangedEventEnt {
+    public DefaultSpaceItemChangedEventEnt {
+        if(providerId == null) {
+            throw new IllegalArgumentException("<providerId> must not be null.");
+        }
+        if(spaceId == null) {
+            throw new IllegalArgumentException("<spaceId> must not be null.");
+        }
+        if(itemId == null) {
+            throw new IllegalArgumentException("<itemId> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "HubResourceChangedEvent";
+        return "SpaceItemChangedEvent";
     }
   
+    @Override
+    public String getProviderId() {
+        return providerId;
+    }
+    
+    @Override
+    public String getSpaceId() {
+        return spaceId;
+    }
+    
+    @Override
+    public String getItemId() {
+        return itemId;
+    }
+    
     /**
-     * A builder for {@link DefaultHubResourceChangedEventEnt}.
+     * A builder for {@link DefaultSpaceItemChangedEventEnt}.
      */
-    public static class DefaultHubResourceChangedEventEntBuilder implements HubResourceChangedEventEntBuilder {
+    public static class DefaultSpaceItemChangedEventEntBuilder implements SpaceItemChangedEventEntBuilder {
+
+        private String m_providerId;
+
+        private String m_spaceId;
+
+        private String m_itemId;
 
         @Override
-        public DefaultHubResourceChangedEventEnt build() {
-            return new DefaultHubResourceChangedEventEnt(
-                );
+        public DefaultSpaceItemChangedEventEntBuilder setProviderId(String providerId) {
+             if(providerId == null) {
+                 throw new IllegalArgumentException("<providerId> must not be null.");
+             }
+             m_providerId = providerId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemChangedEventEntBuilder setSpaceId(String spaceId) {
+             if(spaceId == null) {
+                 throw new IllegalArgumentException("<spaceId> must not be null.");
+             }
+             m_spaceId = spaceId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemChangedEventEntBuilder setItemId(String itemId) {
+             if(itemId == null) {
+                 throw new IllegalArgumentException("<itemId> must not be null.");
+             }
+             m_itemId = itemId;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceItemChangedEventEnt build() {
+            return new DefaultSpaceItemChangedEventEnt(
+                immutable(m_providerId),
+                immutable(m_spaceId),
+                immutable(m_itemId));
         }
     
     }

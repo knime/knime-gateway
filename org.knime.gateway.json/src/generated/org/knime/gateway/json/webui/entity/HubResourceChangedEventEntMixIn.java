@@ -70,22 +70,6 @@ public interface HubResourceChangedEventEntMixIn extends HubResourceChangedEvent
     @JsonIgnore
     public String getTypeID();
 
-    @Override
-    @JsonProperty("providerId")
-    public String getProviderId();
-    
-    @Override
-    @JsonProperty("spaceId")
-    public String getSpaceId();
-    
-    @Override
-    @JsonProperty("itemId")
-    public String getItemId();
-    
-    @Override
-    @JsonProperty("payload")
-    public String getPayload();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -99,22 +83,6 @@ public interface HubResourceChangedEventEntMixIn extends HubResourceChangedEvent
         @Override
         public HubResourceChangedEventEntMixIn build();
     
-        @Override
-        @JsonProperty("providerId")
-        public HubResourceChangedEventEntMixInBuilder setProviderId(final String providerId);
-        
-        @Override
-        @JsonProperty("spaceId")
-        public HubResourceChangedEventEntMixInBuilder setSpaceId(final String spaceId);
-        
-        @Override
-        @JsonProperty("itemId")
-        public HubResourceChangedEventEntMixInBuilder setItemId(final String itemId);
-        
-        @Override
-        @JsonProperty("payload")
-        public HubResourceChangedEventEntMixInBuilder setPayload(final String payload);
-        
     }
 
 

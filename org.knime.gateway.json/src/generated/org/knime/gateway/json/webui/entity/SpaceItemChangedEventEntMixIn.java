@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,58 +40,75 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Dec 10, 2024 (kai): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.json.webui.entity;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.knime.gateway.json.webui.entity.HubResourceChangedEventEntMixIn;
 
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventEnt.DefaultSpaceItemChangedEventEntBuilder;
 
 /**
- * ...
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
- * Kai Franze, KNIME GmbH, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class HubResourceChangeProvider {
 
-    private final Map<HubResourceChangedEventTypeEnt, Runnable> m_listeners = new HashMap<>();
+@JsonDeserialize(builder=DefaultSpaceItemChangedEventEntBuilder.class)
+@JsonSerialize(as=SpaceItemChangedEventEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface SpaceItemChangedEventEntMixIn extends SpaceItemChangedEventEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("providerId")
+    public String getProviderId();
+    
+    @Override
+    @JsonProperty("spaceId")
+    public String getSpaceId();
+    
+    @Override
+    @JsonProperty("itemId")
+    public String getItemId();
+    
 
     /**
-     * ...
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
-     * @param eventTypeEnt ...
-     * @param runnable ...
+     * @author Martin Horn, University of Konstanz
      */
-    public void addEventListener(final HubResourceChangedEventTypeEnt eventTypeEnt, final Runnable runnable) {
-        m_listeners.put(eventTypeEnt, runnable);
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface SpaceItemChangedEventEntMixInBuilder extends SpaceItemChangedEventEntBuilder {
+    
+        @Override
+        public SpaceItemChangedEventEntMixIn build();
+    
+        @Override
+        @JsonProperty("providerId")
+        public SpaceItemChangedEventEntMixInBuilder setProviderId(final String providerId);
+        
+        @Override
+        @JsonProperty("spaceId")
+        public SpaceItemChangedEventEntMixInBuilder setSpaceId(final String spaceId);
+        
+        @Override
+        @JsonProperty("itemId")
+        public SpaceItemChangedEventEntMixInBuilder setItemId(final String itemId);
+        
     }
 
-    /**
-     * ...
-     *
-     * @param eventTypeEnt ...
-     */
-    public void removeEventListener(final HubResourceChangedEventTypeEnt eventTypeEnt) {
-        m_listeners.remove(eventTypeEnt);
-    }
-
-    /**
-     * ...
-     */
-    public void removeAllEventListeners() {
-        m_listeners.clear();
-    }
-
-    /**
-     * ...
-     */
-    public void notifyEventListeners() {
-        m_listeners.values().forEach(Runnable::run);
-    }
 
 }
+

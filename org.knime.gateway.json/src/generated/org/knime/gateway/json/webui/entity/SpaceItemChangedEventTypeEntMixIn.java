@@ -42,46 +42,81 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import static org.knime.gateway.api.util.EntityUtil.immutable;
+import org.knime.gateway.json.webui.entity.HubResourceChangedEventTypeEntMixIn;
 
-import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt.DefaultSpaceItemChangedEventTypeEntBuilder;
 
 /**
- * Abstract event for all events related to hub resource changed events.
- *
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultHubResourceChangedEventEnt(
-    ) implements HubResourceChangedEventEnt {
 
-    /**
-     * Validation for required parameters not being {@code null}.
-     */
-    public DefaultHubResourceChangedEventEnt {
-    }
+@JsonDeserialize(builder=DefaultSpaceItemChangedEventTypeEntBuilder.class)
+@JsonSerialize(as=SpaceItemChangedEventTypeEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface SpaceItemChangedEventTypeEntMixIn extends SpaceItemChangedEventTypeEnt {
 
     @Override
-    public String getTypeID() {
-        return "HubResourceChangedEvent";
-    }
-  
-    /**
-     * A builder for {@link DefaultHubResourceChangedEventEnt}.
-     */
-    public static class DefaultHubResourceChangedEventEntBuilder implements HubResourceChangedEventEntBuilder {
+    @JsonIgnore
+    public String getTypeID();
 
-        @Override
-        public DefaultHubResourceChangedEventEnt build() {
-            return new DefaultHubResourceChangedEventEnt(
-                );
-        }
+    @Override
+    @JsonProperty("typeId")
+    public String getTypeId();
     
+    @Override
+    @JsonProperty("providerId")
+    public String getProviderId();
+    
+    @Override
+    @JsonProperty("spaceId")
+    public String getSpaceId();
+    
+    @Override
+    @JsonProperty("itemId")
+    public String getItemId();
+    
+
+    /**
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
+     */
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface SpaceItemChangedEventTypeEntMixInBuilder extends SpaceItemChangedEventTypeEntBuilder {
+    
+        @Override
+        public SpaceItemChangedEventTypeEntMixIn build();
+    
+        @Override
+        @JsonProperty("typeId")
+        public SpaceItemChangedEventTypeEntMixInBuilder setTypeId(final String typeId);
+        
+        @Override
+        @JsonProperty("providerId")
+        public SpaceItemChangedEventTypeEntMixInBuilder setProviderId(final String providerId);
+        
+        @Override
+        @JsonProperty("spaceId")
+        public SpaceItemChangedEventTypeEntMixInBuilder setSpaceId(final String spaceId);
+        
+        @Override
+        @JsonProperty("itemId")
+        public SpaceItemChangedEventTypeEntMixInBuilder setItemId(final String itemId);
+        
     }
+
 
 }
+

@@ -70,13 +70,14 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt.HubResourceChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -282,25 +283,25 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
     @Test
     public void testHubResourceChangedEventListener() throws Exception {
         // No listener, no event
-        m_hubResourceChangeProvider.notifyEventListeners("nothing");
+        m_hubResourceChangeProvider.notifyEventListeners();
         verify(m_testConsumer, times(0)).accept(any(), any());
 
         var es = DefaultEventService.getInstance();
         // Note: The 'HubResourceChangedEventTypeEnt' has 'getTypeID()' and 'getTypeId()'
-        var eventType1 = buildHubResourceChangedEventType("providerId1", "spaceId1", "itemId1");
+        var eventType1 = buildSpaceItemChangedEventType("providerId1", "spaceId1", "itemId1");
         es.addEventListener(eventType1);
 
         // One listener, one event
-        m_hubResourceChangeProvider.notifyEventListeners("foo");
-        var expectedEvent1 = buildHubResourceChangedEvent(eventType1, "foo");
+        m_hubResourceChangeProvider.notifyEventListeners();
+        var expectedEvent1 = buildSpaceItemChangedEvent(eventType1);
         verify(m_testConsumer, times(1)).accept("HubResourceChangedEvent", expectedEvent1);
 
-        var eventType2 = buildHubResourceChangedEventType("providerId2", "spaceId2", "itemId2");
+        var eventType2 = buildSpaceItemChangedEventType("providerId2", "spaceId2", "itemId2");
         es.addEventListener(eventType2);
         Mockito.clearInvocations(m_testConsumer);
 
         // Two listeners, two events
-        m_hubResourceChangeProvider.notifyEventListeners("bar");
+        m_hubResourceChangeProvider.notifyEventListeners();
         verify(m_testConsumer, times(2)).accept(eq("HubResourceChangedEvent"), any());
 
         es.removeEventListener(eventType1);
@@ -308,26 +309,25 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         Mockito.clearInvocations(m_testConsumer);
 
         // No listener, no event
-        m_hubResourceChangeProvider.notifyEventListeners("nothing");
+        m_hubResourceChangeProvider.notifyEventListeners();
         verify(m_testConsumer, times(0)).accept(any(), any());
     }
 
-    private static HubResourceChangedEventTypeEnt buildHubResourceChangedEventType(final String providerId,
+    private static SpaceItemChangedEventTypeEnt buildSpaceItemChangedEventType(final String providerId,
         final String spaceId, final String itemId) {
-        return builder(HubResourceChangedEventTypeEntBuilder.class) //
+        return builder(SpaceItemChangedEventTypeEntBuilder.class) //
             .setProviderId(providerId) //
             .setSpaceId(spaceId) //
             .setItemId(itemId) //
             .build();
     }
 
-    private static HubResourceChangedEventEnt buildHubResourceChangedEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
-        final String payload) {
-        return builder(HubResourceChangedEventEntBuilder.class) //
+    private static SpaceItemChangedEventEnt
+        buildSpaceItemChangedEvent(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        return builder(SpaceItemChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
             .setSpaceId(eventTypeEnt.getSpaceId()) //
             .setItemId(eventTypeEnt.getItemId()) //
-            .setPayload(payload) //
             .build();
     }
 
