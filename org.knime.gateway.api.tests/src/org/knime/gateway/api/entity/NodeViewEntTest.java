@@ -214,7 +214,7 @@ class NodeViewEntTest {
 
         // a node view as a 'component' without initial data
         nodeViewCreator = m -> {
-            Page p = Page.builder("org.knime.gateway.api.tests", "files", "component.js").build();
+            Page p = Page.create().fromFile().bundleID("org.knime.gateway.api.tests").basePath("files").relativeFilePath("component.js");
             return NodeViewTestUtil.createNodeView(p);
         };
         nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
@@ -423,7 +423,7 @@ class NodeViewEntTest {
 
     private static Pair<WorkflowManager, NativeNodeContainer> createExecutedNodeTableView() throws Exception {
         Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> NodeViewTestUtil
-            .createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
+            .createTableView(Page.create().fromString(() -> "blub").relativePath("index.html"), null, null, null, null);
 
         return createExecutedNodeTableView(nodeViewCreator, 0);
     }
@@ -432,7 +432,7 @@ class NodeViewEntTest {
         throws Exception {
 
         Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> NodeViewTestUtil
-            .createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null, inPortIdx);
+            .createTableView(Page.create().fromString(() -> "blub").relativePath("index.html"), null, null, null, null, inPortIdx);
 
         return createExecutedNodeTableView(nodeViewCreator, inPortIdx);
 
@@ -474,7 +474,7 @@ class NodeViewEntTest {
 
         @Override
         public Page getPage() {
-            return Page.builder(() -> "blub", "index.html").build();
+            return Page.create().fromString(() -> "blub").relativePath("index.html");
         }
 
         @Override
@@ -576,7 +576,7 @@ class NodeViewEntTest {
 
     private static NodeViewEnt createNodeViewEntWithInputSpec(final WorkflowManager wfm, final DataTableSpec spec) {
         Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> NodeViewTestUtil
-            .createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
+            .createTableView(Page.create().fromString(() -> "blub").relativePath("index.html"), null, null, null, null);
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0, nodeViewCreator));
         var source = WorkflowManagerUtil.createAndAddNode(wfm, new TestNodeFactory(spec));
         wfm.addConnection(source.getID(), 1, nnc.getID(), 1);

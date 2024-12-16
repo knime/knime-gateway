@@ -149,7 +149,7 @@ public class SelectionEventsTest {
 
             @Override
             public Page getPage() {
-                return Page.builder(() -> "foo", "bar.html").build();
+                return Page.create().fromString(() -> "foo").relativePath("bar.html");
             }
 
             @Override
@@ -353,7 +353,7 @@ public class SelectionEventsTest {
 
                 @Override
                 public Page getPage() {
-                    return Page.builder(() -> "foo", "bar").build();
+                    return Page.create().fromString(() -> "foo").relativePath("bar");
                 }
 
                 @Override
@@ -473,7 +473,7 @@ public class SelectionEventsTest {
 
                 @Override
                 public Page getPage() {
-                    return Page.builder(() -> "foo", "index.html").build();
+                    return Page.create().fromString(() -> "foo").relativePath("index.html");
                 }
 
                 @Override
