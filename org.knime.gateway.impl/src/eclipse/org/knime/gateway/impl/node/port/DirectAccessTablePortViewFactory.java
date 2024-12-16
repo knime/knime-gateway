@@ -58,6 +58,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewFactory;
 import org.knime.core.webui.page.Page;
+import org.knime.core.webui.page.ReusablePage;
 
 /**
  * A {@link PortView} for all port objects that implement {@link DirectAccessTable}.
@@ -72,9 +73,12 @@ public class DirectAccessTablePortViewFactory implements PortViewFactory<PortObj
         return new PortView() {
 
             @Override
-            public Page getPage() {
-                return Page.builder(CoreUIPlugin.class, "js-src/dist", "DeferredTableView.js") //
-                    .markAsReusable("deferredtableview").build();
+            public ReusablePage getPage() {
+                return Page.create().fromFile() //
+                    .bundleClass(CoreUIPlugin.class) //
+                    .basePath("js-src/dist") //
+                    .relativeFilePath("DeferredTableView.js") //
+                    .getReusablePage("deferredtableview");
             }
 
             @Override

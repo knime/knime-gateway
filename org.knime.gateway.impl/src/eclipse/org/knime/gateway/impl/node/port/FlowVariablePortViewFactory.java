@@ -110,9 +110,11 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
 
             @Override
             public Page getPage() {
-                return Page.builder(CoreUIPlugin.class, "js-src/dist", "TableView.js") //
-                    .markAsReusable("flowvariableview") //
-                    .build();
+                return Page.create().fromFile() //
+                    .bundleClass(CoreUIPlugin.class) //
+                    .basePath("js-src/dist") //
+                    .relativeFilePath("TableView.js") //
+                    .getReusablePage("flowvariableview");
             }
 
         };

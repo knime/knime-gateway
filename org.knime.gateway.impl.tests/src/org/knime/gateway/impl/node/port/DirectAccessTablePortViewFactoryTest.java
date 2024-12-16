@@ -68,6 +68,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.page.ReusablePage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -98,7 +99,7 @@ public class DirectAccessTablePortViewFactoryTest {
             var portView = new DirectAccessTablePortViewFactory().createPortView(directAccessTablePortObject);
             var page = portView.getPage();
             assertThat(page.getContentType().toString(), is("SHADOW_APP"));
-            var pageId = page.getPageIdForReusablePage().orElse(null);
+            var pageId = ((ReusablePage) page).getPageId();
             assertThat(pageId, is("deferredtableview"));
         } finally {
             PortContext.removeLastContext();

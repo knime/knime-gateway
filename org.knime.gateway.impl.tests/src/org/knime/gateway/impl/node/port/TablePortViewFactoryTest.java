@@ -89,6 +89,7 @@ import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
+import org.knime.core.webui.page.ReusablePage;
 
 /**
  * Tests {@link TablePortViewFactory}.
@@ -111,7 +112,7 @@ public class TablePortViewFactoryTest {
             var portView = new TablePortViewFactory().createPortView(bdt);
             var page = portView.getPage();
             assertThat(page.getContentType().toString(), is("SHADOW_APP"));
-            var pageId = page.getPageIdForReusablePage().orElse(null);
+            var pageId = ((ReusablePage) page).getPageId();
             assertThat(pageId, is("tableview"));
         } finally {
             PortContext.removeLastContext();

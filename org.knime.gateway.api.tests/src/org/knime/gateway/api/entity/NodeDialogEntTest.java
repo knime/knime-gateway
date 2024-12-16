@@ -104,9 +104,11 @@ class NodeDialogEntTest {
      */
     @Test
     void testOpenDialogWithoutConnectedInput() {
-        var nc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeDialogNodeFactory(
-            () -> createNodeDialog(Page.builder(() -> "test", "test.html").build(), createNodeSettingsService(), null),
-            1));
+        var nc = WorkflowManagerUtil.createAndAddNode(m_wfm,
+            new NodeDialogNodeFactory(
+                () -> createNodeDialog(Page.create().fromString(() -> "test").relativePath("test.html"),
+                    createNodeSettingsService(), null),
+                1));
 
         var nodeDialogEnt = new NodeDialogEnt(nc);
         assertThat(nodeDialogEnt.getInitialData()).containsSequence("a default model setting");
@@ -122,7 +124,7 @@ class NodeDialogEntTest {
     void testIsWriteProtected() throws URISyntaxException {
         var metanode = m_wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "component");
         var nc = WorkflowManagerUtil.createAndAddNode(metanode, new NodeDialogNodeFactory(
-            () -> createNodeDialog(Page.builder(() -> "test", "test.html").build(), createNodeSettingsService(), null),
+            () -> createNodeDialog(Page.create().fromString(() -> "test").relativePath("test.html"), createNodeSettingsService(), null),
             1));
 
         var componentId = m_wfm.convertMetaNodeToSubNode(metanode.getID()).getConvertedNodeID();
@@ -149,7 +151,7 @@ class NodeDialogEntTest {
 
             @Override
             public Page getPage() {
-                return Page.builder(() -> "blub", "index.html").build();
+                return Page.create().fromString(() -> "blub").relativePath("index.html");
             }
 
             @Override
