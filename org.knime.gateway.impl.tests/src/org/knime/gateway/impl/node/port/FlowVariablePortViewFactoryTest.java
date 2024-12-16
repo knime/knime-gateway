@@ -72,6 +72,7 @@ import org.knime.core.util.LockFailedException;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.node.port.PortContext;
 import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.page.ReusablePage;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -118,7 +119,7 @@ public class FlowVariablePortViewFactoryTest {
         }
         var page = portView.getPage();
         assertThat(page.getContentType().toString(), is("SHADOW_APP"));
-        var pageId = page.getPageIdForReusablePage().orElse(null);
+        var pageId = ((ReusablePage) page).getPageId();
         assertThat(pageId, is("flowvariableview"));
     }
 

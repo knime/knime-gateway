@@ -46,10 +46,15 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,13 +63,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.NodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -98,15 +96,15 @@ public interface NodeEntMixIn extends NodeEnt {
     @Override
     @JsonProperty("id")
     public org.knime.gateway.api.entity.NodeIDEnt getId();
-    
+
     @Override
     @JsonProperty("inPorts")
     public java.util.List<? extends NodePortEnt> getInPorts();
-    
+
     @Override
     @JsonProperty("outPorts")
     public java.util.List<? extends NodePortEnt> getOutPorts();
-    
+
     @Override
     @JsonProperty("hasView")
     public Boolean hasView();
@@ -114,31 +112,31 @@ public interface NodeEntMixIn extends NodeEnt {
     @Override
     @JsonProperty("annotation")
     public NodeAnnotationEnt getAnnotation();
-    
+
     @Override
     @JsonProperty("position")
     public XYEnt getPosition();
-    
+
     @Override
     @JsonProperty("kind")
     public KindEnum getKind();
-    
+
     @Override
     @JsonProperty("dialogType")
     public DialogTypeEnum getDialogType();
-    
+
     @Override
     @JsonProperty("inputContentVersion")
     public Integer getInputContentVersion();
-    
+
     @Override
     @JsonProperty("allowedActions")
     public AllowedNodeActionsEnt getAllowedActions();
-    
+
     @Override
     @JsonProperty("executionInfo")
     public NodeExecutionInfoEnt getExecutionInfo();
-    
+
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -162,22 +160,22 @@ public interface NodeEntMixIn extends NodeEnt {
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodeEntMixInBuilder extends NodeEntBuilder {
-    
+
         @Override
         public NodeEntMixIn build();
-    
+
         @Override
         @JsonProperty("id")
         public NodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
-        
+
         @Override
         @JsonProperty("inPorts")
         public NodeEntMixInBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts);
-        
+
         @Override
         @JsonProperty("outPorts")
         public NodeEntMixInBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts);
-        
+
         @Override
         @JsonProperty("hasView")
         public NodeEntMixInBuilder setHasView(final Boolean hasView);
@@ -185,31 +183,31 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("annotation")
         public NodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
-        
+
         @Override
         @JsonProperty("position")
         public NodeEntMixInBuilder setPosition(final XYEnt position);
-        
+
         @Override
         @JsonProperty("kind")
         public NodeEntMixInBuilder setKind(final KindEnum kind);
-        
+
         @Override
         @JsonProperty("dialogType")
         public NodeEntMixInBuilder setDialogType(final DialogTypeEnum dialogType);
-        
+
         @Override
         @JsonProperty("inputContentVersion")
         public NodeEntMixInBuilder setInputContentVersion(final Integer inputContentVersion);
-        
+
         @Override
         @JsonProperty("allowedActions")
         public NodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
-        
+
         @Override
         @JsonProperty("executionInfo")
         public NodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
-        
+
     }
 
 

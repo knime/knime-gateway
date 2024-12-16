@@ -231,7 +231,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
 
             @Override
             public Page getPage() {
-                return Page.builder(() -> "blub", "index.html").build();
+                return Page.create().fromString(() -> "blub").relativePath("index.html");
             }
 
             @Override
