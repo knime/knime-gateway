@@ -1,10 +1,11 @@
 package org.knime.gateway.impl.webui.service.subscriptions;
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -20,16 +21,16 @@ import org.knime.core.util.proxy.GlobalProxyConfig;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class JettyWebsocketClient extends WebsocketClient {
 
-    private final WebSocketClient m_client;
+    private final org.eclipse.jetty.websocket.client.WebSocketClient m_client;
 
     private final JettyWebsocketListener m_websocketListener;
 
     private final Session m_session;
 
     public JettyWebsocketClient(
-            URI endpoint,
-            String authToken,
-            Function<URI, Optional<GlobalProxyConfig>> proxyConfig
+            final URI endpoint,
+            final String authToken,
+            final Function<URI, Optional<GlobalProxyConfig>> proxyConfig
     ) throws ConnectException {
         super(proxyConfig);
         // TODO use `ProxyConfigurator`
@@ -39,8 +40,8 @@ public class JettyWebsocketClient extends WebsocketClient {
     }
 
 
-    private org.eclipse.jetty.websocket.client.WebSocketClient createClient(final URI endpoint) {
-        var httpClient = new HttpClient();
+    private WebSocketClient createClient(final URI endpoint) {
+        HttpClient httpClient = new HttpClient();
         // A timeout can lead to proxy authentication failure if the back and forth takes too long
         httpClient.setConnectTimeout(10000);
         // TODO -- will modify httpClient
@@ -49,16 +50,31 @@ public class JettyWebsocketClient extends WebsocketClient {
     }
 
 
-    private static Session startSession(final URI endpoint, final String authToken, final WebSocketClient webSocketClient,
+    private Session startSession(final URI endpoint, final String authToken, final WebSocketClient webSocketClient,
             final JettyWebsocketListener webSocketListener) throws ConnectException {
+
+
+        // Connect the client EndPoint to the server.
         try {
             webSocketClient.start();
-            var sessionFuture = webSocketClient.connect(webSocketListener, endpoint, createUpgradeRequest(authToken));
-            return sessionFuture.get(10, TimeUnit.SECONDS);
-        } catch (Exception exception) {
-            stopClient(webSocketClient);
-            throw translateException(exception);
+            //ClientEndPoint clientEndPoint = new ClientEndPoint();
+            // The server URI to connect to.
+            URI serverURI = endpoint;
+            CompletableFuture<Session> clientSessionPromise = webSocketClient.connect(this, serverURI);
+            return clientSessionPromise.get();
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
+        //        try {
+//            var sessionFuture = webSocketClient.connect(webSocketListener, endpoint, createUpgradeRequest(authToken));
+//            return sessionFuture.get(10, TimeUnit.SECONDS);
+//        } catch (Exception exception) {
+//            stopClient(webSocketClient);
+//            throw translateException(exception);
+//        }
     }
 
 
@@ -86,19 +102,15 @@ public class JettyWebsocketClient extends WebsocketClient {
     }
 
     @Override
-    void send(String message) {
+    void send(final String message) {
         m_session.sendText(message, Callback.NOOP);
     }
 
     @Override
-    void addListener(Listener listener) {
+    void addListener(final Listener listener) {
         m_websocketListener.addListener(listener);
     }
 
-    @Override
-    public void close() throws Exception {
-        stopClient(m_client);
-    }
 
     /**
      * Jetty-specific listener that is attached to the jetty websocket client implementation.
@@ -113,7 +125,7 @@ public class JettyWebsocketClient extends WebsocketClient {
         public JettyWebsocketListener() {
         }
 
-        public void addListener(Listener listener) {
+        public void addListener(final Listener listener) {
             m_listeners.add(listener);
         }
 

@@ -68,7 +68,6 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
@@ -82,6 +81,7 @@ import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
+import org.knime.gateway.impl.webui.service.subscriptions.EventDispatcherClient;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -124,9 +124,8 @@ public final class DefaultEventService implements EventService {
     private final KaiHandler m_kaiHandler =
             ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
-    // TODO: Is this required or not?
-    private final HubResourceChangeProvider m_hubResourceChangeProvider =
-        ServiceDependencies.getServiceDependency(HubResourceChangeProvider.class, false);
+    private final EventDispatcherClient m_eventDispatcherClient =
+        ServiceDependencies.getServiceDependency(EventDispatcherClient.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -186,7 +185,7 @@ public final class DefaultEventService implements EventService {
                     m_workflowMiddleware));
         } else if (eventTypeEnt instanceof HubResourceChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new HubResourceChangedEventSource(m_eventConsumer, m_hubResourceChangeProvider));
+                t -> new HubResourceChangedEventSource(m_eventConsumer, m_eventDispatcherClient));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }

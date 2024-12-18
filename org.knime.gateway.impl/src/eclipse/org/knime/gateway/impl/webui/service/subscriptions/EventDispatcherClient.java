@@ -2,6 +2,7 @@ package org.knime.gateway.impl.webui.service.subscriptions;
 
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,54 +22,74 @@ import org.knime.gateway.impl.util.Lazy;
  // TODO number of subscriptions per websocket limited (need to open new ws if we have more subs?)
  // ~> <a href="https://knime-com.atlassian.net/wiki/spaces/PROD/pages/4250533889/Event+Dispatcher">confl docs</a>
  */
-public class EventDispatcherClient implements AutoCloseable {
+// TODO could implement/adapt an interface HubResourceChangeProvider
+public class EventDispatcherClient {
 
-    private final WebsocketClient websocketClient;
+    // moved to field to enable calling this from testing method
+    private final WebsocketClient.Listener websocketListener = new WebsocketClient.Listener() {
+        @Override
+        void onMessage(String message) {
+
+            activeSubscriptions.notifyAllForTesting();  // TODO
+
+            // TODO deserialise `message`
+            var isEvent = false;
+            boolean isHeartbeatPong = false;
+            if (isEvent) {
+                var mockEventResponse = new ResponsePayload.Event();
+                mockEventResponse.notifications().forEach(activeSubscriptions::notify);
+            } else if (isHeartbeatPong) {
+                var mockResponse = new ResponsePayload.Pong("timestamp");
+                heartbeat.setDelay(AdaptiveHeartbeat.Duration.until(mockResponse.expiresAt()));
+            }
+        }
+
+        @Override
+        void onClose(int statusCode, String reason) {
+            // TODO?
+        }
+
+        @Override
+        void onError(int statusCode, String reason) {
+            // TODO?
+        }
+    };
+
+    private AdaptiveHeartbeat heartbeat;
+
+    private final Lazy.Init<WebsocketClient> websocketClient = new Lazy.Init<>(() -> {
+        URI endpoint = null;
+        try {
+            endpoint = new URI("ws://0.0.0.0:8765");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        var authToken = "bar"; // TODO
+        var client = WebsocketClient.createDefault(endpoint, authToken);
+        heartbeat = new AdaptiveHeartbeat(() -> client.send(new RequestPayload.Ping().serialise()));
+        heartbeat.setDelay(defaultHeartbeatDelay);
+        client.addListener(websocketListener);
+        return client;
+        // TODO close client?
+    });
 
     private static final AdaptiveHeartbeat.Duration defaultHeartbeatDelay = AdaptiveHeartbeat.Duration.ofSeconds(30);
 
     private final ActiveSubscriptions activeSubscriptions = new ActiveSubscriptions();
 
-    public EventDispatcherClient() throws WebsocketClient.ConnectException {
-        var endpoint = "foo"; // TODO
-        var authToken = "bar"; // TODO
+    public void callWebsocketListenerForTesting(String message) {
+        websocketListener.onMessage(message);
+    }
 
-        // TODO this will already connect & upgrade to ws and all, and throw -- wanted?
-        // TODO should rather just connect when first subscription is done -- lazyInit
-        websocketClient = WebsocketClient.createDefault(URI.create(endpoint), authToken);
+    public void unsubscribe(String spaceId) {
+        activeSubscriptions.removeAllFor(spaceId);
+        sendSubscriptionUpdate();
+        // TODO close connection when last subscription is removed? with timeout?
+    }
 
-        var heartbeat = new AdaptiveHeartbeat(() -> {
-            websocketClient.send(new RequestPayload.Ping().serialise());
-        });
-        heartbeat.setDelay(defaultHeartbeatDelay);
-
-        websocketClient.addListener(new WebsocketClient.Listener() {
-            @Override
-            void onMessage(String message) {
-                // TODO deserialise `message`
-                var isEvent = true;
-                boolean isHeartbeatPong = true;
-                if (isEvent) {
-                    var mockEventResponse = new ResponsePayload.Event();
-                    mockEventResponse.notifications().forEach(activeSubscriptions::notify);
-                } else  if (isHeartbeatPong) {
-                    var mockResponse = new ResponsePayload.Pong("timestamp");
-                    heartbeat.setDelay(AdaptiveHeartbeat.Duration.until(mockResponse.expiresAt()));
-                }
-            }
-
-            @Override
-            void onClose(int statusCode, String reason) {
-                // TODO?
-            }
-
-            @Override
-            void onError(int statusCode, String reason) {
-                // TODO?
-            }
-        });
-
-
+    public void unsubscribeAll() {
+        activeSubscriptions.clear();
+        sendSubscriptionUpdate();
     }
 
     static class ActiveSubscriptions {
@@ -76,11 +97,17 @@ public class EventDispatcherClient implements AutoCloseable {
         Map<UUID, ActiveSubscription> activeSubscriptions = new HashMap<>();
 
         public void notify(ResponsePayload.Event.SubscriptionNotification notification) {
-            this.get(notification.id()).ifPresent(
-                    subscription -> subscription.callback().accept(
-                            notification.timestamp(),
-                            notification.count()
+            var activeSubscription = this.get(notification.id());
+            activeSubscription.ifPresent(
+                    activeSub -> activeSub.callback().accept(
+                            SubscriptionCallback.SubscriptionNotification.of(notification)
                     ));
+        }
+
+        public void notifyAllForTesting() {
+            activeSubscriptions.values().forEach(activeSubscription -> {
+                activeSubscription.callback().accept(new SubscriptionCallback.SubscriptionNotification("0", 1));
+            });
         }
 
         public void put(ActiveSubscription subscription) {
@@ -92,6 +119,20 @@ public class EventDispatcherClient implements AutoCloseable {
                 return;
             }
             activeSubscriptions.put(subscription.payload().id(), subscription);
+        }
+
+        public void removeAllFor(String spaceId) {
+            // TODO not only spaceId
+            // TODO not consider payload but particular type here after all?
+            // i.e. this is way too indirect for our usecases, via filters and whatnot...
+            activeSubscriptions.entrySet().stream()
+                    .filter(entry -> entry.getValue().payload().filters.stream()
+                    .anyMatch(filter -> filter.value.equals(spaceId))).map(Map.Entry::getValue).findFirst()
+                    .ifPresent(keyToRemove -> activeSubscriptions.remove(keyToRemove));
+        }
+
+        public void clear() {
+            activeSubscriptions.clear();
         }
 
         public Optional<ActiveSubscription> get(UUID id) {
@@ -112,24 +153,29 @@ public class EventDispatcherClient implements AutoCloseable {
     /**
      * public interface
      */
-    public void subscribeToSpace(final String spaceId, SubscriptionCallback callback) {
-        var entity = new RequestPayload.CreateSubscription.Subscription.RepositoryItems(new Filter("spaceId", spaceId));
-        activeSubscriptions.put(new ActiveSubscription(entity, callback));
-        updateSubscriptions();
+    public void subscribeToSpace(final String spaceId, SubscriptionCallback subscriptionCallback) {
+        // TODO "payload" vs "entity"
+        var payload = new RequestPayload.CreateSubscription.Subscription.RepositoryItems(new Filter("spaceId", spaceId));
+        activeSubscriptions.put(new ActiveSubscription(payload, subscriptionCallback));
+        sendSubscriptionUpdate();
     }
 
-    private void updateSubscriptions() {
-        websocketClient.send(new RequestPayload.CreateSubscription(activeSubscriptions.getPayloads()).serialise());
-    }
-
-    @Override
-    public void close() throws Exception {
-        websocketClient.close();
+    private void sendSubscriptionUpdate() {
+        websocketClient.initialised().send(new RequestPayload.CreateSubscription(activeSubscriptions.getPayloads()).serialise());
     }
 
     public interface SubscriptionCallback {
-        void accept(String timestamp, int count);
+        void accept(SubscriptionNotification notification);
+
+        public record SubscriptionNotification(String timestamp, int count) {
+
+            static SubscriptionNotification of(ResponsePayload.Event.SubscriptionNotification notificationPayload) {
+                return new SubscriptionNotification(notificationPayload.timestamp(), notificationPayload.count());
+            }
+
+        }
     }
+
 
     private static class AdaptiveHeartbeat {
         private final Runnable onBeat;

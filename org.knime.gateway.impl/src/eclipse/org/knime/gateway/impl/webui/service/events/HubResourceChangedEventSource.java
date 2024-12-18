@@ -55,7 +55,7 @@ import java.util.Optional;
 import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
 import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.HubResourceChangeProvider;
+import org.knime.gateway.impl.webui.service.subscriptions.EventDispatcherClient;
 
 /**
  * ...
@@ -65,38 +65,41 @@ import org.knime.gateway.impl.webui.HubResourceChangeProvider;
 public class HubResourceChangedEventSource
     extends EventSource<HubResourceChangedEventTypeEnt, HubResourceChangedEventEnt> {
 
-    private final HubResourceChangeProvider m_hubResourceChangeProvider;
+    private final EventDispatcherClient eventDispatcherClient;
 
     /**
      * ...
      *
      * @param eventConsumer ...
-     * @param hubResourceChangeProvider ...
      */
     public HubResourceChangedEventSource(final EventConsumer eventConsumer,
-        final HubResourceChangeProvider hubResourceChangeProvider) {
+        final EventDispatcherClient eventDispatcherClient) {
         super(eventConsumer);
-        m_hubResourceChangeProvider = hubResourceChangeProvider;
+        this.eventDispatcherClient = eventDispatcherClient;
     }
 
     @Override
     public Optional<HubResourceChangedEventEnt>
         addEventListenerAndGetInitialEventFor(final HubResourceChangedEventTypeEnt eventTypeEnt) { // Has subtypes, like space item changed event type, ...
-        m_hubResourceChangeProvider.addEventListener(eventTypeEnt, payload -> {
-            final var event = buildEvent(eventTypeEnt, payload);
+        // TODO instead of directly considering EventDispatcherClient, this could also take an interface "HubResourceChangeProvider"
+        //  which is implemented / adapted by EventDispatcherClient (i.e. the signature for the constructor here would be the interface)
+        EventDispatcherClient.SubscriptionCallback subscriptionCallback = subscriptionNotification -> {
+            final var event = buildEvent(eventTypeEnt);
             sendEvent(event);
-        });
+        };
+        eventDispatcherClient.subscribeToSpace(eventTypeEnt.getSpaceId(), subscriptionCallback);
+
         return Optional.empty();
     }
 
     @Override
     public void removeEventListener(final HubResourceChangedEventTypeEnt eventTypeEnt) {
-        m_hubResourceChangeProvider.removeEventListener(eventTypeEnt);
+        eventDispatcherClient.unsubscribe(eventTypeEnt.getItemId());
     }
 
     @Override
     public void removeAllEventListeners() {
-        m_hubResourceChangeProvider.removeAllEventListeners();
+        eventDispatcherClient.unsubscribeAll();
     }
 
     @Override
@@ -104,13 +107,11 @@ public class HubResourceChangedEventSource
         return "HubResourceChangedEvent";
     }
 
-    private static HubResourceChangedEventEnt buildEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
-        final String payload) {
+    private static HubResourceChangedEventEnt buildEvent(final HubResourceChangedEventTypeEnt eventTypeEnt) {
         return builder(HubResourceChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
             .setSpaceId(eventTypeEnt.getSpaceId()) //
             .setItemId(eventTypeEnt.getItemId()) //
-            .setPayload(payload) //
             .build();
     }
 

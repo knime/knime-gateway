@@ -18,7 +18,7 @@ import org.knime.core.util.proxy.search.GlobalProxySearch;
  * Implementing classes should make use of the proxy config supplied to the constructor
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public abstract class WebsocketClient implements AutoCloseable {
+public abstract class WebsocketClient {
 
     public static class ConnectException extends Exception {
 
@@ -38,9 +38,13 @@ public abstract class WebsocketClient implements AutoCloseable {
 
     }
 
-    public static WebsocketClient createDefault(final URI endpoint, final String authToken)
-            throws JettyWebsocketClient.ConnectException {
-        return new JettyWebsocketClient(endpoint, authToken, GlobalProxySearch::getCurrentFor);
+    public static WebsocketClient createDefault(final URI endpoint, final String authToken) {
+        try {
+            return new JettyWebsocketClient(endpoint, authToken, GlobalProxySearch::getCurrentFor);
+        } catch (ConnectException e) {
+            // TODO report, raise w/ this method, ...
+        }
+        return null;
     }
 
     abstract void send(final String message);
