@@ -4,8 +4,8 @@ Bundle-Name: Unit-Tests for org.knime.gateway.json
 Bundle-SymbolicName: org.knime.gateway.json.tests;singleton:=true
 Bundle-Version: 5.5.0.qualifier
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Fragment-Host: org.knime.gateway.json;bundle-version="[5.4.0,6.0.0)"
-Require-Bundle: org.knime.testing;bundle-version="[5.4.0,6.0.0)",
+Fragment-Host: org.knime.gateway.json;bundle-version="[5.5.0,6.0.0)"
+Require-Bundle: org.knime.testing;bundle-version="[5.5.0,6.0.0)",
  org.junit;bundle-version="[4.13.2,5.0.0)",
  org.hamcrest.library;bundle-version="[2.2.0,3.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
