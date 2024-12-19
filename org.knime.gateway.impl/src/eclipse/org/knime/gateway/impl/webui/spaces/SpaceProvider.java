@@ -53,6 +53,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -72,6 +73,13 @@ public interface SpaceProvider {
      * The ID of the local space provider
      */
     String LOCAL_SPACE_PROVIDER_ID = "local";
+
+    /**
+     * TODO
+     *
+     * @param loginErrorHandler TODO
+     */
+    void init(final Consumer<String> loginErrorHandler);
 
     /**
      * @return the space provider type
@@ -154,6 +162,7 @@ public interface SpaceProvider {
             final IProgressMonitor progressMonitor) throws CoreException, IOException {
         throw new UnsupportedOperationException();
     }
+
 
     /**
      * Returns the connection if this provider is connected to its remote location.

@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -440,6 +441,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     private static SpaceProvider createLocalSpaceProviderForTesting(final Path testWorkspacePath) {
         var localWorkspace = new LocalWorkspace(testWorkspacePath);
         return new SpaceProvider() {
+
+            @Override
+            public void init(final Consumer<String> loginErrorHandler) {
+               //
+            }
+
             @Override
             public String getId() {
                 return "local-testing";
