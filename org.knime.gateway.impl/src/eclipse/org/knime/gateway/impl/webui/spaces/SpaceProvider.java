@@ -53,6 +53,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -72,6 +73,13 @@ public interface SpaceProvider {
      * The ID of the local space provider
      */
     String LOCAL_SPACE_PROVIDER_ID = "local";
+
+    /**
+     * Initializes the space provider after creation.
+     *
+     * @param loginErrorHandler error handler for login errors
+     */
+    void init(final Consumer<String> loginErrorHandler);
 
     /**
      * @return the space provider type
