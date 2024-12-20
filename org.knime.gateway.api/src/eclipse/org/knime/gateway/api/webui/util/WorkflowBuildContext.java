@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.api.webui.util;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -202,15 +201,8 @@ public final class WorkflowBuildContext {
 
     private String[] getPortGroupsPerIndex(final NativeNodeContainer nnc, final boolean inPort) {
         return getPortsConfiguration(nnc)//
+            .map(portsConfig -> portsConfig.getPortGroupsPerIndex(inPort))
             // Create map of port group to port group indices
-            .map(portsConfig -> inPort ? portsConfig.getInputPortLocation() : portsConfig.getOutputPortLocation())//
-            // Create a String array of port groups per index
-            .map(portGroupsToIndicesMap -> {
-                var portGroupsPerIndex = new String[inPort ? (nnc.getNrInPorts() - 1) : (nnc.getNrOutPorts() - 1)];
-                portGroupsToIndicesMap.entrySet().forEach(
-                    entry -> Arrays.stream(entry.getValue()).forEach(i -> portGroupsPerIndex[i] = entry.getKey()));
-                return portGroupsPerIndex;
-            })//
             // Return null if the Optional received by "getPortsConfiguration(...)" was empty
             .orElse(null);
     }
