@@ -44,16 +44,11 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.PortCommandEnt;
-
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 /**
  * Remove a port from a node
@@ -65,7 +60,7 @@ public interface RemovePortCommandEnt extends GatewayEntity, PortCommandEnt {
 
 
   /**
-   * The index of the port to be removed (out of all ports in this side). Only used for container nodes.
+   * The index of the port to be removed (out of all ports in this side, including implicit flow variable port).
    * @return portIndex 
    **/
   public Integer getPortIndex();
@@ -120,7 +115,7 @@ public interface RemovePortCommandEnt extends GatewayEntity, PortCommandEnt {
         RemovePortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         /**
-         * The index of the port to be removed (out of all ports in this side). Only used for container nodes.
+         * The index of the port to be removed (out of all ports in this side, including implicit flow variable port).
          * 
          * @param portIndex the property value,  
          * @return this entity builder for chaining

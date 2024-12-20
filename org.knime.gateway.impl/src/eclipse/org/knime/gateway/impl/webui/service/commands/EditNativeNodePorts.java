@@ -48,13 +48,16 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.ReplaceNodeResult;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
@@ -89,16 +92,21 @@ final class EditNativeNodePorts implements EditPorts {
         var groupName = addPortCommandEnt.getPortGroup();
         var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
-        executeInternal(creationConfigCopy);
+        executeAddPort(creationConfigCopy);
         return findNewPortIdx(addPortCommandEnt);
     }
 
     @Override
     public void removePort(final RemovePortCommandEnt removePortCommandEnt) {
-        var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
-        var groupName = removePortCommandEnt.getPortGroup();
-        getExtendablePortGroup(creationConfigCopy, groupName).removeLastPort();
-        executeInternal(creationConfigCopy);
+        // instance that will be modified and used for creating the replacing node
+        var newCreationConfig = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
+        var isInputSide = removePortCommandEnt.getSide() == SideEnum.INPUT;
+        var portsConfig = newCreationConfig.getPortConfig().orElseThrow();
+        var totalPortIndexToRemove = removePortCommandEnt.getPortIndex();
+        var portGroup = (ExtendablePortGroup)portsConfig.getGroup(removePortCommandEnt.getPortGroup());
+        var indexInGroupToRemove = portsConfig.getPortIndexWithinGroup(totalPortIndexToRemove, isInputSide);
+        portGroup.removePort(indexInGroupToRemove);
+        executeRemovePort(newCreationConfig, totalPortIndexToRemove, isInputSide);
     }
 
     @Override
@@ -127,12 +135,54 @@ final class EditNativeNodePorts implements EditPorts {
             .sum();
     }
 
-    private final NodeID getNodeId() {
+    private NodeID getNodeId() {
         return m_portCommandEnt.getNodeId().toNodeID(m_wfm);
     }
 
-    private void executeInternal(final ModifiableNodeCreationConfiguration creationConfigCopy) {
-        m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), creationConfigCopy);
+    private void executeAddPort(final ModifiableNodeCreationConfiguration newCreationConfig) {
+        m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), newCreationConfig);
+    }
+
+    private void executeRemovePort(final ModifiableNodeCreationConfiguration creationConfigCopy,
+        final int totalPortIndexToRemove, final boolean isInputSide) {
+        var portMappings = getPortMappingForPortRemoval(totalPortIndexToRemove, isInputSide,
+            CoreUtil.getNodeContainer(getNodeId(), m_wfm).orElseThrow());
+        m_replaceNodeResult = m_wfm.replaceNode( //
+            getNodeId(), //
+            creationConfigCopy, //
+            portMappings.map(ReplaceNodeResult.PortMapping::toMap, ReplaceNodeResult.PortMapping::toMap) //
+        );
+    }
+
+    /**
+     * @param totalPortIndexToRemove Index into the total number of ports on the node, counting implicit flow variable
+     *            port on native nodes.
+     * @param isInputSide whether port is removed on the input- or output-side
+     * @param node the node being edited
+     * @return mappings for input- and output side
+     */
+    private static Pair<ReplaceNodeResult.PortMapping, ReplaceNodeResult.PortMapping> getPortMappingForPortRemoval(
+        final int totalPortIndexToRemove, final boolean isInputSide, final NodeContainer node) {
+        var pairOfMappings = new Pair<>( //
+            // Use NodeContainer#getNrInPorts / #getNrOutPorts to also count implicit flow variable port if present
+            ReplaceNodeResult.PortMapping.identity(node.getNrInPorts()), //
+            ReplaceNodeResult.PortMapping.identity(node.getNrOutPorts()) //
+        );
+        return applyToOneOfPair( //
+            pairOfMappings, //
+            isInputSide, //
+            mapping -> mapping.removeIndex(totalPortIndexToRemove) //
+        );
+    }
+
+    private static <X> Pair<X, X> applyToOneOfPair(final Pair<X, X> pair, final boolean leftOrRight,
+        final UnaryOperator<X> mapper) {
+        if (leftOrRight) {
+            pair.map(mapper, e -> e);
+        } else {
+            pair.map(e -> e, mapper);
+        }
+        return pair;
     }
 
     private static ExtendablePortGroup getExtendablePortGroup(final ModifiableNodeCreationConfiguration creationConfig,
