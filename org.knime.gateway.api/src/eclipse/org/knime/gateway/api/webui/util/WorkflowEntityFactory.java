@@ -1335,9 +1335,7 @@ public final class WorkflowEntityFactory {
             // Check if port can be removed
             .map(portIndexToPortGroupMap -> {
                 var portGroupName = portIndexToPortGroupMap[portIndex - 1];
-                var isLastInGroup = portIndex == portIndexToPortGroupMap.length
-                    || !portGroupName.equals(portIndexToPortGroupMap[portIndex]);
-                return isLastInGroup && hasPortsAddedToPortGroup(nnc, buildContext, portGroupName);
+                return hasPortsAddedToPortGroup(nnc, buildContext, portGroupName);
             })//
             // False in all other cases
             .orElse(false);
