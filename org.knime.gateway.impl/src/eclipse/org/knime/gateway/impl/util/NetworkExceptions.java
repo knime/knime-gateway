@@ -61,6 +61,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.function.FailableCallable;
+import org.apache.commons.lang3.function.FailableRunnable;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 
@@ -92,6 +93,23 @@ public final class NetworkExceptions {
     public static <R, E extends Throwable> R callWithCatch(final FailableCallable<R, E> callable,
         final String errorMessage) throws E, NetworkException {
         return callWithCatch(callable, errorMessage, DEFAULT_TIMEOUT);
+    }
+
+    /**
+     * Invokes given callable without return while catching network related exceptions using the a timeout.
+     *
+     * @param <E> The exception type thrown by the callable
+     * @param runnable The task to execute
+     * @param errorMessage The error message to show
+     * @throws E Re-thrown exception in case it's not network-related
+     * @throws NetworkException If a network related exception was caught, a network exception will be thrown
+     */
+    public static <E extends Throwable> void callWithCatch(final FailableRunnable<E> runnable,
+        final String errorMessage) throws E, NetworkException {
+        callWithCatch(() -> {
+            runnable.run();
+            return null;
+        }, errorMessage, DEFAULT_TIMEOUT);
     }
 
     /**
@@ -147,7 +165,7 @@ public final class NetworkExceptions {
         return () -> {
             try {
                 return callable.call();
-            } catch (Throwable e) {  // NOSONAR
+            } catch (Throwable e) { // NOSONAR
                 throw new CompletionException(e);
             }
         };
