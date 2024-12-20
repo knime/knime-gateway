@@ -154,10 +154,7 @@ public class DefaultSpaceService implements SpaceService {
         try {
             final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             final var message = "Could not delete jobs for workflow '" + itemId + "'. ";
-            NetworkExceptions.callWithCatch(() -> {
-                space.deleteJobsForWorkflow(itemId, List.of(jobId));
-                return null;
-            }, message);
+            NetworkExceptions.callWithCatch(() -> space.deleteJobsForWorkflow(itemId, List.of(jobId)), message);
         } catch (final ResourceAccessException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -181,10 +178,8 @@ public class DefaultSpaceService implements SpaceService {
         try {
             final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             final var message = "Could not delete schedules for workflow '" + itemId + "'. ";
-            NetworkExceptions.callWithCatch(() -> {
-                space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
-                return null;
-            }, message);
+            NetworkExceptions.callWithCatch(() -> space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId)),
+                message);
         } catch (final ResourceAccessException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -198,8 +193,9 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, NetworkException {
         try {
             final var message = "Could not create space. ";
-            return NetworkExceptions.callWithCatch(() -> m_spaceProviders.getProvidersMap().get(spaceProviderId)
-                .getSpaceGroup(spaceGroupName).createSpace(), message).toEntity();
+            final var spaceProvider = m_spaceProviders.getProvidersMap().get(spaceProviderId);
+            return NetworkExceptions
+                .callWithCatch(() -> spaceProvider.getSpaceGroup(spaceGroupName).createSpace(), message).toEntity();
         } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -235,10 +231,7 @@ public class DefaultSpaceService implements SpaceService {
         try {
             final var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
             final var message = "Could not delete items. ";
-            NetworkExceptions.callWithCatch(() -> {
-                space.deleteItems(spaceItemIds);
-                return null;
-            }, message);
+            NetworkExceptions.callWithCatch(() -> space.deleteItems(spaceItemIds), message);
         } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -278,11 +271,8 @@ public class DefaultSpaceService implements SpaceService {
                 }
             }
             final var message = "Could not move or copy items. ";
-            NetworkExceptions.callWithCatch(() -> {
-                space.moveOrCopyItems(itemIds, destWorkflowGroupItemId,
-                    NameCollisionHandling.valueOf(collisionHandling), copy);
-                return null;
-            }, message);
+            NetworkExceptions.callWithCatch(() -> space.moveOrCopyItems(itemIds, destWorkflowGroupItemId,
+                NameCollisionHandling.valueOf(collisionHandling), copy), message);
         } catch (NoSuchElementException | IllegalArgumentException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
