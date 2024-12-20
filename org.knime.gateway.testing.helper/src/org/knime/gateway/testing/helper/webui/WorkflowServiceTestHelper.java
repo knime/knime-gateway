@@ -1725,31 +1725,55 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testRemovePortFromNative() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
         var recursiveLoopEnd = new NodeIDEnt(190);
-
         var removeFromFirstGroupCommand = builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
             .setNodeId(recursiveLoopEnd) //
             .setSide(PortCommandEnt.SideEnum.INPUT) //
             .setPortGroup("Collector") //
             .setKind(KindEnum.REMOVE_PORT) //
-            .build();
+            .setPortIndex(2).build();
 
         ws().executeWorkflowCommand(wfId, getRootID(), removeFromFirstGroupCommand);
-        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_removeFromFirstPortGroup");
-
-        var removeFromSecondGroupCommand = builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
-            .setNodeId(recursiveLoopEnd) //
-            .setSide(PortCommandEnt.SideEnum.INPUT) //
-            .setPortGroup("Recursion") //
-            .setKind(KindEnum.REMOVE_PORT) //
-            .build();
-        ws().executeWorkflowCommand(wfId, getRootID(), removeFromSecondGroupCommand);
-        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_removeFromSecondPortGroup");
+        var ports = getPortList(wfId, true, recursiveLoopEnd);
+        assert ports.size() == 4;
+        assert ports.get(0).getTypeID().contains("FlowVariablePortObject");
+        assert ports.get(1).getPortGroupId().equals("Collector");
+        assert ports.get(2).getPortGroupId().equals("Recursion");
+        assert ports.get(3).getPortGroupId().equals("Recursion");
 
         ws().undoWorkflowCommand(wfId, getRootID());
-        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_undo");
+        assert ports.size() == 5;
+        assert ports.get(0).getTypeID().contains("FlowVariablePortObject");
+        assert ports.get(1).getPortGroupId().equals("Collector");
+        assert ports.get(2).getPortGroupId().equals("Collector");
+        assert ports.get(3).getPortGroupId().equals("Recursion");
+        assert ports.get(4).getPortGroupId().equals("Recursion");
 
         ws().redoWorkflowCommand(wfId, getRootID());
-        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_redo");
+        assert ports.size() == 4;
+        assert ports.get(0).getTypeID().contains("FlowVariablePortObject");
+        assert ports.get(1).getPortGroupId().equals("Collector");
+        assert ports.get(2).getPortGroupId().equals("Recursion");
+        assert ports.get(3).getPortGroupId().equals("Recursion");
+    }
+
+    public void testRemovePortFromNativePortGroup() throws Exception {
+        final String wfId = loadWorkflow(TestWorkflowCollection.PORTS);
+        var recursiveLoopEnd = new NodeIDEnt(190);
+        var removeFromSecondPortGroup = builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
+                .setNodeId(recursiveLoopEnd) //
+                .setSide(PortCommandEnt.SideEnum.INPUT) //
+                .setPortGroup("Collector") //
+                .setKind(KindEnum.REMOVE_PORT) //
+                .setPortIndex(4).build();
+
+        ws().executeWorkflowCommand(wfId, getRootID(), removeFromSecondPortGroup);
+        var ports = getPortList(wfId, true, recursiveLoopEnd);
+        ws().undoWorkflowCommand(wfId, getRootID());
+        assert ports.size() == 5;
+        assert ports.get(0).getTypeID().contains("FlowVariablePortObject");
+        assert ports.get(1).getPortGroupId().equals("Collector");
+        assert ports.get(2).getPortGroupId().equals("Collector");
+        assert ports.get(3).getPortGroupId().equals("Recursion");
     }
 
     /**
