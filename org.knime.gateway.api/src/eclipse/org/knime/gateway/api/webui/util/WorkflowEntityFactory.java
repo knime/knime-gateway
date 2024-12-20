@@ -57,6 +57,7 @@ import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
+import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.extension.NodeSpec;
@@ -1353,7 +1354,7 @@ public final class WorkflowEntityFactory {
      *            {@link WorkflowBuildContext#getPortIndexToPortGroupMap(NativeNodeContainer, boolean)}
      * @return Whether the queried port can currently be removed from the node.
      */
-    private boolean canRemoveNativeNodePort(final NativeNodeContainer nnc, final int portIndex,
+    private static boolean canRemoveNativeNodePort(final NativeNodeContainer nnc, final int portIndex,
         final boolean isInputPort, final WorkflowBuildContext buildContext) {
         if (portIndex == 0) {
             return false; // Flow variable ports can never be removed
@@ -1365,16 +1366,28 @@ public final class WorkflowEntityFactory {
             // Check if port can be removed
             .map(portIndexToPortGroupMap -> {
                 var portGroupName = portIndexToPortGroupMap[portIndex - 1];
-                var isLastInGroup = portIndex == portIndexToPortGroupMap.length
-                    || !portGroupName.equals(portIndexToPortGroupMap[portIndex]);
-                return isLastInGroup && hasPortsAddedToPortGroup(nnc, buildContext, portGroupName);
+                var portIndexWithinGroup =
+                    ModifiablePortsConfiguration.getPortIndexWithinGroup(portIndexToPortGroupMap, portIndex);
+                return hasPortsAddedToPortGroup(nnc, buildContext, portGroupName)
+                    && !isFixedPort(nnc, buildContext, portGroupName, portIndexWithinGroup);
             })//
             // False in all other cases
             .orElse(false);
     }
 
-    private boolean hasPortsAddedToPortGroup(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext,
-        final String portGroupName) {
+    private static boolean isFixedPort(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext,
+        final String portGroupName, final int portIndex) {
+        return buildContext.getPortsConfiguration(nnc)//
+            // Map to `ExtendablePortGroup` if there is any
+            .map(portsConfig -> portsConfig.getExtendablePorts().get(portGroupName))//
+            //Get the number of fixed ports
+            .map(portGroup -> portGroup.getFixedPorts().length)
+            //Check if port index is within range of fixed ports
+            .map(fixedPortLen -> fixedPortLen > portIndex).orElse(false);
+    }
+
+    private static boolean hasPortsAddedToPortGroup(final NativeNodeContainer nnc,
+        final WorkflowBuildContext buildContext, final String portGroupName) {
         return buildContext.getPortsConfiguration(nnc)//
             // Map to `ExtendablePortGroup` if there is any
             .map(portsConfig -> portsConfig.getExtendablePorts().get(portGroupName))//
