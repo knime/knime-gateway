@@ -57,7 +57,7 @@ import org.knime.core.util.hub.NamedItemVersion;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Represents a workflow or component project.
@@ -90,11 +90,11 @@ public interface Project {
      * Creates a project considering most notably the {@link WorkflowManager} and the {@link WorkflowContextV2}.
      */
     static Project of(final WorkflowManager wfm, final WorkflowContextV2 context, final ProjectTypeEnum projectType,
-        final String customProjectId, final LocalWorkspace localSpace) {
+        final String customProjectId, final LocalSpace localSpace) {
         final var path = context.getExecutorInfo().getLocalWorkflowPath();
         final var itemId = localSpace.getItemId(path);
-        final var relativePath = localSpace.getLocalRootPath().relativize(path).toString();
-        final var origin = Origin.of(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalWorkspace.LOCAL_SPACE_ID, itemId,
+        final var relativePath = localSpace.getRootPath().relativize(path).toString();
+        final var origin = Origin.of(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId,
             relativePath, projectType);
         final var projectName = path.toFile().getName();
         return of(wfm, origin, projectName, customProjectId);

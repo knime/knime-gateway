@@ -53,7 +53,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
 /**
- * Operations on a single space (local workspace, hub space).
+ * Operations on a single space (local, hub, ...).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
