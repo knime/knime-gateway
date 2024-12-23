@@ -196,11 +196,6 @@ public interface Project {
                 }
 
                 @Override
-                public Optional<String> getRelativePath() {
-                    return Optional.ofNullable(relativePath);
-                }
-
-                @Override
                 public Optional<ProjectTypeEnum> getProjectType() {
                     return Optional.ofNullable(projectType);
                 }

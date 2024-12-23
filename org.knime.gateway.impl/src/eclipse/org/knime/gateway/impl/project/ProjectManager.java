@@ -45,7 +45,6 @@
  */
 package org.knime.gateway.impl.project;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -61,7 +60,6 @@ import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.impl.project.Project.Origin;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
  * Manages projects that are eventually used by the service implementations.
@@ -254,24 +252,6 @@ public final class ProjectManager {
                 .filter(origin -> origin.getSpaceId().equals(spaceId)) //
                 .filter(origin -> origin.getItemId().equals(itemId)) //
                 .isPresent()) //
-            .findFirst();
-    }
-
-    /**
-     * Get the project ID of a local project for workspace-relative path.
-     *
-     * @param relativePath the relative path to the project within the local workspace
-     * @return the project id or an empty optional if there is no project for the given path
-     */
-    public Optional<String> getLocalProject(final Path relativePath) {
-        return getProjectIds().stream()//
-            .filter(projectId -> getProject(projectId)//
-                .flatMap(Project::getOrigin)//
-                .filter(origin -> origin.getProviderId().equals(SpaceProvider.LOCAL_SPACE_PROVIDER_ID))//
-                .flatMap(Origin::getRelativePath)//
-                .map(Path::of)//
-                .filter(relativePath::equals)//
-                .isPresent())//
             .findFirst();
     }
 
