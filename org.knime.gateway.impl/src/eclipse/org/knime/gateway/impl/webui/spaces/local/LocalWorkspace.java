@@ -279,24 +279,16 @@ public final class LocalWorkspace implements Space {
             throw new ServiceExceptions.OperationNotAllowedException("There already exists a file of that name");
         }
 
-        var renameSuccessful = false;
-        var sourceFile = sourcePath.toFile();
-        var destinationFile = destinationPath.toFile();
         try {
-            renameSuccessful = sourceFile.renameTo(destinationFile);
+            if (!sourcePath.toFile().renameTo(destinationPath.toFile())) {
+                throw new IOException(
+                    "Check if the workflow folder or a contained folder is open by another application and "
+                        + "if there are sufficient permissions.");
+            }
         } catch (SecurityException e) {
             throw new IOException(e);
         }
 
-        // If rename fails, try to copy and delete workflow
-        if (!renameSuccessful) {
-            try {
-                FileUtil.copyDir(sourceFile, destinationFile);
-                FileUtil.deleteRecursively(sourceFile);
-            } catch (IOException e) {
-                throw new IOException("Could not rename item '%s' to '%s'".formatted(toKnimeUrl(itemId), newName), e);
-            }
-        }
         m_spaceItemPathAndTypeCache.update(itemId, sourcePath, destinationPath);
 
         return EntityFactory.Space.buildSpaceItemEnt(newName, itemId, itemType);
