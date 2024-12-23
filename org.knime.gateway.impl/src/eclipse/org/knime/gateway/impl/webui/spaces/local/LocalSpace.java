@@ -94,6 +94,7 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
  * {@link Space}-implementation that represents the local workspace.
@@ -102,9 +103,10 @@ import org.knime.gateway.impl.webui.spaces.Space;
  * @author Kai Franze, KNIME GmbH
  * @author Benjamin Moser, KNIME GmbH
  */
-public final class LocalWorkspace implements Space {
+// TODO rename to LocalSpace (consistent with e.g. HubSpace) and "workspace" should be avoided
+public final class LocalSpace implements Space {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalWorkspace.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalSpace.class);
 
     /**
      * ID of the single {@link Space} provider by the {@link }
@@ -121,7 +123,7 @@ public final class LocalWorkspace implements Space {
     /**
      * @param rootPath the path to the root of the local workspace
      */
-    public LocalWorkspace(final Path rootPath) {
+    public LocalSpace(final Path rootPath) {
         m_rootPath = rootPath;
         // To make sure the path of the root item ID can also be retrieved from the cache
         m_spaceItemPathAndTypeCache = new LocalSpaceItemPathAndTypeCache(Space.ROOT_ITEM_ID, rootPath);
@@ -156,7 +158,7 @@ public final class LocalWorkspace implements Space {
         var absolutePath = getAbsolutePath(workflowGroupItemId);
         return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_rootPath,
             this::getItemId, m_spaceItemPathAndTypeCache::determineTypeOrGetFromCache,
-            LocalWorkspace::isValidWorkspaceItem, ITEM_COMPARATOR);
+            LocalSpace::isValidWorkspaceItem, ITEM_COMPARATOR);
     }
 
     @Override
@@ -185,6 +187,10 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+        return toLocalAbsolutePath(itemId);
+    }
+
+    public Optional<Path> toLocalAbsolutePath(final String itemId) {
         var path = m_spaceItemPathAndTypeCache.getPath(itemId);
         if (path == null || !Files.exists(path)) {
             return Optional.empty();
@@ -194,6 +200,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public URI toKnimeUrl(final String itemId) {
+        // TODO can this be avoided?
         if (Space.ROOT_ITEM_ID.equals(itemId)) {
             // for historical reasons, the local space root gets mapped to "knime://LOCAL/" (note the trailing slash!)
             return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_SPACE_ID.toUpperCase(Locale.ROOT) + "/");
@@ -217,7 +224,7 @@ public final class LocalWorkspace implements Space {
         }
     }
 
-    public Path getLocalRootPath() {
+    public Path getRootPath() {
         return m_rootPath;
     }
 
@@ -255,7 +262,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt renameItem(final String itemId, final String queriedName)
-            throws IOException, ServiceExceptions.OperationNotAllowedException {
+        throws IOException, ServiceExceptions.OperationNotAllowedException {
 
         if (itemId.equals(Space.ROOT_ITEM_ID)) {
             throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
@@ -265,7 +272,7 @@ public final class LocalWorkspace implements Space {
         assertValidItemNameOrThrow(newName);
 
         var sourcePath = toLocalAbsolutePath(null, itemId) //
-                .orElseThrow(() -> new IOException("Unknown item ID: '%s'".formatted(itemId)));
+            .orElseThrow(() -> new IOException("Unknown item ID: '%s'".formatted(itemId)));
         var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
         var destinationPath = sourcePath.resolveSibling(newName);
         var oldName = sourcePath.getFileName().toString();
@@ -294,19 +301,17 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public void moveOrCopyItems(final List<String> itemIds, final String destItemId,
-            final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
+        final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
         if (itemIds.contains(Space.ROOT_ITEM_ID)) {
             throw new IllegalArgumentException("The root of the space cannot be moved.");
         }
         if (itemIds.contains(destItemId)) {
             throw new IllegalArgumentException("Cannot move a space item to itself");
         }
-        assertAllItemIdsExistOrElseThrow(
-            Stream.concat(itemIds.stream(), Stream.of(destItemId)).toList());
+        assertAllItemIdsExistOrElseThrow(Stream.concat(itemIds.stream(), Stream.of(destItemId)).toList());
         var destPathParent = getAbsolutePath(destItemId);
         if (m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(destPathParent) != TypeEnum.WORKFLOWGROUP) {
-            throw new IllegalArgumentException(
-                "Cannot move space items to a location that is not a workflow group");
+            throw new IllegalArgumentException("Cannot move space items to a location that is not a workflow group");
         }
 
         Map<String, Pair<Path, Path>> newItemIdToPathMap = new HashMap<>();
@@ -330,7 +335,7 @@ public final class LocalWorkspace implements Space {
      * @see this#resolveWithNameCollisions(Path, String, NameCollisionHandling, Supplier)
      */
     private Path resolveWithNameCollisions(final String parentId, final Path filePath,
-            final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
+        final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(parentId);
         var fileName = filePath.getFileName().toString();
         return resolveWithNameCollisions(parentWorkflowGroupPath, fileName, requestedStrategy, uniqueName);
@@ -341,8 +346,8 @@ public final class LocalWorkspace implements Space {
      * to {@code requestedStrategy}
      */
     private Path resolveWithNameCollisions(final Path parentPath, final String fileName,
-            final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
-        return switch(requestedStrategy) {
+        final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
+        return switch (requestedStrategy) {
             case NOOP -> parentPath.resolve(fileName);
             case AUTORENAME -> parentPath.resolve(uniqueName.get());
             case OVERWRITE -> {
@@ -351,10 +356,8 @@ public final class LocalWorkspace implements Space {
                     deleteItems(List.of(getItemId(destination)));
                 } catch (Exception ex) { // NOSONAR
                     LOGGER.error(ex);
-                    throw new IOException(
-                        String.format("There was an error overwriting \"%s\". Check that it is not currently open.",
-                            fileName),
-                        ex);
+                    throw new IOException(String.format(
+                        "There was an error overwriting \"%s\". Check that it is not currently open.", fileName), ex);
                 }
                 yield destination;
             }
@@ -363,7 +366,7 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt importFile(final Path srcPath, final String workflowGroupItemId,
-            final NameCollisionHandling collisionHandling, final IProgressMonitor progress) throws IOException {
+        final NameCollisionHandling collisionHandling, final IProgressMonitor progress) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var fileName = srcPath.getFileName().toString();
         Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, false);
@@ -376,8 +379,8 @@ public final class LocalWorkspace implements Space {
 
     @Override
     public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
-            final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
-            final IProgressMonitor progressMonitor) throws IOException {
+        final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
+        final IProgressMonitor progressMonitor) throws IOException {
         var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
         FileUtil.unzip(srcPath.toFile(), tmpDir);
@@ -425,7 +428,7 @@ public final class LocalWorkspace implements Space {
      * @return The item's path after it was moved.
      */
     private Path moveItem(final Path srcPath, final Path destPathParent,
-            final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
+        final Space.NameCollisionHandling collisionHandling, final boolean copy) throws IOException {
         final var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(srcPath);
         final var fileName = srcPath.getFileName().toString();
 
@@ -433,8 +436,8 @@ public final class LocalWorkspace implements Space {
             var isWorkflowOrWorkflowGroup = type == TypeEnum.WORKFLOW || type == TypeEnum.WORKFLOWGROUP;
             return generateUniqueSpaceItemName(destPathParent, fileName, isWorkflowOrWorkflowGroup);
         };
-        final var destPath = resolveWithNameCollisions(destPathParent, srcPath.getFileName().toString(),
-            collisionHandling, uniqueName);
+        final var destPath =
+            resolveWithNameCollisions(destPathParent, srcPath.getFileName().toString(), collisionHandling, uniqueName);
 
         if (Files.exists(destPath)) {
             throw new IOException(
@@ -467,7 +470,7 @@ public final class LocalWorkspace implements Space {
      * @throws IOException if directory creation failed
      */
     public Path createWorkflowDir(final String workflowGroupItemId, final String workflowName,
-            final Space.NameCollisionHandling collisionHandling) throws IOException {
+        final Space.NameCollisionHandling collisionHandling) throws IOException {
         var destPathParent = getAbsolutePath(workflowGroupItemId);
 
         Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(destPathParent, workflowName, true);
@@ -475,8 +478,8 @@ public final class LocalWorkspace implements Space {
             uniqueName);
 
         if (Files.exists(destPath)) {
-            throw new IOException(String.format("Attempting to overwrite <%s>, name collision handling went wrong.",
-                destPath));
+            throw new IOException(
+                String.format("Attempting to overwrite <%s>, name collision handling went wrong.", destPath));
         }
         Files.createDirectory(destPath);
         return destPath;
@@ -542,7 +545,7 @@ public final class LocalWorkspace implements Space {
      * @return The initial name if that doesn't exist, the unique one otherwise.
      */
     private static String generateUniqueSpaceItemName(final Path workflowGroup, final String name,
-            final boolean isWorkflowOrWorkflowGroup) {
+        final boolean isWorkflowOrWorkflowGroup) {
         return Space.generateUniqueSpaceItemName(newName -> Files.exists(workflowGroup.resolve(newName)), name,
             isWorkflowOrWorkflowGroup);
     }
@@ -557,7 +560,7 @@ public final class LocalWorkspace implements Space {
     }
 
     /**
-     * Verify that the given name is a valid name for an item in a {@link LocalWorkspace}.
+     * Verify that the given name is a valid name for an item in a {@link LocalSpace}.
      *
      * @see FileStoreNameValidator#isValid
      * @see ExplorerFileSystem#validateFilename
@@ -579,14 +582,14 @@ public final class LocalWorkspace implements Space {
         var matcher = FileUtil.ILLEGAL_FILENAME_CHARS_PATTERN.matcher(name);
         if (matcher.find()) {
             throw new OperationNotAllowedException(
-                    "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
+                "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
         }
     }
 
     @Override
     public Optional<String> getItemIdByURI(final URI uri) {
         if (KnimeUrlType.getType(uri).orElse(null) != KnimeUrlType.MOUNTPOINT_ABSOLUTE
-                || !"LOCAL".equals(uri.getAuthority())) {
+            || !"LOCAL".equals(uri.getAuthority())) {
             return Optional.empty();
         }
         try {
@@ -607,14 +610,12 @@ public final class LocalWorkspace implements Space {
         return EntityUtil.toProjectType(itemType);
     }
 
-    private static final EnumSet<TypeEnum> WORKFLOW_LIKE = EnumSet.of(
-        TypeEnum.WORKFLOW,
-        TypeEnum.COMPONENT,
-        TypeEnum.WORKFLOWTEMPLATE);
+    private static final EnumSet<TypeEnum> WORKFLOW_LIKE =
+        EnumSet.of(TypeEnum.WORKFLOW, TypeEnum.COMPONENT, TypeEnum.WORKFLOWTEMPLATE);
 
     /**
-     * Checks whether an item exists at the given path below a workflow group and determines how such a collision can
-     * be resolved.
+     * Checks whether an item exists at the given path below a workflow group and determines how such a collision can be
+     * resolved.
      *
      * @param workflowGroupId root workflow group's ID
      * @param path path below the root group
@@ -656,10 +657,15 @@ public final class LocalWorkspace implements Space {
             return Optional.of(Pair.create(path, new Collision(false, false, true)));
         } else {
             // collision between two leaf items
-            final boolean typesCompatible = currentType == newItemType
-                    || WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType);
-            final var relativeToRoot = m_rootPath.relativize(current);
-            final var isOpenedAsProject = ProjectManager.getInstance().getLocalProject(relativeToRoot).isPresent();
+            final boolean typesCompatible = (currentType == newItemType)
+                || (WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType));
+            // TODO replace with `Locator`?
+            var localProjectWithId = ProjectManager.getInstance().getProject( //
+                SpaceProvider.LOCAL_SPACE_PROVIDER_ID, //
+                LocalSpace.LOCAL_SPACE_ID, //
+                currentId //
+            );
+            final var isOpenedAsProject = localProjectWithId.isPresent();
             return Optional.of(Pair.create(path, new Collision(typesCompatible, !isOpenedAsProject, true)));
         }
     }

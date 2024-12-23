@@ -85,7 +85,7 @@ import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
-import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -306,8 +306,8 @@ public final class AppStateEntityFactory {
             //   (because they can't be moved while open)
             // ... in the space explorer.
             // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
-            .filter(LocalWorkspace.class::isInstance) //
-            .map(LocalWorkspace.class::cast) //
+            .filter(LocalSpace.class::isInstance) //
+            .map(LocalSpace.class::cast) //
             .map(space -> space.getAncestorItemIds(origin.getItemId())) //
             .orElse(null);
     }

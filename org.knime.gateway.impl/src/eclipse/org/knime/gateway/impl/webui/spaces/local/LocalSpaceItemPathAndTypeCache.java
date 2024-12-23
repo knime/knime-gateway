@@ -102,7 +102,7 @@ final class LocalSpaceItemPathAndTypeCache extends SpaceItemPathAndTypeCache<Pat
                         .equals(MetaNodeTemplateInformation.TemplateType.SubNode.toString());
                     type = isComponent ? SpaceItemEnt.TypeEnum.COMPONENT : SpaceItemEnt.TypeEnum.WORKFLOWTEMPLATE;
                 } catch (InvalidSettingsException | IOException ex) {
-                    NodeLogger.getLogger(LocalWorkspace.class)
+                    NodeLogger.getLogger(LocalSpace.class)
                         .warnWithFormat("Space item type couldn't be determined for %s", item, ex);
                     type = SpaceItemEnt.TypeEnum.DATA;
                 }

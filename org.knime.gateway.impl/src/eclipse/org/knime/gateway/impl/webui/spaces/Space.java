@@ -71,7 +71,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Represents a space in order to abstract from different space implementations (e.g. the local workspace or a hub
@@ -483,7 +483,7 @@ public interface Space {
      * @throws OperationNotAllowedException if the method is called for anything but a space on a Hub that supports
      *     asynchronous uploads
      */
-    default TransferResult uploadFrom(final LocalWorkspace sourceSpace, final List<String> itemIds,
+    default TransferResult uploadFrom(final LocalSpace sourceSpace, final List<String> itemIds,
             final String targetItemId, final boolean excludeData) throws OperationNotAllowedException {
         throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
     }
@@ -497,7 +497,7 @@ public interface Space {
      * @return result indicating success or failure of the download
      * @throws OperationNotAllowedException
      */
-    default TransferResult downloadInto(final List<String> itemIds, final LocalWorkspace targetSpace,
+    default TransferResult downloadInto(final List<String> itemIds, final LocalSpace targetSpace,
             final String targetItemId) throws OperationNotAllowedException {
         throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
     }

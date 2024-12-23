@@ -73,7 +73,7 @@ import org.knime.gateway.impl.util.NetworkExceptions;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
-import org.knime.gateway.impl.webui.spaces.local.LocalWorkspace;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -249,9 +249,9 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException {
         try {
             var space = SpaceProviders.getSpace(m_spaceProviders, spaceProviderId, spaceId);
-            if (space instanceof LocalWorkspace localWorkspace) {
+            if (space instanceof LocalSpace localSpace) {
                 var workflowsToClose =
-                    checkForWorkflowsToClose(getOpenWorkflowIds(localWorkspace), itemIds, localWorkspace);
+                    checkForWorkflowsToClose(getOpenWorkflowIds(localSpace), itemIds, localSpace);
                 if (!workflowsToClose.isEmpty()) {
                     throw new ServiceCallException(
                         "Not all items can be moved. The following workflows need to be closed first: "
@@ -310,13 +310,13 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private static List<String> checkForWorkflowsToClose(final Stream<String> openWorkflowIds,
-        final List<String> itemIds, final LocalWorkspace localWorkspace) {
+        final List<String> itemIds, final LocalSpace localSpace) {
         return openWorkflowIds//
             .filter(workflowId -> {
                 if (itemIds.contains(workflowId)) {
                     return true;
                 }
-                var ancestorItemIds = localWorkspace.getAncestorItemIds(workflowId);
+                var ancestorItemIds = localSpace.getAncestorItemIds(workflowId);
                 return ancestorItemIds.stream().anyMatch(itemIds::contains);
             })//
             .toList();

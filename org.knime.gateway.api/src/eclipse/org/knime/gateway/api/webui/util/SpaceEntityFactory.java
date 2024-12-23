@@ -143,7 +143,7 @@ public final class SpaceEntityFactory {
      * items.
      *
      * @param absolutePath the absolute path to list the items for
-     * @param rootWorkspacePath workspace root path
+     * @param spaceRootPath workspace root path
      * @param getItemId function which determines the id per item/path
      * @param getItemType function which determines the type per item/path
      * @param itemFilter determines the items to be excluded (e.g. hidden files)
@@ -152,15 +152,15 @@ public final class SpaceEntityFactory {
      * @throws IOException
      */
     public WorkflowGroupContentEnt buildLocalWorkflowGroupContentEnt(final Path absolutePath,
-        final Path rootWorkspacePath, final Function<Path, String> getItemId,
+        final Path spaceRootPath, final Function<Path, String> getItemId,
         final Function<Path, SpaceItemEnt.TypeEnum> getItemType, final Predicate<Path> itemFilter,
         final Comparator<SpaceItemEnt> comparator) throws IOException {
-        final var isRoot = absolutePath.equals(rootWorkspacePath);
-        final var relativePath = rootWorkspacePath.relativize(absolutePath);
+        final var isRoot = absolutePath.equals(spaceRootPath);
+        final var relativePath = spaceRootPath.relativize(absolutePath);
         final var path = isRoot ? Collections.<SpacePathSegmentEnt> emptyList()
             : buildSpacePathSegmentEnts(absolutePath, relativePath.getNameCount(), getItemId);
         final var items =
-            buildLocalSpaceItemEnts(absolutePath, rootWorkspacePath, getItemId, getItemType, itemFilter, comparator);
+            buildLocalSpaceItemEnts(absolutePath, spaceRootPath, getItemId, getItemType, itemFilter, comparator);
         return builder(WorkflowGroupContentEntBuilder.class) //
             .setPath(path) //
             .setItems(items) //
