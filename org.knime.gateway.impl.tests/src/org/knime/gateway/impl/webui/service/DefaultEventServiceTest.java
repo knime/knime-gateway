@@ -89,6 +89,7 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 import org.mockito.Mockito;
@@ -102,7 +103,6 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
-    private final HubResourceChangeProvider m_hubResourceChangeProvider = new HubResourceChangeProvider();
 
     @Override
     protected EventConsumer createEventConsumer() {
@@ -270,64 +270,6 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         var ops = List.of(op);
         var patch = builder(PatchEntBuilder.class).setOps(ops).build();
         return builder(WorkflowMonitorStateChangeEventEntBuilder.class).setPatch(patch).build();
-    }
-
-    /**
-     * Tests {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} for the
-     * {@link HubResourceChangedEventTypeEnt}.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testHubResourceChangedEventListener() throws Exception {
-        // No listener, no event
-        m_hubResourceChangeProvider.notifyEventListeners("nothing");
-        verify(m_testConsumer, times(0)).accept(any(), any());
-
-        var es = DefaultEventService.getInstance();
-        // Note: The 'HubResourceChangedEventTypeEnt' has 'getTypeID()' and 'getTypeId()'
-        var eventType1 = buildHubResourceChangedEventType("providerId1", "spaceId1", "itemId1");
-        es.addEventListener(eventType1);
-
-        // One listener, one event
-        m_hubResourceChangeProvider.notifyEventListeners("foo");
-        var expectedEvent1 = buildHubResourceChangedEvent(eventType1, "foo");
-        verify(m_testConsumer, times(1)).accept("HubResourceChangedEvent", expectedEvent1);
-
-        var eventType2 = buildHubResourceChangedEventType("providerId2", "spaceId2", "itemId2");
-        es.addEventListener(eventType2);
-        Mockito.clearInvocations(m_testConsumer);
-
-        // Two listeners, two events
-        m_hubResourceChangeProvider.notifyEventListeners("bar");
-        verify(m_testConsumer, times(2)).accept(eq("HubResourceChangedEvent"), any());
-
-        es.removeEventListener(eventType1);
-        es.removeEventListener(eventType2);
-        Mockito.clearInvocations(m_testConsumer);
-
-        // No listener, no event
-        m_hubResourceChangeProvider.notifyEventListeners("nothing");
-        verify(m_testConsumer, times(0)).accept(any(), any());
-    }
-
-    private static HubResourceChangedEventTypeEnt buildHubResourceChangedEventType(final String providerId,
-        final String spaceId, final String itemId) {
-        return builder(HubResourceChangedEventTypeEntBuilder.class) //
-            .setProviderId(providerId) //
-            .setSpaceId(spaceId) //
-            .setItemId(itemId) //
-            .build();
-    }
-
-    private static HubResourceChangedEventEnt buildHubResourceChangedEvent(final HubResourceChangedEventTypeEnt eventTypeEnt,
-        final String payload) {
-        return builder(HubResourceChangedEventEntBuilder.class) //
-            .setProviderId(eventTypeEnt.getProviderId()) //
-            .setSpaceId(eventTypeEnt.getSpaceId()) //
-            .setItemId(eventTypeEnt.getItemId()) //
-            .setPayload(payload) //
-            .build();
     }
 
 }

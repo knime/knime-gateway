@@ -55,9 +55,9 @@ import java.util.Map;
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
@@ -75,13 +75,12 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
-import org.knime.gateway.impl.webui.service.events.HubResourceChangedEventSource;
+import org.knime.gateway.impl.webui.service.events.ProviderResourceChanged;
 import org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource;
 import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
-import org.knime.gateway.impl.webui.service.subscriptions.EventDispatcherClient;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -124,9 +123,6 @@ public final class DefaultEventService implements EventService {
     private final KaiHandler m_kaiHandler =
             ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
-    private final EventDispatcherClient m_eventDispatcherClient =
-        ServiceDependencies.getServiceDependency(EventDispatcherClient.class, false);
-
     /**
      * Returns the singleton instance for this service.
      *
@@ -147,8 +143,6 @@ public final class DefaultEventService implements EventService {
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
-
-        // TODO replace with switch
 
         // Set the event source depending on the event type
         if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
@@ -183,9 +177,9 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowMonitorStateChangedEventSource(m_eventConsumer, m_projectManager,
                     m_workflowMiddleware));
-        } else if (eventTypeEnt instanceof HubResourceChangedEventTypeEnt) {
+        } else if (eventTypeEnt instanceof ProviderResourceChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new HubResourceChangedEventSource(m_eventConsumer, m_eventDispatcherClient));
+                t -> new ProviderResourceChanged(m_eventConsumer, m_spaceProviders));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
@@ -229,6 +223,7 @@ public final class DefaultEventService implements EventService {
     /*
      * For testing purposes only!
      */
+    @SuppressWarnings("java:S1452")
     EventSource<?, ?> getEventSource(final Class<? extends EventTypeEnt> eventTypeEnt) {
         return m_eventSources.get(eventTypeEnt);
     }

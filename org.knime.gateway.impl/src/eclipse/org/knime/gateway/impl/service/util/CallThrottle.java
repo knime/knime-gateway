@@ -74,10 +74,10 @@ public final class CallThrottle {
     private Runnable m_call;
 
     /**
-     * @param call the logic do be run on {@link #invoke()}
+     * @param call the logic to be run on {@link #invoke()}
      * @param threadName the name of the thread being used
      */
-    CallThrottle(final Runnable call, final String threadName) {
+    public CallThrottle(final Runnable call, final String threadName) {
         m_call = call;
         m_executorService = Executors.newSingleThreadExecutor(r -> {
             var t = new Thread(r, threadName);
@@ -90,7 +90,7 @@ public final class CallThrottle {
      * Tries to execute the given call. It's either executed directly, queued to be the next call or superseded by
      * another follow-up call of this method.
      */
-    void invoke() {
+    public void invoke() {
         if (!m_callState.checkIsCallInProgressAndChangeState()) {
             m_executorService.execute(() -> {
                 do {

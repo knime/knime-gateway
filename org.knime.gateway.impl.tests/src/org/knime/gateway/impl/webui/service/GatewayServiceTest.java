@@ -110,7 +110,6 @@ public abstract class GatewayServiceTest {
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, createNodeFactoryProvider());
-        ServiceDependencies.setServiceDependency(HubResourceChangeProvider.class, createHubResourceChangeProvider());
     }
 
     /**
@@ -132,13 +131,6 @@ public abstract class GatewayServiceTest {
      */
     protected EventConsumer createEventConsumer() {
         return (name, event) -> {};
-    }
-
-    /**
-     * @return the {@link HubResourceChangeProvider} service dependency
-     */
-    protected HubResourceChangeProvider createHubResourceChangeProvider() {
-        return mock(HubResourceChangeProvider.class);
     }
 
     @SuppressWarnings("javadoc")

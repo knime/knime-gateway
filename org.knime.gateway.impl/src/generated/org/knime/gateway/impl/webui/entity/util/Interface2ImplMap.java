@@ -132,10 +132,6 @@ import org.knime.gateway.api.webui.entity.ExpandResultEnt.ExpandResultEntBuilder
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
 import org.knime.gateway.api.webui.entity.ExtensionEnt.ExtensionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultExtensionEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultHubResourceChangedEventEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt.HubResourceChangedEventTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultHubResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
@@ -240,6 +236,10 @@ import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventEnt.ProviderResourceChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt.ProviderResourceChangedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
@@ -484,12 +484,6 @@ public class Interface2ImplMap {
         if(clazz == ExtensionEntBuilder.class) {
             return (B)new DefaultExtensionEnt.DefaultExtensionEntBuilder();
         }        
-        if(clazz == HubResourceChangedEventEntBuilder.class) {
-            return (B)new DefaultHubResourceChangedEventEnt.DefaultHubResourceChangedEventEntBuilder();
-        }        
-        if(clazz == HubResourceChangedEventTypeEntBuilder.class) {
-            return (B)new DefaultHubResourceChangedEventTypeEnt.DefaultHubResourceChangedEventTypeEntBuilder();
-        }        
         if(clazz == InsertNodeCommandEntBuilder.class) {
             return (B)new DefaultInsertNodeCommandEnt.DefaultInsertNodeCommandEntBuilder();
         }        
@@ -645,6 +639,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
+        }        
+        if(clazz == ProviderResourceChangedEventEntBuilder.class) {
+            return (B)new DefaultProviderResourceChangedEventEnt.DefaultProviderResourceChangedEventEntBuilder();
+        }        
+        if(clazz == ProviderResourceChangedEventTypeEntBuilder.class) {
+            return (B)new DefaultProviderResourceChangedEventTypeEnt.DefaultProviderResourceChangedEventTypeEntBuilder();
         }        
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();

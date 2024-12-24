@@ -73,6 +73,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S1192")
 public class ProjectDisposedEventSourceTest {
 
     @SuppressWarnings("javadoc")
@@ -104,8 +105,7 @@ public class ProjectDisposedEventSourceTest {
         var preferenceProvider = mock(PreferencesProvider.class);
         var nodeCollections = mock(NodeCollections.class);
         ServiceDependencies.setDefaultServiceDependencies(projectManager, new WorkflowMiddleware(projectManager, null),
-            null, eventConsumer, spaceProviders, null, preferenceProvider, null, null, nodeCollections, null, null,
-            null);
+            null, eventConsumer, spaceProviders, null, preferenceProvider, null, null, nodeCollections, null, null);
 
         // register event listener
         DefaultEventService.getInstance()

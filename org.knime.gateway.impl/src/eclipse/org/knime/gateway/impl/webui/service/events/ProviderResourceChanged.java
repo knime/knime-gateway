@@ -52,63 +52,76 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Optional;
 
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
-import org.knime.gateway.impl.webui.service.subscriptions.EventDispatcherClient;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventEnt;
+import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
+import org.knime.gateway.impl.service.util.CallThrottle;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * ...
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
-public class HubResourceChangedEventSource
-    extends EventSource<HubResourceChangedEventTypeEnt, HubResourceChangedEventEnt> {
+public class ProviderResourceChanged
+    extends EventSource<ProviderResourceChangedEventTypeEnt, ProviderResourceChangedEventEnt> {
 
-    private final EventDispatcherClient eventDispatcherClient;
+    private final SpaceProviders m_spaceProviders;
+
+    private SpaceProvider.ProviderResourceChangedNotifier m_changeDispatcher;
 
     /**
      * ...
      *
      * @param eventConsumer ...
      */
-    public HubResourceChangedEventSource(final EventConsumer eventConsumer,
-        final EventDispatcherClient eventDispatcherClient) {
+    public ProviderResourceChanged(final EventConsumer eventConsumer, final SpaceProviders spaceProviders) {
         super(eventConsumer);
-        this.eventDispatcherClient = eventDispatcherClient;
+        m_spaceProviders = spaceProviders;
     }
 
     @Override
-    public Optional<HubResourceChangedEventEnt>
-        addEventListenerAndGetInitialEventFor(final HubResourceChangedEventTypeEnt eventTypeEnt) { // Has subtypes, like space item changed event type, ...
-        // TODO instead of directly considering EventDispatcherClient, this could also take an interface "HubResourceChangeProvider"
-        //  which is implemented / adapted by EventDispatcherClient (i.e. the signature for the constructor here would be the interface)
-        EventDispatcherClient.SubscriptionCallback subscriptionCallback = subscriptionNotification -> {
-            final var event = buildEvent(eventTypeEnt);
-            sendEvent(event);
-        };
-        eventDispatcherClient.subscribeToSpace(eventTypeEnt.getSpaceId(), subscriptionCallback);
+    @SuppressWarnings("java:S1602")
+    public Optional<ProviderResourceChangedEventEnt>
+        addEventListenerAndGetInitialEventFor(final ProviderResourceChangedEventTypeEnt eventTypeEnt) {
+        var implementedChangeDispatcher =
+            m_spaceProviders.getProvidersMap().get(eventTypeEnt.getProviderId()).getChangeNotifier();
+        if (implementedChangeDispatcher.isEmpty()) {
+            return Optional.empty();
+        }
+        m_changeDispatcher = implementedChangeDispatcher.get();
 
+        var throttle = new CallThrottle(onSubscriptionNotification(eventTypeEnt), this.getName() + " call throttle");
+
+        m_changeDispatcher.subscribeToItem(eventTypeEnt.getSpaceId(), eventTypeEnt.getItemId(), throttle::invoke);
         return Optional.empty();
     }
 
+    private Runnable onSubscriptionNotification(ProviderResourceChangedEventTypeEnt eventTypeEnt) {
+        return () -> this.sendEvent(
+            // provide information on what has changed in the event s.t. the frontend can decide whether it
+            // is still interested in it
+            buildEvent(eventTypeEnt) //
+        );
+    }
+
     @Override
-    public void removeEventListener(final HubResourceChangedEventTypeEnt eventTypeEnt) {
-        eventDispatcherClient.unsubscribe(eventTypeEnt.getItemId());
+    public void removeEventListener(final ProviderResourceChangedEventTypeEnt eventTypeEnt) {
+        m_changeDispatcher.unsubscribe(eventTypeEnt.getSpaceId(), eventTypeEnt.getItemId());
     }
 
     @Override
     public void removeAllEventListeners() {
-        eventDispatcherClient.unsubscribeAll();
+        m_changeDispatcher.unsubscribeAll();
     }
 
     @Override
     protected String getName() {
-        return "HubResourceChangedEvent";
+        return "ProviderResourceChangedEvent";
     }
 
-    private static HubResourceChangedEventEnt buildEvent(final HubResourceChangedEventTypeEnt eventTypeEnt) {
-        return builder(HubResourceChangedEventEntBuilder.class) //
+    private static ProviderResourceChangedEventEnt buildEvent(final ProviderResourceChangedEventTypeEnt eventTypeEnt) {
+        return builder(ProviderResourceChangedEventEnt.ProviderResourceChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
             .setSpaceId(eventTypeEnt.getSpaceId()) //
             .setItemId(eventTypeEnt.getItemId()) //

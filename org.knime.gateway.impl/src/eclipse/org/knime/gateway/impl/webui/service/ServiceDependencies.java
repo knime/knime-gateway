@@ -65,7 +65,6 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
-import org.knime.gateway.impl.webui.service.subscriptions.EventDispatcherClient;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -149,7 +148,6 @@ public final class ServiceDependencies {
      * @param nodeCollections
      * @param nodeRepo
      * @param selectionEventBus
-     * @param eventDispatcherClient
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
@@ -163,8 +161,8 @@ public final class ServiceDependencies {
         final KaiHandler kaiHandler, //
         final NodeCollections nodeCollections, //
         final NodeRepository nodeRepo, //
-        final SelectionEventBus selectionEventBus, //
-        final EventDispatcherClient eventDispatcherClient) {
+        final SelectionEventBus selectionEventBus //
+    ) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -178,7 +176,6 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
-            ServiceDependencies.setServiceDependency(EventDispatcherClient.class, eventDispatcherClient);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "
