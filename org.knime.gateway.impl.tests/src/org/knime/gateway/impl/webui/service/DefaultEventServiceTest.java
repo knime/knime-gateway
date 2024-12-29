@@ -70,10 +70,6 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt.AppStateChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventEnt.HubResourceChangedEventEntBuilder;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.HubResourceChangedEventTypeEnt.HubResourceChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -89,7 +85,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 import org.mockito.Mockito;
@@ -107,11 +102,6 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
     @Override
     protected EventConsumer createEventConsumer() {
         return m_testConsumer;
-    }
-
-    @Override
-    protected HubResourceChangeProvider createHubResourceChangeProvider() {
-        return m_hubResourceChangeProvider;
     }
 
     /**
@@ -215,7 +205,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // error message added
         ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "execute");
-        var expectedEvent1 = buildWorkflowMonitorStateChangeEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
+        var expectedEvent1 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
             "Fail in execution", NodeIDEnt.getRootID(), "org.knime.testing.node.failing.FailingNodeFactory",
             new NodeIDEnt(6));
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
@@ -225,7 +215,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // error message removed
         ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "reset");
-        var expectedEvent2 = buildWorkflowMonitorStateChangeEvent(OpEnum.REMOVE, "/errors/0", null, null, null, null, null);
+        var expectedEvent2 = buildEvent(OpEnum.REMOVE, "/errors/0", null, null, null, null, null);
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent2.equals(e);
@@ -233,7 +223,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // error message within component added
         ns.changeNodeStates(projectId, new NodeIDEnt(8), List.of(new NodeIDEnt(8, 0, 7)), "execute");
-        var expectedEvent3 = buildWorkflowMonitorStateChangeEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
+        var expectedEvent3 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
             "Fail in execution", new NodeIDEnt(8), "org.knime.testing.node.failing.FailingNodeFactory",
             new NodeIDEnt(8, 0, 7));
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
@@ -245,7 +235,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(),
             builder(DeleteCommandEntBuilder.class).setKind(KindEnum.DELETE).setNodeIds(List.of(new NodeIDEnt(9)))
                 .build());
-        var expectedEvent4 = buildWorkflowMonitorStateChangeEvent(OpEnum.REMOVE, "/warnings/0", null, null, null, null, null);
+        var expectedEvent4 = buildEvent(OpEnum.REMOVE, "/warnings/0", null, null, null, null, null);
         Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
             .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
                 return expectedEvent4.equals(e);
@@ -261,7 +251,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         verify(m_testConsumer, times(0)).accept(any(), any());
     }
 
-    private static WorkflowMonitorStateChangeEventEnt buildWorkflowMonitorStateChangeEvent(final OpEnum opEnum, final String path,
+    private static WorkflowMonitorStateChangeEventEnt buildEvent(final OpEnum opEnum, final String path,
         final String message, final String nodeName, final NodeIDEnt workflowId, final String templateId,
         final NodeIDEnt nodeId) {
         var value = message == null ? null : builder(WorkflowMonitorMessageEntBuilder.class).setMessage(message)

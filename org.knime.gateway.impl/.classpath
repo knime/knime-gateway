@@ -8,15 +8,5 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/eclipse"/>
 	<classpathentry kind="src" path="src/generated"/>
-	<classpathentry kind="lib" path="lib/jetty-alpn-client-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-client-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-http-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-io-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-util-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-websocket-core-client-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-websocket-core-common-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-websocket-jetty-api-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-websocket-jetty-client-12.0.10.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-websocket-jetty-common-12.0.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

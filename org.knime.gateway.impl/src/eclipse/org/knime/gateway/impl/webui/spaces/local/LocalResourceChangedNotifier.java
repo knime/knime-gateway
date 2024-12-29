@@ -66,7 +66,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
  */
 final class LocalResourceChangedNotifier implements SpaceProvider.ProviderResourceChangedNotifier {
 
-    private static final Duration POLL_INTERVAL = Duration.ofSeconds(500);
+    private static final Duration POLL_INTERVAL = Duration.ofMillis(500);
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalResourceChangedNotifier.class);
 
