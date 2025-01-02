@@ -51,15 +51,10 @@ package org.knime.gateway.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.knime.base.data.xml.SvgValue;
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
-import org.knime.core.data.image.png.PNGImageValue;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
-import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
-import org.knime.gateway.impl.node.datavalueview.image.PNGImageValueView;
-import org.knime.gateway.impl.node.datavalueview.image.SvgValueView;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariablePortViewFactory;
 import org.knime.gateway.impl.node.port.FlowVariableSpecViewFactory;
@@ -115,10 +110,6 @@ public class GatewayImplPlugin implements BundleActivator {
 
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
-
-        DataValueViewManager.registerDataValueViewFactory(PNGImageValue.class, PNGImageValueView::new);
-
-        DataValueViewManager.registerDataValueViewFactory(SvgValue.class, SvgValueView::new);
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();

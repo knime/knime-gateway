@@ -68,7 +68,6 @@ import java.util.function.Supplier;
 
 import org.junit.Test;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DoubleValue;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -88,8 +87,6 @@ import org.knime.core.webui.node.port.PortSpecViewFactory;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
-import org.knime.core.webui.node.view.table.datavalue.DataValueView;
-import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.DataValueViewEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -310,31 +307,12 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
         String wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
         wfm.executeAllAndWaitUntilDone();
-        DataValueViewManager.registerDataValueViewFactory(DoubleValue.class, (cell) -> new DataValueView() {
-
-            @Override
-            public Page getPage() {
-                return Page.builder(() -> "blub", "index.html").build();
-            }
-
-            @Override
-            public <D> Optional<InitialDataService<D>> createInitialDataService() {
-                return Optional.empty();
-            }
-
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                return Optional.empty();
-            }
-
-        });
         final var dataValueView =
-            DefaultPortService.getInstance().getDataValueView(wfId, getRootID(), new NodeIDEnt(2), 1, 1, 3);
+            DefaultPortService.getInstance().getDataValueView(wfId, getRootID(), new NodeIDEnt(27), 1, 1, 4);
 
         assertThat(dataValueView, instanceOf(DataValueViewEnt.class));
         assertThat(((DataValueViewEnt)dataValueView).getResourceInfo().getPath(),
-            is("uiext-data_value/3_2_1_1_3/index.html"));
-        DataValueViewManager.removeDataValueViewFactory(DoubleValue.class);
+            is("uiext-data_value/org.knime.core.data.def.StringCell/StringCellView.html"));
     }
 
 }
