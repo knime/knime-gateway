@@ -316,12 +316,8 @@ public final class NodeCategories {
                 return plugInId.regionMatches(0, otherPlugInId, 0, secondDotIndex);
             }
 
-            /**
-             * Since all categories within the top level "Community" category will not be compatible with its vendor, we
-             * make an exception for this case.
-             */
-            private static boolean isCommunityCategory(final CategoryTreeNode node) {
-                return node.metadata().path().size() == 1 && node.metadata().id().toString().equals("community");
+            private boolean isParentLocked() {
+                return parent().map(CategoryTreeNode::locked).orElse(false);
             }
 
             CategoryId categoryIdentifier() {
@@ -341,8 +337,7 @@ public final class NodeCategories {
             }
 
             private void isAllowedByParentLock() throws CategoryCreationException {
-                var allowed = !parent().map(CategoryTreeNode::locked).orElse(false) //
-                    || isContributedByKNIME(this.contributingPlugin());
+                var allowed = !isParentLocked() || isContributedByKNIME(this.contributingPlugin());
                 if (!allowed) {
                     var parentId = parent().flatMap(p -> Optional.ofNullable(p.metadata())).map(CategoryMetadata::id)
                         .map(CategoryId::toString).orElse("unknown");
@@ -352,14 +347,12 @@ public final class NodeCategories {
             }
 
             private void isCompatibleToParentVendor() throws CategoryCreationException {
-                var allowed = true;
                 var parentPluginId = parent() //
                     .map(CategoryTreeNode::metadata) //
                     .flatMap(CategoryMetadata::contributingPlugin);
                 if (parentPluginId.isPresent()) {
                     var childPluginId = this.contributingPlugin();
-                    allowed = childPluginId.equals(parentPluginId.get()) //
-                        || isCommunityCategory(parent().get()) //
+                    var allowed = childPluginId.equals(parentPluginId.get()) //
                         || vendorEqual(childPluginId, parentPluginId.get()) //
                         || isContributedByKNIME(childPluginId);
                     if (!allowed) {
@@ -376,7 +369,11 @@ public final class NodeCategories {
             void canInsertOrThrow() throws CategoryCreationException {
                 mayCreateCategory();
                 isAllowedByParentLock();
-                isCompatibleToParentVendor();
+                if (isParentLocked()) {
+                    // If the parent is locked, the child must be compatible to the parent vendor
+                    // (or be contributed by KNIME)
+                    isCompatibleToParentVendor();
+                }
             }
         }
 
