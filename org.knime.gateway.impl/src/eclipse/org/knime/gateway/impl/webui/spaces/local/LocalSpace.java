@@ -103,7 +103,6 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
  * @author Kai Franze, KNIME GmbH
  * @author Benjamin Moser, KNIME GmbH
  */
-// TODO rename to LocalSpace (consistent with e.g. HubSpace) and "workspace" should be avoided
 public final class LocalSpace implements Space {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalSpace.class);
@@ -190,6 +189,12 @@ public final class LocalSpace implements Space {
         return toLocalAbsolutePath(itemId);
     }
 
+    /**
+     * Resolves the item with the given ID into a local file.
+     *
+     * @param itemId ID if the item to resolve
+     * @return the local path of the item and if available, empty if not available
+     */
     public Optional<Path> toLocalAbsolutePath(final String itemId) {
         var path = m_spaceItemPathAndTypeCache.getPath(itemId);
         if (path == null || !Files.exists(path)) {
@@ -200,7 +205,6 @@ public final class LocalSpace implements Space {
 
     @Override
     public URI toKnimeUrl(final String itemId) {
-        // TODO can this be avoided?
         if (Space.ROOT_ITEM_ID.equals(itemId)) {
             // for historical reasons, the local space root gets mapped to "knime://LOCAL/" (note the trailing slash!)
             return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_SPACE_ID.toUpperCase(Locale.ROOT) + "/");
@@ -659,7 +663,6 @@ public final class LocalSpace implements Space {
             // collision between two leaf items
             final boolean typesCompatible = (currentType == newItemType)
                 || (WORKFLOW_LIKE.contains(currentType) && WORKFLOW_LIKE.contains(newItemType));
-            // TODO replace with `Locator`?
             var localProjectWithId = ProjectManager.getInstance().getProject( //
                 SpaceProvider.LOCAL_SPACE_PROVIDER_ID, //
                 LocalSpace.LOCAL_SPACE_ID, //
