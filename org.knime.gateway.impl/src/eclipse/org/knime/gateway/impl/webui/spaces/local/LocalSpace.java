@@ -157,7 +157,7 @@ public final class LocalSpace implements Space {
         var absolutePath = getAbsolutePath(workflowGroupItemId);
         return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_rootPath,
             this::getItemId, m_spaceItemPathAndTypeCache::determineTypeOrGetFromCache,
-            LocalSpace::isValidWorkspaceItem, ITEM_COMPARATOR);
+            LocalSpace::isValidItem, ITEM_COMPARATOR);
     }
 
     @Override
@@ -521,7 +521,7 @@ public final class LocalSpace implements Space {
      * @param path file or directory in the workspace
      * @return {@code true} if the item is a workspace item, {@code false} otherwise
      */
-    public static boolean isValidWorkspaceItem(final Path path) {
+    public static boolean isValidItem(final Path path) {
         try {
             var filename = path.getFileName().toString();
             return !Files.isHidden(path) //
