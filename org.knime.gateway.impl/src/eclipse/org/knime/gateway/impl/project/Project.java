@@ -72,16 +72,16 @@ public interface Project {
      * Creates a project based on space-item-infos.
      */
     static Project of(final WorkflowManager wfm, final String spaceProviderId, final String spaceId,
-        final String itemId, final String relativePath, final ProjectTypeEnum projectType) {
-        return of(wfm, spaceProviderId, spaceId, itemId, relativePath, projectType, null);
+        final String itemId, final ProjectTypeEnum projectType) {
+        return of(wfm, spaceProviderId, spaceId, itemId, projectType, null);
     }
 
     /**
      * Creates a project based on space-item-infos using a custom project ID.
      */
     static Project of(final WorkflowManager wfm, final String providerId, final String spaceId, final String itemId,
-        final String relativePath, final ProjectTypeEnum projectType, final String customProjectId) {
-        final var origin = Origin.of(providerId, spaceId, itemId, relativePath, projectType);
+        final ProjectTypeEnum projectType, final String customProjectId) {
+        final var origin = Origin.of(providerId, spaceId, itemId, projectType);
         final var projectName = wfm.getName();
         return of(wfm, origin, projectName, customProjectId);
     }
@@ -93,9 +93,8 @@ public interface Project {
         final String customProjectId, final LocalSpace localSpace) {
         final var path = context.getExecutorInfo().getLocalWorkflowPath();
         final var itemId = localSpace.getItemId(path);
-        final var relativePath = localSpace.getRootPath().relativize(path).toString();
         final var origin = Origin.of(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId,
-            relativePath, projectType);
+            projectType);
         final var projectName = path.toFile().getName();
         return of(wfm, origin, projectName, customProjectId);
     }
@@ -176,8 +175,7 @@ public interface Project {
      * Identifies space and item from which this workflow/component project has been opened.
      */
     interface Origin {
-        @SuppressWarnings("javadoc")
-        static Origin of(final String providerId, final String spaceId, final String itemId, final String relativePath,
+        static Origin of(final String providerId, final String spaceId, final String itemId,
             final ProjectTypeEnum projectType) {
             return new Origin() { // NOSONAR
                 @Override
@@ -210,6 +208,7 @@ public interface Project {
          * @param selectedVersion the version information of the item, can be empty
          * @return The newly created Origin, or an empty {@link Optional} if hubLocation or workflow manager are missing
          */
+        @SuppressWarnings({"java:S1188"})
         static Optional<Origin> of(final HubSpaceLocationInfo hubLocation, final WorkflowManager wfm,
             final Optional<NamedItemVersion> selectedVersion) { // NOSONAR: The version is optional
             if (hubLocation == null || wfm == null) {
@@ -294,6 +293,10 @@ public interface Project {
          */
         default Optional<SpaceItemVersionEnt> getItemVersion() {
             return Optional.empty();
+        }
+
+        default boolean isLocal() {
+            return this.getProviderId().equals(SpaceProvider.LOCAL_SPACE_PROVIDER_ID);
         }
     }
 }

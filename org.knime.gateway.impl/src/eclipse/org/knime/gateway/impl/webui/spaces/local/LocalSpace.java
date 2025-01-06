@@ -203,20 +203,28 @@ public final class LocalSpace implements Space {
         return Optional.of(path);
     }
 
+    /**
+     * Return the file system path of the requested item, relative to the root directory of this space.
+     * 
+     * @param itemId The query item
+     * @return The path, or empty if item ID is not in space.
+     */
+    public Optional<Path> toLocalRelativePath(final String itemId) {
+        return toLocalAbsolutePath(itemId).map(absolutePath -> this.getRootPath().relativize(absolutePath));
+    }
+
     @Override
     public URI toKnimeUrl(final String itemId) {
         if (Space.ROOT_ITEM_ID.equals(itemId)) {
             // for historical reasons, the local space root gets mapped to "knime://LOCAL/" (note the trailing slash!)
             return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_SPACE_ID.toUpperCase(Locale.ROOT) + "/");
         }
-        var absolutePath = toLocalAbsolutePath(null, itemId).orElse(null);
-        if (absolutePath == null) {
-            throw new IllegalStateException("No item found for id " + itemId);
-        }
-        final var relativeUri = m_rootPath.toUri().relativize(absolutePath.toUri());
+        final var relativeUri = toLocalRelativePath(itemId).map(Path::toUri)
+            .orElseThrow(() -> new IllegalStateException("No item found for id " + itemId));
         if (relativeUri.isAbsolute()) {
             throw new IllegalStateException(
-                "Space item '" + absolutePath + "' is not inside root '" + m_rootPath + "'");
+                "Space item is at path '" + toLocalAbsolutePath(itemId) + "' and thus not inside root '" + getRootPath()
+                    + "'");
         }
         try {
             return new URIBuilder(relativeUri) //
@@ -349,6 +357,7 @@ public final class LocalSpace implements Space {
      * Resolve the given {@code fileName} against the given {@code parentPath}, resolving name collisions as according
      * to {@code requestedStrategy}
      */
+    @SuppressWarnings("java:S1151")
     private Path resolveWithNameCollisions(final Path parentPath, final String fileName,
         final NameCollisionHandling requestedStrategy, final Supplier<String> uniqueName) throws IOException {
         return switch (requestedStrategy) {
