@@ -316,6 +316,14 @@ public final class NodeCategories {
                 return plugInId.regionMatches(0, otherPlugInId, 0, secondDotIndex);
             }
 
+            /**
+             * Since all categories within the top level "Community" category will not be compatible with its vendor, we
+             * make an exception for this case.
+             */
+            private static boolean isCommunityCategory(final CategoryTreeNode node) {
+                return node.metadata().path().size() == 1 && node.metadata().id().toString().equals("community");
+            }
+
             CategoryId categoryIdentifier() {
                 return path().get(path().size() - 1);
             }
@@ -351,6 +359,7 @@ public final class NodeCategories {
                 if (parentPluginId.isPresent()) {
                     var childPluginId = this.contributingPlugin();
                     allowed = childPluginId.equals(parentPluginId.get()) //
+                        || isCommunityCategory(parent().get()) //
                         || vendorEqual(childPluginId, parentPluginId.get()) //
                         || isContributedByKNIME(childPluginId);
                     if (!allowed) {
