@@ -208,9 +208,9 @@ public interface Project {
          * @param selectedVersion the version information of the item, can be empty
          * @return The newly created Origin, or an empty {@link Optional} if hubLocation or workflow manager are missing
          */
-        @SuppressWarnings({"java:S1188"})
+        @SuppressWarnings({"java:S1188", "OptionalUsedAsFieldOrParameterType"})
         static Optional<Origin> of(final HubSpaceLocationInfo hubLocation, final WorkflowManager wfm,
-            final Optional<NamedItemVersion> selectedVersion) { // NOSONAR: The version is optional
+            final Optional<NamedItemVersion> selectedVersion) {
             if (hubLocation == null || wfm == null) {
                 return Optional.empty();
             }
@@ -279,13 +279,6 @@ public interface Project {
          * @return The project type of the space item
          */
         Optional<ProjectTypeEnum> getProjectType();
-
-        /**
-         * @return the relative path of the original space item - usually only given for the local space
-         */
-        default Optional<String> getRelativePath() {
-            return Optional.empty();
-        }
 
         /**
          * @return The item version of the workflow/component project, or absent for latest version
