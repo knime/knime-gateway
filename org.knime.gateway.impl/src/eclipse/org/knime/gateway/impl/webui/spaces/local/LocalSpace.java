@@ -205,12 +205,17 @@ public final class LocalSpace implements Space {
 
     /**
      * Return the file system path of the requested item, relative to the root directory of this space.
-     * 
+     *
      * @param itemId The query item
      * @return The path, or empty if item ID is not in space.
      */
     public Optional<Path> toLocalRelativePath(final String itemId) {
         return toLocalAbsolutePath(itemId).map(absolutePath -> this.getRootPath().relativize(absolutePath));
+    }
+
+    private Optional<URI> toLocalRelativeURI(final String itemId) {
+        return toLocalAbsolutePath(itemId)
+            .map(absolutePath -> this.getRootPath().toUri().relativize(absolutePath.toUri()));
     }
 
     @Override
@@ -219,8 +224,8 @@ public final class LocalSpace implements Space {
             // for historical reasons, the local space root gets mapped to "knime://LOCAL/" (note the trailing slash!)
             return URI.create(KnimeUrlType.SCHEME + "://" + LOCAL_SPACE_ID.toUpperCase(Locale.ROOT) + "/");
         }
-        final var relativeUri = toLocalRelativePath(itemId).map(Path::toUri)
-            .orElseThrow(() -> new IllegalStateException("No item found for id " + itemId));
+        final var relativeUri =
+            toLocalRelativeURI(itemId).orElseThrow(() -> new IllegalStateException("No item found for id " + itemId));
         if (relativeUri.isAbsolute()) {
             throw new IllegalStateException(
                 "Space item is at path '" + toLocalAbsolutePath(itemId) + "' and thus not inside root '" + getRootPath()
