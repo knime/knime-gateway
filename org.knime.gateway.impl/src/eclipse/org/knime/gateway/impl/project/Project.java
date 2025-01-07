@@ -175,6 +175,13 @@ public interface Project {
      * Identifies space and item from which this workflow/component project has been opened.
      */
     interface Origin {
+        /**
+         * @param providerId
+         * @param spaceId
+         * @param itemId
+         * @param projectType the type of the project or {@code null}
+         * @return a new instance
+         */
         static Origin of(final String providerId, final String spaceId, final String itemId,
             final ProjectTypeEnum projectType) {
             return new Origin() { // NOSONAR
@@ -206,17 +213,17 @@ public interface Project {
          * @param hubLocation location information of the item
          * @param wfm the WorkflowManager that contains the project
          * @param selectedVersion the version information of the item, can be empty
-         * @return The newly created Origin, or an empty {@link Optional} if hubLocation or workflow manager are missing
+         * @return The newly created Origin, or null if hubLocation or workflow manager are missing
          */
-        @SuppressWarnings({"java:S1188", "OptionalUsedAsFieldOrParameterType"})
+        @SuppressWarnings({"java:S1188"})
         static Optional<Origin> of(final HubSpaceLocationInfo hubLocation, final WorkflowManager wfm,
-            final Optional<NamedItemVersion> selectedVersion) {
+            final NamedItemVersion selectedVersion) {
             if (hubLocation == null || wfm == null) {
                 return Optional.empty();
             }
             final var context = wfm.getContextV2();
             final var apExecInfo = (AnalyticsPlatformExecutorInfo)context.getExecutorInfo();
-            final var versionInfo = selectedVersion.map(Origin::buildVersionInfo);
+            final var versionInfo = selectedVersion == null ? null : Origin.buildVersionInfo(selectedVersion);
             return Optional.of(new Origin() {
 
                 @Override
@@ -244,12 +251,12 @@ public interface Project {
 
                 @Override
                 public Optional<SpaceItemVersionEnt> getItemVersion() {
-                    return versionInfo;
+                    return Optional.ofNullable(versionInfo);
                 }
             });
         }
 
-        static SpaceItemVersionEnt buildVersionInfo(final NamedItemVersion selectedVersion) {
+        private static SpaceItemVersionEnt buildVersionInfo(final NamedItemVersion selectedVersion) {
             return builder(SpaceItemVersionEnt.SpaceItemVersionEntBuilder.class) //
                 .setVersion(selectedVersion.version()) //
                 .setTitle(selectedVersion.title()) //
