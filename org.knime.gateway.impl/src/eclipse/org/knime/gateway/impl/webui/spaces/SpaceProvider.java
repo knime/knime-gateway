@@ -115,6 +115,7 @@ public interface SpaceProvider {
 
     /**
      * Returns the server address of the current space provider
+     * 
      * @return the server address or an empty optional if this provider is not connected
      */
     default Optional<String> getServerAddress() {
@@ -140,9 +141,9 @@ public interface SpaceProvider {
      * @throws IOException if I/O errors occur during upload
      * @throws UnsupportedOperationException for local space providers
      */
-    default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri,
-            final boolean deleteSource, final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
-            throws CoreException, IOException {
+    default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri, final boolean deleteSource,
+        final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
+        throws CoreException, IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -152,14 +153,13 @@ public interface SpaceProvider {
      * @param sourceUri source KNIME URL
      * @param targetUri target KNIME URL
      * @param deleteSource flag indicating that the operation is a move instead of a copy operation
-     * @param excludeDataInWorkflows data exclusion flag
      * @param progressMonitor monitor for aborting or receiving progress updates
      * @throws CoreException if errors occur during download
      * @throws IOException if I/O errors occur during download
      * @throws UnsupportedOperationException for local space providers
      */
     default void syncDownloadWorkflow(final URI sourceUri, final URI targetUri, final boolean deleteSource,
-            final IProgressMonitor progressMonitor) throws CoreException, IOException {
+        final IProgressMonitor progressMonitor) throws CoreException, IOException {
         throw new UnsupportedOperationException();
     }
 
@@ -182,20 +182,25 @@ public interface SpaceProvider {
         return Optional.empty();
     }
 
-    default Optional<ProviderResourceChangedNotifier> getChangeNotifier() {
+    /**
+     * @return a change notifier for items in this space. Empty if not available.
+     */
+    default Optional<SpaceItemChangeNotifier> getChangeNotifier() {
         return Optional.empty();
     }
 
-    interface ProviderResourceChangedNotifier {
+    /**
+     * Notifies callbacks if the specified space item has changed.
+     */
+    interface SpaceItemChangeNotifier {
         /**
          * If an item already has a subscription, it is removed.
          */
-        void subscribeToItem(final String space, final String item, Runnable callback);
+        void subscribeToItem(final String spaceId, final String itemId, Runnable callback);
 
         void unsubscribe(String spaceId, String itemId);
 
         void unsubscribeAll();
-
     }
 
     /**
@@ -256,6 +261,7 @@ public interface SpaceProvider {
      * @param spaceId ID of the space containing the item
      * @param itemId ID of the item itself
      */
-    public record SpaceAndItemId(String spaceId, String itemId) {}
+    record SpaceAndItemId(String spaceId, String itemId) {
+    }
 
 }

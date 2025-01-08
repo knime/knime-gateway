@@ -79,7 +79,7 @@ public final class Lazy {
          *
          * @return the value
          */
-        public V initialised() {
+        public V get() {
             if (m_value == null) {
                 m_value = m_supplier.get();
             }
@@ -87,7 +87,7 @@ public final class Lazy {
         }
 
         /**
-         * Clear the cached value. The next call to {@link #initialised()} will trigger a new initialisation.
+         * Clear the cached value. The next call to {@link #get()} will trigger a new initialisation.
          */
         public void clear() {
             m_value = null;
@@ -118,7 +118,7 @@ public final class Lazy {
         }
 
         public V transformed() {
-            return m_transformed.initialised();
+            return m_transformed.get();
         }
 
     }

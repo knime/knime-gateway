@@ -57,11 +57,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt.DefaultEventTypeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateAvailableEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultProjectDisposedEventTypeEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
 
@@ -79,6 +79,8 @@ import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
 @JsonSubTypes({
     @Type(value = DefaultEventTypeEnt.class, name="EventType")
 ,
+  @Type(value = DefaultSpaceItemChangedEventTypeEnt.class, name = "SpaceItemChangedEventType")
+,
   @Type(value = DefaultUpdateAvailableEventTypeEnt.class, name = "UpdateAvailableEventType")
 ,
   @Type(value = DefaultNodeRepositoryLoadingProgressEventTypeEnt.class, name = "NodeRepositoryLoadingProgressEventType")
@@ -86,8 +88,6 @@ import org.knime.gateway.impl.webui.entity.DefaultAppStateChangedEventTypeEnt;
   @Type(value = DefaultWorkflowMonitorStateChangeEventTypeEnt.class, name = "WorkflowMonitorStateChangeEventType")
 ,
   @Type(value = DefaultProjectDisposedEventTypeEnt.class, name = "ProjectDisposedEventType")
-,
-  @Type(value = DefaultProviderResourceChangedEventTypeEnt.class, name = "ProviderResourceChangedEventType")
 ,
   @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
 ,
@@ -121,6 +121,8 @@ public interface EventTypeEntMixIn extends EventTypeEnt {
 @JsonSubTypes({
     @Type(value = DefaultEventTypeEnt.class, name="EventType")
 ,
+  @Type(value = DefaultSpaceItemChangedEventTypeEnt.class, name = "SpaceItemChangedEventType")
+,
   @Type(value = DefaultUpdateAvailableEventTypeEnt.class, name = "UpdateAvailableEventType")
 ,
   @Type(value = DefaultNodeRepositoryLoadingProgressEventTypeEnt.class, name = "NodeRepositoryLoadingProgressEventType")
@@ -128,8 +130,6 @@ public interface EventTypeEntMixIn extends EventTypeEnt {
   @Type(value = DefaultWorkflowMonitorStateChangeEventTypeEnt.class, name = "WorkflowMonitorStateChangeEventType")
 ,
   @Type(value = DefaultProjectDisposedEventTypeEnt.class, name = "ProjectDisposedEventType")
-,
-  @Type(value = DefaultProviderResourceChangedEventTypeEnt.class, name = "ProviderResourceChangedEventType")
 ,
   @Type(value = DefaultWorkflowChangedEventTypeEnt.class, name = "WorkflowChangedEventType")
 ,

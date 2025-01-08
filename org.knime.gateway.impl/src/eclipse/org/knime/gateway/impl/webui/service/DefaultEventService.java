@@ -57,7 +57,7 @@ import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
-import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
@@ -75,9 +75,9 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.EventSource;
-import org.knime.gateway.impl.webui.service.events.ProviderResourceChanged;
 import org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource;
 import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
+import org.knime.gateway.impl.webui.service.events.SpaceItemChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
@@ -120,8 +120,7 @@ public final class DefaultEventService implements EventService {
     private final NodeCollections m_nodeCollections =
         ServiceDependencies.getServiceDependency(NodeCollections.class, false);
 
-    private final KaiHandler m_kaiHandler =
-            ServiceDependencies.getServiceDependency(KaiHandler.class, false);
+    private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -136,10 +135,8 @@ public final class DefaultEventService implements EventService {
         // singleton
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
@@ -151,9 +148,9 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
-                    var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager,
-                        m_preferencesProvider, m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections,
-                        m_kaiHandler);
+                    var dependencies =
+                        new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
+                            m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
             } else {
@@ -177,9 +174,9 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowMonitorStateChangedEventSource(m_eventConsumer, m_projectManager,
                     m_workflowMiddleware));
-        } else if (eventTypeEnt instanceof ProviderResourceChangedEventTypeEnt) {
+        } else if (eventTypeEnt instanceof SpaceItemChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new ProviderResourceChanged(m_eventConsumer, m_spaceProviders));
+                t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceProviders));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
@@ -192,9 +189,6 @@ public final class DefaultEventService implements EventService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings("unchecked")
     @Override
     public void removeEventListener(final EventTypeEnt eventTypeEnt) {

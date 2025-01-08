@@ -46,14 +46,13 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 
-import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
 
 /**
- * The event type to register for the respective event.
+ * Event to update the state of the space explorer.
  *
- * @param typeId
  * @param providerId
  * @param spaceId
  * @param itemId
@@ -61,16 +60,15 @@ import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultProviderResourceChangedEventTypeEnt(
-    String typeId,
+public record DefaultSpaceItemChangedEventEnt(
     String providerId,
     String spaceId,
-    String itemId) implements ProviderResourceChangedEventTypeEnt {
+    String itemId) implements SpaceItemChangedEventEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultProviderResourceChangedEventTypeEnt {
+    public DefaultSpaceItemChangedEventEnt {
         if(providerId == null) {
             throw new IllegalArgumentException("<providerId> must not be null.");
         }
@@ -84,14 +82,9 @@ public record DefaultProviderResourceChangedEventTypeEnt(
 
     @Override
     public String getTypeID() {
-        return "ProviderResourceChangedEventType";
+        return "SpaceItemChangedEvent";
     }
   
-    @Override
-    public String getTypeId() {
-        return typeId;
-    }
-    
     @Override
     public String getProviderId() {
         return providerId;
@@ -108,11 +101,9 @@ public record DefaultProviderResourceChangedEventTypeEnt(
     }
     
     /**
-     * A builder for {@link DefaultProviderResourceChangedEventTypeEnt}.
+     * A builder for {@link DefaultSpaceItemChangedEventEnt}.
      */
-    public static class DefaultProviderResourceChangedEventTypeEntBuilder implements ProviderResourceChangedEventTypeEntBuilder {
-
-        private String m_typeId;
+    public static class DefaultSpaceItemChangedEventEntBuilder implements SpaceItemChangedEventEntBuilder {
 
         private String m_providerId;
 
@@ -121,13 +112,7 @@ public record DefaultProviderResourceChangedEventTypeEnt(
         private String m_itemId;
 
         @Override
-        public DefaultProviderResourceChangedEventTypeEntBuilder setTypeId(String typeId) {
-             m_typeId = typeId;
-             return this;
-        }
-
-        @Override
-        public DefaultProviderResourceChangedEventTypeEntBuilder setProviderId(String providerId) {
+        public DefaultSpaceItemChangedEventEntBuilder setProviderId(String providerId) {
              if(providerId == null) {
                  throw new IllegalArgumentException("<providerId> must not be null.");
              }
@@ -136,7 +121,7 @@ public record DefaultProviderResourceChangedEventTypeEnt(
         }
 
         @Override
-        public DefaultProviderResourceChangedEventTypeEntBuilder setSpaceId(String spaceId) {
+        public DefaultSpaceItemChangedEventEntBuilder setSpaceId(String spaceId) {
              if(spaceId == null) {
                  throw new IllegalArgumentException("<spaceId> must not be null.");
              }
@@ -145,7 +130,7 @@ public record DefaultProviderResourceChangedEventTypeEnt(
         }
 
         @Override
-        public DefaultProviderResourceChangedEventTypeEntBuilder setItemId(String itemId) {
+        public DefaultSpaceItemChangedEventEntBuilder setItemId(String itemId) {
              if(itemId == null) {
                  throw new IllegalArgumentException("<itemId> must not be null.");
              }
@@ -154,9 +139,8 @@ public record DefaultProviderResourceChangedEventTypeEnt(
         }
 
         @Override
-        public DefaultProviderResourceChangedEventTypeEnt build() {
-            return new DefaultProviderResourceChangedEventTypeEnt(
-                immutable(m_typeId),
+        public DefaultSpaceItemChangedEventEnt build() {
+            return new DefaultSpaceItemChangedEventEnt(
                 immutable(m_providerId),
                 immutable(m_spaceId),
                 immutable(m_itemId));

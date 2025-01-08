@@ -52,80 +52,75 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Optional;
 
-import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventEnt;
-import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt;
-import org.knime.gateway.impl.service.util.CallThrottle;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider.ProviderResourceChangedNotifier;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceItemChangeNotifier;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
-/**
- * ...
- *
- * @author Kai Franze, KNIME GmbH, Germany
- */
-public class ProviderResourceChanged
-    extends EventSource<ProviderResourceChangedEventTypeEnt, ProviderResourceChangedEventEnt> {
+@SuppressWarnings("javadoc")
+public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEventTypeEnt, SpaceItemChangedEventEnt> {
 
     private final SpaceProviders m_spaceProviders;
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private Optional<ProviderResourceChangedNotifier> m_changeNotifier;
-
-    /**
-     * ...
-     *
-     * @param eventConsumer ...
-     */
-    public ProviderResourceChanged(final EventConsumer eventConsumer, final SpaceProviders spaceProviders) {
+    public SpaceItemChangedEventSource(final EventConsumer eventConsumer, final SpaceProviders spaceProviders) {
         super(eventConsumer);
         m_spaceProviders = spaceProviders;
     }
 
     @Override
     @SuppressWarnings("java:S1602")
-    public Optional<ProviderResourceChangedEventEnt>
-        addEventListenerAndGetInitialEventFor(final ProviderResourceChangedEventTypeEnt eventTypeEnt) {
-        m_changeNotifier = m_spaceProviders.getProvidersMap().get(eventTypeEnt.getProviderId()).getChangeNotifier();
-        if (m_changeNotifier.isEmpty()) {
-            return Optional.empty();
-        }
-
-        var throttle = new CallThrottle(onSubscriptionNotification(eventTypeEnt), this.getName() + " call throttle");
-
-        m_changeNotifier.ifPresent(notifier -> notifier.subscribeToItem(eventTypeEnt.getSpaceId(),
-            eventTypeEnt.getItemId(), throttle::invoke));
+    public Optional<SpaceItemChangedEventEnt>
+        addEventListenerAndGetInitialEventFor(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> {
+            notifier.subscribeToItem( //
+                eventTypeEnt.getSpaceId(), //
+                eventTypeEnt.getItemId(), //
+                () -> onSubscriptionNotification(eventTypeEnt) //
+            );
+        });
         return Optional.empty();
     }
 
-    private Runnable onSubscriptionNotification(ProviderResourceChangedEventTypeEnt eventTypeEnt) {
-        return () -> this.sendEvent(
+    private Optional<SpaceItemChangeNotifier> getNotifierForProvider(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        return m_spaceProviders.getSpaceProvider(eventTypeEnt.getProviderId()).getChangeNotifier();
+    }
+
+    private void onSubscriptionNotification(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        this.sendEvent(
             // provide information on what has changed in the event s.t. the frontend can decide whether it
             // is still interested in it
             buildEvent(eventTypeEnt) //
         );
     }
 
-    @Override
-    public void removeEventListener(final ProviderResourceChangedEventTypeEnt eventTypeEnt) {
-        m_changeNotifier.ifPresent(notifier -> notifier.unsubscribe(eventTypeEnt.getSpaceId(), eventTypeEnt.getItemId()));
-    }
-
-    @Override
-    public void removeAllEventListeners() {
-        m_changeNotifier.ifPresent(ProviderResourceChangedNotifier::unsubscribeAll);
-    }
-
-    @Override
-    protected String getName() {
-        return "ProviderResourceChangedEvent";
-    }
-
-    private static ProviderResourceChangedEventEnt buildEvent(final ProviderResourceChangedEventTypeEnt eventTypeEnt) {
-        return builder(ProviderResourceChangedEventEnt.ProviderResourceChangedEventEntBuilder.class) //
+    private static SpaceItemChangedEventEnt buildEvent(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        return builder(SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder.class) //
             .setProviderId(eventTypeEnt.getProviderId()) //
             .setSpaceId(eventTypeEnt.getSpaceId()) //
             .setItemId(eventTypeEnt.getItemId()) //
             .build();
+    }
+
+    @Override
+    public void removeEventListener(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> {
+            notifier.unsubscribe( //
+                eventTypeEnt.getSpaceId(), //
+                eventTypeEnt.getItemId() //
+            );
+        });
+    }
+
+    @Override
+    public void removeAllEventListeners() {
+        m_spaceProviders.getProvidersMap().values().forEach(provider -> {
+            provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll);
+        });
+    }
+
+    @Override
+    protected String getName() {
+        return "SpaceItemChangedEvent";
     }
 
 }

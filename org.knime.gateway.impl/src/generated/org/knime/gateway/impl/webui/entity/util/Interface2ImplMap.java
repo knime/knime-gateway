@@ -236,10 +236,6 @@ import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
-import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventEnt.ProviderResourceChangedEventEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventEnt;
-import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventTypeEnt.ProviderResourceChangedEventTypeEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
@@ -254,6 +250,10 @@ import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt.SpaceGroupEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
@@ -640,12 +640,6 @@ public class Interface2ImplMap {
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
         }        
-        if(clazz == ProviderResourceChangedEventEntBuilder.class) {
-            return (B)new DefaultProviderResourceChangedEventEnt.DefaultProviderResourceChangedEventEntBuilder();
-        }        
-        if(clazz == ProviderResourceChangedEventTypeEntBuilder.class) {
-            return (B)new DefaultProviderResourceChangedEventTypeEnt.DefaultProviderResourceChangedEventTypeEntBuilder();
-        }        
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();
         }        
@@ -666,6 +660,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == SpaceGroupEntBuilder.class) {
             return (B)new DefaultSpaceGroupEnt.DefaultSpaceGroupEntBuilder();
+        }        
+        if(clazz == SpaceItemChangedEventEntBuilder.class) {
+            return (B)new DefaultSpaceItemChangedEventEnt.DefaultSpaceItemChangedEventEntBuilder();
+        }        
+        if(clazz == SpaceItemChangedEventTypeEntBuilder.class) {
+            return (B)new DefaultSpaceItemChangedEventTypeEnt.DefaultSpaceItemChangedEventTypeEntBuilder();
         }        
         if(clazz == SpaceItemEntBuilder.class) {
             return (B)new DefaultSpaceItemEnt.DefaultSpaceItemEntBuilder();

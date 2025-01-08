@@ -48,9 +48,11 @@ package org.knime.gateway.impl.webui.spaces.local;
 import java.io.File;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -58,51 +60,67 @@ import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.knime.core.node.NodeLogger;
+import org.knime.gateway.impl.service.util.CallThrottle;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceAndItemId;
 
 /**
- * Listen for changes in the given {@link LocalWorkspace} and notify listeners.
- * This implementation notifies without restrictions, it is left to the caller to throttle notifications.
+ * Listen for changes in the given {@link LocalWorkspace} and notify listeners. This implementation notifies without
+ * restrictions, it is left to the caller to throttle notifications.
+ *
+ * @author Benjamin Moser, KNIME GmbH
  */
-final class LocalResourceChangedNotifier implements SpaceProvider.ProviderResourceChangedNotifier {
+final class LocalSpaceItemChangeNotifier implements SpaceProvider.SpaceItemChangeNotifier {
 
-    private static final Duration POLL_INTERVAL = Duration.ofMillis(500);
+    private static final String SYSPROP = "org.knime.ui.local_space_change_notifier";
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalResourceChangedNotifier.class);
+    private static final Duration DEFAULT_POLL_INTERVAL = Duration.ofMillis(500);
 
-    private final LocalWorkspace m_space;
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalSpaceItemChangeNotifier.class);
 
-    private final Map<SpaceProvider.SpaceAndItemId, FileAlterationMonitor> m_subscriptions = new HashMap<>();
+    private final LocalSpaceProvider m_spaceProvider;
 
-    public LocalResourceChangedNotifier(final LocalWorkspace space) {
-        m_space = space;
+    private final Map<SpaceAndItemId, Subscription> m_subscriptions = new HashMap<>();
+
+    private final AsNeeded<FileAlterationMonitor> m_monitorAsNeeded =
+        new AsNeeded<>(LocalSpaceItemChangeNotifier::createAndStartMonitor, LocalSpaceItemChangeNotifier::stopMonitor);
+
+    LocalSpaceItemChangeNotifier(final LocalSpaceProvider space) {
+        m_spaceProvider = space;
     }
 
-    @SuppressWarnings({"java:S1602", "java:S1941"})
-    private static Optional<FileAlterationMonitor> createAndStartMonitor(final Runnable callback,
-        final File targetPath) {
-        var isSibling = createFilter(file -> {
-            // Avoid reporting changes in subdirectories.
-            return targetPath.equals(file.getParentFile());
-        });
-        var isValidWorkspaceItem = createFilter(file -> {
-            // Constrain to items that can be displayed.
-            return LocalWorkspace.isValidWorkspaceItem(file.toPath());
-        });
-        var observer = new FileAlterationObserver(targetPath, FileFilterUtils.and(isSibling, isValidWorkspaceItem));
-        observer.addListener(fileOrDirectoryCreationOrDeletionInCurrent(callback));
-        var monitor = new FileAlterationMonitor(POLL_INTERVAL.toMillis());
+    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
+    static boolean isEnabled() {
+        return Boolean.getBoolean(SYSPROP + "_enabled");
+    }
+
+    private static Duration getPollInterval() {
+        var configuredProperty = System.getProperty(SYSPROP + "_pollInterval");
+        if (configuredProperty != null) {
+            return Duration.ofMillis(Long.parseLong(configuredProperty));
+        }
+        return DEFAULT_POLL_INTERVAL;
+    }
+
+    private static void stopMonitor(final FileAlterationMonitor monitor) {
         try {
-            monitor.addObserver(observer);
+            monitor.stop();
+        } catch (Exception e) {
+            LOGGER.warn("Could not stop monitor", e);
+        }
+    }
+
+    private static FileAlterationMonitor createAndStartMonitor() {
+        var monitor = new FileAlterationMonitor(getPollInterval().toMillis());
+        try {
             monitor.start();
         } catch (Exception e) {
-            LOGGER.warn("Could not attach observer or start monitor", e);
-            return Optional.empty();
+            LOGGER.warn("Could not start monitor", e);
         }
-        return Optional.of(monitor);
+        return monitor;
     }
 
-    private static IOFileFilter createFilter(final Predicate<File> predicate) {
+    private static IOFileFilter createFilter(final Predicate<? super File> predicate) {
         return new IOFileFilter() {
             @Override
             public boolean accept(final File file) {
@@ -115,17 +133,6 @@ final class LocalResourceChangedNotifier implements SpaceProvider.ProviderResour
                 return true;
             }
         };
-    }
-
-    private static void stop(final FileAlterationMonitor monitor) {
-        if (monitor == null) {
-            return;
-        }
-        try {
-            monitor.stop();
-        } catch (Exception e) {
-            LOGGER.warn("Could not stop unsubscribed monitor", e);
-        }
     }
 
     @SuppressWarnings("java:S1188")
@@ -181,44 +188,97 @@ final class LocalResourceChangedNotifier implements SpaceProvider.ProviderResour
         };
     }
 
-    @Override
-    public void subscribeToItem(final String space, final String item, final Runnable callback) {
-        if (!assertLocal(space)) {
-            return;
-        }
-        var key = new SpaceProvider.SpaceAndItemId(space, item);
-        if (m_subscriptions.containsKey(key)) {
-            unsubscribe(space, item);
-        }
-        var path = m_space.getAbsolutePath(item).toFile();
-        var monitor = createAndStartMonitor(callback, path);
-        if (monitor.isEmpty()) {
-            return;
-        }
-        m_subscriptions.put(key, monitor.get());
+    private static void assertLocal(final String spaceId) {
+        assert LocalWorkspace.LOCAL_SPACE_ID.equals(spaceId)
+                : "Cannot attach %s to space with ID other than %s (is: %s)".formatted( //
+                    LocalSpaceItemChangeNotifier.class.getName(), //
+                LocalWorkspace.LOCAL_SPACE_ID, //
+                    spaceId //
+                );
     }
 
-    private boolean assertLocal(final String space) {
-        if (!space.equals(LocalWorkspace.LOCAL_SPACE_ID)) {
-            LOGGER.warn("Cannot attach %s to space with ID other than %s (is: %s)".formatted( //
-                this.getClass().getName(), //
-                LocalWorkspace.LOCAL_SPACE_ID, //
-                space //
-            ));
-            return false;
-        }
-        return true;
+    @Override
+    public void subscribeToItem(final String spaceId, final String itemId, final Runnable callback) {
+        var item = new SpaceAndItemId(spaceId, itemId);
+        var throttledCallback = new CallThrottle(callback, this.getClass().getName() + " callThrottle");
+        var listener = fileOrDirectoryCreationOrDeletionInCurrent(throttledCallback::invoke);
+        var observer = createObserver(item);
+        observer.addListener(listener);
+        m_monitorAsNeeded.getAndIncrementUsages().addObserver(observer);
+        m_subscriptions.put(item, new Subscription(observer, throttledCallback));
     }
 
     @Override
     public void unsubscribe(final String spaceId, final String itemId) {
-        var removedMonitor = m_subscriptions.remove(new SpaceProvider.SpaceAndItemId(spaceId, itemId));
-        stop(removedMonitor);
+        var subscription = m_subscriptions.remove(new SpaceAndItemId(spaceId, itemId));
+        if (subscription != null) {
+            m_monitorAsNeeded.mapAndDecrementUsages(monitor -> monitor.removeObserver(subscription.observer()));
+            subscription.callback().dispose();
+        }
     }
 
     @Override
     public void unsubscribeAll() {
-        m_subscriptions.values().forEach(LocalResourceChangedNotifier::stop);
-        m_subscriptions.clear();
+        new HashSet<>(m_subscriptions.keySet()).forEach(item -> this.unsubscribe(item.spaceId(), item.itemId()));
+    }
+
+    @SuppressWarnings({"java:S1602", "java:S1941"})
+    private FileAlterationObserver createObserver(final SpaceAndItemId item) {
+        assertLocal(item.spaceId());
+        var targetPath = m_spaceProvider.getSpace(item.spaceId()).getAbsolutePath(item.itemId()).toFile();
+        var isSibling = createFilter(file -> {
+            // Avoid reporting changes in subdirectories.
+            return targetPath.equals(file.getParentFile());
+        });
+        var isValidWorkspaceItem = createFilter(file -> {
+            // Constrain to items that can be displayed.
+            return LocalSpace.isValidItem(file.toPath());
+        });
+        return new FileAlterationObserver( //
+            targetPath, //
+            FileFilterUtils.and(isSibling, isValidWorkspaceItem) //
+        );
+    }
+
+    private record Subscription(FileAlterationObserver observer, CallThrottle callback) {
+
+    }
+
+    private static class AsNeeded<V> {
+        private final Supplier<V> m_setUp;
+
+        private final Consumer<V> m_dispose;
+
+        V m_value;
+
+        private int m_usages;
+
+        AsNeeded(final Supplier<V> setUp, final Consumer<V> dispose) {
+            m_setUp = setUp;
+            m_dispose = dispose;
+        }
+
+        V getAndIncrementUsages() {
+            if (m_value == null) {
+                m_value = m_setUp.get();
+            }
+            m_usages = m_usages + 1;
+            return m_value;
+        }
+
+        /**
+         * This accepts a mapping function because the value may be disposed by {@code m_dispose};
+         * 
+         * @param mapper
+         */
+        void mapAndDecrementUsages(final Consumer<? super V> mapper) {
+            mapper.accept(m_value);
+            m_usages = m_usages - 1;
+            if (m_usages == 0) {
+                m_dispose.accept(m_value);
+                m_value = null;
+            }
+        }
+
     }
 }

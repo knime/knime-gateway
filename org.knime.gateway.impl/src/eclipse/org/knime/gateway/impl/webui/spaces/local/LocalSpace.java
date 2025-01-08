@@ -92,7 +92,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -116,12 +115,11 @@ public final class LocalSpace implements Space {
     /**
      * Holds both, the item ID to path map and the path to type map
      */
-    final LocalSpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache; // Package scope for testing
+    @SuppressWarnings("WeakerAccess") // Package scope for testing
+    final LocalSpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache;
 
     private final Path m_rootPath;
 
-    private final Lazy.Init<LocalResourceChangedNotifier> m_sourceChangedNotifier =
-            new Lazy.Init<>(() -> new LocalResourceChangedNotifier(this));
 
     /**
      * @param rootPath the path to the root of the local workspace
@@ -582,10 +580,12 @@ public final class LocalSpace implements Space {
     }
 
     /**
-     * Verify that the given name is a valid name for an item in a {@link LocalSpace}.
-     *
-     * @see FileStoreNameValidator#isValid
-     * @see ExplorerFileSystem#validateFilename
+     * Verify that the given name is a valid name for an item in a {@link LocalSpace}. See
+     * <ul>
+     * <li>FileStoreNameValidator#isValid</li>
+     * <li>ExplorerFileSystem#validateFilename</li>
+     * </ul>
+     * 
      * @param name The candidate new name.
      */
     private static void assertValidItemNameOrThrow(final String name) throws OperationNotAllowedException {
@@ -689,10 +689,6 @@ public final class LocalSpace implements Space {
             final var isOpenedAsProject = localProjectWithId.isPresent();
             return Optional.of(Pair.create(path, new Collision(typesCompatible, !isOpenedAsProject, true)));
         }
-    }
-
-    public SpaceProvider.ProviderResourceChangedNotifier getResourceChangeDispatcher() {
-        return m_sourceChangedNotifier.initialised();
     }
 
 }

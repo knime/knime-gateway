@@ -130,7 +130,7 @@ public final class CallThrottle {
     /**
      * Disposes the throttle.
      */
-    void dispose() {
+    public void dispose() {
         m_executorService.shutdown();
         m_call = null;
     }

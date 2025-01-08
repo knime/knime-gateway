@@ -54,23 +54,25 @@ import java.util.function.Consumer;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
- * The "local" space provider. It especially always contains a single space group and space. The space is necessarily
- * a {@link LocalWorkspace}.
+ * The "local" space provider. It especially always contains a single space group and space. The space is necessarily a
+ * {@link LocalWorkspace}.
  */
 public class LocalSpaceProvider implements SpaceProvider {
 
     /**
      * The single space in this provider
      */
-    private final LocalWorkspace m_space;
+    private final LocalSpace m_space;
 
+    private final Lazy.Init<LocalSpaceItemChangeNotifier> m_itemChangedNotifier =
+        new Lazy.Init<>(() -> new LocalSpaceItemChangeNotifier(this));
 
-
-    public LocalSpaceProvider(final LocalWorkspace space) {
+    public LocalSpaceProvider(final LocalSpace space) {
         m_space = space;
     }
 
@@ -80,7 +82,7 @@ public class LocalSpaceProvider implements SpaceProvider {
      * @return a SpaceGroup that represents the local group
      */
     @SuppressWarnings("java:S1188")
-    public SpaceGroup<LocalWorkspace> getLocalSpaceGroup() {
+    public SpaceGroup<LocalSpace> getLocalSpaceGroup() {
         return new SpaceGroup<>() {
 
             static final String ID = "Local-space-id";
@@ -104,7 +106,7 @@ public class LocalSpaceProvider implements SpaceProvider {
             }
 
             @Override
-            public List<LocalWorkspace> getSpaces() {
+            public List<LocalSpace> getSpaces() {
                 return List.of(m_space);
             }
 
@@ -112,7 +114,7 @@ public class LocalSpaceProvider implements SpaceProvider {
     }
 
     @Override
-    public void init(Consumer<String> loginErrorHandler) {
+    public void init(final Consumer<String> loginErrorHandler) {
         // Do nothing
     }
 
@@ -124,11 +126,11 @@ public class LocalSpaceProvider implements SpaceProvider {
     @Override
     public SpaceProviderEnt toEntity() {
         return EntityFactory.Space.buildSpaceProviderEnt(SpaceProviderEnt.TypeEnum.LOCAL,
-                List.of(getLocalSpaceGroup().toEntity()));
+            List.of(getLocalSpaceGroup().toEntity()));
     }
 
     @Override
-    public LocalWorkspace getSpace(final String spaceId) {
+    public LocalSpace getSpace(final String spaceId) {
         return Optional.of(m_space).filter(space -> space.getId().equals(spaceId)).orElseThrow();
     }
 
@@ -140,23 +142,22 @@ public class LocalSpaceProvider implements SpaceProvider {
     @Override
     public Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) {
         return getSpace(LocalWorkspace.LOCAL_SPACE_ID).getItemIdByURI(uri) //
-                .map(itemId -> new SpaceAndItemId(LocalWorkspace.LOCAL_SPACE_ID, itemId));
+            .map(itemId -> new SpaceAndItemId(LocalWorkspace.LOCAL_SPACE_ID, itemId));
     }
 
     @Override
-    public SpaceGroup<LocalWorkspace> getSpaceGroup(final String spaceGroupName) {
+    public SpaceGroup<LocalSpace> getSpaceGroup(final String spaceGroupName) {
         var localGroup = getLocalSpaceGroup();
-        if(!spaceGroupName.equals(localGroup.getName())) {
+        if (!spaceGroupName.equals(localGroup.getName())) {
             throw new NoSuchElementException("No group found with name " + spaceGroupName);
         }
         return localGroup;
     }
 
     @Override
-    public Optional<ProviderResourceChangedNotifier> getChangeNotifier() {
-        var isEnabled = Boolean.getBoolean("org.knime.ui.local_space_change_notifier");
-        if (isEnabled) {
-            return Optional.of(m_space.getResourceChangeDispatcher());
+    public Optional<SpaceItemChangeNotifier> getChangeNotifier() {
+        if (LocalSpaceItemChangeNotifier.isEnabled()) {
+            return Optional.of(m_itemChangedNotifier.get());
         } else {
             return Optional.empty();
         }

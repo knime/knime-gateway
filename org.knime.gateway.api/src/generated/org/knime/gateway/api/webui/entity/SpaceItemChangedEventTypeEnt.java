@@ -61,7 +61,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, EventTypeEnt {
+public interface SpaceItemChangedEventTypeEnt extends GatewayEntity, EventTypeEnt {
 
 
   /**
@@ -86,7 +86,7 @@ public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, Even
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProviderResourceChangedEventTypeEnt)other;
+      var e = (SpaceItemChangedEventTypeEnt)other;
       valueConsumer.accept("typeId", Pair.create(getTypeId(), e.getTypeId()));
       valueConsumer.accept("providerId", Pair.create(getProviderId(), e.getProviderId()));
       valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
@@ -96,7 +96,7 @@ public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, Even
     /**
      * The builder for the entity.
      */
-    public interface ProviderResourceChangedEventTypeEntBuilder extends GatewayEntityBuilder<ProviderResourceChangedEventTypeEnt> {
+    public interface SpaceItemChangedEventTypeEntBuilder extends GatewayEntityBuilder<SpaceItemChangedEventTypeEnt> {
 
         /**
          * A unique type id. Must be the name of the actual event type object (e.g. &#39;WorkflowChangedEventType&#39;)
@@ -104,7 +104,7 @@ public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, Even
          * @param typeId the property value,  
          * @return this entity builder for chaining
          */
-        ProviderResourceChangedEventTypeEntBuilder setTypeId(String typeId);
+        SpaceItemChangedEventTypeEntBuilder setTypeId(String typeId);
         
         /**
    		 * Set providerId
@@ -112,7 +112,7 @@ public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, Even
          * @param providerId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProviderResourceChangedEventTypeEntBuilder setProviderId(String providerId);
+        SpaceItemChangedEventTypeEntBuilder setProviderId(String providerId);
         
         /**
    		 * Set spaceId
@@ -120,7 +120,7 @@ public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, Even
          * @param spaceId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProviderResourceChangedEventTypeEntBuilder setSpaceId(String spaceId);
+        SpaceItemChangedEventTypeEntBuilder setSpaceId(String spaceId);
         
         /**
    		 * Set itemId
@@ -128,7 +128,7 @@ public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, Even
          * @param itemId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProviderResourceChangedEventTypeEntBuilder setItemId(String itemId);
+        SpaceItemChangedEventTypeEntBuilder setItemId(String itemId);
         
         
         /**
@@ -138,7 +138,7 @@ public interface ProviderResourceChangedEventTypeEnt extends GatewayEntity, Even
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProviderResourceChangedEventTypeEnt build();
+        SpaceItemChangedEventTypeEnt build();
     
     }
 

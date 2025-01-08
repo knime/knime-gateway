@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.json.webui.entity.EventEntMixIn;
+import org.knime.gateway.json.webui.entity.EventTypeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ProviderResourceChangedEventEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventEnt.DefaultProviderResourceChangedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt.DefaultSpaceItemChangedEventTypeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,15 +61,19 @@ import org.knime.gateway.impl.webui.entity.DefaultProviderResourceChangedEventEn
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultProviderResourceChangedEventEntBuilder.class)
-@JsonSerialize(as=ProviderResourceChangedEventEnt.class)
+@JsonDeserialize(builder=DefaultSpaceItemChangedEventTypeEntBuilder.class)
+@JsonSerialize(as=SpaceItemChangedEventTypeEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ProviderResourceChangedEventEntMixIn extends ProviderResourceChangedEventEnt {
+public interface SpaceItemChangedEventTypeEntMixIn extends SpaceItemChangedEventTypeEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
+    @Override
+    @JsonProperty("typeId")
+    public String getTypeId();
+    
     @Override
     @JsonProperty("providerId")
     public String getProviderId();
@@ -90,22 +94,26 @@ public interface ProviderResourceChangedEventEntMixIn extends ProviderResourceCh
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ProviderResourceChangedEventEntMixInBuilder extends ProviderResourceChangedEventEntBuilder {
+    public static interface SpaceItemChangedEventTypeEntMixInBuilder extends SpaceItemChangedEventTypeEntBuilder {
     
         @Override
-        public ProviderResourceChangedEventEntMixIn build();
+        public SpaceItemChangedEventTypeEntMixIn build();
     
+        @Override
+        @JsonProperty("typeId")
+        public SpaceItemChangedEventTypeEntMixInBuilder setTypeId(final String typeId);
+        
         @Override
         @JsonProperty("providerId")
-        public ProviderResourceChangedEventEntMixInBuilder setProviderId(final String providerId);
+        public SpaceItemChangedEventTypeEntMixInBuilder setProviderId(final String providerId);
         
         @Override
         @JsonProperty("spaceId")
-        public ProviderResourceChangedEventEntMixInBuilder setSpaceId(final String spaceId);
+        public SpaceItemChangedEventTypeEntMixInBuilder setSpaceId(final String spaceId);
         
         @Override
         @JsonProperty("itemId")
-        public ProviderResourceChangedEventEntMixInBuilder setItemId(final String itemId);
+        public SpaceItemChangedEventTypeEntMixInBuilder setItemId(final String itemId);
         
     }
 

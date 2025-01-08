@@ -184,7 +184,7 @@ public final class NodeCategories {
     @SuppressWarnings("java:S3242") // more general type for method parameter possible
     public NodeCategoryEnt getCategory(final List<String> path) throws NoSuchElementException {
         var treeNode = m_tree //
-            .initialised() // lazily build category hierarchy tree on first access
+            .get() // lazily build category hierarchy tree on first access
             .get(path.stream().map(CategoryId::new).toList()) //
             .orElseThrow();
         var children = treeNode.categories().transformed().values().stream() //
@@ -422,13 +422,13 @@ public final class NodeCategories {
             // Providing an empty string or omitting the category-path attribute in the plugin.xml
             // file defaults to the root category path. Consequently, an empty Optional is not expected here.
             if (nodeCategoryPath.isEmpty() || nodeCategoryPath.get().isEmpty()) {
-                return m_uncategorized.initialised();
+                return m_uncategorized.get();
             }
             try {
                 return insertParentCategoriesFor(nodeCategoryPath.get(), node);
             } catch (CategoryCreationException e) { // NOSONAR
                 NodeLogger.getLogger(NodeCategories.class).info(e);
-                return m_uncategorized.initialised();
+                return m_uncategorized.get();
             }
         }
 
@@ -611,7 +611,7 @@ public final class NodeCategories {
         }
 
         boolean locked() {
-            return m_locked.initialised();
+            return m_locked.get();
         }
 
     }
