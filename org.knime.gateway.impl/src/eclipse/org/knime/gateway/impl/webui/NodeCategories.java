@@ -90,7 +90,7 @@ public final class NodeCategories {
     /**
      * These Plug-Ins are not allowed to dynamically create categories.
      */
-    static final Set<String> CATEGORY_CREATION_BLACKLIST = Set.of("org.knime.python3.nodes");
+    private static final Set<String> CATEGORY_CREATION_BLACKLIST = Set.of("org.knime.python3.nodes");
 
     /**
      * tree with null-ish root
@@ -336,30 +336,16 @@ public final class NodeCategories {
                 }
             }
 
-            private void isAllowedByParentLock() throws CategoryCreationException {
-                var allowed = !isParentLocked() || isContributedByKNIME(this.contributingPlugin());
-                if (!allowed) {
-                    var parentId = parent().flatMap(p -> Optional.ofNullable(p.metadata())).map(CategoryMetadata::id)
-                        .map(CategoryId::toString).orElse("unknown");
-                    var message = "Parent category %s is locked and child is not contributed by KNIME but %s";
-                    throw new CategoryCreationException(message.formatted(parentId, contributingPlugin()));
-                }
-            }
-
-            private void isCompatibleToParentVendor() throws CategoryCreationException {
+            private boolean isCompatibleToParentVendor() {
                 var parentPluginId = parent() //
                     .map(CategoryTreeNode::metadata) //
                     .flatMap(CategoryMetadata::contributingPlugin);
                 if (parentPluginId.isPresent()) {
                     var childPluginId = this.contributingPlugin();
-                    var allowed = childPluginId.equals(parentPluginId.get()) //
-                        || vendorEqual(childPluginId, parentPluginId.get()) //
-                        || isContributedByKNIME(childPluginId);
-                    if (!allowed) {
-                        var message = "Vendor of child category %s is not compatible to vendor of parent category %s";
-                        throw new CategoryCreationException(message.formatted(childPluginId, parentPluginId));
-                    }
+                    return childPluginId.equals(parentPluginId.get()) //
+                        || vendorEqual(childPluginId, parentPluginId.get());
                 }
+                return true;
             }
 
             /**
@@ -368,11 +354,13 @@ public final class NodeCategories {
              */
             void canInsertOrThrow() throws CategoryCreationException {
                 mayCreateCategory();
-                isAllowedByParentLock();
-                if (isParentLocked()) {
-                    // If the parent is locked, the child must be compatible to the parent vendor
-                    // (or be contributed by KNIME)
-                    isCompatibleToParentVendor();
+                if (isContributedByKNIME(this.contributingPlugin())) {
+                    return;
+                }
+                if (isParentLocked() && !isCompatibleToParentVendor()) {
+                    throw new CategoryCreationException(
+                        "Parent category is locked and child is neither from same vendor"
+                            + "nor contributed by KNIME.");
                 }
             }
         }
@@ -396,7 +384,7 @@ public final class NodeCategories {
         @SuppressWarnings("serial")
         static class CategoryCreationException extends Exception {
 
-            public CategoryCreationException(final String message) {
+            CategoryCreationException(final String message) {
                 super(message);
             }
         }
