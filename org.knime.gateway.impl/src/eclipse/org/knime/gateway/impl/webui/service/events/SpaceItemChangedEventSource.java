@@ -71,13 +71,12 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
     @SuppressWarnings("java:S1602")
     public Optional<SpaceItemChangedEventEnt>
         addEventListenerAndGetInitialEventFor(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> {
-            notifier.subscribeToItem( //
-                eventTypeEnt.getSpaceId(), //
-                eventTypeEnt.getItemId(), //
-                () -> onSubscriptionNotification(eventTypeEnt) //
-            );
-        });
+        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> //
+        notifier.subscribeToItem( //
+            eventTypeEnt.getSpaceId(), //
+            eventTypeEnt.getItemId(), //
+            () -> onSubscriptionNotification(eventTypeEnt) //
+        ));
         return Optional.empty();
     }
 
@@ -103,19 +102,17 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
 
     @Override
     public void removeEventListener(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> {
-            notifier.unsubscribe( //
-                eventTypeEnt.getSpaceId(), //
-                eventTypeEnt.getItemId() //
-            );
-        });
+        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> //
+        notifier.unsubscribe( //
+            eventTypeEnt.getSpaceId(), //
+            eventTypeEnt.getItemId() //
+        ));
     }
 
     @Override
     public void removeAllEventListeners() {
-        m_spaceProviders.getProvidersMap().values().forEach(provider -> {
-            provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll);
-        });
+        m_spaceProviders.getProvidersMap().values()
+            .forEach(provider -> provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll));
     }
 
     @Override

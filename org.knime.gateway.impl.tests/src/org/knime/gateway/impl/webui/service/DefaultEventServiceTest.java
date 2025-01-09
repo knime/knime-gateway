@@ -56,9 +56,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.awaitility.Awaitility;
@@ -73,6 +77,10 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuild
 import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -85,6 +93,9 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 import org.mockito.Mockito;
@@ -96,8 +107,11 @@ import org.mockito.Mockito;
  */
 public class DefaultEventServiceTest extends GatewayServiceTest {
 
+    private static final String PROVIDER_ID = "provider";
+
     private final EventConsumer m_testConsumer = mock(EventConsumer.class);
 
+    private final DummyNotifier m_notifier = new DummyNotifier();
 
     @Override
     protected EventConsumer createEventConsumer() {
@@ -106,6 +120,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
     /**
      * Tests that no more listeners are registered with the workflow once they have been removed.
+     *
      * @throws Exception
      */
     @Test
@@ -143,8 +158,8 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         checkThatNoEventsAreSent(idAndWfm.getSecond());
     }
 
-    static WorkflowChangedEventTypeEnt registerWorkflowChangedEventListener(final String projectId, final NodeIDEnt wfId)
-        throws Exception {
+    static WorkflowChangedEventTypeEnt registerWorkflowChangedEventListener(final String projectId,
+        final NodeIDEnt wfId) throws Exception {
         DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
         DefaultEventService es = DefaultEventService.getInstance();
 
@@ -260,6 +275,96 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         var ops = List.of(op);
         var patch = builder(PatchEntBuilder.class).setOps(ops).build();
         return builder(WorkflowMonitorStateChangeEventEntBuilder.class).setPatch(patch).build();
+    }
+
+    /**
+     * Tests {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} for the
+     * {@link SpaceItemChangedEventTypeEnt}.
+     */
+    @Test
+    public void testSpaceItemChangedEventListener() throws Exception {
+
+        // No listener, no event
+        m_notifier.notifyEventListeners();
+        verify(m_testConsumer, times(0)).accept(any(), any());
+
+        var eventService = DefaultEventService.getInstance();
+        var eventType1 = buildEventTypeEnt(PROVIDER_ID, "spaceId1", "itemId1");
+        eventService.addEventListener(eventType1);
+
+        // One listener, one event
+        m_notifier.notifyEventListeners();
+        var expectedEvent1 = buildEventEnt(eventType1);
+        verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent1);
+
+        var eventType2 = buildEventTypeEnt(PROVIDER_ID, "spaceId2", "itemId2");
+        eventService.addEventListener(eventType2);
+        Mockito.clearInvocations(m_testConsumer);
+
+        // Two listeners, two events
+        m_notifier.notifyEventListeners();
+        verify(m_testConsumer, times(2)).accept(eq("SpaceItemChangedEvent"), any());
+
+        eventService.removeEventListener(eventType1);
+        eventService.removeEventListener(eventType2);
+        Mockito.clearInvocations(m_testConsumer);
+
+        // No listener, no event
+        m_notifier.notifyEventListeners();
+        verify(m_testConsumer, times(0)).accept(any(), any());
+    }
+
+    @Override
+    protected SpaceProviders createSpaceProviders() {
+        var providers = super.createSpaceProviders();
+        var provider = mock(LocalSpaceProvider.class);
+        when(provider.getChangeNotifier()).thenReturn(Optional.of(m_notifier));
+        when(providers.getSpaceProvider(PROVIDER_ID)).thenReturn(provider);
+        return providers;
+    }
+
+    private static final class DummyNotifier implements SpaceProvider.SpaceItemChangeNotifier {
+
+        private final Map<Pair<String, String>, Runnable> m_listeners = new HashMap<>();
+
+        @Override
+        public void subscribeToItem(final String space, final String item, final Runnable callback) {
+            m_listeners.put(new Pair<>(space, item), callback);
+        }
+
+        @Override
+        public void unsubscribe(final String spaceId, final String itemId) {
+            m_listeners.remove(new Pair<>(spaceId, itemId));
+        }
+
+        @Override
+        public void unsubscribeAll() {
+            m_listeners.clear();
+        }
+
+        /**
+         * Called from tests to simulate a change happening.
+         */
+        public void notifyEventListeners() {
+            m_listeners.values().forEach(Runnable::run);
+        }
+    }
+
+    private static SpaceItemChangedEventTypeEnt buildEventTypeEnt(final String providerId, final String spaceId,
+        final String itemId) {
+        return builder(SpaceItemChangedEventTypeEntBuilder.class) //
+            .setProviderId(providerId) //
+            .setSpaceId(spaceId) //
+            .setItemId(itemId) //
+            .build();
+    }
+
+    private static SpaceItemChangedEventEnt buildEventEnt(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+        return builder(SpaceItemChangedEventEntBuilder.class) //
+            .setProviderId(eventTypeEnt.getProviderId()) //
+            .setSpaceId(eventTypeEnt.getSpaceId()) //
+            .setItemId(eventTypeEnt.getItemId()) //
+            .build();
     }
 
 }

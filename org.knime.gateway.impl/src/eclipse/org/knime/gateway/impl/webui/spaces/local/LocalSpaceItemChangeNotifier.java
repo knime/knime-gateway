@@ -65,7 +65,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceAndItemId;
 
 /**
- * Listen for changes in the given {@link LocalWorkspace} and notify listeners. This implementation notifies without
+ * Listen for changes in the given {@link LocalSpace} and notify listeners. This implementation notifies without
  * restrictions, it is left to the caller to throttle notifications.
  *
  * @author Benjamin Moser, KNIME GmbH
@@ -89,7 +89,6 @@ final class LocalSpaceItemChangeNotifier implements SpaceProvider.SpaceItemChang
         m_spaceProvider = space;
     }
 
-    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     static boolean isEnabled() {
         return Boolean.getBoolean(SYSPROP + "_enabled");
     }
@@ -189,12 +188,12 @@ final class LocalSpaceItemChangeNotifier implements SpaceProvider.SpaceItemChang
     }
 
     private static void assertLocal(final String spaceId) {
-        assert LocalWorkspace.LOCAL_SPACE_ID.equals(spaceId)
-                : "Cannot attach %s to space with ID other than %s (is: %s)".formatted( //
-                    LocalSpaceItemChangeNotifier.class.getName(), //
-                LocalWorkspace.LOCAL_SPACE_ID, //
-                    spaceId //
-                );
+        assert LocalSpace.LOCAL_SPACE_ID.equals(spaceId) : "Cannot attach %s to space with ID other than %s (is: %s)"
+            .formatted( //
+                LocalSpaceItemChangeNotifier.class.getName(), //
+                LocalSpace.LOCAL_SPACE_ID, //
+                spaceId //
+            );
     }
 
     @Override
@@ -268,7 +267,7 @@ final class LocalSpaceItemChangeNotifier implements SpaceProvider.SpaceItemChang
 
         /**
          * This accepts a mapping function because the value may be disposed by {@code m_dispose};
-         * 
+         *
          * @param mapper
          */
         void mapAndDecrementUsages(final Consumer<? super V> mapper) {

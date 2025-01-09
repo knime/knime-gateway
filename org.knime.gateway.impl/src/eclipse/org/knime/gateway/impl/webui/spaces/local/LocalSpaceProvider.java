@@ -141,8 +141,8 @@ public class LocalSpaceProvider implements SpaceProvider {
 
     @Override
     public Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) {
-        return getSpace(LocalWorkspace.LOCAL_SPACE_ID).getItemIdByURI(uri) //
-            .map(itemId -> new SpaceAndItemId(LocalWorkspace.LOCAL_SPACE_ID, itemId));
+        return getSpace(LocalSpace.LOCAL_SPACE_ID).getItemIdByURI(uri) //
+            .map(itemId -> new SpaceAndItemId(LocalSpace.LOCAL_SPACE_ID, itemId));
     }
 
     @Override
