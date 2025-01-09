@@ -97,7 +97,8 @@ final class EditNativeNodePorts implements EditPorts {
     public void removePort(final RemovePortCommandEnt removePortCommandEnt) {
         var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         var groupName = removePortCommandEnt.getPortGroup();
-        getExtendablePortGroup(creationConfigCopy, groupName).removeLastPort();
+        var portIndex = removePortCommandEnt.getPortIndex();
+        getExtendablePortGroup(creationConfigCopy, groupName).removePort(portIndex -1);
         executeInternal(creationConfigCopy);
     }
 
