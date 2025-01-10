@@ -151,7 +151,7 @@ public class NodeRecommendations {
     private static boolean initializeNodeRecommendationManager(final NodeRepository nodeRepo) {
         Function<String, NodeType> getNodeType = id -> {
             var node = nodeRepo.getNodeIncludeFilteredNodes(id);
-            return node == null ? null : node.nodeSpec.type();
+            return node == null ? null : node.nodeSpec().type();
         };
         return NodeRecommendationManager.getInstance().initialize(getNodeType);
     }

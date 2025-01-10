@@ -202,7 +202,7 @@ public class NodeRepositoryTest {
                 sb.append(";path: ");
                 sb.append(repo.getNodes().stream()
                     .filter(node -> node.templateId.equals(entry.getValue().getId()))
-                    .map(node -> node.nodeSpec.metadata().categoryPath()).findFirst().orElse(null));
+                    .map(node -> node.nodeSpec().metadata().categoryPath()).findFirst().orElse(null));
                 sb.append("\n");
             }
             Assert.fail(sb.toString());

@@ -170,8 +170,8 @@ public final class NodeGroups {
             }
             List<Node> nodesMatchingTargetCategory = new ArrayList<>();
             nodes.stream()//
-                .filter(n -> n.nodeSpec.metadata().categoryPath().equals(catPath)
-                    || n.nodeSpec.metadata().categoryPath().startsWith(catPath + "/"))//
+                .filter(n -> n.nodeSpec().metadata().categoryPath().equals(catPath)
+                    || n.nodeSpec().metadata().categoryPath().startsWith(catPath + "/"))//
                 .sorted(Comparator.<Node> comparingInt(n -> n.weight).reversed())//
                 .forEach(n -> { // No `collect(...)` here, nodes are collected in two different ways at the same time
                     alreadyCategorized.add(n.templateId);

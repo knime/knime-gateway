@@ -215,9 +215,9 @@ public final class NodeRepository {
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
         if (fullTemplateInfo) {
             return m_fullInfoNodeTemplateEntCache.computeIfAbsent(n.templateId,
-                k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.nodeSpec));
+                k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.nodeSpec()));
         } else {
-            return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.nodeSpec);
+            return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.nodeSpec());
         }
     }
 
@@ -353,7 +353,8 @@ public final class NodeRepository {
         });
     }
 
-    List<NodeTemplateEnt> mapNodeTemplateEnts(final Collection<Node> nodes, final Boolean includeFullTemplateInfo) {
+    public List<NodeTemplateEnt> mapNodeTemplateEnts(final Collection<Node> nodes,
+        final Boolean includeFullTemplateInfo) {
         return nodes.stream().map(n -> getNodeTemplate(n.templateId, Boolean.TRUE.equals(includeFullTemplateInfo)))//
             .filter(Objects::nonNull)//
             .toList();
@@ -363,12 +364,12 @@ public final class NodeRepository {
      * Helper data structure which represents a node (or component) in the node repository.
      */
     @SuppressWarnings("java:S116")
-    static final class Node {
+    public static final class Node {
 
         private final LazyInitializer<FuzzySearchable> m_fuzzySearchableInitializer = new LazyInitializer<>() {
             @Override
             protected FuzzySearchable initialize() throws ConcurrentException {
-                return new FuzzySearchable(name, nodeSpec.metadata().keywords().toArray(String[]::new));
+                return new FuzzySearchable(name, m_nodeSpec.metadata().keywords().toArray(String[]::new));
             }
         };
 
@@ -376,7 +377,8 @@ public final class NodeRepository {
 
         final String name;
 
-        final NodeSpec nodeSpec;
+        // TODO adjust other fields too
+        private final NodeSpec m_nodeSpec;
 
         /**
          * A weight used for sorting nodes if no other sort criteria is available (such as the search score). The weight
@@ -387,7 +389,11 @@ public final class NodeRepository {
         Node(final NodeSpec spec) {
             templateId = spec.factory().id();
             name = spec.metadata().nodeName();
-            nodeSpec = spec;
+            m_nodeSpec = spec;
+        }
+
+        NodeSpec nodeSpec() {
+            return m_nodeSpec;
         }
 
         FuzzySearchable getFuzzySearchable() {
@@ -405,7 +411,7 @@ public final class NodeRepository {
          * @return True if there exists a compatible port type, false otherwise.
          */
         boolean isInputCompatibleWith(final PortType portType) {
-            return FlowVariablePortObject.TYPE.equals(portType) || nodeSpec.ports().getSupportedInputPortTypes() //
+            return FlowVariablePortObject.TYPE.equals(portType) || m_nodeSpec.ports().getSupportedInputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
 
@@ -416,7 +422,7 @@ public final class NodeRepository {
          * @return True if there exists a compatible port type, false otherwise.
          */
         boolean isOutputCompatibleWith(final PortType portType) {
-            return FlowVariablePortObject.TYPE.equals(portType) || nodeSpec.ports().getSupportedOutputPortTypes() //
+            return FlowVariablePortObject.TYPE.equals(portType) || m_nodeSpec.ports().getSupportedOutputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
     }

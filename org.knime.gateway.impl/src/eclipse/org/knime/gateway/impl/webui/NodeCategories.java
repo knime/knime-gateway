@@ -59,14 +59,16 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.CategoryExtension;
 import org.knime.core.node.extension.NodeAndCategorySorter;
-import org.knime.core.node.extension.NodeSpecCollectionProvider;
-import org.knime.core.node.util.CheckUtils;
 import org.knime.gateway.api.webui.entity.CategoryMetadataEnt;
 import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
+import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.util.ListFunctions;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
@@ -76,6 +78,7 @@ import org.knime.gateway.impl.webui.NodeRepository.Node;
  *
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S1602")
 public final class NodeCategories {
 
     static final String UNCATEGORIZED_KEY = "/uncategorized";
@@ -97,24 +100,26 @@ public final class NodeCategories {
      */
     private final Lazy.Init<CategoryTree> m_tree;
 
-    private final NodeRepository m_nodeRepo;
-
     /**
      * Build the node category hierarchy based on the given nodes
      *
      * @param nodeRepository The nodes that will span this category hierarchy
+     * @param getCategoryExtensions
      */
-    public NodeCategories(final NodeRepository nodeRepository) {
-        CheckUtils.checkArgumentNotNull(nodeRepository);
-        m_nodeRepo = nodeRepository;
-        m_tree = new Lazy.Init<>(() -> new CategoryTree(nodeRepository.getNodes()));
+    public NodeCategories(final NodeRepository nodeRepository,
+        final Supplier<Map<String, CategoryExtension>> getCategoryExtensions) {
+        this(nodeRepository.getNodes(), getCategoryExtensions);
         nodeRepository.onContentChange(m_tree::clear);
     }
 
-    private static Optional<CategoryExtension> getCategoryExtension(final List<CategoryId> path) {
-        var categoryExtensions = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
-        return Optional.ofNullable(categoryExtensions.get(CategoryId.categoryPathToString(path)));
+    public NodeCategories(final Collection<Node> nodes,
+        final Supplier<Map<String, CategoryExtension>> categoryExtensions) {
+        Function<List<CategoryId>, Optional<CategoryExtension>> getCategoryExtension = path -> {
+            return Optional.ofNullable(categoryExtensions.get().get(CategoryId.categoryPathToString(path)));
+        };
+        m_tree = new Lazy.Init<>(() -> new CategoryTree(nodes, getCategoryExtension));
     }
+
 
     /**
      * Type to distinguish category IDs from other Strings.
@@ -182,14 +187,16 @@ public final class NodeCategories {
      * @return the category at this path
      */
     @SuppressWarnings("java:S3242") // more general type for method parameter possible
-    public NodeCategoryEnt getCategory(final List<String> path) throws NoSuchElementException {
+    public NodeCategoryEnt getCategoryEnt(final List<String> path,
+        final BiFunction<Collection<NodeRepository.Node>, Boolean, List<NodeTemplateEnt>> mapNodeTemplateEnts)
+        throws NoSuchElementException {
         var treeNode = m_tree //
             .get() // lazily build category hierarchy tree on first access
             .get(path.stream().map(CategoryId::new).toList()) //
             .orElseThrow();
         var children = treeNode.categories().transformed().values().stream() //
             .map(child -> child.metadata().toEntity()).toList();
-        var nodes = m_nodeRepo.mapNodeTemplateEnts(treeNode.nodes().transformed(), true);
+        var nodes = mapNodeTemplateEnts.apply(treeNode.nodes().transformed(), true);
         var categoryMetadata = treeNode.metadata();
         return builder(NodeCategoryEnt.NodeCategoryEntBuilder.class) //
             .setMetadata(categoryMetadata != null ? categoryMetadata.toEntity() : null) //
@@ -227,8 +234,12 @@ public final class NodeCategories {
             );
         }
 
-        static CategoryMetadata uncategorized() {
-            return getCategoryExtension(List.of(CategoryId.of(UNCATEGORIZED_KEY))) //
+        /**
+         * @return The (hardcoded) category that is supposed to contain uncategorized nodes.
+         */
+        static CategoryMetadata getUncategorizedCategory(
+            final Function<List<CategoryId>, Optional<CategoryExtension>> getCategoryExtension) {
+            return getCategoryExtension.apply(List.of(CategoryId.of(UNCATEGORIZED_KEY))) //
                 .map(CategoryMetadata::fromCategoryExtension) //
                 .orElse(new CategoryMetadata( //
                     CategoryId.of(UNCATEGORIZED_KEY), //
@@ -267,13 +278,27 @@ public final class NodeCategories {
      */
     private static final class CategoryTree extends Tree<CategoryId, CategoryTreeNode> {
 
+        private final Function<List<CategoryId>, Optional<CategoryExtension>> m_getCategoryExtension;
+
         /**
          * Create a category tree that organizes the given nodes.
          *
          * @param nodes The nodes that will be leaves of the category tree, inner nodes are categories.
+         * @param getCategoryExtension Function that provides category metadata
          */
-        CategoryTree(final Collection<Node> nodes) {
-            super(new CategoryTreeNode(null));
+        CategoryTree(final Collection<Node> nodes,
+            final Function<List<CategoryId>, Optional<CategoryExtension>> getCategoryExtension) {
+            super(new CategoryTreeNode(null, () -> false));
+
+            m_getCategoryExtension = getCategoryExtension;
+
+            m_uncategorized = new Lazy.Init<>(() -> {
+                var treeNode =
+                    new CategoryTreeNode(CategoryMetadata.getUncategorizedCategory(getCategoryExtension), () -> false);
+                root().children().put(treeNode.metadata().id(), treeNode);
+                return treeNode;
+            });
+
             // Since the tree should contain only the given nodes and the given collection is unordered,
             // iterate over the given nodes and create category tree nodes as needed.
             nodes.forEach(this::insertNode);
@@ -285,12 +310,7 @@ public final class NodeCategories {
          * @implNote This is expected to correspond to an actually defined, installed category, see
          *           {@link NodeCategories#UNCATEGORIZED_KEY}.
          */
-
-        Lazy.Init<CategoryTreeNode> m_uncategorized = new Lazy.Init<>(() -> {
-            var treeNode = new CategoryTreeNode(CategoryMetadata.uncategorized());
-            root().children().put(treeNode.metadata().id(), treeNode);
-            return treeNode;
-        });
+        Lazy.Init<CategoryTreeNode> m_uncategorized;
 
         /**
          * Context under which the current insertion operation is performed.
@@ -325,7 +345,7 @@ public final class NodeCategories {
             }
 
             String contributingPlugin() {
-                return this.node().nodeSpec.metadata().vendor().bundle().getSymbolicName();
+                return this.node().nodeSpec().metadata().vendor().bundle().getSymbolicName();
             }
 
             private void mayCreateCategory() throws CategoryCreationException {
@@ -372,13 +392,17 @@ public final class NodeCategories {
          * @return The new {@link CategoryTreeNode}
          * @throws CategoryCreationException If the new node could not be inserted into its context
          */
-        private static CategoryTreeNode createTreeNode(final CategoryInsertionContext context)
+        private CategoryTreeNode createTreeNode(final CategoryInsertionContext context)
             throws CategoryCreationException {
             context.canInsertOrThrow(); // throws
-            var metadata = getCategoryExtension(context.path()) //
+            var metadata = m_getCategoryExtension.apply(context.path()) //
                 .map(CategoryMetadata::fromCategoryExtension) //
                 .orElse(CategoryMetadata.fromInsertionContext(context));
-            return new CategoryTreeNode(metadata);
+            Supplier<Boolean> checkIsLocked = () -> Optional.of(metadata) //
+                .map(CategoryMetadata::path) //
+                .flatMap(m_getCategoryExtension) //
+                .map(CategoryExtension::isLocked).orElse(false);
+            return new CategoryTreeNode(metadata, checkIsLocked);
         }
 
         @SuppressWarnings("serial")
@@ -395,7 +419,7 @@ public final class NodeCategories {
          * @param node to insert
          */
         private void insertNode(final Node node) {
-            var nodeCategoryPath = CategoryId.toCategoryPath(node.nodeSpec.metadata().categoryPath());
+            var nodeCategoryPath = CategoryId.toCategoryPath(node.nodeSpec().metadata().categoryPath());
             findCategoryToInsertInto(nodeCategoryPath, node) //
                 .nodes().original() //
                 .add(node); //
@@ -510,7 +534,7 @@ public final class NodeCategories {
 
         @Override
         public String getID() {
-            return node().nodeSpec.factory().id();
+            return node().nodeSpec().factory().id();
         }
 
         @Override
@@ -520,7 +544,7 @@ public final class NodeCategories {
 
         @Override
         public String getContributingPlugin() {
-            return node().nodeSpec.metadata().vendor().bundle().getSymbolicName();
+            return node().nodeSpec().metadata().vendor().bundle().getSymbolicName();
         }
 
         @Override
@@ -532,7 +556,7 @@ public final class NodeCategories {
         public String getAfterID() {
             // May default to "/". This value does not apply for nodes (factory ID expected). `NodeAndCategorySorter`
             // uses `null` as absence value.
-            var metadata = node().nodeSpec.metadata().afterID();
+            var metadata = node().nodeSpec().metadata().afterID();
             return Objects.equals(metadata, "/") ? null : metadata;
         }
 
@@ -561,20 +585,20 @@ public final class NodeCategories {
         private CategoryTreeNode( //
             final CategoryMetadata metadata, //
             final List<Node> nodes, //
-            final Map<CategoryId, CategoryTreeNode> children //
-        ) {
+            final Map<CategoryId, CategoryTreeNode> children, //
+            final Supplier<Boolean> checkIsLocked) {
             this.m_metadata = metadata;
             this.m_nodes = new Lazy.Transform<>(nodes, SortableNode::sort);
             this.m_children = new Lazy.Transform<>(children, SortableCategory::sortCategories);
-            this.m_locked = new Lazy.Init<>(() -> Optional.ofNullable(metadata).map(CategoryMetadata::path)
-                .flatMap(NodeCategories::getCategoryExtension).map(CategoryExtension::isLocked).orElse(false));
+            this.m_locked = new Lazy.Init<>(checkIsLocked);
         }
 
-        CategoryTreeNode(final CategoryMetadata metadata) {
+        CategoryTreeNode(final CategoryMetadata metadata, final Supplier<Boolean> checkIsLocked) {
             this( //
                 metadata, //
                 new ArrayList<>(), // needs to be mutable
-                new HashMap<>() // needs to be mutable
+                new HashMap<>(), // needs to be mutable
+                checkIsLocked
             );
         }
 

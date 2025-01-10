@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
@@ -98,7 +99,10 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
-        m_nodeCategories = new NodeCategories(m_nodeRepo);
+        // TODO make NodeSpecCollectionProvider a service dependency?
+        m_nodeCategories = new NodeCategories( //
+            m_nodeRepo, //
+            () -> NodeSpecCollectionProvider.getInstance().getCategoryExtensions());
     }
 
     /**
@@ -130,9 +134,10 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     }
 
     @Override
-    public NodeCategoryEnt getNodeCategory(List<String> categoryPath) throws ServiceExceptions.NoSuchElementException {
+    public NodeCategoryEnt getNodeCategory(final List<String> categoryPath)
+        throws ServiceExceptions.NoSuchElementException {
         try {
-            return m_nodeCategories.getCategory(categoryPath);
+            return m_nodeCategories.getCategoryEnt(categoryPath, m_nodeRepo::mapNodeTemplateEnts);
         } catch (NoSuchElementException e) {
             throw new ServiceExceptions.NoSuchElementException("The requested category could not be found.", e);
         }

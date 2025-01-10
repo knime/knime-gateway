@@ -168,7 +168,7 @@ public class NodeSearch {
 
         // collect all tags from the templates and sort according to their frequency
         var tagFrequencies = searchResult.foundNodes().stream() //
-            .flatMap(n -> n.nodeSpec.metadata().tags().stream()) //
+            .flatMap(n -> n.nodeSpec().metadata().tags().stream()) //
             .collect(Collectors.groupingBy(t -> t, HashMap::new, Collectors.counting())); //
         var tagsSortedByFrequencyDescending = tagFrequencies.entrySet().stream() //
             .sorted(Entry.<String, Long> comparingByValue().reversed()) //
@@ -233,9 +233,9 @@ public class NodeSearch {
             return true;
         }
         if (allTagsMatch) {
-            return new HashSet<>(node.nodeSpec.metadata().tags()).containsAll(tags);
+            return new HashSet<>(node.nodeSpec().metadata().tags()).containsAll(tags);
         }
-        return tags.stream().anyMatch(node.nodeSpec.metadata().tags()::contains);
+        return tags.stream().anyMatch(node.nodeSpec().metadata().tags()::contains);
     }
 
     private static boolean filterByCompatiblePort(final FoundNode n, final SearchQuery query) {
