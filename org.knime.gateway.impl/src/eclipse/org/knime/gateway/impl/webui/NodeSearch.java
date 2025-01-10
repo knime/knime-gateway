@@ -203,15 +203,15 @@ public class NodeSearch {
             return nodes.stream() //
                 .filter(tagFilter)//
                 .sorted(//
-                    Comparator.<Node> comparingInt(n -> -n.weight)//
-                        .thenComparing(n -> n.name, ALPHANUMERIC_COMPARATOR))//
+                    Comparator.<Node> comparingInt(n -> -n.weight())//
+                        .thenComparing(n -> n.name(), ALPHANUMERIC_COMPARATOR))//
                 .toList();
         }
         // Case 3: filter by tags, rank by similarity to search term
         return nodes.stream() //
             .filter(tagFilter)//
             .map(n -> new FoundNode(n, //
-                StringUtils.containsIgnoreCase(n.name, query.searchTerm()), //
+                StringUtils.containsIgnoreCase(n.name(), query.searchTerm()), //
                 score(n.getFuzzySearchable(), query.searchTerm()))) //
             .filter(n -> n.isSubstringMatch || n.score >= SIMILARITY_THRESHOLD)//
             .filter(n -> filterByCompatiblePort(n, query))
@@ -221,9 +221,9 @@ public class NodeSearch {
                     // 2) then fuzzy matches (also based on "hidden" keywords)
                     .thenComparingDouble(n -> -n.score)//
                     // 3) then on manually defined weight
-                    .thenComparingInt(n -> -n.node.weight)//
+                    .thenComparingInt(n -> -n.node.weight())//
                     // 4) tie-breaks
-                    .thenComparing(n -> n.node.name, ALPHANUMERIC_COMPARATOR))//
+                    .thenComparing(n -> n.node.name(), ALPHANUMERIC_COMPARATOR))//
             .map(wn -> wn.node)//
             .toList();
     }

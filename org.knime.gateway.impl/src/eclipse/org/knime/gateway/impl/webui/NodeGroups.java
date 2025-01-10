@@ -168,9 +168,9 @@ public final class NodeGroups {
             nodes.stream()//
                 .filter(n -> n.nodeSpec().metadata().categoryPath().equals(catPath)
                     || n.nodeSpec().metadata().categoryPath().startsWith(catPath + "/"))//
-                .sorted(Comparator.<Node> comparingInt(n -> n.weight).reversed())//
+                .sorted(Comparator.<Node> comparingInt(n -> n.weight()).reversed())//
                 .forEach(n -> { // No `collect(...)` here, nodes are collected in two different ways at the same time
-                    alreadyCategorized.add(n.templateId);
+                    alreadyCategorized.add(n.templateId());
                     nodesMatchingTargetCategory.add(n);
                 });
             if (!nodesMatchingTargetCategory.isEmpty()) {
@@ -181,7 +181,7 @@ public final class NodeGroups {
         // collect all nodes that didn't end up in any of the given categories
         // (e.g. because they are at root level '/' or don't have a category at all)
         List<Node> uncategorizedNodes = nodes.stream() //
-            .filter(n -> !alreadyCategorized.contains(n.templateId)) //
+            .filter(n -> !alreadyCategorized.contains(n.templateId())) //
             .toList();
         if (!uncategorizedNodes.isEmpty()) {
             categorizedNodes.put(NodeCategories.UNCATEGORIZED_KEY, uncategorizedNodes);
@@ -196,7 +196,7 @@ public final class NodeGroups {
         }
         List<NodeTemplateEnt> res = nodesPerCategory.stream()//
             .limit(numNodesPerTag == null ? Integer.MAX_VALUE : numNodesPerTag)//
-            .map(n -> nodeRepo.getNodeTemplate(n.templateId, Boolean.TRUE.equals(fullTemplateInfo)))//
+            .map(n -> nodeRepo.getNodeTemplate(n.templateId(), Boolean.TRUE.equals(fullTemplateInfo)))//
             .filter(Objects::nonNull)//
             .toList();
         return builder(NodeGroupEntBuilder.class).setNodes(res).setTag(name).build();

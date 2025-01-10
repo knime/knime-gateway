@@ -214,7 +214,7 @@ public final class NodeRepository {
 
     private NodeTemplateEnt getNodeTemplate(final Node n, final boolean fullTemplateInfo) {
         if (fullTemplateInfo) {
-            return m_fullInfoNodeTemplateEntCache.computeIfAbsent(n.templateId,
+            return m_fullInfoNodeTemplateEntCache.computeIfAbsent(n.templateId(),
                 k -> EntityFactory.NodeTemplateAndDescription.buildNodeTemplateEnt(n.nodeSpec()));
         } else {
             return EntityFactory.NodeTemplateAndDescription.buildMinimalNodeTemplateEnt(n.nodeSpec());
@@ -318,18 +318,18 @@ public final class NodeRepository {
 
     private static Map<String, Node> filterNodes(final Map<String, Node> nodes, final Predicate<String> filter) {
         return nodes.entrySet().stream() //
-            .filter(e -> filter.test(e.getValue().templateId)) //
+            .filter(e -> filter.test(e.getValue().templateId())) //
             .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
     private static void addNodeWeights(final Map<String, Node> nodes) {
         Map<Integer, Node> templateIdsToNodes = nodes.values().stream() //
-            .collect(Collectors.toMap(n -> (n.templateId).hashCode(), n -> n));
+            .collect(Collectors.toMap(n -> (n.templateId()).hashCode(), n -> n));
         try (Stream<int[]> lines = readNodeUsageFile()) {
             lines.forEach(line -> {
                 var node = templateIdsToNodes.get(line[0]);
                 if (node != null) {
-                    node.weight = line[1];
+                    node.setWeight(line[1]);
                 }
             });
         }
@@ -355,7 +355,7 @@ public final class NodeRepository {
 
     public List<NodeTemplateEnt> mapNodeTemplateEnts(final Collection<Node> nodes,
         final Boolean includeFullTemplateInfo) {
-        return nodes.stream().map(n -> getNodeTemplate(n.templateId, Boolean.TRUE.equals(includeFullTemplateInfo)))//
+        return nodes.stream().map(n -> getNodeTemplate(n.templateId(), Boolean.TRUE.equals(includeFullTemplateInfo)))//
             .filter(Objects::nonNull)//
             .toList();
     }
@@ -369,32 +369,24 @@ public final class NodeRepository {
         private final LazyInitializer<FuzzySearchable> m_fuzzySearchableInitializer = new LazyInitializer<>() {
             @Override
             protected FuzzySearchable initialize() throws ConcurrentException {
-                return new FuzzySearchable(name, m_nodeSpec.metadata().keywords().toArray(String[]::new));
+                return new FuzzySearchable(m_name, m_nodeSpec.metadata().keywords().toArray(String[]::new));
             }
         };
 
-        final String templateId;
+        private final String m_templateId;
 
-        final String name;
+        private final String m_name;
 
-        // TODO adjust other fields too
         private final NodeSpec m_nodeSpec;
 
-        /**
-         * A weight used for sorting nodes if no other sort criteria is available (such as the search score). The weight
-         * is, e.g., the node's popularity among the users.
-         */
-        int weight;
+        private int m_weight;
 
         Node(final NodeSpec spec) {
-            templateId = spec.factory().id();
-            name = spec.metadata().nodeName();
+            m_templateId = spec.factory().id();
+            m_name = spec.metadata().nodeName();
             m_nodeSpec = spec;
         }
 
-        NodeSpec nodeSpec() {
-            return m_nodeSpec;
-        }
 
         FuzzySearchable getFuzzySearchable() {
             try {
@@ -424,6 +416,30 @@ public final class NodeRepository {
         boolean isOutputCompatibleWith(final PortType portType) {
             return FlowVariablePortObject.TYPE.equals(portType) || m_nodeSpec.ports().getSupportedOutputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
+        }
+
+        NodeSpec nodeSpec() {
+            return m_nodeSpec;
+        }
+
+        String templateId() {
+            return m_templateId;
+        }
+
+        String name() {
+            return m_name;
+        }
+
+        /**
+         * A weight used for sorting nodes if no other sort criteria is available (such as the search score). The weight
+         * is, e.g., the node's popularity among the users.
+         */
+        int weight() {
+            return m_weight;
+        }
+
+        void setWeight(final int weight) {
+            this.m_weight = weight;
         }
     }
 }

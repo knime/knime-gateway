@@ -539,7 +539,7 @@ public final class NodeCategories {
 
         @Override
         public String getName() {
-            return node().name;
+            return node().name();
         }
 
         @Override

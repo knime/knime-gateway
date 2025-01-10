@@ -196,7 +196,7 @@ public class NodeRepositoryTest {
                 sb.append(entry.getValue().getName());
                 sb.append(";path: ");
                 sb.append(repo.getNodes().stream()
-                    .filter(node -> node.templateId.equals(entry.getValue().getId()))
+                    .filter(node -> node.templateId().equals(entry.getValue().getId()))
                     .map(node -> node.nodeSpec().metadata().categoryPath()).findFirst().orElse(null));
                 sb.append("\n");
             }
@@ -211,11 +211,11 @@ public class NodeRepositoryTest {
             not(empty()));
 
         var nodes =
-            repoWithFilter.getNodes().stream().map(n -> n.templateId).toList();
+            repoWithFilter.getNodes().stream().map(n -> n.templateId()).toList();
         var additionalNodes =
-            repoWithFilter.getFilteredNodes().stream().map(n -> n.templateId).toList();
+            repoWithFilter.getFilteredNodes().stream().map(n -> n.templateId()).toList();
         assertThat("nodes and additional nodes should be all nodes", repo.getNodes().stream()
-            .allMatch(n -> nodes.contains(n.templateId) || additionalNodes.contains(n.templateId)));
+            .allMatch(n -> nodes.contains(n.templateId()) || additionalNodes.contains(n.templateId())));
         assertThat("nodes and additional nodes should be disjoint",
             nodes.stream().noneMatch(additionalNodes::contains));
     }
@@ -242,7 +242,7 @@ public class NodeRepositoryTest {
                           isRegex: false
                 """;
         try (var injected = new APCustomizationInjection(customizationYaml)) {
-            var nodes = new NodeRepository().getNodes().stream().map(n -> n.templateId).toList();
+            var nodes = new NodeRepository().getNodes().stream().map(n -> n.templateId()).toList();
             assertThat(nodes,
                 Matchers.containsInAnyOrder("org.knime.base.node.preproc.append.row.AppendedRowsNodeFactory",
                     "org.knime.base.node.preproc.normalize3.Normalizer3NodeFactory"));
