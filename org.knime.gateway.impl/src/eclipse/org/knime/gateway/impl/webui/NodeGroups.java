@@ -71,7 +71,6 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
@@ -97,13 +96,12 @@ public final class NodeGroups {
     }
 
     /**
-     * Filters and groups nodes nodes from the node repository.
+     * Filters and groups nodes from the node repository.
      *
      * @param numNodesPerTag the number of nodes per selected tag
      * @param tagsOffset the number of tags to be skipped (the tags have a fixed order)
      * @param tagsLimit the maximum number of tags to select
-     * @param fullTemplateInfo see
-     *            {@link WorkflowEntityFactory#buildMinimalNodeTemplateEnt(org.knime.core.node.NodeFactory)}
+     * @param fullTemplateInfo see {@link NodeRepository#getNodeTemplate(String, boolean)}
      * @return the node groups entity
      */
     public NodeGroupsEnt getNodesGroupedByTags(final Integer numNodesPerTag, final Integer tagsOffset,
@@ -154,8 +152,6 @@ public final class NodeGroups {
     }
 
     /**
-     * @param nodes
-     * @param targetCategories
      * @return Map of category path to list of nodes in that category
      */
     private static Map<String, List<Node>> categorizeNodes(final Collection<Node> nodes,

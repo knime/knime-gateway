@@ -76,9 +76,7 @@ public class NodeCategoriesTest {
     private static final String SOME_BUNDLE_VENDOR = "org.foo.someBundleVendor";
 
     private final BiFunction<Collection<NodeRepository.Node>, Boolean, List<NodeTemplateEnt>> m_mapNodesToEnts =
-        (nodes, ignored2) -> {
-            return nodes.stream().map(node -> buildMinimalNodeTemplateEnt(node.nodeSpec())).toList();
-        };
+        (nodes, ignored) -> nodes.stream().map(node -> buildMinimalNodeTemplateEnt(node.nodeSpec())).toList();
 
     private static NodeTemplateEnt buildMinimalNodeTemplateEnt(final NodeSpec nodeSpec) {
         return builder(NodeTemplateEnt.NodeTemplateEntBuilder.class)//

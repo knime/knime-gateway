@@ -127,7 +127,7 @@ public class NodeRecommendations {
         }
 
         var searchSuccessors = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
-        // This `null` is evaluated in `NodeRecommandationManager#getNodeRecommendationFor(...)`
+        // This `null` is evaluated in `NodeRecommendationManager#getNodeRecommendationFor(...)`
         var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
 
         var result = removeDuplicates(Stream.concat( //

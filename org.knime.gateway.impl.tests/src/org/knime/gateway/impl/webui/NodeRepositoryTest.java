@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -57,11 +56,10 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -70,9 +68,6 @@ import org.junit.Test;
 import org.knime.core.customization.APCustomization;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
-import org.knime.gateway.api.webui.entity.NodePortTemplateEnt;
-import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.impl.APCustomizationInjection;
 
@@ -84,7 +79,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "java:S112", "java:S5960", "java:S103"})
 public class NodeRepositoryTest {
 
     private static NodeRepository repo;
@@ -99,20 +94,19 @@ public class NodeRepositoryTest {
 
     @Test
     public void testGetNodeTemplates() throws Exception {
-        NodeSearch search = new NodeSearch(repo);
-        NodeSearchResultEnt res =
-            search.searchNodes("Column Filter", asList("Manipulation"), null, 0, 1, Boolean.TRUE, null, null);
+        var search = new NodeSearch(repo);
+        var res = search.searchNodes("Column Filter", List.of("Manipulation"), null, 0, 1, Boolean.TRUE, null, null);
 
-        NodeTemplateEnt nodeFromSearch = res.getNodes().get(0);
-        List<String> ids = asList(nodeFromSearch.getId());
-        Map<String, NodeTemplateEnt> templates = repo.getNodeTemplates(ids, true);
-        NodeTemplateEnt nodeFromRepo = templates.get(ids.get(0));
+        var nodeFromSearch = res.getNodes().get(0);
+        var ids = Collections.singletonList(nodeFromSearch.getId());
+        var templates = repo.getNodeTemplates(ids, true);
+        var nodeFromRepo = templates.get(ids.get(0));
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
         assertThat("unexpected name", nodeFromRepo.getName(), is("Column Filter"));
         assertThat(nodeFromRepo.getExtension().getName(), is("KNIME Base Nodes"));
         assertThat(nodeFromRepo.getExtension().getVendor().getName(), is("KNIME AG, Zurich, Switzerland"));
         assertThat(nodeFromRepo.getExtension().getVendor().isKNIME(), is(true));
-        NodePortTemplateEnt nodeInPort = nodeFromRepo.getInPorts().get(0);
+        var nodeInPort = nodeFromRepo.getInPorts().get(0);
         assertThat("optional inport", nodeInPort.isOptional(), is(false));
         assertThat("no port name expected", nodeInPort.getName(), is(nullValue()));
         assertThat("wrong port type id", nodeInPort.getTypeId(), is((BufferedDataTable.class).getName()));
@@ -127,7 +121,7 @@ public class NodeRepositoryTest {
         assertThat("no factory settings expected", nodeFromSearch.getNodeFactory().getSettings(), is(nullValue()));
 
         // dynamic node
-        res = search.searchNodes("Bar Chart (Java Script)", asList("Views"), null, 0, 1, Boolean.TRUE, null, null);
+        res = search.searchNodes("Bar Chart (Java Script)", List.of("Views"), null, 0, 1, Boolean.TRUE, null, null);
         nodeFromSearch = res.getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplate(nodeFromSearch.getId(), true);
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
@@ -148,16 +142,17 @@ public class NodeRepositoryTest {
 
     @Test
     public void testGetHiddenOrDeprecatedNodeTemplates() throws Exception {
-        NodeSearch search = new NodeSearch(repo);
+        var search = new NodeSearch(repo);
 
-        NodeTemplateEnt nodeFromSearch =
+        var nodeFromSearch =
             search.searchNodes("//hidden", null, null, 0, 1, Boolean.TRUE, null, null).getNodes().get(0);
-        NodeTemplateEnt nodeFromRepo =
-            repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
+        var nodeFromRepo =
+            repo.getNodeTemplates(Collections.singletonList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
 
         nodeFromSearch = search.searchNodes("//deprecated", null, null, 0, 1, Boolean.TRUE, null, null).getNodes().get(0);
-        nodeFromRepo = repo.getNodeTemplates(asList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
+        nodeFromRepo =
+            repo.getNodeTemplates(Collections.singletonList(nodeFromSearch.getId()), true).get(nodeFromSearch.getId());
         assertThat(nodeFromRepo, is(nodeFromSearch));
         assertThat(nodeFromRepo.getName(), containsString("deprecated"));
     }
@@ -167,21 +162,21 @@ public class NodeRepositoryTest {
      * to be returned.
      */
     @Test
+    @SuppressWarnings("java:S134")
     public void testSelectNodesAndNodeSearchNullParameters() throws Exception {
-        NodeGroups select = new NodeGroups(repo);
-        NodeSearch search = new NodeSearch(repo);
+        var select = new NodeGroups(repo);
+        var search = new NodeSearch(repo);
 
-        NodeGroupsEnt groupsRes = select.getNodesGroupedByTags(null, null, null, null);
-        NodeSearchResultEnt searchRes = search.searchNodes(null, null, null, null, null, null, null, null);
+        var groupsRes = select.getNodesGroupedByTags(null, null, null, null);
+        var searchRes = search.searchNodes(null, null, null, null, null, null, null, null);
 
         Map<String, NodeTemplateEnt> overplus = new HashMap<>();
-        for (NodeTemplateEnt n1 : groupsRes.getGroups().stream().flatMap(s -> s.getNodes().stream())
-            .collect(Collectors.toList())) {
+        for (final var n1 : groupsRes.getGroups().stream().flatMap(s -> s.getNodes().stream()).toList()) {
             if (overplus.containsKey(n1.getId() + "_search")) {
                 overplus.remove(n1.getId() + "_search");
             } else {
                 overplus.put(n1.getId() + "_select", n1);
-                for (NodeTemplateEnt n2 : searchRes.getNodes()) {
+                for (final var n2 : searchRes.getNodes()) {
                     if (overplus.containsKey(n2.getId() + "_select")) {
                         overplus.remove(n2.getId() + "_select");
                     } else {
@@ -191,10 +186,10 @@ public class NodeRepositoryTest {
             }
         }
         if (!overplus.isEmpty()) {
-            StringBuilder sb = new StringBuilder(
+            var sb = new StringBuilder(
                 "Same select- and search-results expected if selection and search are not constrained!\n");
             sb.append("But there are differences:\n");
-            for (Entry<String, NodeTemplateEnt> entry : overplus.entrySet()) {
+            for (final var entry : overplus.entrySet()) {
                 sb.append("NODE ");
                 sb.append(entry.getKey());
                 sb.append(";name: ");
@@ -216,9 +211,9 @@ public class NodeRepositoryTest {
             not(empty()));
 
         var nodes =
-            repoWithFilter.getNodes().stream().map(n -> n.templateId).collect(Collectors.toList());
+            repoWithFilter.getNodes().stream().map(n -> n.templateId).toList();
         var additionalNodes =
-            repoWithFilter.getFilteredNodes().stream().map(n -> n.templateId).collect(Collectors.toList());
+            repoWithFilter.getFilteredNodes().stream().map(n -> n.templateId).toList();
         assertThat("nodes and additional nodes should be all nodes", repo.getNodes().stream()
             .allMatch(n -> nodes.contains(n.templateId) || additionalNodes.contains(n.templateId)));
         assertThat("nodes and additional nodes should be disjoint",
@@ -232,8 +227,8 @@ public class NodeRepositoryTest {
      * @throws JsonMappingException
      */
     @Test
-    public void testNodeCustomizations() throws JsonMappingException, JsonProcessingException {
-        String customizationYaml = """
+    public void testNodeCustomizations() throws JsonProcessingException {
+        var customizationYaml = """
                   version: 'customization-v0.1'
                   nodes:
                       filter:
