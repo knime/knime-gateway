@@ -283,7 +283,9 @@ public final class LocalWorkspace implements Space {
 
         try {
             if (!sourcePath.toFile().renameTo(destinationPath.toFile())) {
-                throw new IOException("Could not rename item '%s' to '%s'".formatted(toKnimeUrl(itemId), newName));
+                throw new IOException(
+                    "Check if the workflow folder or a contained folder is open by another application and "
+                        + "if there are sufficient permissions.");
             }
         } catch (SecurityException e) {
             throw new IOException(e);
