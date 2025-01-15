@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,53 +41,44 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jan 15, 2025 (kai): created
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.service;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.VersionService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-
-import org.knime.gateway.api.service.GatewayService;
-
-import java.util.ArrayList;
 import java.util.List;
 
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.service.VersionService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.util.NetworkExceptions;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * The default implementation of the {@link VersionService}.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME GmbH, Germany
+ * @since 5.5
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+public final class DefaultVersionService implements VersionService {
 
-    private ListServices() {
-        //utility class
+    private final SpaceProviders m_spaceProviders =
+            ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+
+    @Override
+    public List<SpaceItemVersionEnt> listVersionsForItem(final String spaceId, final String spaceProviderId,
+        final String itemId, final Integer limit) throws ServiceCallException, NetworkException {
+        try {
+            final var spaceProvider = SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId);
+            final var space = spaceProvider.getSpace(spaceId);
+            final var message = "Could not versions of '%s' from '%s'".formatted(itemId, space.getName());
+            return NetworkExceptions.callWithCatch(() -> space.listVersionsForItem(itemId, limit), message);
+        } catch (Exception e) {
+            throw new ServiceCallException(e.getMessage(), e);
+        }
     }
 
-    /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
-     */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(VersionService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
-    }
 }

@@ -68,6 +68,7 @@ import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -528,6 +529,19 @@ public interface Space {
             } while (taken.test(newName + fileExtension));
             return newName + fileExtension;
         }
+    }
+
+    /**
+     * Lists the versions of an item.
+     *
+     * @param itemId
+     * @param limit
+     * @return The list of versions
+     * @throws ResourceAccessException If the versions could not be fetched
+     */
+    default List<SpaceItemVersionEnt> listVersionsForItem(final String itemId, final Integer limit)
+        throws ResourceAccessException {
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
     }
 
 }

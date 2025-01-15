@@ -61,6 +61,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.knime.core.util.hub.NamedItemVersion;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -68,6 +69,8 @@ import org.knime.gateway.api.webui.entity.SpaceGroupEnt.SpaceGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.SpaceItemEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt.SpaceItemVersionEntBuilder;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -254,4 +257,22 @@ public final class SpaceEntityFactory {
             .setType(type) //
             .build();
     }
+
+    /**
+     * Builds a {@link SpaceItemEnt} from a {@link NamedItemVersion}.
+     *
+     * @param namedItemVersion The version to build the entity from
+     * @return The entity
+     */
+    public SpaceItemVersionEnt buildSpaceItemVersionEnt(final NamedItemVersion namedItemVersion) {
+        return builder(SpaceItemVersionEntBuilder.class) //
+            .setVersion(namedItemVersion.version()) //
+            .setTitle(namedItemVersion.title()) //
+            .setDescription(namedItemVersion.description()) //
+            .setAuthor(namedItemVersion.author()) //
+            .setAuthorAccountId(namedItemVersion.authorAccountId()) //
+            .setCreatedOn(namedItemVersion.createdOn()) //
+            .build();
+    }
+
 }

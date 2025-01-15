@@ -45,8 +45,6 @@
  */
 package org.knime.gateway.impl.project;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
 import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowManager;
@@ -56,6 +54,7 @@ import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.hub.NamedItemVersion;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
@@ -221,9 +220,13 @@ public interface Project {
             if (hubLocation == null || wfm == null) {
                 return Optional.empty();
             }
+
             final var context = wfm.getContextV2();
             final var apExecInfo = (AnalyticsPlatformExecutorInfo)context.getExecutorInfo();
-            final var versionInfo = selectedVersion == null ? null : Origin.buildVersionInfo(selectedVersion);
+            final var versionInfo = selectedVersion == null //
+                ? null //
+                : EntityFactory.Space.buildSpaceItemVersionEnt(selectedVersion);
+
             return Optional.of(new Origin() {
 
                 @Override
@@ -254,17 +257,6 @@ public interface Project {
                     return Optional.ofNullable(versionInfo);
                 }
             });
-        }
-
-        private static SpaceItemVersionEnt buildVersionInfo(final NamedItemVersion selectedVersion) {
-            return builder(SpaceItemVersionEnt.SpaceItemVersionEntBuilder.class) //
-                .setVersion(selectedVersion.version()) //
-                .setTitle(selectedVersion.title()) //
-                .setDescription(selectedVersion.description()) //
-                .setAuthor(selectedVersion.author()) //
-                .setAuthorAccountId(selectedVersion.authorAccountId()) //
-                .setCreatedOn(selectedVersion.createdOn()) //
-                .build();
         }
 
         /**

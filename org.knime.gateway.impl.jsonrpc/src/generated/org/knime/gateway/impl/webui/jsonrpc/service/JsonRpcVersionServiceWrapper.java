@@ -42,51 +42,48 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+
+import com.googlecode.jsonrpc4j.JsonRpcError;
+import com.googlecode.jsonrpc4j.JsonRpcErrors;
+import com.googlecode.jsonrpc4j.JsonRpcMethod;
+import com.googlecode.jsonrpc4j.JsonRpcParam;
+import com.googlecode.jsonrpc4j.JsonRpcService;
+
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
 import org.knime.gateway.api.webui.service.VersionService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-
-import org.knime.gateway.api.service.GatewayService;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+@JsonRpcService(value = "VersionService")
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
+public class JsonRpcVersionServiceWrapper implements VersionService {
 
-    private ListServices() {
-        //utility class
+    private final java.util.function.Supplier<VersionService> m_service;
+    
+    public JsonRpcVersionServiceWrapper(java.util.function.Supplier<VersionService> service) {
+        m_service = service;
     }
 
-    /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+	/**
+     * {@inheritDoc}
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(VersionService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
+    @Override
+    @JsonRpcMethod(value = "listVersionsForItem")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
+    })
+    public java.util.List<SpaceItemVersionEnt> listVersionsForItem(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="limit") Integer limit)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
+        return m_service.get().listVersionsForItem(spaceId, spaceProviderId, itemId, limit);    
     }
+
 }

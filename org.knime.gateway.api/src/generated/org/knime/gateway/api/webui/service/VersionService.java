@@ -42,51 +42,33 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
-
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.VersionService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.ApplicationService;
+package org.knime.gateway.api.webui.service;
 
 import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Operations on the versions of hub items.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
-
-    private ListServices() {
-        //utility class
-    }
+public interface VersionService extends GatewayService {
 
     /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+     * Lists the available versions for the given space item. If there is a draft on top of the named versions,  it will be included in the list carrying a magic version number.
+     *
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param spaceProviderId Identifies a space-provider.
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
+     * @param limit The maximum number of versions to return, all if omitted.
+     *
+     * @return the result
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(VersionService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ApplicationService.class);
-        return res;
-    }
+    java.util.List<SpaceItemVersionEnt> listVersionsForItem(String spaceId, String spaceProviderId, String itemId, Integer limit)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
+        
 }
