@@ -61,6 +61,7 @@ import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.VersionService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -170,6 +171,12 @@ public class GatewayDefaultServiceTests {
             public SpaceService getSpaceService() {
                 return DefaultSpaceService.getInstance();
             }
+
+            @Override
+            public VersionService getVersionService() {
+                return DefaultVersionService.getInstance();
+            }
+
         };
         m_gatewayTestName = gatewayTestName;
     }

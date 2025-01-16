@@ -102,9 +102,6 @@ public class DefaultSpaceService implements SpaceService {
         //
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceProviderEnt getSpaceProvider(final String spaceProviderId)
         throws ServiceCallException, NetworkException {
@@ -120,9 +117,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
         final String workflowGroupId) throws ServiceCallException, NetworkException {
@@ -179,9 +173,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName)
         throws ServiceCallException {
@@ -214,9 +205,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
         throws ServiceCallException {
@@ -227,9 +215,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceItemEnt createWorkflowGroup(final String spaceId, final String spaceProviderId, final String itemId)
         throws ServiceCallException {
@@ -240,9 +225,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void moveOrCopyItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
         final String destWorkflowGroupItemId, final String collisionHandling, final Boolean copy)
@@ -265,9 +247,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
         final String newName) throws ServiceCallException {
@@ -280,9 +259,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
         throws ServiceCallException {

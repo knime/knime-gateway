@@ -49,7 +49,9 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.api.webui.service.VersionService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
@@ -65,18 +67,36 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  */
 public final class DefaultVersionService implements VersionService {
 
+    /**
+     * Returns the singleton instance for this service.
+     *
+     * @return the singleton instance
+     */
+    public static DefaultVersionService getInstance() {
+        return ServiceInstances.getDefaultServiceInstance(DefaultVersionService.class);
+    }
+
     private final SpaceProviders m_spaceProviders =
             ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
 
+    DefaultVersionService() {
+        // Singleton
+    }
+
     @Override
-    public List<SpaceItemVersionEnt> listVersionsForItem(final String spaceId, final String spaceProviderId,
+    public List<SpaceItemVersionEnt> listVersionsForItem(final String spaceProviderId, final String spaceId,
         final String itemId, final Integer limit) throws ServiceCallException, NetworkException {
         try {
             final var spaceProvider = SpaceProviders.getSpaceProvider(m_spaceProviders, spaceProviderId);
             final var space = spaceProvider.getSpace(spaceId);
-            final var message = "Could not versions of '%s' from '%s'".formatted(itemId, space.getName());
+            final var message = "Could not fetch versions of '%s' from '%s'".formatted(itemId, space.getName());
+
+            // TODO: How would we know if there is a draft or not?
+            // TODO: And how would we return that? New endpoint or magic version number?
+            // Note: Empty list means no versions.
+
             return NetworkExceptions.callWithCatch(() -> space.listVersionsForItem(itemId, limit), message);
-        } catch (Exception e) {
+        } catch (ResourceAccessException | NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
     }

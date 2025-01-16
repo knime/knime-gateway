@@ -81,6 +81,7 @@ import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.VersionService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.json.util.JsonUtil;
@@ -169,7 +170,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
          * Canonical sorting of the compatibleTypes-list.
          */
         objToString.addException(PortTypeEnt.class, "compatibleTypes", (v, gen, e) -> {
-            List<String> l = ((List<String>)v).stream().sorted().collect(Collectors.toList());
+            List<String> l = ((List<String>)v).stream().sorted().toList();
             gen.writeRawValue(objToString.toString(l));
         });
 
@@ -182,7 +183,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
                 .map(WebUIGatewayServiceTestHelper::replaceNonDeterministicPatchValues)//
                 .sorted(Comparator.<PatchOpEnt, String> comparing(o -> o.getOp().toString())
                     .thenComparing(o -> String.valueOf(o.getFrom())).thenComparing(PatchOpEnt::getPath))//
-                .collect(Collectors.toList());
+                .toList();
             gen.writeRawValue(objToString.toString(l));
         });
 
@@ -327,6 +328,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     /**
      * Shortcut to get the node repository service instance.
+     *
      * @return a node repository service instance
      */
     protected NodeRepositoryService nrs() {
@@ -343,11 +345,19 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     }
 
     /**
+     * Shortcut to get a version service instance.
+     *
+     * @return a version service instance
+     */
+    protected VersionService vs() {
+        return m_serviceProvider.getVersionService();
+    }
+
+    /**
      * Execute the given workflow command and return the new workflow snapshot
      *
      * @param commandEnt
      * @param workflowId
-     * @return the updated workflow after the command was executed
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
@@ -358,7 +368,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     /**
      * @param wfId
-     * @return the updated workflow after the last command was undone
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
@@ -368,7 +377,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     /**
      * @param wfId
-     * @return the update workflow after a command was redone
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception

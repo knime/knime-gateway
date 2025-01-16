@@ -60,8 +60,8 @@ public interface VersionService extends GatewayService {
     /**
      * Lists the available versions for the given space item. If there is a draft on top of the named versions,  it will be included in the list carrying a magic version number.
      *
-     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      * @param limit The maximum number of versions to return, all if omitted.
      *
@@ -69,6 +69,6 @@ public interface VersionService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    java.util.List<SpaceItemVersionEnt> listVersionsForItem(String spaceId, String spaceProviderId, String itemId, Integer limit)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
+    java.util.List<SpaceItemVersionEnt> listVersionsForItem(String spaceProviderId, String spaceId, String itemId, Integer limit)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
 }

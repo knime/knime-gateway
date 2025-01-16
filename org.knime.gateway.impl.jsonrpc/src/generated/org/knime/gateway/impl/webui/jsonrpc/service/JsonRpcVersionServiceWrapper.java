@@ -82,8 +82,8 @@ public class JsonRpcVersionServiceWrapper implements VersionService {
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
             data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<SpaceItemVersionEnt> listVersionsForItem(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="limit") Integer limit)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
-        return m_service.get().listVersionsForItem(spaceId, spaceProviderId, itemId, limit);    
+    public java.util.List<SpaceItemVersionEnt> listVersionsForItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="limit") Integer limit)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
+        return m_service.get().listVersionsForItem(spaceProviderId, spaceId, itemId, limit);    
     }
 
 }

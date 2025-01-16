@@ -39,6 +39,10 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
  */
 public final class GatewayTestCollection {
 
+    /**
+     * List of all the test helper classes that contribute to the gateway tests. If you add a new test helper class,
+     * make sure to add it here.
+     */
     private static final List<Class<?>> CONTRIBUTING_CLASSES = List.of( //
         NodeRecommendationsTestHelper.class, //
         NodeServiceTestHelper.class, //
@@ -50,8 +54,8 @@ public final class GatewayTestCollection {
         CutCopyPasteCommandsTestHelper.class, //
         BendpointsTestHelper.class, //
         DeleteCommandTestHelper.class, //
-        ConnectCommandsTestHelper.class
-    );
+        ConnectCommandsTestHelper.class, //
+        VersionServiceTestHelper.class);
 
     private GatewayTestCollection() {
         // utility class
