@@ -25,7 +25,6 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.util.EntityUtil.toLinkEnts;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
@@ -1401,15 +1400,16 @@ public final class WorkflowEntityFactory {
     }
 
     static String createIconDataURL(final URL url) {
-        if (url != null) {
-            try (InputStream in = url.openStream()) {
-                return createIconDataURL(IOUtils.toByteArray(in));
-            } catch (IOException ex) {
-                NodeLogger.getLogger(WorkflowEntityFactory.class).error(String.format("Icon for node couldn't be read"),
-                    ex);
-                return null;
+        if (url == null) {
+            return null;
+        }
+        try (var in = url.openStream()) {
+            if (in == null) {
+                throw new IOException("Could not open stream for URL: " + url);
             }
-        } else {
+            return createIconDataURL(IOUtils.toByteArray(in));
+        } catch (IOException ex) {
+            NodeLogger.getLogger(WorkflowEntityFactory.class).error("Icon for node couldn't be read", ex);
             return null;
         }
     }
