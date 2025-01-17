@@ -71,10 +71,11 @@ import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.NodeRepository;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.jsonrpc.DefaultJsonRpcRequestHandler;
+import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
+import org.knime.gateway.impl.webui.repo.NodeRepository;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.json.util.ObjectMapperUtil;
@@ -235,6 +236,7 @@ public class GatewayJsonRpcWrapperServiceTests {
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, Mockito.mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(NodeRepository.class, new NodeRepository());
+        ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, () -> Map.of());
     }
 
     @SuppressWarnings("javadoc")
