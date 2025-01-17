@@ -46,6 +46,8 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.knime.gateway.impl.util.ListFunctions.enumerate;
+import static org.knime.gateway.impl.util.ListFunctions.repeat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -57,7 +59,6 @@ import java.util.Optional;
 import java.util.PrimitiveIterator;
 import java.util.Set;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -114,14 +115,6 @@ public class AutoDisConnectUtilTest {
         });
         doReturn(ports).when(mock).getSourcePorts();
         return ports;
-    }
-
-    private static <T> Stream<T> repeat(final T obj, final int times) {
-        return IntStream.range(0, times).mapToObj(i -> obj);
-    }
-
-    private static <T> Stream<Enumerated<T>> enumerate(final List<T> list) {
-        return IntStream.range(0, list.size()).mapToObj(i -> new Enumerated<>(i, list.get(i)));
     }
 
     private static void assertPlanned(final String message, final Connectable.SourcePort<?> sourcePort,
@@ -533,10 +526,6 @@ public class AutoDisConnectUtilTest {
 
         assertThat("Only one connection should be planned", resultingPlan.size() == 1);
         assertPlanned(sourcePort, destinationPort, resultingPlan);
-    }
-
-    record Enumerated<T>(int index, T element) {
-
     }
 
 }

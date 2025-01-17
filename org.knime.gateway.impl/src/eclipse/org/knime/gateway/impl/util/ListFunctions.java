@@ -46,10 +46,12 @@
 package org.knime.gateway.impl.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.function.FailableBiFunction;
 
@@ -65,6 +67,7 @@ public final class ListFunctions {
     /**
      * Apply a mapping function {@code S -> T} to the list. The mapping function additionally receives the result of its
      * application to the previous element in the list. The mapping function may throw exceptions of type {@code E}.
+     * This is similar to a left-fold over the list.
      *
      * @param list The input list
      * @param mapper The function to be mapped
@@ -75,7 +78,7 @@ public final class ListFunctions {
         final FailableBiFunction<Optional<T>, S, T, E> mapper) throws E {
         var result = new ArrayList<T>();
         for (var index = 0; index < list.size(); index++) {
-            var previous = getOptional(result, index);
+            var previous = getOptional(result, index - 1);
             var current = list.get(index);
             var mapped = mapper.apply(previous, current); // potentially throws and exits
             result.add(mapped);
@@ -109,7 +112,7 @@ public final class ListFunctions {
     public static <E> List<List<E>> foldAppend(final List<E> identity, final Iterable<E> list) {
         var result = new ArrayList<List<E>>();
         var accumulator = new ArrayList<>(identity);
-        for (var element : list) {
+        for (final var element : list) {
             accumulator.add(element);
             result.add(accumulator.stream().toList());
         }
@@ -129,4 +132,28 @@ public final class ListFunctions {
             .toList();
     }
 
+    /**
+     * @return A stream consisting of {@code obj} repeated {@code times} times.
+     */
+    public static <T> Stream<T> repeat(final T obj, final int times) {
+        return IntStream.range(0, times).mapToObj(i -> obj);
+    }
+
+    /**
+     * @return A stream of index-element pairs. For example, given [ x1, x2, x3 ], yields [ (1, x1), (2, x2), (3, x3) ].
+     */
+    public static <T> Stream<Enumerated<T>> enumerate(final List<T> list) {
+        return IntStream.range(0, list.size()).mapToObj(i -> new Enumerated<>(i, list.get(i)));
+    }
+
+    /**
+     * @see ListFunctions#enumerate(List)
+     */
+    public static <T> Stream<Enumerated<T>> enumerate(final T[] array) {
+        return enumerate(Arrays.stream(array).toList());
+    }
+
+    public record Enumerated<T>(int index, T element) {
+
+    }
 }

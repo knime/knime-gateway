@@ -69,7 +69,7 @@ public final class Lazy {
 
         private V m_value;
 
-        public Init(Supplier<V> supplier) {
+        public Init(final Supplier<V> supplier) {
             this.m_supplier = supplier;
         }
 
@@ -92,6 +92,11 @@ public final class Lazy {
         public void clear() {
             m_value = null;
         }
+
+        @Override
+        public String toString() {
+            return "Init{" + "m_value=" + m_value + '}';
+        }
     }
 
     /**
@@ -107,7 +112,7 @@ public final class Lazy {
 
         private final Init<V> m_transformed;
 
-        public Transform(V value, UnaryOperator<V> transformation) {
+        public Transform(final V value, final UnaryOperator<V> transformation) {
             this.m_transformation = transformation;
             this.m_value = value;
             this.m_transformed = new Init<>(() -> m_transformation.apply(m_value));
@@ -121,5 +126,9 @@ public final class Lazy {
             return m_transformed.get();
         }
 
+        @Override
+        public String toString() {
+            return "Transform{" + "m_value=" + m_value + ", m_transformed=" + m_transformed + '}';
+        }
     }
 }
