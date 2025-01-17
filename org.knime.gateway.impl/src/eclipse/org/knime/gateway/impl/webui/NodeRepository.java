@@ -96,6 +96,8 @@ public final class NodeRepository {
      */
     private Predicate<String> m_filter;
 
+    private final NodeSpecProvider m_nodeSpecProvider;
+
     /**
      * Nodes included by the predicate, or all nodes available in the installation if no predicate is given.
      *
@@ -141,9 +143,25 @@ public final class NodeRepository {
 
     /**
      * Create a new node repository. All available nodes are included.
+     * 
+     * @see NodeRepository#NodeRepository(Predicate, NodeSpecProvider)
      */
     public NodeRepository() {
-        this(null);
+        this(null, NodeSpecCollectionProvider.getInstance());
+    }
+
+    /**
+     * @see NodeRepository#NodeRepository(Predicate, NodeSpecProvider)
+     */
+    public NodeRepository(final Predicate<String> filter) {
+        this(filter, NodeSpecCollectionProvider.getInstance());
+    }
+
+    /**
+     * @see NodeRepository#NodeRepository(Predicate, NodeSpecProvider)
+     */
+    public NodeRepository(final Predicate<String> filter, final NodeSpecCollectionProvider nodeSpecCollectionProvider) {
+        this(filter, NodeSpecProvider.of(nodeSpecCollectionProvider));
     }
 
     /**
@@ -157,8 +175,9 @@ public final class NodeRepository {
      *
      * @param filter defines which nodes will be included in this instance. If {@code null}, all nodes are included.
      */
-    public NodeRepository(final Predicate<String> filter) {
+    NodeRepository(final Predicate<String> filter, final NodeSpecProvider nodeSpecProvider) {
         m_filter = filter;
+        m_nodeSpecProvider = nodeSpecProvider;
     }
 
     /**
@@ -227,7 +246,7 @@ public final class NodeRepository {
      * @param templateId
      * @return the node or <code>null<code> if it is not included in this node repository.
      */
-    Node getNode(final String templateId) {
+    public Node getNode(final String templateId) {
         loadAllNodesAndNodeSets();
         return m_nodes.get(templateId);
     }
@@ -276,7 +295,7 @@ public final class NodeRepository {
      */
     synchronized Collection<Node> getHiddenNodes() {
         if (m_hiddenNodes == null) {
-            m_hiddenNodes = mapFromNodeSpecToNodeAndFilter(NodeSpecCollectionProvider.getInstance().getHiddenNodes());
+            m_hiddenNodes = mapFromNodeSpecToNodeAndFilter(m_nodeSpecProvider.getHiddenNodes());
         }
         return m_hiddenNodes.values();
     }
@@ -287,7 +306,7 @@ public final class NodeRepository {
     synchronized Collection<Node> getDeprecatedNodes() {
         if (m_deprecatedNodes == null) {
             m_deprecatedNodes =
-                mapFromNodeSpecToNodeAndFilter(NodeSpecCollectionProvider.getInstance().getDeprecatedNodes());
+                mapFromNodeSpecToNodeAndFilter(m_nodeSpecProvider.getDeprecatedNodes());
             addNodeWeights(m_deprecatedNodes);
         }
         return m_deprecatedNodes.values();
@@ -296,7 +315,7 @@ public final class NodeRepository {
     private synchronized void loadAllNodesAndNodeSets() {
         if (m_nodes == null) { // Do not run this if nodes have already been fetched
             // Read in all node templates available
-            var activeNodes = mapFromNodeSpecToNodeAndFilter(NodeSpecCollectionProvider.getInstance().getActiveNodes());
+            var activeNodes = mapFromNodeSpecToNodeAndFilter(m_nodeSpecProvider.getActiveNodes());
             addNodeWeights(activeNodes);
 
             if (m_filter == null) {
@@ -368,7 +387,7 @@ public final class NodeRepository {
 
         private final LazyInitializer<FuzzySearchable> m_fuzzySearchableInitializer = new LazyInitializer<>() {
             @Override
-            protected FuzzySearchable initialize() throws ConcurrentException {
+            protected FuzzySearchable initialize() {
                 return new FuzzySearchable(m_name, m_nodeSpec.metadata().keywords().toArray(String[]::new));
             }
         };
@@ -381,12 +400,11 @@ public final class NodeRepository {
 
         private int m_weight;
 
-        Node(final NodeSpec spec) {
+        public Node(final NodeSpec spec) {
             m_templateId = spec.factory().id();
             m_name = spec.metadata().nodeName();
             m_nodeSpec = spec;
         }
-
 
         FuzzySearchable getFuzzySearchable() {
             try {
@@ -402,7 +420,7 @@ public final class NodeRepository {
          *
          * @return True if there exists a compatible port type, false otherwise.
          */
-        boolean isInputCompatibleWith(final PortType portType) {
+        public boolean isInputCompatibleWith(final PortType portType) {
             return FlowVariablePortObject.TYPE.equals(portType) || m_nodeSpec.ports().getSupportedInputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
@@ -413,20 +431,20 @@ public final class NodeRepository {
          *
          * @return True if there exists a compatible port type, false otherwise.
          */
-        boolean isOutputCompatibleWith(final PortType portType) {
+        public boolean isOutputCompatibleWith(final PortType portType) {
             return FlowVariablePortObject.TYPE.equals(portType) || m_nodeSpec.ports().getSupportedOutputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
 
-        NodeSpec nodeSpec() {
+        public NodeSpec nodeSpec() {
             return m_nodeSpec;
         }
 
-        String templateId() {
+        public String templateId() {
             return m_templateId;
         }
 
-        String name() {
+        public String name() {
             return m_name;
         }
 
@@ -438,7 +456,7 @@ public final class NodeRepository {
             return m_weight;
         }
 
-        void setWeight(final int weight) {
+        public void setWeight(final int weight) {
             this.m_weight = weight;
         }
     }

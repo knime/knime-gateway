@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
@@ -63,6 +62,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.NodeCategories;
+import org.knime.gateway.impl.webui.NodeCategoryExtensions;
 import org.knime.gateway.impl.webui.NodeGroups;
 import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRelation;
@@ -96,14 +96,13 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     }
 
     DefaultNodeRepositoryService() {
+        var nodeCategories = ServiceDependencies.getServiceDependency(NodeCategoryExtensions.class, true);
         m_nodeSearch = new NodeSearch(m_nodeRepo);
-        m_nodeGroups = new NodeGroups(m_nodeRepo);
+        m_nodeGroups = new NodeGroups(m_nodeRepo, nodeCategories);
         m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
-        // TODO make NodeSpecCollectionProvider a service dependency?
-        m_nodeCategories = new NodeCategories( //
-            m_nodeRepo, //
-            () -> NodeSpecCollectionProvider.getInstance().getCategoryExtensions());
+        m_nodeCategories = new NodeCategories(m_nodeRepo, nodeCategories);
     }
+
 
     /**
      * {@inheritDoc}
@@ -137,7 +136,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     public NodeCategoryEnt getNodeCategory(final List<String> categoryPath)
         throws ServiceExceptions.NoSuchElementException {
         try {
-            return m_nodeCategories.getCategoryEnt(categoryPath, m_nodeRepo::mapNodeTemplateEnts);
+            return m_nodeCategories.getCategoryEnt(categoryPath);
         } catch (NoSuchElementException e) {
             throw new ServiceExceptions.NoSuchElementException("The requested category could not be found.", e);
         }

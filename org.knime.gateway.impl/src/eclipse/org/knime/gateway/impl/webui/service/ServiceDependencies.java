@@ -56,6 +56,7 @@ import java.util.Map;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.NodeCategoryExtensions;
 import org.knime.gateway.impl.webui.NodeCollections;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.NodeRepository;
@@ -136,17 +137,19 @@ public final class ServiceDependencies {
     /**
      * Helper to set all dependencies required by the default service implementations.
      *
+     * @param exampleProjects
      * @param projectManager
      * @param workflowMiddleware
-     * @param appStateUpdater     The application state updater
-     * @param eventConsumer       The event consumer
-     * @param spaceProviders      The space providers
+     * @param appStateUpdater The application state updater
+     * @param eventConsumer The event consumer
+     * @param spaceProviders The space providers
      * @param updateStateProvider The update state provider
      * @param preferencesProvider
      * @param nodeFactoryProvider
-     * @param kaiHandler          handle K-AI related requests
+     * @param kaiHandler handle K-AI related requests
      * @param nodeCollections
      * @param nodeRepo
+     * @param nodeCategoryExtensions
      * @param selectionEventBus
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
@@ -160,9 +163,8 @@ public final class ServiceDependencies {
         final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
         final NodeCollections nodeCollections, //
-        final NodeRepository nodeRepo, //
-        final SelectionEventBus selectionEventBus //
-    ) {
+        final NodeRepository nodeRepo, final NodeCategoryExtensions nodeCategoryExtensions,
+        final SelectionEventBus selectionEventBus) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -175,6 +177,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(KaiHandler.class, kaiHandler);
             ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
+            ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
         } else {
             throw new IllegalStateException(

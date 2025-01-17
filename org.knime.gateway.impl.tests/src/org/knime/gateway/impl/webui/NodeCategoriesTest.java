@@ -47,25 +47,22 @@ package org.knime.gateway.impl.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.knime.gateway.impl.util.ListFunctions.enumerate;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.Collection;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.extension.CategoryExtension;
 import org.knime.core.node.extension.NodeSpec;
-import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeCategoryEnt;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.shared.workflow.def.impl.VendorDefBuilder;
 
 @SuppressWarnings({"javadoc", "java:S5960"})
@@ -75,48 +72,46 @@ public class NodeCategoriesTest {
 
     private static final String SOME_BUNDLE_VENDOR = "org.foo.someBundleVendor";
 
-    private final BiFunction<Collection<NodeRepository.Node>, Boolean, List<NodeTemplateEnt>> m_mapNodesToEnts =
-        (nodes, ignored) -> nodes.stream().map(node -> buildMinimalNodeTemplateEnt(node.nodeSpec())).toList();
+    private static NodeRepository nodeRepositoryWith(final NodeSpec... specs) {
+        var nodes = enumerate(specs).collect(Collectors.toMap( //
+            e -> String.valueOf(e.index()), //
+            e -> e.element() //
+        ));
+        var nodeSpecProvider = new NodeSpecProvider() {
+            @Override
+            public Map<String, NodeSpec> getNodes() {
+                return nodes;
+            }
 
-    private static NodeTemplateEnt buildMinimalNodeTemplateEnt(final NodeSpec nodeSpec) {
-        return builder(NodeTemplateEnt.NodeTemplateEntBuilder.class)//
-            .setId(nodeSpec.factory().id())//
-            .setName(nodeSpec.metadata().nodeName())//
-            .setType(NativeNodeInvariantsEnt.TypeEnum.CONFIGURATION)//
-            .build();
+            @Override
+            public Map<String, NodeSpec> getActiveNodes() {
+                return nodes;
+            }
+        };
+        return new NodeRepository(null, nodeSpecProvider);
     }
 
-    private static NodeRepository.Node mockNodeWithMetadata(final String categoryPath) {
-        return mockNodeWithMetadata(categoryPath, someVendor());
+    private static NodeSpec nodeSpec(final String categoryPath) {
+        return nodeSpec(categoryPath, someVendor());
     }
 
-    private static NodeRepository.Node mockNodeWithMetadata(final String categoryPath,
-        final NodeSpec.Metadata.Vendor vendor) {
-        var nameAndFactoryId = "some node";
-        var node = mock(NodeRepository.Node.class, RETURNS_DEEP_STUBS);
-        var nodeSpec = mock(NodeSpec.class);
-        when(node.nodeSpec()).thenReturn(nodeSpec);
-        var factory = mock(NodeSpec.Factory.class);
-        when(factory.id()).thenReturn(nameAndFactoryId);
-        when(nodeSpec.factory()).thenReturn(factory);
-        when(nodeSpec.metadata()).thenReturn( //
-            new NodeSpec.Metadata( //
-                vendor, //
-                nameAndFactoryId, //
-                NodeFactory.NodeType.Configuration, //
-                categoryPath, //
-                null, // afterId
-                List.of(), // keywords
-                List.of() // tags
-            ) //
+    private static NodeSpec nodeSpec(final String categoryPath, final NodeSpec.Metadata.Vendor vendor) {
+        var metadata = new NodeSpec.Metadata( //
+            vendor, "node name", //
+            NodeFactory.NodeType.Unknown, //
+            categoryPath, //
+            "afterId", //
+            List.of(), //
+            List.of() //
         );
-        return node;
-    }
-
-    private static NodeSpec.Metadata.Vendor knimeVendor() {
-        return new NodeSpec.Metadata.Vendor( //
-            new VendorDefBuilder().setSymbolicName("org.knime.featureVendor").build(), //
-            new VendorDefBuilder().setSymbolicName("org.knime.bundleVendor").build() //
+        return new NodeSpec( //
+            new NodeSpec.Factory("id", "className", null), //
+            NodeFactory.NodeType.Unknown, //
+            new NodeSpec.Ports(List.of(), List.of(), List.of(), List.of()), //
+            metadata, //
+            mock(URL.class), //
+            false, //
+            false //
         );
     }
 
@@ -127,100 +122,241 @@ public class NodeCategoriesTest {
         );
     }
 
-    @Test
-    public void testGetRootCategory() {
-        Supplier<Map<String, CategoryExtension>> categoryExtensions = () -> Map.of( //
-            "/parent/", CategoryExtension.builder("cat0", "cat1").withPath("parent").build() //
+    private static NodeCategoryExtensions categories(final CategoryExtension... catExts) {
+        return () -> Arrays.stream(catExts).collect(Collectors.toMap( //
+            cat -> cat.getCompletePath(), //
+            cat -> cat) //
         );
-        // category will only be present in hierarchy if a node has been put into it
-        List<NodeRepository.Node> nodes = List.of(mockNodeWithMetadata("/parent/cat0"));
-        var returnedCategory =
-            new NodeCategories(nodes, categoryExtensions).getCategoryEnt(List.of(), m_mapNodesToEnts);
-        assertThat("The returned category should contain some child categories",
-            !returnedCategory.getChildCategories().isEmpty());
-    }
-
-    @Test
-    public void testExistingCategoryIsReturned() {
-        Supplier<Map<String, CategoryExtension>> categoryExtensions = () -> Map.of( //
-            "/parent/cat1", CategoryExtension.builder("cat1", "cat1").withPath("parent").build() //
-        );
-        // category will only be present in hierarchy if a node has been put into it
-        var nodes = List.of( //
-            mockNodeWithMetadata("/parent"), //
-            mockNodeWithMetadata("/parent/cat1"));
-        var categoryEnt =
-            new NodeCategories(nodes, categoryExtensions).getCategoryEnt(List.of("parent"), m_mapNodesToEnts);
-        assertHasNodes(categoryEnt);
-        assertThat("The returned category should contain some child categories",
-            !categoryEnt.getChildCategories().isEmpty());
     }
 
     private static void assertHasNodes(final NodeCategoryEnt categoryEnt) {
         assertThat("The returned category should contain some nodes", !categoryEnt.getNodes().isEmpty());
     }
 
+    private static NodeSpec.Metadata.Vendor knimeVendor() {
+        return new NodeSpec.Metadata.Vendor( //
+            new VendorDefBuilder().setSymbolicName("org.knime.featureVendor").build(), //
+            new VendorDefBuilder().setSymbolicName("org.knime.bundleVendor").build() //
+        );
+    }
+
+    private static void assertUncategorizedNotEmpty(final NodeCategories nodeCategories) {
+        assertThat( //
+            "Node should be placed in uncategorized", //
+            !nodeCategories.getCategoryEnt(List.of("uncategorized")).getNodes().isEmpty() //
+        );
+    }
+
+    @Test
+    public void testGetRootCategory() {
+        var repo = nodeRepositoryWith(nodeSpec("/parent/cat/"));
+        var categories = categories(CategoryExtension.builder("cat", "cat").withPath("parent").build());
+        var nodeCategories = new NodeCategories(repo, categories);
+        var rootCategory = nodeCategories.getCategoryEnt(List.of());
+        assertThat("The root category should contain some child categories",
+            !rootCategory.getChildCategories().isEmpty());
+    }
+
+    @Test
+    public void testNodeIsInsertedIntoChildCategory() {
+        var repo = nodeRepositoryWith(nodeSpec("/parent/child/"));
+        var categories = categories( //
+            CategoryExtension.builder("parent", "parent").build(), //
+            CategoryExtension.builder("child", "child") //
+                .withPath("parent").build() //
+        );
+        assertHasNodes(new NodeCategories(repo, categories).getCategoryEnt(List.of("parent", "child")));
+
+    }
+
+    @Test
+    public void testNodeCanInduceCategory() {
+        var categories = categories(CategoryExtension.builder("cat", "cat").withPath("parent").build());
+        var repo = nodeRepositoryWith(nodeSpec("/parent/cat"));
+        var categoryEnt = new NodeCategories(repo, categories).getCategoryEnt(List.of("parent", "cat"));
+        assertHasNodes(categoryEnt);
+    }
+
     @Test
     public void testNonExistingCategoryThrows() {
-        assertThrows(NoSuchElementException.class, () -> new NodeCategories(List.of(), Map::of)
-            .getCategoryEnt(List.of("foo", "bar", "baz"), m_mapNodesToEnts));
-    }
-
-    @Test
-    public void testCanInsertIntoLockedIfContributedByKNIME() {
-        var categoryExtension = CategoryExtension.builder("cat1", "cat1").withLocked(true).build();
-        var nodes = List.of(mockNodeWithMetadata("/cat1", knimeVendor()));
-        var categoryEnt = new NodeCategories(nodes, () -> Map.of("/", categoryExtension)) //
-            .getCategoryEnt(List.of("cat1"), m_mapNodesToEnts);
-        assertHasNodes(categoryEnt);
-    }
-
-    @Test
-    public void testCanInsertIntoLockedIfCompatible() {
-        var categoryExtension =
-            CategoryExtension.builder("cat1", "cat1").withPluginId(SOME_BUNDLE_VENDOR).withLocked(true).build();
-        var nodes = List.of(mockNodeWithMetadata("/cat1", knimeVendor()));
-        var categoryEnt = new NodeCategories(nodes, () -> Map.of("/", categoryExtension)) //
-            .getCategoryEnt(List.of("cat1"), m_mapNodesToEnts);
-        assertHasNodes(categoryEnt);
-    }
-
-    /**
-     * Note that "can insert" checks are about where a child category can be attached to a parent category.
-     */
-    @Test
-    public void testCanNotInsertIntoLockedElse() {
-        var parent =
-            CategoryExtension.builder("cat1", "cat1").withPluginId("org.baz.someOtherVendor").withLocked(true).build();
-        var nodes = List.of(mockNodeWithMetadata("/parent/cat1", someVendor()));
-        assertThrows( //
-            Throwable.class, //
-            () -> new NodeCategories(nodes, () -> Map.of("/", parent)) //
-                .getCategoryEnt(List.of("cat1"), m_mapNodesToEnts) //
+        assertThrows(NoSuchElementException.class, () -> //
+        new NodeCategories(nodeRepositoryWith(), Map::of) //
+            .getCategoryEnt(List.of("foo", "bar", "baz")) //
         );
     }
 
     /**
-     * See NXT-2840
+     * A category can be added as child to a locked parent category if the child category is contributed by KNIME.
      */
     @Test
-    public void testCanInsertCategoriesWithNoExplicitMetadata() {
-        var nodes = List.of(mockNodeWithMetadata("/cat1", knimeVendor()));
-        var categoryEnt = new NodeCategories(nodes, Map::of) //
-            .getCategoryEnt(List.of("cat1"), m_mapNodesToEnts);
+    public void testCanInsertIntoLockedIfContributedByKNIME() {
+        var lockedParent =
+            CategoryExtension.builder("parent", "parent").withPluginId(someVendor().bundle().getSymbolicName()) //
+                .withLocked(true) //
+                .build();
+        var childContributedByKNIME = CategoryExtension.builder("cat", "cat") //
+            .withPath("parent") //
+            .withPluginId(knimeVendor().bundle().getSymbolicName()) //
+            .build();
+        var categories = categories(lockedParent, childContributedByKNIME);
+        // important to make the node compatible, else it would not be allowed to be added -- but this is not what
+        // we want to test here. Instead, we want to test that the child category can be added.
+        var repo = nodeRepositoryWith(nodeSpec("/parent/cat/", someVendor()));
+        var categoryEnt = new NodeCategories(repo, categories) //
+            .getCategoryEnt(List.of("parent"));
+        assertThat("The locked parent category should contain some child categories",
+            !categoryEnt.getChildCategories().isEmpty());
+    }
+
+    /**
+     * Similar to {@link this#testCanInsertIntoLockedIfContributedByKNIME()}, except for that the category to be created
+     * is not explicitly given but inferred ad-hoc from the node target path.
+     */
+    @Test
+    public void testNodeCanInduceChildOfLockedIfCompatible() {
+        var categories = categories(CategoryExtension.builder("parent", "parent")
+            .withPluginId(someVendor().bundle().getSymbolicName()).withLocked(true).build());
+        var repo = nodeRepositoryWith(nodeSpec("/parent/cat/", someVendor()));
+        var categoryEnt = new NodeCategories(repo, categories) //
+            .getCategoryEnt(List.of("parent", "cat")); // should not throw
         assertHasNodes(categoryEnt);
     }
 
     /**
-     * See NXT-3229
+     * Negation of {@link this#testNodeCanInduceChildOfLockedIfCompatible()} Analog to
+     * {@link this#testCanNotInsertIntoLockedElse()} ()}
      */
     @Test
-    public void testCanInsertIntoUnlockedWithIncompatibleVendor() {
-        var categoryExtension =
-            CategoryExtension.builder("cat1", "cat1").withPluginId("org.baz.someOtherVendor").withLocked(false).build();
-        var nodes = List.of(mockNodeWithMetadata("/cat1", knimeVendor()));
-        var categoryEnt = new NodeCategories(nodes, () -> Map.of("/", categoryExtension)) //
-            .getCategoryEnt(List.of("cat1"), m_mapNodesToEnts);
+    public void testNodeCanNotInduceChildofLockedIfNotCompatible() {
+        var lockedParent = CategoryExtension.builder("parent", "parent") //
+            .withLocked(true) //
+            .withPluginId("some other vendor") //
+            .build();
+        // the child is not explicitly defined, the node would "induce" it with its category path
+        // but since it is from an incompatible vendor, this should not be allowed
+        var repo = nodeRepositoryWith(nodeSpec("/parent/child", someVendor()));
+        var nodeCategories = new NodeCategories(repo, categories(lockedParent));
+        // no categories should have been added to the tree since that one node insertion failed
+        assertThrows(NoSuchElementException.class, () -> nodeCategories.getCategoryEnt(List.of("parent")));
+        assertThrows(NoSuchElementException.class, () -> nodeCategories.getCategoryEnt(List.of("parent", "child")));
+        // node should have been put into uncategorized instead
+        assertUncategorizedNotEmpty(nodeCategories);
+    }
+
+    /**
+     * Similar to {@link this#testCanInsertIntoLockedIfContributedByKNIME()}, except for that the category to be created
+     * is not explicitly given but inferred ad-hoc from the node target path.
+     * <p>
+     * This is the special case for if the node is contributed by KNIME. A more general case is if the node is of a
+     * compatible vendor, see {@link this#testNodeCanInduceChildOfLockedIfCompatible()}
+     */
+    @Test
+    public void testNodeCanInduceCategoryInLockedIfContributedByKNIME() {
+        var categories = categories(CategoryExtension.builder("parent", "parent").withLocked(true).build());
+        // adding this node would imply adding a category `cat` ad hoc
+        var nodeByKNIME = nodeSpec("/parent/cat/", knimeVendor());
+        var categoryEnt =
+            new NodeCategories(nodeRepositoryWith(nodeByKNIME), categories).getCategoryEnt(List.of("parent", "cat"));
+        assertHasNodes(categoryEnt);
+    }
+
+    /**
+     * Can not insert into locked in the general case.
+     * 
+     * Analog to {@link this#testNodeCanNotInduceChildofLockedIfNotCompatible()}
+     */
+    @Test
+    public void testCanNotInsertIntoLockedElse() {
+        var lockedParent = CategoryExtension.builder("parent", "parent") //
+            .withPluginId("some other vendor") //
+            .withLocked(true) //
+            .build();
+        var childContributedBySomeVendor = CategoryExtension.builder("child", "child") //
+            .withPath("parent") //
+            .withPluginId(SOME_BUNDLE_VENDOR) //
+            .build();
+        var categories = categories(lockedParent, childContributedBySomeVendor);
+        var repo = nodeRepositoryWith(nodeSpec("/parent/child/"));
+        var nodeCategories = new NodeCategories(repo, categories);
+        assertThrows( //
+            NoSuchElementException.class, //
+            () -> nodeCategories.getCategoryEnt(List.of("parent", "child")) //
+        );
+        assertUncategorizedNotEmpty(nodeCategories);
+    }
+
+    /**
+     * Some nodes are not allowed to imply categories ad-hoc.
+     */
+    @Test
+    public void testBlackListedNodeMayNotCreateCategories() {
+        var repo = nodeRepositoryWith(nodeSpec("/parent/", someVendor()));
+        var categoryCreationBlacklist = Set.of(someVendor().bundle().getSymbolicName());
+        var nodeCategories = new NodeCategories( //
+            repo, //
+            categories(), // no explicit category metadata -- any category would have to be implied ad-hoc by a node
+            categoryCreationBlacklist //
+        );
+        assertThrows( //
+            NoSuchElementException.class, //
+            () -> nodeCategories.getCategoryEnt(List.of("parent")) //
+        );
+        assertUncategorizedNotEmpty(nodeCategories);
+    }
+
+    /**
+     * See NXT-2840 WEKA nodes not categorized correctly
+     */
+    @Test
+    public void testCanInsertCategoriesWithNoExplicitMetadata() {
+        var repo = nodeRepositoryWith(nodeSpec("/cat", knimeVendor()));
+        var categoryEnt = new NodeCategories(repo, categories()) //
+            .getCategoryEnt(List.of("cat"));
+        assertHasNodes(categoryEnt);
+    }
+
+    /**
+     * See NXT-3229 Some community nodes are not categorized
+     */
+    @Test
+    public void testCanInsertNodeWithIncompatibleVendorIntoUnlocked() {
+        var categories = categories(CategoryExtension.builder("cat", "cat") //
+            .withPluginId("some other vendor") //
+            .withLocked(false) //
+            .build() //
+        );
+        var repo = nodeRepositoryWith(nodeSpec("/cat", someVendor()));
+        var categoryEnt = new NodeCategories(repo, categories) //
+            .getCategoryEnt(List.of("cat"));
+        assertHasNodes(categoryEnt);
+    }
+
+    @Test
+    public void testCanNotInsertNodeWithIncompatibleVendorIntoLocked() {
+        var categories = categories(CategoryExtension.builder("cat", "cat") //
+            .withPluginId("some other vendor") //
+            .withLocked(true) //
+            .build() //
+        );
+        var repo = nodeRepositoryWith(nodeSpec("/cat", someVendor()));
+        var nodeCategories = new NodeCategories(repo, categories);
+        assertThrows( //
+            NoSuchElementException.class, //
+            () -> nodeCategories.getCategoryEnt(List.of("cat")) //
+        );
+        assertUncategorizedNotEmpty(nodeCategories);
+    }
+
+    @Test
+    public void testCanInsertNodeIntoLockedIfContributedByKNIME() {
+        var categories = categories(CategoryExtension.builder("cat", "cat") //
+            .withPluginId("some other vendor") //
+            .withLocked(true) //
+            .build() //
+        );
+        var repo = nodeRepositoryWith(nodeSpec("/cat", knimeVendor()));
+        var categoryEnt = new NodeCategories(repo, categories) //
+            .getCategoryEnt(List.of("cat"));
         assertHasNodes(categoryEnt);
     }
 

@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.impl.webui.NodeRepository.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,8 +71,6 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
-import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.impl.webui.NodeRepository.Node;
 
 /**
  * Logic and state (e.g. caching) required to filter and group nodes from the {@link NodeRepository}.
@@ -81,6 +80,8 @@ import org.knime.gateway.impl.webui.NodeRepository.Node;
 public final class NodeGroups {
 
     private final NodeRepository m_nodeRepo;
+
+    private final NodeCategoryExtensions m_nodeCategoryExtensions;
 
     private Map<String, List<Node>> m_nodesPerCategory;
 
@@ -92,7 +93,12 @@ public final class NodeGroups {
      * @param nodeRepo the node repository to select the nodes from
      */
     public NodeGroups(final NodeRepository nodeRepo) {
+        this(nodeRepo, () -> NodeSpecCollectionProvider.getInstance().getCategoryExtensions());
+    }
+
+    public NodeGroups(final NodeRepository nodeRepo, final NodeCategoryExtensions nodeCategoryExtensions) {
         m_nodeRepo = nodeRepo;
+        m_nodeCategoryExtensions = nodeCategoryExtensions;
     }
 
     /**
@@ -109,7 +115,7 @@ public final class NodeGroups {
         initCategories();
         var nodesPerCategory = getNodesPerCategory();
 
-        List<NodeGroupEnt> groups = m_topLevelCats.stream()//
+        var groups = m_topLevelCats.stream()//
             .filter(category -> nodesPerCategory.containsKey(category.getFirst()))//
             .skip(tagsOffset == null ? 0 : tagsOffset)//
             .limit(tagsLimit == null ? Integer.MAX_VALUE : tagsLimit)//
@@ -122,8 +128,7 @@ public final class NodeGroups {
 
     private synchronized void initCategories() {
         if (m_topLevelCats == null) {
-            var categoryExtensions = NodeSpecCollectionProvider.getInstance().getCategoryExtensions();
-            var topLevelCategories = getSortedCategoriesAtLevel("/", categoryExtensions.values());
+            var topLevelCategories = getSortedCategoriesAtLevel("/", m_nodeCategoryExtensions.get().values());
             var uncategorizedCategory =
                 Pair.create(NodeCategories.UNCATEGORIZED_KEY, NodeCategories.UNCATEGORIZED_NAME);
             if (!topLevelCategories.contains(uncategorizedCategory)) {
@@ -144,7 +149,7 @@ public final class NodeGroups {
         final Collection<CategoryExtension> categories) {
         return NodeAndCategorySorter.sortCategoryExtensions(categories.stream()//
             .filter(category -> {
-                String categoryPath = category.getPath();
+                var categoryPath = category.getPath();
                 return categoryPath == null || StringUtils.isBlank(categoryPath) || categoryPath.equals(targetPath);
             }))//
             .map(cat -> Pair.create(cat.getCompletePath(), cat.getName()))//
@@ -158,8 +163,8 @@ public final class NodeGroups {
         final List<Pair<String, String>> targetCategories) {
         Map<String, List<Node>> categorizedNodes = new HashMap<>();
         Set<String> alreadyCategorized = new HashSet<>();
-        for (var targetCategory : targetCategories) {
-            String catPath = targetCategory.getFirst();
+        for (final var targetCategory : targetCategories) {
+            var catPath = targetCategory.getFirst();
             if (catPath.equals(NodeCategories.UNCATEGORIZED_KEY)) {
                 // 'uncategorized' nodes are handled below
                 continue;
@@ -180,7 +185,7 @@ public final class NodeGroups {
 
         // collect all nodes that didn't end up in any of the given categories
         // (e.g. because they are at root level '/' or don't have a category at all)
-        List<Node> uncategorizedNodes = nodes.stream() //
+        var uncategorizedNodes = nodes.stream() //
             .filter(n -> !alreadyCategorized.contains(n.templateId())) //
             .toList();
         if (!uncategorizedNodes.isEmpty()) {
@@ -194,7 +199,7 @@ public final class NodeGroups {
         if (nodesPerCategory == null || nodesPerCategory.isEmpty()) {
             return null;
         }
-        List<NodeTemplateEnt> res = nodesPerCategory.stream()//
+        var res = nodesPerCategory.stream()//
             .limit(numNodesPerTag == null ? Integer.MAX_VALUE : numNodesPerTag)//
             .map(n -> nodeRepo.getNodeTemplate(n.templateId(), Boolean.TRUE.equals(fullTemplateInfo)))//
             .filter(Objects::nonNull)//
