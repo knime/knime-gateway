@@ -42,11 +42,8 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Mar 24, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;

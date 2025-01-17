@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  */
 
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
 import java.util.Map;
 

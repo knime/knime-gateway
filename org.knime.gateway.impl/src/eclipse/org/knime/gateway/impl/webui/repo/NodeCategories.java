@@ -43,7 +43,7 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.impl.util.ListFunctions.foldAppend;

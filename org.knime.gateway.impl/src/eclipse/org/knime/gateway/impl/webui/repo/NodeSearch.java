@@ -42,11 +42,8 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Mar 22, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
@@ -69,7 +66,8 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.webui.NodeRepository.Node;
+import org.knime.gateway.impl.webui.NodeRelation;
+import org.knime.gateway.impl.webui.repo.NodeRepository.Node;
 
 /**
  * Logic and state (e.g. caching) required to search for nodes in the {@link NodeRepository}.

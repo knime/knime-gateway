@@ -61,13 +61,13 @@ import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.webui.NodeCategories;
-import org.knime.gateway.impl.webui.NodeCategoryExtensions;
-import org.knime.gateway.impl.webui.NodeGroups;
-import org.knime.gateway.impl.webui.NodeRecommendations;
 import org.knime.gateway.impl.webui.NodeRelation;
-import org.knime.gateway.impl.webui.NodeRepository;
-import org.knime.gateway.impl.webui.NodeSearch;
+import org.knime.gateway.impl.webui.repo.NodeCategories;
+import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
+import org.knime.gateway.impl.webui.repo.NodeGroups;
+import org.knime.gateway.impl.webui.repo.NodeRecommendations;
+import org.knime.gateway.impl.webui.repo.NodeRepository;
+import org.knime.gateway.impl.webui.repo.NodeSearch;
 
 /**
  * The default implementation of {@link NodeRepositoryService}.

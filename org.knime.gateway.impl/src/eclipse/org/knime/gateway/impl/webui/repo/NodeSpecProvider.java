@@ -43,64 +43,61 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+package org.knime.gateway.impl.webui.repo;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import java.util.Map;
 
-@SuppressWarnings({"javadoc", "java:S5960"})
-class TreeTest {
+import org.knime.core.node.extension.NodeSpec;
+import org.knime.core.node.extension.NodeSpecCollectionProvider;
 
-    private static Tree<String, TreeNode> setUpTree() {
-        // set up tree structure (without using methods of the class under test)
-        Tree<String, TreeNode> tree = new Tree<>(createNode(List.of()));
-        var root = tree.root();
-        var node0 = createNode(List.of("0"));
-        root.children().put("0", node0);
-        var node1 = createNode(List.of("1"));
-        root.children().put("1", node1);
+/**
+ * Provide access to available nodes.
+ */
+interface NodeSpecProvider {
 
-        var node00 = createNode(List.of("0", "0"));
-        var node01 = createNode(List.of("0", "1"));
-        node0.children().put("0", node00);
-        node0.children().put("1", node01);
-
-        var node10 = createNode(List.of("1", "0"));
-        node1.children().put("0", node10);
-        return tree;
+    default Map<String, NodeSpec> getNodes() {
+        return Map.of();
     }
 
-    private static TreeNode createNode(final List<String> path) {
-        return new TreeNode(new ArrayList<>(path), new HashMap<>());
+    default Map<String, NodeSpec> getActiveNodes() {
+        return Map.of();
     }
 
-    @Test
-    void testGetFindsValue() {
-        var tree = setUpTree();
-        var queryPath = List.of("0", "1");
-        var foundValue = tree.get(queryPath);
-        Assertions.assertTrue(foundValue.isPresent());
-        Assertions.assertIterableEquals(queryPath, foundValue.get().path());
+    default Map<String, NodeSpec> getHiddenNodes() {
+        return Map.of();
     }
 
-    @Test
-    void testGetReturnsEmptyForNonExistingValue() {
-        var tree = setUpTree();
-        var queryPath = List.of("1", "1"); // does not exist in tree
-        var foundValue = tree.get(queryPath);
-        Assertions.assertFalse(foundValue.isPresent());
+    default Map<String, NodeSpec> getDeprecatedNodes() {
+        return Map.of();
     }
 
-    record TreeNode(
-            // save what we think is node's full path into node at creation time to verify in testing that it is indeed
-            // at this path in the tree
-            ArrayList<String> path, //
-            HashMap<String, TreeNode> children //
-    ) implements Tree.TreeNode<String, TreeNode> {
+    /**
+     * Adapt {@link NodeSpecCollectionProvider} to this interface. This is here because this interface is only needed in
+     * gateway and {@link NodeSpecCollectionProvider} is final.
+     */
+    static NodeSpecProvider of(final NodeSpecCollectionProvider nodeSpecCollectionProvider) {
+        return new NodeSpecProvider() {
 
+            @Override
+            public Map<String, NodeSpec> getNodes() {
+                return nodeSpecCollectionProvider.getNodes();
+            }
+
+            @Override
+            public Map<String, NodeSpec> getActiveNodes() {
+                return nodeSpecCollectionProvider.getActiveNodes();
+            }
+
+            @Override
+            public Map<String, NodeSpec> getHiddenNodes() {
+                return nodeSpecCollectionProvider.getHiddenNodes();
+            }
+
+            @Override
+            public Map<String, NodeSpec> getDeprecatedNodes() {
+                return nodeSpecCollectionProvider.getDeprecatedNodes();
+            }
+        };
     }
 }

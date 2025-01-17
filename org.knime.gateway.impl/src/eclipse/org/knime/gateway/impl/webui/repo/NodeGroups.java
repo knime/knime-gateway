@@ -42,14 +42,11 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Mar 22, 2021 (hornm): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.impl.webui.NodeRepository.Node;
+import static org.knime.gateway.impl.webui.repo.NodeRepository.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;

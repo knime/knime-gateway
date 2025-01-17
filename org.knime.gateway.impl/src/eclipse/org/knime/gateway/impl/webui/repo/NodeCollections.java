@@ -43,61 +43,60 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
+package org.knime.gateway.impl.webui.repo;
 
-package org.knime.gateway.impl.webui;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-import java.util.Map;
-
-import org.knime.core.node.extension.NodeSpec;
-import org.knime.core.node.extension.NodeSpecCollectionProvider;
+import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.webui.modes.WebUIMode;
 
 /**
- * Provide access to available nodes.
+ * Provide information about node collections to services. A node collection is a subset of all installed nodes.
+ * This can be used to limit the set of nodes displayed to the user.
+ *
+ * @author Benjamin Moser, KNIME GmbH
  */
-interface NodeSpecProvider {
+public final class NodeCollections {
 
-    default Map<String, NodeSpec> getNodes() {
-        return Map.of();
-    }
+    private final PreferencesProvider m_preferencesProvider;
 
-    default Map<String, NodeSpec> getActiveNodes() {
-        return Map.of();
-    }
+    private final WebUIMode m_mode;
 
-    default Map<String, NodeSpec> getHiddenNodes() {
-        return Map.of();
-    }
-
-    default Map<String, NodeSpec> getDeprecatedNodes() {
-        return Map.of();
+    public NodeCollections(final PreferencesProvider preferencesProvider, WebUIMode mode) {
+        this.m_preferencesProvider = preferencesProvider;
+        this.m_mode = mode;
     }
 
     /**
-     * Adapt {@link NodeSpecCollectionProvider} to this interface. This is here because this interface is only needed in
-     * gateway and {@link NodeSpecCollectionProvider} is final.
+     * @param displayName Must be compatible for an input placeholder "Search in {displayName} nodes"
+     * @param nodeFilter Decides whether a given node factory class name is in this collection
      */
-    static NodeSpecProvider of(final NodeSpecCollectionProvider nodeSpecCollectionProvider) {
-        return new NodeSpecProvider() {
-
-            @Override
-            public Map<String, NodeSpec> getNodes() {
-                return nodeSpecCollectionProvider.getNodes();
-            }
-
-            @Override
-            public Map<String, NodeSpec> getActiveNodes() {
-                return nodeSpecCollectionProvider.getActiveNodes();
-            }
-
-            @Override
-            public Map<String, NodeSpec> getHiddenNodes() {
-                return nodeSpecCollectionProvider.getHiddenNodes();
-            }
-
-            @Override
-            public Map<String, NodeSpec> getDeprecatedNodes() {
-                return nodeSpecCollectionProvider.getDeprecatedNodes();
-            }
-        };
+    public record NodeCollection(String displayName, Predicate<String> nodeFilter) {
+        public NodeCollection(final String displayName, final Predicate<String> nodeFilter) {
+            this.displayName = Objects.requireNonNull(displayName);
+            this.nodeFilter = Objects.requireNonNull(nodeFilter);
+        }
     }
+
+    /**
+     * @return The currently active collection
+     */
+    public Optional<NodeCollection> getActiveCollection() {
+        if (m_mode == WebUIMode.PLAYGROUND) {
+            return Optional.of(new NodeCollection("preview", id -> true));
+        } else {
+            return getCollectionFromPreferences();
+        }
+    }
+
+    private Optional<NodeCollection> getCollectionFromPreferences() {
+        var configuredPredicate = m_preferencesProvider.activeNodeCollection();
+        if (configuredPredicate == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new NodeCollection("starter", configuredPredicate));
+    }
+
 }

@@ -42,39 +42,43 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Jan 17, 2023 (benjamin): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
-import java.util.Set;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-/**
- * Test helper for creating a new {@link NodeRepository}.
- *
- * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
- */
-public final class NodeRepositoryTestingUtil {
+import org.junit.jupiter.api.Test;
+import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.webui.modes.WebUIMode;
 
-    private NodeRepositoryTestingUtil() {
-        // static utility
+class NodeCollectionsTest {
+
+    @Test
+    void testPlaygroundModeYieldsPreviewCollection() throws Exception {
+        var nodeCollections = new NodeCollections(mock(PreferencesProvider.class), WebUIMode.PLAYGROUND);
+        var result = nodeCollections.getActiveCollection();
+        assertTrue(result.isPresent());
+        assertEquals(result.get().displayName(), "preview");
     }
 
-    /** The nodes that are included in the node repository returned by {@link #createNodeRepositoryWithFilter()} */
-    static final Set<String> INCLUDED_NODES =
-        Set.of("org.knime.base.node.preproc.table.cropper.TableCropperNodeFactory",
-            "org.knime.base.node.preproc.table.cellextractor.CellExtractorNodeFactory",
-            "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory",
-            "org.knime.base.node.preproc.table.splitter.TableSplitterNodeFactory");
-
-    /** @return a new {@link NodeRepository} with the {@link #INCLUDED_NODES} */
-    static NodeRepository createNodeRepositoryWithFilter() {
-        return new NodeRepository(INCLUDED_NODES::contains);
+    @Test
+    void testDefaultModeAndNoPreferencesYieldsNoCollection() {
+        var mockPreferencesProvider = mock(PreferencesProvider.class);
+        when(mockPreferencesProvider.activeNodeCollection()).thenReturn(null);
+        var nodeCollections = new NodeCollections(mockPreferencesProvider, WebUIMode.DEFAULT);
+        assertTrue(nodeCollections.getActiveCollection().isEmpty());
     }
 
-    /** @return a new {@link NodeRepository} with no active collection */
-    static NodeRepository createNodeRepository() {
-        return new NodeRepository();
+    @Test
+    void testDefaultModeAndPreferencesYieldsStarterCollection() {
+        var mockPreferencesProvider = mock(PreferencesProvider.class);
+        when(mockPreferencesProvider.activeNodeCollection()).thenReturn(id -> true);
+        var nodeCollections = new NodeCollections(mockPreferencesProvider, WebUIMode.DEFAULT);
+        var result = nodeCollections.getActiveCollection();
+        assertTrue(result.isPresent());
+        assertEquals(result.get().displayName(), "starter");
     }
 }

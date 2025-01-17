@@ -43,59 +43,35 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-
-import org.knime.gateway.impl.webui.modes.WebUIMode;
+import java.util.Set;
 
 /**
- * Provide information about node collections to services. A node collection is a subset of all installed nodes.
- * This can be used to limit the set of nodes displayed to the user.
+ * Test helper for creating a new {@link NodeRepository}.
  *
- * @author Benjamin Moser, KNIME GmbH
+ * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
  */
-public final class NodeCollections {
+public final class NodeRepositoryTestingUtil {
 
-    private final PreferencesProvider m_preferencesProvider;
-
-    private final WebUIMode m_mode;
-
-    public NodeCollections(final PreferencesProvider preferencesProvider, WebUIMode mode) {
-        this.m_preferencesProvider = preferencesProvider;
-        this.m_mode = mode;
+    private NodeRepositoryTestingUtil() {
+        // static utility
     }
 
-    /**
-     * @param displayName Must be compatible for an input placeholder "Search in {displayName} nodes"
-     * @param nodeFilter Decides whether a given node factory class name is in this collection
-     */
-    public record NodeCollection(String displayName, Predicate<String> nodeFilter) {
-        public NodeCollection(final String displayName, final Predicate<String> nodeFilter) {
-            this.displayName = Objects.requireNonNull(displayName);
-            this.nodeFilter = Objects.requireNonNull(nodeFilter);
-        }
+    /** The nodes that are included in the node repository returned by {@link #createNodeRepositoryWithFilter()} */
+    static final Set<String> INCLUDED_NODES =
+        Set.of("org.knime.base.node.preproc.table.cropper.TableCropperNodeFactory",
+            "org.knime.base.node.preproc.table.cellextractor.CellExtractorNodeFactory",
+            "org.knime.base.node.io.tablecreator.TableCreator2NodeFactory",
+            "org.knime.base.node.preproc.table.splitter.TableSplitterNodeFactory");
+
+    /** @return a new {@link NodeRepository} with the {@link #INCLUDED_NODES} */
+    static NodeRepository createNodeRepositoryWithFilter() {
+        return new NodeRepository(INCLUDED_NODES::contains);
     }
 
-    /**
-     * @return The currently active collection
-     */
-    public Optional<NodeCollection> getActiveCollection() {
-        if (m_mode == WebUIMode.PLAYGROUND) {
-            return Optional.of(new NodeCollection("preview", id -> true));
-        } else {
-            return getCollectionFromPreferences();
-        }
+    /** @return a new {@link NodeRepository} with no active collection */
+    static NodeRepository createNodeRepository() {
+        return new NodeRepository();
     }
-
-    private Optional<NodeCollection> getCollectionFromPreferences() {
-        var configuredPredicate = m_preferencesProvider.activeNodeCollection();
-        if (configuredPredicate == null) {
-            return Optional.empty();
-        }
-        return Optional.of(new NodeCollection("starter", configuredPredicate));
-    }
-
 }

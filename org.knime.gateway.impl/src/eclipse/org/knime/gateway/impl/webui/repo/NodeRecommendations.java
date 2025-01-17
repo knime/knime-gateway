@@ -42,11 +42,8 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Aug 17, 2022 (Kai Franze, KNIME GmbH): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.repo;
 
 import static org.knime.core.ui.workflowcoach.NodeRecommendationManager.joinRecommendations;
 import static org.knime.core.ui.workflowcoach.NodeRecommendationManager.removeDuplicates;
@@ -69,6 +66,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.NodeRelation;
 
 /**
  * Logic to retrieve node recommendations, we might need the {@link NodeRepository} for it.
