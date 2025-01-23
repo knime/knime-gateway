@@ -122,6 +122,13 @@ public final class NodeCategories {
         nodeRepository.onContentChange(m_tree::clear);
     }
 
+
+    /**
+     * Build the node category hierarchy based on the nodes in the given repository.
+     *
+     * @param nodeRepository The nodes that will span this category hierarchy
+     * @param categoryExtensions Provides access to category metadata
+     */
     public NodeCategories(final NodeRepository nodeRepository, final NodeCategoryExtensions categoryExtensions) {
         this(nodeRepository, categoryExtensions, DEFAULT_CATEGORY_CREATION_BLACKLIST);
     }
@@ -339,7 +346,7 @@ public final class NodeCategories {
 
             // Since the tree should contain only the given nodes and the given collection is unordered,
             // iterate over the given nodes and create category tree nodes as needed.
-            nodes.forEach(node -> this.insertNode(node));
+            nodes.forEach(this::insertNode);
         }
 
         private static boolean isContributedByKNIME(final Optional<String> plugInId) {
@@ -477,7 +484,6 @@ public final class NodeCategories {
         /**
          * Context under which the current insertion operation is performed.
          */
-        @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
         private record CategoryInsertionContext(Optional<CategoryTreeNode> parent, List<CategoryId> path,
                 NodeRepository.Node node, RepositoryContext repositoryContext) {
 

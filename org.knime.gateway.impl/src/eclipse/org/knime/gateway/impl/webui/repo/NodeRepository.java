@@ -140,7 +140,7 @@ public final class NodeRepository {
 
     /**
      * Create a new node repository. All available nodes are included.
-     * 
+     *
      * @see NodeRepository#NodeRepository(Predicate, NodeSpecProvider)
      */
     public NodeRepository() {
@@ -154,10 +154,7 @@ public final class NodeRepository {
         this(filter, NodeSpecCollectionProvider.getInstance());
     }
 
-    /**
-     * @see NodeRepository#NodeRepository(Predicate, NodeSpecProvider)
-     */
-    public NodeRepository(final Predicate<String> filter, final NodeSpecCollectionProvider nodeSpecCollectionProvider) {
+    private NodeRepository(final Predicate<String> filter, final NodeSpecCollectionProvider nodeSpecCollectionProvider) {
         this(filter, NodeSpecProvider.of(nodeSpecCollectionProvider));
     }
 

@@ -46,7 +46,6 @@
 package org.knime.gateway.impl.webui.repo;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.impl.webui.repo.NodeRepository.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,6 +67,7 @@ import org.knime.gateway.api.webui.entity.NodeGroupEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupEnt.NodeGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt;
 import org.knime.gateway.api.webui.entity.NodeGroupsEnt.NodeGroupsEntBuilder;
+import org.knime.gateway.impl.webui.repo.NodeRepository.Node;
 
 /**
  * Logic and state (e.g. caching) required to filter and group nodes from the {@link NodeRepository}.
@@ -170,7 +170,7 @@ public final class NodeGroups {
             nodes.stream()//
                 .filter(n -> n.nodeSpec().metadata().categoryPath().equals(catPath)
                     || n.nodeSpec().metadata().categoryPath().startsWith(catPath + "/"))//
-                .sorted(Comparator.<Node> comparingInt(n -> n.weight()).reversed())//
+                .sorted(Comparator.<Node> comparingInt(Node::weight).reversed())//
                 .forEach(n -> { // No `collect(...)` here, nodes are collected in two different ways at the same time
                     alreadyCategorized.add(n.templateId());
                     nodesMatchingTargetCategory.add(n);

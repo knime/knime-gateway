@@ -56,5 +56,8 @@ import org.knime.core.node.extension.CategoryExtension;
 @FunctionalInterface
 public interface NodeCategoryExtensions {
 
+    /**
+     * @return map from {@link CategoryExtension#getCompletePath()} to node repository category
+     */
     Map<String, CategoryExtension> get();
 }
