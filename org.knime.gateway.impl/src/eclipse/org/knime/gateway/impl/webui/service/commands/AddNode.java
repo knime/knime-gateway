@@ -58,10 +58,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.NodeTimer;
-import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.NodeCreationType;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
@@ -135,14 +132,6 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             .failOnConnectionAttempt() //
             .create();
         return true; // Workflow changed if no exceptions were thrown
-    }
-
-    private static void trackNodeCreation(final NodeContainer nc, final AddNodeCommandEnt commandEnt) {
-        NodeTimer.GLOBAL_TIMER.addNodeCreation(nc);
-        NodeTimer.GLOBAL_TIMER.incNodeCreatedVia(NodeCreationType.WEB_UI);
-        if (isNodeAddedViaQuickNodeInsertion(commandEnt)) {
-            NodeTimer.GLOBAL_TIMER.incNodeCreatedVia(NodeCreationType.WEB_UI_QUICK_INSERTION_RECOMMENDED);
-        }
     }
 
     private static boolean isNodeAddedViaQuickNodeInsertion(final AddNodeCommandEnt commandEnt) {
