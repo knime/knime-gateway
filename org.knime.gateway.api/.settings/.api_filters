@@ -7,6 +7,28 @@
                 <message_argument value="5.0.0"/>
             </message_arguments>
         </filter>
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.5.0"/>
+                <message_argument value="5.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.api.webui.entity.ConnectableEnt">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ConnectableEnt"/>
+                <message_argument value="org.knime.gateway.api_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.api.webui.entity.ExampleProjectEnt">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ExampleProjectEnt"/>
+                <message_argument value="org.knime.gateway.api_5.5.0"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/api/entity/GatewayEntity.java" type="org.knime.gateway.api.entity.GatewayEntity">
         <filter id="403804204">
@@ -21,6 +43,39 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/webui/util/SpaceEntityFactory.java" type="org.knime.gateway.api.webui.util.SpaceEntityFactory">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.util.SpaceEntityFactory"/>
+                <message_argument value="buildSpaceProviderEnt(SpaceProviderEnt.TypeEnum, List&lt;SpaceGroupEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceProviderAndConnectionEnt(String, String, SpaceProviderEnt.TypeEnum, boolean, SpaceProviderAndConnectionEnt.ConnectionModeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceProviderAndConnectionEnt(String, String, SpaceProviderEnt.TypeEnum, boolean, SpaceProviderAndConnectionEnt.ConnectionModeEnum, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceProviderAndConnectionEnt(String, String, SpaceProviderEnt.TypeEnum, boolean, SpaceProviderAndConnectionEnt.ConnectionModeEnum, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceProviderContentEnt(String, String, SpaceProviderEnt.TypeEnum, List&lt;SpaceGroupEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, boolean, SpaceProviderEnt.ConnectionModeEnum, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt">
         <filter id="403804204">
             <message_arguments>
@@ -28,9 +83,20 @@
                 <message_argument value="getFileExtensionToNodeTemplateId()"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt"/>
+                <message_argument value="getSpaceProviders()"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getFileExtensionToNodeTemplateId()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getSpaceProviders()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -41,9 +107,214 @@
                 <message_argument value="setFileExtensionToNodeTemplateId(Map&lt;String,String&gt;)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
+                <message_argument value="setSpaceProviders(List&lt;SpaceProviderAndConnectionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
+                <message_argument value="setSpaceProviders(Map&lt;String,SpaceProviderAndConnectionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
+                <message_argument value="setSpaceProviders(Map&lt;String,SpaceProviderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
+                <message_argument value="setSpaceProviders(SpaceProviderAndConnectionEnt)"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setFileExtensionToNodeTemplateId(Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSpaceProviders(List&lt;SpaceProviderAndConnectionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSpaceProviders(Map&lt;String,SpaceProviderAndConnectionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSpaceProviders(Map&lt;String,SpaceProviderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSpaceProviders(SpaceProviderAndConnectionEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceItemChangedEventEnt.java" type="org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceItemChangedEventTypeEnt.java" type="org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderAndConnectionEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getConnectionMode()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getId()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getName()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getUser()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="isConnected()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getSpaceGroups()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getConnectionMode()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getId()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getName()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getUser()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="isConnected()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt$ConnectionModeEnum">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="ConnectionModeEnum"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt$SpaceProviderEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setConnected(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setConnectionMode(SpaceProviderEnt.ConnectionModeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setId(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setName(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setUser(UserEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setSpaceGroups(List&lt;SpaceGroupEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setConnected(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setConnectionMode(SpaceProviderEnt.ConnectionModeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setId(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setName(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setUser(UserEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/UserEnt.java" type="org.knime.gateway.api.webui.entity.UserEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.UserEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -63,6 +334,69 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/SpaceService.java" type="org.knime.gateway.api.webui.service.SpaceService">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="connectSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="disconnectSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="getSpaceGroups(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="getSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="getSpaceProviders()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="getSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="connectSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="disconnectSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getSpaceGroups(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getSpaceProviders()"/>
             </message_arguments>
         </filter>
     </resource>

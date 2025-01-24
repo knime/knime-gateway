@@ -7,6 +7,159 @@
                 <message_argument value="5.0.0"/>
             </message_arguments>
         </filter>
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.5.0"/>
+                <message_argument value="5.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.NodeCategories">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.NodeCategories"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.NodeCollections">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.NodeCollections"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.NodeGroups">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.NodeGroups"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.NodeRecommendations">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.NodeRecommendations"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.NodeRepository">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.NodeRepository"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.NodeSearch">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.NodeSearch"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultConnectableEnt">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultConnectableEnt"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultExampleProjectEnt">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultExampleProjectEnt"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.spaces.local.LocalWorkspace">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.local.LocalWorkspace"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/Project.java" type="org.knime.gateway.impl.project.Project">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="of(WorkflowManager, Project.Origin, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="of(WorkflowManager, String, String, String, SpaceItemReferenceEnt.ProjectTypeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="of(WorkflowManager, String, String, String, SpaceItemReferenceEnt.ProjectTypeEnum, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="of(WorkflowManager, WorkflowContextV2, SpaceItemReferenceEnt.ProjectTypeEnum, String, LocalSpace)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/Project.java" type="org.knime.gateway.impl.project.Project$Origin">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project.Origin"/>
+                <message_argument value="getRelativePath()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="isLocal()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="of(HubSpaceLocationInfo, WorkflowManager, NamedItemVersion)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="of(String, String, String, SpaceItemReferenceEnt.ProjectTypeEnum)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/ProjectManager.java" type="org.knime.gateway.impl.project.ProjectManager">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.ProjectManager"/>
+                <message_argument value="getLocalProject(Path)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getProject(String, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/CallThrottle.java" type="org.knime.gateway.impl.service.util.CallThrottle">
+        <filter id="1160773636">
+            <message_arguments>
+                <message_argument value="CallThrottle(Runnable, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1227882500">
+            <message_arguments>
+                <message_argument value="dispose()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1227882500">
+            <message_arguments>
+                <message_argument value="invoke()"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/NodeFactoryProvider.java" type="org.knime.gateway.impl.webui.NodeFactoryProvider">
         <filter id="403804204">
@@ -18,19 +171,6 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getFileExtensionToNodeFactoryMap()"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/NodeSearch.java" type="org.knime.gateway.impl.webui.NodeSearch">
-        <filter id="338792546">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.NodeSearch"/>
-                <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, Boolean)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, String, String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -47,6 +187,22 @@
                 <message_argument value="buildAppStateEnt(AppStateEnt, WorkflowProjectManager, PreferencesProvider, ExampleProjects, SpaceProviders)"/>
             </message_arguments>
         </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory"/>
+                <message_argument value="buildAppStateEnt(Predicate&lt;String&gt;, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="ALL_PROJECTS"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="NO_PROJECTS"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="buildAppStateEnt(AppStateEnt, WorkflowProjectManager, PreferencesProvider, ExampleProjects, SpaceProviders, NodeFactoryProvider)"/>
@@ -57,12 +213,39 @@
                 <message_argument value="buildAppStateEnt(Predicate&lt;String&gt;, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildAppStateEnt(String, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceProviderAndConnectionEnt(SpaceProvider, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceProviderEnt(SpaceProvider, boolean)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory$ServiceDependencies">
         <filter id="338722907">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
                 <message_argument value="ServiceDependencies(ProjectManager, PreferencesProvider, SpaceProviders, NodeFactoryProvider, NodeCollections)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
+                <message_argument value="ServiceDependencies(ProjectManager, PreferencesProvider, SpaceProviders, NodeFactoryProvider, NodeCollections, KaiHandler)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
+                <message_argument value="nodeCollections()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -96,11 +279,81 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/repo/NodeCategories.java" type="org.knime.gateway.impl.webui.repo.NodeCategories">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.repo.NodeCategories"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/repo/NodeCategoryExtensions.java" type="org.knime.gateway.impl.webui.repo.NodeCategoryExtensions">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.repo.NodeCategoryExtensions"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/repo/NodeCollections.java" type="org.knime.gateway.impl.webui.repo.NodeCollections">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.repo.NodeCollections"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/repo/NodeGroups.java" type="org.knime.gateway.impl.webui.repo.NodeGroups">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.repo.NodeGroups"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/repo/NodeRecommendations.java" type="org.knime.gateway.impl.webui.repo.NodeRecommendations">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.repo.NodeRecommendations"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/repo/NodeRepository.java" type="org.knime.gateway.impl.webui.repo.NodeRepository">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.repo.NodeRepository"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/repo/NodeSearch.java" type="org.knime.gateway.impl.webui.repo.NodeSearch">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.repo.NodeSearch"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultNodeRepositoryService.java" type="org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService">
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService"/>
                 <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultSpaceService.java" type="org.knime.gateway.impl.webui.service.DefaultSpaceService">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultSpaceService"/>
+                <message_argument value="getSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/ServiceDependencies.java" type="org.knime.gateway.impl.webui.service.ServiceDependencies">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.ServiceDependencies"/>
+                <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProviders, UpdateStateProvider, PreferencesProvider, NodeFactoryProvider, KaiHandler, NodeCollections, NodeRepository, SelectionEventBus)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProviders, UpdateStateProvider, PreferencesProvider, NodeFactoryProvider, KaiHandler, NodeCollections, NodeRepository, NodeCategoryExtensions, SelectionEventBus)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -111,9 +364,337 @@
                 <message_argument value="AppStateChangedEventSource(EventConsumer, AppStateUpdater, WorkflowProjectManager, PreferencesProvider, SpaceProviders)"/>
             </message_arguments>
         </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(AppStateChangedEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource"/>
+                <message_argument value="removeEventListener(AppStateChangedEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="AppStateChangedEventSource(EventConsumer, AppStateUpdater, WorkflowProjectManager, PreferencesProvider, SpaceProviders, NodeFactoryProvider)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(AppStateChangedEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(AppStateChangedEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/EventSource.java" type="org.knime.gateway.impl.webui.service.events.EventSource">
+        <filter id="336695337">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.EventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(T, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="336695337">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.EventSource"/>
+                <message_argument value="removeEventListener(T, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.EventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(T)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.EventSource"/>
+                <message_argument value="addEventListenerFor(T)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.EventSource"/>
+                <message_argument value="removeEventListener(T)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.EventSource"/>
+                <message_argument value="sendEvent(E)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(T, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="assertValidProjectId(String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(T, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/NodeRepositoryLoadingProgressEventSource.java" type="org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(NodeRepositoryLoadingProgressEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource"/>
+                <message_argument value="removeEventListener(NodeRepositoryLoadingProgressEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(NodeRepositoryLoadingProgressEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(NodeRepositoryLoadingProgressEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/NodeViewStateEventSource.java" type="org.knime.gateway.impl.webui.service.events.NodeViewStateEventSource">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.NodeViewStateEventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(NativeNodeContainer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.NodeViewStateEventSource"/>
+                <message_argument value="removeEventListener(NativeNodeContainer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(NativeNodeContainer, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(NativeNodeContainer, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/ProjectDisposedEventSource.java" type="org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(ProjectDisposedEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource"/>
+                <message_argument value="removeEventListener(ProjectDisposedEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(ProjectDisposedEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(ProjectDisposedEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/SpaceItemChangedEventSource.java" type="org.knime.gateway.impl.webui.service.events.SpaceItemChangedEventSource">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.SpaceItemChangedEventSource"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/UpdateAvailableEventSource.java" type="org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(UpdateAvailableEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource"/>
+                <message_argument value="removeEventListener(UpdateAvailableEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(UpdateAvailableEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(UpdateAvailableEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/WorkflowChangedEventSource.java" type="org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(WorkflowChangedEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource"/>
+                <message_argument value="removeEventListener(WorkflowChangedEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(WorkflowChangedEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(WorkflowChangedEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/events/WorkflowMonitorStateChangedEventSource.java" type="org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource"/>
+                <message_argument value="addEventListenerAndGetInitialEventFor(WorkflowMonitorStateChangeEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource"/>
+                <message_argument value="removeEventListener(WorkflowMonitorStateChangeEventTypeEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="addEventListenerAndGetInitialEventFor(WorkflowMonitorStateChangeEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeEventListener(WorkflowMonitorStateChangeEventTypeEnt, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/Space.java" type="org.knime.gateway.impl.webui.spaces.Space">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="downloadInto(List&lt;String&gt;, LocalWorkspace, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="getLocalRootPath()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="uploadFrom(LocalWorkspace, List&lt;String&gt;, String, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="downloadInto(List&lt;String&gt;, LocalSpace, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="uploadFrom(LocalSpace, List&lt;String&gt;, String, boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProvider.java" type="org.knime.gateway.impl.webui.spaces.SpaceProvider">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
+                <message_argument value="init(Consumer&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
+                <message_argument value="toEntity()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
+                <message_argument value="toEntity()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getChangeNotifier()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="init(Consumer&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="toEntity()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProvider.java" type="org.knime.gateway.impl.webui.spaces.SpaceProvider$SpaceItemChangeNotifier">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="SpaceItemChangeNotifier"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProviders.java" type="org.knime.gateway.impl.webui.spaces.SpaceProviders">
+        <filter id="404918348">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProviders"/>
+                <message_argument value="8"/>
+                <message_argument value="4"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProvidersFactory.java" type="org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/local/LocalSpace.java" type="org.knime.gateway.impl.webui.spaces.local.LocalSpace">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.local.LocalSpace"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/local/LocalSpaceProvider.java" type="org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider"/>
             </message_arguments>
         </filter>
     </resource>
@@ -270,12 +851,28 @@
         <filter id="338722907">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
                 <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean, Map&lt;String,SpaceProviderAndConnectionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean, Map&lt;String,SpaceProviderEnt&gt;)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -293,6 +890,16 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setIsKaiEnabled(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setSpaceProviders(Map&lt;String,SpaceProviderAndConnectionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setSpaceProviders(Map&lt;String,SpaceProviderEnt&gt;)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -509,18 +1116,6 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultEventTypeEnt(String)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultExampleProjectEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultExampleProjectEnt">
-        <filter id="337768515">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultExampleProjectEnt"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="DefaultExampleProjectEnt(String, String, SpaceItemReferenceEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -992,6 +1587,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceItemChangedEventEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceItemChangedEventTypeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceItemChangedEventTypeEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceItemEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceItemEnt">
         <filter id="337768515">
             <message_arguments>
@@ -1034,9 +1643,70 @@
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt"/>
+                <message_argument value="DefaultSpaceProviderEnt(List&lt;SpaceGroupEnt&gt;, SpaceProviderEnt.TypeEnum, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt"/>
+                <message_argument value="getSpaceGroups()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt"/>
+                <message_argument value="spaceGroups()"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultSpaceProviderEnt(List&lt;SpaceEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, String, Boolean, Boolean, SpaceProviderEnt.ConnectionModeEnum, UserEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceProviderEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt$DefaultSpaceProviderEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt.DefaultSpaceProviderEntBuilder"/>
+                <message_argument value="setSpaceGroups(List&lt;SpaceGroupEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setConnected(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setConnectionMode(SpaceProviderEnt.ConnectionModeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setId(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setName(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setUser(UserEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1121,6 +1791,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultUpdateNodeLabelCommandEnt(WorkflowCommandEnt.KindEnum, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUserEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUserEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUserEnt"/>
             </message_arguments>
         </filter>
     </resource>
