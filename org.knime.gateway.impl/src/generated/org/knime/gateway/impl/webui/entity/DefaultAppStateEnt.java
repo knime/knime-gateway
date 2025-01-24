@@ -48,6 +48,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 
@@ -72,6 +73,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param nodeRepositoryLoaded
  * @param analyticsPlatformDownloadURL
  * @param isSubnodeLockingEnabled
+ * @param spaceProviders
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -94,7 +96,8 @@ public record DefaultAppStateEnt(
     java.util.Map<String, String> fileExtensionToNodeTemplateId,
     Boolean nodeRepositoryLoaded,
     String analyticsPlatformDownloadURL,
-    Boolean isSubnodeLockingEnabled) implements AppStateEnt {
+    Boolean isSubnodeLockingEnabled,
+    java.util.Map<String, SpaceProviderEnt> spaceProviders) implements AppStateEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -197,6 +200,11 @@ public record DefaultAppStateEnt(
         return isSubnodeLockingEnabled;
     }
     
+    @Override
+    public java.util.Map<String, SpaceProviderEnt> getSpaceProviders() {
+        return spaceProviders;
+    }
+    
     /**
      * A builder for {@link DefaultAppStateEnt}.
      */
@@ -237,6 +245,8 @@ public record DefaultAppStateEnt(
         private String m_analyticsPlatformDownloadURL;
 
         private Boolean m_isSubnodeLockingEnabled;
+
+        private java.util.Map<String, SpaceProviderEnt> m_spaceProviders;
 
         @Override
         public DefaultAppStateEntBuilder setAppMode(AppModeEnum appMode) {
@@ -347,6 +357,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setSpaceProviders(java.util.Map<String, SpaceProviderEnt> spaceProviders) {
+             m_spaceProviders = spaceProviders;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
                 immutable(m_appMode),
@@ -366,7 +382,8 @@ public record DefaultAppStateEnt(
                 immutable(m_fileExtensionToNodeTemplateId),
                 immutable(m_nodeRepositoryLoaded),
                 immutable(m_analyticsPlatformDownloadURL),
-                immutable(m_isSubnodeLockingEnabled));
+                immutable(m_isSubnodeLockingEnabled),
+                immutable(m_spaceProviders));
         }
     
     }

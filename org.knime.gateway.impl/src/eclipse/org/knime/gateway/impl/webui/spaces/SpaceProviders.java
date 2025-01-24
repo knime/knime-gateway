@@ -54,15 +54,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
-import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider;
 
 /**
@@ -231,73 +227,6 @@ public final class SpaceProviders {
     public synchronized Map<String, SpaceProviderEnt.TypeEnum> getProviderTypes(final String projectId) {
         return getProvidersMap(projectId).entrySet().stream() //
             .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType()));
-    }
-
-    /**
-     * Gets the space provides, composes them into an event and passed it to the given event consumer.
-     *
-     * @param eventConsumer
-     */
-    public void sendSpaceProvidersChangedEvent(final EventConsumer eventConsumer) {
-        sendSpaceProvidersChangedEvent(null, eventConsumer);
-    }
-
-    /**
-     * Gets the space provides, composes them into an event and passed it to the given event consumer.
-     *
-     * @param projectId TODO
-     * @param eventConsumer
-     */
-    public void sendSpaceProvidersChangedEvent(final String projectId, final EventConsumer eventConsumer) {
-        final var result = MAPPER.createObjectNode();
-        Object res;
-        try {
-            getProvidersMap(projectId).values().forEach(sp -> {
-                result.set(sp.getId(), buildSpaceProviderObjectNode(sp, false));
-            });
-            res = MAPPER.createObjectNode().set("result", result);
-        } catch (Throwable t) { // NOSONAR
-            res = MAPPER.createObjectNode().put("error", t.getMessage());
-        }
-        eventConsumer.accept("SpaceProvidersChangedEvent", res);
-    }
-
-    /**
-     * Build the space provider object optionally connecting to the space provider first.
-     *
-     * @param spaceProvider
-     * @param doConnect
-     *
-     * @return The complete space provider object,
-     */
-    private static ObjectNode buildSpaceProviderObjectNode(final SpaceProvider spaceProvider, final boolean doConnect) {
-        final var type = spaceProvider.getType();
-        final var isLocalSpaceProvider = type == TypeEnum.LOCAL;
-        final var connectionMode = isLocalSpaceProvider ? "AUTOMATIC" : "AUTHENTICATED";
-        final var userObjectNode = buildUserObjectNode(spaceProvider, doConnect); // To connect if necessary
-        final var spaceProviderObjectNode = MAPPER.createObjectNode()//
-            .put("id", spaceProvider.getId()) //
-            .put("name", spaceProvider.getName()) //
-            .put("type", type.toString()) //
-            .put("connected", isLocalSpaceProvider || spaceProvider.getConnection(false).isPresent()) //
-            .put("connectionMode", connectionMode) //
-            .put("hostname", isLocalSpaceProvider ? null
-                : spaceProvider.getServerAddress().orElse(null));
-        if (!isLocalSpaceProvider) { // Do not set user object node in local space
-            spaceProviderObjectNode.set("user", userObjectNode);
-        }
-        return spaceProviderObjectNode;
-    }
-
-    /**
-     * @return The user object node if connection present {@code null} otherwise.
-     */
-    private static ObjectNode buildUserObjectNode(final SpaceProvider spaceProvider, final boolean doConnect) {
-        return spaceProvider.getConnection(doConnect)//
-            .map(SpaceProviderConnection::getUsername)//
-            .filter(Predicate.not(String::isEmpty))//
-            .map(userName -> MAPPER.createObjectNode().putObject("user").put("name", userName))//
-            .orElse(null);
     }
 
     private static final class MultiKeyMap<K, V> {

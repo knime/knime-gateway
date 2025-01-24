@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.UserEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Provides one or more spaces.
+ * General space provider meta information.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -86,12 +86,41 @@ public interface SpaceProviderEnt extends GatewayEntity {
 
   }
 
+  /**
+   * Gets or Sets connectionMode
+   */
+  public enum ConnectionModeEnum {
+    AUTHENTICATED("AUTHENTICATED"),
+    
+    ANONYMOUS("ANONYMOUS"),
+    
+    AUTOMATIC("AUTOMATIC");
+
+    private String value;
+
+    ConnectionModeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
-   * The groups contained in this provider to which the user have access to.
-   * @return spaceGroups , never <code>null</code>
+   * Get id
+   * @return id , never <code>null</code>
    **/
-  public java.util.List<SpaceGroupEnt> getSpaceGroups();
+  public String getId();
+
+  /**
+   * Get name
+   * @return name , never <code>null</code>
+   **/
+  public String getName();
 
   /**
    * Type of the space provider.
@@ -111,15 +140,37 @@ public interface SpaceProviderEnt extends GatewayEntity {
    **/
   public Boolean isCommunityHub();
 
+  /**
+   * Get connected
+   * @return connected , never <code>null</code>
+   **/
+  public Boolean isConnected();
+
+  /**
+   * Get connectionMode
+   * @return connectionMode , never <code>null</code>
+   **/
+  public ConnectionModeEnum getConnectionMode();
+
+  /**
+   * Get user
+   * @return user 
+   **/
+  public UserEnt getUser();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (SpaceProviderEnt)other;
-      valueConsumer.accept("spaceGroups", Pair.create(getSpaceGroups(), e.getSpaceGroups()));
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("hostname", Pair.create(getHostname(), e.getHostname()));
       valueConsumer.accept("isCommunityHub", Pair.create(isCommunityHub(), e.isCommunityHub()));
+      valueConsumer.accept("connected", Pair.create(isConnected(), e.isConnected()));
+      valueConsumer.accept("connectionMode", Pair.create(getConnectionMode(), e.getConnectionMode()));
+      valueConsumer.accept("user", Pair.create(getUser(), e.getUser()));
   }
 
     /**
@@ -128,12 +179,20 @@ public interface SpaceProviderEnt extends GatewayEntity {
     public interface SpaceProviderEntBuilder extends GatewayEntityBuilder<SpaceProviderEnt> {
 
         /**
-         * The groups contained in this provider to which the user have access to.
+   		 * Set id
          * 
-         * @param spaceGroups the property value, NOT <code>null</code>! 
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        SpaceProviderEntBuilder setSpaceGroups(java.util.List<SpaceGroupEnt> spaceGroups);
+        SpaceProviderEntBuilder setId(String id);
+        
+        /**
+   		 * Set name
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setName(String name);
         
         /**
          * Type of the space provider.
@@ -158,6 +217,30 @@ public interface SpaceProviderEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceProviderEntBuilder setIsCommunityHub(Boolean isCommunityHub);
+        
+        /**
+   		 * Set connected
+         * 
+         * @param connected the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setConnected(Boolean connected);
+        
+        /**
+   		 * Set connectionMode
+         * 
+         * @param connectionMode the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setConnectionMode(ConnectionModeEnum connectionMode);
+        
+        /**
+   		 * Set user
+         * 
+         * @param user the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setUser(UserEnt user);
         
         
         /**

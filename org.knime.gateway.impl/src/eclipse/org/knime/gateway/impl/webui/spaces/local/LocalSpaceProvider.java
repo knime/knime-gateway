@@ -52,7 +52,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
@@ -126,9 +125,8 @@ public class LocalSpaceProvider implements SpaceProvider {
     }
 
     @Override
-    public SpaceProviderEnt toEntity() {
-        return EntityFactory.Space.buildSpaceProviderEnt(SpaceProviderEnt.TypeEnum.LOCAL,
-            List.of(getLocalSpaceGroup().toEntity()));
+    public List<SpaceGroupEnt> toEntity() {
+        return List.of(getLocalSpaceGroup().toEntity());
     }
 
     @Override

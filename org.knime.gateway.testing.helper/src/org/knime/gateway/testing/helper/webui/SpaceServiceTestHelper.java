@@ -83,8 +83,6 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -338,7 +336,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      *
      * @throws InvalidRequestException
      */
-    public void testGetSpaceProvider() throws Exception {
+    public void testGetSpaceGroups() throws Exception {
         var spaces = new Space[5];
         for (var i = 0; i < 4; i++) {
             spaces[i] = mockSpace("id" + i, "name" + i, "owner" + i, "description" + i, i % 2 == 0);
@@ -349,25 +347,25 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ServiceDependencies.setServiceDependency(SpaceProviders.class,
             () -> Map.of(provider1.getId(), provider1, provider2.getId(), provider2));
 
-        var spaceProvider = ss().getSpaceProvider("id1");
+        var spaceProvider = ss().getSpaceGroups("id1");
         cr(spaceProvider, "space_provider1");
 
-        spaceProvider = ss().getSpaceProvider("id2");
+        spaceProvider = ss().getSpaceGroups("id2");
         cr(spaceProvider, "space_provider2");
 
-        assertThrows(ServiceCallException.class, () -> ss().getSpaceProvider("non_existing_id"));
+        assertThrows(ServiceCallException.class, () -> ss().getSpaceGroups("non_existing_id"));
     }
 
     /**
      * Tests {@link SpaceService#getSpaceProvider(String)} being not reachable.
      */
-    public void testGetSpaceProviderNotReachable() {
+    public void testGetSpacesNotReachable() {
         var space = mockSpaceWithFailingToEntity("id0", "name0");
         var provider = createSpaceProvider("id0", "name0", space);
 
         ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
 
-        assertThrows(NetworkException.class, () -> ss().getSpaceProvider("id0"));
+        assertThrows(NetworkException.class, () -> ss().getSpaceGroups("id0"));
     }
 
     private static Space mockSpaceWithFailingToEntity(final String id, final String name) {
@@ -408,11 +406,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public SpaceProviderEnt toEntity() {
-                return EntityFactory.Space.buildSpaceProviderEnt( //
-                    TypeEnum.LOCAL, //
-                    List.of(getLocalSpaceGroupForTesting(spaces).toEntity()) //
-                );
+            public List<SpaceGroupEnt> toEntity() {
+                return List.of(getLocalSpaceGroupForTesting(spaces).toEntity());
             }
 
             @Override
@@ -458,9 +453,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public SpaceProviderEnt toEntity() {
-                return EntityFactory.Space.buildSpaceProviderEnt(null,
-                    List.of(getLocalSpaceGroupForTesting(localWorkspace).toEntity()));
+            public List<SpaceGroupEnt> toEntity() {
+                return List.of(getLocalSpaceGroupForTesting(localWorkspace).toEntity());
             }
 
             @Override

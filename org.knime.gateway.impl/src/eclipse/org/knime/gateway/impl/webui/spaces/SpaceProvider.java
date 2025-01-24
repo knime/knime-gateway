@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.spaces;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -59,7 +60,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 
 /**
@@ -115,7 +116,7 @@ public interface SpaceProvider {
 
     /**
      * Returns the server address of the current space provider
-     * 
+     *
      * @return the server address or an empty optional if this provider is not connected
      */
     default Optional<String> getServerAddress() {
@@ -123,11 +124,11 @@ public interface SpaceProvider {
     }
 
     /**
-     * Creates an entity representing this space provider and its available spaces.
+     * Creates an entity representing the available spaces.
      *
      * @return entity representing this space provider
      */
-    SpaceProviderEnt toEntity();
+    List<SpaceGroupEnt> toEntity();
 
     /**
      * Uploads a workflow to the location represented by the given KNIME URL.

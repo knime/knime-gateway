@@ -45,8 +45,8 @@
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
@@ -156,15 +156,15 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "getSpaceProvider")
+    @JsonRpcMethod(value = "getSpaceGroups")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
             data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceProviderEnt getSpaceProvider(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
-        return m_service.get().getSpaceProvider(spaceProviderId);    
+    public java.util.List<SpaceGroupEnt> getSpaceGroups(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
+        return m_service.get().getSpaceGroups(spaceProviderId);    
     }
 
 	/**

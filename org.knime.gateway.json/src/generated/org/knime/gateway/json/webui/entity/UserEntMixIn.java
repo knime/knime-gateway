@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.UserEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt.DefaultSpaceProviderEntBuilder;
+import org.knime.gateway.api.webui.entity.UserEnt;
+import org.knime.gateway.impl.webui.entity.DefaultUserEnt.DefaultUserEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,46 +60,18 @@ import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt.DefaultSpaceP
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultSpaceProviderEntBuilder.class)
-@JsonSerialize(as=SpaceProviderEnt.class)
+@JsonDeserialize(builder=DefaultUserEntBuilder.class)
+@JsonSerialize(as=UserEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
+public interface UserEntMixIn extends UserEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("id")
-    public String getId();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
-    
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("hostname")
-    public String getHostname();
-    
-    @Override
-    @JsonProperty("isCommunityHub")
-    public Boolean isCommunityHub();
-    
-    @Override
-    @JsonProperty("connected")
-    public Boolean isConnected();
-    
-    @Override
-    @JsonProperty("connectionMode")
-    public ConnectionModeEnum getConnectionMode();
-    
-    @Override
-    @JsonProperty("user")
-    public UserEnt getUser();
     
 
     /**
@@ -110,42 +81,14 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface SpaceProviderEntMixInBuilder extends SpaceProviderEntBuilder {
+    public static interface UserEntMixInBuilder extends UserEntBuilder {
     
         @Override
-        public SpaceProviderEntMixIn build();
+        public UserEntMixIn build();
     
-        @Override
-        @JsonProperty("id")
-        public SpaceProviderEntMixInBuilder setId(final String id);
-        
         @Override
         @JsonProperty("name")
-        public SpaceProviderEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("type")
-        public SpaceProviderEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("hostname")
-        public SpaceProviderEntMixInBuilder setHostname(final String hostname);
-        
-        @Override
-        @JsonProperty("isCommunityHub")
-        public SpaceProviderEntMixInBuilder setIsCommunityHub(final Boolean isCommunityHub);
-        
-        @Override
-        @JsonProperty("connected")
-        public SpaceProviderEntMixInBuilder setConnected(final Boolean connected);
-        
-        @Override
-        @JsonProperty("connectionMode")
-        public SpaceProviderEntMixInBuilder setConnectionMode(final ConnectionModeEnum connectionMode);
-        
-        @Override
-        @JsonProperty("user")
-        public SpaceProviderEntMixInBuilder setUser(final UserEnt user);
+        public UserEntMixInBuilder setName(final String name);
         
     }
 

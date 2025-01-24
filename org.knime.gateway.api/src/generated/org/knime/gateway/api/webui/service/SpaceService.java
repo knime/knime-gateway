@@ -48,8 +48,8 @@ import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.SpaceEnt;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 
 /**
@@ -135,7 +135,7 @@ public interface SpaceService extends GatewayService {
     void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
         
     /**
-     * Mainly returns the spaces provided by this space-provider.
+     * Returns the spaces provided by this space-provider.
      *
      * @param spaceProviderId Identifies a space-provider.
      *
@@ -143,7 +143,7 @@ public interface SpaceService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceProviderEnt getSpaceProvider(String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
+    java.util.List<SpaceGroupEnt> getSpaceGroups(String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
         
     /**
      * Lists the available jobs for the given workflow.

@@ -171,6 +171,7 @@ import org.knime.gateway.json.webui.entity.UpdateLinkedComponentsResultEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateNodeLabelCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateProjectMetadataCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.UpdateWorkflowAnnotationCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.UserEntMixIn;
 import org.knime.gateway.json.webui.entity.VendorEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowAnnotationEntMixIn;
@@ -337,6 +338,7 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEntMixIn.class);
         res.add(UpdateProjectMetadataCommandEntMixIn.class);
         res.add(UpdateWorkflowAnnotationCommandEntMixIn.class);
+        res.add(UserEntMixIn.class);
         res.add(VendorEntMixIn.class);
         res.add(WorkflowAnnotationCommandEntMixIn.class);
         res.add(WorkflowAnnotationEntMixIn.class);
@@ -489,6 +491,7 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEntMixIn.UpdateNodeLabelCommandEntMixInBuilder.class);
         res.add(UpdateProjectMetadataCommandEntMixIn.UpdateProjectMetadataCommandEntMixInBuilder.class);
         res.add(UpdateWorkflowAnnotationCommandEntMixIn.UpdateWorkflowAnnotationCommandEntMixInBuilder.class);
+        res.add(UserEntMixIn.UserEntMixInBuilder.class);
         res.add(VendorEntMixIn.VendorEntMixInBuilder.class);
         res.add(WorkflowAnnotationCommandEntMixIn.WorkflowAnnotationCommandEntMixInBuilder.class);
         res.add(WorkflowAnnotationEntMixIn.WorkflowAnnotationEntMixInBuilder.class);

@@ -46,36 +46,53 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.UserEnt;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 
 /**
- * Provides one or more spaces.
+ * General space provider meta information.
  *
- * @param spaceGroups
+ * @param id
+ * @param name
  * @param type
  * @param hostname
  * @param isCommunityHub
+ * @param connected
+ * @param connectionMode
+ * @param user
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultSpaceProviderEnt(
-    java.util.List<SpaceGroupEnt> spaceGroups,
+    String id,
+    String name,
     TypeEnum type,
     String hostname,
-    Boolean isCommunityHub) implements SpaceProviderEnt {
+    Boolean isCommunityHub,
+    Boolean connected,
+    ConnectionModeEnum connectionMode,
+    UserEnt user) implements SpaceProviderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
     public DefaultSpaceProviderEnt {
-        if(spaceGroups == null) {
-            throw new IllegalArgumentException("<spaceGroups> must not be null.");
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
+        }
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
         if(type == null) {
             throw new IllegalArgumentException("<type> must not be null.");
+        }
+        if(connected == null) {
+            throw new IllegalArgumentException("<connected> must not be null.");
+        }
+        if(connectionMode == null) {
+            throw new IllegalArgumentException("<connectionMode> must not be null.");
         }
     }
 
@@ -85,8 +102,13 @@ public record DefaultSpaceProviderEnt(
     }
   
     @Override
-    public java.util.List<SpaceGroupEnt> getSpaceGroups() {
-        return spaceGroups;
+    public String getId() {
+        return id;
+    }
+    
+    @Override
+    public String getName() {
+        return name;
     }
     
     @Override
@@ -104,12 +126,29 @@ public record DefaultSpaceProviderEnt(
         return isCommunityHub;
     }
     
+    @Override
+    public Boolean isConnected() {
+        return connected;
+    }
+    
+    @Override
+    public ConnectionModeEnum getConnectionMode() {
+        return connectionMode;
+    }
+    
+    @Override
+    public UserEnt getUser() {
+        return user;
+    }
+    
     /**
      * A builder for {@link DefaultSpaceProviderEnt}.
      */
     public static class DefaultSpaceProviderEntBuilder implements SpaceProviderEntBuilder {
 
-        private java.util.List<SpaceGroupEnt> m_spaceGroups = new java.util.ArrayList<>();
+        private String m_id;
+
+        private String m_name;
 
         private TypeEnum m_type;
 
@@ -117,12 +156,27 @@ public record DefaultSpaceProviderEnt(
 
         private Boolean m_isCommunityHub;
 
+        private Boolean m_connected;
+
+        private ConnectionModeEnum m_connectionMode;
+
+        private UserEnt m_user;
+
         @Override
-        public DefaultSpaceProviderEntBuilder setSpaceGroups(java.util.List<SpaceGroupEnt> spaceGroups) {
-             if(spaceGroups == null) {
-                 throw new IllegalArgumentException("<spaceGroups> must not be null.");
+        public DefaultSpaceProviderEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
-             m_spaceGroups = spaceGroups;
+             m_id = id;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceProviderEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("<name> must not be null.");
+             }
+             m_name = name;
              return this;
         }
 
@@ -148,12 +202,40 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
+        public DefaultSpaceProviderEntBuilder setConnected(Boolean connected) {
+             if(connected == null) {
+                 throw new IllegalArgumentException("<connected> must not be null.");
+             }
+             m_connected = connected;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceProviderEntBuilder setConnectionMode(ConnectionModeEnum connectionMode) {
+             if(connectionMode == null) {
+                 throw new IllegalArgumentException("<connectionMode> must not be null.");
+             }
+             m_connectionMode = connectionMode;
+             return this;
+        }
+
+        @Override
+        public DefaultSpaceProviderEntBuilder setUser(UserEnt user) {
+             m_user = user;
+             return this;
+        }
+
+        @Override
         public DefaultSpaceProviderEnt build() {
             return new DefaultSpaceProviderEnt(
-                immutable(m_spaceGroups),
+                immutable(m_id),
+                immutable(m_name),
                 immutable(m_type),
                 immutable(m_hostname),
-                immutable(m_isCommunityHub));
+                immutable(m_isCommunityHub),
+                immutable(m_connected),
+                immutable(m_connectionMode),
+                immutable(m_user));
         }
     
     }

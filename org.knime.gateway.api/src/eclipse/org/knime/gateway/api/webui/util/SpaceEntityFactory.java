@@ -72,6 +72,7 @@ import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
+import org.knime.gateway.api.webui.entity.UserEnt.UserEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder;
 
@@ -89,16 +90,27 @@ public final class SpaceEntityFactory {
     }
 
     /**
+     * @param id
+     * @param name
      * @param type
-     * @param groups
+     * @param connected
+     * @param connectionMode
+     * @param hostname
+     * @param username
      *
-     * @return a new {@link SpaceProviderEnt}-instance
+     * @return new {@link SpaceProviderEnt}-instance
      */
-    public SpaceProviderEnt buildSpaceProviderEnt(final SpaceProviderEnt.TypeEnum type,
-            final List<SpaceGroupEnt> groups) {
+    public SpaceProviderEnt buildSpaceProviderEnt(final String id, final String name,
+        final SpaceProviderEnt.TypeEnum type, final boolean connected,
+        final SpaceProviderEnt.ConnectionModeEnum connectionMode, final String hostname, final String username) {
+        var userEnt = username == null ? null : builder(UserEntBuilder.class).setName(username).build();
         return builder(SpaceProviderEntBuilder.class) //
-            .setSpaceGroups(groups) //
+            .setId(id) //
+            .setName(name) //
             .setType(type) //
+            .setConnected(connected) //
+            .setConnectionMode(connectionMode) //
+            .setHostname(hostname) //
             .build();
     }
 

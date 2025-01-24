@@ -175,7 +175,8 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         var previousAppState = m_appStateUpdater.getLastAppState().orElse(null);
         var filterProjectSpecificInfosFromEvents = m_appStateUpdater.filterProjectSpecificInfosFromEvents();
         var appState = AppStateEntityFactory.buildAppStateEnt( //
-            filterProjectSpecificInfosFromEvents ? id -> false : null, //
+            filterProjectSpecificInfosFromEvents ? AppStateEntityFactory.NO_PROJECTS
+                : AppStateEntityFactory.ALL_PROJECTS, //
             filterProjectSpecificInfosFromEvents ? id -> false : null, //
             m_dependencies //
         );

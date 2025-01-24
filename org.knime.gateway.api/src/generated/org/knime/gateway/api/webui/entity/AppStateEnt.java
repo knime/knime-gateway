@@ -46,6 +46,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 
 import java.util.function.BiConsumer;
 
@@ -196,6 +197,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public Boolean isSubnodeLockingEnabled();
 
+  /**
+   * A map of all available space providers.
+   * @return spaceProviders 
+   **/
+  public java.util.Map<String, SpaceProviderEnt> getSpaceProviders();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -219,6 +226,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("nodeRepositoryLoaded", Pair.create(isNodeRepositoryLoaded(), e.isNodeRepositoryLoaded()));
       valueConsumer.accept("analyticsPlatformDownloadURL", Pair.create(getAnalyticsPlatformDownloadURL(), e.getAnalyticsPlatformDownloadURL()));
       valueConsumer.accept("isSubnodeLockingEnabled", Pair.create(isSubnodeLockingEnabled(), e.isSubnodeLockingEnabled()));
+      valueConsumer.accept("spaceProviders", Pair.create(getSpaceProviders(), e.getSpaceProviders()));
   }
 
     /**
@@ -369,6 +377,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setIsSubnodeLockingEnabled(Boolean isSubnodeLockingEnabled);
+        
+        /**
+         * A map of all available space providers.
+         * 
+         * @param spaceProviders the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setSpaceProviders(java.util.Map<String, SpaceProviderEnt> spaceProviders);
         
         
         /**

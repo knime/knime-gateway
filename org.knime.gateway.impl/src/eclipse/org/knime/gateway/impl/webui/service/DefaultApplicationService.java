@@ -126,13 +126,11 @@ public final class DefaultApplicationService implements ApplicationService {
             m_spaceProviders.update(projectId.get(), wfm.getContextV2());
         }
 
-        var workflowProjectFilter =
-            projectId.<Predicate<String>> map(id -> id::equals).orElse(null);
-        Predicate<String> isActiveProject = workflowProjectFilter == null ? null : id -> true;
+        Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
             m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
-        var appState =
-            AppStateEntityFactory.buildAppStateEnt(workflowProjectFilter, isActiveProject, dependencies);
+        var appState = AppStateEntityFactory.buildAppStateEnt(projectId.orElse(AppStateEntityFactory.ALL_PROJECTS),
+            isActiveProject, dependencies);
         if (m_appStateUpdater != null) {
             m_appStateUpdater.setLastAppState(appState);
         }

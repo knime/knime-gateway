@@ -46,6 +46,7 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -143,6 +144,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("isSubnodeLockingEnabled")
     public Boolean isSubnodeLockingEnabled();
     
+    @Override
+    @JsonProperty("spaceProviders")
+    public java.util.Map<String, SpaceProviderEnt> getSpaceProviders();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -227,6 +232,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("isSubnodeLockingEnabled")
         public AppStateEntMixInBuilder setIsSubnodeLockingEnabled(final Boolean isSubnodeLockingEnabled);
+        
+        @Override
+        @JsonProperty("spaceProviders")
+        public AppStateEntMixInBuilder setSpaceProviders(final java.util.Map<String, SpaceProviderEnt> spaceProviders);
         
     }
 

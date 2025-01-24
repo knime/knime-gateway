@@ -75,6 +75,9 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ConnectionModeEnum;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -84,6 +87,8 @@ import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -120,6 +125,7 @@ public final class AppStateEntityFactory {
     /**
      * Holds instances of service dependencies needed for building this application state.
      */
+    @SuppressWarnings("javadoc")
     public record ServiceDependencies( //
         ProjectManager projectManager, //
         PreferencesProvider preferencesProvider, //
@@ -131,23 +137,40 @@ public final class AppStateEntityFactory {
     }
 
     /**
+     * TODO
+     */
+    public static final String NO_PROJECTS = null;
+
+    /**
+     * TODO
+     */
+    public static final String ALL_PROJECTS = "";
+
+    /**
      * Properties added here potentially also need to be considered in
      * {@link #buildAppStateEntDiff(AppStateEnt, AppStateEnt)}.
      *
      * @param dependencies Service dependencies needed for building this application state
-     * @param workflowProjectFilter filters the workflow projects to be included in the app state; or {@code null} if
-     *            all projects are to be included
-     * @param isActiveProject determines the projects to be set to active (see
-     *            {@link ProjectEnt#getActiveWorkflowId()}; if {@code null}
-     *            {@link ProjectManager#isActiveProject(String)} is used
+     * @param projectId only includes the project with the given id in the app state; or if {@link #NO_PROJECTS} no
+     *            projects are to be included; if {@link #ALL_PROJECTS} all projects are included
+     * @param isActiveProject determines the projects to be set to active (see {@link ProjectEnt#getActiveWorkflowId()};
+     *            if {@code null} {@link ProjectManager#isActiveProject(String)} is used
      * @return a new application state entity instance
      */
-    public static AppStateEnt buildAppStateEnt(final Predicate<String> workflowProjectFilter,
-        final Predicate<String> isActiveProject, final ServiceDependencies dependencies) {
+    public static AppStateEnt buildAppStateEnt(final String projectId, final Predicate<String> isActiveProject,
+        final ServiceDependencies dependencies) {
+        Predicate<String> workflowProjectFilter;
+        if (NO_PROJECTS == projectId) {
+            workflowProjectFilter = id -> false;
+        } else if (ALL_PROJECTS == projectId) {
+            workflowProjectFilter = id -> true;
+        } else {
+            workflowProjectFilter = id -> id.equals(projectId);
+        }
         var projects = getProjectEnts( //
             dependencies.projectManager(), //
             dependencies.spaceProviders(), //
-            workflowProjectFilter == null ? id -> true : workflowProjectFilter, //
+            workflowProjectFilter, //
             isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
         );
         var activeCollection =
@@ -179,6 +202,9 @@ public final class AppStateEntityFactory {
             .setNodeRepositoryLoaded(NodeSpecCollectionProvider.Progress.isDone()) //
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
+            // TODO HUB-9598 only include when not read-only connection?
+            .setSpaceProviders(appMode == AppModeEnum.DEFAULT
+                ? buildSpaceProviderEnts(projectId, dependencies.spaceProviders(), false) : null) //
             .build();
     }
 
@@ -221,6 +247,8 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::isKaiEnabled, builder::setIsKaiEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
+            // TODO only include in case of desktop and default mode?
+            setIfChanged(oldAppState, newAppState, AppStateEnt::getSpaceProviders, builder::setSpaceProviders);
             return builder.build();
         }
     }
@@ -331,5 +359,38 @@ public final class AppStateEntityFactory {
             return Boolean.FALSE;
         }
         return Boolean.valueOf(value);
+    }
+
+    private static Map<String, SpaceProviderEnt> buildSpaceProviderEnts(final String projectId,
+        final SpaceProviders spaceProviders, final boolean doConnect) {
+        return spaceProviders.getProvidersMap(projectId).values().stream()
+            .map(sp -> buildSpaceProviderEnt(sp, doConnect))
+            .collect(Collectors.toMap(SpaceProviderEnt::getId, Function.identity()));
+    }
+
+    /**
+     * TODO
+     *
+     * @return new instance of {@link SpaceProviderEnt}
+     */
+    public static SpaceProviderEnt buildSpaceProviderEnt(final SpaceProvider spaceProvider, final boolean doConnect) {
+        final var type = spaceProvider.getType();
+        final var isLocalSpaceProvider = type == TypeEnum.LOCAL;
+        final var connectionMode = ConnectionModeEnum.valueOf(isLocalSpaceProvider ? "AUTOMATIC" : "AUTHENTICATED");
+        final var username = getUsername(spaceProvider, doConnect); // To connect if necessary
+        return EntityFactory.Space.buildSpaceProviderEnt(spaceProvider.getId(), spaceProvider.getName(),
+            type, isLocalSpaceProvider || spaceProvider.getConnection(false).isPresent(), connectionMode,
+            isLocalSpaceProvider ? null : spaceProvider.getServerAddress().orElse(null),
+            isLocalSpaceProvider ? null : username);
+    }
+
+    /**
+     * @return The user object node if connection present {@code null} otherwise.
+     */
+    private static String getUsername(final SpaceProvider spaceProvider, final boolean doConnect) {
+        return spaceProvider.getConnection(doConnect)//
+            .map(SpaceProviderConnection::getUsername)//
+            .filter(Predicate.not(String::isEmpty))//
+            .orElse(null);
     }
 }
