@@ -104,7 +104,7 @@ public final class UIExtensionEntityFactory {
         if (setupNodeViewStateEvents) {
             var nodeViewStateEventSource = new NodeViewStateEventSource(eventConsumer,
                 initialSelectionSupplierAndSelectionEventCleanUp.getFirst());
-            nodeViewStateEventSource.addEventListenerAndGetInitialEventFor(nnc);
+            nodeViewStateEventSource.addEventListenerAndGetInitialEventFor(nnc, null);
             nodeViewStateEventCleanUp = nodeViewStateEventSource::removeAllEventListeners;
         }
 

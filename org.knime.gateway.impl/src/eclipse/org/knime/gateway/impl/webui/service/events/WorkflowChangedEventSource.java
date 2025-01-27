@@ -125,7 +125,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     @SuppressWarnings("resource")
     @Override
     public Optional<CompositeEventEnt>
-        addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType) {
+        addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
+        assertValidProjectId(projectId, wfEventType.getProjectId());
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         var workflowChangesListener = m_workflowMiddleware.getWorkflowChangesListener(workflowKey);
 
@@ -195,7 +196,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      * {@inheritDoc}
      */
     @Override
-    public void removeEventListener(final WorkflowChangedEventTypeEnt wfEventType) {
+    public void removeEventListener(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
         var wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         removeEventListener(wfKey);
         removeTracker(wfKey);

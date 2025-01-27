@@ -78,25 +78,25 @@ public class UpdateAvailableEventSource
         final UpdateStateProvider updateStateProvider) {
         super(eventConsumer);
         m_updateStateProvider = updateStateProvider;
-        m_callback = updateState -> sendEvent(EntityFactory.UpdateState
-            .buildEventEnt(updateState.getNewReleases(), updateState.getBugfixes()));
+        m_callback = updateState -> sendEvent(
+            EntityFactory.UpdateState.buildEventEnt(updateState.getNewReleases(), updateState.getBugfixes()), null);
     }
 
     @Override
     public Optional<UpdateAvailableEventEnt>
-        addEventListenerAndGetInitialEventFor(final UpdateAvailableEventTypeEnt eventTypeEnt) {
+        addEventListenerAndGetInitialEventFor(final UpdateAvailableEventTypeEnt eventTypeEnt, final String projectId) {
         m_updateStateProvider.addUpdateStateChangedListener(m_callback);
         return Optional.empty(); // Will be set before update check is triggered, so there will never be an event to emit
     }
 
     @Override
-    public void removeEventListener(final UpdateAvailableEventTypeEnt eventTypeEnt) {
+    public void removeEventListener(final UpdateAvailableEventTypeEnt eventTypeEnt, final String projectId) {
         m_updateStateProvider.removeUpdateStateChangedListener(m_callback);
     }
 
     @Override
     public void removeAllEventListeners() {
-        removeEventListener(null);
+        removeEventListener(null, null);
     }
 
     @Override

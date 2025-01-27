@@ -51,6 +51,9 @@ package org.knime.gateway.impl.webui.service.events;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+import org.knime.core.node.util.CheckUtils;
+import org.knime.gateway.impl.webui.service.DefaultServiceContext;
+
 /**
  * An event source produces events that are forwarded to an event consumer.
  *
@@ -99,37 +102,41 @@ public abstract class EventSource<T, E> {
      * event to 'catch up' (instead of passing it to the associated event consumer).
      *
      * @param eventTypeEnt
+     * @param projectId id of the workflow project this event listener is associated with (i.e. the initial event, if
+     *            there is one, will be associated wit that workflow project - see {@link #sendEvent(Object, String)};
+     *            can be {@code null} (see also {@link DefaultServiceContext})
+     *
      * @return the very first event or an empty optional if there isn't any (method must not wait for events to arrive -
      *         only returns if there is an event at event listener registration time)
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
-    public abstract Optional<E> addEventListenerAndGetInitialEventFor(T eventTypeEnt);
+    public abstract Optional<E> addEventListenerAndGetInitialEventFor(T eventTypeEnt, String projectId);
 
     /**
-     * Registers a listener with the event source for the specified type of event.
+     * Little helper to assert that the project id equals the expected one (see also {@link DefaultServiceContext}).
      *
-     * @param eventTypeEnt
-     *
-     * @throws IllegalArgumentException if object describing the event type isn't valid
+     * @param expectedProjectId
+     * @param actualProjectId
      */
-    public void addEventListenerFor(final T eventTypeEnt) {
-        addEventListenerFor(eventTypeEnt, null);
+    protected static final void assertValidProjectId(final String expectedProjectId, final String actualProjectId) {
+        CheckUtils.checkArgument(expectedProjectId == null || expectedProjectId.equals(actualProjectId),
+            "Illegal project id");
     }
 
     /**
      * Registers a listener with the event source for the specified type of event.
      *
      * @param eventTypeEnt
-     * @param workflowProjectId id of the workflow project this event listener is associated with (i.e. the initial
-     *            event, if there is one, will be associated wit that workflow project - see
-     *            {@link #sendEvent(Object, String)}; can be {@code null}
+     * @param projectId id of the workflow project this event listener is associated with (i.e. the initial event, if
+     *            there is one, will be associated with that workflow project - see {@link #sendEvent(Object, String)};
+     *            can be {@code null}
      *
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
-    public void addEventListenerFor(final T eventTypeEnt, final String workflowProjectId) {
+    public void addEventListenerFor(final T eventTypeEnt, final String projectId) {
         // make sure the returned event is the first being send!
         synchronized (m_sendEventLock) {
-            addEventListenerAndGetInitialEventFor(eventTypeEnt).ifPresent(e -> sendEvent(e, workflowProjectId));
+            addEventListenerAndGetInitialEventFor(eventTypeEnt, projectId).ifPresent(e -> sendEvent(e, projectId));
         }
     }
 
@@ -137,8 +144,10 @@ public abstract class EventSource<T, E> {
      * Removes an event listener for a particular event type instance.
      *
      * @param eventTypeEnt
+     * @param projectId the id of the workflow project this event listener is associated with; can be {@code null} if
+     *            not associated with a particular project (see also {@link DefaultServiceContext})
      */
-    public abstract void removeEventListener(T eventTypeEnt);
+    public abstract void removeEventListener(T eventTypeEnt, String projectId);
 
     /**
      * Removes all event listeners registered with the event source. After this method, no events will be emitted
@@ -147,22 +156,12 @@ public abstract class EventSource<T, E> {
     public abstract void removeAllEventListeners();
 
     /**
-     * Called by sub-classes to emit an event.
-     *
-     * @param event the event instance
-     */
-    protected final void sendEvent(final E event) {
-        synchronized (m_sendEventLock) {
-            m_eventConsumer.accept(getName(), event);
-        }
-    }
-
-    /**
      * Called by sub-classes to emit an event. This event is associated with a dedicated workflow project (specified by
      * the project id).
      *
      * @param event the event instance
-     * @param projectId
+     * @param projectId the id of the project the event listener is associated with; can be {@code null} - see
+     *            {@link EventConsumer#accept(String, Object, String)}.
      */
     protected final void sendEvent(final E event, final String projectId) {
         synchronized (m_sendEventLock) {

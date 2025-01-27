@@ -86,11 +86,12 @@ public class NodeViewStateEventSource extends EventSource<NativeNodeContainer, N
     }
 
     @Override
-    public Optional<NodeViewStateEvent> addEventListenerAndGetInitialEventFor(final NativeNodeContainer nnc) {
+    public Optional<NodeViewStateEvent> addEventListenerAndGetInitialEventFor(final NativeNodeContainer nnc,
+        final String projectId) {
         m_nnc = nnc;
         m_nodeStateChangeListener = e -> {
             var nodeViewStateEvent = createEvent(m_nnc, m_initialSelectionSupplier);
-            sendEvent(nodeViewStateEvent);
+            sendEvent(nodeViewStateEvent, projectId);
         };
         nnc.addNodeStateChangeListener(m_nodeStateChangeListener);
         return Optional.empty();
@@ -103,7 +104,7 @@ public class NodeViewStateEventSource extends EventSource<NativeNodeContainer, N
     }
 
     @Override
-    public void removeEventListener(final NativeNodeContainer nnc) {
+    public void removeEventListener(final NativeNodeContainer nnc, final String projectId) {
         if (nnc.removeNodeStateChangeListener(m_nodeStateChangeListener)) {
             m_nodeStateChangeListener = null;
             m_nnc = null;
@@ -112,7 +113,7 @@ public class NodeViewStateEventSource extends EventSource<NativeNodeContainer, N
 
     @Override
     public void removeAllEventListeners() {
-        removeEventListener(m_nnc);
+        removeEventListener(m_nnc, null);
         m_nnc = null;
     }
 

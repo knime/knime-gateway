@@ -65,7 +65,8 @@ public interface EventConsumer extends BiConsumer<String, Object> {
      *
      * @param name the event name/type
      * @param event the actual event payload
-     * @param projectId the id of the project this event is associated with
+     * @param projectId the id of the project this event is associated with, or {@code null} if it's an
+     *            'application-wide' event
      */
     default void accept(final String name, final Object event, final String projectId) {
         accept(name, event);

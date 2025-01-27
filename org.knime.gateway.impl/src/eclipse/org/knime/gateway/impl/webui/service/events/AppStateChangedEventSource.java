@@ -103,7 +103,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
 
     @Override
     public Optional<CompositeEventEnt>
-        addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt) {
+        addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt, final String projectId) {
         Runnable appStateChangedListener = this::checkForAppStateChangeAndSendEvent;
         m_appStateUpdater.addAppStateChangedListener(appStateChangedListener);
         m_removeAppStateChangedListener =
@@ -137,13 +137,13 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     }
 
     @Override
-    public void removeEventListener(final AppStateChangedEventTypeEnt eventTypeEnt) {
+    public void removeEventListener(final AppStateChangedEventTypeEnt eventTypeEnt, final String projectId) {
         m_removeAppStateChangedListener.run();
     }
 
     @Override
     public void removeAllEventListeners() {
-        removeEventListener(null);
+        removeEventListener(null, null);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         }
 
         if (events != null) {
-            sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class).setEvents(events).build());
+            sendEvent(EntityBuilderManager.builder(CompositeEventEntBuilder.class).setEvents(events).build(), null);
         }
     }
 

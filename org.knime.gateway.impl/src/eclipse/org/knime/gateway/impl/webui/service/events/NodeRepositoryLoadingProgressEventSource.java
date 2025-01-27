@@ -87,8 +87,8 @@ public class NodeRepositoryLoadingProgressEventSource
      * {@inheritDoc}
      */
     @Override
-    public Optional<NodeRepositoryLoadingProgressEventEnt>
-        addEventListenerAndGetInitialEventFor(final NodeRepositoryLoadingProgressEventTypeEnt eventTypeEnt) {
+    public Optional<NodeRepositoryLoadingProgressEventEnt> addEventListenerAndGetInitialEventFor(
+        final NodeRepositoryLoadingProgressEventTypeEnt eventTypeEnt, final String projectId) {
         if (Progress.isDone()) {
             removeAllEventListeners();
         } else if (m_listener == null) {
@@ -104,7 +104,7 @@ public class NodeRepositoryLoadingProgressEventSource
             || m_lastEventInfo.time + EVENT_INTERVAL_IN_MS < now) {
             sendEvent(builder(NodeRepositoryLoadingProgressEventEntBuilder.class)
                 .setProgress(BigDecimal.valueOf(progressEvent.overallProgress()))
-                .setExtensionName(progressEvent.extensionName()).build());
+                .setExtensionName(progressEvent.extensionName()).build(), null);
             m_lastEventInfo = new LastEventInfo(progressEvent.extensionName(), now);
         }
     }
@@ -113,7 +113,8 @@ public class NodeRepositoryLoadingProgressEventSource
      * {@inheritDoc}
      */
     @Override
-    public void removeEventListener(final NodeRepositoryLoadingProgressEventTypeEnt eventTypeEnt) {
+    public void removeEventListener(final NodeRepositoryLoadingProgressEventTypeEnt eventTypeEnt,
+        final String projectId) {
         removeAllEventListeners();
     }
 

@@ -183,7 +183,7 @@ public final class DefaultEventService implements EventService {
 
         // After setting the event source, try to add an event listener for the event type
         try {
-            eventSource.addEventListenerFor(eventTypeEnt, DefaultServiceContext.getWorkflowProjectId().orElse(null));
+            eventSource.addEventListenerFor(eventTypeEnt, projectId());
         } catch (IllegalArgumentException e) {
             throw new InvalidRequestException(e.getMessage(), e);
         }
@@ -195,8 +195,12 @@ public final class DefaultEventService implements EventService {
         @SuppressWarnings({"rawtypes"})
         EventSource eventSource = m_eventSources.get(eventTypeEnt.getClass()); // NOSONAR
         if (eventSource != null) {
-            eventSource.removeEventListener(eventTypeEnt);
+            eventSource.removeEventListener(eventTypeEnt, projectId());
         }
+    }
+
+    private static String projectId() {
+        return DefaultServiceContext.getWorkflowProjectId().orElse(null);
     }
 
     /**

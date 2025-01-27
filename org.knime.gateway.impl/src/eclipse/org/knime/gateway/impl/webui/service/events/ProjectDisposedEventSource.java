@@ -91,7 +91,8 @@ public final class ProjectDisposedEventSource
      */
     @Override
     public Optional<ProjectDisposedEventEnt>
-        addEventListenerAndGetInitialEventFor(final ProjectDisposedEventTypeEnt eventTypeEnt) {
+        addEventListenerAndGetInitialEventFor(final ProjectDisposedEventTypeEnt eventTypeEnt, final String projectId) {
+        assertValidProjectId(projectId, eventTypeEnt.getProjectId());
         m_projectIds.add(eventTypeEnt.getProjectId());
         return Optional.empty();
     }
@@ -100,7 +101,7 @@ public final class ProjectDisposedEventSource
      * {@inheritDoc}
      */
     @Override
-    public void removeEventListener(final ProjectDisposedEventTypeEnt eventTypeEnt) {
+    public void removeEventListener(final ProjectDisposedEventTypeEnt eventTypeEnt, final String projectId) {
         m_projectIds.remove(eventTypeEnt.getProjectId());
     }
 

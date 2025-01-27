@@ -70,27 +70,27 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
     @Override
     @SuppressWarnings("java:S1602")
     public Optional<SpaceItemChangedEventEnt>
-        addEventListenerAndGetInitialEventFor(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> //
+        addEventListenerAndGetInitialEventFor(final SpaceItemChangedEventTypeEnt eventTypeEnt, final String projectId) {
+        getNotifierForProvider(eventTypeEnt, projectId).ifPresent(notifier -> //
         notifier.subscribeToItem( //
             eventTypeEnt.getSpaceId(), //
             eventTypeEnt.getItemId(), //
-            () -> onSubscriptionNotification(eventTypeEnt) //
+            () -> onSubscriptionNotification(eventTypeEnt, projectId) //
         ));
         return Optional.empty();
     }
 
-    private Optional<SpaceItemChangeNotifier> getNotifierForProvider(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        // TODO projectId if available?
-        return m_spaceProviders.getSpaceProvider((String)null, eventTypeEnt.getProviderId()).getChangeNotifier();
+    private Optional<SpaceItemChangeNotifier> getNotifierForProvider(final SpaceItemChangedEventTypeEnt eventTypeEnt,
+        final String projectId) {
+        return m_spaceProviders.getSpaceProvider(projectId, eventTypeEnt.getProviderId()).getChangeNotifier();
     }
 
-    private void onSubscriptionNotification(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
+    private void onSubscriptionNotification(final SpaceItemChangedEventTypeEnt eventTypeEnt, final String projectId) {
         this.sendEvent(
             // provide information on what has changed in the event s.t. the frontend can decide whether it
             // is still interested in it
-            buildEvent(eventTypeEnt) //
-        );
+            buildEvent(eventTypeEnt), //
+            projectId);
     }
 
     private static SpaceItemChangedEventEnt buildEvent(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
@@ -102,8 +102,8 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
     }
 
     @Override
-    public void removeEventListener(final SpaceItemChangedEventTypeEnt eventTypeEnt) {
-        getNotifierForProvider(eventTypeEnt).ifPresent(notifier -> //
+    public void removeEventListener(final SpaceItemChangedEventTypeEnt eventTypeEnt, final String projectId) {
+        getNotifierForProvider(eventTypeEnt, projectId).ifPresent(notifier -> //
         notifier.unsubscribe( //
             eventTypeEnt.getSpaceId(), //
             eventTypeEnt.getItemId() //
