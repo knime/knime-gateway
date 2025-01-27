@@ -90,6 +90,7 @@ import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -137,12 +138,14 @@ public final class AppStateEntityFactory {
     }
 
     /**
-     * TODO
+     * Used with {@link #buildAppStateEnt(String, Predicate, ServiceDependencies)} as project-id to indicate that no
+     * projects are to be included.
      */
     public static final String NO_PROJECTS = null;
 
     /**
-     * TODO
+     * Used with {@link #buildAppStateEnt(String, Predicate, ServiceDependencies)} as project-id to indicate that no
+     * projects are to be included.
      */
     public static final String ALL_PROJECTS = "";
 
@@ -176,8 +179,10 @@ public final class AppStateEntityFactory {
         var activeCollection =
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         var kaiHandler = dependencies.kaiHandler();
+        var appMode = getAppModeEnum();
         return builder(AppStateEntBuilder.class) //
-            .setAppMode(getAppModeEnum()).setOpenProjects(projects) //
+            .setAppMode(appMode) //
+            .setOpenProjects(projects) //
             .setAvailablePortTypes(AVAILABLE_PORT_TYPE_ENTS) //
             .setSuggestedPortTypeIds(AVAILABLE_SUGGESTED_PORT_TYPE_IDS) //
             .setAvailableComponentTypes(AVAILABLE_COMPONENT_TYPES) //
@@ -247,8 +252,9 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::isKaiEnabled, builder::setIsKaiEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
-            // TODO only include in case of desktop and default mode?
-            setIfChanged(oldAppState, newAppState, AppStateEnt::getSpaceProviders, builder::setSpaceProviders);
+            if (getAppModeEnum() == AppModeEnum.DEFAULT) {
+                setIfChanged(oldAppState, newAppState, AppStateEnt::getSpaceProviders, builder::setSpaceProviders);
+            }
             return builder.build();
         }
     }
@@ -327,19 +333,19 @@ public final class AppStateEntityFactory {
 
     private static List<String> getAncestorItemIds(final String projectId, final Project.Origin origin,
         final SpaceProviders spaceProviders) {
-        // TODO don't fetch hub space!!
-        return null;
-        //        return SpaceProviders.getSpaceOptional(projectId, spaceProviders, origin.getProviderId(), origin.getSpaceId()) //
-        //            // ancestor item ids are only required for local projects because it's used to
-        //            // * mark folders that contain open projects
-        //            // * disallow folders to be moved if they contain opened local projects
-        //            //   (because they can't be moved while open)
-        //            // ... in the space explorer.
-        //            // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
-        //            .filter(LocalSpace.class::isInstance) //
-        //            .map(LocalSpace.class::cast) //
-        //            .map(space -> space.getAncestorItemIds(origin.getItemId())) //
-        //            .orElse(null);
+        // ancestor item ids are only required for local projects because it's used to
+        // * mark folders that contain open projects
+        // * disallow folders to be moved if they contain opened local projects
+        //   (because they can't be moved while open)
+        // ... in the space explorer.
+        // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
+        if (origin.isLocal()) {
+            var localSpace =
+                (LocalSpace)spaceProviders.getSpace(projectId, origin.getProviderId(), origin.getSpaceId());
+            return localSpace.getAncestorItemIds(origin.getItemId());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -369,7 +375,8 @@ public final class AppStateEntityFactory {
     }
 
     /**
-     * TODO
+     * @param spaceProvider
+     * @param doConnect whether to connect to the space provider if necessary
      *
      * @return new instance of {@link SpaceProviderEnt}
      */

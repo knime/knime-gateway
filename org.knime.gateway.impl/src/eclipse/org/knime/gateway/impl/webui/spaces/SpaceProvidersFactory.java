@@ -60,6 +60,7 @@ import org.knime.gateway.api.util.ExtPointUtil;
  * @author Marcel Wiedenmann, KNIME GmbH, Berlin, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+// TODO naming NXT-3239
 public interface SpaceProvidersFactory {
 
     /**
