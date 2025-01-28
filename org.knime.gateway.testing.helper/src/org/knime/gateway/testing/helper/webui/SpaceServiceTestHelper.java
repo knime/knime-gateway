@@ -66,7 +66,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -97,6 +96,7 @@ import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -135,8 +135,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
 
         var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", mockedSpace);
-        var spaceProviders = Map.of(providerId, spaceProvider);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> spaceProviders);
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(spaceProvider));
 
         // trigger operation under test
         var renamedItemEnt = ss().renameItem(providerId, spaceId, itemId, newName);
@@ -146,6 +145,22 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // verify that rename method of individual space was called
         verify(mockedSpace).renameItem(itemId, newName);
+    }
+
+    /**
+     * Helper to create a {@link SpaceProviders}-instance for testing.
+     *
+     * @param spaceProviders
+     * @return
+     */
+    public static SpaceProviders createSpaceProviders(final SpaceProvider... spaceProviders) {
+        var spaceProvidersFactory = mock(SpaceProvidersFactory.class);
+        var providers = List.of(spaceProviders);
+        when(spaceProvidersFactory.createSpaceProviders()).thenReturn(providers);
+        var res = new SpaceProviders(id -> {
+        }, null, List.of(spaceProvidersFactory));
+        res.update();
+        return res;
     }
 
     private static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
@@ -159,8 +174,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testRenameSpaceItemLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
-        ServiceDependencies.setServiceDependency(SpaceProviders.class,
-            () -> Map.of(p.getFirst().getId(), p.getFirst()));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
 
@@ -192,8 +206,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testRenameToExistingLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
-        ServiceDependencies.setServiceDependency(SpaceProviders.class,
-            () -> Map.of(p.getFirst().getId(), p.getFirst()));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
 
@@ -210,8 +223,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testRenameRootLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
-        ServiceDependencies.setServiceDependency(SpaceProviders.class,
-            () -> Map.of(p.getFirst().getId(), p.getFirst()));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
         assertThrows(ServiceCallException.class, () -> {
@@ -226,7 +238,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var renamedSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "test name", "some owner", "", true);
         when(space.renameSpace(any(String.class))).thenReturn(renamedSpaceEnt);
         when(provider.getSpace(anyString())).thenReturn(space);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(provider));
 
         // call service
         assertEquals("Should return an Space entity", //
@@ -299,7 +311,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var space = mockSpaceWithFailingListWorkflowGroup("id0", "name0");
         var provider = createSpaceProvider("id0", "name0", space);
 
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(provider));
 
         assertThrows(NetworkException.class, () -> ss().listWorkflowGroup("id0", "id0", "blub"));
     }
@@ -344,8 +356,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var provider1 = createSpaceProvider("id1", "name1", spaces[0], spaces[1]);
         var provider2 = createSpaceProvider("id2", "name2", spaces[2], spaces[3]);
 
-        ServiceDependencies.setServiceDependency(SpaceProviders.class,
-            () -> Map.of(provider1.getId(), provider1, provider2.getId(), provider2));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(provider1, provider2));
 
         var spaceProvider = ss().getSpaceGroups("id1");
         cr(spaceProvider, "space_provider1");
@@ -363,7 +374,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var space = mockSpaceWithFailingToEntity("id0", "name0");
         var provider = createSpaceProvider("id0", "name0", space);
 
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(provider));
 
         assertThrows(NetworkException.class, () -> ss().getSpaceGroups("id0"));
     }
@@ -517,8 +528,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static String registerLocalSpaceProviderForTesting(final Path testWorkspacePath) {
         var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class,
-            () -> Map.of(spaceProvider.getId(), spaceProvider));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(spaceProvider));
         return spaceProvider.getId();
     }
 
@@ -945,7 +955,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(space.getId()).thenReturn("space id");
         when(group.createSpace()).thenReturn(space);
         when(provider.getSpaceGroup(group.getName())).thenReturn(group);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, () -> Map.of(provider.getId(), provider));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, createSpaceProviders(provider));
         // make call to service: create a space in this provider in this group
         assertEquals("Should return the new Space entity", ss().createSpace(provider.getId(), group.getName()),
             newSpaceEnt);

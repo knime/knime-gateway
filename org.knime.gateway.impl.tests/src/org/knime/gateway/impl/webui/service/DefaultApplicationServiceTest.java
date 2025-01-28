@@ -54,11 +54,12 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -70,12 +71,15 @@ import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
-import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
 /**
  * Tests for the {@link DefaultApplicationService}-implementation.
@@ -94,7 +98,6 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
      */
     private static final String DB_SESSION_PORT_OBJECT_TYPE_ID = "org.knime.database.port.DBSessionPortObject";
 
-
     /**
      * Test to get the app state.
      *
@@ -106,6 +109,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
         ProjectManager.getInstance().openAndCacheProject(workflowProjectId);
         ProjectManager.getInstance().setProjectActive(workflowProjectId);
+        setSpaceProvidersDepencency();
 
         var appService = DefaultApplicationService.getInstance();
 
@@ -113,6 +117,68 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         assertThat(appStateEnt.hasNodeRecommendationsEnabled(), not(is(nullValue())));
         AppStateEnt appStateEntStripped = stripAppState(appStateEnt);
         cr(appStateEntStripped, "appstate");
+    }
+
+    private static void setSpaceProvidersDepencency() {
+        String localProviderId = "local_provider";
+        String localProviderName = "Local Provider";
+        String connectedProviderId = "connected_provider";
+        String connectedProviderName = "Connected Provider";
+        var localSpaceProvider = mock(SpaceProvider.class);
+        when(localSpaceProvider.getId()).thenReturn(localProviderId);
+        when(localSpaceProvider.getName()).thenReturn(localProviderName);
+        when(localSpaceProvider.getType()).thenReturn(TypeEnum.LOCAL);
+        var connectedSpaceProvider = mock(SpaceProvider.class);
+        when(connectedSpaceProvider.getId()).thenReturn(connectedProviderId);
+        when(connectedSpaceProvider.getName()).thenReturn(connectedProviderName);
+        when(connectedSpaceProvider.getType()).thenReturn(TypeEnum.HUB);
+        var spaceProviderConnection = mock(SpaceProviderConnection.class);
+        when(spaceProviderConnection.getUsername()).thenReturn("test-username");
+        when(connectedSpaceProvider.getConnection(false)).thenReturn(Optional.of(spaceProviderConnection));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class,
+            SpaceServiceTestHelper.createSpaceProviders(localSpaceProvider, connectedSpaceProvider));
+    }
+
+    /**
+     * Tests the app state with a space provider specific to a workflow (see
+     * {@link SpaceProvidersFactory#createSpaceProvider(org.knime.core.node.workflow.contextv2.WorkflowContextV2)}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetAppStateWithWorkflowSpecificSpaceProvider() throws Exception {
+        String workflowProjectId = "the_workflow_project_id";
+        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+        ProjectManager.getInstance().openAndCacheProject(workflowProjectId);
+        ProjectManager.getInstance().setProjectActive(workflowProjectId);
+        var spaceProvidersFactory = setSpaceProvidersDependencyAndGetFactory();
+
+        var appService = DefaultApplicationService.getInstance();
+
+        try (var unused = DefaultServiceContext.set(workflowProjectId)) {
+            AppStateEnt appStateEnt = appService.getState();
+            var expectedSpaceProvider = appStateEnt.getSpaceProviders().get("foo");
+            assertThat(expectedSpaceProvider.getName(), is("bar"));
+        }
+
+        verify(spaceProvidersFactory).createSpaceProvider(any());
+    }
+
+    private static SpaceProvidersFactory setSpaceProvidersDependencyAndGetFactory() {
+        var spaceProvidersFactory = mock(SpaceProvidersFactory.class);
+        var spaceProvider = mock(SpaceProvider.class);
+        when(spaceProvider.getId()).thenReturn("foo");
+        when(spaceProvider.getName()).thenReturn("bar");
+        when(spaceProvider.getType()).thenReturn(TypeEnum.HUB);
+        when(spaceProvidersFactory.createSpaceProvider(any())).thenReturn(Optional.of(spaceProvider));
+        ServiceDependencies.setServiceDependency(SpaceProviders.class, new SpaceProviders(id -> {
+        }, null, List.of(spaceProvidersFactory)));
+        return spaceProvidersFactory;
+    }
+
+    @Override
+    protected SpaceProviders createSpaceProviders() {
+        return null;
     }
 
     /**
@@ -124,6 +190,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
     public void testGetAppStateWithMode() throws Exception {
         String workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
+        setSpaceProvidersDepencency();
 
         var appService = DefaultApplicationService.getInstance();
 
@@ -141,16 +208,6 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         assertThat(appStateEnt.getAppMode(), is(AppModeEnum.PLAYGROUND));
 
         System.clearProperty(modeSysProp);
-    }
-
-    @Override
-    protected SpaceProviders createSpaceProviders() {
-        var space = mock(Space.class);
-        var spaceProvider = mock(SpaceProvider.class);
-        when(spaceProvider.getSpace(any())).thenReturn(space);
-        var spaceProviders = mock(SpaceProviders.class);
-        when(spaceProviders.getProvidersMap()).thenReturn(Map.of("Provider ID for testing", spaceProvider));
-        return spaceProviders;
     }
 
     private static AppStateEnt stripAppState(final AppStateEnt appStateEnt) {
@@ -175,6 +232,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
             .setAvailableComponentTypes(appStateEnt.getAvailableComponentTypes())
             .setSuggestedPortTypeIds(suggestedPortTypeIds) //
             .setFeatureFlags(appStateEnt.getFeatureFlags()) //
+            .setSpaceProviders(appStateEnt.getSpaceProviders()) //
             .build();
     }
 

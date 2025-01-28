@@ -93,8 +93,9 @@ public final class WorkflowMonitorStateChangedEventSource
     @Override
     public Optional<WorkflowMonitorStateChangeEventEnt>
         addEventListenerAndGetInitialEventFor(final WorkflowMonitorStateChangeEventTypeEnt eventTypeEnt,
-            final String projectId) {
-        assertValidProjectId(projectId, eventTypeEnt.getProjectId());
+            final String contextProjectId) {
+        assertValidProjectId(contextProjectId, eventTypeEnt.getProjectId());
+        var projectId = eventTypeEnt.getProjectId();
         var wfKey = new WorkflowKey(projectId, NodeIDEnt.getRootID());
 
         // initial event to catch-up with the most recent workflow version

@@ -58,9 +58,6 @@ import java.io.IOException;
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.DefaultProject;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -79,15 +76,10 @@ public class WorkflowChangedEventSourceTest {
      * Tests that workflow changed listeners are removed when the respective project is removed from the
      * {@link ProjectManager}.
      *
-     * @throws InvalidRequestException
      * @throws IOException
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
-     * @throws InterruptedException
      */
     @Test
-    public void testRemoveListenerWhenProjectIsRemoved() throws InvalidRequestException, IOException,
-        NotASubWorkflowException, NodeNotFoundException, InterruptedException {
+    public void testRemoveListenerWhenProjectIsRemoved() throws IOException {
         var projectManager = ProjectManager.getInstance();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         projectManager.addProject(DefaultProject.builder(wfm).setId("id1").build());

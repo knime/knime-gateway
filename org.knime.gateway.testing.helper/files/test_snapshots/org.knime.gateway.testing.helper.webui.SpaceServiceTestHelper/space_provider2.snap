@@ -1,21 +1,18 @@
-{
-  "spaceGroups" : [ {
-    "id" : "Local-Testing-space-id",
-    "name" : "Local Testing Group",
-    "spaces" : [ {
-      "description" : "description2",
-      "id" : "id2",
-      "name" : "name2",
-      "owner" : "owner2",
-      "private" : true
-    }, {
-      "description" : "description3",
-      "id" : "id3",
-      "name" : "name3",
-      "owner" : "owner3",
-      "private" : false
-    } ],
-    "type" : "USER"
+[ {
+  "id" : "Local-Testing-space-id",
+  "name" : "Local Testing Group",
+  "spaces" : [ {
+    "description" : "description2",
+    "id" : "id2",
+    "name" : "name2",
+    "owner" : "owner2",
+    "private" : true
+  }, {
+    "description" : "description3",
+    "id" : "id3",
+    "name" : "name3",
+    "owner" : "owner3",
+    "private" : false
   } ],
-  "type" : "LOCAL"
-}
+  "type" : "USER"
+} ]

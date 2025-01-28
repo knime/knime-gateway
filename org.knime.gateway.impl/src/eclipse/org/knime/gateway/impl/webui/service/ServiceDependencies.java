@@ -121,7 +121,7 @@ public final class ServiceDependencies {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore.");
         }
-        if (DEPENDENCIES.containsKey(clazz)) {
+        if (DEPENDENCIES.get(clazz) != null) {
             throw new IllegalStateException("Only one dependency can be registered at a time");
         }
         DEPENDENCIES.put(clazz, impl);

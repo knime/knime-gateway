@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -153,7 +154,7 @@ public class UpdateAvailableEventsTest extends GatewayServiceTest {
                 // Compare list of strings
                 var bugFixesMatch = ((UpdateAvailableEventEnt)e).getBugfixes().equals(bugfixes);
                 return newReleasesMatch && bugFixesMatch;
-            }));
+            }), any());
         });
     }
 
@@ -184,7 +185,7 @@ public class UpdateAvailableEventsTest extends GatewayServiceTest {
         addEventListenerAndcheckForUpdates(supplier);
         Awaitility.await().atMost(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             verify(m_testConsumer, times(numberOfEvents)).accept(eq("UpdateAvailableEvent"),
-                isA(UpdateAvailableEventEnt.class));
+                isA(UpdateAvailableEventEnt.class), any());
         });
     }
 

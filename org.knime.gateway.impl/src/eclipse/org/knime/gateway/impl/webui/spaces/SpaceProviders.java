@@ -74,8 +74,7 @@ public final class SpaceProviders {
 
     private final MultiKeyMap<String, SpaceProviderEnt.TypeEnum> m_spaceProviderTypes = new MultiKeyMap<>();
 
-    private final List<SpaceProvidersFactory> m_spaceProvidersFactories =
-        SpaceProvidersFactory.collectSpaceProviderFactories();
+    private final List<SpaceProvidersFactory> m_spaceProvidersFactories;
 
     private final Consumer<String> m_loginErrorHandler;
 
@@ -86,8 +85,19 @@ public final class SpaceProviders {
      * @param localSpaceProvider the local space provider or {@code null} if none
      */
     public SpaceProviders(final Consumer<String> loginErrorHandler, final LocalSpaceProvider localSpaceProvider) {
+        this(loginErrorHandler, localSpaceProvider, SpaceProvidersFactory.collectSpaceProviderFactories());
+    }
+
+    /**
+     * @param loginErrorHandler error handler for login errors
+     * @param localSpaceProvider the local space provider or {@code null} if none
+     * @param spaceProviderFactories the factories to create the space providers from
+     */
+    public SpaceProviders(final Consumer<String> loginErrorHandler, final LocalSpaceProvider localSpaceProvider,
+        final List<SpaceProvidersFactory> spaceProviderFactories) {
         m_loginErrorHandler = loginErrorHandler;
         m_localSpaceProvider = localSpaceProvider;
+        m_spaceProvidersFactories = spaceProviderFactories;
     }
 
     /**
@@ -119,7 +129,9 @@ public final class SpaceProviders {
     public synchronized void update() {
         m_spaceProviders.clear(null);
         m_spaceProviderTypes.clear(null);
-        m_spaceProviders.put(null, m_localSpaceProvider.getId(), m_localSpaceProvider);
+        if (m_localSpaceProvider != null) {
+            m_spaceProviders.put(null, m_localSpaceProvider.getId(), m_localSpaceProvider);
+        }
         m_spaceProvidersFactories.forEach(factory -> {
             factory.createSpaceProviders().forEach(provider -> {
                 provider.init(m_loginErrorHandler);

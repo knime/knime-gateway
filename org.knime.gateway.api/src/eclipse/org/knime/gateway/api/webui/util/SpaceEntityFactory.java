@@ -111,6 +111,7 @@ public final class SpaceEntityFactory {
             .setConnected(connected) //
             .setConnectionMode(connectionMode) //
             .setHostname(hostname) //
+            .setUser(userEnt) //
             .build();
     }
 

@@ -151,6 +151,7 @@ import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.R
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt.TransformMetanodePortsBarCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
@@ -1973,12 +1974,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testAddNodeCommandFromSpaceItemId() throws Exception {
         var nodeFactoryProvider = mock(NodeFactoryProvider.class);
-        var spaceProviders = mock(SpaceProviders.class);
         var spaceProvider = mock(SpaceProvider.class);
         var space = mock(Space.class);
         when(spaceProvider.getSpace(eq("spaceId"))).thenReturn(space);
-        when(spaceProviders.getProvidersMap()).thenReturn(Map.of("providerId", spaceProvider));
+        when(spaceProvider.getId()).thenReturn("providerId");
+        when(spaceProvider.getType()).thenReturn(SpaceProviderEnt.TypeEnum.HUB);
         when(space.toPathBasedKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
+        var spaceProviders = SpaceServiceTestHelper.createSpaceProviders(spaceProvider);
 
         Class nodeFactoryClass = org.knime.core.node.extension.NodeFactoryProvider.getInstance() // NOSONAR
             .getNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()

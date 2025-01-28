@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.After;
@@ -65,6 +66,7 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflow;
@@ -116,7 +118,8 @@ public abstract class GatewayServiceTest {
      * @return the {@link SpaceProviders} service dependency
      */
     protected SpaceProviders createSpaceProviders() {
-        return mock(SpaceProviders.class);
+        return new SpaceProviders(id -> {
+        }, null, List.of(mock(SpaceProvidersFactory.class)));
     }
 
     /**

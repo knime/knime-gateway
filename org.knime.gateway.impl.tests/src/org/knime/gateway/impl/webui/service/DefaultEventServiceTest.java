@@ -81,6 +81,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt.SpaceItemChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt.SpaceItemChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
@@ -95,9 +96,9 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
+import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 import org.mockito.Mockito;
 
 /**
@@ -295,7 +296,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         // One listener, one event
         m_notifier.notifyEventListeners();
         var expectedEvent1 = buildEventEnt(eventType1);
-        verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent1);
+        verify(m_testConsumer, times(1)).accept("SpaceItemChangedEvent", expectedEvent1, null);
 
         var eventType2 = buildEventTypeEnt(PROVIDER_ID, "spaceId2", "itemId2");
         eventService.addEventListener(eventType2);
@@ -303,7 +304,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // Two listeners, two events
         m_notifier.notifyEventListeners();
-        verify(m_testConsumer, times(2)).accept(eq("SpaceItemChangedEvent"), any());
+        verify(m_testConsumer, times(2)).accept(eq("SpaceItemChangedEvent"), any(), any());
 
         eventService.removeEventListener(eventType1);
         eventService.removeEventListener(eventType2);
@@ -311,16 +312,16 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
         // No listener, no event
         m_notifier.notifyEventListeners();
-        verify(m_testConsumer, times(0)).accept(any(), any());
+        verify(m_testConsumer, times(0)).accept(any(), any(), any());
     }
 
     @Override
     protected SpaceProviders createSpaceProviders() {
-        var providers = super.createSpaceProviders();
-        var provider = mock(LocalSpaceProvider.class);
+        var provider = mock(SpaceProvider.class);
+        when(provider.getId()).thenReturn(PROVIDER_ID);
+        when(provider.getType()).thenReturn(TypeEnum.HUB);
         when(provider.getChangeNotifier()).thenReturn(Optional.of(m_notifier));
-        when(providers.getSpaceProvider(PROVIDER_ID)).thenReturn(provider);
-        return providers;
+        return SpaceServiceTestHelper.createSpaceProviders(provider);
     }
 
     private static final class DummyNotifier implements SpaceProvider.SpaceItemChangeNotifier {

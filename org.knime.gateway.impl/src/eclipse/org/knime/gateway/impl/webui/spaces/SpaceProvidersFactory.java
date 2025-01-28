@@ -66,7 +66,7 @@ public interface SpaceProvidersFactory {
     /**
      * @return all available space providers
      */
-    List<? extends SpaceProvider> createSpaceProviders();
+    List<SpaceProvider> createSpaceProviders();
 
     /**
      * @param context the workflow context to create a space provider for

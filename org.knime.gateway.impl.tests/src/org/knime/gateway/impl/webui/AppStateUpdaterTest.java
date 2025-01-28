@@ -122,7 +122,7 @@ public class AppStateUpdaterTest {
         pm.addProject(proj2);
         appStateUpdater.updateAppState();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent",
-            buildExpectedCompositeEvent(proj1, proj2));
+            buildExpectedCompositeEvent(proj1, proj2), null);
 
         // update a preference and verify resulting app state changed event
         when(preferencesProvider.hasNodeRecommendationsEnabled()).thenReturn(true);
@@ -132,7 +132,7 @@ public class AppStateUpdaterTest {
             .build();
         expectedEvent = builder(CompositeEventEntBuilder.class)
             .setEvents(List.of(appStateChangedEvent, buildProjectDirtyStateEvent(proj1, proj2))).build();
-        verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent);
+        verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent, null);
 
         pm.removeProject(proj1.getID(), WorkflowManagerUtil::disposeWorkflow);
         pm.removeProject(proj2.getID(), WorkflowManagerUtil::disposeWorkflow);
@@ -181,7 +181,7 @@ public class AppStateUpdaterTest {
             .build();
         var expectedEvent =
             builder(CompositeEventEntBuilder.class).setEvents(asList(appStateChangedEvent, null)).build();
-        verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent);
+        verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent, null);
 
         pm.removeProject(proj1.getID(), WorkflowManagerUtil::disposeWorkflow);
         pm.removeProject(proj2.getID(), WorkflowManagerUtil::disposeWorkflow);
