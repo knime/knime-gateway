@@ -239,6 +239,7 @@ public class DirectAccessTablePortViewFactoryTest {
                     "rowHeightMode":"CUSTOM",
                     "verticalPaddingMode":"COMPACT",
                     "customRowHeight" : 24,
+                    "maxAutoRowHeight" : 120,
                     "enableGlobalSearch" : false,
                     "enableColumnSearch" : false,
                     "enableSortingByHeader" : false,
