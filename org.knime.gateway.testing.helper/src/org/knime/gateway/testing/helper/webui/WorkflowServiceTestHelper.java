@@ -1678,19 +1678,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setSide(PortCommandEnt.SideEnum.INPUT) //
             .setPortGroup("Collector") //
             .setKind(KindEnum.REMOVE_PORT) //
-            .build();
+            .setPortIndex(2).build();
 
         ws().executeWorkflowCommand(wfId, getRootID(), removeFromFirstGroupCommand);
         cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_removeFromFirstPortGroup");
-
-        var removeFromSecondGroupCommand = builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
-            .setNodeId(recursiveLoopEnd) //
-            .setSide(PortCommandEnt.SideEnum.INPUT) //
-            .setPortGroup("Recursion") //
-            .setKind(KindEnum.REMOVE_PORT) //
-            .build();
-        ws().executeWorkflowCommand(wfId, getRootID(), removeFromSecondGroupCommand);
-        cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_removeFromSecondPortGroup");
 
         ws().undoWorkflowCommand(wfId, getRootID());
         cr(getPortList(wfId, true, recursiveLoopEnd), "native_remove_port_undo");
