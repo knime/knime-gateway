@@ -1358,10 +1358,30 @@ public final class WorkflowEntityFactory {
             // Check if port can be removed
             .map(portIndexToPortGroupMap -> {
                 var portGroupName = portIndexToPortGroupMap[portIndex - 1];
-                return hasPortsAddedToPortGroup(nnc, buildContext, portGroupName);
+                var portIndexWithinGroup = 0;
+                var previousPortGroupName = portGroupName;
+                while (portIndex - 1 - portIndexWithinGroup > 0 && portGroupName.equals(previousPortGroupName)) {
+                    previousPortGroupName = portIndexToPortGroupMap[portIndex - 2 - portIndexWithinGroup];
+                    if (previousPortGroupName.equals(portGroupName)) {
+                        portIndexWithinGroup++;
+                    }
+                }
+                return hasPortsAddedToPortGroup(nnc, buildContext, portGroupName)
+                    && !isFixedPort(nnc, buildContext, portGroupName, portIndexWithinGroup);
             })//
             // False in all other cases
             .orElse(false);
+    }
+
+    private boolean isFixedPort(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext,
+        final String portGroupName, final int portIndex) {
+        return buildContext.getPortsConfiguration(nnc)//
+            // Map to `ExtendablePortGroup` if there is any
+            .map(portsConfig -> portsConfig.getExtendablePorts().get(portGroupName))//
+            //Get the number of fixed ports
+            .map(portGroup -> portGroup.getFixedPorts().length)
+            //Check if port index is within range of fixed ports
+            .map(fixedPortLen -> fixedPortLen > portIndex).orElse(false);
     }
 
     private boolean hasPortsAddedToPortGroup(final NativeNodeContainer nnc, final WorkflowBuildContext buildContext,
