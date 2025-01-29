@@ -201,7 +201,7 @@ class NodeViewEntTest {
         assertThat(ent.isDeactivationRequired()).isTrue();
         var resourceInfo = ent.getResourceInfo();
         assertThat(resourceInfo.getPath()).endsWith("index.html");
-        assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
+        assertThat(resourceInfo.getBaseUrl()).isEqualTo("https://org.knime.core.ui.view/");
         assertThat(resourceInfo.getType()).isEqualTo(Resource.ContentType.HTML.toString());
         assertThat(resourceInfo.getId()).isNotNull();
         var nodeInfo = ent.getNodeInfo();
@@ -224,7 +224,7 @@ class NodeViewEntTest {
         assertThat(ent.getInitialData()).isNull();
         assertThat(resourceInfo.getType()).isEqualTo(Resource.ContentType.SHADOW_APP.toString());
         assertThat(resourceInfo.getPath()).endsWith("component.js");
-        assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
+        assertThat(resourceInfo.getBaseUrl()).isEqualTo("https://org.knime.core.ui.view/");
 
         // test to create a node view entity while running headless (e.g. on the executor)
         NativeNodeContainer nnc2 = nnc;
@@ -286,7 +286,7 @@ class NodeViewEntTest {
         m_wfm.executeAllAndWaitUntilDone();
 
         var ent = NodeViewEnt.create(nnc, null);
-        assertThat(ent.getResourceInfo().getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
+        assertThat(ent.getResourceInfo().getBaseUrl()).isEqualTo("https://org.knime.core.ui.view/");
 
         // base url is _not_ expected to be set if run within 'executor' unless
         // the NodeViewEnt is used for image generation
@@ -295,7 +295,7 @@ class NodeViewEntTest {
             assertThat(ent2.getResourceInfo().getBaseUrl()).isNull();
 
             var ent3 = NodeViewEnt.createForImageGeneration(nnc, null, ImageFormat.PNG, "blub");
-            assertThat(ent3.getResourceInfo().getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
+            assertThat(ent3.getResourceInfo().getBaseUrl()).isEqualTo("https://org.knime.core.ui.view/");
         });
 
     }
