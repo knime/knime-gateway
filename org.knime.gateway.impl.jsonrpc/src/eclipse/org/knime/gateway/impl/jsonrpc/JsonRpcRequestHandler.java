@@ -52,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.service.GatewayService;
 
@@ -69,8 +70,15 @@ import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
 public class JsonRpcRequestHandler {
 
     private final JsonRpcMultiServer m_jsonRpcMultiServer;
+
     private final ExceptionToJsonRpcErrorTranslator m_exceptionTranslator;
+
     private final ObjectMapper m_mapper;
+
+    /**
+     * Maximum size for JSON-RPC requests and responses in bytes. This considers the entire in-/output before parsing.
+     */
+    private final static int MAX_PACKET_SIZE_BYTES = 10 * 1024 * 1024; // 10 MiB
 
     /**
      * Creates a new request handler.
@@ -101,13 +109,22 @@ public class JsonRpcRequestHandler {
     public byte[] handle(final byte[] jsonRpcRequest) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
                 ByteArrayInputStream in = new ByteArrayInputStream(jsonRpcRequest)) {
+            checkSize("Request", in.available());
             m_jsonRpcMultiServer.handleRequest(in, out);
+            checkSize("Response", out.size());
             return out.toByteArray();
         } catch (IOException e) {
             NodeLogger.getLogger(getClass()).warn("Problem handling json rpc request", e);
             // turn it into a json error object
             return createJsonRpcErrorResponse(m_mapper, m_exceptionTranslator.getUnexpectedExceptionErrorCode(e),
                 m_exceptionTranslator.getMessage(e), m_exceptionTranslator.getData(e)).getBytes(StandardCharsets.UTF_8);
+        }
+    }
+
+    private static void checkSize(final String label, final int size) throws IOException {
+        if (size > MAX_PACKET_SIZE_BYTES) {
+            throw new IOException(
+                "%s is too large. Maximum %s, actual %s".formatted(label, size, MAX_PACKET_SIZE_BYTES));
         }
     }
 
