@@ -112,13 +112,11 @@ public final class SpaceProviders {
             m_spaceProviders.clear(projectId);
             m_spaceProviderTypes.clear(projectId);
         } else {
-            m_spaceProvidersFactories.forEach(factory -> {
-                factory.createSpaceProvider(context).ifPresent(provider -> {
-                    provider.init(m_loginErrorHandler);
-                    m_spaceProviders.put(projectId, provider.getId(), provider);
-                    m_spaceProviderTypes.put(projectId, provider.getId(), provider.getType());
-                });
-            });
+            m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProvider(context).ifPresent(provider -> {
+                provider.init(m_loginErrorHandler);
+                m_spaceProviders.put(projectId, provider.getId(), provider);
+                m_spaceProviderTypes.put(projectId, provider.getId(), provider.getType());
+            }));
         }
     }
 
@@ -132,13 +130,11 @@ public final class SpaceProviders {
         if (m_localSpaceProvider != null) {
             m_spaceProviders.put(null, m_localSpaceProvider.getId(), m_localSpaceProvider);
         }
-        m_spaceProvidersFactories.forEach(factory -> {
-            factory.createSpaceProviders().forEach(provider -> {
-                provider.init(m_loginErrorHandler);
-                m_spaceProviders.put(null, provider.getId(), provider);
-                m_spaceProviderTypes.put(null, provider.getId(), provider.getType());
-            });
-        });
+        m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProviders().forEach(provider -> {
+            provider.init(m_loginErrorHandler);
+            m_spaceProviders.put(null, provider.getId(), provider);
+            m_spaceProviderTypes.put(null, provider.getId(), provider.getType());
+        }));
     }
 
     /**

@@ -112,7 +112,7 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
 
     @Override
     public void removeAllEventListeners() {
-        // TODO projectId if available?
+        // TODO get all space providers regardless of the project-id
         m_spaceProviders.getProvidersMap(null).values()
             .forEach(provider -> provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll));
     }

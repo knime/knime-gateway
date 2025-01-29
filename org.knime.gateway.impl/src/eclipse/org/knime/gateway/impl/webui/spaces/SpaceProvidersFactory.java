@@ -81,7 +81,7 @@ public interface SpaceProvidersFactory {
      *
      * @return all registered {@link SpaceProviders}
      */
-    public static List<SpaceProvidersFactory> collectSpaceProviderFactories() {
+    static List<SpaceProvidersFactory> collectSpaceProviderFactories() {
         String extensionPointId = "org.knime.gateway.impl.SpaceProvidersFactory";
         return ExtPointUtil.collectExecutableExtensions(extensionPointId, "class");
     }
