@@ -52,7 +52,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.compress.utils.IOUtils;
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.service.GatewayService;
 
