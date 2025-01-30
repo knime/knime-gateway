@@ -336,6 +336,10 @@ This is a placeholder for future architectural requirements.
 [^5.2.1]: Checked by Sonar rule [S5696](https://rules.sonarsource.com/javascript/RSPEC-5696/) for JavaScript and [S6299](https://rules.sonarsource.com/javascript/RSPEC-6299/) for Vue.
 [^5.2.4]: Checked by Sonar rule [S5334](https://rules.sonarsource.com/java/RSPEC-5334/) for Java programs and [S1523](https://rules.sonarsource.com/javascript/RSPEC-1523/) for JavaScript.
 
+See also:
+- [NXT-3215 Limits on json-rpc request and responses, and events](https://knime-com.atlassian.net/browse/NXT-3214)
+
+
 ## V5.3 Output Encoding and Injection Prevention
 
 |     #      | Description                                                                                                                                                                                                                                                                                                                                                                                                                          | Notes                                                                             | Last Checked |                           N/A                            |
