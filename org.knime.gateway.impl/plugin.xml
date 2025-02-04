@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="SpaceProvidersFactory" name="Space Providers Factory" schema="schema/SpaceProvidersFactory.exsd"/>
    <extension-point id="KaiHandlerFactory" name="KaiHandlerFactory" schema="schema/KaiHandlerFactory.exsd"/>
+   <extension-point id="CompositeViewDataProvider" name="CompositeViewDataProvider" schema="schema/CompositeViewDataProvider.exsd"/>
    <extension
          point="org.knime.gateway.api.entity.EntityBuilderFactory">
       <EntityBuilderFactory
