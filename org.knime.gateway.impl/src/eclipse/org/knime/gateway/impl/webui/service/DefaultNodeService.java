@@ -200,8 +200,25 @@ public final class DefaultNodeService implements NodeService {
         throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
+
+        return getNodeView(nnc, projectId, m_selectionEventBus);
+    }
+
+    /**
+     * Convenience function if native node container is available.
+     *
+     * @param nnc native node container
+     * @param projectId project id, can be null. Only used in {@link PerNodeWrapperEventEmitter} and if null default
+     *            `projectWfm.getNameWithID()` will be used
+     * @return node view
+     * @throws NodeNotFoundException
+     * @throws InvalidRequestException
+     */
+    static Object getNodeView(final NativeNodeContainer nnc, final String projectId,
+        final SelectionEventBus selectionEventBus) throws InvalidRequestException {
+
         if (!NodeViewManager.hasNodeView(nnc)) {
-            throw new InvalidRequestException("The node " + nnc.getNameWithID() + " doesn't have a view");
+            throw new InvalidRequestException("The node " + nnc.getNameWithID() + " does not have a view");
         }
         if (!nnc.getNodeContainerState().isExecuted()) {
             throw new InvalidRequestException(
@@ -209,11 +226,14 @@ public final class DefaultNodeService implements NodeService {
         }
 
         return NodeViewEnt.create(nnc, createInitialSelectionSupplier(NodeWrapper.of(nnc), projectId,
-            NodeViewManager.getInstance().getTableViewManager(), m_selectionEventBus));
+            NodeViewManager.getInstance().getTableViewManager(), selectionEventBus));
     }
 
-    static <N extends NodeWrapper> Supplier<List<String>> createInitialSelectionSupplier(final N nodeWrapper,
-        final String projectId, final TableViewManager<N> tableViewManager, final SelectionEventBus selectionEventBus) {
+    static <N extends NodeWrapper> Supplier<List<String>> createInitialSelectionSupplier( //
+        final N nodeWrapper, //
+        final String projectId, //
+        final TableViewManager<N> tableViewManager, //
+        final SelectionEventBus selectionEventBus) {
         if (selectionEventBus == null) {
             return DefaultNodeService.createInitialSelectionSupplier(nodeWrapper, tableViewManager);
         } else {
@@ -243,8 +263,8 @@ public final class DefaultNodeService implements NodeService {
 
     }
 
-    private static <T> T getNC(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
+    private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
             nc = getNodeContainer(projectId, workflowId, nodeId);
@@ -334,8 +354,8 @@ public final class DefaultNodeService implements NodeService {
      * {@inheritDoc}
      */
     @Override
-    public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey) throws NodeNotFoundException,
-            ServiceExceptions.NodeDescriptionNotAvailableException {
+    public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey)
+        throws NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
         if (!m_nodeDescriptionCache.containsKey(factoryKey)) {
             NodeFactory<NodeModel> fac;
             try {

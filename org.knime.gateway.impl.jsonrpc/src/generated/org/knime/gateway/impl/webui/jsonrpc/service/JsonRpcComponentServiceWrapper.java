@@ -42,51 +42,45 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service.util;
+package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.WorkflowService;
+
+import com.googlecode.jsonrpc4j.JsonRpcError;
+import com.googlecode.jsonrpc4j.JsonRpcErrors;
+import com.googlecode.jsonrpc4j.JsonRpcMethod;
+import com.googlecode.jsonrpc4j.JsonRpcParam;
+import com.googlecode.jsonrpc4j.JsonRpcService;
+
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
 import org.knime.gateway.api.webui.service.ComponentService;
-import org.knime.gateway.api.webui.service.ApplicationService;
-
-import org.knime.gateway.api.service.GatewayService;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
- * Lists all gateway services of package <code>com.knime.gateway.service</code>.
+ * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public class ListServices {
+@JsonRpcService(value = "ComponentService")
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
+public class JsonRpcComponentServiceWrapper implements ComponentService {
 
-    private ListServices() {
-        //utility class
+    private final java.util.function.Supplier<ComponentService> m_service;
+    
+    public JsonRpcComponentServiceWrapper(java.util.function.Supplier<ComponentService> service) {
+        m_service = service;
     }
 
-    /**
-     * Lists all gateway service classes of package <code>com.knime.gateway.service</code>.
-     * @return the class list
+	/**
+     * {@inheritDoc}
      */
-    public static List<Class<? extends GatewayService>> listServiceInterfaces() {
-        List<Class<? extends GatewayService>> res = new ArrayList<>();
-        res.add(SpaceService.class);
-        res.add(KaiService.class);
-        res.add(NodeService.class);
-        res.add(NodeRepositoryService.class);
-        res.add(PortService.class);
-        res.add(EventService.class);
-        res.add(WorkflowService.class);
-        res.add(ComponentService.class);
-        res.add(ApplicationService.class);
-        return res;
+    @Override
+    @JsonRpcMethod(value = "getCompositeViewPage")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public Object getCompositeViewPage(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+        return m_service.get().getCompositeViewPage(projectId, workflowId, nodeId);    
     }
+
 }
