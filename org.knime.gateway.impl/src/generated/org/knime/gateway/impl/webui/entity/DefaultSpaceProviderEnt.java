@@ -46,7 +46,6 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.UserEnt;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 
@@ -60,7 +59,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
  * @param isCommunityHub
  * @param connected
  * @param connectionMode
- * @param user
+ * @param username
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -73,7 +72,7 @@ public record DefaultSpaceProviderEnt(
     Boolean isCommunityHub,
     Boolean connected,
     ConnectionModeEnum connectionMode,
-    UserEnt user) implements SpaceProviderEnt {
+    String username) implements SpaceProviderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -137,8 +136,8 @@ public record DefaultSpaceProviderEnt(
     }
     
     @Override
-    public UserEnt getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
     
     /**
@@ -160,7 +159,7 @@ public record DefaultSpaceProviderEnt(
 
         private ConnectionModeEnum m_connectionMode;
 
-        private UserEnt m_user;
+        private String m_username;
 
         @Override
         public DefaultSpaceProviderEntBuilder setId(String id) {
@@ -220,8 +219,8 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
-        public DefaultSpaceProviderEntBuilder setUser(UserEnt user) {
-             m_user = user;
+        public DefaultSpaceProviderEntBuilder setUsername(String username) {
+             m_username = username;
              return this;
         }
 
@@ -235,7 +234,7 @@ public record DefaultSpaceProviderEnt(
                 immutable(m_isCommunityHub),
                 immutable(m_connected),
                 immutable(m_connectionMode),
-                immutable(m_user));
+                immutable(m_username));
         }
     
     }

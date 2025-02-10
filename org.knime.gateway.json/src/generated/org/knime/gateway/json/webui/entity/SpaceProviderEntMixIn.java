@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.UserEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -99,8 +98,8 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
     public ConnectionModeEnum getConnectionMode();
     
     @Override
-    @JsonProperty("user")
-    public UserEnt getUser();
+    @JsonProperty("username")
+    public String getUsername();
     
 
     /**
@@ -144,8 +143,8 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
         public SpaceProviderEntMixInBuilder setConnectionMode(final ConnectionModeEnum connectionMode);
         
         @Override
-        @JsonProperty("user")
-        public SpaceProviderEntMixInBuilder setUser(final UserEnt user);
+        @JsonProperty("username")
+        public SpaceProviderEntMixInBuilder setUsername(final String username);
         
     }
 

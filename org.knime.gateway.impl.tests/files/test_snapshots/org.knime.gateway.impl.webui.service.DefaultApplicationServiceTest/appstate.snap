@@ -66,9 +66,7 @@
       "id" : "connected_provider",
       "name" : "Connected Provider",
       "type" : "HUB",
-      "user" : {
-        "name" : "test-username"
-      }
+      "username" : "test-username"
     },
     "local_provider" : {
       "connected" : true,

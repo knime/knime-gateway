@@ -171,7 +171,6 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.entity.UserEnt;
 import org.knime.gateway.api.webui.entity.VendorEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
@@ -339,7 +338,6 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEnt.class);
         res.add(UpdateProjectMetadataCommandEnt.class);
         res.add(UpdateWorkflowAnnotationCommandEnt.class);
-        res.add(UserEnt.class);
         res.add(VendorEnt.class);
         res.add(WorkflowAnnotationCommandEnt.class);
         res.add(WorkflowAnnotationEnt.class);
@@ -492,7 +490,6 @@ public class ListEntities {
         res.add(UpdateNodeLabelCommandEnt.UpdateNodeLabelCommandEntBuilder.class);
         res.add(UpdateProjectMetadataCommandEnt.UpdateProjectMetadataCommandEntBuilder.class);
         res.add(UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder.class);
-        res.add(UserEnt.UserEntBuilder.class);
         res.add(VendorEnt.VendorEntBuilder.class);
         res.add(WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder.class);
         res.add(WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder.class);

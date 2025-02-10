@@ -171,13 +171,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderAndConnectionEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderAndConnectionEnt"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt">
         <filter id="403804204">
             <message_arguments>
@@ -201,6 +194,12 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
                 <message_argument value="getUser()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getUsername()"/>
             </message_arguments>
         </filter>
         <filter id="403804204">
@@ -233,6 +232,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getUser()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getUsername()"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -279,6 +283,12 @@
                 <message_argument value="setUser(UserEnt)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setUsername(String)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
@@ -308,6 +318,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setUser(UserEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setUsername(String)"/>
             </message_arguments>
         </filter>
     </resource>

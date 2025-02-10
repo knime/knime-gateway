@@ -298,8 +298,6 @@ import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt.Update
 import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt.UpdateWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.entity.UserEnt.UserEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultUserEnt;
 import org.knime.gateway.api.webui.entity.VendorEnt.VendorEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultVendorEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt.WorkflowAnnotationCommandEntBuilder;
@@ -734,9 +732,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == UpdateWorkflowAnnotationCommandEntBuilder.class) {
             return (B)new DefaultUpdateWorkflowAnnotationCommandEnt.DefaultUpdateWorkflowAnnotationCommandEntBuilder();
-        }        
-        if(clazz == UserEntBuilder.class) {
-            return (B)new DefaultUserEnt.DefaultUserEntBuilder();
         }        
         if(clazz == VendorEntBuilder.class) {
             return (B)new DefaultVendorEnt.DefaultVendorEntBuilder();

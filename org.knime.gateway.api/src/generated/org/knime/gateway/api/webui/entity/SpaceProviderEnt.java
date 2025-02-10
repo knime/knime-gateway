@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.UserEnt;
 
 import java.util.function.BiConsumer;
 
@@ -153,10 +152,10 @@ public interface SpaceProviderEnt extends GatewayEntity {
   public ConnectionModeEnum getConnectionMode();
 
   /**
-   * Get user
-   * @return user 
+   * Get username
+   * @return username 
    **/
-  public UserEnt getUser();
+  public String getUsername();
 
 
   @Override
@@ -170,7 +169,7 @@ public interface SpaceProviderEnt extends GatewayEntity {
       valueConsumer.accept("isCommunityHub", Pair.create(isCommunityHub(), e.isCommunityHub()));
       valueConsumer.accept("connected", Pair.create(isConnected(), e.isConnected()));
       valueConsumer.accept("connectionMode", Pair.create(getConnectionMode(), e.getConnectionMode()));
-      valueConsumer.accept("user", Pair.create(getUser(), e.getUser()));
+      valueConsumer.accept("username", Pair.create(getUsername(), e.getUsername()));
   }
 
     /**
@@ -235,12 +234,12 @@ public interface SpaceProviderEnt extends GatewayEntity {
         SpaceProviderEntBuilder setConnectionMode(ConnectionModeEnum connectionMode);
         
         /**
-   		 * Set user
+   		 * Set username
          * 
-         * @param user the property value,  
+         * @param username the property value,  
          * @return this entity builder for chaining
          */
-        SpaceProviderEntBuilder setUser(UserEnt user);
+        SpaceProviderEntBuilder setUsername(String username);
         
         
         /**

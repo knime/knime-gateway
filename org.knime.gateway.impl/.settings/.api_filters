@@ -1724,6 +1724,11 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="DefaultSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, String, Boolean, Boolean, SpaceProviderEnt.ConnectionModeEnum, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="DefaultSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, String, Boolean, Boolean, SpaceProviderEnt.ConnectionModeEnum, UserEnt)"/>
             </message_arguments>
         </filter>
@@ -1758,6 +1763,11 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setUser(UserEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setUsername(String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1842,13 +1852,6 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultUpdateNodeLabelCommandEnt(WorkflowCommandEnt.KindEnum, String, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUserEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUserEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUserEnt"/>
             </message_arguments>
         </filter>
     </resource>
