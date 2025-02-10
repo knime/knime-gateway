@@ -76,7 +76,7 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
@@ -141,7 +141,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
 
     /**
      * Tests the app state with a space provider specific to a workflow (see
-     * {@link SpaceProvidersFactory#createSpaceProvider(org.knime.core.node.workflow.contextv2.WorkflowContextV2)}.
+     * {@link SpaceProviderFactory#createSpaceProvider(org.knime.core.node.workflow.contextv2.WorkflowContextV2)}.
      *
      * @throws Exception
      */
@@ -164,8 +164,8 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         verify(spaceProvidersFactory).createSpaceProvider(any());
     }
 
-    private static SpaceProvidersFactory setSpaceProvidersDependencyAndGetFactory() {
-        var spaceProvidersFactory = mock(SpaceProvidersFactory.class);
+    private static SpaceProviderFactory setSpaceProvidersDependencyAndGetFactory() {
+        var spaceProvidersFactory = mock(SpaceProviderFactory.class);
         var spaceProvider = mock(SpaceProvider.class);
         when(spaceProvider.getId()).thenReturn("foo");
         when(spaceProvider.getName()).thenReturn("bar");

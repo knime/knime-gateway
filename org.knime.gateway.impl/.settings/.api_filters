@@ -712,19 +712,19 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProviderFactory.java" type="org.knime.gateway.impl.webui.spaces.SpaceProviderFactory">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProviderFactory"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProviders.java" type="org.knime.gateway.impl.webui.spaces.SpaceProviders">
         <filter id="404918348">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProviders"/>
                 <message_argument value="8"/>
                 <message_argument value="4"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProvidersFactory.java" type="org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory"/>
             </message_arguments>
         </filter>
     </resource>

@@ -61,7 +61,7 @@ import org.knime.gateway.api.util.ExtPointUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 // TODO naming NXT-3239
-public interface SpaceProvidersFactory {
+public interface SpaceProviderFactory {
 
     /**
      * @return all available space providers
@@ -81,7 +81,7 @@ public interface SpaceProvidersFactory {
      *
      * @return all registered {@link SpaceProviders}
      */
-    static List<SpaceProvidersFactory> collectSpaceProviderFactories() {
+    static List<SpaceProviderFactory> collectSpaceProviderFactories() {
         String extensionPointId = "org.knime.gateway.impl.SpaceProvidersFactory";
         return ExtPointUtil.collectExecutableExtensions(extensionPointId, "class");
     }

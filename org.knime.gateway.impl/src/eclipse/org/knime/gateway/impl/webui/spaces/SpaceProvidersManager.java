@@ -70,7 +70,7 @@ public final class SpaceProvidersManager {
 
     private LocalSpaceProvider m_localSpaceProvider;
 
-    private List<SpaceProvidersFactory> m_spaceProvidersFactories;
+    private List<SpaceProviderFactory> m_spaceProvidersFactories;
 
     /**
      * @param loginErrorHandler error handler for login errors
@@ -78,7 +78,7 @@ public final class SpaceProvidersManager {
      */
     public SpaceProvidersManager(final Consumer<String> loginErrorHandler,
         final LocalSpaceProvider localSpaceProvider) {
-        this(loginErrorHandler, localSpaceProvider, SpaceProvidersFactory.collectSpaceProviderFactories());
+        this(loginErrorHandler, localSpaceProvider, SpaceProviderFactory.collectSpaceProviderFactories());
     }
 
     /**
@@ -87,7 +87,7 @@ public final class SpaceProvidersManager {
      * @param spaceProviderFactories the factories to create the space providers from
      */
     public SpaceProvidersManager(final Consumer<String> loginErrorHandler, final LocalSpaceProvider localSpaceProvider,
-        final List<SpaceProvidersFactory> spaceProviderFactories) {
+        final List<SpaceProviderFactory> spaceProviderFactories) {
         m_loginErrorHandler = loginErrorHandler;
         m_localSpaceProvider = localSpaceProvider;
         m_spaceProvidersFactories = spaceProviderFactories;
@@ -129,7 +129,7 @@ public final class SpaceProvidersManager {
     }
 
     /**
-     * Updates the space providers by creating the space providers anew from the {@link SpaceProvidersFactory}-extension
+     * Updates the space providers by creating the space providers anew from the {@link SpaceProviderFactory}-extension
      * point.
      */
     public synchronized void update() {

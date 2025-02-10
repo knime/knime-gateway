@@ -76,7 +76,7 @@ public class SpaceProvidersManagerTest {
      */
     @Test
     public void testUpdateAndGet() {
-        var spaceProvidersFactory = mock(SpaceProvidersFactory.class);
+        var spaceProvidersFactory = mock(SpaceProviderFactory.class);
         var spaceProvidersManager = new SpaceProvidersManager(id -> {
         }, null, List.of(spaceProvidersFactory));
         var spacerProvider1 = mock(SpaceProvider.class);
