@@ -55,10 +55,12 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider;
 
 /**
- * Manages instances of {@link SpaceProviders}, accessible by a {@link Key}.
+ * Manages instances of {@link SpaceProviders}, accessible by a {@link Key}. Mainly used as a service dependency (see,
+ * e.g., {@link ServiceDependencies}).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

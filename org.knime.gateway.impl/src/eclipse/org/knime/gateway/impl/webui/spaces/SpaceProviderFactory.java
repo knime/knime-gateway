@@ -55,7 +55,7 @@ import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.util.ExtPointUtil;
 
 /**
- * The extension point for the factory that creates {@link SpaceProviders}-instances.
+ * The extension point for the factory that creates {@link SpaceProvider}-instances.
  *
  * @author Marcel Wiedenmann, KNIME GmbH, Berlin, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -77,12 +77,10 @@ public interface SpaceProviderFactory {
     }
 
     /**
-     * Collects and returns all registered {@link SpaceProviders}.
-     *
-     * @return all registered {@link SpaceProviders}
+     * @return all registered {@link SpaceProviderFactory SpaceProviderFactories}
      */
     static List<SpaceProviderFactory> collectSpaceProviderFactories() {
-        String extensionPointId = "org.knime.gateway.impl.SpaceProvidersFactory";
+        var extensionPointId = "org.knime.gateway.impl.SpaceProvidersFactory";
         return ExtPointUtil.collectExecutableExtensions(extensionPointId, "class");
     }
 }

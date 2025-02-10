@@ -55,11 +55,9 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
-import org.knime.gateway.impl.webui.service.ServiceDependencies;
 
 /**
- * Summarizes all available space providers. Mainly used as a service dependency (see, e.g.,
- * {@link ServiceDependencies}).
+ * Summarizes all available space providers.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

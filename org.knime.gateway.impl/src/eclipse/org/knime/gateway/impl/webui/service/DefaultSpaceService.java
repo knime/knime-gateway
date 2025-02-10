@@ -111,14 +111,15 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public List<SpaceGroupEnt> getSpaceGroups(final String spaceProviderId) throws ServiceCallException, NetworkException {
+    public List<SpaceGroupEnt> getSpaceGroups(final String spaceProviderId)
+        throws ServiceCallException, NetworkException {
         if (spaceProviderId == null || spaceProviderId.isBlank()) {
             throw new ServiceCallException("Invalid space-provider-id (empty/null)");
         }
         try {
             final var spaceProvider =
                 m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
-            final var message = "Could not access '" + spaceProvider.getName() + ". ";
+            final var message = "Could not access '" + spaceProvider.getName() + "'.";
             return NetworkExceptions.callWithCatch(spaceProvider::toEntity, message);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
@@ -135,7 +136,7 @@ public class DefaultSpaceService implements SpaceService {
             final var spaceProvider =
                 m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
             final var space = spaceProvider.getSpace(spaceId);
-            final var message = "Could not list spaces of '" + spaceProvider.getName();
+            final var message = "Could not list spaces of '" + spaceProvider.getName() + "'.";
             return NetworkExceptions.callWithCatch(() -> space.listWorkflowGroup(workflowGroupId), message);
         } catch (NoSuchElementException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);

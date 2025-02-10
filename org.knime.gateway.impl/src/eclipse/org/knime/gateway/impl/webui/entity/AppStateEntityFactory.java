@@ -145,14 +145,14 @@ public final class AppStateEntityFactory {
     public static final String NO_PROJECTS = null;
 
     /**
-     * Used with {@link #buildAppStateEnt(String, Predicate, ServiceDependencies)} as project-id to indicate that no
+     * Used with {@link #buildAppStateEnt(String, Predicate, ServiceDependencies)} as project-id to indicate that all
      * projects are to be included.
      */
     public static final String ALL_PROJECTS = "";
 
     /**
      * Properties added here potentially also need to be considered in
-     * {@link #buildAppStateEntDiff(AppStateEnt, AppStateEnt)}.
+     * {@link #buildAppStateEntDiff(AppStateEnt, AppStateEnt, boolean)}.
      *
      * @param dependencies Service dependencies needed for building this application state
      * @param projectId only includes the project with the given id in the app state; or if {@link #NO_PROJECTS} no
