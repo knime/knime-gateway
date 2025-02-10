@@ -89,7 +89,8 @@ import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
@@ -130,7 +131,7 @@ public final class AppStateEntityFactory {
     public record ServiceDependencies( //
         ProjectManager projectManager, //
         PreferencesProvider preferencesProvider, //
-        SpaceProviders spaceProviders, //
+        SpaceProvidersManager spaceProvidersManager, //
         NodeFactoryProvider nodeFactoryProvider, //
         NodeCollections nodeCollections, //
         KaiHandler kaiHandler //
@@ -172,7 +173,7 @@ public final class AppStateEntityFactory {
         }
         var projects = getProjectEnts( //
             dependencies.projectManager(), //
-            dependencies.spaceProviders(), //
+            dependencies.spaceProvidersManager(), //
             workflowProjectFilter, //
             isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
         );
@@ -209,7 +210,7 @@ public final class AppStateEntityFactory {
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
             // TODO HUB-9598 only include when not read-only connection?
             .setSpaceProviders(appMode == AppModeEnum.DEFAULT
-                ? buildSpaceProviderEnts(projectId, dependencies.spaceProviders(), false) : null) //
+                ? buildSpaceProviderEnts(projectId, dependencies.spaceProvidersManager(), false) : null) //
             .build();
     }
 
@@ -269,12 +270,12 @@ public final class AppStateEntityFactory {
     }
 
     private static List<ProjectEnt> getProjectEnts(final ProjectManager projectManager,
-        final SpaceProviders spaceProviders, final Predicate<String> projectFilter,
+        final SpaceProvidersManager spaceProvidersManager, final Predicate<String> projectFilter,
         final Predicate<String> isActiveProject) {
         return projectManager.getProjectIds().stream() //
             .filter(projectFilter) //
             .flatMap(id -> projectManager.getProject(id).stream()) //
-            .map(wp -> buildWorkflowProjectEnt(wp, isActiveProject, spaceProviders)) //
+            .map(wp -> buildWorkflowProjectEnt(wp, isActiveProject, spaceProvidersManager)) //
             .toList();
     }
 
@@ -302,7 +303,7 @@ public final class AppStateEntityFactory {
     }
 
     private static ProjectEnt buildWorkflowProjectEnt(final Project p, final Predicate<String> isActiveProject,
-        final SpaceProviders spaceProviders) {
+        final SpaceProvidersManager spaceProvidersManager) {
         final var projectEntBuilder = builder(ProjectEntBuilder.class) //
             .setName(p.getName()) //
             .setProjectId(p.getID());
@@ -313,26 +314,26 @@ public final class AppStateEntityFactory {
         }
 
         p.getOrigin().ifPresent(origin -> {
-            var originEnt = buildSpaceItemReferenceEnt(p.getID(), origin, spaceProviders);
+            var originEnt = buildSpaceItemReferenceEnt(p.getID(), origin, spaceProvidersManager);
             projectEntBuilder.setOrigin(originEnt);
         });
         return projectEntBuilder.build();
     }
 
     private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final String projectId, final Project.Origin origin,
-        final SpaceProviders spaceProviders) {
+        final SpaceProvidersManager spaceProvidersManager) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
             .setProjectType(origin.getProjectType().orElse(null)) //
             .setVersion(origin.getItemVersion().orElse(null))
-            .setAncestorItemIds(getAncestorItemIds(projectId, origin, spaceProviders)) //
+            .setAncestorItemIds(getAncestorItemIds(projectId, origin, spaceProvidersManager)) //
             .build();
     }
 
     private static List<String> getAncestorItemIds(final String projectId, final Project.Origin origin,
-        final SpaceProviders spaceProviders) {
+        final SpaceProvidersManager spaceProvidersManager) {
         // ancestor item ids are only required for local projects because it's used to
         // * mark folders that contain open projects
         // * disallow folders to be moved if they contain opened local projects
@@ -340,8 +341,8 @@ public final class AppStateEntityFactory {
         // ... in the space explorer.
         // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
         if (origin.isLocal()) {
-            var localSpace =
-                (LocalSpace)spaceProviders.getSpace(projectId, origin.getProviderId(), origin.getSpaceId());
+            var localSpace = (LocalSpace)spaceProvidersManager.getSpaceProviders(Key.of(projectId))
+                .getSpace(origin.getProviderId(), origin.getSpaceId());
             return localSpace.getAncestorItemIds(origin.getItemId());
         } else {
             return null;
@@ -368,8 +369,8 @@ public final class AppStateEntityFactory {
     }
 
     private static Map<String, SpaceProviderEnt> buildSpaceProviderEnts(final String projectId,
-        final SpaceProviders spaceProviders, final boolean doConnect) {
-        return spaceProviders.getProvidersMap(projectId).values().stream()
+        final SpaceProvidersManager spaceProvidersManager, final boolean doConnect) {
+        return spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getAllSpaceProviders().stream()
             .map(sp -> buildSpaceProviderEnt(sp, doConnect))
             .collect(Collectors.toMap(SpaceProviderEnt::getId, Function.identity()));
     }

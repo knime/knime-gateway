@@ -60,7 +60,8 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -80,8 +81,8 @@ public final class DefaultApplicationService implements ApplicationService {
     private final PreferencesProvider m_preferencesProvider =
         ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
 
-    private final SpaceProviders m_spaceProviders =
-        ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+    private final SpaceProvidersManager m_spaceProvidersManager =
+        ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, true);
 
     private final NodeFactoryProvider m_nodeFactoryProvider =
         ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
@@ -123,12 +124,12 @@ public final class DefaultApplicationService implements ApplicationService {
         if (projectId.isPresent()) {
             var wfm = org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(projectId.get(),
                 NodeIDEnt.getRootID());
-            m_spaceProviders.update(projectId.get(), wfm.getContextV2());
+            m_spaceProvidersManager.update(Key.of(projectId.get()), wfm.getContextV2());
         }
 
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-            m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
+            m_spaceProvidersManager, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
         var appState = AppStateEntityFactory.buildAppStateEnt(projectId.orElse(AppStateEntityFactory.ALL_PROJECTS),
             isActiveProject, dependencies);
         if (m_appStateUpdater != null) {

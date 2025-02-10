@@ -174,6 +174,26 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/WorkflowMiddleware.java" type="org.knime.gateway.impl.webui.WorkflowMiddleware">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.WorkflowMiddleware"/>
+                <message_argument value="WorkflowMiddleware(ProjectManager, SpaceProviders)"/>
+            </message_arguments>
+        </filter>
+        <filter id="640712815">
+            <message_arguments>
+                <message_argument value="WorkflowLock"/>
+                <message_argument value="WorkflowMiddleware"/>
+                <message_argument value="close()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowMiddleware(ProjectManager, SpaceProvidersManager)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory">
         <filter id="338792546">
             <message_arguments>
@@ -246,6 +266,12 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
                 <message_argument value="nodeCollections()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
+                <message_argument value="spaceProviders()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -354,6 +380,24 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProviders, UpdateStateProvider, PreferencesProvider, NodeFactoryProvider, KaiHandler, NodeCollections, NodeRepository, NodeCategoryExtensions, SelectionEventBus)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProvidersManager, UpdateStateProvider, PreferencesProvider, NodeFactoryProvider, KaiHandler, NodeCollections, NodeRepository, NodeCategoryExtensions, SelectionEventBus)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/WorkflowCommands.java" type="org.knime.gateway.impl.webui.service.commands.WorkflowCommands">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="execute(WorkflowKey, E, WorkflowMiddleware, NodeFactoryProvider, SpaceProviders)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="execute(WorkflowKey, E, WorkflowMiddleware, NodeFactoryProvider, SpaceProvidersManager)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -681,6 +725,13 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProvidersManager.java" type="org.knime.gateway.impl.webui.spaces.SpaceProvidersManager">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvidersManager"/>
             </message_arguments>
         </filter>
     </resource>

@@ -187,7 +187,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -1980,7 +1980,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(spaceProvider.getId()).thenReturn("providerId");
         when(spaceProvider.getType()).thenReturn(SpaceProviderEnt.TypeEnum.HUB);
         when(space.toPathBasedKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
-        var spaceProviders = SpaceServiceTestHelper.createSpaceProviders(spaceProvider);
+        var spaceProvidersManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
 
         Class nodeFactoryClass = org.knime.core.node.extension.NodeFactoryProvider.getInstance() // NOSONAR
             .getNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()
@@ -1988,7 +1988,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Mockito.when(nodeFactoryProvider.fromFileExtension(ArgumentMatchers.endsWith("test.csv")))
             .thenReturn(nodeFactoryClass);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProvidersManager);
         String wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
 
         var addNodeCommand = builder(AddNodeCommandEntBuilder.class).setKind(KindEnum.ADD_NODE)//

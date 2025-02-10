@@ -81,7 +81,7 @@ import org.knime.gateway.impl.webui.service.events.SpaceItemChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -111,8 +111,8 @@ public final class DefaultEventService implements EventService {
     private final PreferencesProvider m_preferencesProvider =
         ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
 
-    private final SpaceProviders m_spaceProviders =
-        ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+    private final SpaceProvidersManager m_spaceProvidersManager =
+        ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, true);
 
     private final NodeFactoryProvider m_nodeFactoryProvider =
         ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
@@ -150,7 +150,7 @@ public final class DefaultEventService implements EventService {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
                     var dependencies =
                         new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-                            m_spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
+                            m_spaceProvidersManager, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
             } else {
@@ -176,7 +176,7 @@ public final class DefaultEventService implements EventService {
                     m_workflowMiddleware));
         } else if (eventTypeEnt instanceof SpaceItemChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceProviders));
+                t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceProvidersManager));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }

@@ -67,6 +67,7 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.TestWorkflow;
@@ -104,21 +105,21 @@ public abstract class GatewayServiceTest {
     public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         final var projectManager = ProjectManager.getInstance();
-        final var spaceProviders = createSpaceProviders();
+        final var spaceProvidersManager = createSpaceProvidersManager();
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(projectManager, spaceProviders));
+            new WorkflowMiddleware(projectManager, spaceProvidersManager));
         ServiceDependencies.setServiceDependency(EventConsumer.class, createEventConsumer());
         ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProvidersManager);
         ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, createNodeFactoryProvider());
     }
 
     /**
      * @return the {@link SpaceProviders} service dependency
      */
-    protected SpaceProviders createSpaceProviders() {
-        return new SpaceProviders(id -> {
+    protected SpaceProvidersManager createSpaceProvidersManager() {
+        return new SpaceProvidersManager(id -> {
         }, null, List.of(mock(SpaceProvidersFactory.class)));
     }
 

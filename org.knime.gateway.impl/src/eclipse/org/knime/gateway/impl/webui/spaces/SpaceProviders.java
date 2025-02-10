@@ -48,18 +48,14 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider;
 
 /**
  * Summarizes all available space providers. Mainly used as a service dependency (see, e.g.,
@@ -69,72 +65,14 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpaceProvider;
  */
 public final class SpaceProviders {
 
-    // project-id -> (space-provider-id -> space-provider)
-    private final MultiKeyMap<String, SpaceProvider> m_spaceProviders = new MultiKeyMap<>();
-
-    private final MultiKeyMap<String, SpaceProviderEnt.TypeEnum> m_spaceProviderTypes = new MultiKeyMap<>();
-
-    private final List<SpaceProvidersFactory> m_spaceProvidersFactories;
-
-    private final Consumer<String> m_loginErrorHandler;
-
-    private final LocalSpaceProvider m_localSpaceProvider;
+    private final Map<String, SpaceProvider> m_spaceProviders;
 
     /**
-     * @param loginErrorHandler error handler for login errors
+     * @param spaceProviders the spaceProvidersMap
      * @param localSpaceProvider the local space provider or {@code null} if none
      */
-    public SpaceProviders(final Consumer<String> loginErrorHandler, final LocalSpaceProvider localSpaceProvider) {
-        this(loginErrorHandler, localSpaceProvider, SpaceProvidersFactory.collectSpaceProviderFactories());
-    }
-
-    /**
-     * @param loginErrorHandler error handler for login errors
-     * @param localSpaceProvider the local space provider or {@code null} if none
-     * @param spaceProviderFactories the factories to create the space providers from
-     */
-    public SpaceProviders(final Consumer<String> loginErrorHandler, final LocalSpaceProvider localSpaceProvider,
-        final List<SpaceProvidersFactory> spaceProviderFactories) {
-        m_loginErrorHandler = loginErrorHandler;
-        m_localSpaceProvider = localSpaceProvider;
-        m_spaceProvidersFactories = spaceProviderFactories;
-    }
-
-    /**
-     * Updates the space providers by adding or removing space providers for the project-id. A space provider is
-     * specifically created for the projects workflow context.
-     *
-     * @param projectId the id of the project to create or remove the space providers for
-     * @param context will remove the space providers for the project-id if the context is {@code null}
-     */
-    public void update(final String projectId, final WorkflowContextV2 context) {
-        if (context == null) {
-            m_spaceProviders.clear(projectId);
-            m_spaceProviderTypes.clear(projectId);
-        } else {
-            m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProvider(context).ifPresent(provider -> {
-                provider.init(m_loginErrorHandler);
-                m_spaceProviders.put(projectId, provider.getId(), provider);
-                m_spaceProviderTypes.put(projectId, provider.getId(), provider.getType());
-            }));
-        }
-    }
-
-    /**
-     * Updates the space providers by creating the space providers anew from the {@link SpaceProvidersFactory}-extension
-     * point.
-     */
-    public synchronized void update() {
-        m_spaceProviders.clear(null);
-        m_spaceProviderTypes.clear(null);
-        if (m_localSpaceProvider != null) {
-            m_spaceProviders.put(null, m_localSpaceProvider.getId(), m_localSpaceProvider);
-        }
-        m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProviders().forEach(provider -> {
-            provider.init(m_loginErrorHandler);
-            m_spaceProviders.put(null, provider.getId(), provider);
-            m_spaceProviderTypes.put(null, provider.getId(), provider.getType());
-        }));
+    SpaceProviders(final Map<String, SpaceProvider> spaceProviders) {
+        m_spaceProviders = spaceProviders;
     }
 
     /**
@@ -146,21 +84,7 @@ public final class SpaceProviders {
      * @return the space
      */
     public Space getSpace(final String spaceProviderId, final String spaceId) {
-        return getSpace(null, spaceProviderId, spaceId);
-    }
-
-    /**
-     * Returns the space for the given space-provider-id and space-id.
-     *
-     * @param projectId id of the project to get the space providers for; can be {@code null} in case of the desktop
-     *            environment where space providers aren't associated with specific workflows
-     * @param spaceProviderId
-     * @param spaceId
-     * @throws NoSuchElementException if there is no space provider or space for the given ids
-     * @return the space
-     */
-    public Space getSpace(final String projectId, final String spaceProviderId, final String spaceId) {
-        return getSpaceProvider(projectId, spaceProviderId).getSpace(spaceId);
+        return getSpaceProvider(spaceProviderId).getSpace(spaceId);
     }
 
     /**
@@ -171,20 +95,7 @@ public final class SpaceProviders {
      * @throws NoSuchElementException if there is no space provider for the given id
      */
     public SpaceProvider getSpaceProvider(final String spaceProviderId) {
-        return getSpaceProvider(null, spaceProviderId);
-    }
-
-    /**
-     * Returns the space provider for the given project-id and space-provider-id.
-     *
-     * @param projectId id of the project to get the space providers for; can be {@code null} in case of the desktop
-     *            environment where space providers aren't associated with specific workflows
-     * @param spaceProviderId
-     * @return the space provider
-     * @throws NoSuchElementException if there is no space provider for the given id
-     */
-    public SpaceProvider getSpaceProvider(final String projectId, final String spaceProviderId) {
-        var res = this.getProvidersMap(projectId).get(spaceProviderId);
+        var res = m_spaceProviders.get(spaceProviderId);
         if (res == null) {
             throw new NoSuchElementException("No space provider found for id '" + spaceProviderId + "'");
         }
@@ -192,27 +103,10 @@ public final class SpaceProviders {
     }
 
     /**
-     * @return map of available {@link SpaceProvider}s; maps the space-provider-id to the space-provider.
+     * @return all space providers
      */
-    public synchronized Map<String, SpaceProvider> getProvidersMap() {
-        return getProvidersMap(null);
-    }
-
-    /**
-     * @param projectId id of the project to get the space providers for; can be {@code null} in case of the desktop
-     *            environment where space providers aren't associated with specific workflows
-     *
-     * @return map of available {@link SpaceProvider}s; maps the space-provider-id to the space-provider.
-     */
-    public synchronized Map<String, SpaceProvider> getProvidersMap(final String projectId) {
-        var providersMap = m_spaceProviders.get(projectId);
-        if (providersMap == null) {
-            providersMap = m_spaceProviders.get(null);
-        }
-        if (providersMap == null) {
-            return Map.of();
-        }
-        return providersMap;
+    public Collection<SpaceProvider> getAllSpaceProviders() {
+        return m_spaceProviders.values();
     }
 
     /**
@@ -221,40 +115,8 @@ public final class SpaceProviders {
      * @return types of available {@link SpaceProvider}s
      */
     public synchronized Map<String, SpaceProviderEnt.TypeEnum> getProviderTypes() {
-        return getProviderTypes(null);
-    }
-
-    /**
-     * Types of available {@link SpaceProvider}s, may be overridden for performance.
-     *
-     * @param projectId id of the project to get the space providers for; can be {@code null} in case of the desktop
-     *            environment where space providers aren't associated with specific workflows
-     *
-     * @return types of available {@link SpaceProvider}s
-     */
-    public synchronized Map<String, SpaceProviderEnt.TypeEnum> getProviderTypes(final String projectId) {
-        return getProvidersMap(projectId).entrySet().stream() //
+        return m_spaceProviders.entrySet().stream() //
             .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType()));
     }
 
-    private static final class MultiKeyMap<K, V> {
-
-        private final Map<K, Map<K, V>> m_map = new LinkedHashMap<>();
-
-        V put(final K key1, final K key2, final V value) {
-            return m_map.computeIfAbsent(key1, k -> new LinkedHashMap<>()).put(key2, value);
-        }
-
-        void clear(final K key1) {
-            var nestedMap = m_map.remove(key1);
-            if (nestedMap != null) {
-                nestedMap.clear();
-            }
-        }
-
-        Map<K, V> get(final K key1) {
-            return m_map.get(key1);
-        }
-
-    }
 }

@@ -66,7 +66,7 @@ import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.repo.NodeRepository;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 
 /**
  * Provides and manages specific object instances that are considered to be dependencies for the implementation of
@@ -142,7 +142,7 @@ public final class ServiceDependencies {
      * @param workflowMiddleware
      * @param appStateUpdater The application state updater
      * @param eventConsumer The event consumer
-     * @param spaceProviders The space providers
+     * @param spaceProvidersManager The space providers
      * @param updateStateProvider The update state provider
      * @param preferencesProvider
      * @param nodeFactoryProvider
@@ -157,7 +157,7 @@ public final class ServiceDependencies {
         final WorkflowMiddleware workflowMiddleware, //
         final AppStateUpdater appStateUpdater, //
         final EventConsumer eventConsumer, //
-        final SpaceProviders spaceProviders, //
+        final SpaceProvidersManager spaceProvidersManager, //
         final UpdateStateProvider updateStateProvider, //
         final PreferencesProvider preferencesProvider, //
         final NodeFactoryProvider nodeFactoryProvider, //
@@ -170,7 +170,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
             ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
             ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
-            ServiceDependencies.setServiceDependency(SpaceProviders.class, spaceProviders);
+            ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProvidersManager);
             ServiceDependencies.setServiceDependency(UpdateStateProvider.class, updateStateProvider);
             ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
             ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);

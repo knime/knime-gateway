@@ -76,8 +76,8 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
@@ -135,8 +135,8 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         var spaceProviderConnection = mock(SpaceProviderConnection.class);
         when(spaceProviderConnection.getUsername()).thenReturn("test-username");
         when(connectedSpaceProvider.getConnection(false)).thenReturn(Optional.of(spaceProviderConnection));
-        ServiceDependencies.setServiceDependency(SpaceProviders.class,
-            SpaceServiceTestHelper.createSpaceProviders(localSpaceProvider, connectedSpaceProvider));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
+            SpaceServiceTestHelper.createSpaceProvidersManager(localSpaceProvider, connectedSpaceProvider));
     }
 
     /**
@@ -171,13 +171,13 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         when(spaceProvider.getName()).thenReturn("bar");
         when(spaceProvider.getType()).thenReturn(TypeEnum.HUB);
         when(spaceProvidersFactory.createSpaceProvider(any())).thenReturn(Optional.of(spaceProvider));
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, new SpaceProviders(id -> {
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, new SpaceProvidersManager(id -> {
         }, null, List.of(spaceProvidersFactory)));
         return spaceProvidersFactory;
     }
 
     @Override
-    protected SpaceProviders createSpaceProviders() {
+    protected SpaceProvidersManager createSpaceProvidersManager() {
         return null;
     }
 

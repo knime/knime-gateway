@@ -94,7 +94,8 @@ import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 /**
  * Provides utility methods to operate on a workflow represented by a {@link WorkflowKey} where the methods require to
@@ -147,14 +148,14 @@ public final class WorkflowMiddleware {
 
     private final WorkflowCommands m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
 
-    private final SpaceProviders m_spaceProviders;
+    private final SpaceProvidersManager m_spaceProvidersManager;
 
     /**
      * @param projectManager
-     * @param spaceProviders
+     * @param spaceProvidersManager
      */
-    public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProviders spaceProviders) {
-        m_spaceProviders = spaceProviders;
+    public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager) {
+        m_spaceProvidersManager = spaceProvidersManager;
         projectManager
             .addProjectRemovedListener(projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
     }
@@ -305,8 +306,9 @@ public final class WorkflowMiddleware {
                 .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
         }
-        if (m_spaceProviders != null) {
-            buildContextBuilder.setSpaceProviderTypes(m_spaceProviders.getProviderTypes(wfKey.getProjectId()));
+        if (m_spaceProvidersManager != null) {
+            buildContextBuilder.setSpaceProviderTypes(
+                m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes());
         }
         final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
         if (wfEnt == null) {

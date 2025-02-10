@@ -55,16 +55,18 @@ import java.util.Optional;
 import org.knime.gateway.api.webui.entity.SpaceItemChangedEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceItemChangeNotifier;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 @SuppressWarnings("javadoc")
 public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEventTypeEnt, SpaceItemChangedEventEnt> {
 
-    private final SpaceProviders m_spaceProviders;
+    private final SpaceProvidersManager m_spaceProvidersManager;
 
-    public SpaceItemChangedEventSource(final EventConsumer eventConsumer, final SpaceProviders spaceProviders) {
+    public SpaceItemChangedEventSource(final EventConsumer eventConsumer,
+        final SpaceProvidersManager spaceProvidersManager) {
         super(eventConsumer);
-        m_spaceProviders = spaceProviders;
+        m_spaceProvidersManager = spaceProvidersManager;
     }
 
     @Override
@@ -82,7 +84,8 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
 
     private Optional<SpaceItemChangeNotifier> getNotifierForProvider(final SpaceItemChangedEventTypeEnt eventTypeEnt,
         final String projectId) {
-        return m_spaceProviders.getSpaceProvider(projectId, eventTypeEnt.getProviderId()).getChangeNotifier();
+        return m_spaceProvidersManager.getSpaceProviders(Key.of(projectId))
+            .getSpaceProvider(eventTypeEnt.getProviderId()).getChangeNotifier();
     }
 
     private void onSubscriptionNotification(final SpaceItemChangedEventTypeEnt eventTypeEnt, final String projectId) {
@@ -113,7 +116,7 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
     @Override
     public void removeAllEventListeners() {
         // TODO get all space providers regardless of the project-id
-        m_spaceProviders.getProvidersMap(null).values()
+        m_spaceProvidersManager.getSpaceProviders(Key.defaultKey()).getAllSpaceProviders()
             .forEach(provider -> provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll));
     }
 

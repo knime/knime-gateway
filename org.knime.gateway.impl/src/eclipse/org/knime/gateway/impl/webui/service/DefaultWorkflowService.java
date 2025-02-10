@@ -74,7 +74,8 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -91,8 +92,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final NodeFactoryProvider m_nodeFactoryProvider =
         ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
 
-    private final SpaceProviders m_spaceProviders =
-        ServiceDependencies.getServiceDependency(SpaceProviders.class, false);
+    private final SpaceProvidersManager m_spaceProvidersManager =
+        ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -122,7 +123,8 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
                 .setSpaceProviderTypes(
-                    m_spaceProviders == null ? Map.of() : m_spaceProviders.getProviderTypes(wfKey.getProjectId()));
+                    m_spaceProvidersManager == null ? Map.of()
+                        : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes());
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
             var buildConext = WorkflowBuildContext.builder().includeInteractionInfo(false);
@@ -166,7 +168,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
-            m_workflowMiddleware, m_nodeFactoryProvider, m_spaceProviders);
+            m_workflowMiddleware, m_nodeFactoryProvider, m_spaceProvidersManager);
     }
 
     /**

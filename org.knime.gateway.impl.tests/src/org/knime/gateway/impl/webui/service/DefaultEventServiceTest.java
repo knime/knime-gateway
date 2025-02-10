@@ -95,7 +95,7 @@ import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
@@ -316,12 +316,12 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
     }
 
     @Override
-    protected SpaceProviders createSpaceProviders() {
+    protected SpaceProvidersManager createSpaceProvidersManager() {
         var provider = mock(SpaceProvider.class);
         when(provider.getId()).thenReturn(PROVIDER_ID);
         when(provider.getType()).thenReturn(TypeEnum.HUB);
         when(provider.getChangeNotifier()).thenReturn(Optional.of(m_notifier));
-        return SpaceServiceTestHelper.createSpaceProviders(provider);
+        return SpaceServiceTestHelper.createSpaceProvidersManager(provider);
     }
 
     private static final class DummyNotifier implements SpaceProvider.SpaceItemChangeNotifier {

@@ -50,7 +50,7 @@ package org.knime.gateway.impl.webui.spaces;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,13 +62,14 @@ import java.util.Optional;
 import org.junit.Test;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 /**
- * Tests for {@link SpaceProviders}.
+ * Tests for {@link SpaceProvidersManager}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class SpaceProvidersTest {
+public class SpaceProvidersManagerTest {
 
     /**
      * Tests the {@link SpaceProviders#update}-methods and the {@link SpaceProviders#getSpaceProvider}-method.
@@ -76,7 +77,7 @@ public class SpaceProvidersTest {
     @Test
     public void testUpdateAndGet() {
         var spaceProvidersFactory = mock(SpaceProvidersFactory.class);
-        var spaceProviders = new SpaceProviders(id -> {
+        var spaceProvidersManager = new SpaceProvidersManager(id -> {
         }, null, List.of(spaceProvidersFactory));
         var spacerProvider1 = mock(SpaceProvider.class);
         when(spacerProvider1.getId()).thenReturn("1");
@@ -92,31 +93,36 @@ public class SpaceProvidersTest {
         var projectId = "project-id";
 
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.empty());
-        spaceProviders.update(projectId, wfContext);
-        assertThrows(NoSuchElementException.class, () -> spaceProviders.getSpaceProvider(projectId, "1"));
+        spaceProvidersManager.update(Key.of(projectId), wfContext);
+        assertThrows(NoSuchElementException.class,
+            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1"));
 
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.of(spacerProvider1));
-        spaceProviders.update(projectId, wfContext);
-        assertThat(spaceProviders.getSpaceProvider(projectId, "1").getId(), is("1"));
+        spaceProvidersManager.update(Key.of(projectId), wfContext);
+        assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
 
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.of(spacerProvider2));
-        spaceProviders.update(projectId, wfContext);
-        assertThat(spaceProviders.getSpaceProvider(projectId, "2").getId(), is("2"));
+        spaceProvidersManager.update(Key.of(projectId), wfContext);
+        assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2").getId(), is("2"));
 
-        spaceProviders.update(projectId, null);
-        assertThrows(NoSuchElementException.class, () -> spaceProviders.getSpaceProvider(projectId, "1"));
-        assertThrows(NoSuchElementException.class, () -> spaceProviders.getSpaceProvider(projectId, "2"));
+        spaceProvidersManager.remove(Key.of(projectId));
+        assertThrows(NoSuchElementException.class,
+            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1"));
+        assertThrows(NoSuchElementException.class,
+            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2"));
 
         when(spaceProvidersFactory.createSpaceProviders()).thenReturn(List.of(spacerProvider1, spacerProvider2));
-        spaceProviders.update();
-        assertThat(spaceProviders.getSpaceProvider(projectId, "1").getId(), is("1"));
-        assertThat(spaceProviders.getSpaceProvider(projectId, "2").getId(), is("2"));
-        assertThat(spaceProviders.getSpaceProvider("unknown-project-id", "1").getId(), is("1"));
+        spaceProvidersManager.update();
+        assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
+        assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2").getId(), is("2"));
+        assertThat(spaceProvidersManager.getSpaceProviders(Key.of("unknown-project-id")).getSpaceProvider("1").getId(),
+            is("1"));
 
         when(spaceProvidersFactory.createSpaceProviders()).thenReturn(List.of(spacerProvider1));
-        spaceProviders.update();
-        assertThat(spaceProviders.getSpaceProvider(projectId, "1").getId(), is("1"));
-        assertThrows(NoSuchElementException.class, () -> spaceProviders.getSpaceProvider(projectId, "2"));
+        spaceProvidersManager.update();
+        assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
+        assertThrows(NoSuchElementException.class,
+            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2"));
 
     }
 

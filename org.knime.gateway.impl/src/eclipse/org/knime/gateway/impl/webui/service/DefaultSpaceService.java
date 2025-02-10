@@ -72,7 +72,8 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.util.NetworkExceptions;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
@@ -92,8 +93,8 @@ public class DefaultSpaceService implements SpaceService {
         return ServiceInstances.getDefaultServiceInstance(DefaultSpaceService.class);
     }
 
-    private final SpaceProviders m_spaceProviders =
-        ServiceDependencies.getServiceDependency(SpaceProviders.class, true);
+    private final SpaceProvidersManager m_spaceProvidersManager =
+        ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, true);
 
     private final ProjectManager m_projectManager =
             ServiceDependencies.getServiceDependency(ProjectManager.class, true);
@@ -102,8 +103,8 @@ public class DefaultSpaceService implements SpaceService {
         //
     }
 
-    private static String projectId() {
-        return DefaultServiceContext.getProjectId().orElse(null);
+    private static Key projectId() {
+        return DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
     }
 
     /**
@@ -115,7 +116,8 @@ public class DefaultSpaceService implements SpaceService {
             throw new ServiceCallException("Invalid space-provider-id (empty/null)");
         }
         try {
-            final var spaceProvider = m_spaceProviders.getSpaceProvider(projectId(), spaceProviderId);
+            final var spaceProvider =
+                m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
             final var message = "Could not access '" + spaceProvider.getName() + ". ";
             return NetworkExceptions.callWithCatch(spaceProvider::toEntity, message);
         } catch (NoSuchElementException e) {
@@ -130,7 +132,8 @@ public class DefaultSpaceService implements SpaceService {
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
         final String workflowGroupId) throws ServiceCallException, NetworkException {
         try {
-            final var spaceProvider = m_spaceProviders.getSpaceProvider(projectId(), spaceProviderId);
+            final var spaceProvider =
+                m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
             final var space = spaceProvider.getSpace(spaceId);
             final var message = "Could not list spaces of '" + spaceProvider.getName();
             return NetworkExceptions.callWithCatch(() -> space.listWorkflowGroup(workflowGroupId), message);
@@ -143,7 +146,8 @@ public class DefaultSpaceService implements SpaceService {
     public List<Object> listJobsForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
         throws ServiceCallException {
         try {
-            return m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId).listJobsForWorkflow(workflowId);
+            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
+                .listJobsForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching jobs", e);
         }
@@ -152,7 +156,8 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
         final String jobId) throws ServiceCallException {
-        final var space = m_spaceProviders.getSpaceProvider(projectId(), spaceProviderId).getSpace(spaceId);
+        final var space = m_spaceProvidersManager.getSpaceProviders(projectId())
+            .getSpaceProvider(spaceProviderId).getSpace(spaceId);
         try {
             space.deleteJobsForWorkflow(itemId, List.of(jobId));
         } catch (final ResourceAccessException e) {
@@ -164,7 +169,7 @@ public class DefaultSpaceService implements SpaceService {
     public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId,
         final String workflowId) throws ServiceCallException {
         try {
-            return m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId)
+            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
                 .listSchedulesForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching jobs", e);
@@ -174,7 +179,7 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public void deleteSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
         final String scheduleId) throws ServiceCallException {
-        final var space = m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId);
+        final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
         try {
             space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
         } catch (final ResourceAccessException e) {
@@ -188,7 +193,8 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName) throws ServiceCallException {
         try {
-            return m_spaceProviders.getProvidersMap(projectId()).get(spaceProviderId) //
+            return m_spaceProvidersManager.getSpaceProviders(projectId()) //
+                .getSpaceProvider(spaceProviderId) //
                 .getSpaceGroup(spaceGroupName) //
                 .createSpace() //
                 .toEntity();
@@ -201,13 +207,13 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId,
         final String name) throws ServiceCallException {
         try {
-            final var item = m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId) //
+            final var item = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId) //
                 .createWorkflow(workflowGroupId, name);
             if (GlobalNodeStats.isEnabled()) {
                 NodeTimer.GLOBAL_TIMER
                     .incWorkflowCreate(
-                        m_spaceProviders.getSpaceProvider(projectId(), spaceProviderId).getType() == TypeEnum.LOCAL
-                            ? WorkflowType.LOCAL : WorkflowType.REMOTE);
+                        m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId)
+                            .getType() == TypeEnum.LOCAL ? WorkflowType.LOCAL : WorkflowType.REMOTE);
             }
             return item;
         } catch (NoSuchElementException e) {
@@ -224,7 +230,8 @@ public class DefaultSpaceService implements SpaceService {
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
         throws ServiceCallException {
         try {
-            m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId).deleteItems(spaceItemIds);
+            m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
+                .deleteItems(spaceItemIds);
         } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -237,7 +244,8 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt createWorkflowGroup(final String spaceId, final String spaceProviderId, final String itemId)
         throws ServiceCallException {
         try {
-            return m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId).createWorkflowGroup(itemId);
+            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
+                .createWorkflowGroup(itemId);
         } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }
@@ -251,7 +259,7 @@ public class DefaultSpaceService implements SpaceService {
         final String destWorkflowGroupItemId, final String collisionHandling, final Boolean copy)
         throws ServiceCallException {
         try {
-            var space = m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId);
+            var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
             if (space instanceof LocalSpace localSpace) {
                 var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(localSpace), itemIds, localSpace);
                 if (!workflowsToClose.isEmpty()) {
@@ -274,7 +282,8 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
         final String newName) throws ServiceCallException {
         try {
-            return m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId).renameItem(itemId, newName);
+            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
+                .renameItem(itemId, newName);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);
         } catch (OperationNotAllowedException | IOException e) {
@@ -289,7 +298,8 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
         throws ServiceCallException {
         try {
-            return m_spaceProviders.getSpace(projectId(), spaceProviderId, spaceId).renameSpace(spaceName);
+            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
+                .renameSpace(spaceName);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);
         } catch (OperationNotAllowedException | IOException e) {
