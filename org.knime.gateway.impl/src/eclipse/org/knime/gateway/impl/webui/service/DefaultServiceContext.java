@@ -96,7 +96,7 @@ public final class DefaultServiceContext {
      * @return the workflow project id associated with the current context (for the current thread) or an empty optional
      *         if there is none
      */
-    static Optional<String> getWorkflowProjectId() {
+    static Optional<String> getProjectId() {
         var c = CONTEXT.get();
         if (c != null) {
             return Optional.ofNullable(c.m_workflowProjectId);
@@ -107,18 +107,18 @@ public final class DefaultServiceContext {
     /**
      * Asserts that the passed workflow project id is associated with the context (if one is set).
      *
-     * @param workflowProjectIdToCheck
+     * @param projectIdToCheck
      * @throws IllegalStateException if the workflow project id associated with the current context doesn't match the
      *             one passed as parameter
      */
-    static void assertWorkflowProjectId(final String workflowProjectIdToCheck) {
-        var expectedId = getWorkflowProjectId().orElse(null);
+    static void assertWorkflowProjectId(final String projectIdToCheck) {
+        var expectedId = getProjectId().orElse(null);
         if (expectedId == null) {
             return;
         }
-        if (!expectedId.equals(workflowProjectIdToCheck)) {
+        if (!expectedId.equals(projectIdToCheck)) {
             throw new IllegalStateException(
-                "No workflow project id available/accessible for the given id (" + workflowProjectIdToCheck + ")");
+                "No workflow project id available/accessible for the given id (" + projectIdToCheck + ")");
         }
     }
 

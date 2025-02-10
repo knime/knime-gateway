@@ -200,7 +200,7 @@ public final class DefaultEventService implements EventService {
     }
 
     private static String projectId() {
-        return DefaultServiceContext.getWorkflowProjectId().orElse(null);
+        return DefaultServiceContext.getProjectId().orElse(null);
     }
 
     /**

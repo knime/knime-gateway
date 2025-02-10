@@ -119,7 +119,7 @@ public final class DefaultApplicationService implements ApplicationService {
      */
     @Override
     public AppStateEnt getState() {
-        var projectId = DefaultServiceContext.getWorkflowProjectId();
+        var projectId = DefaultServiceContext.getProjectId();
         if (projectId.isPresent()) {
             var wfm = org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(projectId.get(),
                 NodeIDEnt.getRootID());

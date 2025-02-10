@@ -103,7 +103,7 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private static String projectId() {
-        return DefaultServiceContext.getWorkflowProjectId().orElse(null);
+        return DefaultServiceContext.getProjectId().orElse(null);
     }
 
     /**
