@@ -52,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
@@ -105,6 +106,13 @@ public final class SpaceProvidersManager {
             res = m_spaceProviders.get(Key.defaultKey());
         }
         return res;
+    }
+
+    /**
+     * @return all available keys
+     */
+    public Set<Key> getKeys() {
+        return m_spaceProviders.keySet();
     }
 
     /**

@@ -211,10 +211,9 @@ public class DefaultSpaceService implements SpaceService {
             final var item = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId) //
                 .createWorkflow(workflowGroupId, name);
             if (GlobalNodeStats.isEnabled()) {
-                NodeTimer.GLOBAL_TIMER
-                    .incWorkflowCreate(
-                        m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId)
-                            .getType() == TypeEnum.LOCAL ? WorkflowType.LOCAL : WorkflowType.REMOTE);
+                NodeTimer.GLOBAL_TIMER.incWorkflowCreate(
+                    m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId)
+                        .getType() == TypeEnum.LOCAL ? WorkflowType.LOCAL : WorkflowType.REMOTE);
             }
             return item;
         } catch (NoSuchElementException e) {

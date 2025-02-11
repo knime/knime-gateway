@@ -115,9 +115,10 @@ public class SpaceItemChangedEventSource extends EventSource<SpaceItemChangedEve
 
     @Override
     public void removeAllEventListeners() {
-        // TODO get all space providers regardless of the project-id
-        m_spaceProvidersManager.getSpaceProviders(Key.defaultKey()).getAllSpaceProviders()
-            .forEach(provider -> provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll));
+        for (Key key : m_spaceProvidersManager.getKeys()) {
+            m_spaceProvidersManager.getSpaceProviders(key).getAllSpaceProviders()
+                .forEach(provider -> provider.getChangeNotifier().ifPresent(SpaceItemChangeNotifier::unsubscribeAll));
+        }
     }
 
     @Override

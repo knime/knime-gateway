@@ -370,6 +370,9 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/ServiceDependencies.java">
+        <filter id="0"/>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/ServiceDependencies.java" type="org.knime.gateway.impl.webui.service.ServiceDependencies">
         <filter id="338792546">
             <message_arguments>

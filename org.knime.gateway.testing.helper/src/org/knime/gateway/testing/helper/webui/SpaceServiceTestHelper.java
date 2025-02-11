@@ -95,8 +95,8 @@ import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -176,7 +176,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testRenameSpaceItemLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(p.getFirst()));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
+            createSpaceProvidersManager(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
 
