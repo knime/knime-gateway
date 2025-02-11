@@ -58,6 +58,7 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ProjectFilter;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -130,8 +131,8 @@ public final class DefaultApplicationService implements ApplicationService {
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
             m_spaceProvidersManager, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
-        var appState = AppStateEntityFactory.buildAppStateEnt(projectId.orElse(AppStateEntityFactory.ALL_PROJECTS),
-            isActiveProject, dependencies);
+        var appState = AppStateEntityFactory.buildAppStateEnt(
+            projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), isActiveProject, dependencies);
         if (m_appStateUpdater != null) {
             m_appStateUpdater.setLastAppState(appState);
         }

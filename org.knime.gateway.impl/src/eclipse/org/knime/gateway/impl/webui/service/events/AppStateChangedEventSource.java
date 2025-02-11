@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirty
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ProjectFilter;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies;
 
 /**
@@ -175,8 +176,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         var previousAppState = m_appStateUpdater.getLastAppState().orElse(null);
         var filterProjectSpecificInfosFromEvents = m_appStateUpdater.filterProjectSpecificInfosFromEvents();
         var appState = AppStateEntityFactory.buildAppStateEnt( //
-            filterProjectSpecificInfosFromEvents ? AppStateEntityFactory.NO_PROJECTS
-                : AppStateEntityFactory.ALL_PROJECTS, //
+            filterProjectSpecificInfosFromEvents ? ProjectFilter.none() : ProjectFilter.all(), //
             filterProjectSpecificInfosFromEvents ? id -> false : null, //
             m_dependencies //
         );

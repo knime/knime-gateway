@@ -198,49 +198,12 @@
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory"/>
-                <message_argument value="buildAppStateEnt(AppStateEnt, Predicate&lt;String&gt;, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
-            </message_arguments>
-        </filter>
-        <filter id="338792546">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory"/>
-                <message_argument value="buildAppStateEnt(AppStateEnt, WorkflowProjectManager, PreferencesProvider, ExampleProjects, SpaceProviders)"/>
-            </message_arguments>
-        </filter>
-        <filter id="338792546">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory"/>
                 <message_argument value="buildAppStateEnt(Predicate&lt;String&gt;, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="ALL_PROJECTS"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="NO_PROJECTS"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="buildAppStateEnt(AppStateEnt, WorkflowProjectManager, PreferencesProvider, ExampleProjects, SpaceProviders, NodeFactoryProvider)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="buildAppStateEnt(Predicate&lt;String&gt;, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="buildAppStateEnt(String, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="buildSpaceProviderAndConnectionEnt(SpaceProvider, boolean)"/>
+                <message_argument value="buildAppStateEnt(AppStateEntityFactory.ProjectFilter, Predicate&lt;String&gt;, AppStateEntityFactory.ServiceDependencies)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -249,13 +212,14 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory$ServiceDependencies">
-        <filter id="338722907">
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory$ProjectFilter">
+        <filter id="1143996420">
             <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
-                <message_argument value="ServiceDependencies(ProjectManager, PreferencesProvider, SpaceProviders, NodeFactoryProvider, NodeCollections)"/>
+                <message_argument value="ProjectFilter"/>
             </message_arguments>
         </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory$ServiceDependencies">
         <filter id="338722907">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
@@ -369,9 +333,6 @@
                 <message_argument value="getSpaceProvider(String)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/ServiceDependencies.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/ServiceDependencies.java" type="org.knime.gateway.impl.webui.service.ServiceDependencies">
         <filter id="338792546">

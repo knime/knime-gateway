@@ -139,42 +139,21 @@ public final class AppStateEntityFactory {
     }
 
     /**
-     * Used with {@link #buildAppStateEnt(String, Predicate, ServiceDependencies)} as project-id to indicate that no
-     * projects are to be included.
-     */
-    public static final String NO_PROJECTS = null;
-
-    /**
-     * Used with {@link #buildAppStateEnt(String, Predicate, ServiceDependencies)} as project-id to indicate that all
-     * projects are to be included.
-     */
-    public static final String ALL_PROJECTS = "";
-
-    /**
      * Properties added here potentially also need to be considered in
      * {@link #buildAppStateEntDiff(AppStateEnt, AppStateEnt, boolean)}.
      *
      * @param dependencies Service dependencies needed for building this application state
-     * @param projectId only includes the project with the given id in the app state; or if {@link #NO_PROJECTS} no
-     *            projects are to be included; if {@link #ALL_PROJECTS} all projects are included
+     * @param projectFilter determines the projects to include in the app state
      * @param isActiveProject determines the projects to be set to active (see {@link ProjectEnt#getActiveWorkflowId()};
      *            if {@code null} {@link ProjectManager#isActiveProject(String)} is used
      * @return a new application state entity instance
      */
-    public static AppStateEnt buildAppStateEnt(final String projectId, final Predicate<String> isActiveProject,
+    public static AppStateEnt buildAppStateEnt(final ProjectFilter projectFilter, final Predicate<String> isActiveProject,
         final ServiceDependencies dependencies) {
-        Predicate<String> workflowProjectFilter;
-        if (NO_PROJECTS == projectId) {
-            workflowProjectFilter = id -> false;
-        } else if (ALL_PROJECTS == projectId) {
-            workflowProjectFilter = id -> true;
-        } else {
-            workflowProjectFilter = id -> id.equals(projectId);
-        }
         var projects = getProjectEnts( //
             dependencies.projectManager(), //
             dependencies.spaceProvidersManager(), //
-            workflowProjectFilter, //
+            projectFilter.predicate(), //
             isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
         );
         var activeCollection =
@@ -210,8 +189,62 @@ public final class AppStateEntityFactory {
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
             // TODO HUB-9598 only include when not read-only connection?
             .setSpaceProviders(appMode == AppModeEnum.DEFAULT
-                ? buildSpaceProviderEnts(projectId, dependencies.spaceProvidersManager(), false) : null) //
+                ? buildSpaceProviderEnts(projectFilter.spaceProvidersKey(), dependencies.spaceProvidersManager(), false)
+                : null) //
             .build();
+    }
+
+    /**
+     * Determines which projects to include in the app state.
+     */
+    public static final class ProjectFilter {
+
+        private static final String NO_PROJECTS = null;
+
+        private static final String ALL_PROJECTS = "";
+
+        private String m_projectId;
+
+        /**
+         * @return a project filter that includes all projects
+         */
+        public static ProjectFilter all() {
+            return new ProjectFilter(ALL_PROJECTS);
+        }
+
+        /**
+         * @return a project filter that includes no project.
+         */
+        public static ProjectFilter none() {
+            return new ProjectFilter(NO_PROJECTS);
+        }
+
+        /**
+         * @param projectId
+         * @return a project filter that includes only the project with the given id
+         */
+        public static ProjectFilter single(final String projectId) {
+            return new ProjectFilter(projectId);
+        }
+
+        private ProjectFilter(final String projectId) {
+            m_projectId = projectId;
+        }
+
+        private Predicate<String> predicate() {
+            if (NO_PROJECTS == m_projectId) {
+                return id -> false;
+            } else if (ALL_PROJECTS == m_projectId) {
+                return id -> true;
+            } else {
+                return id -> id.equals(m_projectId);
+            }
+        }
+
+        private Key spaceProvidersKey() {
+            return Key.of(m_projectId);
+        }
+
     }
 
     private static AppModeEnum getAppModeEnum() {
@@ -368,9 +401,9 @@ public final class AppStateEntityFactory {
         return Boolean.valueOf(value);
     }
 
-    private static Map<String, SpaceProviderEnt> buildSpaceProviderEnts(final String projectId,
+    private static Map<String, SpaceProviderEnt> buildSpaceProviderEnts(final Key spaceProvidersKey,
         final SpaceProvidersManager spaceProvidersManager, final boolean doConnect) {
-        return spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getAllSpaceProviders().stream()
+        return spaceProvidersManager.getSpaceProviders(spaceProvidersKey).getAllSpaceProviders().stream()
             .map(sp -> buildSpaceProviderEnt(sp, doConnect))
             .collect(Collectors.toMap(SpaceProviderEnt::getId, Function.identity()));
     }
