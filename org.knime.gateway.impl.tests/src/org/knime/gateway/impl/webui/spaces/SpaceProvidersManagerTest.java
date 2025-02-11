@@ -94,22 +94,20 @@ public class SpaceProvidersManagerTest {
 
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.empty());
         spaceProvidersManager.update(Key.of(projectId), wfContext);
-        assertThrows(NoSuchElementException.class,
-            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1"));
+        assertThrows(NoSuchElementException.class, () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)));
 
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.of(spacerProvider1));
         spaceProvidersManager.update(Key.of(projectId), wfContext);
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
+        assertThrows(NoSuchElementException.class,
+            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2"));
 
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.of(spacerProvider2));
         spaceProvidersManager.update(Key.of(projectId), wfContext);
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2").getId(), is("2"));
 
         spaceProvidersManager.remove(Key.of(projectId));
-        assertThrows(NoSuchElementException.class,
-            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1"));
-        assertThrows(NoSuchElementException.class,
-            () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2"));
+        assertThrows(NoSuchElementException.class, () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)));
 
         when(spaceProvidersFactory.createSpaceProviders()).thenReturn(List.of(spacerProvider1, spacerProvider2));
         spaceProvidersManager.update();

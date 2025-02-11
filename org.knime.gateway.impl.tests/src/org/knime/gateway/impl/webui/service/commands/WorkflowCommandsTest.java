@@ -120,7 +120,8 @@ import org.knime.gateway.impl.webui.service.GatewayServiceTest;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -291,7 +292,6 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
      *
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
@@ -299,7 +299,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             new WorkflowMiddleware(ProjectManager.getInstance(), null));
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManagerInstance());
 
         Semaphore semaphore = new Semaphore(0);
         AtomicReference<Object> event = new AtomicReference<>();
@@ -322,8 +322,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
 
         semaphore.acquire();
         assertThat(((WorkflowChangedEventEnt)((CompositeEventEnt)event.get()).getEvents().get(0)).getPatch().getOps()
-            .stream().map(op -> op.getPath()).collect(Collectors.toList()),
-            Matchers.hasItem("/allowedActions/canUndo"));
+            .stream().map(op -> op.getPath()).toList(), Matchers.hasItem("/allowedActions/canUndo"));
     }
 
     static void disposeWorkflowProject(final Project wp) {
@@ -408,7 +407,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         };
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManagerInstance());
 
         var snapshotId = DefaultWorkflowService.getInstance()
             .getWorkflow(wfId, getRootID(), true).getSnapshotId();
@@ -515,7 +514,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManagerInstance());
 
         Stack<CommandResultEnt> results = new Stack<>();
         Stack<WorkflowChangedEventEnt> events = new Stack<>();
@@ -573,6 +572,14 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @Override
     public void setupServiceDependencies() {
         // prevent service dependencies from being set
+    }
+
+    private static SpaceProvidersManager createSpaceProvidersManagerInstance() {
+        var spaceProviderFactory = mock(SpaceProviderFactory.class);
+        var res = new SpaceProvidersManager(id -> {
+        }, null, List.of(spaceProviderFactory));
+        res.update();
+        return res;
     }
 
 }

@@ -81,7 +81,8 @@ import org.knime.gateway.impl.webui.service.DefaultEventService;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -221,7 +222,14 @@ public class AppStateUpdaterTest {
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
-        ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager());
+    }
+
+    private static SpaceProvidersManager createSpaceProvidersManager() {
+        var res = new SpaceProvidersManager(id -> {
+        }, null, List.of(mock(SpaceProviderFactory.class)));
+        res.update();
+        return res;
     }
 
 }

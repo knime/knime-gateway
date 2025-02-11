@@ -65,8 +65,8 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.LocalWorkflowLoader;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -119,8 +119,10 @@ public abstract class GatewayServiceTest {
      * @return the {@link SpaceProviders} service dependency
      */
     protected SpaceProvidersManager createSpaceProvidersManager() {
-        return new SpaceProvidersManager(id -> {
+        var res = new SpaceProvidersManager(id -> {
         }, null, List.of(mock(SpaceProviderFactory.class)));
+        res.update();
+        return res;
     }
 
     /**

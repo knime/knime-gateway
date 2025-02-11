@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.spaces;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -99,11 +100,15 @@ public final class SpaceProvidersManager {
     /**
      * @param key
      * @return the {@link SpaceProviders} instance for the given key or the default key if none is found
+     * @throws NoSuchElementException if no {@link SpaceProviders} instance is found for the given key
      */
     public SpaceProviders getSpaceProviders(final Key key) {
         var res = m_spaceProviders.get(key);
         if (res == null) {
             res = m_spaceProviders.get(Key.defaultKey());
+        }
+        if (res == null) {
+            throw new NoSuchElementException("No space providers found for key '" + key + "'");
         }
         return res;
     }
@@ -199,6 +204,14 @@ public final class SpaceProvidersManager {
         @Override
         public int hashCode() {
             return m_key == null ? 0 : m_key.hashCode();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            return m_key;
         }
 
     }
