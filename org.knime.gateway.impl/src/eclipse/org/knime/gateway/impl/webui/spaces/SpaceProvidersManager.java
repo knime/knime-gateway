@@ -72,7 +72,11 @@ public final class SpaceProvidersManager {
 
     private final Consumer<String> m_loginErrorHandler;
 
-    private final LocalSpaceProvider m_localSpaceProvider;
+    private Consumer<SpaceProvider> m_onProviderCreated;
+
+    private Consumer<SpaceProvider> m_onProviderRemoved;
+
+    private LocalSpaceProvider m_localSpaceProvider;
 
     private final List<SpaceProviderFactory> m_spaceProvidersFactories;
 
@@ -82,7 +86,20 @@ public final class SpaceProvidersManager {
      */
     public SpaceProvidersManager(final Consumer<String> loginErrorHandler,
         final LocalSpaceProvider localSpaceProvider) {
-        this(loginErrorHandler, localSpaceProvider, SpaceProviderFactory.collectSpaceProviderFactories());
+        this(loginErrorHandler, null, null, localSpaceProvider);
+    }
+
+    /**
+     * @param loginErrorHandler error handler for login errors
+     * @param onProviderCreated callback for newly created space providers
+     * @param onProviderRemoved callback for removed space providers
+     * @param localSpaceProvider the local space provider or {@code null} if none
+     */
+    public SpaceProvidersManager(final Consumer<String> loginErrorHandler,
+        final Consumer<SpaceProvider> onProviderCreated, final Consumer<SpaceProvider> onProviderRemoved,
+        final LocalSpaceProvider localSpaceProvider) {
+        this(loginErrorHandler, onProviderCreated, onProviderRemoved, localSpaceProvider,
+            SpaceProviderFactory.collectSpaceProviderFactories());
     }
 
     /**
@@ -92,7 +109,22 @@ public final class SpaceProvidersManager {
      */
     public SpaceProvidersManager(final Consumer<String> loginErrorHandler, final LocalSpaceProvider localSpaceProvider,
         final List<SpaceProviderFactory> spaceProviderFactories) {
+        this(loginErrorHandler, null, null, localSpaceProvider, spaceProviderFactories);
+    }
+
+    /**
+     * @param loginErrorHandler error handler for login errors
+     * @param onProviderCreated callback for newly created space providers
+     * @param onProviderRemoved callback for removed space providers
+     * @param localSpaceProvider the local space provider or {@code null} if none
+     * @param spaceProviderFactories the factories to create the space providers from
+     */
+    public SpaceProvidersManager(final Consumer<String> loginErrorHandler,
+        final Consumer<SpaceProvider> onProviderCreated, final Consumer<SpaceProvider> onProviderRemoved,
+        final LocalSpaceProvider localSpaceProvider, final List<SpaceProviderFactory> spaceProviderFactories) {
         m_loginErrorHandler = loginErrorHandler;
+        m_onProviderCreated = onProviderCreated == null ? (provider -> {}) : onProviderCreated;
+        m_onProviderRemoved = onProviderRemoved == null ? (provider -> {}) : onProviderRemoved;
         m_localSpaceProvider = localSpaceProvider;
         m_spaceProvidersFactories = spaceProviderFactories;
     }
@@ -130,6 +162,7 @@ public final class SpaceProvidersManager {
     public void update(final Key key, final WorkflowContextV2 context) {
         m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProvider(context).ifPresent(provider -> {
             provider.init(m_loginErrorHandler);
+            m_onProviderCreated.accept(provider);
             m_spaceProviders.put(key, new SpaceProviders(Map.of(provider.getId(), provider)));
         }));
     }
@@ -140,6 +173,7 @@ public final class SpaceProvidersManager {
      * @param key
      */
     public void remove(final Key key) {
+        m_spaceProviders.get(key).getAllSpaceProviders().forEach(m_onProviderRemoved);
         m_spaceProviders.remove(key);
     }
 
@@ -148,15 +182,20 @@ public final class SpaceProvidersManager {
      * point.
      */
     public synchronized void update() {
+        m_spaceProviders.values().forEach(providers -> providers.getAllSpaceProviders().forEach(m_onProviderRemoved));
         m_spaceProviders.clear();
+
         var spaceProvidersMap = new LinkedHashMap<String, SpaceProvider>();
         if (m_localSpaceProvider != null) {
             spaceProvidersMap.put(m_localSpaceProvider.getId(), m_localSpaceProvider);
         }
+
         m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProviders().forEach(provider -> {
             provider.init(m_loginErrorHandler);
+            m_onProviderCreated.accept(provider);
             spaceProvidersMap.put(provider.getId(), provider);
         }));
+
         m_spaceProviders.put(Key.defaultKey(), new SpaceProviders(spaceProvidersMap));
     }
 

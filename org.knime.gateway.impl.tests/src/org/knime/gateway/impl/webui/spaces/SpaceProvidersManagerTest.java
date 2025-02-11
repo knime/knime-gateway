@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
+import static org.assertj.core.api.Assertions.assertThatList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,9 +56,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
@@ -121,7 +124,77 @@ public class SpaceProvidersManagerTest {
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
         assertThrows(NoSuchElementException.class,
             () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2"));
+    }
 
+    /**
+     * Assert that the callbacks are called as expected when updating the space providers.
+     */
+    @Test
+    public void testCallbacksWhenUpdating() {
+        var spacerProvider1 = mock(SpaceProvider.class);
+        when(spacerProvider1.getId()).thenReturn("1");
+        when(spacerProvider1.getType()).thenReturn(TypeEnum.HUB);
+
+        var spacerProvider2 = mock(SpaceProvider.class);
+        when(spacerProvider2.getId()).thenReturn("2");
+        when(spacerProvider2.getType()).thenReturn(TypeEnum.SERVER);
+
+        var spaceProvidersFactory = mock(SpaceProviderFactory.class);
+        when(spaceProvidersFactory.createSpaceProviders()).thenReturn(List.of(spacerProvider1, spacerProvider2));
+
+        var onCreateCounter = new ArrayList<TypeEnum>();
+        Consumer<SpaceProvider> onProviderCreated = provider -> onCreateCounter.add(provider.getType());
+        var onRemoveCounter = new ArrayList<TypeEnum>();
+        Consumer<SpaceProvider> onProviderRemoved = provider -> onRemoveCounter.add(provider.getType());
+        var spaceProvidersManager = new SpaceProvidersManager(id -> {}, onProviderCreated, onProviderRemoved, null,
+            List.of(spaceProvidersFactory));
+
+        spaceProvidersManager.update();
+        assertThatList(onRemoveCounter).isEmpty(); // Nothing to remove on first 'update()' call.
+        assertThatList(onCreateCounter).containsExactly(TypeEnum.HUB, TypeEnum.SERVER).hasSize(2);
+
+        onCreateCounter.clear();
+        onRemoveCounter.clear();
+
+        spaceProvidersManager.update();
+        assertThatList(onRemoveCounter).containsExactly(TypeEnum.HUB, TypeEnum.SERVER).hasSize(2);
+        assertThatList(onCreateCounter).containsExactly(TypeEnum.HUB, TypeEnum.SERVER).hasSize(2);
+    }
+
+    /**
+     * Assert that the callbacks are called as expected when updating the space providers.
+     */
+    @Test
+    public void testCallbacksWhenUpdatingWithinContext() {
+        var spacerProvider1 = mock(SpaceProvider.class);
+        when(spacerProvider1.getId()).thenReturn("1");
+        when(spacerProvider1.getType()).thenReturn(TypeEnum.HUB);
+
+        var wfContext = WorkflowContextV2.forTemporaryWorkflow(Path.of("/"), Path.of("/"));
+        var projectId = "project-id";
+
+        var spaceProvidersFactory = mock(SpaceProviderFactory.class);
+        when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.of(spacerProvider1));
+
+        var onCreateCounter = new ArrayList<TypeEnum>();
+        Consumer<SpaceProvider> onProviderCreated = provider -> onCreateCounter.add(provider.getType());
+        var onRemoveCounter = new ArrayList<TypeEnum>();
+        Consumer<SpaceProvider> onProviderRemoved = provider -> onRemoveCounter.add(provider.getType());
+        var spaceProvidersManager = new SpaceProvidersManager(id -> {}, onProviderCreated, onProviderRemoved, null,
+            List.of(spaceProvidersFactory));
+
+        spaceProvidersManager.update(Key.of(projectId), wfContext);
+        assertThatList(onRemoveCounter).isEmpty(); // Nothing to remove on first 'update()' call.
+        assertThatList(onCreateCounter).containsExactly(TypeEnum.HUB).hasSize(1);
+
+        onCreateCounter.clear();
+        onRemoveCounter.clear();
+
+        spaceProvidersManager.remove(Key.of(projectId));
+        assertThatList(onRemoveCounter).containsExactly(TypeEnum.HUB).hasSize(1);
+
+        spaceProvidersManager.update(Key.of(projectId), wfContext);
+        assertThatList(onCreateCounter).containsExactly(TypeEnum.HUB).hasSize(1);
     }
 
 }
