@@ -198,10 +198,10 @@ public interface AppStateEnt extends GatewayEntity {
   public Boolean isSubnodeLockingEnabled();
 
   /**
-   * A map of all available space providers.
+   * A list of all available space providers.
    * @return spaceProviders 
    **/
-  public java.util.Map<String, SpaceProviderEnt> getSpaceProviders();
+  public java.util.List<SpaceProviderEnt> getSpaceProviders();
 
 
   @Override
@@ -379,12 +379,12 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setIsSubnodeLockingEnabled(Boolean isSubnodeLockingEnabled);
         
         /**
-         * A map of all available space providers.
+         * A list of all available space providers.
          * 
          * @param spaceProviders the property value,  
          * @return this entity builder for chaining
          */
-        AppStateEntBuilder setSpaceProviders(java.util.Map<String, SpaceProviderEnt> spaceProviders);
+        AppStateEntBuilder setSpaceProviders(java.util.List<SpaceProviderEnt> spaceProviders);
         
         
         /**

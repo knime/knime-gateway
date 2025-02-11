@@ -401,11 +401,10 @@ public final class AppStateEntityFactory {
         return Boolean.valueOf(value);
     }
 
-    private static Map<String, SpaceProviderEnt> buildSpaceProviderEnts(final Key spaceProvidersKey,
+    private static List<SpaceProviderEnt> buildSpaceProviderEnts(final Key spaceProvidersKey,
         final SpaceProvidersManager spaceProvidersManager, final boolean doConnect) {
         return spaceProvidersManager.getSpaceProviders(spaceProvidersKey).getAllSpaceProviders().stream()
-            .map(sp -> buildSpaceProviderEnt(sp, doConnect))
-            .collect(Collectors.toMap(SpaceProviderEnt::getId, Function.identity()));
+            .map(sp -> buildSpaceProviderEnt(sp, doConnect)).toList();
     }
 
     /**

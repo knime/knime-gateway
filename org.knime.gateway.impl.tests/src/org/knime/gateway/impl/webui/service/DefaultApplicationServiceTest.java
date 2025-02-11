@@ -157,7 +157,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
 
         try (var unused = DefaultServiceContext.set(workflowProjectId)) {
             AppStateEnt appStateEnt = appService.getState();
-            var expectedSpaceProvider = appStateEnt.getSpaceProviders().get("foo");
+            var expectedSpaceProvider = appStateEnt.getSpaceProviders().get(0);
             assertThat(expectedSpaceProvider.getName(), is("bar"));
         }
 

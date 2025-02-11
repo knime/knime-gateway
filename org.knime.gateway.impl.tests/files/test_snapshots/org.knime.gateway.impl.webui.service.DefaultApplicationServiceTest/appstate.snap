@@ -59,22 +59,19 @@
     },
     "projectId" : "the_workflow_project_id"
   } ],
-  "spaceProviders" : {
-    "connected_provider" : {
-      "connected" : true,
-      "connectionMode" : "AUTHENTICATED",
-      "id" : "connected_provider",
-      "name" : "Connected Provider",
-      "type" : "HUB",
-      "username" : "test-username"
-    },
-    "local_provider" : {
-      "connected" : true,
-      "connectionMode" : "AUTOMATIC",
-      "id" : "local_provider",
-      "name" : "Local Provider",
-      "type" : "LOCAL"
-    }
-  },
+  "spaceProviders" : [ {
+    "connected" : true,
+    "connectionMode" : "AUTOMATIC",
+    "id" : "local_provider",
+    "name" : "Local Provider",
+    "type" : "LOCAL"
+  }, {
+    "connected" : true,
+    "connectionMode" : "AUTHENTICATED",
+    "id" : "connected_provider",
+    "name" : "Connected Provider",
+    "type" : "HUB",
+    "username" : "test-username"
+  } ],
   "suggestedPortTypeIds" : [ "org.knime.core.node.BufferedDataTable", "org.knime.core.node.port.flowvariable.FlowVariablePortObject", "org.knime.core.node.port.PortObject", "org.knime.core.node.workflow.capture.WorkflowPortObject" ]
 }

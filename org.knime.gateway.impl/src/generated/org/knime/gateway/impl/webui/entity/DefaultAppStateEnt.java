@@ -97,7 +97,7 @@ public record DefaultAppStateEnt(
     Boolean nodeRepositoryLoaded,
     String analyticsPlatformDownloadURL,
     Boolean isSubnodeLockingEnabled,
-    java.util.Map<String, SpaceProviderEnt> spaceProviders) implements AppStateEnt {
+    java.util.List<SpaceProviderEnt> spaceProviders) implements AppStateEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -201,7 +201,7 @@ public record DefaultAppStateEnt(
     }
     
     @Override
-    public java.util.Map<String, SpaceProviderEnt> getSpaceProviders() {
+    public java.util.List<SpaceProviderEnt> getSpaceProviders() {
         return spaceProviders;
     }
     
@@ -246,7 +246,7 @@ public record DefaultAppStateEnt(
 
         private Boolean m_isSubnodeLockingEnabled;
 
-        private java.util.Map<String, SpaceProviderEnt> m_spaceProviders;
+        private java.util.List<SpaceProviderEnt> m_spaceProviders;
 
         @Override
         public DefaultAppStateEntBuilder setAppMode(AppModeEnum appMode) {
@@ -357,7 +357,7 @@ public record DefaultAppStateEnt(
         }
 
         @Override
-        public DefaultAppStateEntBuilder setSpaceProviders(java.util.Map<String, SpaceProviderEnt> spaceProviders) {
+        public DefaultAppStateEntBuilder setSpaceProviders(java.util.List<SpaceProviderEnt> spaceProviders) {
              m_spaceProviders = spaceProviders;
              return this;
         }

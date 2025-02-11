@@ -116,6 +116,12 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
+                <message_argument value="setSpaceProviders(List&lt;SpaceProviderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
                 <message_argument value="setSpaceProviders(Map&lt;String,SpaceProviderAndConnectionEnt&gt;)"/>
             </message_arguments>
         </filter>
@@ -139,6 +145,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setSpaceProviders(List&lt;SpaceProviderAndConnectionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSpaceProviders(List&lt;SpaceProviderEnt&gt;)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -323,13 +334,6 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setUsername(String)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/UserEnt.java" type="org.knime.gateway.api.webui.entity.UserEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.UserEnt"/>
             </message_arguments>
         </filter>
     </resource>

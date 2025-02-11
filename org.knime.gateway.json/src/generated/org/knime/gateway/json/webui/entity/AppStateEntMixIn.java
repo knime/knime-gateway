@@ -146,7 +146,7 @@ public interface AppStateEntMixIn extends AppStateEnt {
     
     @Override
     @JsonProperty("spaceProviders")
-    public java.util.Map<String, SpaceProviderEnt> getSpaceProviders();
+    public java.util.List<SpaceProviderEnt> getSpaceProviders();
     
 
     /**
@@ -235,7 +235,7 @@ public interface AppStateEntMixIn extends AppStateEnt {
         
         @Override
         @JsonProperty("spaceProviders")
-        public AppStateEntMixInBuilder setSpaceProviders(final java.util.Map<String, SpaceProviderEnt> spaceProviders);
+        public AppStateEntMixInBuilder setSpaceProviders(final java.util.List<SpaceProviderEnt> spaceProviders);
         
     }
 
