@@ -94,7 +94,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Allows one to execute, undo and redo workflow commands for workflows. Individual commands are assumed to be executed
@@ -155,7 +155,7 @@ public final class WorkflowCommands {
      * @param commandEnt the workflow command entity to execute
      * @param workflowMiddleware additional dependency required to assemble the command result
      * @param nodeFactoryProvider additional dependency required to execute some commands
-     * @param spaceProvidersManager The space providers
+     * @param spaceProviders The space providers
      *
      * @return The instance of the executed command
      *
@@ -165,9 +165,9 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProvidersManager spaceProvidersManager)
+        final SpaceProviders spaceProviders)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProvidersManager);
+        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
@@ -180,7 +180,7 @@ public final class WorkflowCommands {
 
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
-        final NodeFactoryProvider nodeFactoryProvider, final SpaceProvidersManager spaceProvidersManager)
+        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders)
         throws OperationNotAllowedException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt ce) {
@@ -194,7 +194,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AutoDisconnectCommandEnt ce) {
             command = new AutoDisconnect(ce);
         } else if (commandEnt instanceof AddNodeCommandEnt ce) {
-            command = new AddNode(ce, nodeFactoryProvider, spaceProvidersManager);
+            command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
         } else if (commandEnt instanceof ReplaceNodeCommandEnt ce) {
             command = new ReplaceNode(ce);
         } else if (commandEnt instanceof InsertNodeCommandEnt ce) {

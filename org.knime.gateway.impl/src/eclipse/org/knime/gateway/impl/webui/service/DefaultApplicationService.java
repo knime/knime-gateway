@@ -127,10 +127,13 @@ public final class DefaultApplicationService implements ApplicationService {
                 NodeIDEnt.getRootID());
             m_spaceProvidersManager.update(Key.of(projectId.get()), wfm.getContextV2());
         }
-
+        var spaceProviders = m_spaceProvidersManager.getSpaceProviders( //
+            DefaultServiceContext.getProjectId().map(Key::of) //
+                .orElse(Key.defaultKey()) //
+        );
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-            m_spaceProvidersManager, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
+            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
         var appState = AppStateEntityFactory.buildAppStateEnt(
             projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), isActiveProject, dependencies);
         if (m_appStateUpdater != null) {

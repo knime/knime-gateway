@@ -75,8 +75,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Workflow command to add a native node.
@@ -92,17 +91,17 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
     private final NodeFactoryProvider m_nodeFactoryProvider;
 
-    private final SpaceProvidersManager m_spaceProvidersManager;
+    private final SpaceProviders m_spaceProviders;
 
     AddNode(final AddNodeCommandEnt commandEnt) {
         this(commandEnt, null, null);
     }
 
     AddNode(final AddNodeCommandEnt commandEnt, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProvidersManager spaceProvidersManager) {
+        final SpaceProviders spaceProviders) {
         m_commandEnt = commandEnt;
         m_nodeFactoryProvider = nodeFactoryProvider;
-        m_spaceProvidersManager = spaceProvidersManager;
+        m_spaceProviders = spaceProviders;
     }
 
     @Override
@@ -112,7 +111,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         var positionEnt = m_commandEnt.getPosition();
         var factoryKeyEnt = m_commandEnt.getNodeFactory();
         var url = parseURL(m_commandEnt.getUrl());
-        if (url == null && m_commandEnt.getSpaceItemReference() != null && m_spaceProvidersManager != null) {
+        if (url == null && m_commandEnt.getSpaceItemReference() != null && m_spaceProviders != null) {
             url = getUrlFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
         }
 
@@ -177,8 +176,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         final var spaceId = spaceItemId.getSpaceId();
         final var itemId = spaceItemId.getItemId();
         try {
-            var space = m_spaceProvidersManager.getSpaceProviders(Key.of(getWorkflowKey().getProjectId()))
-                .getSpace(spaceProviderId, spaceId);
+            var space = m_spaceProviders.getSpace(spaceProviderId, spaceId);
             return space.toPathBasedKnimeUrl(itemId).toURL();
         } catch (MalformedURLException | ResourceAccessException ex) {
             NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId

@@ -127,8 +127,8 @@ public final class DefaultWorkflowService implements WorkflowService {
                         : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes());
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
-            var buildConext = WorkflowBuildContext.builder().includeInteractionInfo(false);
-            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildConext);
+            var buildContext = WorkflowBuildContext.builder().includeInteractionInfo(false);
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         }
     }
 
@@ -167,8 +167,13 @@ public final class DefaultWorkflowService implements WorkflowService {
         final WorkflowCommandEnt workflowCommandEnt)
         throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        var spaceProviders = m_spaceProvidersManager == null ? null : //
+            m_spaceProvidersManager.getSpaceProviders( //
+                DefaultServiceContext.getProjectId().map(Key::of) //
+                    .orElse(Key.defaultKey()) //
+            );
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
-            m_workflowMiddleware, m_nodeFactoryProvider, m_spaceProvidersManager);
+            m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
     }
 
     /**

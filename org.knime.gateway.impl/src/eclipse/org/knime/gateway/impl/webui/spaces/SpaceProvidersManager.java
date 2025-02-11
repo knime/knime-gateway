@@ -70,11 +70,11 @@ public final class SpaceProvidersManager {
 
     private final Map<Key, SpaceProviders> m_spaceProviders = new LinkedHashMap<>();
 
-    private Consumer<String> m_loginErrorHandler;
+    private final Consumer<String> m_loginErrorHandler;
 
-    private LocalSpaceProvider m_localSpaceProvider;
+    private final LocalSpaceProvider m_localSpaceProvider;
 
-    private List<SpaceProviderFactory> m_spaceProvidersFactories;
+    private final List<SpaceProviderFactory> m_spaceProvidersFactories;
 
     /**
      * @param loginErrorHandler error handler for login errors
@@ -165,7 +165,7 @@ public final class SpaceProvidersManager {
      */
     public static final class Key {
 
-        private String m_key;
+        private final String m_key;
 
         private Key(final String key) {
             m_key = key;

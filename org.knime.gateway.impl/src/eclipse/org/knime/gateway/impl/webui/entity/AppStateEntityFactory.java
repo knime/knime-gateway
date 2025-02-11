@@ -89,8 +89,7 @@ import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
@@ -129,12 +128,12 @@ public final class AppStateEntityFactory {
      */
     @SuppressWarnings("javadoc")
     public record ServiceDependencies( //
-        ProjectManager projectManager, //
-        PreferencesProvider preferencesProvider, //
-        SpaceProvidersManager spaceProvidersManager, //
-        NodeFactoryProvider nodeFactoryProvider, //
-        NodeCollections nodeCollections, //
-        KaiHandler kaiHandler //
+            ProjectManager projectManager, //
+            PreferencesProvider preferencesProvider, //
+            SpaceProviders spaceProviders, //
+            NodeFactoryProvider nodeFactoryProvider, //
+            NodeCollections nodeCollections, //
+            KaiHandler kaiHandler //
     ) {
     }
 
@@ -152,7 +151,7 @@ public final class AppStateEntityFactory {
         final Predicate<String> isActiveProject, final ServiceDependencies dependencies) {
         var projects = getProjectEnts( //
             dependencies.projectManager(), //
-            dependencies.spaceProvidersManager(), //
+            dependencies.spaceProviders(), //
             projectFilter.predicate(), //
             isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
         );
@@ -188,9 +187,8 @@ public final class AppStateEntityFactory {
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
             // TODO HUB-9598 only include when not read-only connection?
-            .setSpaceProviders(appMode == AppModeEnum.DEFAULT
-                ? buildSpaceProviderEnts(projectFilter.spaceProvidersKey(), dependencies.spaceProvidersManager(), false)
-                : null) //
+            .setSpaceProviders(
+                appMode == AppModeEnum.DEFAULT ? buildSpaceProviderEnts(dependencies.spaceProviders(), false) : null) //
             .build();
     }
 
@@ -203,7 +201,7 @@ public final class AppStateEntityFactory {
 
         private static final String ALL_PROJECTS = "";
 
-        private String m_projectId;
+        private final String m_projectId;
 
         /**
          * @return a project filter that includes all projects
@@ -232,17 +230,13 @@ public final class AppStateEntityFactory {
         }
 
         private Predicate<String> predicate() {
-            if (NO_PROJECTS == m_projectId) {
+            if (Objects.equals(NO_PROJECTS, m_projectId)) {
                 return id -> false;
-            } else if (ALL_PROJECTS == m_projectId) {
+            } else if (ALL_PROJECTS.equals(m_projectId)) {
                 return id -> true;
             } else {
                 return id -> id.equals(m_projectId);
             }
-        }
-
-        private Key spaceProvidersKey() {
-            return Key.of(m_projectId);
         }
 
     }
@@ -260,16 +254,16 @@ public final class AppStateEntityFactory {
      *
      * @param oldAppState
      * @param newAppState
-     * @param includePojectSpecificInfosInDiff
+     * @param includeProjectSpecificInfosInDiff
      * @return the app state where only the properties are set which have changed
      */
     public static AppStateEnt buildAppStateEntDiff(final AppStateEnt oldAppState, final AppStateEnt newAppState,
-        final boolean includePojectSpecificInfosInDiff) {
+        final boolean includeProjectSpecificInfosInDiff) {
         if (oldAppState == null) { // If there is no previous app state, no checks are needed
             return newAppState;
         } else { // Only set what has changed (except for properties we know that are static)
             var builder = builder(AppStateEntBuilder.class);
-            if (includePojectSpecificInfosInDiff) {
+            if (includeProjectSpecificInfosInDiff) {
                 setIfChanged(oldAppState, newAppState, AppStateEnt::getOpenProjects, builder::setOpenProjects);
             }
             setIfChanged(oldAppState, newAppState, AppStateEnt::hasNodeCollectionActive,
@@ -281,8 +275,7 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::isScrollToZoomEnabled, builder::setScrollToZoomEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isConfirmNodeConfigChanges,
                 builder::setConfirmNodeConfigChanges);
-            setIfChanged(oldAppState, newAppState, AppStateEnt::isUseEmbeddedDialogs,
-                builder::setUseEmbeddedDialogs);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::isUseEmbeddedDialogs, builder::setUseEmbeddedDialogs);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isKaiEnabled, builder::setIsKaiEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
@@ -303,12 +296,12 @@ public final class AppStateEntityFactory {
     }
 
     private static List<ProjectEnt> getProjectEnts(final ProjectManager projectManager,
-        final SpaceProvidersManager spaceProvidersManager, final Predicate<String> projectFilter,
+        final SpaceProviders spaceProviders, final Predicate<String> projectFilter,
         final Predicate<String> isActiveProject) {
         return projectManager.getProjectIds().stream() //
             .filter(projectFilter) //
             .flatMap(id -> projectManager.getProject(id).stream()) //
-            .map(wp -> buildWorkflowProjectEnt(wp, isActiveProject, spaceProvidersManager)) //
+            .map(wp -> buildProjectEnt(wp, isActiveProject, spaceProviders)) //
             .toList();
     }
 
@@ -335,38 +328,37 @@ public final class AppStateEntityFactory {
             .toList();
     }
 
-    private static ProjectEnt buildWorkflowProjectEnt(final Project p, final Predicate<String> isActiveProject,
-        final SpaceProvidersManager spaceProvidersManager) {
+    private static ProjectEnt buildProjectEnt(final Project project, final Predicate<String> isActiveProject,
+        final SpaceProviders spaceProviders) {
         final var projectEntBuilder = builder(ProjectEntBuilder.class) //
-            .setName(p.getName()) //
-            .setProjectId(p.getID());
+            .setName(project.getName()) //
+            .setProjectId(project.getID());
 
         // optionally set an active workflow for this workflow project
-        if (isActiveProject.test(p.getID())) {
+        if (isActiveProject.test(project.getID())) {
             projectEntBuilder.setActiveWorkflowId(NodeIDEnt.getRootID());
         }
 
-        p.getOrigin().ifPresent(origin -> {
-            var originEnt = buildSpaceItemReferenceEnt(p.getID(), origin, spaceProvidersManager);
+        project.getOrigin().ifPresent(origin -> {
+            var originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders);
             projectEntBuilder.setOrigin(originEnt);
         });
         return projectEntBuilder.build();
     }
 
-    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final String projectId, final Project.Origin origin,
-        final SpaceProvidersManager spaceProvidersManager) {
+    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
+        final SpaceProviders spaceProviders) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
             .setProviderId(origin.getProviderId()) //
             .setSpaceId(origin.getSpaceId()) //
             .setItemId(origin.getItemId()) //
             .setProjectType(origin.getProjectType().orElse(null)) //
             .setVersion(origin.getItemVersion().orElse(null))
-            .setAncestorItemIds(getAncestorItemIds(projectId, origin, spaceProvidersManager)) //
+            .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }
 
-    private static List<String> getAncestorItemIds(final String projectId, final Project.Origin origin,
-        final SpaceProvidersManager spaceProvidersManager) {
+    private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders) {
         // ancestor item ids are only required for local projects because it's used to
         // * mark folders that contain open projects
         // * disallow folders to be moved if they contain opened local projects
@@ -374,8 +366,7 @@ public final class AppStateEntityFactory {
         // ... in the space explorer.
         // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
         if (origin.isLocal()) {
-            var localSpace = (LocalSpace)spaceProvidersManager.getSpaceProviders(Key.of(projectId))
-                .getSpace(origin.getProviderId(), origin.getSpaceId());
+            var localSpace = (LocalSpace)spaceProviders.getSpace(origin.getProviderId(), origin.getSpaceId());
             return localSpace.getAncestorItemIds(origin.getItemId());
         } else {
             return null;
@@ -383,7 +374,7 @@ public final class AppStateEntityFactory {
     }
 
     /**
-     * @return Web URL to send the user to to download the desktop edition of the Analytics Platform, or null if not
+     * @return Web URL to send the user to download the desktop edition of the Analytics Platform, or null if not
      *         configured.
      */
     private static String getAnalyticsPlatformDownloadURL() {
@@ -401,10 +392,9 @@ public final class AppStateEntityFactory {
         return Boolean.valueOf(value);
     }
 
-    private static List<SpaceProviderEnt> buildSpaceProviderEnts(final Key spaceProvidersKey,
-        final SpaceProvidersManager spaceProvidersManager, final boolean doConnect) {
-        return spaceProvidersManager.getSpaceProviders(spaceProvidersKey).getAllSpaceProviders().stream()
-            .map(sp -> buildSpaceProviderEnt(sp, doConnect)).toList();
+    private static List<SpaceProviderEnt> buildSpaceProviderEnts(final SpaceProviders spaceProviders,
+        final boolean doConnect) {
+        return spaceProviders.getAllSpaceProviders().stream().map(sp -> buildSpaceProviderEnt(sp, doConnect)).toList();
     }
 
     /**
@@ -418,8 +408,8 @@ public final class AppStateEntityFactory {
         final var isLocalSpaceProvider = type == TypeEnum.LOCAL;
         final var connectionMode = ConnectionModeEnum.valueOf(isLocalSpaceProvider ? "AUTOMATIC" : "AUTHENTICATED");
         final var username = getUsername(spaceProvider, doConnect); // To connect if necessary
-        return EntityFactory.Space.buildSpaceProviderEnt(spaceProvider.getId(), spaceProvider.getName(),
-            type, isLocalSpaceProvider || spaceProvider.getConnection(false).isPresent(), connectionMode,
+        return EntityFactory.Space.buildSpaceProviderEnt(spaceProvider.getId(), spaceProvider.getName(), type,
+            isLocalSpaceProvider || spaceProvider.getConnection(false).isPresent(), connectionMode,
             isLocalSpaceProvider ? null : spaceProvider.getServerAddress().orElse(null),
             isLocalSpaceProvider ? null : username);
     }

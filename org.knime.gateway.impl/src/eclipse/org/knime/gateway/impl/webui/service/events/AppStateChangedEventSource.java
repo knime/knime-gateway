@@ -51,6 +51,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.extension.NodeSpecCollectionProvider.Progress.ProgressEvent;
@@ -175,11 +176,9 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     private AppStateChangedEventEnt buildAppStateChangedEvent() {
         var previousAppState = m_appStateUpdater.getLastAppState().orElse(null);
         var filterProjectSpecificInfosFromEvents = m_appStateUpdater.filterProjectSpecificInfosFromEvents();
-        var appState = AppStateEntityFactory.buildAppStateEnt( //
-            filterProjectSpecificInfosFromEvents ? ProjectFilter.none() : ProjectFilter.all(), //
-            filterProjectSpecificInfosFromEvents ? id -> false : null, //
-            m_dependencies //
-        );
+        var projectFilter = filterProjectSpecificInfosFromEvents ? ProjectFilter.none() : ProjectFilter.all();
+        Predicate<String> isActiveProject = filterProjectSpecificInfosFromEvents ? id -> false : null;
+        var appState = AppStateEntityFactory.buildAppStateEnt(projectFilter, isActiveProject, m_dependencies);
         m_appStateUpdater.setLastAppState(appState);
         return buildEventEnt(AppStateEntityFactory.buildAppStateEntDiff(previousAppState, appState,
             !filterProjectSpecificInfosFromEvents));
