@@ -148,8 +148,8 @@ public final class AppStateEntityFactory {
      *            if {@code null} {@link ProjectManager#isActiveProject(String)} is used
      * @return a new application state entity instance
      */
-    public static AppStateEnt buildAppStateEnt(final ProjectFilter projectFilter, final Predicate<String> isActiveProject,
-        final ServiceDependencies dependencies) {
+    public static AppStateEnt buildAppStateEnt(final ProjectFilter projectFilter,
+        final Predicate<String> isActiveProject, final ServiceDependencies dependencies) {
         var projects = getProjectEnts( //
             dependencies.projectManager(), //
             dependencies.spaceProvidersManager(), //
