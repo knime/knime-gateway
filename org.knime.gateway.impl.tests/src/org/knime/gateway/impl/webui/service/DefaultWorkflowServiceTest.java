@@ -68,7 +68,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.CachedProject;
@@ -167,6 +166,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("java:S1941")
     public void testLockedMetanodeAndComponent() throws Exception {
         var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS, wfId);

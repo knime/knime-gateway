@@ -49,7 +49,6 @@
 package org.knime.gateway.testing.helper;
 
 import java.io.File;
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -57,7 +56,6 @@ import java.util.UUID;
 
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.TemplateNodeContainerPersistor;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
@@ -82,7 +80,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     @Override
     public String loadWorkflow(final TestWorkflow workflow) throws Exception {
-        final String projectId = UUID.randomUUID().toString();
+        final var projectId = UUID.randomUUID().toString();
         loadWorkflow(workflow, projectId);
         return projectId;
     }
@@ -126,7 +124,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     @Override
     public String loadComponent(final TestWorkflow component) throws Exception {
-        String projectId = UUID.randomUUID().toString();
+        var projectId = UUID.randomUUID().toString();
         loadComponent(component, projectId);
         return projectId;
     }
@@ -140,12 +138,12 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws Exception
      */
     public void loadComponent(final TestWorkflow component, final String projectId) throws Exception {
-        URI componentURI = component.getWorkflowDir().toURI();
-        WorkflowLoadHelper loadHelper = new WorkflowLoadHelper(true, true,
+        var componentURI = component.getWorkflowDir().toURI();
+        var loadHelper = new WorkflowLoadHelper(true, true,
             WorkflowContextV2.forTemporaryWorkflow(new File("").toPath(), null));
-        TemplateNodeContainerPersistor loadPersistor =
+        var loadPersistor =
             loadHelper.createTemplateLoadPersistor(component.getWorkflowDir(), componentURI);
-        MetaNodeLinkUpdateResult loadResult =
+        var loadResult =
             new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
         WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
         var snc = (SubNodeContainer)loadResult.getLoadedInstance();
