@@ -229,11 +229,11 @@ public final class WorkflowBuildContext {
      */
     public static final class WorkflowBuildContextBuilder {
 
-        private boolean m_includeInteractionInfo = false;
+        private boolean m_includeInteractionInfo;
 
-        private boolean m_canUndo = false;
+        private boolean m_canUndo;
 
-        private boolean m_canRedo = false;
+        private boolean m_canRedo;
 
         private Supplier<DependentNodeProperties> m_depNodeProps;
 

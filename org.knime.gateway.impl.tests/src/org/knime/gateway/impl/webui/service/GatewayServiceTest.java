@@ -162,15 +162,15 @@ public abstract class GatewayServiceTest {
      * Helper to load workflows for testing.
      *
      * @param wf the test workflow to load
-     * @param workflowProjectId a custom workflow project id of the loaded workflow
+     * @param projectId a custom workflow project id of the loaded workflow
      * @return the loaded workflow manager instance
      * @throws Exception
      */
-    protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String workflowProjectId) throws Exception {
-        m_workflowLoader.loadWorkflow(wf, workflowProjectId);
-        Project project =
-            ProjectManager.getInstance().getProject(workflowProjectId).orElse(null);
-        return project == null ? null : project.loadWorkflowManager();
+    protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String projectId) throws Exception {
+        m_workflowLoader.loadWorkflow(wf, projectId);
+        return ProjectManager.getInstance().getProject(projectId) //
+                .map(Project::getWorkflowManager) //
+                .orElse(null);
     }
 
     /**

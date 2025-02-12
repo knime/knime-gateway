@@ -148,7 +148,6 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
     public void testGetAppStateWithWorkflowSpecificSpaceProvider() throws Exception {
         var workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
-        ProjectManager.getInstance().openAndCacheProject(workflowProjectId);
         ProjectManager.getInstance().setProjectActive(workflowProjectId);
         var spaceProvidersFactory = setSpaceProvidersDependencyAndGetFactory();
 
