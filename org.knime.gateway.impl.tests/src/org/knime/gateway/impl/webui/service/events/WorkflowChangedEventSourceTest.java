@@ -59,7 +59,7 @@ import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -82,8 +82,8 @@ public class WorkflowChangedEventSourceTest {
     public void testRemoveListenerWhenProjectIsRemoved() throws IOException {
         var projectManager = ProjectManager.getInstance();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        projectManager.addProject(DefaultProject.builder(wfm).setId("id1").build());
-        projectManager.addProject(DefaultProject.builder(wfm).setId("id2").build());
+        projectManager.addProject(CachedProject.builder().setWfm(wfm).setId("id1").build());
+        projectManager.addProject(CachedProject.builder().setWfm(wfm).setId("id2").build());
 
         // create event source
         var workflowMiddleware = new WorkflowMiddleware(projectManager, null);
@@ -101,11 +101,9 @@ public class WorkflowChangedEventSourceTest {
 
         // check
         assertThat(eventSource.getNumRegisteredListeners(), is(2));
-        projectManager.removeProject("id1", w -> {
-        });
+        projectManager.removeProject("id1");
         assertThat(eventSource.getNumRegisteredListeners(), is(1));
-        projectManager.removeProject("id2", w -> {
-        });
+        projectManager.removeProject("id2");
         assertThat(eventSource.getNumRegisteredListeners(), is(0));
 
         // clean-up

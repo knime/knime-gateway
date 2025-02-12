@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.PreferencesProvider;
@@ -80,8 +81,6 @@ import org.knime.js.core.JSCorePlugin;
 /**
  * Runs all tests provided by {@link GatewayTestCollection} on the default service implementations, e.g.
  * {@link DefaultWorkflowService}.
- *
- * TODO consider using dynamic tests with JUnit 5 //NOSONAR
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -129,14 +128,19 @@ public class GatewayDefaultServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                ProjectManager.getInstance().openAndCacheProject(wfId)
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
+                ProjectManager.getInstance() //
+                    .getProject(wfId) //
+                    .map(Project::getWorkflowManager) //
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
+                    .executeAll();
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                ProjectManager.getInstance().openAndCacheProject(wfId)
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
+                ProjectManager.getInstance() //
+                    .getProject(wfId) //
+                    .map(Project::getWorkflowManager) //
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
                     .executeAllAndWaitUntilDone();
             }
         };

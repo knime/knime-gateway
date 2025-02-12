@@ -110,6 +110,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
 import org.knime.gateway.api.webui.entity.AllowedLoopActionsEnt;
@@ -535,7 +536,10 @@ public final class WorkflowEntityFactory {
     }
 
     static ComponentNodeAndDescriptionEnt.TypeEnum buildComponentTypeEnt(final SubNodeContainer snc) {
-        return snc.getMetadata().getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
+        return snc.getMetadata() //
+            .getNodeType() //
+            .map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())) //
+            .orElse(null);
     }
 
     static String buildComponentIconEnt(final SubNodeContainer snc) {
@@ -1188,6 +1192,10 @@ public final class WorkflowEntityFactory {
         final var locationType = Optional.ofNullable(wfm.getContextV2())//
             .map(WorkflowContextV2::getLocationType)//
             .orElse(LocationType.LOCAL);
+        final var version = Optional.ofNullable(buildContext.getVersion()) //
+            .filter(v -> !VersionId.currentState().equals(v)) //
+            .map(VersionId::toString) //
+            .orElse(null);
         return builder(WorkflowInfoEntBuilder.class)//
             .setName(wfm.getName())//
             .setContainerId(getContainerId(wfm, buildContext))//
@@ -1199,7 +1207,9 @@ public final class WorkflowEntityFactory {
                 case HUB_SPACE -> ProviderTypeEnum.HUB;
                 case SERVER_REPOSITORY -> ProviderTypeEnum.SERVER;
             })//
-            .setJobManager(buildJobManagerEnt(wfm.findJobManager())).build();
+            .setJobManager(buildJobManagerEnt(wfm.findJobManager())) //
+            .setVersion(version) //
+            .build();
     }
 
     private Boolean getContainsLinkedComponents(final WorkflowManager wfm) {

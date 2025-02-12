@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
@@ -280,10 +281,18 @@ public interface Space {
      * Resolves the item with the given ID into a local file, potentially downloading it.
      *
      * @param monitor to report progress, progress messages and for cancellation
-     * @param itemId ID if the item to resolve
+     * @param itemId  ID if the item to resolve
+     * @param version The version of the item
      * @return the local path of the item and if available, empty if not available
      */
-    Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId);
+    Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId, final VersionId version);
+
+    /**
+     * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId) 
+     */
+    default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+        return toLocalAbsolutePath(monitor, itemId, VersionId.currentState());
+    }
 
     /**
      * @param itemId

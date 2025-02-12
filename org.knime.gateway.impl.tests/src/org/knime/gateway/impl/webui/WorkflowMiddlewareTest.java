@@ -61,7 +61,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.js.core.JSCorePlugin;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -93,10 +93,10 @@ public class WorkflowMiddlewareTest {
     @Test
     public void testWorkflowStateCacheCleanUpOnSubWorkflowRemoval() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var wpm = ProjectManager.getInstance();
+        var projectManager = ProjectManager.getInstance();
         var projectId = wfm.getNameWithID();
-        wpm.addProject(DefaultProject.builder(wfm).setId(projectId).build());
-        var middleware = new WorkflowMiddleware(wpm, null);
+        projectManager.addProject(CachedProject.builder().setWfm(wfm).setId(projectId).onDispose(WorkflowManagerUtil::disposeWorkflow).build());
+        var middleware = new WorkflowMiddleware(projectManager, null);
         createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.PROJECT, wfm.getID());
 
         var metanodeIDs = createNestedMetanodesOrComponents(wfm, false);
@@ -113,14 +113,14 @@ public class WorkflowMiddlewareTest {
         wfm.removeNode(componentIDs[0]);
         await().untilAsserted(() -> assertThat(middleware.m_workflowStateCache.size(), is(1)));
 
-        ProjectManager.getInstance().removeProject(projectId, WorkflowManagerUtil::disposeWorkflow);
+        ProjectManager.getInstance().removeProject(projectId);
     }
 
     private static NodeID[] createNestedMetanodesOrComponents(final WorkflowManager wfm, final boolean createComponents)
         throws InstantiationException, IllegalAccessException, InvalidNodeFactoryExtensionException {
         var nodeId = WorkflowManagerUtil
             .createAndAddNode(wfm, org.knime.core.node.extension.NodeFactoryProvider.getInstance() //
-                .getNodeFactory("org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory").get())
+                .getNodeFactory("org.knime.base.node.preproc.filter.column.DataColumnSpecFilterNodeFactory").orElseThrow())
             .getID();
         var metanodeID = wfm.collapseIntoMetaNode(new NodeID[]{nodeId}, new WorkflowAnnotationID[0], "Metanode")
             .getCollapsedMetanodeID();
@@ -141,7 +141,7 @@ public class WorkflowMiddlewareTest {
         final ContainerTypeEnum expectedContainerType, final NodeID... nodeIds) {
         for (var nodeId : nodeIds) {
             var snapshot = middleware.buildWorkflowSnapshotEnt(new WorkflowKey(projectId, new NodeIDEnt(nodeId)),
-                () -> WorkflowBuildContext.builder());
+                    WorkflowBuildContext::builder);
             assertThat(snapshot.getWorkflow().getInfo().getContainerType(), is(expectedContainerType));
         }
     }

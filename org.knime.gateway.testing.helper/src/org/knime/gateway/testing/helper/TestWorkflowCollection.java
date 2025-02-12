@@ -109,22 +109,25 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
      */
     AUTO_CONNECT_NODES("/files/testflows/Auto Connect Nodes", "auto_connect_nodes"),
 
-
     /**
      * Workflow to test encrypted metanodes and components.
      */
     ENCRYPTED_METANODE_AND_COMPONENT("/files/testflows/Encrypted Metanode and Component",
-            "encrypted_metanode_and_component");
+            "encrypted_metanode_and_component"),
+
+    VERSIONS_CURRENT_STATE("/files/testflows/Versions/Current State", "current_state"),
+
+    VERSIONS_EARLIER_VERSION("/files/testflows/Versions/Earlier Version", "earlier_Version");
 
     private final String m_workflowDir;
 
     private final String m_name;
 
     /**
-     * @param the relative path for the workflow directory
+     * @param workflowDir the relative path for the workflow directory
      * @param name the workflow name
      */
-    private TestWorkflowCollection(final String workflowDir, final String name) {
+    TestWorkflowCollection(final String workflowDir, final String name) {
         m_workflowDir = workflowDir;
         m_name = name;
     }

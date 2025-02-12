@@ -45,6 +45,7 @@
  */
 package org.knime.gateway.impl.util;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -92,6 +93,17 @@ public final class Lazy {
         public void clear() {
             m_value = null;
         }
+
+        public boolean isInitialized() {
+            return m_value != null;
+        }
+
+        public void ifInitialized(final Consumer<V> consumer) {
+            if (isInitialized()) {
+                consumer.accept(m_value);
+            }
+        }
+
 
         @Override
         public String toString() {

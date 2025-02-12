@@ -169,13 +169,13 @@ public final class CoreUtil {
      */
     public static NodeID createAndAddNode(final String factoryClassName, final String factorySettings, final URL url,
         final Integer x, final Integer y, final WorkflowManager wfm, final boolean centerNode) throws IOException {
-        NodeFactory<NodeModel> nodeFactory = getNodeFactory(factoryClassName, factorySettings);
+        var nodeFactory = getNodeFactory(factoryClassName, factorySettings);
         NodeID nodeID;
-        if (nodeFactory instanceof ConfigurableNodeFactory && url != null) {
+        if (nodeFactory instanceof ConfigurableNodeFactory configurableNodeFactory && url != null) {
             final ModifiableNodeCreationConfiguration config =
-                ((ConfigurableNodeFactory)nodeFactory).createNodeCreationConfig();
+                configurableNodeFactory.createNodeCreationConfig();
             config.setURLConfiguration(url);
-            nodeID = wfm.addNodeAndApplyContext(nodeFactory, config, -1);
+            nodeID = wfm.addNodeAndApplyContext(configurableNodeFactory, config, -1);
         } else {
             nodeID = wfm.createAndAddNode(nodeFactory);
         }
@@ -202,7 +202,7 @@ public final class CoreUtil {
             nodeFactory = FileNativeNodeContainerPersistor.loadNodeFactory(factoryClassName);
         } catch (InstantiationException | IllegalAccessException | InvalidNodeFactoryExtensionException
                 | InvalidSettingsException ex) {
-            String message = "No node found for factory key " + factoryClassName;
+            var message = "No node found for factory key " + factoryClassName;
             NodeLogger.getLogger(CoreUtil.class).warn(message, ex);
             throw new NoSuchElementException(message);
         }
@@ -234,7 +234,7 @@ public final class CoreUtil {
     public static boolean isInStreamingMode(final WorkflowManager wfm) {
         NodeContainerParent directNCParent = wfm.getDirectNCParent();
         if (wfm.getDirectNCParent() instanceof SubNodeContainer) {
-            NodeContainer nc = (NodeContainer)directNCParent;
+            var nc = (NodeContainer)directNCParent;
             return nc.getJobManager() != null && nc.getJobManager().getID().equals(STREAMING_JOB_MANAGER_ID);
         }
         return false;
@@ -330,21 +330,18 @@ public final class CoreUtil {
      * @throws InterruptedException
      */
     public static void cancelAndCloseLoadedWorkflow(final WorkflowManager wfm) throws InterruptedException {
-        if (wfm.getNodeContainerState().isExecutionInProgress()) {
+        if (wfm.getNodeContainerState() != null && wfm.getNodeContainerState().isExecutionInProgress()) {
             CoreUtil.cancel(wfm);
             wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         }
         if (wfm.isComponentProjectWFM()) {
-            SubNodeContainer snc = (SubNodeContainer)wfm.getDirectNCParent();
+            var snc = (SubNodeContainer)wfm.getDirectNCParent();
             snc.getParent().removeProject(snc.getID());
         } else if (wfm.isProject()) {
             var parent = wfm.getParent();
-            if (parent.containsNodeContainer(wfm.getID())) {
+            if (parent != null && parent.containsNodeContainer(wfm.getID())) {
                 parent.removeProject(wfm.getID());
             }
-        } else {
-            throw new IllegalArgumentException("The passed workflow ('" + wfm.getNameWithID()
-                + "' it neither a workflow project nor a component project.");
         }
     }
 
@@ -360,7 +357,7 @@ public final class CoreUtil {
             // special handling since parent.cancelExecution doesn't work as expected for component projects
             wfm.cancelExecution();
         } else {
-            performActionOnWorkflow(wfm, (parent, nc) -> parent.cancelExecution(nc));
+            performActionOnWorkflow(wfm, WorkflowManager::cancelExecution);
         }
     }
 
@@ -376,9 +373,7 @@ public final class CoreUtil {
             // special handling since parent.executeUpToHere doesn't work as expected for component projects
             wfm.executeAll();
         } else {
-            performActionOnWorkflow(wfm, (parent, nc) -> {
-                parent.executeUpToHere(nc.getID());
-            });
+            performActionOnWorkflow(wfm, (parent, nc) -> parent.executeUpToHere(nc.getID()));
         }
     }
 
@@ -424,9 +419,9 @@ public final class CoreUtil {
      * @throws IOException if an I/O error occurs or the file does not exist
      */
     public static URL resolveToURL(final String path, final Class<?> clazz) throws IOException {
-        Bundle myself = FrameworkUtil.getBundle(clazz);
+        var myself = FrameworkUtil.getBundle(clazz);
         IPath p = new Path(path);
-        URL url = FileLocator.find(myself, p, null);
+        var url = FileLocator.find(myself, p, null);
         if (url == null) {
             throw new FileNotFoundException("Path " + path + " does not exist in bundle " + myself.getSymbolicName());
         }
@@ -436,10 +431,10 @@ public final class CoreUtil {
     /**
      * @param wfm The workflow manager to search in
      * @return The set of nodes in the given {@code wfm} that satisfy at least one of these conditions:
-     * <ul>
-     *    <li>The node does not have any incoming connections</li>
-     *    <li>All incoming connections are from a metanode inport</li>
-     * </ul>
+     *         <ul>
+     *         <li>The node does not have any incoming connections</li>
+     *         <li>All incoming connections are from a metanode inport</li>
+     *         </ul>
      */
     public static Set<NodeContainer> getSourceNodes(final WorkflowManager wfm) {
         return wfm.getNodeContainers().stream().filter(nc -> {
@@ -448,9 +443,9 @@ public final class CoreUtil {
         }).collect(Collectors.toSet());
     }
 
-
     /**
      * Obtain the loop context of the given node, if any.
+     * 
      * @param nnc The node container to get the loop context for.
      * @return An Optional containing the loop context if available, else an empty Optional.
      */
@@ -459,7 +454,8 @@ public final class CoreUtil {
         //  loop iteration is completed.
         if (nnc.isModelCompatibleTo(LoopStartNode.class)) {
             // The loop head node produces the FlowLoopContext, hence it is not available on the stack yet.
-            return Optional.ofNullable(nnc.getOutgoingFlowObjectStack()).map(stack -> stack.peek(FlowLoopContext.class));
+            return Optional.ofNullable(nnc.getOutgoingFlowObjectStack())
+                .map(stack -> stack.peek(FlowLoopContext.class));
         } else {
             return Optional.ofNullable(nnc.getFlowObjectStack()).map(stack -> stack.peek(FlowLoopContext.class));
         }
@@ -468,20 +464,20 @@ public final class CoreUtil {
     /**
      * Determine whether the given node has a *direct* predecessor that is currently waiting to be executed. Does not
      * check predecessors outside the current workflow (e.g. via connections coming into a metanode).
+     * 
      * @param id The id of the node to consider the predecessors of.
      * @param wfm the workflow manager containing the node
      * @return {@code true} iff the node has a direct predecessor that is currently waiting to be executed. If the node
-     *      is not in the given workflow manager, {@code false} is returned.
+     *         is not in the given workflow manager, {@code false} is returned.
      */
     public static boolean hasWaitingPredecessor(final NodeID id, final WorkflowManager wfm) {
-        return predecessors(id, wfm).stream()
-                .map(wfm::getNodeContainer)
-                .map(NodeContainer::getNodeContainerState)
-                .anyMatch(NodeContainerState::isWaitingToBeExecuted);
+        return predecessors(id, wfm).stream().map(wfm::getNodeContainer).map(NodeContainer::getNodeContainerState)
+            .anyMatch(NodeContainerState::isWaitingToBeExecuted);
     }
 
     /**
      * Obtain the direct predecessors of the given node.
+     * 
      * @param id The node to get the direct predecessors of.
      * @param wfm The containing workflow manager
      * @return The set of nodes that are linked to the given node through connections coming into the given node.
@@ -489,7 +485,7 @@ public final class CoreUtil {
     static Set<NodeID> predecessors(final NodeID id, final WorkflowManager wfm) {
         if (wfm.containsNodeContainer(id)) {
             return wfm.getIncomingConnectionsFor(id).stream().map(ConnectionContainer::getSource)
-                    .filter(source -> !source.equals(wfm.getID())).collect(Collectors.toSet());
+                .filter(source -> !source.equals(wfm.getID())).collect(Collectors.toSet());
         } else {
             return Collections.emptySet();
         }
@@ -497,6 +493,7 @@ public final class CoreUtil {
 
     /**
      * Obtain the direct successors of the given node.
+     * 
      * @param id The node to get the direct successors of
      * @param wfm The containing workflow manager
      * @return The set of nodes that are linked to the given node through connections outgoing from the given node.
@@ -504,7 +501,7 @@ public final class CoreUtil {
     static Set<NodeID> successors(final NodeID id, final WorkflowManager wfm) {
         if (wfm.containsNodeContainer(id)) {
             return wfm.getOutgoingConnectionsFor(id).stream().map(ConnectionContainer::getDest)
-                    .filter(dest -> !dest.equals(wfm.getID())).collect(Collectors.toSet());
+                .filter(dest -> !dest.equals(wfm.getID())).collect(Collectors.toSet());
         } else {
             return Collections.emptySet();
         }
@@ -512,6 +509,7 @@ public final class CoreUtil {
 
     /**
      * Get the port type based on a port type ID
+     * 
      * @param ptypeId The ID of the port type to obtain
      * @return An Optional containing the Port Type, or an empty optional if the port type could not be determined.
      */
@@ -522,6 +520,7 @@ public final class CoreUtil {
 
     /**
      * Get the port type ID of a given port type object
+     * 
      * @param ptype The port type
      * @return The ID of the given port type
      */
@@ -551,6 +550,7 @@ public final class CoreUtil {
 
     /**
      * Find a workflow annotation with given id in the given workflow manager.
+     * 
      * @param id The workflow annotation to look for.
      * @param wfm The workflow manager to search in.
      * @return The workflow annotation object corresponding to the given ID, or an empty optional if not available.
@@ -645,9 +645,9 @@ public final class CoreUtil {
      */
     public static void removeBendpoints(final ConnectionContainer connection, final int... indices) {
         editConnectionUIInformation(connection, b -> {
-            int[] sortedIndices = indices.clone();
+            var sortedIndices = indices.clone();
             Arrays.sort(sortedIndices);
-            for (int i = 0; i < sortedIndices.length; i++) {
+            for (var i = 0; i < sortedIndices.length; i++) {
                 b.removeBendpoint(sortedIndices[i] - i);
             }
         });
@@ -662,7 +662,7 @@ public final class CoreUtil {
         // to a separate thread. Event listeners might in turn hold or require locks, and they should not be able to
         // block the calling thread, potentially causing a deadlock.
         KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(() -> //
-            connection.setUIInfo(builder.build()) // will notify event listeners
+        connection.setUIInfo(builder.build()) // will notify event listeners
         );
     }
 
@@ -735,16 +735,17 @@ public final class CoreUtil {
     }
 
     /**
-     * The concrete kind of a container node. We assume a 1-to-1 mapping from a {@link ContainerType} to a subclass
-     * of {@link NodeContainer} that implements the node's container behaviour.
+     * The concrete kind of a container node. We assume a 1-to-1 mapping from a {@link ContainerType} to a subclass of
+     * {@link NodeContainer} that implements the node's container behaviour.
+     * 
      * @see CoreUtil#getContainerType(NodeID, WorkflowManager)
      */
     @SuppressWarnings("javadoc")
     public enum ContainerType {
 
-        METANODE("Metanode"),
+            METANODE("Metanode"),
 
-        COMPONENT("Component");
+            COMPONENT("Component");
 
         private final String m_label;
 
@@ -876,6 +877,7 @@ public final class CoreUtil {
 
     /**
      * Check if the given workflow is in a dirty state or if it has a parent that is dirty
+     * 
      * @param wfm
      * @return True if its dirty or it has a parent that is dirty, false otherwise
      */
@@ -903,9 +905,10 @@ public final class CoreUtil {
 
     /**
      * Traverse nodes in a given workflow manager, potentially recursing into child workflows.
+     * 
      * @param wfm The workflow manager to start traversing in.
      * @param nodeVisitor Predicate return value determines whether to recurse into the node (if possible). Side effects
-     *                    may consume the currently visited node otherwise.
+     *            may consume the currently visited node otherwise.
      */
     public static void iterateNodes(final WorkflowManager wfm, final Predicate<NodeContainer> nodeVisitor) {
         for (var nc : wfm.getNodeContainers()) {
@@ -925,7 +928,7 @@ public final class CoreUtil {
         }
         if (nc instanceof SubNodeContainer snc) {
             return Optional.of(snc.getWorkflowManager());
-        };
+        }
         return Optional.empty();
     }
 

@@ -50,8 +50,6 @@ package org.knime.gateway.impl.project;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
 
 import java.util.List;
 
@@ -83,15 +81,14 @@ public class ProjectManagerTest {
         var wfm = WorkflowManager.ROOT;
         var pm = ProjectManager.getInstance();
 
-        var proj1 = DefaultProject.builder(wfm).build();
-        var proj1a = DefaultProject.builder(wfm).setId(proj1.getID()).build();
-        var proj1b = DefaultProject.builder(wfm).setId(proj1.getID()).setName("proj1b").build();
-        var proj2 = DefaultProject.builder(wfm).build();
+        var proj1 = CachedProject.builder().setWfm(wfm).build();
+        var proj1a = CachedProject.builder().setWfm(wfm).setId(proj1.getID()).build();
+        var proj1b = CachedProject.builder().setWfm(wfm).setName("proj1b").setId(proj1.getID()).build();
+        var proj2 = CachedProject.builder().setWfm(wfm).build();
 
         // add projects
         pm.addProject(proj1);
-        assertThat(pm.getProject(proj1.getID()).get().getName(), is(proj1.getName()));
-        assertThat(pm.getCachedProject(proj1.getID()).get(), sameInstance(wfm));
+        assertThat(pm.getProject(proj1.getID()).orElseThrow().getName(), is(proj1.getName()));
         pm.addProject(proj1a, ProjectConsumerType.WORKFLOW_SERVICE, false);
         pm.addProject(proj2);
 
@@ -102,16 +99,15 @@ public class ProjectManagerTest {
 
         // replace project
         pm.addProject(proj1b);
-        assertThat(pm.getProject(proj1.getID()).get().getName(), is("proj1b"));
+        assertThat(pm.getProject(proj1.getID()).orElseThrow().getName(), is("proj1b"));
         pm.addProject(proj1, ProjectConsumerType.UI, false);
-        assertThat(pm.getProject(proj1.getID()).get().getName(), is("proj1b"));
+        assertThat(pm.getProject(proj1.getID()).orElseThrow().getName(), is("proj1b"));
 
         // remove project
-        pm.removeProject(proj1.getID(), w -> {}); // removes the ui-consumer
+        pm.removeProject(proj1.getID()); // removes the ui-consumer
         assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
         assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of(proj1a.getID())));
-        pm.removeProject(proj1a.getID(), ProjectConsumerType.WORKFLOW_SERVICE, w -> {
-        });
+        pm.removeProject(proj1a.getID(), ProjectConsumerType.WORKFLOW_SERVICE);
         assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
         assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of()));
     }

@@ -45,73 +45,21 @@
  */
 package org.knime.gateway.impl.project;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
 import java.util.Optional;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.AnalyticsPlatformExecutorInfo;
-import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
-import org.knime.core.util.hub.NamedItemVersion;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.VersionId;
 
 /**
- * Represents a workflow or component project.
+ * A workflow or component project.
  *
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
  */
 @SuppressWarnings("javadoc")
 public interface Project {
-
-    /**
-     * Creates a project based on space-item-infos.
-     */
-    static Project of(final WorkflowManager wfm, final String spaceProviderId, final String spaceId,
-        final String itemId, final ProjectTypeEnum projectType) {
-        return of(wfm, spaceProviderId, spaceId, itemId, projectType, null);
-    }
-
-    /**
-     * Creates a project based on space-item-infos using a custom project ID.
-     */
-    static Project of(final WorkflowManager wfm, final String providerId, final String spaceId, final String itemId,
-        final ProjectTypeEnum projectType, final String customProjectId) {
-        final var origin = Origin.of(providerId, spaceId, itemId, projectType);
-        final var projectName = wfm.getName();
-        return of(wfm, origin, projectName, customProjectId);
-    }
-
-    /**
-     * Creates a project considering most notably the {@link WorkflowManager} and the {@link WorkflowContextV2}.
-     */
-    static Project of(final WorkflowManager wfm, final WorkflowContextV2 context, final ProjectTypeEnum projectType,
-        final String customProjectId, final LocalSpace localSpace) {
-        final var path = context.getExecutorInfo().getLocalWorkflowPath();
-        final var itemId = localSpace.getItemId(path);
-        final var origin = Origin.of(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId,
-            projectType);
-        final var projectName = path.toFile().getName();
-        return of(wfm, origin, projectName, customProjectId);
-    }
-
-    /**
-     * Creates a project from a {@link WorkflowManager} and an {@link Origin}
-     */
-    static Project of(final WorkflowManager wfm, final Origin origin, final String projectName,
-        final String customProjectId) {
-        final var projectId =
-            customProjectId == null ? DefaultProject.getUniqueProjectId(wfm.getName()) : customProjectId;
-        return DefaultProject.builder(wfm) //
-            .setId(projectId) //
-            .setName(projectName)//
-            .setOrigin(origin) //
-            .build();
-    }
 
     /**
      * @return the name of the project
@@ -124,23 +72,16 @@ public interface Project {
     String getID();
 
     /**
-     * Opens/loads the actual workflow represented by this workflow/component project. If the workflow has already been
-     * opened before it will be opened/loaded again.
-     *
-     * If the workflow manager is already available with the creation of this project instance,
-     * {@link #getWorkflowManager()} should be implemented, too.
-     *
-     * @return the newly loaded workflow
+     * The root workflow manager of the {@link VersionId.CurrentState} of this project. This might mean loading it, or
+     * obtaining it via reference. If this call succeeds, the workflow manager can be understood to be loaded.
      */
-    WorkflowManager loadWorkflowManager();
+    WorkflowManager getWorkflowManager();
 
     /**
-     * This method only returns a workflow manager if it doesn't require to be loaded and is already available with the
-     * creation of this project instance. Otherwise {@link #loadWorkflowManager()} will load it.
-     *
-     * @return the workflow manager if already available, otherwise an empty optional
+     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project, or empty if that workflow
+     * manager is not yet loaded.
      */
-    default Optional<WorkflowManager> getWorkflowManager() {
+    default Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
         return Optional.empty();
     }
 
@@ -150,6 +91,36 @@ public interface Project {
      */
     default Optional<Origin> getOrigin() {
         return Optional.empty();
+    }
+
+    /**
+     * Obtain the workflow manager in the project of a given {@link VersionId}.
+     */
+    default Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
+        if (version instanceof VersionId.Fixed fixedVersion) {
+            return this.getVersion(fixedVersion);
+        }
+        return Optional.ofNullable(this.getWorkflowManager());
+    }
+
+    /**
+     * Obtain the workflow manager in the project of a given {@link VersionId.Fixed} version.
+     */
+    default Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
+        return Optional.empty();
+    }
+
+    /**
+     * Dispose the project.
+     */
+    default void dispose() {
+        getWorkflowManagerIfLoaded().ifPresent(wfm -> {
+            try {
+                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
+            } catch (InterruptedException e) { // NOSONAR
+                NodeLogger.getLogger(CachedProject.class).error(e);
+            }
+        });
     }
 
     /**
@@ -171,132 +142,4 @@ public interface Project {
         throw new UnsupportedOperationException("Report generation not supported");
     }
 
-    /**
-     * Identifies space and item from which this workflow/component project has been opened.
-     */
-    interface Origin {
-        /**
-         * @param providerId
-         * @param spaceId
-         * @param itemId
-         * @param projectType the type of the project or {@code null}
-         * @return a new instance
-         */
-        static Origin of(final String providerId, final String spaceId, final String itemId,
-            final ProjectTypeEnum projectType) {
-            return new Origin() { // NOSONAR
-                @Override
-                public String getProviderId() {
-                    return providerId;
-                }
-
-                @Override
-                public String getSpaceId() {
-                    return spaceId;
-                }
-
-                @Override
-                public String getItemId() {
-                    return itemId;
-                }
-
-                @Override
-                public Optional<ProjectTypeEnum> getProjectType() {
-                    return Optional.ofNullable(projectType);
-                }
-            };
-        }
-
-        /**
-         * Creates an {@link Origin} from a Hub Space and a WorkflowManager
-         *
-         * @param hubLocation location information of the item
-         * @param wfm the WorkflowManager that contains the project
-         * @param selectedVersion the version information of the item, can be empty
-         * @return The newly created Origin, or null if hubLocation or workflow manager are missing
-         */
-        @SuppressWarnings({"java:S1188"})
-        static Optional<Origin> of(final HubSpaceLocationInfo hubLocation, final WorkflowManager wfm,
-            final NamedItemVersion selectedVersion) {
-            if (hubLocation == null || wfm == null) {
-                return Optional.empty();
-            }
-            final var context = wfm.getContextV2();
-            final var apExecInfo = (AnalyticsPlatformExecutorInfo)context.getExecutorInfo();
-            final var versionInfo = selectedVersion == null ? null : Origin.buildVersionInfo(selectedVersion);
-            return Optional.of(new Origin() {
-
-                @Override
-                public String getProviderId() {
-                    final var mountpoint = apExecInfo.getMountpoint().orElseThrow(
-                        () -> new IllegalStateException("Missing Mount ID for Hub workflow '" + wfm + "'"));
-                    return mountpoint.getFirst().getAuthority();
-                }
-
-                @Override
-                public String getSpaceId() {
-                    return hubLocation.getSpaceItemId();
-                }
-
-                @Override
-                public String getItemId() {
-                    return hubLocation.getWorkflowItemId();
-                }
-
-                @Override
-                public Optional<ProjectTypeEnum> getProjectType() {
-                    return Optional
-                        .of(wfm.isComponentProjectWFM() ? ProjectTypeEnum.COMPONENT : ProjectTypeEnum.WORKFLOW);
-                }
-
-                @Override
-                public Optional<SpaceItemVersionEnt> getItemVersion() {
-                    return Optional.ofNullable(versionInfo);
-                }
-            });
-        }
-
-        private static SpaceItemVersionEnt buildVersionInfo(final NamedItemVersion selectedVersion) {
-            return builder(SpaceItemVersionEnt.SpaceItemVersionEntBuilder.class) //
-                .setVersion(selectedVersion.version()) //
-                .setTitle(selectedVersion.title()) //
-                .setDescription(selectedVersion.description()) //
-                .setAuthor(selectedVersion.author()) //
-                .setAuthorAccountId(selectedVersion.authorAccountId()) //
-                .setCreatedOn(selectedVersion.createdOn()) //
-                .build();
-        }
-
-        /**
-         * @return The ID of the space provider containing the workflow/component project
-         */
-        String getProviderId();
-
-        /**
-         * @return The space ID of the workflow/component project
-         */
-        String getSpaceId();
-
-        /**
-         * @return The item ID of the workflow/component project
-         */
-        String getItemId();
-
-        /**
-         * @return The project type of the space item
-         */
-        Optional<ProjectTypeEnum> getProjectType();
-
-        /**
-         * @return The item version of the workflow/component project, or absent for latest version
-         * @since 5.4
-         */
-        default Optional<SpaceItemVersionEnt> getItemVersion() {
-            return Optional.empty();
-        }
-
-        default boolean isLocal() {
-            return this.getProviderId().equals(SpaceProvider.LOCAL_SPACE_PROVIDER_ID);
-        }
-    }
 }

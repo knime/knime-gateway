@@ -92,7 +92,7 @@ public class ProjectDisposedEventSourceTest {
             }
 
             @Override
-            public WorkflowManager loadWorkflowManager() {
+            public WorkflowManager getWorkflowManager() {
                 return null;
             }
 
@@ -113,8 +113,7 @@ public class ProjectDisposedEventSourceTest {
             .addEventListener(builder(ProjectDisposedEventTypeEntBuilder.class).setProjectId("test id").build());
         DefaultEventService.getInstance()
             .addEventListener(builder(ProjectDisposedEventTypeEntBuilder.class).setProjectId("test id 2").build());
-        projectManager.removeProject("test id", wfm -> {
-        });
+        projectManager.removeProject("test id");
 
         // the actual check
         verify(eventConsumer).accept("ProjectDisposedEvent",

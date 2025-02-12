@@ -126,11 +126,10 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testWorkflowChangedEventsRemovedListeners() throws Exception {
-        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowChangedEventTypeEnt eventType =
-            registerWorkflowChangedEventListener(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID());
+        var idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var eventType = registerWorkflowChangedEventListener(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID());
 
-        DefaultEventService es = DefaultEventService.getInstance();
+        var es = DefaultEventService.getInstance();
 
         // remove event listener again
         es.removeEventListener(eventType);
@@ -145,11 +144,10 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testRemoveAllEventListeners() throws Exception {
-        Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowChangedEventTypeEnt eventType =
-            registerWorkflowChangedEventListener(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID());
+        var idAndWfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var eventType = registerWorkflowChangedEventListener(idAndWfm.getFirst().toString(), NodeIDEnt.getRootID());
 
-        DefaultEventService es = DefaultEventService.getInstance();
+        var es = DefaultEventService.getInstance();
 
         // add one more event listener
         es.addEventListener(eventType);
@@ -161,21 +159,21 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
 
     static WorkflowChangedEventTypeEnt registerWorkflowChangedEventListener(final String projectId,
         final NodeIDEnt wfId) throws Exception {
-        DefaultWorkflowService ws = DefaultWorkflowService.getInstance();
-        DefaultEventService es = DefaultEventService.getInstance();
+        var ws = DefaultWorkflowService.getInstance();
+        var es = DefaultEventService.getInstance();
 
         // get the current workflow state and register event listener
         // (such that change events are send for that workflow)
-        WorkflowSnapshotEnt wf = ws.getWorkflow(projectId, wfId, Boolean.TRUE);
-        WorkflowChangedEventTypeEnt eventType = builder(WorkflowChangedEventTypeEntBuilder.class)
-            .setProjectId(projectId).setWorkflowId(wfId).setSnapshotId(wf.getSnapshotId()).build();
+        var wf = ws.getWorkflow(projectId, wfId, Boolean.TRUE, null);
+        var eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId).setWorkflowId(wfId)
+            .setSnapshotId(wf.getSnapshotId()).build();
         es.addEventListener(eventType);
         return eventType;
     }
 
     private void checkThatNoEventsAreSent(final WorkflowManager wfm) {
         // set empty callback for testing
-        DefaultEventService es = DefaultEventService.getInstance();
+        var es = DefaultEventService.getInstance();
         es.setPreEventCreationCallbackForTesting(null);
 
         // carry out the workflow changes
@@ -224,38 +222,30 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         var expectedEvent1 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
             "Fail in execution", NodeIDEnt.getRootID(), "org.knime.testing.node.failing.FailingNodeFactory",
             new NodeIDEnt(6));
-        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
-            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
-                return expectedEvent1.equals(e);
-            }), eq(projectId)));
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await().untilAsserted(() -> verify(m_testConsumer)
+            .accept(eq("WorkflowMonitorStateChangeEvent"), argThat(expectedEvent1::equals), eq(projectId)));
 
         // error message removed
         ns.changeNodeStates(projectId, NodeIDEnt.getRootID(), List.of(new NodeIDEnt(6)), "reset");
         var expectedEvent2 = buildEvent(OpEnum.REMOVE, "/errors/0", null, null, null, null, null);
-        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
-            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
-                return expectedEvent2.equals(e);
-            }), eq(projectId)));
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await().untilAsserted(() -> verify(m_testConsumer)
+            .accept(eq("WorkflowMonitorStateChangeEvent"), argThat(expectedEvent2::equals), eq(projectId)));
 
         // error message within component added
         ns.changeNodeStates(projectId, new NodeIDEnt(8), List.of(new NodeIDEnt(8, 0, 7)), "execute");
         var expectedEvent3 = buildEvent(OpEnum.ADD, "/errors/0", "Execute failed: This node fails on each execution.",
             "Fail in execution", new NodeIDEnt(8), "org.knime.testing.node.failing.FailingNodeFactory",
             new NodeIDEnt(8, 0, 7));
-        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
-            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
-                return expectedEvent3.equals(e);
-            }), eq(projectId)));
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await().untilAsserted(() -> verify(m_testConsumer)
+            .accept(eq("WorkflowMonitorStateChangeEvent"), argThat(expectedEvent3::equals), eq(projectId)));
 
         // warning message removed due to node removal
         DefaultWorkflowService.getInstance().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(),
             builder(DeleteCommandEntBuilder.class).setKind(KindEnum.DELETE).setNodeIds(List.of(new NodeIDEnt(9)))
                 .build());
         var expectedEvent4 = buildEvent(OpEnum.REMOVE, "/warnings/0", null, null, null, null, null);
-        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await()
-            .untilAsserted(() -> verify(m_testConsumer).accept(eq("WorkflowMonitorStateChangeEvent"), argThat(e -> {
-                return expectedEvent4.equals(e);
-            }), eq(projectId)));
+        Awaitility.waitAtMost(Duration.FIVE_SECONDS).await().untilAsserted(() -> verify(m_testConsumer)
+            .accept(eq("WorkflowMonitorStateChangeEvent"), argThat(expectedEvent4::equals), eq(projectId)));
 
         // remove event listener
         es.removeEventListener(builder(WorkflowMonitorStateChangeEventTypeEntBuilder.class).setProjectId(projectId)

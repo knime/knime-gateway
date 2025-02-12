@@ -62,6 +62,7 @@ import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings({"java:S1602"}) // braces around 1-expression lambda
 public final class WorkflowServiceProjects {
 
     private static Runnable removeAllProjectsCallback;
@@ -76,25 +77,33 @@ public final class WorkflowServiceProjects {
      * @param wfm the workflow manager representing the project
      */
     public static void registerProject(final WorkflowManager wfm) {
-        ProjectManager.getInstance().addProject(DefaultProject.builder(wfm).build(),
-            ProjectConsumerType.WORKFLOW_SERVICE, false);
+        ProjectManager.getInstance().addProject( //
+            CachedProject.builder().setWfm(wfm).build(), //
+            ProjectConsumerType.WORKFLOW_SERVICE, //
+            false //
+        );
     }
 
     /**
      * @param absolutePath the absolute path to the workflow within the local workspace
      * @return the project id or an empty optional if there is no project for the given path
      */
-    public static Optional<String> getProject(final Path absolutePath) {
-        var pm = ProjectManager.getInstance();
-        for (var projectId : pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE)) {
-            var wfm = pm.getCachedProject(projectId).orElse(null);
-            if (wfm != null && Optional.ofNullable(wfm.getContextV2()) //
-                .map(context -> context.getExecutorInfo().getLocalWorkflowPath()) //
-                .map(wfPath -> wfPath.equals(absolutePath)).orElse(Boolean.FALSE)) {
-                return Optional.of(projectId);
-            }
-        }
-        return Optional.empty();
+    public static Optional<String> getProjectIdAt(final Path absolutePath) {
+        var projectManager = ProjectManager.getInstance();
+        return projectManager.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).stream() //
+            .filter(projectId -> { //
+                return projectManager.getProject(projectId) //
+                    .flatMap(Project::getWorkflowManagerIfLoaded).filter(wfm -> isAtPath(wfm, absolutePath)) //
+                    .isPresent(); //
+            }) //
+            .findFirst();
+    }
+
+    private static boolean isAtPath(final WorkflowManager wfm, final Path absolutePath) {
+        return Optional.ofNullable(wfm.getContextV2()) //
+            .map(context -> context.getExecutorInfo().getLocalWorkflowPath()) //
+            .map(wfPath -> wfPath.equals(absolutePath)) //
+            .orElse(false);
     }
 
     /**
@@ -103,17 +112,13 @@ public final class WorkflowServiceProjects {
      * @param absolutePath the absolute path to the workflow within the local workspace
      */
     public static void removeProject(final Path absolutePath) {
-        var pm = ProjectManager.getInstance();
-        var projectId = getProject(absolutePath).orElse(null);
-        if (projectId != null) {
-            pm.removeProject(projectId, ProjectConsumerType.WORKFLOW_SERVICE, wfm -> {
-                try {
-                    CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-                } catch (InterruptedException e) { // NOSONAR
-                    NodeLogger.getLogger(WorkflowServiceProjects.class).error(e);
-                }
-            });
-        }
+        getProjectIdAt(absolutePath).ifPresent(projectId -> {
+            ProjectManager.getInstance().removeProject( //
+                projectId, //
+                ProjectConsumerType.WORKFLOW_SERVICE //
+            //
+            );
+        });
     }
 
     /**

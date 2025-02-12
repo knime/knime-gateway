@@ -106,7 +106,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -143,7 +143,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        var wfm = wp.loadWorkflowManager();
+        var wfm = wp.getWorkflowManager();
         var sleepNodeClassname = "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory";
 
         var n1 = addNodeDirectly(sleepNodeClassname, wfm);
@@ -240,7 +240,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @Test
     public void testUndoAndRedoWhileWorkflowIsExecuting() throws Exception {
         var wp = createEmptyWorkflowProject();
-        var wfm = wp.loadWorkflowManager();
+        var wfm = wp.getWorkflowManager();
         var waitNodeID = WorkflowManagerUtil.createAndAddNode(wfm,
             FileNativeNodeContainerPersistor.loadNodeFactory("org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"))
             .getID();
@@ -310,7 +310,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         String projectId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES).getFirst().toString();
         var snapshotId =
-            DefaultWorkflowService.getInstance().getWorkflow(projectId, NodeIDEnt.getRootID(), true).getSnapshotId();
+            DefaultWorkflowService.getInstance().getWorkflow(projectId, NodeIDEnt.getRootID(), true, null).getSnapshotId();
 
         DefaultEventService.getInstance()
             .addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
@@ -326,22 +326,24 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     }
 
     static void disposeWorkflowProject(final Project wp) {
-        ProjectManager.getInstance().removeProject(wp.getID(), WorkflowManagerUtil::disposeWorkflow);
+        ProjectManager.getInstance().removeProject(wp.getID());
     }
 
     static Project createEmptyWorkflowProject() throws IOException {
         File dir = FileUtil.createTempDir("workflow");
         File workflowFile = new File(dir, WorkflowPersistor.WORKFLOW_FILE);
-        if (workflowFile.createNewFile()) {
-            WorkflowManager wfm = WorkflowManager.ROOT.createAndAddProject("workflow", new WorkflowCreationHelper(
-                WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null)));
-            String id = "wfId";
-            Project workflowProject = DefaultProject.builder(wfm).setId(id).setName("workflow").build();
-            ProjectManager.getInstance().addProject(workflowProject);
-            return workflowProject;
-        } else {
+        if (!workflowFile.createNewFile()) {
             throw new IllegalStateException("Creating empty workflow failed");
         }
+        WorkflowManager wfm = WorkflowManager.ROOT.createAndAddProject("workflow", new WorkflowCreationHelper(
+            WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null)));
+        Project workflowProject = CachedProject.builder().setWfm(wfm) //
+                .setName("workflow") //
+                .setId("wfId") //
+                .onDispose(WorkflowManagerUtil::disposeWorkflow) //
+                .build();
+        ProjectManager.getInstance().addProject(workflowProject);
+        return workflowProject;
     }
 
     private static void configureWaitNode(final WorkflowManager wfm, final NodeID waitNodeID)
@@ -410,7 +412,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManagerInstance());
 
         var snapshotId = DefaultWorkflowService.getInstance()
-            .getWorkflow(wfId, getRootID(), true).getSnapshotId();
+            .getWorkflow(wfId, getRootID(), true, null).getSnapshotId();
         var eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId(wfId).setWorkflowId(getRootID()).setSnapshotId(snapshotId)
             .setTypeId("WorkflowChangedEventType").build();
@@ -524,7 +526,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             new WorkflowMiddleware(ProjectManager.getInstance(), null));
 
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI).getFirst().toString();
-        var snapshotId = DefaultWorkflowService.getInstance().getWorkflow(projectId, getRootID(), true).getSnapshotId();
+        var snapshotId = DefaultWorkflowService.getInstance().getWorkflow(projectId, getRootID(), true, null).getSnapshotId();
         var eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
             .setWorkflowId(getRootID()).setSnapshotId(snapshotId).setTypeId("WorkflowChangedEventType").build();
         DefaultEventService.getInstance().addEventListener(eventType);

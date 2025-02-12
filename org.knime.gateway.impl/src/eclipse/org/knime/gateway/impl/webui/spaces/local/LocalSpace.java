@@ -92,6 +92,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -187,7 +188,7 @@ public final class LocalSpace implements Space {
     }
 
     @Override
-    public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+    public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId, final VersionId version) {
         return toLocalAbsolutePath(itemId);
     }
 

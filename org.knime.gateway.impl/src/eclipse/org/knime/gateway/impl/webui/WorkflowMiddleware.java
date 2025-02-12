@@ -407,7 +407,7 @@ public final class WorkflowMiddleware {
 
     private static class SnapshotIdGenerator implements Supplier<String> {
 
-        private AtomicLong m_count = new AtomicLong();
+        private final AtomicLong m_count = new AtomicLong();
 
         @Override
         public String get() {
@@ -421,8 +421,6 @@ public final class WorkflowMiddleware {
      */
     private static final class WorkflowState {
 
-        private final WorkflowKey m_wfKey;
-
         private final WorkflowManager m_wfm;
 
         private CachedDependentNodeProperties m_depNodeProperties;
@@ -432,8 +430,8 @@ public final class WorkflowMiddleware {
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
         private WorkflowState(final WorkflowKey wfKey) {
-            m_wfKey = wfKey;
-            m_wfm = DefaultServiceUtil.getWorkflowManager(m_wfKey.getProjectId(), m_wfKey.getWorkflowId());
+            m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId(),
+                wfKey.getVersionId());
         }
 
         DependentNodeProperties getDependentNodeProperties() {

@@ -69,6 +69,7 @@ import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.PreferencesProvider;
@@ -147,14 +148,15 @@ public class GatewayJsonRpcWrapperServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                ProjectManager.getInstance().openAndCacheProject(wfId)
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)).executeAll();
+                ProjectManager.getInstance().getProject(wfId).map(Project::getWorkflowManager) //
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
+                    .executeAll();
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                ProjectManager.getInstance().openAndCacheProject(wfId)
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId))
+                ProjectManager.getInstance().getProject(wfId).map(Project::getWorkflowManager) //
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
                     .executeAllAndWaitUntilDone();
             }
         };

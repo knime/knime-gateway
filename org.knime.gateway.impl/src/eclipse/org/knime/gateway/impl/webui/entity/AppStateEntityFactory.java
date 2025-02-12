@@ -79,6 +79,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ConnectionModeEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -346,7 +347,7 @@ public final class AppStateEntityFactory {
         return projectEntBuilder.build();
     }
 
-    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Project.Origin origin,
+    private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Origin origin,
         final SpaceProviders spaceProviders) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
             .setProviderId(origin.getProviderId()) //
@@ -358,7 +359,7 @@ public final class AppStateEntityFactory {
             .build();
     }
 
-    private static List<String> getAncestorItemIds(final Project.Origin origin, final SpaceProviders spaceProviders) {
+    private static List<String> getAncestorItemIds(final Origin origin, final SpaceProviders spaceProviders) {
         // ancestor item ids are only required for local projects because it's used to
         // * mark folders that contain open projects
         // * disallow folders to be moved if they contain opened local projects
@@ -369,7 +370,7 @@ public final class AppStateEntityFactory {
             var localSpace = (LocalSpace)spaceProviders.getSpace(origin.getProviderId(), origin.getSpaceId());
             return localSpace.getAncestorItemIds(origin.getItemId());
         } else {
-            return null;
+            return null;  // NOSONAR null return value is reasonable (want to sent entity property to null)
         }
     }
 

@@ -144,7 +144,7 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var removalIndex = 0;
         var connection = connectionWithTwoBendpoints.toString();
-        var removedBendpointPosition = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow()
+        var removedBendpointPosition = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false, null).getWorkflow()
             .getConnections().get(connection).getBendpoints().get(removalIndex);
         executeWorkflowCommand( //
             deleteBendpoint(connectionWithTwoBendpoints, removalIndex), //

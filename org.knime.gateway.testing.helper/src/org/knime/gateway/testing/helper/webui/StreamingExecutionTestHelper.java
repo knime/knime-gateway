@@ -92,7 +92,7 @@ public class StreamingExecutionTestHelper extends WebUIGatewayServiceTestHelper 
      */
     public void testJobManagerProperty() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.STREAMING_EXECUTION);
-        Map<String, NodeEnt> nodes = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow().getNodes();
+        Map<String, NodeEnt> nodes = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow().getNodes();
         cr(nodes.get("root:4").getExecutionInfo(), "custom_job_manager");
         cr(nodes.get("root:3").getExecutionInfo(), "streaming_job_manager");
     }
@@ -106,7 +106,7 @@ public class StreamingExecutionTestHelper extends WebUIGatewayServiceTestHelper 
         String wfId = loadWorkflow(TestWorkflowCollection.STREAMING_EXECUTION);
         executeWorkflowAsync(wfId);
         await().atMost(4, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
-            Map<String, NodeEnt> nodes = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow().getNodes();
+            Map<String, NodeEnt> nodes = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow().getNodes();
             NodeStateEnt s1 = ((ComponentNodeEnt)nodes.get("root:3")).getState();
             NodeStateEnt s2 = ((ComponentNodeEnt)nodes.get("root:5")).getState();
             return s1.getExecutionState() == ExecutionStateEnum.EXECUTED
@@ -117,14 +117,14 @@ public class StreamingExecutionTestHelper extends WebUIGatewayServiceTestHelper 
         // Connection progress events are handled asynchronously (on different threads) in streaming execution:
         // Do not proceed with test until this property has been set.
         await().atMost(4, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(() -> {
-            var connections = ws().getWorkflow(wfId, new NodeIDEnt(5), false).getWorkflow().getConnections();
+            var connections = ws().getWorkflow(wfId, new NodeIDEnt(5), false, null).getWorkflow().getConnections();
             return connections.get("root:5:0:5_1").isStreaming() != null
                 && connections.get("root:5:0:6_1").isStreaming() != null;
         });
 
-        WorkflowEnt componentWf3 = ws().getWorkflow(wfId, new NodeIDEnt(3), Boolean.FALSE).getWorkflow();
+        WorkflowEnt componentWf3 = ws().getWorkflow(wfId, new NodeIDEnt(3), Boolean.FALSE, null).getWorkflow();
         cr(componentWf3.getConnections(), "streamed_connections_finished");
-        cr(ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE).getWorkflow().getConnections(),
+        cr(ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE, null).getWorkflow().getConnections(),
             "streamed_connections_in_progress");
 
         cr(componentWf3.getNodes().get("root:3:0:5"), "streamable_node_5");

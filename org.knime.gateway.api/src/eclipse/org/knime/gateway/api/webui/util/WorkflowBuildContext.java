@@ -65,6 +65,7 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
@@ -93,6 +94,8 @@ public final class WorkflowBuildContext {
 
     private final boolean m_canRedo;
 
+    private final VersionId m_version;
+
     private Map<NodeID, String[]> m_inPortGroupsAndIndices;
 
     private Map<NodeID, String[]> m_outPortGroupsAndIndices;
@@ -112,6 +115,7 @@ public final class WorkflowBuildContext {
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
         m_spaceProviderTypes = builder.m_spaceProviderTypes;
+        m_version = builder.m_version;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -192,6 +196,10 @@ public final class WorkflowBuildContext {
         return Optional.ofNullable(portsConfig);
     }
 
+    VersionId getVersion() {
+        return m_version;
+    }
+
     private String[] getPortGroupsPerIndex(final NativeNodeContainer nnc, final boolean inPort) {
         return getPortsConfiguration(nnc)//
             // Create map of port group to port group indices
@@ -230,6 +238,8 @@ public final class WorkflowBuildContext {
         private Supplier<DependentNodeProperties> m_depNodeProps;
 
         private Map<String, SpaceProviderEnt.TypeEnum> m_spaceProviderTypes = Map.of();
+
+        private VersionId m_version;
 
         private WorkflowBuildContextBuilder() {
             //
@@ -293,6 +303,11 @@ public final class WorkflowBuildContext {
         public WorkflowBuildContextBuilder setSpaceProviderTypes(
                 final Map<String, SpaceProviderEnt.TypeEnum> spaceProviderTypes) {
             m_spaceProviderTypes = CheckUtils.checkArgumentNotNull(spaceProviderTypes);
+            return this;
+        }
+
+        public WorkflowBuildContextBuilder setVersion(final VersionId version) {
+            m_version = CheckUtils.checkArgumentNotNull(version);
             return this;
         }
 
