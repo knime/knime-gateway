@@ -66,12 +66,20 @@ public final class Lazy {
      * @param <V> The type of the provided value.
      */
     public static final class Init<V> {
-        private final Supplier<V> m_supplier;
+        private Supplier<V> m_supplier = null;
 
         private V m_value;
 
         public Init(final Supplier<V> supplier) {
             this.m_supplier = supplier;
+        }
+
+        /**
+         * Create an instance in already-initialised state. This is useful for when sometimes a value is already
+         * available, sometimes not.
+         */
+        public Init(final V value) {
+            this.m_value = value;
         }
 
         /**
