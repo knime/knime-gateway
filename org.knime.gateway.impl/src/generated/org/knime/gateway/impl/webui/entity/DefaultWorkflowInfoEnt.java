@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
  * @param linked
  * @param containsLinkedComponents
  * @param providerType
+ * @param version
  * @param jobManager
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -71,6 +72,7 @@ public record DefaultWorkflowInfoEnt(
     Boolean linked,
     Boolean containsLinkedComponents,
     ProviderTypeEnum providerType,
+    String version,
     JobManagerEnt jobManager) implements WorkflowInfoEnt {
 
     /**
@@ -124,6 +126,11 @@ public record DefaultWorkflowInfoEnt(
     }
     
     @Override
+    public String getVersion() {
+        return version;
+    }
+    
+    @Override
     public JobManagerEnt getJobManager() {
         return jobManager;
     }
@@ -144,6 +151,8 @@ public record DefaultWorkflowInfoEnt(
         private Boolean m_containsLinkedComponents;
 
         private ProviderTypeEnum m_providerType;
+
+        private String m_version;
 
         private JobManagerEnt m_jobManager;
 
@@ -193,6 +202,12 @@ public record DefaultWorkflowInfoEnt(
         }
 
         @Override
+        public DefaultWorkflowInfoEntBuilder setVersion(String version) {
+             m_version = version;
+             return this;
+        }
+
+        @Override
         public DefaultWorkflowInfoEntBuilder setJobManager(JobManagerEnt jobManager) {
              m_jobManager = jobManager;
              return this;
@@ -207,6 +222,7 @@ public record DefaultWorkflowInfoEnt(
                 immutable(m_linked),
                 immutable(m_containsLinkedComponents),
                 immutable(m_providerType),
+                immutable(m_version),
                 immutable(m_jobManager));
         }
     

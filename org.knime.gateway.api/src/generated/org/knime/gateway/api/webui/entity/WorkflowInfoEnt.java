@@ -147,6 +147,12 @@ public interface WorkflowInfoEnt extends GatewayEntity {
   public ProviderTypeEnum getProviderType();
 
   /**
+   * The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
+   * @return version 
+   **/
+  public String getVersion();
+
+  /**
    * Get jobManager
    * @return jobManager 
    **/
@@ -163,6 +169,7 @@ public interface WorkflowInfoEnt extends GatewayEntity {
       valueConsumer.accept("linked", Pair.create(isLinked(), e.isLinked()));
       valueConsumer.accept("containsLinkedComponents", Pair.create(isContainsLinkedComponents(), e.isContainsLinkedComponents()));
       valueConsumer.accept("providerType", Pair.create(getProviderType(), e.getProviderType()));
+      valueConsumer.accept("version", Pair.create(getVersion(), e.getVersion()));
       valueConsumer.accept("jobManager", Pair.create(getJobManager(), e.getJobManager()));
   }
 
@@ -218,6 +225,14 @@ public interface WorkflowInfoEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowInfoEntBuilder setProviderType(ProviderTypeEnum providerType);
+        
+        /**
+         * The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
+         * 
+         * @param version the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowInfoEntBuilder setVersion(String version);
         
         /**
    		 * Set jobManager

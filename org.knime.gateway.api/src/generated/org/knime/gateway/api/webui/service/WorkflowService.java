@@ -94,12 +94,13 @@ public interface WorkflowService extends GatewayService {
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param includeInteractionInfo Whether to enclose information that is required when the user is interacting with the returned workflow. E.g. the allowed actions (reset, execute, cancel) for contained nodes and the entire workflow itself.
+     * @param version The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo, String version)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Returns the current state of the workflow monitor.
