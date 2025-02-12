@@ -95,6 +95,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
     public ProviderTypeEnum getProviderType();
     
     @Override
+    @JsonProperty("version")
+    public String getVersion();
+    
+    @Override
     @JsonProperty("jobManager")
     public JobManagerEnt getJobManager();
     
@@ -134,6 +138,10 @@ public interface WorkflowInfoEntMixIn extends WorkflowInfoEnt {
         @Override
         @JsonProperty("providerType")
         public WorkflowInfoEntMixInBuilder setProviderType(final ProviderTypeEnum providerType);
+        
+        @Override
+        @JsonProperty("version")
+        public WorkflowInfoEntMixInBuilder setVersion(final String version);
         
         @Override
         @JsonProperty("jobManager")
