@@ -95,7 +95,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
         var wfm = loadWorkflowInWorkspace(workflow.getWorkflowDir());
-        var project = CachedProject.builder().setWfm(wfm).setId(projectId).setOrigin(createOriginForTesting());
+        var project = CachedProject.builder().setWfm(wfm).setName(workflow.getName()).setId(projectId).setOrigin(createOriginForTesting());
         if (workflow instanceof TestWorkflow.WithVersion withVersion) {
             project.getVersion(ignored -> {
                 try {

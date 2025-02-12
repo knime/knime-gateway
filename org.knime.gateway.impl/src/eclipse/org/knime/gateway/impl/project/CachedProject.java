@@ -71,6 +71,9 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Implementation that caches associated {@link WorkflowManager}s.
+ * <p>
+ * A {@link CachedProject} can be created either through an already-available {@link WorkflowManager} instance,
+ * or a {@code Supplier<WorkflowManager>}, which may load the workflow manager. See {@link Builder}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -96,7 +99,11 @@ public final class CachedProject implements Project {
      * @param builder
      */
     private CachedProject(final Builder builder) {
-        m_cachedWfm = new Lazy.Init<>(builder.m_getWfm);
+        if (builder.m_loadedWfm != null) {
+            m_cachedWfm = new Lazy.Init<>(builder.m_loadedWfm);
+        } else {
+            m_cachedWfm = new Lazy.Init<>(builder.m_getWfm);
+        }
         m_id = builder.m_id;
         m_name = builder.m_name;
         m_origin = builder.m_origin;
@@ -251,6 +258,8 @@ public final class CachedProject implements Project {
 
         private Supplier<WorkflowManager> m_getWfm;
 
+        private WorkflowManager m_loadedWfm;
+
         private String m_id;
 
         private String m_name;
@@ -273,10 +282,9 @@ public final class CachedProject implements Project {
             return projectName + "_" + UUID.randomUUID();
         }
 
-
         @Override
         public BuilderStage.Optionals setWfm(final WorkflowManager wfm) {
-            m_getWfm = () -> wfm;
+            m_loadedWfm = wfm;
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
             return this;
