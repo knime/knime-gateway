@@ -73,7 +73,7 @@ import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.DefaultApplicationService;
@@ -106,20 +106,19 @@ public class AppStateUpdaterTest {
 
         var pm = ProjectManager.getInstance();
         var wfm1 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj1 = DefaultProject.builder(wfm1).build();
+        var proj1 = CachedProject.builder().setWfm(wfm1).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj1);
 
         DefaultApplicationService.getInstance().getState(); // initializes the app-state for the AppStateUpdater
         DefaultEventService.getInstance().addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
         // verify initial event
         var expectedEvent =
-            builder(CompositeEventEntBuilder.class).setEvents(asList(null, buildProjectDirtyStateEvent(proj1)))
-                .build();
+            builder(CompositeEventEntBuilder.class).setEvents(asList(null, buildProjectDirtyStateEvent(proj1))).build();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent, null);
 
         // update open projects and verify resulting app state changed event
         var wfm2 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj2 = DefaultProject.builder(wfm2).build();
+        var proj2 = CachedProject.builder().setWfm(wfm2).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj2);
         appStateUpdater.updateAppState();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent",
@@ -135,8 +134,8 @@ public class AppStateUpdaterTest {
             .setEvents(List.of(appStateChangedEvent, buildProjectDirtyStateEvent(proj1, proj2))).build();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent, null);
 
-        pm.removeProject(proj1.getID(), WorkflowManagerUtil::disposeWorkflow);
-        pm.removeProject(proj2.getID(), WorkflowManagerUtil::disposeWorkflow);
+        pm.removeProject(proj1.getID());
+        pm.removeProject(proj2.getID());
     }
 
     /**
@@ -156,8 +155,8 @@ public class AppStateUpdaterTest {
         setupServiceDependencies(appStateUpdater, eventConsumer, preferencesProvider);
 
         var pm = ProjectManager.getInstance();
-        var wfm1 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj1 = DefaultProject.builder(wfm1).build();
+        var proj1 = CachedProject.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
+            .onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj1);
 
         DefaultApplicationService.getInstance().getState(); // initializes the app-state for the AppStateUpdater
@@ -167,8 +166,8 @@ public class AppStateUpdaterTest {
         verify(eventConsumer, times(0)).accept(any(), any());
 
         // update open projects and check resulting app state changed event (there should be none)
-        var wfm2 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj2 = DefaultProject.builder(wfm2).build();
+        var proj2 = CachedProject.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
+            .onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj2);
         appStateUpdater.updateAppState();
         verify(eventConsumer, times(0)).accept(any(), any(), any());
@@ -184,8 +183,8 @@ public class AppStateUpdaterTest {
             builder(CompositeEventEntBuilder.class).setEvents(asList(appStateChangedEvent, null)).build();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent", expectedEvent, null);
 
-        pm.removeProject(proj1.getID(), WorkflowManagerUtil::disposeWorkflow);
-        pm.removeProject(proj2.getID(), WorkflowManagerUtil::disposeWorkflow);
+        pm.removeProject(proj1.getID());
+        pm.removeProject(proj2.getID());
 
     }
 

@@ -55,15 +55,15 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
-import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.impl.project.Project;
 
 /**
  * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
@@ -78,91 +78,56 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * Gets the node container (including (sub-)workflows) for the id-pair of root workflow- and node ID.
-     *
-     * @param rootWorkflowID id of the root workflow
-     * @param nodeID the node id to get the node/workflow for - if {@link NodeIDEnt#getRootID()} the root workflow
-     *            itself will be returned
-     * @return the {@link NodeContainer} instance
-     * @throws IllegalArgumentException if there is no node for the given node id
-     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
+     * Obtain the {@link NodeContainer} with the given id in the root workflow manager of the given {@link Project}.
      */
-    public static NodeContainer getNodeContainer(final String rootWorkflowID, final NodeIDEnt nodeID) {
-        var wfm = getRootWorkflowManager(rootWorkflowID);
-        if (nodeID.equals(NodeIDEnt.getRootID())) {
-            return wfm;
-        } else {
-            return wfm.findNodeContainer(nodeID.toNodeID(wfm));
-        }
+    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt nodeId) {
+        return findNodeContainer(getProjectWfm(projectId), nodeId);
     }
 
     /**
-     * Gets the node container for the coordinates 'root workflow id', 'workflow id' and 'node id'. The 'workflow id' is
-     * the node-id of the sub-workflow or 'root' for faster access to the node container.
-     *
-     * @param rootWorkflowID id of the root workflow (project)
-     * @param workflowID id of the sub-workflow or 'root'
-     * @param nodeID the id of the actual node
-     * @return the node container
-     * @throws IllegalArgumentException if there is no node for the given node id
-     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
+     * Obtain the root workflow manager of the given {@link Project} and find the workflow manager of the container node
+     * identified by {@code subWorkflowId}. In the sub-workflow, find the {@code nodeInSubWorkflow}.
      */
-    public static NodeContainer getNodeContainer(final String rootWorkflowID, final NodeIDEnt workflowID,
-        final NodeIDEnt nodeID) {
-        var wfm = getWorkflowManager(rootWorkflowID, workflowID);
-        var rootWfm = getRootWorkflowManager(rootWorkflowID);
-        return wfm.getNodeContainer(nodeID.toNodeID(rootWfm));
-    }
-
-    /**
-     * Gets the workflow manager from the {@link ProjectManager} for a corresponding root workflow id.
-     *
-     * @param rootWorkflowID the id to get the wfm for
-     * @return the {@link WorkflowManager} instance
-     * @throws NoSuchElementException if there is no workflow manager for the id registered
-     */
-    public static WorkflowManager getRootWorkflowManager(final String rootWorkflowID) {
-        return ProjectManager.getInstance().openAndCacheProject(rootWorkflowID).orElseThrow(
-            () -> new NoSuchElementException("Workflow project for ID \"" + rootWorkflowID + "\" not found."));
-    }
-
-    /**
-     * Gets the {@link Project} from the {@link ProjectManager} for a corresponding workflow project id.
-     *
-     * @param workflowProjectID the id to get the project for
-     * @return the {@link Project} instance
-     * @throws NoSuchElementException if there is no workflow project for the id registered
-     */
-    public static Project getWorkflowProject(final String workflowProjectID) {
-        return ProjectManager.getInstance().getProject(workflowProjectID).orElseThrow(
-            () -> new NoSuchElementException("Workflow project for ID \"" + workflowProjectID + "\" not found."));
+    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
+        final NodeIDEnt nodeInSubWorkflow) {
+        var subWorkflow = getWorkflowManager(projectId, subWorkflowId);
+        return findNodeContainer(subWorkflow, nodeInSubWorkflow);
     }
 
     /**
      * Gets the (sub-)workflow manager for the given root workflow id and node id.
      *
-     * @param rootWorkflowID the root workflow id
-     * @param nodeID the subnode's or metanode's node id
+     * @param projectId the root workflow id
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return the {@link WorkflowManager}-instance
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    public static WorkflowManager getWorkflowManager(final String rootWorkflowID, final NodeIDEnt nodeID) {
-        NodeContainer nodeContainer;
-        if (nodeID == null || nodeID.equals(NodeIDEnt.getRootID())) {
-            nodeContainer = getRootWorkflowManager(rootWorkflowID);
-        } else {
-            nodeContainer = getNodeContainer(rootWorkflowID, nodeID);
+    public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
+        return getWorkflowManager(projectId, workflowId, VersionId.currentState());
+    }
+
+    public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId, final VersionId versionId) {
+        return parseWfm(findNodeContainer(getProjectWfm(projectId, versionId), workflowId));
+    }
+
+    private static NodeContainer findNodeContainer(final WorkflowManager parent, final NodeIDEnt child) {
+        if (child.equals(NodeIDEnt.getRootID())) {
+            return parent;
         }
+        return parent.findNodeContainer(child.toNodeID(parent));
+    }
+
+    private static WorkflowManager parseWfm(final NodeContainer nc) {
         WorkflowManager wfm;
-        if (nodeContainer instanceof SubNodeContainer subNodeContainer) {
+        if (nc instanceof SubNodeContainer subNodeContainer) {
             wfm = subNodeContainer.getWorkflowManager();
-        } else if (nodeContainer instanceof WorkflowManager metanodeWfm) {
+        } else if (nc instanceof WorkflowManager metanodeWfm) {
             wfm = metanodeWfm;
         } else {
-            throw new IllegalStateException("The node id '" + nodeID + "' doesn't reference a sub workflow.");
+            throw new IllegalStateException("The node id '" + nc.getID() + "' doesn't reference a sub workflow.");
         }
         if (wfm.isEncrypted() && !wfm.isUnlocked()) {
             throw new IllegalStateException("Workflow is locked and cannot be accessed.");
@@ -171,8 +136,28 @@ public final class DefaultServiceUtil {
     }
 
     /**
+     * Obtain the root workflow manager of the given project.
+     */
+    public static WorkflowManager getProjectWfm(final String projectId) {
+        return getProjectWfm(projectId, VersionId.currentState());
+    }
+
+    /**
+     * Obtain the root workflow manager of the given project at the given version.
+     *
+     * @return the {@link WorkflowManager} instance
+     * @throws NoSuchElementException if there is no workflow manager for the id registered
+     */
+    private static WorkflowManager getProjectWfm(final String projectId, final VersionId version) {
+        return ProjectManager.getInstance().getProject(projectId)
+            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
+            .getWorkflowManager(version)
+            .orElseThrow(() -> new NoSuchElementException("Workflow for version \"" + version + "\" not found."));
+    }
+
+    /**
      * Gets the root workflow manager and the contained node container at the same time (see
-     * {@link #getNodeContainer(String, NodeIDEnt)} and {@link #getRootWorkflowManager(String)}).
+     * {@link #getNodeContainer(String, NodeIDEnt)} and {@link #getProjectWfm(String, VersionId)}).
      *
      * @param rootWorkflowID the id of the root workflow
      * @param nodeID the id of the node requested
@@ -182,24 +167,26 @@ public final class DefaultServiceUtil {
      */
     public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final String rootWorkflowID,
         final NodeIDEnt nodeID) {
-        return Pair.create(getRootWorkflowManager(rootWorkflowID), getNodeContainer(rootWorkflowID, nodeID));
+        return Pair.create( //
+            getProjectWfm(rootWorkflowID), //
+            getNodeContainer(rootWorkflowID, nodeID) //
+        );
     }
 
     /**
      * Converts a node id entity (as provided by gateway entities) to a {@link NodeID} instance.
      *
-     * @param rootWorkflowID id of the workflow the node belongs to
+     * @param projectId id of the workflow the node belongs to
      * @param nodeID the node id entity
      *
      * @return the {@link NodeID} instance
      */
-    public static NodeID entityToNodeID(final String rootWorkflowID, final NodeIDEnt nodeID) {
-        return nodeID.toNodeID(getRootWorkflowManager(rootWorkflowID));
+    public static NodeID entityToNodeID(final String projectId, final NodeIDEnt nodeID) {
+        return nodeID.toNodeID(getProjectWfm(projectId, VersionId.currentState()));
     }
 
     /**
-     * Converts annotation id entity (as provided by gateway entities) to a
-     * {@link WorkflowAnnotationID}-instance.
+     * Converts annotation id entity (as provided by gateway entities) to a {@link WorkflowAnnotationID}-instance.
      *
      * @param rootWorkflowID id of the root(!) workflow the annotations belongs to
      * @param annotationID the annotation id entity to convert
@@ -207,7 +194,7 @@ public final class DefaultServiceUtil {
      */
     public static WorkflowAnnotationID entityToAnnotationID(final String rootWorkflowID,
         final AnnotationIDEnt annotationID) {
-        NodeID nodeID = entityToNodeID(rootWorkflowID, annotationID.getNodeIDEnt());
+        var nodeID = entityToNodeID(rootWorkflowID, annotationID.getNodeIDEnt());
         return new WorkflowAnnotationID(nodeID, annotationID.getIndex());
     }
 
@@ -246,7 +233,7 @@ public final class DefaultServiceUtil {
         if (nodeIdEnts != null && nodeIdEnts.length != 0) {
             nodeIDs = new NodeID[nodeIdEnts.length];
             nodeIDs[0] = nodeIdEnts[0].toNodeID(wfm);
-            NodeID prefix = nodeIDs[0].getPrefix();
+            var prefix = nodeIDs[0].getPrefix();
             for (var i = 1; i < nodeIDs.length; i++) {
                 nodeIDs[i] = nodeIdEnts[i].toNodeID(wfm);
                 if (!nodeIDs[i].hasSamePrefix(prefix)) {
@@ -267,7 +254,7 @@ public final class DefaultServiceUtil {
      * @return the node the state has been changed for
      */
     public static NodeContainer changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action) {
-        NodeContainer nc = getNodeContainer(projectId, nodeId);
+        var nc = getNodeContainer(projectId, nodeId);
         if (nc instanceof SubNodeContainer subNodeContainer) {
             doChangeNodeStates(subNodeContainer.getWorkflowManager(), action);
         } else if (nc instanceof WorkflowManager metanodeWfm) {
@@ -279,7 +266,7 @@ public final class DefaultServiceUtil {
     }
 
     private static void doChangeNodeStates(final WorkflowManager wfm, final String action, final NodeID... nodeIDs) {
-        try (WorkflowLock l = wfm.lock()) {
+        try (var l = wfm.lock()) {
             if (StringUtils.isBlank(action)) {
                 // if there is no action (null or empty)
             } else if (action.equals("reset")) {
@@ -315,7 +302,7 @@ public final class DefaultServiceUtil {
             // Cancel the execution of the containing workflow manager -- required for properly handling components.
             CoreUtil.cancel(wfm);
         } else {
-            for (NodeID nodeID : nodeIDs) {
+            for (final var nodeID : nodeIDs) {
                 wfm.cancelExecution(wfm.getNodeContainer(nodeID));
             }
         }

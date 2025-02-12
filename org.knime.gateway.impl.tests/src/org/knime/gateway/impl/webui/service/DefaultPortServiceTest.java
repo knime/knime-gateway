@@ -95,7 +95,7 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -119,7 +119,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
     public void testDeactivatePortDataService() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nc = createNodeWithTableOutputPort(wfm);
-        var project = DefaultProject.builder(wfm).build();
+        var project = CachedProject.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         var projectId = project.getID();
         var nodeIdEnt = new NodeIDEnt(nc.getID());
         ProjectManager.getInstance().addProject(project);
@@ -145,12 +145,13 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
         // clean up
         PortViewManager.registerPortViews(BufferedDataTable.TYPE, originalPortViews.viewDescriptors(),
             originalPortViews.configuredIndices(), originalPortViews.executedIndices());
-        ProjectManager.getInstance().removeProject(project.getID(), WorkflowManagerUtil::disposeWorkflow);
+        ProjectManager.getInstance().removeProject(project.getID());
         ServiceInstances.disposeAllServiceInstancesAndDependencies();
     }
 
+    @SuppressWarnings({"java:S1188"})
     private static NativeNodeContainer createNodeWithTableOutputPort(final WorkflowManager wfm) {
-        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeFactory<NodeModel>() {
+        return WorkflowManagerUtil.createAndAddNode(wfm, new NodeFactory<>() {
 
             @Override
             public NodeModel createNodeModel() {
@@ -163,7 +164,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
 
                     @Override
                     protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
-                        throws Exception {
+                            throws Exception {
                         return null;
                     }
 
@@ -179,7 +180,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
 
                     @Override
                     protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                        throws IOException, CanceledExecutionException {
+                            throws IOException, CanceledExecutionException {
                         //
                     }
 
@@ -190,13 +191,13 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
 
                     @Override
                     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-                        throws InvalidSettingsException {
+                            throws InvalidSettingsException {
                         //
                     }
 
                     @Override
                     protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                        throws IOException, CanceledExecutionException {
+                            throws IOException, CanceledExecutionException {
                         //
                     }
                 };
@@ -222,11 +223,10 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
                 return null;
             }
         });
-        return nc;
     }
 
     private static PortView createPortView(final boolean[] deactivateRunnablesCalled) {
-        var portView = new PortView() {
+        return new PortView() {
 
             @Override
             public Page getPage() {
@@ -245,7 +245,6 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
                     .onDeactivate(() -> deactivateRunnablesCalled[1] = true).build());
             }
         };
-        return portView;
     }
 
     /**
@@ -256,7 +255,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
      */
     @Test
     public void getPortViewWithInitialSelection() throws Exception {
-        String wfId = "wf_id";
+        var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
         wfm.executeAllAndWaitUntilDone();
 
@@ -275,7 +274,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testGetPortViewWithInitialSelectionAndSetUpSelectionEventBus() throws Exception {
-        String wfId = "wf_id";
+        var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
         wfm.executeAllAndWaitUntilDone();
 
@@ -304,7 +303,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @Test
     public void testGetDataValueView() throws Exception {
-        String wfId = "wf_id";
+        var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
         wfm.executeAllAndWaitUntilDone();
         final var dataValueView =

@@ -48,15 +48,46 @@
  */
 package org.knime.gateway.impl.webui;
 
+import org.knime.core.node.util.CheckUtils;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 
 /**
- * Uniquely identifies a workflow by its project-id and the node-id in case its a sub-workflow (the node-id is 'root' if
- * it's the top-level workflow).
+ * Uniquely identifies a workflow.
+ * 
+ * @param projectId The ID of the project the workflow is associated with. See
+ *            {@link org.knime.gateway.impl.project.ProjectManager}.
+ * @param workflowId The ID of a node within the project's root workflow. That ID may correspond to a container node
+ *                  holding a sub-workflow. If {@link NodeIDEnt#getRootID()}, this points to the root workflow.
+ * @param version The identifier of a version.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public record WorkflowKey(String projectId, NodeIDEnt workflowId) {
+public record WorkflowKey(String projectId, NodeIDEnt workflowId, VersionId version) {
+
+    public WorkflowKey(final String projectId, final NodeIDEnt workflowId, final VersionId version) {
+        this.projectId = CheckUtils.checkArgumentNotNull(projectId);
+        this.workflowId = CheckUtils.checkArgumentNotNull(workflowId);
+        this.version = CheckUtils.checkArgumentNotNull(version);
+    }
+
+    /**
+     * @see WorkflowKey
+     */
+    public WorkflowKey(final String projectId, final NodeIDEnt workflowId) {
+        this(projectId, workflowId, VersionId.currentState());
+    }
+
+    public WorkflowKey(final String projectId, final String nodeId) {
+        this(projectId, new NodeIDEnt(nodeId));
+    }
+
+    /**
+     * @see WorkflowKey
+     */
+    public WorkflowKey(final String projectId) {
+        this(projectId, NodeIDEnt.getRootID());
+    }
 
     /**
      * @return the workflow project id
@@ -70,6 +101,13 @@ public record WorkflowKey(String projectId, NodeIDEnt workflowId) {
      */
     public NodeIDEnt getWorkflowId() {
         return workflowId;
+    }
+
+    /**
+     * @return the ID of the version
+     */
+    public VersionId getVersionId() {
+        return version;
     }
 
 }

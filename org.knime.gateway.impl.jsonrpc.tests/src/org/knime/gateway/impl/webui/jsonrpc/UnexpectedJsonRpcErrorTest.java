@@ -95,7 +95,7 @@ public class UnexpectedJsonRpcErrorTest {
     public void testUnexpectedJsonRpcError() throws NotASubWorkflowException, NodeNotFoundException {
         Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> serviceMocks = new HashMap<>();
         WorkflowService workflowServiceMock = mock(WorkflowService.class);
-        when(workflowServiceMock.getWorkflow(any(), any(), any()))
+        when(workflowServiceMock.getWorkflow(any(), any(), any(), any()))
             .thenThrow(new UnsupportedOperationException("an unexpected exception"));
         serviceMocks.put(WorkflowService.class, () -> workflowServiceMock);
         DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler(serviceMocks);
@@ -104,7 +104,7 @@ public class UnexpectedJsonRpcErrorTest {
             new JsonRpcClient(mapper, new TestExceptionResolver(Matchers.is("an unexpected exception")));
         WorkflowService workflowServiceProxy = createClientProxy(WorkflowService.class, handler, jsonRpcClient);
         assertThrows(UnsupportedOperationException.class,
-            () -> workflowServiceProxy.getWorkflow(null, null, Boolean.FALSE));
+            () -> workflowServiceProxy.getWorkflow(null, null, Boolean.FALSE, null));
     }
 
     private static class TestExceptionResolver implements ExceptionResolver {

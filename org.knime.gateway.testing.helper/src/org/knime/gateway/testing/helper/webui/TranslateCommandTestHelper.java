@@ -118,7 +118,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testTranslateBendpointsUndoRedo() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
-        var originalWfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        var originalWfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false, null).getWorkflow();
         var connection = BendpointsTestHelper.connectionWithTwoBendpoints.toString();
         var bendpointIndex = 1;
         Function<WorkflowEnt, XYEnt> bendpoint = bendpointAccessor(connection, bendpointIndex);
@@ -133,7 +133,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testTranslateBendpointsOnlySelected() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
-        var originalWfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        var originalWfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false, null).getWorkflow();
         var connectionId = BendpointsTestHelper.connectionWithTwoBendpoints.toString();
         var sourceNode = new NodeIDEnt(189);
         var targetNode = BendpointsTestHelper.connectionWithTwoBendpoints.getDestNodeIDEnt();
@@ -190,7 +190,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var node15 = new NodeIDEnt(15);
         var node16 = new NodeIDEnt(16);
         var node18 = new NodeIDEnt(18);
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
         Map<String, NodeEnt> nodes = workflow.getNodes();
         XYEnt orgPosNode15 = nodes.get(node15.toString()).getPosition();
         XYEnt orgPosNode16 = nodes.get(node16.toString()).getPosition();
@@ -208,7 +208,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             .setAnnotationIds(singletonList(anno3)) //
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(deltaX).setY(deltaY).build()).build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
         // assert node positions
         nodes = workflow.getNodes();
         XYEnt pos = nodes.get(node15.toString()).getPosition();
@@ -230,7 +230,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
         // undo
         ws().undoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
         nodes = workflow.getNodes();
         pos = nodes.get(node15.toString()).getPosition();
         assertThat(pos.getX(), is(orgPosNode15.getX()));
@@ -246,7 +246,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
         // redo
         ws().redoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
         nodes = workflow.getNodes();
         pos = nodes.get(node15.toString()).getPosition();
         assertThat(pos.getX(), is(0));
@@ -266,7 +266,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setAnnotationIds(singletonList(anno1))
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(-880).setY(-20).build()).build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command2);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false, null).getWorkflow();
         wa = workflow.getWorkflowAnnotations().stream().filter(a -> a.getId().equals(anno1)).findFirst().orElse(null);
         assertThat(wa.getBounds().getX(), is(0)); // NOSONAR wa guaranteed to be non-null
         assertThat(wa.getBounds().getY(), is(0));
@@ -277,10 +277,10 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
                 .setNodeIds(List.of(new NodeIDEnt(12, 0, 10))).setAnnotationIds(emptyList())
                 .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
         NodeEnt nodeBefore =
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10");
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true, null).getWorkflow().getNodes().get("root:12:0:10");
         ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), command3);
         NodeEnt nodeAfter =
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10");
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true, null).getWorkflow().getNodes().get("root:12:0:10");
         assertThat(nodeAfter.getPosition().getX(), is(nodeBefore.getPosition().getX() + 10));
         assertThat(nodeAfter.getPosition().getY(), is(nodeBefore.getPosition().getY() + 10));
 
@@ -289,9 +289,9 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             builder(TranslateCommandEnt.TranslateCommandEntBuilder.class).setKind(WorkflowCommandEnt.KindEnum.TRANSLATE)
                 .setNodeIds(List.of(new NodeIDEnt(6, 3))).setAnnotationIds(emptyList())
                 .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
-        nodeBefore = ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3");
+        nodeBefore = ws().getWorkflow(wfId, new NodeIDEnt(6), true, null).getWorkflow().getNodes().get("root:6:3");
         ws().executeWorkflowCommand(wfId, new NodeIDEnt(6), command4);
-        nodeAfter = ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3");
+        nodeAfter = ws().getWorkflow(wfId, new NodeIDEnt(6), true, null).getWorkflow().getNodes().get("root:6:3");
         assertThat(nodeAfter.getPosition().getX(), is(nodeBefore.getPosition().getX() + 10));
         assertThat(nodeAfter.getPosition().getY(), is(nodeBefore.getPosition().getY() + 10));
 
@@ -318,7 +318,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var metanodeId = new NodeIDEnt(6);
         var outPortsBarBounds =
-            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE, null).getWorkflow().getMetaOutPorts().getBounds();
 
         var translateCommand = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setMetanodeOutPortsBar(Boolean.TRUE)
@@ -326,14 +326,14 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         ws().executeWorkflowCommand(wfId, metanodeId, translateCommand);
 
         var outPortsBarBoundsTranslated =
-            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE, null).getWorkflow().getMetaOutPorts().getBounds();
         assertThat(outPortsBarBoundsTranslated.getX(), is(outPortsBarBounds.getX() + 10));
         assertThat(outPortsBarBoundsTranslated.getY(), is(outPortsBarBounds.getY() + 10));
 
         // undo
         ws().undoWorkflowCommand(wfId, metanodeId);
         var outPortsBarBoundsTranslatedUndone =
-            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE).getWorkflow().getMetaOutPorts().getBounds();
+            ws().getWorkflow(wfId, metanodeId, Boolean.FALSE, null).getWorkflow().getMetaOutPorts().getBounds();
         assertThat(outPortsBarBoundsTranslatedUndone.getX(), is(outPortsBarBounds.getX()));
         assertThat(outPortsBarBoundsTranslatedUndone.getY(), is(outPortsBarBounds.getY()));
 

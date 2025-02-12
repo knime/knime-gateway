@@ -91,7 +91,7 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -108,13 +108,14 @@ import org.knime.testing.util.WorkflowManagerUtil;
 public class DefaultNodeServiceTest extends GatewayServiceTest {
 
     private WorkflowManager m_wfm;
+
     private String m_projectId;
 
     @SuppressWarnings("javadoc")
     @Before
     public void createEmptyWorkflow() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var project = DefaultProject.builder(m_wfm).build();
+        var project = CachedProject.builder().setWfm(m_wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         m_projectId = project.getID();
         ProjectManager.getInstance().addProject(project);
     }
@@ -122,7 +123,7 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
     @SuppressWarnings("javadoc")
     @After
     public void tearDownWorkflow() {
-        ProjectManager.getInstance().removeProject(m_projectId, WorkflowManagerUtil::disposeWorkflow);
+        ProjectManager.getInstance().removeProject(m_projectId);
     }
 
     @Override
@@ -159,44 +160,41 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
 
     private static NativeNodeContainer createNodeWithView(final WorkflowManager wfm,
         final boolean[] deactivateRunnablesCalled) {
-        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(m -> {
-            return new NodeView() {
+        return WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(m -> new NodeView() {
 
-                @Override
-                public Page getPage() {
-                    return Page.builder(() -> "blub", "index.html").build();
-                }
+            @Override
+            public Page getPage() {
+                return Page.builder(() -> "blub", "index.html").build();
+            }
 
-                @Override
-                public Optional<InitialDataService<String>> createInitialDataService() {
-                    return Optional.of(InitialDataService.builder(() -> "initial data")
-                        .onDeactivate(() -> deactivateRunnablesCalled[0] = true).build());
-                }
+            @Override
+            public Optional<InitialDataService<String>> createInitialDataService() {
+                return Optional.of(InitialDataService.builder(() -> "initial data")
+                    .onDeactivate(() -> deactivateRunnablesCalled[0] = true).build());
+            }
 
-                @Override
-                public Optional<RpcDataService> createRpcDataService() {
-                    return Optional.of(RpcDataService.<Supplier<String>> builder(() -> "bar")
-                        .onDeactivate(() -> deactivateRunnablesCalled[1] = true).build());
-                }
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.of(RpcDataService.<Supplier<String>> builder(() -> "bar")
+                    .onDeactivate(() -> deactivateRunnablesCalled[1] = true).build());
+            }
 
-                @Override
-                public Optional<ApplyDataService<String>> createApplyDataService() {
-                    return Optional.empty();
-                }
+            @Override
+            public Optional<ApplyDataService<String>> createApplyDataService() {
+                return Optional.empty();
+            }
 
-                @Override
-                public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-                    //
-                }
+            @Override
+            public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                //
+            }
 
-                @Override
-                public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
-                    //
-                }
+            @Override
+            public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+                //
+            }
 
-            };
         }));
-        return nc;
     }
 
     /**
@@ -226,47 +224,44 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
 
     private static NativeNodeContainer createNodeWithDialog(final WorkflowManager wfm,
         final AtomicBoolean deactivateRunnableCalled) {
-        var nc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeDialogNodeFactory(() -> {
-            return new NodeDialog() {
+        return WorkflowManagerUtil.createAndAddNode(wfm, new NodeDialogNodeFactory(() -> new NodeDialog() {
 
-                @Override
-                public Page getPage() {
-                    return Page.builder(() -> "blub", "index.html").build();
-                }
+            @Override
+            public Page getPage() {
+                return Page.builder(() -> "blub", "index.html").build();
+            }
 
-                @Override
-                public Optional<RpcDataService> createRpcDataService() {
-                    return Optional.of(RpcDataService.<Supplier<String>> builder(() -> "bar")
-                        .onDeactivate(() -> deactivateRunnableCalled.set(true)).build());
-                }
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.of(RpcDataService.<Supplier<String>> builder(() -> "bar")
+                    .onDeactivate(() -> deactivateRunnableCalled.set(true)).build());
+            }
 
-                @Override
-                public Set<SettingsType> getSettingsTypes() {
-                    return Set.of(SettingsType.VIEW);
-                }
+            @Override
+            public Set<SettingsType> getSettingsTypes() {
+                return Set.of(SettingsType.VIEW);
+            }
 
-                @Override
-                public NodeSettingsService getNodeSettingsService() {
-                    return new NodeSettingsService() {
+            @Override
+            public NodeSettingsService getNodeSettingsService() {
+                return new NodeSettingsService() {
 
-                        @Override
-                        public void toNodeSettings(final String textSettings,
-                            final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
-                            final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-                            //
-                        }
+                    @Override
+                    public void toNodeSettings(final String textSettings,
+                        final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
+                        final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
+                        //
+                    }
 
-                        @Override
-                        public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
-                            final PortObjectSpec[] specs) {
-                            return null;
-                        }
-                    };
-                }
+                    @Override
+                    public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
+                        final PortObjectSpec[] specs) {
+                        return null;
+                    }
+                };
+            }
 
-            };
         }));
-        return nc;
     }
 
     /**
@@ -276,7 +271,7 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
      */
     @Test
     public void getNodeViewWithInitialSelection() throws Exception {
-        String wfId = "wf_id";
+        var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, wfId);
         wfm.executeAllAndWaitUntilDone();
 
@@ -295,7 +290,7 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testGetNodeViewWithInitialSelectionAndSetUpSelectionEventBus() throws Exception {
-        String wfId = "wf_id";
+        var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, wfId);
         wfm.executeAllAndWaitUntilDone();
 

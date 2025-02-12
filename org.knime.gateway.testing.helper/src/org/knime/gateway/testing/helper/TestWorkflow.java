@@ -51,6 +51,7 @@ package org.knime.gateway.testing.helper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.function.Supplier;
 
 import org.knime.core.util.FileUtil;
 
@@ -87,6 +88,34 @@ public interface TestWorkflow {
         File tmpFile = FileUtil.createTempFile("test_workflow_upload", ".knwf");
         FileUtil.zipDir(tmpFile, workflowDir, 9);
         return tmpFile;
+    }
+
+    interface WithVersion extends TestWorkflow {
+        File getVersionWorkflowDir();
+
+        static WithVersion of(final TestWorkflow base, final Supplier<File> versionWorkflowDir) {
+            return new WithVersion() {
+                @Override
+                public File getVersionWorkflowDir() {
+                    return versionWorkflowDir.get();
+                }
+
+                @Override
+                public URL createKnwfFileAndGetUrl() throws IOException {
+                    return base.createKnwfFileAndGetUrl();
+                }
+
+                @Override
+                public File getWorkflowDir() {
+                    return base.getWorkflowDir();
+                }
+
+                @Override
+                public String getName() {
+                    return base.getName();
+                }
+            };
+        }
     }
 
 }

@@ -114,7 +114,7 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ServiceDependencies.setServiceDependency(SpaceProviders.class, mock(SpaceProviders.class));
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
 
-        WorkflowSnapshotEnt wf = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE);
+        WorkflowSnapshotEnt wf = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE, null);
         WorkflowChangedEventTypeEnt eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId(wfId).setWorkflowId(getRootID()).setSnapshotId(wf.getSnapshotId())
             .setTypeId("WorkflowChangedEventType").build();

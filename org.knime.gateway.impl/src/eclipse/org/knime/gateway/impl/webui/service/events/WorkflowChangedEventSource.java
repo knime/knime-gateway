@@ -82,7 +82,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
-    // TODO in a multi-user scenario we will need to keep track of the callbacks
+    // In a multi-user scenario we will need to keep track of the callbacks
     // per 'user/client' instead of per workflow - see NXT-2599
     private final Map<WorkflowKey, Runnable> m_workflowChangesCallbacks = new HashMap<>();
 

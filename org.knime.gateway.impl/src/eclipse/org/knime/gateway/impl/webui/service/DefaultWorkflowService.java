@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -71,6 +70,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
@@ -83,8 +83,6 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class DefaultWorkflowService implements WorkflowService {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultWorkflowService.class);
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
@@ -113,23 +111,26 @@ public final class DefaultWorkflowService implements WorkflowService {
      */
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
-        final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
+        final Boolean includeInfoOnAllowedActions, final String versionParameter)
+        throws NotASubWorkflowException, NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var wfKey = new WorkflowKey(projectId, workflowId);
-        LOGGER.debug("'getWorkflow()' was called for: " + wfKey); // Quickly get project ID and workflow ID while debugging
+        var version = VersionId.parse(versionParameter);
+        var wfKey = new WorkflowKey(projectId, workflowId, version);
+        WorkflowBuildContext.WorkflowBuildContextBuilder buildContext = WorkflowBuildContext.builder();
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            var buildContext = WorkflowBuildContext.builder()//
-                .includeInteractionInfo(true)//
+            Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null  //
+                            ? Map.of() //
+                            : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
+            buildContext.includeInteractionInfo(true)//
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
-                .setSpaceProviderTypes(
-                    m_spaceProvidersManager == null ? Map.of()
-                        : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes());
+                .setSpaceProviderTypes(providerTypes) //
+                .setVersion(version);
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
-            var buildContext = WorkflowBuildContext.builder().includeInteractionInfo(false);
-            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
+            buildContext.includeInteractionInfo(false).setVersion(version);
         }
+        return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
     }
 
     /**
@@ -154,7 +155,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                     return EntityFactory.Workflow.buildNodeIdAndIsExecutedEnt(nodeId, ncState);
                 })//
                 .toList();
-        } catch (IllegalStateException | InterruptedException e) {
+        } catch (IllegalStateException | InterruptedException e) { // NOSONAR
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
         }
     }

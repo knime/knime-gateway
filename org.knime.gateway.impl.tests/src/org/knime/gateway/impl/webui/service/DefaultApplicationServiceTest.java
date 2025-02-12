@@ -105,25 +105,24 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testGetAppState() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
+        var workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
-        ProjectManager.getInstance().openAndCacheProject(workflowProjectId);
         ProjectManager.getInstance().setProjectActive(workflowProjectId);
         setSpaceProvidersDepencency();
 
         var appService = DefaultApplicationService.getInstance();
 
-        AppStateEnt appStateEnt = appService.getState();
+        var appStateEnt = appService.getState();
         assertThat(appStateEnt.hasNodeRecommendationsEnabled(), not(is(nullValue())));
-        AppStateEnt appStateEntStripped = stripAppState(appStateEnt);
+        var appStateEntStripped = stripAppState(appStateEnt);
         cr(appStateEntStripped, "appstate");
     }
 
     private static void setSpaceProvidersDepencency() {
-        String localProviderId = "local_provider";
-        String localProviderName = "Local Provider";
-        String connectedProviderId = "connected_provider";
-        String connectedProviderName = "Connected Provider";
+        var localProviderId = "local_provider";
+        var localProviderName = "Local Provider";
+        var connectedProviderId = "connected_provider";
+        var connectedProviderName = "Connected Provider";
         var localSpaceProvider = mock(SpaceProvider.class);
         when(localSpaceProvider.getId()).thenReturn(localProviderId);
         when(localSpaceProvider.getName()).thenReturn(localProviderName);
@@ -147,7 +146,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testGetAppStateWithWorkflowSpecificSpaceProvider() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
+        var workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
         ProjectManager.getInstance().openAndCacheProject(workflowProjectId);
         ProjectManager.getInstance().setProjectActive(workflowProjectId);
@@ -156,7 +155,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         var appService = DefaultApplicationService.getInstance();
 
         try (var unused = DefaultServiceContext.set(workflowProjectId)) {
-            AppStateEnt appStateEnt = appService.getState();
+            var appStateEnt = appService.getState();
             var expectedSpaceProvider = appStateEnt.getSpaceProviders().get(0);
             assertThat(expectedSpaceProvider.getName(), is("bar"));
         }
@@ -188,7 +187,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testGetAppStateWithMode() throws Exception {
-        String workflowProjectId = "the_workflow_project_id";
+        var workflowProjectId = "the_workflow_project_id";
         loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
         setSpaceProvidersDepencency();
 

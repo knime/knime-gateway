@@ -62,10 +62,9 @@ import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.impl.project.DefaultProject;
-import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.CachedProject;
+import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -97,18 +96,28 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * @throws Exception
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
-        final var workflowDir = workflow.getWorkflowDir();
-        WorkflowManager wfm = WorkflowManagerUtil.loadWorkflowInWorkspace(workflowDir.toPath(),
-            workflowDir.getParentFile().toPath());
-        addToProjectManager(wfm, workflow.getName(), projectId);
+        var wfm = loadWorkflowInWorkspace(workflow.getWorkflowDir());
+        var project = CachedProject.builder().setWfm(wfm).setId(projectId).setOrigin(createOriginForTesting());
+        if (workflow instanceof TestWorkflow.WithVersion withVersion) {
+            project.getVersion(ignored -> {
+                try {
+                    return loadWorkflowInWorkspace(withVersion.getVersionWorkflowDir());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        addToProjectManager(wfm, workflow.getName(), projectId, project.build());
     }
 
-    private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId) {
-        wfm.setName(name);
-        // wfm.setName marks the workflow dirty
+    private WorkflowManager loadWorkflowInWorkspace(final File workflowDir) throws Exception {
+        return WorkflowManagerUtil.loadWorkflowInWorkspace(workflowDir.toPath(), workflowDir.getParentFile().toPath());
+    }
+
+    private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId, final CachedProject project) {
+        wfm.setName(name); // wfm.setName marks the workflow dirty
         wfm.getNodeContainerDirectory().setDirty(false);
-        ProjectManager.getInstance()
-            .addProject(DefaultProject.builder(wfm).setId(projectId).setOrigin(createOriginForTesting()).build());
+        ProjectManager.getInstance().addProject(project);
         m_loadedWorkflows.add(projectId);
     }
 
@@ -139,29 +148,22 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         MetaNodeLinkUpdateResult loadResult =
             new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
         WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
-        SubNodeContainer snc = (SubNodeContainer)loadResult.getLoadedInstance();
-        addToProjectManager(snc.getWorkflowManager(), component.getName(), projectId);
+        var snc = (SubNodeContainer)loadResult.getLoadedInstance();
+        addToProjectManager(snc.getWorkflowManager(), component.getName(), projectId, CachedProject.builder().setWfm(snc.getWorkflowManager()).setId(projectId).setOrigin(createOriginForTesting()).build());
     }
 
     /**
      * Disposes all loaded workflows.
      *
-     * @throws InterruptedException
      */
-    public void disposeWorkflows() throws InterruptedException {
-        for (String projectId : m_loadedWorkflows) {
-            WorkflowManager wfm = ProjectManager.getInstance().openAndCacheProject(projectId).orElse(null);
-            if (wfm != null) {
-                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-            }
-            ProjectManager.getInstance().removeProject(projectId, w -> {
-                //
-            });
+    public void disposeWorkflows() {
+        for (var projectId : m_loadedWorkflows) {
+            ProjectManager.getInstance().removeProject(projectId);
         }
     }
 
-    private static Project.Origin createOriginForTesting() {
-        return new Project.Origin() {
+    private static Origin createOriginForTesting() {
+        return new Origin() {
             @Override
             public String getProviderId() {
                 return "Provider ID for testing";

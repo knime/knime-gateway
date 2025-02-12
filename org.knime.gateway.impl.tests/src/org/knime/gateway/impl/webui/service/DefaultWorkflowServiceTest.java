@@ -71,7 +71,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.project.DefaultProject;
+import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
@@ -98,16 +98,16 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testThatWorkflowEntitiesAreNotCached() throws Exception {
-        String wfId = "wf_id";
-        WorkflowManager wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
-        WorkflowSnapshotEnt ent = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
-        WorkflowSnapshotEnt ent2 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
+        var wfId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
+        var ent = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false, null);
+        var ent2 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false, null);
         assertFalse(ent.getWorkflow() == ent2.getWorkflow());
 
         // change
         NodeUIInformation.moveNodeBy(wfm.getNodeContainers().iterator().next(), new int[]{10, 10});
 
-        WorkflowSnapshotEnt ent3 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false);
+        var ent3 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false, null);
         assertFalse(ent2.getWorkflow() == ent3.getWorkflow());
     }
 
@@ -123,13 +123,13 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, wfId);
         var workflowService = DefaultWorkflowService.getInstance();
 
-        var allowedActionsMap = workflowService.getWorkflow(wfId, getRootID(), true).getWorkflow().getNodes().entrySet()
+        var allowedActionsMap = workflowService.getWorkflow(wfId, getRootID(), true, null).getWorkflow().getNodes().entrySet()
             .stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
         cr(allowedActionsMap, "allowed_actions_for_view_nodes");
 
         wfm.executeAllAndWaitUntilDone();
 
-        var allowedActionsMapExecuted = workflowService.getWorkflow(wfId, getRootID(), true).getWorkflow().getNodes()
+        var allowedActionsMapExecuted = workflowService.getWorkflow(wfId, getRootID(), true, null).getWorkflow().getNodes()
             .entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
         cr(allowedActionsMapExecuted, "allowed_actions_for_view_nodes_executed");
     }
@@ -146,7 +146,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         var wfm = loadWorkflow(TestWorkflowCollection.NODE_MESSAGE, wfId);
 
         var workflowService = DefaultWorkflowService.getInstance();
-        var stateEnt = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes()
+        var stateEnt = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false, null).getWorkflow().getNodes()
             .get("root:4")).getState();
         assertThat(stateEnt.getWarning(), is(nullValue()));
         assertThat(stateEnt.getIssue(), is(nullValue()));
@@ -154,7 +154,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
 
         wfm.executeAllAndWaitUntilDone();
 
-        var stateEntExecuted = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow()
+        var stateEntExecuted = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false, null).getWorkflow()
             .getNodes().get("root:4")).getState();
         assertThat(stateEntExecuted.getWarning(), containsString("can not be transformed"));
         assertThat(stateEntExecuted.getIssue(), containsString("For input string"));
@@ -171,7 +171,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS, wfId);
         var workflowService = DefaultWorkflowService.getInstance();
-        var nodes = workflowService.getWorkflow(wfId, getRootID(), false).getWorkflow().getNodes();
+        var nodes = workflowService.getWorkflow(wfId, getRootID(), false, null).getWorkflow().getNodes();
         var metanode = (MetaNodeEnt)nodes.get("root:27");
         var component = (ComponentNodeEnt)nodes.get("root:28");
         assertThat(metanode.isLocked(), is(Boolean.TRUE));
@@ -185,7 +185,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         };
         ((WorkflowManager)wfm.getNodeContainer(wfm.getID().createChild(27))).unlock(prompt);
         ((SubNodeContainer)wfm.getNodeContainer(wfm.getID().createChild(28))).getWorkflowManager().unlock(prompt);
-        nodes = workflowService.getWorkflow("wf_id", getRootID(), false).getWorkflow().getNodes();
+        nodes = workflowService.getWorkflow("wf_id", getRootID(), false, null).getWorkflow().getNodes();
         metanode = (MetaNodeEnt)nodes.get("root:27");
         component = (ComponentNodeEnt)nodes.get("root:28");
         assertThat(metanode.isLocked(), is(Boolean.FALSE));
@@ -204,18 +204,18 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         throws IOException, NotASubWorkflowException, NodeNotFoundException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
-        var project = DefaultProject.builder(wfm).build();
+        var project = CachedProject.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         ProjectManager.getInstance().addProject(project);
 
         var workflowService = DefaultWorkflowService.getInstance();
-        var nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE).getWorkflow().getNodes();
+        var nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE, null).getWorkflow().getNodes();
         assertThat(nodes.get("root:1").getKind().name(), is("METANODE"));
 
         metanode.hideInUI();
-        nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE).getWorkflow().getNodes();
+        nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE, null).getWorkflow().getNodes();
         assertThat(nodes.isEmpty(), is(true));
 
-        ProjectManager.getInstance().removeProject(project.getID(), WorkflowManagerUtil::disposeWorkflow);
+        ProjectManager.getInstance().removeProject(project.getID());
     }
 
 }

@@ -96,7 +96,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
             asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
         ws().executeWorkflowCommand(wfId, getRootID(), command);
-        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE, null).getWorkflow();
         cr(workflow, "delete_command");
         assertThat(workflow.getNodes().keySet(), not(hasItems("root:1", "root:4")));
         assertThat(workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).toList(),
@@ -110,10 +110,10 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var command = createDeleteCommandEnt(asList(new NodeIDEnt(1), new NodeIDEnt(4)),
             asList(new ConnectionIDEnt(new NodeIDEnt(26), 1)), asList(new AnnotationIDEnt(getRootID(), 1)));
         ws().executeWorkflowCommand(wfId, getRootID(), command);
-        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        WorkflowEnt workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE, null).getWorkflow();
         assertThat(workflow.getNodes().keySet(), Matchers.not(hasItems("root:1", "root:4")));
         ws().undoWorkflowCommand(wfId, getRootID());
-        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE).getWorkflow();
+        workflow = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE, null).getWorkflow();
         assertThat(workflow.getNodes().keySet(), hasItems("root:1", "root:4"));
         assertThat(workflow.getWorkflowAnnotations().stream().map(a -> a.getId().toString()).toList(),
             hasItems("root_1"));
@@ -124,34 +124,34 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
     public void canDeleteWithinComponent() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         assertThat("node expected to be present",
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10"),
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true, null).getWorkflow().getNodes().get("root:12:0:10"),
             is(notNullValue()));
         ws().executeWorkflowCommand(wfId, new NodeIDEnt(12),
             createDeleteCommandEnt(asList(new NodeIDEnt(12, 0, 10)), emptyList(), emptyList()));
         assertThat("node expected to be deleted",
-            ws().getWorkflow(wfId, new NodeIDEnt(12), true).getWorkflow().getNodes().get("root:12:0:10"),
+            ws().getWorkflow(wfId, new NodeIDEnt(12), true, null).getWorkflow().getNodes().get("root:12:0:10"),
             is(nullValue()));
     }
 
     public void canDeleteConnectionLeavingMetanode() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow().getConnections().get("root:6_1"),
+        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false, null).getWorkflow().getConnections().get("root:6_1"),
             is(notNullValue()));
         ws().executeWorkflowCommand(wfId, new NodeIDEnt(6),
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt("root:6_1")), emptyList()));
-        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false).getWorkflow().getConnections().get("root:6_1"),
+        assertThat(ws().getWorkflow(wfId, new NodeIDEnt(6), false, null).getWorkflow().getConnections().get("root:6_1"),
             is(nullValue()));
     }
 
     public void canDeleteConnectionInMetanode() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         assertThat("node expected to be present",
-            ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"),
+            ws().getWorkflow(wfId, new NodeIDEnt(6), true, null).getWorkflow().getNodes().get("root:6:3"),
             is(notNullValue()));
         ws().executeWorkflowCommand(wfId, new NodeIDEnt(6),
             createDeleteCommandEnt(asList(new NodeIDEnt(6, 3)), emptyList(), emptyList()));
         assertThat("node expected to be deleted",
-            ws().getWorkflow(wfId, new NodeIDEnt(6), true).getWorkflow().getNodes().get("root:6:3"), is(nullValue()));
+            ws().getWorkflow(wfId, new NodeIDEnt(6), true, null).getWorkflow().getNodes().get("root:6:3"), is(nullValue()));
     }
 
     public void deletionFailsIfNodeDoesNotExist() throws Exception {
@@ -192,11 +192,11 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         String wfId2 = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES);
         executeWorkflowAsync(wfId2);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WorkflowEnt w = ws().getWorkflow(wfId2, NodeIDEnt.getRootID(), Boolean.TRUE).getWorkflow();
+            WorkflowEnt w = ws().getWorkflow(wfId2, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow();
             assertThat(((NativeNodeEnt)w.getNodes().get("root:4")).getState().getExecutionState(),
                 is(NodeStateEnt.ExecutionStateEnum.EXECUTED));
         });
-        cr(ws().getWorkflow(wfId2, getRootID(), Boolean.TRUE).getWorkflow(), "can_delete_executing");
+        cr(ws().getWorkflow(wfId2, getRootID(), Boolean.TRUE, null).getWorkflow(), "can_delete_executing");
 
         // deletion fails because of a node that cannot be deleted due to executing successors
         var command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());

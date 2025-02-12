@@ -142,7 +142,7 @@ public class EncryptedComponentAndMetanodeTest extends GatewayServiceTest {
     public void testWorkflowService() {
         var ws = DefaultWorkflowService.getInstance();
         var projectId = m_wfm.getFirst().toString();
-        assertThrows(IllegalStateException.class, () -> ws.getWorkflow(projectId, new NodeIDEnt(2), Boolean.FALSE));
+        assertThrows(IllegalStateException.class, () -> ws.getWorkflow(projectId, new NodeIDEnt(2), Boolean.FALSE, null));
 
         var monitorState = ws.getWorkflowMonitorState(projectId).getState();
         assertThat(monitorState.getErrors()).isEmpty();

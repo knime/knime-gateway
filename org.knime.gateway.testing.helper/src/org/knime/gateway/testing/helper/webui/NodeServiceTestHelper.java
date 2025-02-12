@@ -120,12 +120,12 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // one test that it generally works
-        NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE)
+        NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null)
             .getWorkflow().getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         ns().changeNodeStates(wfId, getRootID(), singletonList(new NodeIDEnt(1)), "execute");
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE).getWorkflow()
+            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow()
                 .getNodes().get("root:1");
             assertThat(nodeEnt2.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
@@ -151,14 +151,14 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE)
+            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE, null)
                 .getWorkflow().getNodes().get("root:5:0:4");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
 
         ns().changeNodeStates(wfId, getRootID(), emptyList(), "execute");
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE).getWorkflow()
+            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE, null).getWorkflow()
                 .getNodes().get("root:5:0:4");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
@@ -218,14 +218,14 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.STREAMING_EXECUTION);
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
         Awaitility.await().untilAsserted(() -> {
-            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow().getNodes()
                 .get("root:5");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTING));
         });
 
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "cancel");
         Awaitility.await().untilAsserted(() -> {
-            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow().getNodes()
                 .get("root:5");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         });
@@ -252,7 +252,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testChangeLoopExecutionState(wfId, component);
         ns().changeNodeStates(wfId, component, Collections.emptyList(), "cancel");
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WorkflowEnt wf = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE).getWorkflow();
+            WorkflowEnt wf = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow();
             assertThat(((ComponentNodeEnt)wf.getNodes().get("root:5")).getState().getExecutionState(),
                 is(not(ExecutionStateEnum.EXECUTING)));
         });
@@ -320,7 +320,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private NativeNodeEnt getNativeNodeEnt(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NotASubWorkflowException, NodeNotFoundException {
-        return (NativeNodeEnt)ws().getWorkflow(projectId, workflowId, Boolean.TRUE).getWorkflow().getNodes()
+        return (NativeNodeEnt)ws().getWorkflow(projectId, workflowId, Boolean.TRUE, null).getWorkflow().getNodes()
             .get(nodeId.toString());
     }
 
@@ -384,7 +384,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
 
-        var workflow = ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow();
+        var workflow = ws().getWorkflow(projectId, getRootID(), Boolean.FALSE, null).getWorkflow();
         assertThat(((NativeNodeEnt)workflow.getNodes().get("root:1")).getDialogType(), is(DialogTypeEnum.WEB));
         assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).getDialogType(), is(DialogTypeEnum.SWING));
         assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:17")).getDialogType(), is(DialogTypeEnum.WEB));
@@ -442,7 +442,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         executeWorkflow(projectId);
 
-        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE).getWorkflow().getNodes()
+        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE, null).getWorkflow().getNodes()
                 .get("root:1")).hasView(), is(Boolean.TRUE));
 
         var viewEnt = ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1));

@@ -88,8 +88,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
-import org.knime.gateway.impl.project.Project.Origin;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -103,7 +103,6 @@ import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-import org.knime.testing.util.WorkflowManagerUtil;
 import org.mockito.Mockito;
 
 /**
@@ -804,7 +803,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
                     Space.NameCollisionHandling.NOOP.toString(), false));
         } finally {
-            ProjectManager.getInstance().removeProject(wfId, WorkflowManagerUtil::disposeWorkflow);
+            ProjectManager.getInstance().removeProject(wfId);
         }
     }
 
@@ -835,7 +834,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             ss().moveOrCopyItems(spaceId, providerId, List.of(wfId), wfGroupId,
                 Space.NameCollisionHandling.NOOP.toString(), false);
         } finally {
-            ProjectManager.getInstance().removeProject(wfId, WorkflowManagerUtil::disposeWorkflow);
+            ProjectManager.getInstance().removeProject(wfId);
             FileUtils.deleteQuietly(testWorkspacePath.resolve(wfGroupName).toFile());
         }
     }
@@ -866,7 +865,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return new Project() {
 
             @Override
-            public WorkflowManager loadWorkflowManager() {
+            public WorkflowManager getWorkflowManager() {
                 return null;
             }
 
