@@ -109,6 +109,7 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.util.Either;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
@@ -352,6 +353,34 @@ public final class WorkflowEntityFactory {
     }
 
     /**
+     * If {@code wfm} is not a metanode, return it. Otherwise, recurse parents until a non-metanode parent is
+     * encountered.
+     */
+    private Optional<WorkflowManager> nonMetanodeSelfOrParent(final WorkflowManager wfm) {
+        if (wfm.getID().isRoot()) {
+            return Optional.empty();
+        }
+        if (CoreUtil.isMetanodeWfm(wfm)) {
+            return nonMetanodeSelfOrParent(CoreUtil.getWorkflowParent(wfm));
+        }
+        return Optional.of(wfm);
+    }
+
+    private Either<ProjectMetadataEnt, ComponentNodeDescriptionEnt> getMetadata(final WorkflowManager wfm) {
+        //noinspection unchecked
+        return (Either<ProjectMetadataEnt, ComponentNodeDescriptionEnt>)
+                nonMetanodeSelfOrParent(wfm).map(providingWfm -> {
+            if (providingWfm.isProject()) {
+                return Either.left(buildProjectMetadataEnt(providingWfm));
+            }
+            if (CoreUtil.isComponentWFM(providingWfm)) {
+                return Either.right(buildComponentNodeDescriptionEnt(getParentComponent(providingWfm)));
+            }
+            return null;
+        }).orElse(Either.empty());
+    }
+
+    /**
      * Builds a new {@link WorkflowEnt} instance.
      *
      * @param wfm the workflow manager to build the workflow entity for
@@ -360,25 +389,26 @@ public final class WorkflowEntityFactory {
      */
     public WorkflowEnt buildWorkflowEnt(final WorkflowManager wfm,
         final WorkflowBuildContextBuilder buildContextBuilder) { // NOSONAR
-        try (WorkflowLock lock = wfm.lock()) {
-            WorkflowBuildContext buildContext = buildContextBuilder.build(wfm);
-            Collection<NodeContainer> nodeContainers = wfm.getNodeContainers();
+        try (var lock = wfm.lock()) {
+            var buildContext = buildContextBuilder.build(wfm);
+            var nodeContainers = wfm.getNodeContainers();
             // linked hash map to retain iteration order!
             Map<String, NodeEnt> nodes = new LinkedHashMap<>();
             Map<String, NativeNodeInvariantsEnt> invariants = new HashMap<>();
-            for (NodeContainer nc : nodeContainers) {
+            for (var nc : nodeContainers) {
                 if (nc instanceof WorkflowManager metanode && metanode.isHiddenInUI()) {
                     continue;
                 }
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
-            Map<String, ConnectionEnt> connections = wfm.getConnectionContainers().stream()
+            var connections = wfm.getConnectionContainers().stream()
                 .map(cc -> buildConnectionEnt(buildConnectionIDEnt(cc, buildContext), cc, buildContext))
                 .collect(Collectors.toMap(c -> c.getId().toString(), c -> c)); // NOSONAR
-            List<WorkflowAnnotationEnt> annotations =
+            var annotations =
                 wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).toList();
-            var info = buildWorkflowInfoEnt(wfm, buildContext);
-            return builder(WorkflowEntBuilder.class).setInfo(info)//
+            var metadata = getMetadata(wfm);
+            return builder(WorkflowEntBuilder.class) //
+                .setInfo(buildWorkflowInfoEnt(wfm, buildContext))//
                 .setNodes(nodes)//
                 .setNodeTemplates(invariants)//
                 .setConnections(connections)//
@@ -388,9 +418,8 @@ public final class WorkflowEntityFactory {
                 .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
                 .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
-                .setProjectMetadata(wfm.isProject() ? buildProjectMetadataEnt(wfm) : null)//
-                .setComponentMetadata(
-                    CoreUtil.isComponentWFM(wfm) ? buildComponentNodeDescriptionEnt(getParentComponent(wfm)) : null)//
+                .setProjectMetadata(metadata.get(ProjectMetadataEnt.class).orElse(null))//
+                .setComponentMetadata(metadata.get(ComponentNodeDescriptionEnt.class).orElse(null))//
                 .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).build();
         }
     }
@@ -1063,7 +1092,7 @@ public final class WorkflowEntityFactory {
         List<WorkflowInfoEnt> parents = new ArrayList<>();
         WorkflowManager parent = wfm;
         do {
-            parent = getWorkflowParent(parent);
+            parent = CoreUtil.getWorkflowParent(parent);
             parents.add(buildWorkflowInfoEnt(parent, buildContext));
         } while (!parent.isProject() && !parent.isComponentProjectWFM());
         Collections.reverse(parents);
@@ -1602,11 +1631,6 @@ public final class WorkflowEntityFactory {
     private static boolean isHubItemVersionChangeable(final URI uri, final WorkflowBuildContext buildContext) {
         return KnimeUrlType.getType(uri).orElse(null) == KnimeUrlType.MOUNTPOINT_ABSOLUTE
             && buildContext.getSpaceProviderType(uri.getAuthority()).orElse(null) == SpaceProviderEnt.TypeEnum.HUB;
-    }
-
-    private WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
-        NodeContainerParent parent = wfm.getDirectNCParent();
-        return parent instanceof SubNodeContainer snc ? snc.getParent() : (WorkflowManager)parent;
     }
 
     /*
