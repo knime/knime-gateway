@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -56,21 +57,38 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeViewEnt;
 
 /**
- * Provider for the composite view data of components
+ * Provider for the composite view data of components.
+ *
+ * Pragmatic solution to avoid circular dependencies between knime-gateway and knime-js-core plugins.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public interface CompositeViewDataProvider {
 
     /**
+     * Returns the composite view data of the component.
+     *
      * @param snc the container of the component
      * @param createNodeViewEnt A function that creates a NodeViewEntity from a native node container to be rendered in
      *            the composite view
      * @return A string representation of the page to show, that embed the views of the containing nodes into a
      *         customizable layout.
-     * @throws IOException
+     * @throws IOException -
      */
     String getCompositeViewData(final SubNodeContainer snc,
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    /**
+     * Triggers the re-execution of the component.
+     *
+     * @param snc -
+     * @param resetNodeIdSuffix The nodeId suffix, i.e., not starting with root, that triggered the re-execution
+     * @param viewValues -
+     * @param createNodeViewEnt -
+     * @throws IOException -
+     */
+    void triggerComponentReexecution(final SubNodeContainer snc, final String resetNodeIdSuffix,
+        final Map<String, String> viewValues, final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt)
+        throws IOException;
 
 }
