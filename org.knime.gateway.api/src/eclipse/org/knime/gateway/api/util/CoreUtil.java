@@ -249,6 +249,12 @@ public final class CoreUtil {
         return wfm.getDirectNCParent() instanceof SubNodeContainer;
     }
 
+    public static boolean isMetanodeWfm(final WorkflowManager wfm) {
+        return CoreUtil.getContainerType(wfm) //
+            .map(type -> type == CoreUtil.ContainerType.METANODE) //
+            .orElse(false);
+    }
+
     /**
      * @param wfm A {@link WorkflowManager} instance
      * @return The parenting {@link SubNodeContainer} of a component {@link WorkflowManager} or an empty optional if the
@@ -733,6 +739,11 @@ public final class CoreUtil {
         return templateInfo != null && templateInfo.getRole() == MetaNodeTemplateInformation.Role.Link;
     }
 
+    public static WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
+        var parent = wfm.getDirectNCParent();
+        return parent instanceof SubNodeContainer snc ? snc.getParent() : (WorkflowManager)parent;
+    }
+
     /**
      * The concrete kind of a container node. We assume a 1-to-1 mapping from a {@link ContainerType} to a subclass of
      * {@link NodeContainer} that implements the node's container behaviour.
@@ -771,11 +782,28 @@ public final class CoreUtil {
     }
 
     /**
+     * Obtain the {@link ContainerType} of the given workflow manager.
+     */
+    public static Optional<ContainerType> getContainerType(final WorkflowManager wfm) {
+        if (wfm.isProject()) {
+            return Optional.empty();
+        }
+        if (isComponentWFM(wfm)) {
+            return Optional.of(ContainerType.COMPONENT);
+        }
+        if (wfm.getParent().getID().isRoot()) {
+            // this is a top-level workflow and not a component project
+            return Optional.empty();
+        }
+        return getContainerType(wfm.getID(), wfm.getParent());
+    }
+
+    /**
      * Obtain the {@link ContainerType} of a container node.
      *
      * @param nc The node container
-     * @return an Optional containing the container type of the node, or an empty Optional if the node could not be
-     *         found in the workflow or is not a container node.
+     * @return an Optional containing the container type of the node, or an empty Optional if the node is not a
+     *         container node.
      */
     public static Optional<ContainerType> getContainerType(final NodeContainer nc) {
         if (nc instanceof WorkflowManager) {
