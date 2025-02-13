@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.NodeLogger;
@@ -100,8 +101,23 @@ public class DefaultComponentService implements ComponentService {
         try {
             var snc = getSubnodeContainer(projectId, workflowId, nodeId);
             return getViewDataProvider().getCompositeViewData(snc, getNodeViewCreator(projectId));
-        } catch (IOException | NodeNotFoundException | InvalidRequestException ex) {
+        } catch (IOException | NodeNotFoundException ex) {
             throw new ServiceCallException("Could not create component view data. " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public void reexecuteComponentNode(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final String nodeIdThatTriggered, final Map<String, String> stateUpdates) throws ServiceCallException {
+
+        LOGGER.info("reexecuteCompositeViewPage: "+projectId+" "+workflowId+" "+nodeId+" "+nodeIdThatTriggered);
+
+        try {
+            var snc = getSubnodeContainer(projectId,workflowId,nodeId);
+            getViewDataProvider().reexecutePage(snc,nodeIdThatTriggered, stateUpdates,
+                    getNodeViewCreator(projectId));
+        } catch (IOException | NodeNotFoundException ex) {
+            throw new ServiceCallException("Could not reexecute component. " + ex.getMessage(), ex);
         }
     }
 
@@ -119,11 +135,11 @@ public class DefaultComponentService implements ComponentService {
     }
 
     private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws InvalidRequestException, NodeNotFoundException {
+        final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
 
         var nc = DefaultServiceUtil.assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
         if (!(nc instanceof SubNodeContainer)) {
-            throw new InvalidRequestException(
+            throw new ServiceCallException(
                 "No SubNodeContainer for " + projectId + ", " + workflowId + ", " + nodeId + " found.");
         }
         return (SubNodeContainer)nc;
