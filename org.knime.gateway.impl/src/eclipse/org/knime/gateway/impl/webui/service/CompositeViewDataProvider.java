@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -71,6 +72,17 @@ public interface CompositeViewDataProvider {
      * @throws IOException
      */
     String getCompositeViewData(final SubNodeContainer snc,
+        final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    /**
+     * @param snc
+     * @param nodeIdThatTriggered
+     * @param stateUpdates
+     * @param createNodeViewEnt
+     * @return
+     * @throws IOException
+     */
+    public void reexecutePage(final SubNodeContainer snc, final String nodeIdThatTriggered, final Map<String, String> stateUpdates,
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
 
 }

@@ -94,4 +94,14 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
         return m_service.get().getCompositeViewPage(projectId, workflowId, nodeId);    
     }
 
+    @Override
+    @JsonRpcMethod(value = "reexecuteComponentNode")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public void reexecuteComponentNode(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="nodeIdThatTriggered") String nodeIdThatTriggered, @JsonRpcParam(value="stateUpdates") java.util.Map<String, String> stateUpdates)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().reexecuteComponentNode(projectId, workflowId, nodeId, nodeIdThatTriggered, stateUpdates);    
+    }
+
 }
