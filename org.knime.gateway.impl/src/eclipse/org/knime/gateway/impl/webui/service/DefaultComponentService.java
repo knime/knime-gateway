@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.NodeLogger;
@@ -88,12 +89,36 @@ public class DefaultComponentService implements ComponentService {
     }
 
     @Override
-    public Object getComponentViewPage(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
+    public Object getCompositeViewPage(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
-        var nc = DefaultServiceUtil.assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
-        if (!(nc instanceof SubNodeContainer)) {
-            throw new InvalidRequestException("TODO. client error. not found");
+
+        var snc = getSubnodeContainer(projectId, workflowId, nodeId);
+
+        try {
+            return getProvider().getCompositeViewData(snc, getNodeViewCreator(projectId));
+        } catch (IOException ex) {
+            throw new InvalidRequestException("Could not create component view data. " + ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object reexecuteCompositeViewPage(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final Map<String, String> stateUpdates) throws NodeNotFoundException, InvalidRequestException {
+
+        var snc = getSubnodeContainer(projectId,workflowId,nodeId);
+        try {
+            getProvider().reexecutePage(snc, stateUpdates,
+                getNodeViewCreator(projectId));
+        } catch (IOException ex) {
+            throw new InvalidRequestException("Could not reexecute component. " + ex.getMessage(), ex);
+        }
+        return null;
+    }
+
+    private static CompositeViewDataProvider getProvider() throws NodeNotFoundException, InvalidRequestException {
 
         List<CompositeViewDataProvider> dataProviders =
             ExtPointUtil.collectExecutableExtensions("org.knime.gateway.impl.CompositeViewDataProvider", "impl");
@@ -101,8 +126,20 @@ public class DefaultComponentService implements ComponentService {
             throw new IllegalStateException(
                 "Expected only a single data provider for component views. Got " + dataProviders.size() + ".");
         }
+        return dataProviders.get(0);
+    }
 
-        Function<NativeNodeContainer, NodeViewEnt> createNodeView = (final NativeNodeContainer nnc) -> {
+    private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws InvalidRequestException, NodeNotFoundException {
+        var nc = DefaultServiceUtil.assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        if (!(nc instanceof SubNodeContainer)) {
+            throw new InvalidRequestException("client error. not found");
+        }
+        return (SubNodeContainer)nc;
+    }
+
+    private Function<NativeNodeContainer, NodeViewEnt> getNodeViewCreator(final String projectId) {
+        return (final NativeNodeContainer nnc) -> {
             try {
                 var nodeView = DefaultNodeService.getNodeView(nnc, projectId, m_selectionEventBus);
                 if (nodeView instanceof NodeViewEnt nodeViewEntity) {
@@ -117,12 +154,6 @@ public class DefaultComponentService implements ComponentService {
                 return NodeViewEnt.create(nnc);
             }
         };
-
-        try {
-            return dataProviders.get(0).getCompositeViewData((SubNodeContainer)nc, createNodeView);
-        } catch (IOException ex) {
-            throw new InvalidRequestException("Could not create component view data. " + ex.getMessage(), ex);
-        }
     }
 
 }

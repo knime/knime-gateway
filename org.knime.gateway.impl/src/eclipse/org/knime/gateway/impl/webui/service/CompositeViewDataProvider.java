@@ -49,11 +49,16 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeViewEnt;
+import org.knime.js.core.JSONWebNodePage;
+
+import com.fasterxml.jackson.databind.util.RawValue;
 
 /**
  * Provider for the composite view data of components
@@ -72,5 +77,45 @@ public interface CompositeViewDataProvider {
      */
     String getCompositeViewData(final SubNodeContainer snc,
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    /**
+     * @param snc
+     * @param stateUpdates
+     * @param createNodeViewEnt
+     * @return
+     * @throws IOException
+     */
+    public ReexecutedPage reexecutePage(final SubNodeContainer snc, final Map<String, String> stateUpdates,
+        final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    /**
+     * Object that contains the wizard page and some additional information.
+     *
+     * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+     * @since 4.5
+     */
+    public interface ReexecutedPage {
+
+        /**
+         * @return the nodes that have been reset by a re-execution event and are effectively re-executed (no longer
+         *         pending re-execution; e.g. finished, failed, deactivated, etc.) or an empty list if the nodes reset
+         *         by the re-execution event are still awaiting execution.
+         */
+        List<String> getReexecutedNodes();
+
+        /**
+         * @return the nodes that have been reset or <code>null</code> if the component is in executed state and
+         *         {@link #getPage()} returns page content
+         */
+        List<String> getResetNodes();
+
+        /**
+         * Returns the actual page content, i.e. as json-serialized {@link JSONWebNodePage}-object.
+         *
+         * @return the actual page content or <code>null</code> if the component is in execution
+         */
+        RawValue getPage();
+
+    }
 
 }
