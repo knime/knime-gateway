@@ -117,7 +117,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionParameter);
         var wfKey = new WorkflowKey(projectId, workflowId, version);
-        WorkflowBuildContext.WorkflowBuildContextBuilder buildContext = WorkflowBuildContext.builder();
+        var buildContext = WorkflowBuildContext.builder();
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null  //
                             ? Map.of() //
@@ -127,7 +127,6 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
                 .setSpaceProviderTypes(providerTypes) //
                 .setVersion(version);
-            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
             buildContext.includeInteractionInfo(false).setVersion(version);
         }
