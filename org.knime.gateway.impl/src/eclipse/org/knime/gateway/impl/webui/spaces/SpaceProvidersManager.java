@@ -72,11 +72,11 @@ public final class SpaceProvidersManager {
 
     private final Consumer<String> m_loginErrorHandler;
 
-    private Consumer<SpaceProvider> m_onProviderCreated;
+    private final Consumer<SpaceProvider> m_onProviderCreated;
 
-    private Consumer<SpaceProvider> m_onProviderRemoved;
+    private final Consumer<SpaceProvider> m_onProviderRemoved;
 
-    private LocalSpaceProvider m_localSpaceProvider;
+    private final LocalSpaceProvider m_localSpaceProvider;
 
     private final List<SpaceProviderFactory> m_spaceProvidersFactories;
 
