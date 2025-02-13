@@ -108,7 +108,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         addToProjectManager(wfm, workflow.getName(), projectId, project.build());
     }
 
-    private WorkflowManager loadWorkflowInWorkspace(final File workflowDir) throws Exception {
+    private static WorkflowManager loadWorkflowInWorkspace(final File workflowDir) throws Exception {
         return WorkflowManagerUtil.loadWorkflowInWorkspace(workflowDir.toPath(), workflowDir.getParentFile().toPath());
     }
 
