@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -72,5 +73,17 @@ public interface CompositeViewDataProvider {
      */
     String getCompositeViewData(final SubNodeContainer snc,
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    /**
+     * @param snc
+     * @param resetNodeIdSuffix The nodeId suffix, i.e., not starting with root, that triggered the re-execution
+     * @param stateUpdates
+     * @param createNodeViewEnt
+     * @return
+     * @throws IOException
+     */
+    void triggerComponentReexecution(final SubNodeContainer snc, final String resetNodeIdSuffix,
+        final Map<String, String> stateUpdates, final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt)
+        throws IOException;
 
 }

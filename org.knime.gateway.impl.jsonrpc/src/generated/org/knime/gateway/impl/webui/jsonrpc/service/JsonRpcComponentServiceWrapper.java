@@ -84,6 +84,9 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
         return m_service.get().getComponentDescription(projectId, workflowId, nodeId);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
     @Override
     @JsonRpcMethod(value = "getCompositeViewPage")
     @JsonRpcErrors(value = {
@@ -92,6 +95,19 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
     })
     public Object getCompositeViewPage(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().getCompositeViewPage(projectId, workflowId, nodeId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "triggerComponentReexecution")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public void triggerComponentReexecution(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="resetNodeIdSuffix") String resetNodeIdSuffix, @JsonRpcParam(value="stateUpdates") java.util.Map<String, String> stateUpdates)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().triggerComponentReexecution(projectId, workflowId, nodeId, resetNodeIdSuffix, stateUpdates);
     }
 
 }
