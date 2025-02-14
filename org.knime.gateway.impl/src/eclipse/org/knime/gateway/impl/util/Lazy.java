@@ -62,8 +62,11 @@ public final class Lazy {
     /**
      * A lazy initializer with the capability to reset it.
      *
-     * @see org.apache.commons.lang3.concurrent.LazyInitializer
-     * @see com.google.common.base.Suppliers.MemoizingSupplier
+     * See also
+     * <ul>
+     * <li>org.apache.commons.lang3.concurrent.LazyInitializer</li>
+     * <li>com.google.common.base.Suppliers.MemoizingSupplier</li>
+     * </ul>
      * 
      * @implNote Not thread-safe.
      * @param <V> The type of the provided value.
@@ -75,7 +78,7 @@ public final class Lazy {
         private Supplier<V> m_supplier;
 
         @SuppressWarnings("unchecked")
-        private V m_value = (V) NO_INIT;
+        private V m_value = (V)NO_INIT;
 
         /**
          * Create an instance with the given supplier.
@@ -103,10 +106,10 @@ public final class Lazy {
             if (m_value == NO_INIT) {
                 // only go into synchronisation if value has been observed to not yet be initialised
                 synchronized (this) {
-                     result = this.m_value;
-                     if (result == NO_INIT) { // have to check under synchronisation to be certain
-                         this.m_value = result = m_supplier.get();
-                     }
+                    result = this.m_value;
+                    if (result == NO_INIT) { // have to check under synchronisation to be certain
+                        this.m_value = result = m_supplier.get();
+                    }
                 }
             }
             return result;
@@ -134,7 +137,6 @@ public final class Lazy {
                 consumer.accept(m_value);
             }
         }
-
 
         @Override
         public String toString() {
