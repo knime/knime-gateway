@@ -46,6 +46,7 @@
 package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,7 +79,7 @@ public final class ProjectManager {
 
     };
 
-    private final Map<String, ProjectInternal> m_projectsMap = new LinkedHashMap<>();
+    private final ProjectsMap<String, ProjectInternal> m_projectsMap = new ProjectsMap<>();
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
@@ -138,7 +139,7 @@ public final class ProjectManager {
      * @return the ids of the registered projects
      */
     List<String> getProjectIds(final ProjectConsumerType consumerType) {
-        return m_projectsMap.entrySet().stream()
+        return m_projectsMap.entryList().stream()
             .filter(e -> consumerType.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0))
             .map(Entry::getKey).toList();
     }
@@ -323,6 +324,15 @@ public final class ProjectManager {
     }
 
     /**
+     * Updates the list of project IDs to reflect the new order.
+     *
+     * @param projectIds
+     */
+    public void updateProjectsOrder(final List<String> projectIds) {
+        m_projectsMap.updateOrder(projectIds);
+    }
+
+    /**
      * Clears the entire state. For testing purposes only.
      */
     void clearState() {
@@ -357,6 +367,57 @@ public final class ProjectManager {
         private boolean isUI() {
             return this == UI;
         }
+    }
+
+    /**
+     * A map that also keeps track of an order.
+     */
+    private final class ProjectsMap<K, V> {
+
+        private final Map<K, V> m_map = new LinkedHashMap<>();
+
+        private final List<K> m_list = new ArrayList<>();
+
+        V get(final K key) {
+            return m_map.get(key);
+        }
+
+        /**
+         * @return List of entries in the tracked order
+         */
+        List<Entry<K, V>> entryList() {
+            return m_list.stream()//
+                .map(k -> Map.entry(k, m_map.get(k)))//
+                .toList();
+        }
+
+        void put(final K key, final V value) {
+            m_map.put(key, value);
+            m_list.add(key);
+        }
+
+        void remove(final K key) {
+            m_map.remove(key);
+            m_list.remove(key);
+        }
+
+        Collection<V> values() {
+            return m_map.values();
+        }
+
+        void clear() {
+            m_map.clear();
+            m_list.clear();
+        }
+
+        /**
+         * Updates the order of the keys.
+         */
+        void updateOrder(final List<K> keys) {
+            m_list.clear();
+            m_list.addAll(keys);
+        }
+
     }
 
 }
