@@ -104,6 +104,7 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt.AddBendpointCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
@@ -184,7 +185,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
-import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -276,7 +276,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertTrue(
                 "Version workflow is returned",
                 versionWorkflow.getWorkflowAnnotations().stream().anyMatch(annotation -> annotation.getText().getValue().toLowerCase().contains("earlier version"))
-                && workflow.getInfo().getVersion().equals(version.toString())
+                && versionWorkflow.getInfo().getVersion().equals(version.toString())
         );
     }
 
