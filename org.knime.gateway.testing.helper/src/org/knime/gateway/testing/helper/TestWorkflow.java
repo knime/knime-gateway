@@ -90,6 +90,9 @@ public interface TestWorkflow {
         return tmpFile;
     }
 
+    /**
+     * @see LocalWorkflowLoader#loadWorkflow(TestWorkflow, String) 
+     */
     interface WithVersion extends TestWorkflow {
         File getVersionWorkflowDir();
 
