@@ -50,7 +50,6 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.function.Predicate;
 
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -122,13 +121,8 @@ public final class DefaultApplicationService implements ApplicationService {
     @Override
     public AppStateEnt getState() {
         var projectId = DefaultServiceContext.getProjectId();
-        if (projectId.isPresent()) {
-            var wfm = org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(projectId.get(),
-                NodeIDEnt.getRootID());
-            m_spaceProvidersManager.update(Key.of(projectId.get()), wfm.getContextV2());
-        }
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders( //
-            DefaultServiceContext.getProjectId().map(Key::of) //
+            projectId.map(Key::of) //
                 .orElse(Key.defaultKey()) //
         );
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
