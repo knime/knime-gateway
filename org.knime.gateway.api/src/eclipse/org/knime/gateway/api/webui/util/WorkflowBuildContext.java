@@ -306,6 +306,9 @@ public final class WorkflowBuildContext {
             return this;
         }
 
+        /**
+         * The version of the project this workflow belongs to.
+         */
         public WorkflowBuildContextBuilder setVersion(final VersionId version) {
             m_version = CheckUtils.checkArgumentNotNull(version);
             return this;

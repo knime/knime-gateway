@@ -61,15 +61,25 @@ public final class Lazy {
 
     /**
      * A lazy initializer with the capability to reset it.
+     *
+     * @see org.apache.commons.lang3.concurrent.LazyInitializer
+     * @see com.google.common.base.Suppliers.MemoizingSupplier
      * 
      * @implNote Not thread-safe.
      * @param <V> The type of the provided value.
      */
     public static final class Init<V> {
-        private Supplier<V> m_supplier = null;
 
-        private V m_value;
+        private static final Object NO_INIT = new Object();
 
+        private Supplier<V> m_supplier;
+
+        @SuppressWarnings("unchecked")
+        private V m_value = (V) NO_INIT;
+
+        /**
+         * Create an instance with the given supplier.
+         */
         public Init(final Supplier<V> supplier) {
             this.m_supplier = supplier;
         }
@@ -89,10 +99,17 @@ public final class Lazy {
          * @return the value
          */
         public V get() {
-            if (m_value == null) {
-                m_value = m_supplier.get();
+            V result = this.m_value;
+            if (m_value == NO_INIT) {
+                // only go into synchronisation if value has been observed to not yet be initialised
+                synchronized (this) {
+                     result = this.m_value;
+                     if (result == NO_INIT) { // have to check under synchronisation to be certain
+                         this.m_value = result = m_supplier.get();
+                     }
+                }
             }
-            return m_value;
+            return result;
         }
 
         /**
@@ -102,10 +119,16 @@ public final class Lazy {
             m_value = null;
         }
 
+        /**
+         * @return Whether a value is already initialised
+         */
         public boolean isInitialized() {
-            return m_value != null;
+            return m_value != NO_INIT;
         }
 
+        /**
+         * @param consumer Applied to the value, if present
+         */
         public void ifInitialized(final Consumer<V> consumer) {
             if (isInitialized()) {
                 consumer.accept(m_value);

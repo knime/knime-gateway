@@ -115,8 +115,14 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     ENCRYPTED_METANODE_AND_COMPONENT("/files/testflows/Encrypted Metanode and Component",
             "encrypted_metanode_and_component"),
 
+    /**
+     * Minimal workflow to represent the current version of a project.
+     */
     VERSIONS_CURRENT_STATE("/files/testflows/Versions/Current State", "current_state"),
 
+    /**
+     * Minimal workflow to represent an earlier version of a project.
+     */
     VERSIONS_EARLIER_VERSION("/files/testflows/Versions/Earlier Version", "earlier_Version");
 
     private final String m_workflowDir;

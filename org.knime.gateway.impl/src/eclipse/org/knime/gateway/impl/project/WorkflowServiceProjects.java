@@ -62,7 +62,6 @@ import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings({"java:S1602"}) // braces around 1-expression lambda
 public final class WorkflowServiceProjects {
 
     private static Runnable removeAllProjectsCallback;
@@ -88,6 +87,7 @@ public final class WorkflowServiceProjects {
      * @param absolutePath the absolute path to the workflow within the local workspace
      * @return the project id or an empty optional if there is no project for the given path
      */
+    @SuppressWarnings({"java:S1602"}) // braces around 1-expression lambda
     public static Optional<String> getProjectIdAt(final Path absolutePath) {
         var projectManager = ProjectManager.getInstance();
         return projectManager.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).stream() //

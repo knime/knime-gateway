@@ -46,19 +46,23 @@
 
 package org.knime.gateway.api.util;
 
+import java.util.Objects;
+
 /**
- * Identifies a workflow version, i.e. a version assigned to a specific {@link org.knime.core.node.workflow.WorkflowManager}.
+ * Identifies a workflow version, i.e. a version assigned to a specific
+ * {@link org.knime.core.node.workflow.WorkflowManager}.
  *
  * @implNote `toString` and {@link this#parse(String)} are compatible with the Catalog Service API spec.
  */
-public interface VersionId {
-
-    CurrentState CURRENT_STATE = new CurrentState();
+public abstract sealed class VersionId permits VersionId.CurrentState, VersionId.Fixed {
 
     /**
      * Corresponds to the "draft" (or "working area") concept.
      */
-    record CurrentState() implements VersionId {
+    public static final class CurrentState extends VersionId {
+
+        static CurrentState CURRENT_STATE = new CurrentState();
+
         @Override
         public String toString() {
             return "current-state";
@@ -68,23 +72,49 @@ public interface VersionId {
     /**
      * @see CurrentState
      */
-    static CurrentState currentState() {
-        return CURRENT_STATE;
+    public static CurrentState currentState() {
+        return CurrentState.CURRENT_STATE;
     }
 
     /**
      * Represents a read-only snapshot of some previous state.
-     * @param id identifier of that version. Can not be assumed to be sequential.
      */
-    record Fixed(int id) implements VersionId {
+    public static final class Fixed extends VersionId {
+        private final int id;
+
+        /**
+         * @param id identifier of that version. Can not be assumed to be sequential.
+         */
+        public Fixed(final int id) {
+            this.id = id;
+        }
+
         @Override
         public String toString() {
             return String.valueOf(id);
         }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null || obj.getClass() != this.getClass()) {
+                return false;
+            }
+            var that = (Fixed)obj;
+            return this.id == that.id;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id);
+        }
+
     }
 
-    static VersionId parse(final String versionId) throws IllegalArgumentException {
-        if (versionId == null || CURRENT_STATE.toString().equals(versionId)) {
+    public static VersionId parse(final String versionId) throws IllegalArgumentException {
+        if (versionId == null || CurrentState.CURRENT_STATE.toString().equals(versionId)) {
             return new CurrentState();
         }
         return new Fixed(Integer.parseInt(versionId));

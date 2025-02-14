@@ -263,10 +263,16 @@ public final class ProjectManager {
         }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 
+    /**
+     * The contained projects
+     */
     public Stream<Project> projects() {
         return m_projectsMap.values().stream().map(ProjectInternal::project);
     }
 
+    /**
+     * Dispose all projects
+     */
     public void disposeAll() {
         getProjectIds().forEach(id -> {
             getProject(id).ifPresent(Project::dispose);

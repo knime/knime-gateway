@@ -222,6 +222,7 @@ public final class CachedProject implements Project {
             .append(m_origin, otherProject.getOrigin().orElse(null)).build();
     }
 
+    @SuppressWarnings("javadoc")
     public interface BuilderStage {
 
         interface RequiresId {
@@ -241,7 +242,7 @@ public final class CachedProject implements Project {
         interface Optionals extends RequiresId, RequiresName {
             Optionals setOrigin(Origin origin);
 
-            Optionals getVersion(Function<VersionId.Fixed, WorkflowManager> getVersion);
+            Optionals setVersionWfmLoader(Function<VersionId.Fixed, WorkflowManager> getVersion);
 
             Optionals onDispose(Consumer<WorkflowManager> onDispose);
 
@@ -251,6 +252,9 @@ public final class CachedProject implements Project {
 
     /**
      * Builder for {@link CachedProject}-instances.
+     *
+     * This builder offers different routes to construct an instance. Namely, one via a supplier which requires setting
+     * additional properties, and one via an instance which infers these properties from the instance.
      */
     @SuppressWarnings({"java:S1939"}) // clearer if all implementations are listed, even though technically redundant
     public static final class Builder implements BuilderStage.RequiresId, BuilderStage.RequiresWorkflow,
@@ -330,7 +334,7 @@ public final class CachedProject implements Project {
          * @param getVersion
          * @return
          */
-        public Builder getVersion(final Function<VersionId.Fixed, WorkflowManager> getVersion) {
+        public Builder setVersionWfmLoader(final Function<VersionId.Fixed, WorkflowManager> getVersion) {
             Objects.requireNonNull(getVersion);
             m_getVersion = getVersion;
             return this;
