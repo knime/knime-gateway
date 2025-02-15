@@ -57,7 +57,11 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Manages projects that are eventually used by the service implementations.
@@ -95,6 +99,34 @@ public final class ProjectManager {
         } catch (ConcurrentException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+
+    /*
+     *  Checks whether there is already a workflow project loaded which is used as a workflow service (i.e. a workflow
+     *  executed by another workflow). If so, the respective project is updated to add the project-origin and mark it as
+     *  being used by the UI, too.
+     *
+     *  @return the project and workflow-manager or null if none
+     */
+    public Optional<Project> getAndUpdateWorkflowServiceProject(final Space space, final String spaceProviderId,
+        final String spaceId, final String itemId, final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
+        if (!(space instanceof LocalSpace localSpace)) {
+            return Optional.empty();
+        }
+        return localSpace.toLocalAbsolutePath(new ExecutionMonitor(), itemId) //
+            .flatMap(WorkflowServiceProjects::getProjectIdAt) //
+            .flatMap(this::getProject) //
+            .flatMap(originalProject -> {
+                return originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
+                    var updatedProject = CachedProject.builder() //
+                        .setWfm(wfm) //
+                        .setId(originalProject.getID()) //
+                        .setOrigin(Origin.of(spaceProviderId, spaceId, itemId, projectType)) //
+                        .build();
+                    this.addProject(updatedProject);
+                    return updatedProject;
+                });
+            });
     }
 
     /**
