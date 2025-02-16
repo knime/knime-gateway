@@ -132,7 +132,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     @Override
     public NodeCategoryEnt getNodeCategory(List<String> categoryPath) throws ServiceExceptions.NoSuchElementException {
         try {
-            return m_nodeCategories.getCategory(categoryPath);
+            return m_nodeCategories.getCategoryEnt(categoryPath);
         } catch (NoSuchElementException e) {
             throw new ServiceExceptions.NoSuchElementException("The requested category could not be found.", e);
         }

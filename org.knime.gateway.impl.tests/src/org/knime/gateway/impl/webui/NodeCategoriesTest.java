@@ -74,19 +74,19 @@ public class NodeCategoriesTest {
 
     @Test
     public void testGetRootCategory() {
-        var result = m_categories.getCategory(List.of());
+        var result = m_categories.getCategoryEnt(List.of());
         assertThat("The returned category should contain some child categories", !result.getChildCategories().isEmpty());
     }
 
     @Test
     public void testExistingCategoryIsReturned() {
-        var result = m_categories.getCategory(List.of("io"));
+        var result = m_categories.getCategoryEnt(List.of("io"));
         assertThat("The returned category should contain some nodes", !result.getNodes().isEmpty());
         assertThat("The returned category should contain some child categories", !result.getChildCategories().isEmpty());
     }
 
     @Test
     public void testNonExistingCategoryThrows() {
-        assertThrows(NoSuchElementException.class, () -> m_categories.getCategory(List.of("foo", "bar", "baz")));
+        assertThrows(NoSuchElementException.class, () -> m_categories.getCategoryEnt(List.of("foo", "bar", "baz")));
     }
 }

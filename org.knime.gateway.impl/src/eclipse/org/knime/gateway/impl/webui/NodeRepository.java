@@ -418,5 +418,9 @@ public final class NodeRepository {
             return FlowVariablePortObject.TYPE.equals(portType) || nodeSpec.ports().getSupportedOutputPortTypes() //
                 .anyMatch(pt -> CoreUtil.arePortTypesCompatible(portType, pt));
         }
+
+        public NodeSpec nodeSpec() {
+            return nodeSpec;
+        }
     }
 }
