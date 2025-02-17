@@ -63,9 +63,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.util.Lazy;
-import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
@@ -74,6 +74,11 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
  * <p>
  * A {@link CachedProject} can be created either through an already-available {@link WorkflowManager} instance,
  * or a {@code Supplier<WorkflowManager>}, which may load the workflow manager. See {@link Builder}.
+ * <p>
+ * See also
+ * <ul>
+ *     <li>NXT-3356</li>
+ * </ul>
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -304,6 +309,7 @@ public final class CachedProject implements Project {
          * @param id the id to set
          * @return this
          */
+        @Override
         public BuilderStage.Optionals setId(final String id) {
             Objects.requireNonNull(id);
             m_id = id;
@@ -314,6 +320,7 @@ public final class CachedProject implements Project {
          * @param name the name to set
          * @return this
          */
+        @Override
         public BuilderStage.RequiresId setName(final String name) {
             Objects.requireNonNull(name);
             m_name = name;
@@ -324,6 +331,7 @@ public final class CachedProject implements Project {
          * @param origin the origin to set
          * @return this
          */
+        @Override
         public Builder setOrigin(final Origin origin) {
             Objects.requireNonNull(origin);
             m_origin = origin;
@@ -334,12 +342,14 @@ public final class CachedProject implements Project {
          * @param getVersion
          * @return
          */
+        @Override
         public Builder setVersionWfmLoader(final Function<VersionId.Fixed, WorkflowManager> getVersion) {
             Objects.requireNonNull(getVersion);
             m_getVersion = getVersion;
             return this;
         }
 
+        @Override
         public Builder onDispose(final Consumer<WorkflowManager> onDispose) {
             Objects.requireNonNull(onDispose);
             m_onDispose = onDispose;
@@ -349,6 +359,7 @@ public final class CachedProject implements Project {
         /**
          * @return a new {@link CachedProject}-instance
          */
+        @Override
         public CachedProject build() {
             return new CachedProject(this);
         }

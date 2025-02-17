@@ -54,14 +54,22 @@ import java.util.Objects;
  *
  * @implNote `toString` and {@link this#parse(String)} are compatible with the Catalog Service API spec.
  */
-public abstract sealed class VersionId permits VersionId.CurrentState, VersionId.Fixed {
+public sealed class VersionId {
+
+    private VersionId() {
+
+    }
 
     /**
      * Corresponds to the "draft" (or "working area") concept.
      */
     public static final class CurrentState extends VersionId {
 
-        static CurrentState CURRENT_STATE = new CurrentState();
+        private CurrentState() {
+
+        }
+
+        private static final CurrentState CURRENT_STATE = new CurrentState();
 
         @Override
         public String toString() {
@@ -80,18 +88,18 @@ public abstract sealed class VersionId permits VersionId.CurrentState, VersionId
      * Represents a read-only snapshot of some previous state.
      */
     public static final class Fixed extends VersionId {
-        private final int id;
+        private final int m_id;
 
         /**
          * @param id identifier of that version. Can not be assumed to be sequential.
          */
         public Fixed(final int id) {
-            this.id = id;
+            this.m_id = id;
         }
 
         @Override
         public String toString() {
-            return String.valueOf(id);
+            return String.valueOf(m_id);
         }
 
         @Override
@@ -103,16 +111,19 @@ public abstract sealed class VersionId permits VersionId.CurrentState, VersionId
                 return false;
             }
             var that = (Fixed)obj;
-            return this.id == that.id;
+            return this.m_id == that.m_id;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(id);
+            return Objects.hash(m_id);
         }
 
     }
 
+    /**
+     * Parse an instance from the given string.
+     */
     public static VersionId parse(final String versionId) throws IllegalArgumentException {
         if (versionId == null || CurrentState.CURRENT_STATE.toString().equals(versionId)) {
             return new CurrentState();

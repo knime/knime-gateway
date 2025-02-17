@@ -61,9 +61,9 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 
 /**
  * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
@@ -95,21 +95,29 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * Gets the (sub-)workflow manager for the given root workflow id and node id.
-     *
-     * @param projectId the root workflow id
-     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
-     * @return the {@link WorkflowManager}-instance
-     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
-     * @throws IllegalArgumentException if there is no node for the given node id
-     * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
-     *             or the workflow is encrypted
+     * @see this#getWorkflowManager(String, VersionId, NodeIDEnt)
+     * @param projectId The ID of the project
+     * @param workflowId The node ID of the child workflow
+     * @return The workflow manager
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
-        return getWorkflowManager(projectId, workflowId, VersionId.currentState());
+        return getWorkflowManager(projectId, VersionId.currentState(), workflowId);
     }
 
-    public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId, final VersionId versionId) {
+
+    /**
+     * Gets the (sub-)workflow manager for the given root workflow id and node id.
+     *
+     * @param projectId  the root workflow id
+     * @param versionId  specifies the version to load.
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
+     * @return the {@link WorkflowManager}-instance
+     * @throws NoSuchElementException   if there is no root workflow for the given root workflow id
+     * @throws IllegalArgumentException if there is no node for the given node id
+     * @throws IllegalStateException    if the given node id doesn't reference a sub workflow (i.e. component or metanode)
+     *                                  or the workflow is encrypted
+     */
+    public static WorkflowManager getWorkflowManager(final String projectId, final VersionId versionId, final NodeIDEnt workflowId) {
         return parseWfm(findNodeContainer(getProjectWfm(projectId, versionId), workflowId));
     }
 

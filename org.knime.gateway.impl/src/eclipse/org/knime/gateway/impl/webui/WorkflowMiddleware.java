@@ -430,8 +430,8 @@ public final class WorkflowMiddleware {
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
         private WorkflowState(final WorkflowKey wfKey) {
-            m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId(),
-                wfKey.getVersionId());
+            m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(),
+                wfKey.getWorkflowId());
         }
 
         DependentNodeProperties getDependentNodeProperties() {
