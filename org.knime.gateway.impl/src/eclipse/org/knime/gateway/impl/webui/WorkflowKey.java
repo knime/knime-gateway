@@ -58,7 +58,7 @@ import org.knime.gateway.api.util.VersionId;
  * @param projectId The ID of the project the workflow is associated with. See
  *            {@link org.knime.gateway.impl.project.ProjectManager}.
  * @param workflowId The ID of a node within the project's root workflow. That ID may correspond to a container node
- *                  holding a sub-workflow. If {@link NodeIDEnt#getRootID()}, this points to the root workflow.
+ *            holding a sub-workflow. If {@link NodeIDEnt#getRootID()}, this points to the root workflow.
  * @param version The identifier of a version.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -78,6 +78,9 @@ public record WorkflowKey(String projectId, NodeIDEnt workflowId, VersionId vers
         this(projectId, workflowId, VersionId.currentState());
     }
 
+    /**
+     * @see WorkflowKey
+     */
     public WorkflowKey(final String projectId, final String nodeId) {
         this(projectId, new NodeIDEnt(nodeId));
     }

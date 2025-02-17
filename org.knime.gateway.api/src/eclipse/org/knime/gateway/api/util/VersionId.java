@@ -69,11 +69,29 @@ public sealed class VersionId {
 
         }
 
+
         private static final CurrentState CURRENT_STATE = new CurrentState();
 
+        /**
+         * @return value compatible with Catalog Service
+         */
         @Override
         public String toString() {
             return "current-state";
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == null || obj.getClass() != this.getClass()) {
+                return false;
+            }
+            return Objects.equals(this.toString(), obj.toString());
+        }
+
+
+        @Override
+        public int hashCode() {
+            return this.toString().hashCode();
         }
     }
 
@@ -111,7 +129,7 @@ public sealed class VersionId {
                 return false;
             }
             var that = (Fixed)obj;
-            return this.m_id == that.m_id;
+            return Objects.equals(this.m_id, that.m_id);
         }
 
         @Override
