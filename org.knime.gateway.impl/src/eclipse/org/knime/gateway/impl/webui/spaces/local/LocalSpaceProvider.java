@@ -68,38 +68,14 @@ public class LocalSpaceProvider implements SpaceProvider {
      */
     private final LocalSpace m_space;
 
-    private final SpaceGroup<LocalSpace> m_group = new SpaceGroup<>() {
-
-        private static final String ID = "Local-space-id";
-
-        private static final String NAME = "local";
-
-        @Override
-        public SpaceGroupEnt toEntity() {
-            return EntityFactory.Space.buildSpaceGroupEnt(ID, NAME, SpaceGroupEnt.TypeEnum.USER,
-                List.of(m_space.toEntity()));
-        }
-
-        @Override
-        public String getName() {
-            return NAME;
-        }
-
-        @Override
-        public SpaceGroupType getType() {
-            return SpaceGroupType.USER;
-        }
-
-        @Override
-        public List<LocalSpace> getSpaces() {
-            return List.of(m_space);
-        }
-
-    };
+    private final SpaceGroup<LocalSpace> m_group = new LocalSpaceGroup();
 
     private final Lazy.Init<LocalSpaceItemChangeNotifier> m_itemChangedNotifier =
         new Lazy.Init<>(() -> new LocalSpaceItemChangeNotifier(this));
 
+    /**
+     * @param space The single space instance that is provided by this provider
+     */
     public LocalSpaceProvider(final LocalSpace space) {
         m_space = space;
     }
@@ -161,5 +137,38 @@ public class LocalSpaceProvider implements SpaceProvider {
         } else {
             return Optional.empty();
         }
+    }
+
+    private final class LocalSpaceGroup implements SpaceGroup<LocalSpace> {
+
+        private LocalSpaceGroup() {
+
+        }
+
+        private static final String ID = "Local-space-id";
+
+        private static final String NAME = "local";
+
+        @Override
+        public SpaceGroupEnt toEntity() {
+            return EntityFactory.Space.buildSpaceGroupEnt(ID, NAME, SpaceGroupEnt.TypeEnum.USER,
+                List.of(m_space.toEntity()));
+        }
+
+        @Override
+        public String getName() {
+            return NAME;
+        }
+
+        @Override
+        public SpaceGroupType getType() {
+            return SpaceGroupType.USER;
+        }
+
+        @Override
+        public List<LocalSpace> getSpaces() {
+            return List.of(m_space);
+        }
+
     }
 }

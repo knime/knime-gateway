@@ -97,7 +97,7 @@ public class DefaultSpaceService implements SpaceService {
         ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, true);
 
     private final ProjectManager m_projectManager =
-            ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     DefaultSpaceService() {
         //
@@ -157,8 +157,8 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
         final String jobId) throws ServiceCallException {
-        final var space = m_spaceProvidersManager.getSpaceProviders(projectId())
-            .getSpaceProvider(spaceProviderId).getSpace(spaceId);
+        final var space =
+            m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId).getSpace(spaceId);
         try {
             space.deleteJobsForWorkflow(itemId, List.of(jobId));
         } catch (final ResourceAccessException e) {

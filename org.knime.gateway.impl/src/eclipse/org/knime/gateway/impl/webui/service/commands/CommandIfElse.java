@@ -94,8 +94,8 @@ abstract class CommandIfElse extends HigherOrderCommand {
         var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         var takeLeft = m_predicate.apply(wfm);
         m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;
-        if (m_activeCommand instanceof WithResult) {
-            return Optional.of((WithResult)m_activeCommand);
+        if (m_activeCommand instanceof WithResult withResult) {
+            return Optional.of(withResult);
         } else {
             return Optional.empty();
         }

@@ -78,8 +78,8 @@ public interface Project {
     WorkflowManager getWorkflowManager();
 
     /**
-     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project, or empty if that workflow
-     * manager is not yet loaded.
+     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project, or empty if that
+     *         workflow manager is not yet loaded.
      */
     default Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
         return Optional.empty();
@@ -130,8 +130,7 @@ public interface Project {
     }
 
     /**
-     * Generates a report. See
-     * <code>com.knime.enterprise.executor.JobPool#generateReport(com.knime.enterprise.executor.WorkflowJob, org.knime.core.util.report.ReportingConstants.RptOutputFormat, org.knime.core.util.report.ReportingConstants.RptOutputOptions)</code>
+     * Generates a report. See {@code org.knime.enterprise.executor.JobPool#generateReport}.
      *
      * @param format the report format
      * @return the report directory or an empty optional

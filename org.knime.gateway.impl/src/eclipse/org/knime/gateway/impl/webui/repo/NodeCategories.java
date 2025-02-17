@@ -315,7 +315,7 @@ public final class NodeCategories {
      *           because {@link CategoryTreeNode#m_nodes} and {@link CategoryTreeNode#m_children} have to be mutable
      *           collections for the way the tree is constructed.
      */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "java:S3553"})
     private static final class CategoryTree extends Tree<CategoryId, CategoryTreeNode> {
 
         private final RepositoryContext m_repositoryContext;
@@ -395,9 +395,9 @@ public final class NodeCategories {
                 .add(node); //
         }
 
-        @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "java:S3553"})
+        @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "java:S3553", "java:S6126"})
         private CategoryTreeNode findCategoryToInsertInto(final Optional<List<CategoryId>> nodeCategoryPath,
-            final NodeRepository.Node node) {
+                                                          final NodeRepository.Node node) {
             // Providing an empty string or omitting the category-path attribute in the plugin.xml
             // file defaults to the root category path. Consequently, an empty Optional is not expected here.
             if (nodeCategoryPath.isEmpty() || nodeCategoryPath.get().isEmpty()) {

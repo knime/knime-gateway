@@ -154,7 +154,8 @@ public final class NodeRepository {
         this(filter, NodeSpecCollectionProvider.getInstance());
     }
 
-    private NodeRepository(final Predicate<String> filter, final NodeSpecCollectionProvider nodeSpecCollectionProvider) {
+    private NodeRepository(final Predicate<String> filter,
+        final NodeSpecCollectionProvider nodeSpecCollectionProvider) {
         this(filter, NodeSpecProvider.of(nodeSpecCollectionProvider));
     }
 
@@ -299,8 +300,7 @@ public final class NodeRepository {
      */
     synchronized Collection<Node> getDeprecatedNodes() {
         if (m_deprecatedNodes == null) {
-            m_deprecatedNodes =
-                mapFromNodeSpecToNodeAndFilter(m_nodeSpecProvider.getDeprecatedNodes());
+            m_deprecatedNodes = mapFromNodeSpecToNodeAndFilter(m_nodeSpecProvider.getDeprecatedNodes());
             addNodeWeights(m_deprecatedNodes);
         }
         return m_deprecatedNodes.values();

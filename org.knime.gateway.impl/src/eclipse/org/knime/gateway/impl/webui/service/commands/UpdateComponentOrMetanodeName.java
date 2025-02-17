@@ -74,8 +74,7 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
     @Override
     public void undo() throws OperationNotAllowedException {
         var container = getWorkflowManager().getNodeContainer(m_nodeId);
-        if (container instanceof WorkflowManager) {
-            var metanode = (WorkflowManager)container;
+        if (container instanceof WorkflowManager metanode) {
             metanode.setName(m_oldName);
         } else {
             var component = (SubNodeContainer)container;
@@ -92,16 +91,14 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
         if (newName.isBlank()) {
             throw new OperationNotAllowedException("Illegal new name: <" + newName + ">");
         }
-        if (container instanceof WorkflowManager) {
-            var metaNode = (WorkflowManager)container;
+        if (container instanceof WorkflowManager metaNode) {
             if (metaNode.isProject()) {
                 throw new OperationNotAllowedException("Workflow projects cannot be renamed like this");
             }
             m_oldName = metaNode.getName();
             metaNode.setName(newName);
             return true;
-        } else if (container instanceof SubNodeContainer) {
-            var component = (SubNodeContainer)container;
+        } else if (container instanceof SubNodeContainer component) {
             m_oldName = component.getName();
             component.setName(newName);
             return true;

@@ -81,8 +81,8 @@ abstract class CommandSequence extends HigherOrderCommand {
     protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
         var lastCommand = m_commands.get(m_commands.size() - 1);
-        if (lastCommand instanceof WithResult) {
-            return Optional.of((WithResult)lastCommand);
+        if (lastCommand instanceof WithResult withResult) {
+            return Optional.of(withResult);
         } else {
             return Optional.empty();
         }

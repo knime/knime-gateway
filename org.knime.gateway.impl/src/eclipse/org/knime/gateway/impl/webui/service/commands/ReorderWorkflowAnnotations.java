@@ -97,7 +97,7 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         final var workflowKey = getWorkflowKey();
         final var annotationIds = m_commandEnt.getAnnotationIds().stream()//
             .map(id -> DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), id))//
-            .collect(Collectors.toList());
+                .toList();
         final var annotations = getAnnotions(wfm, annotationIds);
         final var action = m_commandEnt.getAction();
 

@@ -50,7 +50,6 @@ package org.knime.gateway.impl.node.port.table;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DirectAccessTable;
@@ -142,7 +141,7 @@ public interface Table {
         }
         try {
             return table.getRows(Math.max(start, 0), size, null).stream().map(r -> Row.create(r, spec))
-                .collect(Collectors.toList());
+                    .toList();
         } catch (IndexOutOfBoundsException | CanceledExecutionException ex) {
             NodeLogger.getLogger(Table.class).error("Problem reading rows", ex);
             return Collections.emptyList();

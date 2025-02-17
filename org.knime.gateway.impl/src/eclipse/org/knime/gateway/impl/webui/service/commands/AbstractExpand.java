@@ -51,7 +51,6 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
@@ -164,9 +163,9 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
         return builder(ExpandResultEnt.ExpandResultEntBuilder.class) //
             .setKind(CommandResultEnt.KindEnum.EXPAND_RESULT) //
             .setSnapshotId(snapshotId) //
-            .setExpandedNodeIds(getExpandedNodes().stream().map(NodeIDEnt::new).collect(Collectors.toList())) //
+            .setExpandedNodeIds(getExpandedNodes().stream().map(NodeIDEnt::new).toList()) //
             .setExpandedAnnotationIds(
-                getExpandedAnnotations().stream().map(AnnotationIDEnt::new).collect(Collectors.toList())) //
+                getExpandedAnnotations().stream().map(AnnotationIDEnt::new).toList()) //
             .build();
     }
 

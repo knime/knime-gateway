@@ -101,12 +101,12 @@ public final class ProjectManager {
         }
     }
 
-    /*
-     *  Checks whether there is already a workflow project loaded which is used as a workflow service (i.e. a workflow
-     *  executed by another workflow). If so, the respective project is updated to add the project-origin and mark it as
-     *  being used by the UI, too.
+    /**
+     * Checks whether there is already a workflow project loaded which is used as a workflow service (i.e. a workflow
+     * executed by another workflow). If so, the respective project is updated to add the project-origin and mark it as
+     * being used by the UI, too.
      *
-     *  @return the project and workflow-manager or null if none
+     * @return the project and workflow-manager or null if none
      */
     public Optional<Project> getAndUpdateWorkflowServiceProject(final Space space, final String spaceProviderId,
         final String spaceId, final String itemId, final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
@@ -116,17 +116,20 @@ public final class ProjectManager {
         return localSpace.toLocalAbsolutePath(new ExecutionMonitor(), itemId) //
             .flatMap(WorkflowServiceProjects::getProjectIdAt) //
             .flatMap(this::getProject) //
-            .flatMap(originalProject -> {
-                return originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
-                    var updatedProject = CachedProject.builder() //
-                        .setWfm(wfm) //
-                        .setId(originalProject.getID()) //
-                        .setOrigin(Origin.of(spaceProviderId, spaceId, itemId, projectType)) //
-                        .build();
-                    this.addProject(updatedProject);
-                    return updatedProject;
-                });
-            });
+            .flatMap(originalProject -> updateProject(originalProject, spaceProviderId, spaceId, itemId, projectType));
+    }
+
+    private Optional<CachedProject> updateProject(final Project originalProject, final String spaceProviderId,
+        final String spaceId, final String itemId, final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
+        return originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
+            var updatedProject = CachedProject.builder() //
+                .setWfm(wfm) //
+                .setId(originalProject.getID()) //
+                .setOrigin(Origin.of(spaceProviderId, spaceId, itemId, projectType)) //
+                .build();
+            this.addProject(updatedProject);
+            return updatedProject;
+        });
     }
 
     /**
@@ -215,8 +218,8 @@ public final class ProjectManager {
     }
 
     /**
-     * Remove the project for the given ID and dispose it. The project might not be removed in case there are
-     * still other consumers that rely on this project.
+     * Remove the project for the given ID and dispose it. The project might not be removed in case there are still
+     * other consumers that rely on this project.
      *
      * @param projectId the project id to remove
      * @param consumerType the {@link ProjectConsumerType} to remove this project for
@@ -266,10 +269,10 @@ public final class ProjectManager {
      */
     public Optional<Project> getProject(final String providerId, final String spaceId, final String itemId) {
         return projects().filter(project -> project.getOrigin() //
-                .filter(origin -> origin.getProviderId().equals(providerId)) //
-                .filter(origin -> origin.getSpaceId().equals(spaceId)) //
-                .filter(origin -> origin.getItemId().equals(itemId)) //
-                .isPresent()) //
+            .filter(origin -> origin.getProviderId().equals(providerId)) //
+            .filter(origin -> origin.getSpaceId().equals(spaceId)) //
+            .filter(origin -> origin.getItemId().equals(itemId)) //
+            .isPresent()) //
             .findFirst();
     }
 
@@ -287,6 +290,7 @@ public final class ProjectManager {
      *
      * @return map from project IDs to the dirty flag of the projects
      */
+    @SuppressWarnings("java:S1602")
     public Map<String, Boolean> getDirtyProjectsMap() {
         return projects().map(project -> {
             return project.getWorkflowManagerIfLoaded() //

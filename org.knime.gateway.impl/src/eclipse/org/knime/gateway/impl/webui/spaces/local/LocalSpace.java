@@ -83,6 +83,7 @@ import org.knime.core.util.PathUtils;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
@@ -92,7 +93,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -120,7 +120,6 @@ public final class LocalSpace implements Space {
     final LocalSpaceItemPathAndTypeCache m_spaceItemPathAndTypeCache;
 
     private final Path m_rootPath;
-
 
     /**
      * @param rootPath the path to the root of the local workspace
@@ -158,9 +157,8 @@ public final class LocalSpace implements Space {
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String workflowGroupItemId) throws IOException {
         var absolutePath = getAbsolutePath(workflowGroupItemId);
-        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_rootPath,
-            this::getItemId, m_spaceItemPathAndTypeCache::determineTypeOrGetFromCache,
-            LocalSpace::isValidItem, ITEM_COMPARATOR);
+        return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_rootPath, this::getItemId,
+            m_spaceItemPathAndTypeCache::determineTypeOrGetFromCache, LocalSpace::isValidItem, ITEM_COMPARATOR);
     }
 
     @Override
@@ -188,7 +186,8 @@ public final class LocalSpace implements Space {
     }
 
     @Override
-    public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId, final VersionId version) {
+    public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId,
+        final VersionId version) {
         return toLocalAbsolutePath(itemId);
     }
 
@@ -230,9 +229,8 @@ public final class LocalSpace implements Space {
         final var relativeUri =
             toLocalRelativeURI(itemId).orElseThrow(() -> new IllegalStateException("No item found for id " + itemId));
         if (relativeUri.isAbsolute()) {
-            throw new IllegalStateException(
-                "Space item is at path '" + toLocalAbsolutePath(itemId) + "' and thus not inside root '" + getRootPath()
-                    + "'");
+            throw new IllegalStateException("Space item is at path '" + toLocalAbsolutePath(itemId)
+                + "' and thus not inside root '" + getRootPath() + "'");
         }
         try {
             return new URIBuilder(relativeUri) //
@@ -650,7 +648,7 @@ public final class LocalSpace implements Space {
     public Optional<Pair<IPath, Collision>> checkForCollision(final String workflowGroupId, final IPath path,
         final TypeEnum newItemType) {
 
-        var currentId = workflowGroupId;  // NOSONAR: assignment is useful
+        var currentId = workflowGroupId; // NOSONAR: assignment is useful
         var current = getAbsolutePath(workflowGroupId);
         var currentType = getItemType(workflowGroupId);
 

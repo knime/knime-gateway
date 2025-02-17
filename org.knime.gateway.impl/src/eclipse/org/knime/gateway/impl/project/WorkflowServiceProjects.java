@@ -51,9 +51,7 @@ package org.knime.gateway.impl.project;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
 
 /**
@@ -111,6 +109,7 @@ public final class WorkflowServiceProjects {
      *
      * @param absolutePath the absolute path to the workflow within the local workspace
      */
+    @SuppressWarnings("java:S1602")
     public static void removeProject(final Path absolutePath) {
         getProjectIdAt(absolutePath).ifPresent(projectId -> {
             ProjectManager.getInstance().removeProject( //
