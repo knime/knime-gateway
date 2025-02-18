@@ -79,14 +79,31 @@ public final class DefaultServiceUtil {
 
     /**
      * Obtain the {@link NodeContainer} with the given id in the root workflow manager of the given {@link Project}.
+     *
+     * @param projectId id of the root workflow (project)
+     * @param nodeId the id of the actual node
+     * @return the node container
+     * @throws IllegalArgumentException if there is no node for the given node id
+     * @throws NoSuchElementException if there is no project for the id registered
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt nodeId) {
         return findNodeContainer(getProjectWfm(projectId), nodeId);
     }
 
     /**
-     * Obtain the root workflow manager of the given {@link Project} and find the workflow manager of the container node
-     * identified by {@code subWorkflowId}. In the sub-workflow, find the {@code nodeInSubWorkflow}.
+     * Gets the workflow manager from the {@link ProjectManager} for a corresponding root workflow id. Obtain the root
+     * workflow manager of the given {@link Project} and find the workflow manager of the container node identified by
+     * {@code subWorkflowId}. In the sub-workflow, find the {@code nodeInSubWorkflow}.
+     *
+     * @param projectId the id to get the wfm for
+     * @param subWorkflowId the id of the sub workflow
+     * @param nodeInSubWorkflow the id of the node in the sub workflow
+     * @return the node container, never null
+     * @throws NoSuchElementException if there is no workflow manager for the id registered
+     * @throws IllegalArgumentException if there is no node for the given node id
+     * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
+     *             or the workflow is encrypted
+
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final NodeIDEnt nodeInSubWorkflow) {
@@ -96,9 +113,6 @@ public final class DefaultServiceUtil {
 
     /**
      * @see this#getWorkflowManager(String, VersionId, NodeIDEnt)
-     * @param projectId The ID of the project
-     * @param workflowId The node ID of the child workflow
-     * @return The workflow manager
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
         return getWorkflowManager(projectId, VersionId.currentState(), workflowId);
@@ -145,6 +159,10 @@ public final class DefaultServiceUtil {
 
     /**
      * Obtain the root workflow manager of the given project.
+     *
+     * @param projectId the project id
+     * @return the {@link WorkflowManager}
+     * @throws NoSuchElementException if there is not project for the id registered
      */
     public static WorkflowManager getProjectWfm(final String projectId) {
         return getProjectWfm(projectId, VersionId.currentState());
@@ -153,8 +171,10 @@ public final class DefaultServiceUtil {
     /**
      * Obtain the root workflow manager of the given project at the given version.
      *
+     * @param projectId the project id
+     * @param version the version to load
      * @return the {@link WorkflowManager} instance
-     * @throws NoSuchElementException if there is no workflow manager for the id registered
+     * @throws NoSuchElementException if there is no project for the id registered or no workflow for the given version
      */
     private static WorkflowManager getProjectWfm(final String projectId, final VersionId version) {
         return ProjectManager.getInstance().getProject(projectId)
