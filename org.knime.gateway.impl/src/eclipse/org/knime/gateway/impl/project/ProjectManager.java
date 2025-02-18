@@ -46,7 +46,6 @@
 package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -79,7 +78,7 @@ public final class ProjectManager {
 
     };
 
-    private final ProjectsMap<String, ProjectInternal> m_projectsMap = new ProjectsMap<>();
+    private final ResortableMap<String, ProjectInternal> m_projectsMap = new ResortableMap<>();
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
@@ -135,13 +134,15 @@ public final class ProjectManager {
     }
 
     /**
-     * @param consumerType the {@link ProjectConsumerType} to get the project ids for
-     * @return the ids of the registered projects
+     * @param consumerType The {@link ProjectConsumerType} to get the project IDs for
+     * @return The IDs of the registered projects. Since it's a 'LinkedHashMap', the order of the entries is guaranteed
+     *         to be the insertion order.
      */
     List<String> getProjectIds(final ProjectConsumerType consumerType) {
-        return m_projectsMap.entryList().stream()
-            .filter(e -> consumerType.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0))
-            .map(Entry::getKey).toList();
+        return m_projectsMap.entrySet().stream()
+            .filter(e -> consumerType.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0)) //
+            .map(Entry::getKey) //
+            .toList();
     }
 
     /**
@@ -328,8 +329,8 @@ public final class ProjectManager {
      *
      * @param projectIds
      */
-    public void updateProjectsOrder(final List<String> projectIds) {
-        m_projectsMap.updateOrder(projectIds);
+    public void updateOpenProjectsOrder(final List<String> projectIds) {
+        m_projectsMap.resortKeys(projectIds);
     }
 
     /**
@@ -370,52 +371,17 @@ public final class ProjectManager {
     }
 
     /**
-     * A map that also keeps track of an order.
+     * A re-sortable map.
      */
-    private final class ProjectsMap<K, V> {
+    @SuppressWarnings("serial")
+    private static final class ResortableMap<K, V> extends LinkedHashMap<K, V> {
 
-        private final Map<K, V> m_map = new LinkedHashMap<>();
-
-        private final List<K> m_list = new ArrayList<>();
-
-        V get(final K key) {
-            return m_map.get(key);
-        }
-
-        /**
-         * @return List of entries in the tracked order
-         */
-        List<Entry<K, V>> entryList() {
-            return m_list.stream()//
-                .map(k -> Map.entry(k, m_map.get(k)))//
-                .toList();
-        }
-
-        void put(final K key, final V value) {
-            m_map.put(key, value);
-            m_list.add(key);
-        }
-
-        void remove(final K key) {
-            m_map.remove(key);
-            m_list.remove(key);
-        }
-
-        Collection<V> values() {
-            return m_map.values();
-        }
-
-        void clear() {
-            m_map.clear();
-            m_list.clear();
-        }
-
-        /**
-         * Updates the order of the keys.
-         */
-        void updateOrder(final List<K> keys) {
-            m_list.clear();
-            m_list.addAll(keys);
+        void resortKeys(final List<K> keys) {
+            var entriesInNewOrder = keys.stream() //
+                .filter(this::containsKey) //
+                .map(key -> Map.entry(key, this.get(key))); //
+            this.clear();
+            entriesInNewOrder.forEach(entry -> this.put(entry.getKey(), entry.getValue()));
         }
 
     }
