@@ -43,6 +43,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/util/VersionId.java" type="org.knime.gateway.api.util.VersionId">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.util.VersionId"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/webui/util/SpaceEntityFactory.java" type="org.knime.gateway.api.webui.util.SpaceEntityFactory">
         <filter id="338792546">
             <message_arguments>
@@ -73,6 +80,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="buildSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, boolean, SpaceProviderEnt.ConnectionModeEnum, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowBuildContext.java" type="org.knime.gateway.api.webui.util.WorkflowBuildContext$WorkflowBuildContextBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setVersion(VersionId)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -337,6 +351,32 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowInfoEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowInfoEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowInfoEnt"/>
+                <message_argument value="getVersion()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getVersion()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowInfoEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowInfoEnt$WorkflowInfoEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder"/>
+                <message_argument value="setVersion(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setVersion(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/NodeRepositoryService.java" type="org.knime.gateway.api.webui.service.NodeRepositoryService">
         <filter id="403804204">
             <message_arguments>
@@ -416,6 +456,25 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getSpaceProviders()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/WorkflowService.java" type="org.knime.gateway.api.webui.service.WorkflowService">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
+                <message_argument value="getWorkflow(String, NodeIDEnt, Boolean, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
+                <message_argument value="getWorkflow(String, NodeIDEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getWorkflow(String, NodeIDEnt, Boolean, String)"/>
             </message_arguments>
         </filter>
     </resource>

@@ -14,6 +14,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.project.DefaultProject">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.DefaultProject"/>
+                <message_argument value="org.knime.gateway.impl_5.4.0"/>
+            </message_arguments>
+        </filter>
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.DefaultProject"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.NodeCategories">
         <filter id="305324134">
             <message_arguments>
@@ -86,7 +100,70 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/CachedProject.java" type="org.knime.gateway.impl.project.CachedProject">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.CachedProject"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/Origin.java" type="org.knime.gateway.impl.project.Origin">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Origin"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/Project.java" type="org.knime.gateway.impl.project.Project">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project"/>
+                <message_argument value="getWorkflowManager()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project"/>
+                <message_argument value="getWorkflowManager()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project"/>
+                <message_argument value="loadWorkflowManager()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405995624">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project.Origin"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="dispose()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getVersion(VersionId.Fixed)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getWorkflowManager()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getWorkflowManager(VersionId)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getWorkflowManagerIfLoaded()"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="of(WorkflowManager, Project.Origin, String, String)"/>
@@ -135,12 +212,63 @@
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.project.ProjectManager"/>
+                <message_argument value="getCachedProject(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.ProjectManager"/>
                 <message_argument value="getLocalProject(Path)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.ProjectManager"/>
+                <message_argument value="openAndCacheProject(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.ProjectManager"/>
+                <message_argument value="removeProject(String, Consumer&lt;WorkflowManager&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="disposeAll()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getAndUpdateWorkflowServiceProject(Space, String, String, String, SpaceItemReferenceEnt.ProjectTypeEnum)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="getProject(String, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="projects()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="removeProject(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowServiceProjects.java" type="org.knime.gateway.impl.project.WorkflowServiceProjects">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.WorkflowServiceProjects"/>
+                <message_argument value="getProject(Path)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getProjectIdAt(Path)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -161,6 +289,30 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/DefaultServiceUtil.java" type="org.knime.gateway.impl.service.util.DefaultServiceUtil">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.DefaultServiceUtil"/>
+                <message_argument value="getRootWorkflowManager(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.DefaultServiceUtil"/>
+                <message_argument value="getWorkflowProject(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getProjectWfm(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getWorkflowManager(String, VersionId, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/NodeFactoryProvider.java" type="org.knime.gateway.impl.webui.NodeFactoryProvider">
         <filter id="403804204">
             <message_arguments>
@@ -171,6 +323,28 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getFileExtensionToNodeFactoryMap()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/WorkflowKey.java" type="org.knime.gateway.impl.webui.WorkflowKey">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowKey(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowKey(String, NodeIDEnt, VersionId)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowKey(String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getVersionId()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -331,6 +505,14 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.DefaultSpaceService"/>
                 <message_argument value="getSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultWorkflowService.java" type="org.knime.gateway.impl.webui.service.DefaultWorkflowService">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultWorkflowService"/>
+                <message_argument value="getWorkflow(String, NodeIDEnt, Boolean)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -605,6 +787,12 @@
         </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/Space.java" type="org.knime.gateway.impl.webui.spaces.Space">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="toLocalAbsolutePath(ExecutionMonitor, String, VersionId)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
@@ -626,6 +814,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="downloadInto(List&lt;String&gt;, LocalSpace, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="toLocalAbsolutePath(ExecutionMonitor, String, VersionId)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -1907,9 +2100,27 @@
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt"/>
+                <message_argument value="DefaultWorkflowInfoEnt(String, NodeIDEnt, WorkflowInfoEnt.ContainerTypeEnum, Boolean, Boolean, WorkflowInfoEnt.ProviderTypeEnum, JobManagerEnt)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultWorkflowInfoEnt(String, NodeIDEnt, WorkflowInfoEnt.ContainerTypeEnum, Boolean, Boolean, JobManagerEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultWorkflowInfoEnt(String, NodeIDEnt, WorkflowInfoEnt.ContainerTypeEnum, Boolean, Boolean, WorkflowInfoEnt.ProviderTypeEnum, String, JobManagerEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowInfoEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowInfoEnt$DefaultWorkflowInfoEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setVersion(String)"/>
             </message_arguments>
         </filter>
     </resource>
