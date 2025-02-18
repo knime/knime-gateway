@@ -120,13 +120,13 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // one test that it generally works
-        NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null)
-            .getWorkflow().getNodes().get("root:1");
+        NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow()
+            .getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         ns().changeNodeStates(wfId, getRootID(), singletonList(new NodeIDEnt(1)), "execute");
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow()
-                .getNodes().get("root:1");
+            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null)
+                .getWorkflow().getNodes().get("root:1");
             assertThat(nodeEnt2.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
 
@@ -158,8 +158,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         ns().changeNodeStates(wfId, getRootID(), emptyList(), "execute");
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE, null).getWorkflow()
-                .getNodes().get("root:5:0:4");
+            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE, null)
+                .getWorkflow().getNodes().get("root:5:0:4");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
     }
@@ -218,15 +218,15 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.STREAMING_EXECUTION);
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
         Awaitility.await().untilAsserted(() -> {
-            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow().getNodes()
-                .get("root:5");
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow()
+                .getNodes().get("root:5");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTING));
         });
 
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "cancel");
         Awaitility.await().untilAsserted(() -> {
-            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow().getNodes()
-                .get("root:5");
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow()
+                .getNodes().get("root:5");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         });
     }
@@ -248,7 +248,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testChangeLoopExecutionStateInSubWorkflow() throws Exception {
         String wfId = loadWorkflow(TestWorkflowCollection.LOOP_EXECUTION);
-        NodeIDEnt component = new NodeIDEnt(5,0);
+        NodeIDEnt component = new NodeIDEnt(5, 0);
         testChangeLoopExecutionState(wfId, component);
         ns().changeNodeStates(wfId, component, Collections.emptyList(), "cancel");
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
@@ -349,23 +349,26 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // example for dynamically created node description
         // note that "correct" behaviour is that a single dialog option is produced
         // see also org.knime.distance.util.DistanceMeasureDescriptionFactory, works similarly.
-        testNodeDescriptionSnapshot("org.knime.base.node.preproc.pmml.missingval.compute.MissingValueHandlerNodeFactory");
+        testNodeDescriptionSnapshot(
+            "org.knime.base.node.preproc.pmml.missingval.compute.MissingValueHandlerNodeFactory");
 
         // dynamic JS node -- have their own schema
         testNodeDescriptionSnapshot("org.knime.dynamic.js.v30.DynamicJSNodeFactory",
-                "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:barChart\"}}}",
-                "barChart");
+            "{\"name\":\"settings\",\"value\":{\"nodeDir\":{\"type\":\"string\",\"value\":\"org.knime.dynamic.js.base:nodes/:barChart\"}}}",
+            "barChart");
     }
 
-    private void testNodeDescriptionSnapshot(final String classname) throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+    private void testNodeDescriptionSnapshot(final String classname)
+        throws NodeNotFoundException, NodeDescriptionNotAvailableException {
         testNodeDescriptionSnapshot(classname, null, null);
     }
 
-    private void testNodeDescriptionSnapshot(final String classname, final String settings, final String settingsReadable) throws NodeNotFoundException, NodeDescriptionNotAvailableException {
-        NodeFactoryKeyEnt keyEnt = builder(NodeFactoryKeyEntBuilder.class)
-                .setClassName(classname)
-                .setSettings(settings)
-                .build();
+    private void testNodeDescriptionSnapshot(final String classname, final String settings,
+        final String settingsReadable) throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+        NodeFactoryKeyEnt keyEnt = builder(NodeFactoryKeyEntBuilder.class) //
+            .setClassName(classname) //
+            .setSettings(settings) //
+            .build();
 
         NativeNodeDescriptionEnt ndEnt = ns().getNodeDescription(keyEnt);
 
@@ -442,12 +445,11 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         executeWorkflow(projectId);
 
-        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE, null).getWorkflow().getNodes()
-                .get("root:1")).hasView(), is(Boolean.TRUE));
+        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE, null).getWorkflow()
+            .getNodes().get("root:1")).hasView(), is(Boolean.TRUE));
 
         var viewEnt = ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1));
-        var nodeViewJsonNode =
-            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(viewEnt, JsonNode.class);
+        var nodeViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(viewEnt, JsonNode.class);
         assertThat(nodeViewJsonNode.get("projectId").textValue(), containsString("view nodes"));
         assertThat(nodeViewJsonNode.get("workflowId").textValue(), is("root"));
         assertThat(nodeViewJsonNode.get("nodeId").textValue(), is("root:1"));
@@ -476,7 +478,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1));
 
         // initialData
-        var initialData = ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "initial_data", "");
+        var initialData =
+            ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "initial_data", "");
         var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
         assertThat(jsonNode.get("result").get("data"), notNullValue());
 

@@ -95,7 +95,8 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
         var wfm = loadWorkflowInWorkspace(workflow.getWorkflowDir());
-        var project = CachedProject.builder().setWfm(wfm).setName(workflow.getName()).setId(projectId).setOrigin(createOriginForTesting());
+        var project = CachedProject.builder().setWfm(wfm).setName(workflow.getName()).setId(projectId)
+            .setOrigin(createOriginForTesting());
         if (workflow instanceof TestWorkflow.WithVersion withVersion) {
             project.setVersionWfmLoader(ignored -> {
                 try {
@@ -112,7 +113,8 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         return WorkflowManagerUtil.loadWorkflowInWorkspace(workflowDir.toPath(), workflowDir.getParentFile().toPath());
     }
 
-    private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId, final CachedProject project) {
+    private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId,
+        final CachedProject project) {
         wfm.setName(name); // wfm.setName marks the workflow dirty
         wfm.getNodeContainerDirectory().setDirty(false);
         ProjectManager.getInstance().addProject(project);
@@ -139,15 +141,14 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     public void loadComponent(final TestWorkflow component, final String projectId) throws Exception {
         var componentURI = component.getWorkflowDir().toURI();
-        var loadHelper = new WorkflowLoadHelper(true, true,
-            WorkflowContextV2.forTemporaryWorkflow(new File("").toPath(), null));
-        var loadPersistor =
-            loadHelper.createTemplateLoadPersistor(component.getWorkflowDir(), componentURI);
-        var loadResult =
-            new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
+        var loadHelper =
+            new WorkflowLoadHelper(true, true, WorkflowContextV2.forTemporaryWorkflow(new File("").toPath(), null));
+        var loadPersistor = loadHelper.createTemplateLoadPersistor(component.getWorkflowDir(), componentURI);
+        var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
         WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
         var snc = (SubNodeContainer)loadResult.getLoadedInstance();
-        addToProjectManager(snc.getWorkflowManager(), component.getName(), projectId, CachedProject.builder().setWfm(snc.getWorkflowManager()).setId(projectId).setOrigin(createOriginForTesting()).build());
+        addToProjectManager(snc.getWorkflowManager(), component.getName(), projectId, CachedProject.builder()
+            .setWfm(snc.getWorkflowManager()).setId(projectId).setOrigin(createOriginForTesting()).build());
     }
 
     /**

@@ -157,9 +157,9 @@ final class Delete extends AbstractWorkflowCommand {
         m_connectionsDeleted = m_connectionIdsQueried.stream()
             .map(connectionId -> new ConnectionID(connectionId.getDestNodeIDEnt().toNodeID(wfm),
                 connectionId.getDestPortIdx()))
-            .filter(id -> wfm.containsNodeContainer(id.getDestinationNode()) || wfm.getID().equals(id.getDestinationNode()))
-            .map(wfm::getConnection)
-            .collect(Collectors.toCollection(HashSet::new));
+            .filter(
+                id -> wfm.containsNodeContainer(id.getDestinationNode()) || wfm.getID().equals(id.getDestinationNode()))
+            .map(wfm::getConnection).collect(Collectors.toCollection(HashSet::new));
 
         if (m_connectionsDeleted.size() != m_connectionIdsQueried.size()) {
             throw new OperationNotAllowedException("Some connections don't exist. Delete operation aborted.");

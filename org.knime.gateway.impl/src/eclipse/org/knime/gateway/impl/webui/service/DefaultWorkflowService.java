@@ -57,6 +57,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -71,7 +72,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
-import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
@@ -119,9 +119,9 @@ public final class DefaultWorkflowService implements WorkflowService {
         var wfKey = new WorkflowKey(projectId, workflowId, version);
         var buildContext = WorkflowBuildContext.builder();
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
-            Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null  //
-                            ? Map.of() //
-                            : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
+            Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
+                ? Map.of() //
+                : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
             buildContext.includeInteractionInfo(true)//
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
