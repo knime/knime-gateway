@@ -69,6 +69,7 @@ import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.database.DatabaseConnectionPortObject;
 import org.knime.core.node.port.database.DatabasePortObject;
 import org.knime.core.node.port.viewproperty.ShapeHandlerPortObject;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
@@ -78,6 +79,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
 
@@ -146,14 +148,14 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testGetAppStateWithWorkflowSpecificSpaceProvider() throws Exception {
-        var workflowProjectId = "the_workflow_project_id";
-        loadWorkflow(TestWorkflowCollection.HOLLOW, workflowProjectId);
-        ProjectManager.getInstance().setProjectActive(workflowProjectId);
-        var spaceProvidersFactory = setSpaceProvidersDependencyAndGetFactory();
+        var projectId = "the_workflow_project_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.HOLLOW, projectId);
+        ProjectManager.getInstance().setProjectActive(projectId);
+        var spaceProvidersFactory = setSpaceProvidersDependencyAndGetFactory(projectId, wfm);
 
         var appService = DefaultApplicationService.getInstance();
 
-        try (var unused = DefaultServiceContext.set(workflowProjectId)) {
+        try (var unused = DefaultServiceContext.set(projectId)) {
             var appStateEnt = appService.getState();
             var expectedSpaceProvider = appStateEnt.getSpaceProviders().get(0);
             assertThat(expectedSpaceProvider.getName(), is("bar"));
@@ -162,15 +164,18 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         verify(spaceProvidersFactory).createSpaceProvider(any());
     }
 
-    private static SpaceProviderFactory setSpaceProvidersDependencyAndGetFactory() {
+    private static SpaceProviderFactory setSpaceProvidersDependencyAndGetFactory(final String projectId,
+        final WorkflowManager wfm) {
         var spaceProvidersFactory = mock(SpaceProviderFactory.class);
         var spaceProvider = mock(SpaceProvider.class);
         when(spaceProvider.getId()).thenReturn("foo");
         when(spaceProvider.getName()).thenReturn("bar");
         when(spaceProvider.getType()).thenReturn(TypeEnum.HUB);
         when(spaceProvidersFactory.createSpaceProvider(any())).thenReturn(Optional.of(spaceProvider));
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, new SpaceProvidersManager(id -> {
-        }, null, List.of(spaceProvidersFactory)));
+        var spaceProvidersManager = new SpaceProvidersManager(id -> {
+        }, null, List.of(spaceProvidersFactory));
+        spaceProvidersManager.update(Key.of(projectId), wfm.getContextV2());
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProvidersManager);
         return spaceProvidersFactory;
     }
 
