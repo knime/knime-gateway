@@ -105,9 +105,6 @@ public final class DefaultApplicationService implements ApplicationService {
         // singleton
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         if (m_appStateUpdater != null) {
@@ -115,16 +112,11 @@ public final class DefaultApplicationService implements ApplicationService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AppStateEnt getState() {
         var projectId = DefaultServiceContext.getProjectId();
-        var spaceProviders = m_spaceProvidersManager.getSpaceProviders( //
-            projectId.map(Key::of) //
-                .orElse(Key.defaultKey()) //
-        );
+        var key = projectId.map(Key::of).orElse(Key.defaultKey());
+        var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
             spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
