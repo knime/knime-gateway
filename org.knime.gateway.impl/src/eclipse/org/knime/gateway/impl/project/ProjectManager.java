@@ -370,7 +370,8 @@ public final class ProjectManager {
         void resortKeys(final List<K> keys) {
             var entriesInNewOrder = keys.stream() //
                 .filter(this::containsKey) //
-                .map(key -> Map.entry(key, this.get(key))); //
+                .map(key -> Map.entry(key, this.get(key))) //
+                .toList(); // To force evaluation, otherwise 'this.clear()' might be called before 'this.get(key)'
             this.clear();
             entriesInNewOrder.forEach(entry -> this.put(entry.getKey(), entry.getValue()));
         }
