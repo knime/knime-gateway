@@ -492,6 +492,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/CompositeViewDataProvider.java" type="org.knime.gateway.impl.webui.service.CompositeViewDataProvider">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.CompositeViewDataProvider"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultNodeRepositoryService.java" type="org.knime.gateway.impl.webui.service.DefaultNodeRepositoryService">
         <filter id="338792546">
             <message_arguments>

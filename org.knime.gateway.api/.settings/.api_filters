@@ -377,6 +377,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/ComponentService.java" type="org.knime.gateway.api.webui.service.ComponentService">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.ComponentService"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/NodeRepositoryService.java" type="org.knime.gateway.api.webui.service.NodeRepositoryService">
         <filter id="403804204">
             <message_arguments>
