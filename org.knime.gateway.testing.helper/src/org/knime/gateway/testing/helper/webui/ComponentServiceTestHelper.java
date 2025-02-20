@@ -44,59 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2020 (hornm): created
+ *   Aug 3, 2020 (hornm): created
  */
-package org.knime.gateway.testing.helper;
+package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.json.util.ObjectMapperUtil;
+import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.ServiceProvider;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.WorkflowExecutor;
+import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
- * Provides implementations of all gateway services for the Web-UI.
+ * Test for the endpoints of the node service.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
+ * @author Kai Franze, KNIME GmbH, Germany
+ * @author Tobias Kampmann, TNG
  */
-public interface ServiceProvider {
+public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
-     * @return workflow service implementation
+     * @param entityResultChecker
+     * @param serviceProvider
+     * @param workflowLoader
+     * @param workflowExecutor
      */
-    WorkflowService getWorkflowService();
+    public ComponentServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+        super(ComponentServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+    }
 
     /**
-     * @return node service implementation
+     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, NodeIDEnt)}.
+     *
+     * @throws Exception
      */
-    NodeService getNodeService();
-
-    /**
-     * @return port service implementation
-     */
-    PortService getPortService();
-
-    /**
-     * @return event service implementation
-     */
-    EventService getEventService();
-
-    /**
-     * @return node repository service implementation
-     */
-    NodeRepositoryService getNodeRepositoryService();
-
-    /**
-     * @return space service implementation
-     */
-    SpaceService getSpaceService();
-
-    /**
-     * @return component service implementation
-     */
-    ComponentService getComponentService();
+    public void testCompositeViewPage() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
+        var compositeViewPage =
+            (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:11"));
+        var compositeViewPageTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(compositeViewPage);
+        var nodeView = compositeViewPageTree.get("nodeViews").get("11:0:10");
+        assertThat(nodeView.get("nodeInfo").get("nodeAnnotation").asText(), is("novel view-node"));
+        var webNode = compositeViewPageTree.get("webNodes").get("11:0:9");
+        assertThat(webNode.get("nodeInfo").get("nodeAnnotation").asText(), is("JS view-node"));
+    }
 
 }

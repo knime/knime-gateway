@@ -62,6 +62,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -194,6 +195,11 @@ public class GatewayJsonRpcWrapperServiceTests {
             @Override
             public SpaceService getSpaceService() {
                 return createClientProxy(SpaceService.class, handler, jsonRpcClient);
+            }
+
+            @Override
+            public ComponentService getComponentService() {
+                return createClientProxy(ComponentService.class, handler, jsonRpcClient);
             }
         };
 

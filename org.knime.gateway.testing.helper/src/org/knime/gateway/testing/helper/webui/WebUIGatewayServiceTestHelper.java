@@ -76,6 +76,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
+import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -340,6 +341,15 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     protected SpaceService ss() {
         return m_serviceProvider.getSpaceService();
+    }
+
+    /**
+     * Shortcut to get a component service instance.
+     *
+     * @return a component service instance
+     */
+    protected ComponentService cs() {
+        return m_serviceProvider.getComponentService();
     }
 
     /**

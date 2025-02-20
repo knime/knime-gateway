@@ -50,7 +50,8 @@ public final class GatewayTestCollection {
         CutCopyPasteCommandsTestHelper.class, //
         BendpointsTestHelper.class, //
         DeleteCommandTestHelper.class, //
-        ConnectCommandsTestHelper.class
+        ConnectCommandsTestHelper.class, //
+        ComponentServiceTestHelper.class
     );
 
     private GatewayTestCollection() {

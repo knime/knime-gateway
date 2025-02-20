@@ -462,7 +462,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         message = assertThrows(InvalidRequestException.class,
             () -> ns().getNodeView(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
-        assertThat(message, containsString("doesn't have a view"));
+        assertThat(message, containsString("does not have a view"));
     }
 
     /**
