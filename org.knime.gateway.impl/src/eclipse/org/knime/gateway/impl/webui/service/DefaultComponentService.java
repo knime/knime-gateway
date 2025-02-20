@@ -76,6 +76,8 @@ public class DefaultComponentService implements ComponentService {
     private final SelectionEventBus m_selectionEventBus =
         ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
 
+    private static CompositeViewDataProvider m_cachedCompositeViewDataProvider;
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -102,13 +104,16 @@ public class DefaultComponentService implements ComponentService {
     }
 
     private static CompositeViewDataProvider getViewDataProvider() {
-        List<CompositeViewDataProvider> dataProviders =
-            ExtPointUtil.collectExecutableExtensions("org.knime.gateway.impl.CompositeViewDataProvider", "impl");
-        if (dataProviders.size() != 1) {
-            throw new IllegalStateException(
-                "Expected only a single data provider for component views. Got " + dataProviders.size() + ".");
+        if (m_cachedCompositeViewDataProvider == null) {
+            List<CompositeViewDataProvider> dataProviders =
+                ExtPointUtil.collectExecutableExtensions("org.knime.gateway.impl.CompositeViewDataProvider", "impl");
+            if (dataProviders.size() != 1) {
+                throw new IllegalStateException(
+                    "Expected only a single data provider for component views. Got " + dataProviders.size() + ".");
+            }
+            m_cachedCompositeViewDataProvider = dataProviders.get(0);
         }
-        return dataProviders.get(0);
+        return m_cachedCompositeViewDataProvider;
     }
 
     private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
