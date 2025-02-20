@@ -83,9 +83,12 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, NodeIDEnt)}.
      *
+     * TODO enable test (i.e. add public modifier) - disabled because the JSCoreCompositeViewDataProvider extension
+     * point is not available when run in Jenkins
+     *
      * @throws Exception
      */
-    public void testCompositeViewPage() throws Exception {
+    void testCompositeViewPage() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
         var compositeViewPage =
             (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:11"));
