@@ -352,24 +352,10 @@ public final class WorkflowEntityFactory {
         //
     }
 
-    /**
-     * If {@code wfm} is not a metanode, return it. Otherwise, recurse parents until a non-metanode parent is
-     * encountered.
-     */
-    private Optional<WorkflowManager> nonMetanodeSelfOrParent(final WorkflowManager wfm) {
-        if (wfm.getID().isRoot()) {
-            return Optional.empty();
-        }
-        if (CoreUtil.isMetanodeWfm(wfm)) {
-            return nonMetanodeSelfOrParent(CoreUtil.getWorkflowParent(wfm));
-        }
-        return Optional.of(wfm);
-    }
-
     private Either<ProjectMetadataEnt, ComponentNodeDescriptionEnt> getMetadata(final WorkflowManager wfm) {
         //noinspection unchecked
         return (Either<ProjectMetadataEnt, ComponentNodeDescriptionEnt>)
-                nonMetanodeSelfOrParent(wfm).map(providingWfm -> {
+                CoreUtil.nonMetanodeSelfOrParent(wfm).map(providingWfm -> {
             if (providingWfm.isProject()) {
                 return Either.left(buildProjectMetadataEnt(providingWfm));
             }
