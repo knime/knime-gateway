@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Update metadata of a component workflow
@@ -66,8 +67,8 @@ import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 public final class UpdateComponentMetadata
     extends AbstractUpdateWorkflowMetadata<ComponentMetadata, UpdateComponentMetadataCommandEnt> {
 
-    public UpdateComponentMetadata(final UpdateComponentMetadataCommandEnt commandEnt) {
-        super(commandEnt);
+    public UpdateComponentMetadata(final UpdateComponentMetadataCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+        super(commandEnt, workflowMiddleware);
     }
 
     @Override
@@ -110,11 +111,14 @@ public final class UpdateComponentMetadata
     @Override
     void apply(final ComponentMetadata metadata) {
         CoreUtil.getComponentSNC(getWorkflowManager()).orElseThrow().setMetadata(metadata);
+        if (!getWorkflowManager().equals(getWorkflowManagerToModify())) {
+            setDirtyAndNotifyWorkflowListener(metadata);
+        }
     }
 
     @Override
     ComponentMetadata getOriginal() {
-        return CoreUtil.getComponentSNC(getWorkflowManager()).orElseThrow().getMetadata();
+        return CoreUtil.getComponentSNC(getWorkflowManagerToModify()).orElseThrow().getMetadata();
     }
 
     private static ComponentPortDescriptionEnt toPortDescriptionEnt(final ComponentMetadata.Port p) {

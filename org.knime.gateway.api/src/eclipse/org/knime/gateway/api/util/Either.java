@@ -46,15 +46,17 @@
 
 package org.knime.gateway.api.util;
 
-import org.knime.core.node.util.ClassUtils;
-
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.knime.core.node.util.ClassUtils;
 
 /**
  * Value type that can hold either of two type instances.
  */
-public class Either<L, R> {
+public final class Either<L, R> {
 
     L m_left;
 
@@ -66,28 +68,42 @@ public class Either<L, R> {
     }
 
     /**
+     *
+     * @param left
      * @return An instance containing value of type {@link L}
+     * @param <L>
+     * @param <R>
      */
     public static <L, R> Either<L, R> left(final L left) {
         return new Either<>(left, null);
     }
 
     /**
+     *
+     * @param right
      * @return An instance containing value of type {@link R}
+     * @param <L>
+     * @param <R>
      */
     public static <L, R> Either<L, R> right(final R right) {
         return new Either<>(null, right);
     }
 
     /**
+     *
      * @return an instance containing no value
+     * @param <L>
+     * @param <R>
      */
     public static <L, R> Either<L, R> empty() {
         return new Either<>(null, null);
     }
 
     /**
-     * Return the value of type {@code Z} if it is set, otherwise an empty optional.
+     *
+     * @param query
+     * @return the value of type {@code Z} if it is set, otherwise an empty optional.
+     * @param <Z>
      */
     public <Z> Optional<Z> get(final Class<Z> query) {
         return Stream.of(m_left, m_right) //
@@ -95,6 +111,23 @@ public class Either<L, R> {
             .map(e -> ClassUtils.castOptional(query, e)) //
             .flatMap(Optional::stream) //
             .findFirst();
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        var either = (Either<?, ?>)other;
+        return new EqualsBuilder().append(m_left, either.m_left).append(m_right, either.m_right).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(m_left).append(m_right).toHashCode();
     }
 
     @Override

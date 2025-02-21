@@ -47,10 +47,13 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.core.node.workflow.NodeContainerMetadata;
+import org.knime.core.node.workflow.WorkflowEvent;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Abstract logic to update metadata of a workflow (e.g. project or component)
@@ -60,8 +63,10 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
  */
 public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMetadata, E extends WorkflowCommandEnt>
     extends AbstractWorkflowCommand {
-    AbstractUpdateWorkflowMetadata(final E commandEnt) {
+
+    AbstractUpdateWorkflowMetadata(final E commandEnt, final WorkflowMiddleware workflowMiddleware) {
         m_commandEnt = commandEnt;
+        m_middleware = workflowMiddleware;
     }
 
     private final E m_commandEnt;
@@ -70,6 +75,8 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
      * The original state before execution of the command, used as a checkpoint for undo-ing.
      */
     private M m_originalMetadata;
+
+    private final WorkflowMiddleware m_middleware;
 
     /**
      * Build a new metadata object from the given values
@@ -146,4 +153,26 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
         return metadataBuilder;
     }
 
+    /**
+     * Metanode workflows supply and display the metadata of their parent. This is also the place where edits have to
+     * take place.
+     * 
+     * @return
+     */
+    protected WorkflowManager getWorkflowManagerToModify() {
+        return CoreUtil.nonMetanodeSelfOrParent(getWorkflowManager()).orElseThrow();
+    }
+
+    /**
+     * The current workflow might not even be notified (but instead a parent, see callers). For the workflow state
+     * caches and the frontend to become aware of this change, we need to trigger an update explicitly.
+     * 
+     * @param newMetadata the new value
+     */
+    protected void setDirtyAndNotifyWorkflowListener(final NodeContainerMetadata newMetadata) {
+        getWorkflowManager().setDirty();
+        var event = new WorkflowEvent(WorkflowEvent.Type.WORKFLOW_METADATA_CHANGED, getWorkflowManager().getID(), null,
+            newMetadata);
+        m_middleware.getWorkflowChangesListener(getWorkflowKey()).notifyWorkflowListener(event);
+    }
 }

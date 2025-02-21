@@ -97,8 +97,7 @@ public class WorkflowChangesListener implements Closeable {
 
     private Listener<WorkflowAnnotation> m_workflowAnnotationListener = new NoopListener<>();
 
-    private Listener<ConnectionContainer> m_connectionUIInformationListener =
-        new NoopListener<>();
+    private Listener<ConnectionContainer> m_connectionUIInformationListener = new NoopListener<>();
 
     private Listener<ConnectionContainer> m_connectionProgressListener = new NoopListener<>();
 
@@ -315,22 +314,35 @@ public class WorkflowChangesListener implements Closeable {
         m_connectionUIInformationListener.attachTo(connectionContainers);
     }
 
+    /**
+     * Notify the workflow listener. This would usually be called from core side but some exceptions may validate
+     * triggering this "manually" in the gateway layer.
+     * @param e
+     */
+    public void notifyWorkflowListener(final WorkflowEvent e) {
+        if (m_workflowListener == null) {
+            return;
+        }
+        m_workflowListener.workflowChanged(e);
+    }
+
     private void trackChange(final WorkflowEvent e) { // NOSONAR: Simple 1:1 matching, not too complex
         switch (e.getType()) {
             case NODE_ADDED -> updateWorkflowChangesTrackers(WorkflowChange.NODE_ADDED);
             case NODE_REMOVED -> updateWorkflowChangesTrackers(WorkflowChange.NODE_REMOVED);
             case CONNECTION_ADDED -> updateWorkflowChangesTrackers(WorkflowChange.CONNECTION_ADDED);
-            case CONNECTION_REMOVED -> updateWorkflowChangesTrackers(
-                WorkflowChangesTracker.WorkflowChange.CONNECTION_REMOVED);
+            case CONNECTION_REMOVED ->
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.CONNECTION_REMOVED);
             case NODE_COLLAPSED -> updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED);
             case NODE_EXPANDED -> updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED);
-            case ANNOTATION_ADDED -> updateWorkflowChangesTrackers(
-                WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
-            case ANNOTATION_REMOVED -> updateWorkflowChangesTrackers(
-                WorkflowChangesTracker.WorkflowChange.ANNOTATION_REMOVED);
-            case NODE_PORTS_CHANGED -> updateWorkflowChangesTrackers(
-                WorkflowChangesTracker.WorkflowChange.NODE_PORTS_CHANGED);
+            case ANNOTATION_ADDED ->
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
+            case ANNOTATION_REMOVED ->
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_REMOVED);
+            case NODE_PORTS_CHANGED ->
+                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_PORTS_CHANGED);
             case PORTS_BAR_UI_INFO_CHANGED -> updateWorkflowChangesTrackers(WorkflowChange.PORTS_BAR_MOVED);
+            case WORKFLOW_METADATA_CHANGED -> updateWorkflowChangesTrackers(WorkflowChange.ANY);
             default -> {
                 //
             }
@@ -449,7 +461,6 @@ public class WorkflowChangesListener implements Closeable {
 
     }
 
-
     /**
      * Generalization of any listener that can be attached to aspects of a node/connection/annotation.
      *
@@ -464,8 +475,7 @@ public class WorkflowChangesListener implements Closeable {
 
         final L m_listener;
 
-        private ListenerImpl(final BiConsumer<T, L> attacher,
-            final BiConsumer<T, L> detacher, final L listener) {
+        private ListenerImpl(final BiConsumer<T, L> attacher, final BiConsumer<T, L> detacher, final L listener) {
             m_attacher = attacher;
             m_detacher = detacher;
             m_listener = listener;
@@ -497,12 +507,12 @@ public class WorkflowChangesListener implements Closeable {
 
         @Override
         public void attachTo(final Collection<T> targets) {
-           //
+            //
         }
 
         @Override
         public void detachFrom(final Collection<T> targets) {
-           //
+            //
         }
 
         @Override
