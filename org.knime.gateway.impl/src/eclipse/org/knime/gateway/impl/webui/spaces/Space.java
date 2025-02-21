@@ -65,13 +65,13 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
 import org.knime.core.util.Pair;
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
@@ -319,6 +319,24 @@ public interface Space {
      * @throws IllegalStateException if there were problems determining the URI
      */
     URI toKnimeUrl(String itemId);
+
+    /**
+     * @param itemId
+     * @return A browser-viewable URI corresponding to the item
+     * @throws ResourceAccessException
+     */
+    default Optional<URI> getItemUrl(final String itemId) throws ResourceAccessException  {
+        return Optional.empty();
+    }
+
+    /**
+     * @param itemId
+     * @return A browser-viewable URI corresponding to the API definition of the item
+     * @throws ResourceAccessException
+     */
+    default Optional<URI> getAPIDefinitionURI(final String itemId) throws ResourceAccessException {
+        return Optional.empty();
+    }
 
     /**
      * Creates a mountpoint-absolute KNIME URL for the given space item. The resulting KNIME-URL is guaranteed to be
