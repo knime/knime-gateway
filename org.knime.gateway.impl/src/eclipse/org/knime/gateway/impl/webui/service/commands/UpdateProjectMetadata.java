@@ -53,14 +53,15 @@ import org.knime.core.node.workflow.WorkflowMetadata;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Update metadata of a workflow project
  */
 public final class UpdateProjectMetadata
     extends AbstractUpdateWorkflowMetadata<WorkflowMetadata, UpdateProjectMetadataCommandEnt> {
-    public UpdateProjectMetadata(final UpdateProjectMetadataCommandEnt commandEnt) {
-        super(commandEnt);
+    public UpdateProjectMetadata(final UpdateProjectMetadataCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+        super(commandEnt, workflowMiddleware);
     }
 
     @Override
@@ -82,11 +83,15 @@ public final class UpdateProjectMetadata
 
     @Override
     WorkflowMetadata getOriginal() {
-        return getWorkflowManager().getMetadata();
+        return getWorkflowManagerToModify().getMetadata();
     }
 
     @Override
     void apply(final WorkflowMetadata metadata) {
-        getWorkflowManager().setContainerMetadata(metadata);
+        getWorkflowManagerToModify().setContainerMetadata(metadata);
+        if (!getWorkflowManager().equals(getWorkflowManagerToModify())) {
+            setDirtyAndNotifyWorkflowListener(metadata);
+        }
     }
+
 }

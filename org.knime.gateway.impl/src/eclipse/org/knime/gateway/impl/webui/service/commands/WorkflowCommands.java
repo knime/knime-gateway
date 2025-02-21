@@ -98,9 +98,9 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Allows one to execute, undo and redo workflow commands for workflows. Individual commands are assumed to be executed
- * sequentially. It accordingly keeps undo- and redo-stacks for each workflow a command has been executed on.
- * Individual types of workflow commands are represented by the implementations of {@link WorkflowCommandEnt},
- * i.e. different kind of entities of workflow commands.
+ * sequentially. It accordingly keeps undo- and redo-stacks for each workflow a command has been executed on. Individual
+ * types of workflow commands are represented by the implementations of {@link WorkflowCommandEnt}, i.e. different kind
+ * of entities of workflow commands.
  *
  * This is API that might/should be moved closer to the core eventually.
  *
@@ -141,8 +141,8 @@ public final class WorkflowCommands {
      * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
      * @throws NodeNotFoundException if the reference doesn't point to a workflow
      */
-    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey,
-        final E commandEnt) throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
+    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
+        throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
         return execute(wfKey, commandEnt, null, null, null);
     }
 
@@ -167,7 +167,7 @@ public final class WorkflowCommands {
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
         final SpaceProviders spaceProviders)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders);
+        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
@@ -180,8 +180,8 @@ public final class WorkflowCommands {
 
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
-        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders)
-        throws OperationNotAllowedException {
+        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
+        final WorkflowMiddleware workflowMiddleware) throws OperationNotAllowedException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
@@ -226,14 +226,14 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AddWorkflowAnnotationCommandEnt ce) {
             command = new AddWorkflowAnnotation(ce);
         } else if (commandEnt instanceof UpdateProjectMetadataCommandEnt ce) {
-            command = new UpdateProjectMetadata(ce);
+            command = new UpdateProjectMetadata(ce, workflowMiddleware);
         } else if (commandEnt instanceof UpdateComponentMetadataCommandEnt ce) {
-            command = new UpdateComponentMetadata(ce);
+            command = new UpdateComponentMetadata(ce, workflowMiddleware);
         } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
             command = new UpdateComponentLinkInformation(ce);
-        } else if(commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
+        } else if (commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
             command = new TransformMetanodePortsBar(ce);
         } else if (commandEnt instanceof UpdateLinkedComponentsCommandEnt ce) {
             command = new UpdateLinkedComponents(ce);

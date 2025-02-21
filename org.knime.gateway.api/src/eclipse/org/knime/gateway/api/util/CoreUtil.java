@@ -739,9 +739,29 @@ public final class CoreUtil {
         return templateInfo != null && templateInfo.getRole() == MetaNodeTemplateInformation.Role.Link;
     }
 
+    /**
+     * @param wfm
+     * @return the parent of this workflow manager, handling metanode and component child workflow managers
+     */
     public static WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
         var parent = wfm.getDirectNCParent();
         return parent instanceof SubNodeContainer snc ? snc.getParent() : (WorkflowManager)parent;
+    }
+
+    /**
+     * If {@code wfm} is not a metanode, return it. Otherwise, recurse parents until a non-metanode parent is
+     * encountered.
+     * @param wfm
+     * @return
+     */
+    public static Optional<WorkflowManager> nonMetanodeSelfOrParent(final WorkflowManager wfm) {
+        if (wfm.getID().isRoot()) {
+            return Optional.empty();
+        }
+        if (isMetanodeWfm(wfm)) {
+            return nonMetanodeSelfOrParent(getWorkflowParent(wfm));
+        }
+        return Optional.of(wfm);
     }
 
     /**
@@ -782,7 +802,8 @@ public final class CoreUtil {
     }
 
     /**
-     * Obtain the {@link ContainerType} of the given workflow manager.
+     * @param wfm
+     * @return the container type of the workflow manager. Empty if the workflow manager is the root wfm.
      */
     public static Optional<ContainerType> getContainerType(final WorkflowManager wfm) {
         if (wfm.isProject()) {
