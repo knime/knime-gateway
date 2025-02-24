@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
@@ -55,6 +57,7 @@ import org.knime.core.node.context.ports.ExtendablePortGroup;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.ReplaceNodeResult;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
@@ -89,7 +92,7 @@ final class EditNativeNodePorts implements EditPorts {
         var groupName = addPortCommandEnt.getPortGroup();
         var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
-        executeInternal(creationConfigCopy);
+        executeAddPort(creationConfigCopy);
         return findNewPortIdx(addPortCommandEnt);
     }
 
@@ -98,8 +101,12 @@ final class EditNativeNodePorts implements EditPorts {
         var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         var groupName = removePortCommandEnt.getPortGroup();
         var portIndex = removePortCommandEnt.getPortIndex();
-        getExtendablePortGroup(creationConfigCopy, groupName).removePort(portIndex - 1);
-        executeInternal(creationConfigCopy);
+        var portGroup = getExtendablePortGroup(creationConfigCopy, groupName);
+        var removeInputPort = portGroup.definesInputPorts();
+        var removeOutputPort = portGroup.definesOutputPorts();
+        var length = portGroup.getFixedPorts().length + portGroup.getConfiguredPorts().length + 1;
+        portGroup.removePort(portIndex - 1);
+        executeRemovePort(creationConfigCopy, portIndex - 1, length, removeInputPort, removeOutputPort);
     }
 
     @Override
@@ -132,8 +139,54 @@ final class EditNativeNodePorts implements EditPorts {
         return m_portCommandEnt.getNodeId().toNodeID(m_wfm);
     }
 
-    private void executeInternal(final ModifiableNodeCreationConfiguration creationConfigCopy) {
+    private void executeAddPort(final ModifiableNodeCreationConfiguration creationConfigCopy) {
         m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), creationConfigCopy);
+    }
+
+    private void executeRemovePort(final ModifiableNodeCreationConfiguration creationConfigCopy, final int portIndex,
+        final int portGroupLength, final boolean inputPort, final boolean outputPort) {
+        //last port removal is default
+        if (portIndex == portGroupLength - 1) {
+            m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), creationConfigCopy);
+        } else {
+            //TODO: generate mapping from old to new port indices
+            Map<Integer, Integer> inputPortMapping = new HashMap<>();
+            Map<Integer, Integer> outputPortMapping = new HashMap<>();
+            if (!inputPort) {
+                var inputLength = creationConfigCopy.getPortConfig().get().getInputPorts().length;
+                for (int i = 0; i < inputLength; i++) {
+                    inputPortMapping.put(i, i);
+                }
+            } else {
+                for (int i = 0; i < portGroupLength; i++) {
+                    if (i < (portIndex + 1)) {
+                        inputPortMapping.put(i, i);
+                    } else if(i == portGroupLength - 1) {
+                        inputPortMapping.put(i, -1);
+                    } else {
+                        inputPortMapping.put(i, (i + 1));
+                    }
+                }
+            }
+            if (!outputPort) {
+                var inputLength = creationConfigCopy.getPortConfig().get().getInputPorts().length;
+                for (int i = 0; i < inputLength; i++) {
+                    outputPortMapping.put(i, i);
+                }
+            } else {
+                for (int i = 0; i < portGroupLength; i++) {
+                    if (i < (portIndex + 1)) {
+                        outputPortMapping.put(i, i);
+                    } else if(i == portGroupLength - 1) {
+                        outputPortMapping.put(i, -1);
+                    } else {
+                        outputPortMapping.put(i, (i + 1));
+                    }
+                }
+            }
+            var portMappings = new Pair<>(inputPortMapping, outputPortMapping);
+            m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), creationConfigCopy, portMappings);
+        }
     }
 
     private static ExtendablePortGroup getExtendablePortGroup(final ModifiableNodeCreationConfiguration creationConfig,
