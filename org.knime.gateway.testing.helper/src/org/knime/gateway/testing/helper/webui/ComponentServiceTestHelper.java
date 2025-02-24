@@ -50,9 +50,12 @@ package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -94,6 +97,49 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(nodeView.get("nodeInfo").get("nodeAnnotation").asText(), is("novel view-node"));
         var webNode = compositeViewPageTree.get("webNodes").get("11:0:9");
         assertThat(webNode.get("nodeInfo").get("nodeAnnotation").asText(), is("JS view-node"));
+    }
+
+    /**
+     * Tests {@link ComponentService#getComponentDescription(String, NodeIDEnt, NodeIDEnt)}.
+     *
+     * @throws Exception
+     */
+    public void testGetComponentDescription() throws Exception {
+        var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
+
+        // New component
+        var componentNew = new NodeIDEnt(9);
+        var descNew = cs().getComponentDescription(projectId, getRootID(), componentNew);
+        cr(descNew, "component_description_new");
+
+        // Component with partial description
+        var componentPartial = new NodeIDEnt(4);
+        var descPartial = cs().getComponentDescription(projectId, getRootID(), componentPartial);
+        cr(descPartial, "component_description_partial");
+
+        // Component with full description
+        var componentFull = new NodeIDEnt(6);
+        var descFull = cs().getComponentDescription(projectId, getRootID(), componentFull);
+        cr(descFull, "component_description_full");
+
+        // Empty component
+        var componentEmpty = new NodeIDEnt(11);
+        var descEmpty = cs().getComponentDescription(projectId, getRootID(), componentEmpty);
+        cr(descEmpty, "component_description_empty");
+
+        // Metanode
+        var metanode = new NodeIDEnt(2);
+        assertThrows(ServiceCallException.class,
+            () -> cs().getComponentDescription(projectId, getRootID(), metanode));
+
+        // Native node
+        var nativeNode = new NodeIDEnt(5);
+        assertThrows(ServiceCallException.class,
+            () -> cs().getComponentDescription(projectId, getRootID(), nativeNode));
+
+        // Non-existing node
+        var nan = new NodeIDEnt(99);
+        assertThrows(ServiceCallException.class, () -> cs().getComponentDescription(projectId, getRootID(), nan));
     }
 
 }

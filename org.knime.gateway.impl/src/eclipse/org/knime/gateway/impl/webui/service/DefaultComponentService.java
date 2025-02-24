@@ -58,10 +58,12 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.ExtPointUtil;
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -145,4 +147,15 @@ public class DefaultComponentService implements ComponentService {
         };
     }
 
+    @Override
+    public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws ServiceCallException {
+        SubNodeContainer snc;
+        try {
+            snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
+        } catch (NodeNotFoundException | InvalidRequestException ex) {
+            throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
+        }
+    }
 }
