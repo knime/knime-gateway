@@ -63,7 +63,6 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
-import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
@@ -75,7 +74,6 @@ import org.knime.gateway.api.entity.NodeDialogEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
@@ -113,9 +111,6 @@ public final class DefaultNodeService implements NodeService {
         // singleton
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
@@ -130,9 +125,6 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
@@ -178,9 +170,6 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
@@ -192,9 +181,6 @@ public final class DefaultNodeService implements NodeService {
         return new NodeDialogEnt(snc);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
@@ -280,9 +266,6 @@ public final class DefaultNodeService implements NodeService {
         return ncClass.cast(nc);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String extensionType, final String serviceType, final String request)
@@ -310,9 +293,6 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String extensionType) throws NodeNotFoundException, InvalidRequestException {
@@ -341,18 +321,12 @@ public final class DefaultNodeService implements NodeService {
         return dataServiceManager;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String mode, final List<String> selection) throws NodeNotFoundException {
         DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, nodeId, mode, selection, NodeWrapper::of);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey)
         throws NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
@@ -380,12 +354,4 @@ public final class DefaultNodeService implements NodeService {
     public void dispose() {
         m_nodeDescriptionCache.clear();
     }
-
-    @Override
-    public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
-        final var snc = getNC(projectId, workflowId, nodeId, SubNodeContainer.class);
-        return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
-    }
-
 }

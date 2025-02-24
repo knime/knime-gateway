@@ -50,7 +50,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 
 /**
- * The (user-editable) description of a component&#39;s port. Asummed to be Plaintext.
+ * The (user-editable) description of a component&#39;s port. Assumed to be Plaintext.
  *
  * @param name
  * @param description

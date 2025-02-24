@@ -55,7 +55,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The (user-editable) description of a component&#39;s port. Asummed to be Plaintext.
+ * The (user-editable) description of a component&#39;s port. Assumed to be Plaintext.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
