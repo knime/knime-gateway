@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -73,6 +74,16 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
 	/**
      * {@inheritDoc}
      */
+    @Override
+    @JsonRpcMethod(value = "getComponentDescription")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public ComponentNodeDescriptionEnt getComponentDescription(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+        return m_service.get().getComponentDescription(projectId, workflowId, nodeId);    
+    }
+
     @Override
     @JsonRpcMethod(value = "getCompositeViewPage")
     @JsonRpcErrors(value = {
