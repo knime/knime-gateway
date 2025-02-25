@@ -48,6 +48,8 @@ import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt.AddAnnotationRe
 import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt.AddBendpointCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddBendpointCommandEnt;
+import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
@@ -357,6 +359,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == AddBendpointCommandEntBuilder.class) {
             return (B)new DefaultAddBendpointCommandEnt.DefaultAddBendpointCommandEntBuilder();
+        }        
+        if(clazz == AddComponentCommandEntBuilder.class) {
+            return (B)new DefaultAddComponentCommandEnt.DefaultAddComponentCommandEntBuilder();
         }        
         if(clazz == AddNodeCommandEntBuilder.class) {
             return (B)new DefaultAddNodeCommandEnt.DefaultAddNodeCommandEntBuilder();

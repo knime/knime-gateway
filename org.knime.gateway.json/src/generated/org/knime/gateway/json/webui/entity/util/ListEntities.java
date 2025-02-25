@@ -46,6 +46,7 @@ package org.knime.gateway.json.webui.entity.util;
 
 import org.knime.gateway.json.webui.entity.AddAnnotationResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddBendpointCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.AddComponentCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddPortCommandEntMixIn;
@@ -212,6 +213,7 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEntMixIn.class);
         res.add(AddBendpointCommandEntMixIn.class);
+        res.add(AddComponentCommandEntMixIn.class);
         res.add(AddNodeCommandEntMixIn.class);
         res.add(AddNodeResultEntMixIn.class);
         res.add(AddPortCommandEntMixIn.class);
@@ -364,6 +366,7 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEntMixIn.AddAnnotationResultEntMixInBuilder.class);
         res.add(AddBendpointCommandEntMixIn.AddBendpointCommandEntMixInBuilder.class);
+        res.add(AddComponentCommandEntMixIn.AddComponentCommandEntMixInBuilder.class);
         res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
         res.add(AddNodeResultEntMixIn.AddNodeResultEntMixInBuilder.class);
         res.add(AddPortCommandEntMixIn.AddPortCommandEntMixInBuilder.class);

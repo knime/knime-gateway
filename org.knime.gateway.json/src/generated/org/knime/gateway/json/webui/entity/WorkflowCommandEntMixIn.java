@@ -83,6 +83,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformation
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
@@ -114,6 +115,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAutoDisconnectCommandEnt.class, name = "auto_disconnect")
 ,
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
+,
+  @Type(value = DefaultAddComponentCommandEnt.class, name = "add_component")
 ,
   @Type(value = DefaultReplaceNodeCommandEnt.class, name = "replace_node")
 ,
@@ -196,6 +199,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAutoDisconnectCommandEnt.class, name = "auto_disconnect")
 ,
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
+,
+  @Type(value = DefaultAddComponentCommandEnt.class, name = "add_component")
 ,
   @Type(value = DefaultReplaceNodeCommandEnt.class, name = "replace_node")
 ,

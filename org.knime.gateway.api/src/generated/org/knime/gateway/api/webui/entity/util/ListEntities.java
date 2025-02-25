@@ -46,6 +46,7 @@ package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
+import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
@@ -213,6 +214,7 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEnt.class);
         res.add(AddBendpointCommandEnt.class);
+        res.add(AddComponentCommandEnt.class);
         res.add(AddNodeCommandEnt.class);
         res.add(AddNodeResultEnt.class);
         res.add(AddPortCommandEnt.class);
@@ -365,6 +367,7 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEnt.AddAnnotationResultEntBuilder.class);
         res.add(AddBendpointCommandEnt.AddBendpointCommandEntBuilder.class);
+        res.add(AddComponentCommandEnt.AddComponentCommandEntBuilder.class);
         res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
         res.add(AddNodeResultEnt.AddNodeResultEntBuilder.class);
         res.add(AddPortCommandEnt.AddPortCommandEntBuilder.class);
