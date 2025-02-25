@@ -288,7 +288,7 @@ public interface Space {
     Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId, final VersionId version);
 
     /**
-     * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId) 
+     * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
      */
     default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
         return toLocalAbsolutePath(monitor, itemId, VersionId.currentState());
@@ -322,7 +322,7 @@ public interface Space {
 
     /**
      * @param itemId
-     * @return A browser-viewable URI corresponding to the item
+     * @return A browser-viewable URL corresponding to the item
      * @throws ResourceAccessException
      */
     default Optional<URI> getItemUrl(final String itemId) throws ResourceAccessException  {
@@ -331,10 +331,10 @@ public interface Space {
 
     /**
      * @param itemId
-     * @return A browser-viewable URI corresponding to the API definition of the item
+     * @return A browser-viewable URL corresponding to the API definition of the item
      * @throws ResourceAccessException
      */
-    default Optional<URI> getAPIDefinitionURI(final String itemId) throws ResourceAccessException {
+    default Optional<URI> getAPIDefinitionUrl(final String itemId) throws ResourceAccessException {
         return Optional.empty();
     }
 
