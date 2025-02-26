@@ -46,6 +46,8 @@ package org.knime.gateway.json.webui.entity.util;
 
 import org.knime.gateway.json.webui.entity.AddAnnotationResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddBendpointCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.AddComponentCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.AddComponentResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.AddNodeResultEntMixIn;
 import org.knime.gateway.json.webui.entity.AddPortCommandEntMixIn;
@@ -135,6 +137,7 @@ import org.knime.gateway.json.webui.entity.PortTypeEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewDescriptorEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewDescriptorMappingEntMixIn;
 import org.knime.gateway.json.webui.entity.PortViewsEntMixIn;
+import org.knime.gateway.json.webui.entity.ProblemMessageEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectDirtyStateEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectDisposedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.ProjectDisposedEventTypeEntMixIn;
@@ -212,6 +215,8 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEntMixIn.class);
         res.add(AddBendpointCommandEntMixIn.class);
+        res.add(AddComponentCommandEntMixIn.class);
+        res.add(AddComponentResultEntMixIn.class);
         res.add(AddNodeCommandEntMixIn.class);
         res.add(AddNodeResultEntMixIn.class);
         res.add(AddPortCommandEntMixIn.class);
@@ -301,6 +306,7 @@ public class ListEntities {
         res.add(PortViewDescriptorEntMixIn.class);
         res.add(PortViewDescriptorMappingEntMixIn.class);
         res.add(PortViewsEntMixIn.class);
+        res.add(ProblemMessageEntMixIn.class);
         res.add(ProjectDirtyStateEventEntMixIn.class);
         res.add(ProjectDisposedEventEntMixIn.class);
         res.add(ProjectDisposedEventTypeEntMixIn.class);
@@ -364,6 +370,8 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEntMixIn.AddAnnotationResultEntMixInBuilder.class);
         res.add(AddBendpointCommandEntMixIn.AddBendpointCommandEntMixInBuilder.class);
+        res.add(AddComponentCommandEntMixIn.AddComponentCommandEntMixInBuilder.class);
+        res.add(AddComponentResultEntMixIn.AddComponentResultEntMixInBuilder.class);
         res.add(AddNodeCommandEntMixIn.AddNodeCommandEntMixInBuilder.class);
         res.add(AddNodeResultEntMixIn.AddNodeResultEntMixInBuilder.class);
         res.add(AddPortCommandEntMixIn.AddPortCommandEntMixInBuilder.class);
@@ -453,6 +461,7 @@ public class ListEntities {
         res.add(PortViewDescriptorEntMixIn.PortViewDescriptorEntMixInBuilder.class);
         res.add(PortViewDescriptorMappingEntMixIn.PortViewDescriptorMappingEntMixInBuilder.class);
         res.add(PortViewsEntMixIn.PortViewsEntMixInBuilder.class);
+        res.add(ProblemMessageEntMixIn.ProblemMessageEntMixInBuilder.class);
         res.add(ProjectDirtyStateEventEntMixIn.ProjectDirtyStateEventEntMixInBuilder.class);
         res.add(ProjectDisposedEventEntMixIn.ProjectDisposedEventEntMixInBuilder.class);
         res.add(ProjectDisposedEventTypeEntMixIn.ProjectDisposedEventTypeEntMixInBuilder.class);

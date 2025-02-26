@@ -58,6 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
+import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
@@ -194,6 +195,8 @@ public final class WorkflowCommands {
             command = new AutoDisconnect(ce);
         } else if (commandEnt instanceof AddNodeCommandEnt ce) {
             command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
+        } else if (commandEnt instanceof AddComponentCommandEnt ce) {
+            command = new AddComponent(ce, spaceProviders);
         } else if (commandEnt instanceof ReplaceNodeCommandEnt ce) {
             command = new ReplaceNode(ce);
         } else if (commandEnt instanceof InsertNodeCommandEnt ce) {

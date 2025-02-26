@@ -46,6 +46,8 @@ package org.knime.gateway.api.webui.entity.util;
 
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
+import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
+import org.knime.gateway.api.webui.entity.AddComponentResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
@@ -135,6 +137,7 @@ import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.PortViewDescriptorEnt;
 import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt;
 import org.knime.gateway.api.webui.entity.PortViewsEnt;
+import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
@@ -213,6 +216,8 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEnt.class);
         res.add(AddBendpointCommandEnt.class);
+        res.add(AddComponentCommandEnt.class);
+        res.add(AddComponentResultEnt.class);
         res.add(AddNodeCommandEnt.class);
         res.add(AddNodeResultEnt.class);
         res.add(AddPortCommandEnt.class);
@@ -302,6 +307,7 @@ public class ListEntities {
         res.add(PortViewDescriptorEnt.class);
         res.add(PortViewDescriptorMappingEnt.class);
         res.add(PortViewsEnt.class);
+        res.add(ProblemMessageEnt.class);
         res.add(ProjectDirtyStateEventEnt.class);
         res.add(ProjectDisposedEventEnt.class);
         res.add(ProjectDisposedEventTypeEnt.class);
@@ -365,6 +371,8 @@ public class ListEntities {
         List<Class<?>> res = new ArrayList<>();
         res.add(AddAnnotationResultEnt.AddAnnotationResultEntBuilder.class);
         res.add(AddBendpointCommandEnt.AddBendpointCommandEntBuilder.class);
+        res.add(AddComponentCommandEnt.AddComponentCommandEntBuilder.class);
+        res.add(AddComponentResultEnt.AddComponentResultEntBuilder.class);
         res.add(AddNodeCommandEnt.AddNodeCommandEntBuilder.class);
         res.add(AddNodeResultEnt.AddNodeResultEntBuilder.class);
         res.add(AddPortCommandEnt.AddPortCommandEntBuilder.class);
@@ -454,6 +462,7 @@ public class ListEntities {
         res.add(PortViewDescriptorEnt.PortViewDescriptorEntBuilder.class);
         res.add(PortViewDescriptorMappingEnt.PortViewDescriptorMappingEntBuilder.class);
         res.add(PortViewsEnt.PortViewsEntBuilder.class);
+        res.add(ProblemMessageEnt.ProblemMessageEntBuilder.class);
         res.add(ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder.class);
         res.add(ProjectDisposedEventEnt.ProjectDisposedEventEntBuilder.class);
         res.add(ProjectDisposedEventTypeEnt.ProjectDisposedEventTypeEntBuilder.class);

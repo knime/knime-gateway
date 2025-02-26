@@ -44,66 +44,28 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
+import org.knime.gateway.api.webui.entity.AddComponentResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt.DefaultAddComponentResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapse_result")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expand_result")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convert_container_result")
-,
-  @Type(value = DefaultCopyResultEnt.class, name = "copy_result")
-,
-  @Type(value = DefaultPasteResultEnt.class, name = "paste_result")
-,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "add_node_result")
-,
-  @Type(value = DefaultAddPortResultEnt.class, name = "add_port_result")
-,
-  @Type(value = DefaultAddAnnotationResultEnt.class, name = "add_annotation_result")
-,
-  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
-})
-@JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
-@JsonSerialize(as=CommandResultEnt.class)
+
+@JsonDeserialize(builder=DefaultAddComponentResultEntBuilder.class)
+@JsonSerialize(as=AddComponentResultEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface CommandResultEntMixIn extends CommandResultEnt {
+public interface AddComponentResultEntMixIn extends AddComponentResultEnt {
 
     @Override
     @JsonIgnore
@@ -117,52 +79,42 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
     @JsonProperty("kind")
     public KindEnum getKind();
     
+    @Override
+    @JsonProperty("newNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
+    
+    @Override
+    @JsonProperty("problem")
+    public ProblemMessageEnt getProblem();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
      * @author Martin Horn, University of Konstanz
      */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "kind",
-    visible = true,
-    defaultImpl = DefaultCommandResultEnt.class)
-@JsonSubTypes({
-    @Type(value = DefaultCommandResultEnt.class, name="CommandResult")
-,
-  @Type(value = DefaultCollapseResultEnt.class, name = "collapse_result")
-,
-  @Type(value = DefaultExpandResultEnt.class, name = "expand_result")
-,
-  @Type(value = DefaultConvertContainerResultEnt.class, name = "convert_container_result")
-,
-  @Type(value = DefaultCopyResultEnt.class, name = "copy_result")
-,
-  @Type(value = DefaultPasteResultEnt.class, name = "paste_result")
-,
-  @Type(value = DefaultAddNodeResultEnt.class, name = "add_node_result")
-,
-  @Type(value = DefaultAddPortResultEnt.class, name = "add_port_result")
-,
-  @Type(value = DefaultAddAnnotationResultEnt.class, name = "add_annotation_result")
-,
-  @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
-})
+
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {
+    public static interface AddComponentResultEntMixInBuilder extends AddComponentResultEntBuilder {
     
         @Override
-        public CommandResultEntMixIn build();
+        public AddComponentResultEntMixIn build();
     
         @Override
         @JsonProperty("snapshotId")
-        public CommandResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        public AddComponentResultEntMixInBuilder setSnapshotId(final String snapshotId);
         
         @Override
         @JsonProperty("kind")
-        public CommandResultEntMixInBuilder setKind(final KindEnum kind);
+        public AddComponentResultEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("newNodeId")
+        public AddComponentResultEntMixInBuilder setNewNodeId(final org.knime.gateway.api.entity.NodeIDEnt newNodeId);
+        
+        @Override
+        @JsonProperty("problem")
+        public AddComponentResultEntMixInBuilder setProblem(final ProblemMessageEnt problem);
         
     }
 
