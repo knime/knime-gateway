@@ -45,11 +45,9 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -126,16 +124,10 @@ public interface WorkflowEnt extends GatewayEntity {
   public AllowedWorkflowActionsEnt getAllowedActions();
 
   /**
-   * Get componentMetadata
-   * @return componentMetadata 
+   * Get metadata
+   * @return metadata , never <code>null</code>
    **/
-  public ComponentNodeDescriptionEnt getComponentMetadata();
-
-  /**
-   * Get projectMetadata
-   * @return projectMetadata 
-   **/
-  public ProjectMetadataEnt getProjectMetadata();
+  public EditableMetadataEnt getMetadata();
 
   /**
    * Flag indicating whether the workflow is in a dirty state, i.e. contains unsaved changes.
@@ -157,8 +149,7 @@ public interface WorkflowEnt extends GatewayEntity {
       valueConsumer.accept("metaInPorts", Pair.create(getMetaInPorts(), e.getMetaInPorts()));
       valueConsumer.accept("metaOutPorts", Pair.create(getMetaOutPorts(), e.getMetaOutPorts()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
-      valueConsumer.accept("componentMetadata", Pair.create(getComponentMetadata(), e.getComponentMetadata()));
-      valueConsumer.accept("projectMetadata", Pair.create(getProjectMetadata(), e.getProjectMetadata()));
+      valueConsumer.accept("metadata", Pair.create(getMetadata(), e.getMetadata()));
       valueConsumer.accept("dirty", Pair.create(isDirty(), e.isDirty()));
   }
 
@@ -240,20 +231,12 @@ public interface WorkflowEnt extends GatewayEntity {
         WorkflowEntBuilder setAllowedActions(AllowedWorkflowActionsEnt allowedActions);
         
         /**
-   		 * Set componentMetadata
+   		 * Set metadata
          * 
-         * @param componentMetadata the property value,  
+         * @param metadata the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        WorkflowEntBuilder setComponentMetadata(ComponentNodeDescriptionEnt componentMetadata);
-        
-        /**
-   		 * Set projectMetadata
-         * 
-         * @param projectMetadata the property value,  
-         * @return this entity builder for chaining
-         */
-        WorkflowEntBuilder setProjectMetadata(ProjectMetadataEnt projectMetadata);
+        WorkflowEntBuilder setMetadata(EditableMetadataEnt metadata);
         
         /**
          * Flag indicating whether the workflow is in a dirty state, i.e. contains unsaved changes.

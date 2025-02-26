@@ -109,7 +109,6 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
-import org.knime.gateway.api.util.Either;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
@@ -132,6 +131,8 @@ import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt.ConnectionEntBuilder;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt.MetadataTypeEnum;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
@@ -352,18 +353,15 @@ public final class WorkflowEntityFactory {
         //
     }
 
-    private Either<ProjectMetadataEnt, ComponentNodeDescriptionEnt> getMetadata(final WorkflowManager wfm) {
-        //noinspection unchecked
-        return (Either<ProjectMetadataEnt, ComponentNodeDescriptionEnt>)
-                CoreUtil.nonMetanodeSelfOrParent(wfm).map(providingWfm -> {
-            if (providingWfm.isProject()) {
-                return Either.left(buildProjectMetadataEnt(providingWfm));
-            }
-            if (CoreUtil.isComponentWFM(providingWfm)) {
-                return Either.right(buildComponentNodeDescriptionEnt(getParentComponent(providingWfm)));
-            }
-            return null;
-        }).orElse(Either.empty());
+    private EditableMetadataEnt getMetadata(final WorkflowManager wfm) {
+        var providingWfm = CoreUtil.getNonMetanodeSelfOrParent(wfm);
+        if (providingWfm.isProject()) {
+            return buildProjectMetadataEnt(providingWfm);
+        }
+        if (CoreUtil.isComponentWFM(providingWfm)) {
+            return buildComponentNodeDescriptionEnt(getParentComponent(providingWfm));
+        }
+        return null;
     }
 
     /**
@@ -404,8 +402,7 @@ public final class WorkflowEntityFactory {
                 .setParents(buildParentWorkflowInfoEnts(wfm, buildContext))//
                 .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
-                .setProjectMetadata(metadata.get(ProjectMetadataEnt.class).orElse(null))//
-                .setComponentMetadata(metadata.get(ComponentNodeDescriptionEnt.class).orElse(null))//
+                .setMetadata(metadata)//
                 .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).build();
         }
     }
@@ -547,6 +544,7 @@ public final class WorkflowEntityFactory {
             .setViews(buildComponentViewDescriptionEnts(snc))//
             .setInPorts(buildComponentInNodePortDescriptionEnts(metadata, snc))//
             .setOutPorts(buildComponentOutNodePortDescriptionEnts(metadata, snc))//
+            .setMetadataType(MetadataTypeEnum.COMPONENT)//
             .build();
     }
 
@@ -1132,6 +1130,7 @@ public final class WorkflowEntityFactory {
             .setLinks(links)//
             .setTags(metadata.getTags())//
             .setLastEdit(metadata.getLastModified().toOffsetDateTime())//
+            .setMetadataType(MetadataTypeEnum.PROJECT)//
             .build();
     }
 

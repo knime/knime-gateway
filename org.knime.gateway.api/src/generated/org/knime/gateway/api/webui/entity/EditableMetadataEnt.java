@@ -62,7 +62,28 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface EditableProjectMetadataEnt extends GatewayEntity {
+public interface EditableMetadataEnt extends GatewayEntity {
+
+  /**
+   * Descriminator for different types of metadata.
+   */
+  public enum MetadataTypeEnum {
+    PROJECT("project"),
+    
+    COMPONENT("component");
+
+    private String value;
+
+    MetadataTypeEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
@@ -70,6 +91,12 @@ public interface EditableProjectMetadataEnt extends GatewayEntity {
    * @return description 
    **/
   public TypedTextEnt getDescription();
+
+  /**
+   * Descriminator for different types of metadata.
+   * @return metadataType , never <code>null</code>
+   **/
+  public MetadataTypeEnum getMetadataType();
 
   /**
    * A collection of tags the user chose to describe the workflow
@@ -87,8 +114,9 @@ public interface EditableProjectMetadataEnt extends GatewayEntity {
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (EditableProjectMetadataEnt)other;
+      var e = (EditableMetadataEnt)other;
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("metadataType", Pair.create(getMetadataType(), e.getMetadataType()));
       valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
       valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
   }
@@ -96,7 +124,7 @@ public interface EditableProjectMetadataEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface EditableProjectMetadataEntBuilder extends GatewayEntityBuilder<EditableProjectMetadataEnt> {
+    public interface EditableMetadataEntBuilder extends GatewayEntityBuilder<EditableMetadataEnt> {
 
         /**
    		 * Set description
@@ -104,7 +132,15 @@ public interface EditableProjectMetadataEnt extends GatewayEntity {
          * @param description the property value,  
          * @return this entity builder for chaining
          */
-        EditableProjectMetadataEntBuilder setDescription(TypedTextEnt description);
+        EditableMetadataEntBuilder setDescription(TypedTextEnt description);
+        
+        /**
+         * Descriminator for different types of metadata.
+         * 
+         * @param metadataType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        EditableMetadataEntBuilder setMetadataType(MetadataTypeEnum metadataType);
         
         /**
          * A collection of tags the user chose to describe the workflow
@@ -112,7 +148,7 @@ public interface EditableProjectMetadataEnt extends GatewayEntity {
          * @param tags the property value,  
          * @return this entity builder for chaining
          */
-        EditableProjectMetadataEntBuilder setTags(java.util.List<String> tags);
+        EditableMetadataEntBuilder setTags(java.util.List<String> tags);
         
         /**
          * A collection of URLs attached to the workflow
@@ -120,7 +156,7 @@ public interface EditableProjectMetadataEnt extends GatewayEntity {
          * @param links the property value,  
          * @return this entity builder for chaining
          */
-        EditableProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);
+        EditableMetadataEntBuilder setLinks(java.util.List<LinkEnt> links);
         
         
         /**
@@ -130,7 +166,7 @@ public interface EditableProjectMetadataEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        EditableProjectMetadataEnt build();
+        EditableMetadataEnt build();
     
     }
 

@@ -47,7 +47,7 @@ package org.knime.gateway.json.webui.entity;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.EditableMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
@@ -81,6 +81,10 @@ public interface UpdateComponentMetadataCommandEntMixIn extends UpdateComponentM
     @Override
     @JsonProperty("description")
     public TypedTextEnt getDescription();
+    
+    @Override
+    @JsonProperty("metadataType")
+    public MetadataTypeEnum getMetadataType();
     
     @Override
     @JsonProperty("tags")
@@ -126,6 +130,10 @@ public interface UpdateComponentMetadataCommandEntMixIn extends UpdateComponentM
         @Override
         @JsonProperty("description")
         public UpdateComponentMetadataCommandEntMixInBuilder setDescription(final TypedTextEnt description);
+        
+        @Override
+        @JsonProperty("metadataType")
+        public UpdateComponentMetadataCommandEntMixInBuilder setMetadataType(final MetadataTypeEnum metadataType);
         
         @Override
         @JsonProperty("tags")

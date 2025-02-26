@@ -50,7 +50,7 @@ import org.knime.core.node.workflow.NodeContainerMetadata;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -90,7 +90,7 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
     /**
      * Build a command entity from the given metadata. Such an entity can be thought of as a "view" on the editable
      * properties of the metadata.
-     * 
+     *
      * @param metadata The source metadata
      * @return An entity containing the corresponding values of the given metadata
      * @apiNote This is <i>not</i> an inverse to {@link this#toMetadata(WorkflowCommandEnt)}
@@ -127,15 +127,14 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
 
     /**
      * Set some metadata fields of a given builder instance based on the values in a given metadata instance.
-     * 
+     *
      * @param metadataOptionals The builder instance to set fields on
      * @param editableMetadata The source metadata
      * @return The modified builder
      * @param <O> The value type of the builder
      */
     public <O> NodeContainerMetadata.MetadataOptionals<O> setProjectMetadata(
-        final NodeContainerMetadata.NeedsContentType<O> metadataOptionals,
-        final EditableProjectMetadataEnt editableMetadata) {
+        final NodeContainerMetadata.NeedsContentType<O> metadataOptionals, final EditableMetadataEnt editableMetadata) {
         var metadataBuilder = metadataOptionals
             // explicitly or implicitly modifiable properties
             .withContentType(CoreUtil.ContentTypeConverter
@@ -156,17 +155,17 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
     /**
      * Metanode workflows supply and display the metadata of their parent. This is also the place where edits have to
      * take place.
-     * 
+     *
      * @return
      */
     protected WorkflowManager getWorkflowManagerToModify() {
-        return CoreUtil.nonMetanodeSelfOrParent(getWorkflowManager()).orElseThrow();
+        return CoreUtil.getNonMetanodeSelfOrParent(getWorkflowManager());
     }
 
     /**
      * The current workflow might not even be notified (but instead a parent, see callers). For the workflow state
      * caches and the frontend to become aware of this change, we need to trigger an update explicitly.
-     * 
+     *
      * @param newMetadata the new value
      */
     protected void setDirtyAndNotifyWorkflowListener(final NodeContainerMetadata newMetadata) {

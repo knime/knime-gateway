@@ -49,7 +49,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
  *
  * @param kind
  * @param description
+ * @param metadataType
  * @param tags
  * @param links
  * @param inPorts
@@ -72,6 +73,7 @@ import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 public record DefaultUpdateComponentMetadataCommandEnt(
     KindEnum kind,
     TypedTextEnt description,
+    MetadataTypeEnum metadataType,
     java.util.List<String> tags,
     java.util.List<LinkEnt> links,
     java.util.List<ComponentPortDescriptionEnt> inPorts,
@@ -85,6 +87,9 @@ public record DefaultUpdateComponentMetadataCommandEnt(
     public DefaultUpdateComponentMetadataCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(metadataType == null) {
+            throw new IllegalArgumentException("<metadataType> must not be null.");
         }
         if(inPorts == null) {
             throw new IllegalArgumentException("<inPorts> must not be null.");
@@ -107,6 +112,11 @@ public record DefaultUpdateComponentMetadataCommandEnt(
     @Override
     public TypedTextEnt getDescription() {
         return description;
+    }
+    
+    @Override
+    public MetadataTypeEnum getMetadataType() {
+        return metadataType;
     }
     
     @Override
@@ -148,6 +158,8 @@ public record DefaultUpdateComponentMetadataCommandEnt(
 
         private TypedTextEnt m_description;
 
+        private MetadataTypeEnum m_metadataType;
+
         private java.util.List<String> m_tags;
 
         private java.util.List<LinkEnt> m_links;
@@ -172,6 +184,15 @@ public record DefaultUpdateComponentMetadataCommandEnt(
         @Override
         public DefaultUpdateComponentMetadataCommandEntBuilder setDescription(TypedTextEnt description) {
              m_description = description;
+             return this;
+        }
+
+        @Override
+        public DefaultUpdateComponentMetadataCommandEntBuilder setMetadataType(MetadataTypeEnum metadataType) {
+             if(metadataType == null) {
+                 throw new IllegalArgumentException("<metadataType> must not be null.");
+             }
+             m_metadataType = metadataType;
              return this;
         }
 
@@ -222,6 +243,7 @@ public record DefaultUpdateComponentMetadataCommandEnt(
             return new DefaultUpdateComponentMetadataCommandEnt(
                 immutable(m_kind),
                 immutable(m_description),
+                immutable(m_metadataType),
                 immutable(m_tags),
                 immutable(m_links),
                 immutable(m_inPorts),

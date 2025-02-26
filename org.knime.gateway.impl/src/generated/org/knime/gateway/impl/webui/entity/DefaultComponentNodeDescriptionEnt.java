@@ -46,15 +46,14 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import java.time.OffsetDateTime;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndDescriptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeDescriptionEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 
@@ -69,9 +68,9 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
  * @param inPorts
  * @param outPorts
  * @param description
+ * @param metadataType
  * @param tags
  * @param links
- * @param lastEdit
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -85,9 +84,9 @@ public record DefaultComponentNodeDescriptionEnt(
     java.util.List<NodePortDescriptionEnt> inPorts,
     java.util.List<NodePortDescriptionEnt> outPorts,
     TypedTextEnt description,
+    MetadataTypeEnum metadataType,
     java.util.List<String> tags,
-    java.util.List<LinkEnt> links,
-    OffsetDateTime lastEdit) implements ComponentNodeDescriptionEnt {
+    java.util.List<LinkEnt> links) implements ComponentNodeDescriptionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -95,6 +94,9 @@ public record DefaultComponentNodeDescriptionEnt(
     public DefaultComponentNodeDescriptionEnt {
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
+        }
+        if(metadataType == null) {
+            throw new IllegalArgumentException("<metadataType> must not be null.");
         }
     }
 
@@ -144,6 +146,11 @@ public record DefaultComponentNodeDescriptionEnt(
     }
     
     @Override
+    public MetadataTypeEnum getMetadataType() {
+        return metadataType;
+    }
+    
+    @Override
     public java.util.List<String> getTags() {
         return tags;
     }
@@ -151,11 +158,6 @@ public record DefaultComponentNodeDescriptionEnt(
     @Override
     public java.util.List<LinkEnt> getLinks() {
         return links;
-    }
-    
-    @Override
-    public OffsetDateTime getLastEdit() {
-        return lastEdit;
     }
     
     /**
@@ -179,11 +181,11 @@ public record DefaultComponentNodeDescriptionEnt(
 
         private TypedTextEnt m_description;
 
+        private MetadataTypeEnum m_metadataType;
+
         private java.util.List<String> m_tags;
 
         private java.util.List<LinkEnt> m_links;
-
-        private OffsetDateTime m_lastEdit;
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setName(String name) {
@@ -237,6 +239,15 @@ public record DefaultComponentNodeDescriptionEnt(
         }
 
         @Override
+        public DefaultComponentNodeDescriptionEntBuilder setMetadataType(MetadataTypeEnum metadataType) {
+             if(metadataType == null) {
+                 throw new IllegalArgumentException("<metadataType> must not be null.");
+             }
+             m_metadataType = metadataType;
+             return this;
+        }
+
+        @Override
         public DefaultComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags) {
              m_tags = tags;
              return this;
@@ -245,12 +256,6 @@ public record DefaultComponentNodeDescriptionEnt(
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links) {
              m_links = links;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeDescriptionEntBuilder setLastEdit(OffsetDateTime lastEdit) {
-             m_lastEdit = lastEdit;
              return this;
         }
 
@@ -265,9 +270,9 @@ public record DefaultComponentNodeDescriptionEnt(
                 immutable(m_inPorts),
                 immutable(m_outPorts),
                 immutable(m_description),
+                immutable(m_metadataType),
                 immutable(m_tags),
-                immutable(m_links),
-                immutable(m_lastEdit));
+                immutable(m_links));
         }
     
     }

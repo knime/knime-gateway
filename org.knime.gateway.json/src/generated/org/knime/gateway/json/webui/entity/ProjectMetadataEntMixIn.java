@@ -47,7 +47,7 @@ package org.knime.gateway.json.webui.entity;
 import java.time.OffsetDateTime;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.EditableMetadataEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -78,6 +78,10 @@ public interface ProjectMetadataEntMixIn extends ProjectMetadataEnt {
     public TypedTextEnt getDescription();
     
     @Override
+    @JsonProperty("metadataType")
+    public MetadataTypeEnum getMetadataType();
+    
+    @Override
     @JsonProperty("tags")
     public java.util.List<String> getTags();
     
@@ -105,6 +109,10 @@ public interface ProjectMetadataEntMixIn extends ProjectMetadataEnt {
         @Override
         @JsonProperty("description")
         public ProjectMetadataEntMixInBuilder setDescription(final TypedTextEnt description);
+        
+        @Override
+        @JsonProperty("metadataType")
+        public ProjectMetadataEntMixInBuilder setMetadataType(final MetadataTypeEnum metadataType);
         
         @Override
         @JsonProperty("tags")

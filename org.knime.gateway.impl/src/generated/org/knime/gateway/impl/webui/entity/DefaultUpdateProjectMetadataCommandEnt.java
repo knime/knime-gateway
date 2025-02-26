@@ -48,7 +48,7 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
  *
  * @param kind
  * @param description
+ * @param metadataType
  * @param tags
  * @param links
  *
@@ -67,6 +68,7 @@ import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 public record DefaultUpdateProjectMetadataCommandEnt(
     KindEnum kind,
     TypedTextEnt description,
+    MetadataTypeEnum metadataType,
     java.util.List<String> tags,
     java.util.List<LinkEnt> links) implements UpdateProjectMetadataCommandEnt {
 
@@ -76,6 +78,9 @@ public record DefaultUpdateProjectMetadataCommandEnt(
     public DefaultUpdateProjectMetadataCommandEnt {
         if(kind == null) {
             throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(metadataType == null) {
+            throw new IllegalArgumentException("<metadataType> must not be null.");
         }
     }
 
@@ -92,6 +97,11 @@ public record DefaultUpdateProjectMetadataCommandEnt(
     @Override
     public TypedTextEnt getDescription() {
         return description;
+    }
+    
+    @Override
+    public MetadataTypeEnum getMetadataType() {
+        return metadataType;
     }
     
     @Override
@@ -113,6 +123,8 @@ public record DefaultUpdateProjectMetadataCommandEnt(
 
         private TypedTextEnt m_description;
 
+        private MetadataTypeEnum m_metadataType;
+
         private java.util.List<String> m_tags;
 
         private java.util.List<LinkEnt> m_links;
@@ -133,6 +145,15 @@ public record DefaultUpdateProjectMetadataCommandEnt(
         }
 
         @Override
+        public DefaultUpdateProjectMetadataCommandEntBuilder setMetadataType(MetadataTypeEnum metadataType) {
+             if(metadataType == null) {
+                 throw new IllegalArgumentException("<metadataType> must not be null.");
+             }
+             m_metadataType = metadataType;
+             return this;
+        }
+
+        @Override
         public DefaultUpdateProjectMetadataCommandEntBuilder setTags(java.util.List<String> tags) {
              m_tags = tags;
              return this;
@@ -149,6 +170,7 @@ public record DefaultUpdateProjectMetadataCommandEnt(
             return new DefaultUpdateProjectMetadataCommandEnt(
                 immutable(m_kind),
                 immutable(m_description),
+                immutable(m_metadataType),
                 immutable(m_tags),
                 immutable(m_links));
         }
