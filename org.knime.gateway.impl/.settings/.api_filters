@@ -84,6 +84,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultExampleProjectEnt">
         <filter id="305324134">
             <message_arguments>
@@ -258,6 +266,11 @@
                 <message_argument value="removeProject(String)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="updateOpenProjectsOrder(List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowServiceProjects.java" type="org.knime.gateway.impl.project.WorkflowServiceProjects">
         <filter id="338792546">
@@ -310,6 +323,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="getWorkflowManager(String, VersionId, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/WorkflowChangesListener.java" type="org.knime.gateway.impl.service.util.WorkflowChangesListener">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="notifyWorkflowListener(WorkflowEvent)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -538,6 +558,67 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProvidersManager, UpdateStateProvider, PreferencesProvider, NodeFactoryProvider, KaiHandler, NodeCollections, NodeRepository, NodeCategoryExtensions, SelectionEventBus)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/AbstractUpdateWorkflowMetadata.java" type="org.knime.gateway.impl.webui.service.commands.AbstractUpdateWorkflowMetadata">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.AbstractUpdateWorkflowMetadata"/>
+                <message_argument value="setProjectMetadata(NodeContainerMetadata.NeedsContentType&lt;O&gt;, EditableProjectMetadataEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getWorkflowManagerToModify()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setDirtyAndNotifyWorkflowListener(NodeContainerMetadata)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setProjectMetadata(NodeContainerMetadata.NeedsContentType&lt;O&gt;, EditableMetadataEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/UpdateComponentMetadata.java" type="org.knime.gateway.impl.webui.service.commands.UpdateComponentMetadata">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.UpdateComponentMetadata"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.UpdateComponentMetadata"/>
+                <message_argument value="UpdateComponentMetadata(UpdateComponentMetadataCommandEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="UpdateComponentMetadata(UpdateComponentMetadataCommandEnt, WorkflowMiddleware)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/UpdateProjectMetadata.java" type="org.knime.gateway.impl.webui.service.commands.UpdateProjectMetadata">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.UpdateProjectMetadata"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.UpdateProjectMetadata"/>
+                <message_argument value="UpdateProjectMetadata(UpdateProjectMetadataCommandEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="UpdateProjectMetadata(UpdateProjectMetadataCommandEnt, WorkflowMiddleware)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1189,14 +1270,56 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentNodeDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt">
+        <filter id="337682486">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt"/>
+                <message_argument value="org.knime.gateway.api.webui.entity.ProjectMetadataEnt,org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt"/>
+            </message_arguments>
+        </filter>
         <filter id="337768515">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt"/>
+                <message_argument value="DefaultComponentNodeDescriptionEnt(String, ComponentNodeAndDescriptionEnt.TypeEnum, String, List&lt;NodeDialogOptionGroupEnt&gt;, List&lt;NodeViewDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;, TypedTextEnt, List&lt;String&gt;, List&lt;LinkEnt&gt;, OffsetDateTime)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt"/>
+                <message_argument value="getLastEdit()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt"/>
+                <message_argument value="lastEdit()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultComponentNodeDescriptionEnt(String, ComponentNodeAndDescriptionEnt.TypeEnum, String, List&lt;NodeDialogOptionGroupEnt&gt;, List&lt;NodeViewDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;, TypedTextEnt, EditableMetadataEnt.MetadataTypeEnum, List&lt;String&gt;, List&lt;LinkEnt&gt;)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultComponentNodeDescriptionEnt(String, ComponentNodeAndDescriptionEnt.TypeEnum, String, String, List&lt;NodeDialogOptionGroupEnt&gt;, List&lt;NodeViewDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentNodeDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt$DefaultComponentNodeDescriptionEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt.DefaultComponentNodeDescriptionEntBuilder"/>
+                <message_argument value="setLastEdit(OffsetDateTime)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setMetadataType(EditableMetadataEnt.MetadataTypeEnum)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1317,6 +1440,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultDynamicPortGroupDescriptionEnt(String, String, String, List&lt;NodePortTemplateEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultEditableMetadataEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1777,14 +1907,38 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProjectMetadataEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt">
+        <filter id="337682486">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt"/>
+                <message_argument value="org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt"/>
+            </message_arguments>
+        </filter>
         <filter id="337768515">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt"/>
+                <message_argument value="DefaultProjectMetadataEnt(TypedTextEnt, List&lt;String&gt;, List&lt;LinkEnt&gt;, OffsetDateTime)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultProjectMetadataEnt(String, String, List&lt;String&gt;, List&lt;LinkEnt&gt;, OffsetDateTime)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultProjectMetadataEnt(TypedTextEnt, EditableMetadataEnt.MetadataTypeEnum, List&lt;String&gt;, List&lt;LinkEnt&gt;, OffsetDateTime)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProjectMetadataEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt$DefaultProjectMetadataEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setMetadataType(EditableMetadataEnt.MetadataTypeEnum)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1993,6 +2147,32 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUpdateComponentMetadataCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentMetadataCommandEnt">
+        <filter id="337682486">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentMetadataCommandEnt"/>
+                <message_argument value="org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentMetadataCommandEnt"/>
+                <message_argument value="DefaultUpdateComponentMetadataCommandEnt(WorkflowCommandEnt.KindEnum, TypedTextEnt, List&lt;String&gt;, List&lt;LinkEnt&gt;, List&lt;ComponentPortDescriptionEnt&gt;, List&lt;ComponentPortDescriptionEnt&gt;, String, UpdateComponentMetadataCommandEnt.TypeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultUpdateComponentMetadataCommandEnt(WorkflowCommandEnt.KindEnum, TypedTextEnt, EditableMetadataEnt.MetadataTypeEnum, List&lt;String&gt;, List&lt;LinkEnt&gt;, List&lt;ComponentPortDescriptionEnt&gt;, List&lt;ComponentPortDescriptionEnt&gt;, String, UpdateComponentMetadataCommandEnt.TypeEnum)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUpdateComponentMetadataCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentMetadataCommandEnt$DefaultUpdateComponentMetadataCommandEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setMetadataType(EditableMetadataEnt.MetadataTypeEnum)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUpdateComponentOrMetanodeNameCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentOrMetanodeNameCommandEnt">
         <filter id="337768515">
             <message_arguments>
@@ -2026,6 +2206,32 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultUpdateNodeLabelCommandEnt(WorkflowCommandEnt.KindEnum, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUpdateProjectMetadataCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt">
+        <filter id="337682486">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt"/>
+                <message_argument value="org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt"/>
+                <message_argument value="DefaultUpdateProjectMetadataCommandEnt(WorkflowCommandEnt.KindEnum, TypedTextEnt, List&lt;String&gt;, List&lt;LinkEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultUpdateProjectMetadataCommandEnt(WorkflowCommandEnt.KindEnum, TypedTextEnt, EditableMetadataEnt.MetadataTypeEnum, List&lt;String&gt;, List&lt;LinkEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUpdateProjectMetadataCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt$DefaultUpdateProjectMetadataCommandEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setMetadataType(EditableMetadataEnt.MetadataTypeEnum)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -2083,9 +2289,63 @@
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
+                <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, ComponentNodeDescriptionEnt, ProjectMetadataEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
+                <message_argument value="componentMetadata()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
+                <message_argument value="getComponentMetadata()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
+                <message_argument value="getProjectMetadata()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
+                <message_argument value="projectMetadata()"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, ComponentNodeDescriptionEnt, ProjectMetadataEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt$DefaultWorkflowEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder"/>
+                <message_argument value="setComponentMetadata(ComponentNodeDescriptionEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt.DefaultWorkflowEntBuilder"/>
+                <message_argument value="setProjectMetadata(ProjectMetadataEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setMetadata(EditableMetadataEnt)"/>
             </message_arguments>
         </filter>
     </resource>
