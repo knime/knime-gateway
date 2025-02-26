@@ -57,6 +57,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt;

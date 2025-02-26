@@ -370,7 +370,7 @@ public final class AppStateEntityFactory {
             var localSpace = (LocalSpace)spaceProviders.getSpace(origin.getProviderId(), origin.getSpaceId());
             return localSpace.getAncestorItemIds(origin.getItemId());
         } else {
-            return null;  // NOSONAR null return value is reasonable (want to sent entity property to null)
+            return null; // NOSONAR null return value is reasonable (want to sent entity property to null)
         }
     }
 
