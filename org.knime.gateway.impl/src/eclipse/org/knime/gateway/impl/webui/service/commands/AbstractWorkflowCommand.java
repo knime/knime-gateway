@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
@@ -72,8 +73,15 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
         throws OperationNotAllowedException, NodeNotFoundException, NotASubWorkflowException {
         m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
         m_wfKey = wfKey;
+        return executeWithLockAndContext();
+    }
+
+    private boolean executeWithLockAndContext() throws OperationNotAllowedException {
+        NodeContext.pushContext(m_wfm);
         try (WorkflowLock lock = m_wfm.lock()) {
             return executeWithLockedWorkflow();
+        } finally {
+            NodeContext.removeLastContext();
         }
     }
 
@@ -110,9 +118,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
     @Override
     public void redo() throws OperationNotAllowedException {
-        try (var lock = m_wfm.lock()) {
-            executeWithLockedWorkflow();
-        }
+        executeWithLockAndContext();
     }
 
     /**

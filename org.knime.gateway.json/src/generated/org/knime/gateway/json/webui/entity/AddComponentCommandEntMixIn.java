@@ -42,83 +42,90 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
-
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt.DefaultAddComponentCommandEntBuilder;
 
 /**
- * AddNodeResultEnt
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AddNodeResultEnt extends GatewayEntity, CommandResultEnt {
 
+@JsonDeserialize(builder=DefaultAddComponentCommandEntBuilder.class)
+@JsonSerialize(as=AddComponentCommandEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface AddComponentCommandEntMixIn extends AddComponentCommandEnt {
 
-  /**
-   * The id of the new node added.
-   * @return newNodeId 
-   **/
-  public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AddNodeResultEnt)other;
-      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("newNodeId", Pair.create(getNewNodeId(), e.getNewNodeId()));
-  }
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("providerId")
+    public String getProviderId();
+    
+    @Override
+    @JsonProperty("spaceId")
+    public String getSpaceId();
+    
+    @Override
+    @JsonProperty("itemId")
+    public String getItemId();
+    
+    @Override
+    @JsonProperty("position")
+    public XYEnt getPosition();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface AddNodeResultEntBuilder extends GatewayEntityBuilder<AddNodeResultEnt> {
 
-        /**
-         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-         * 
-         * @param snapshotId the property value,  
-         * @return this entity builder for chaining
-         */
-        AddNodeResultEntBuilder setSnapshotId(String snapshotId);
-        
-        /**
-   		 * Set kind
-         * 
-         * @param kind the property value,  
-         * @return this entity builder for chaining
-         */
-        AddNodeResultEntBuilder setKind(KindEnum kind);
-        
-        /**
-         * The id of the new node added.
-         * 
-         * @param newNodeId the property value,  
-         * @return this entity builder for chaining
-         */
-        AddNodeResultEntBuilder setNewNodeId(org.knime.gateway.api.entity.NodeIDEnt newNodeId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        AddNodeResultEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface AddComponentCommandEntMixInBuilder extends AddComponentCommandEntBuilder {
     
+        @Override
+        public AddComponentCommandEntMixIn build();
+    
+        @Override
+        @JsonProperty("kind")
+        public AddComponentCommandEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("providerId")
+        public AddComponentCommandEntMixInBuilder setProviderId(final String providerId);
+        
+        @Override
+        @JsonProperty("spaceId")
+        public AddComponentCommandEntMixInBuilder setSpaceId(final String spaceId);
+        
+        @Override
+        @JsonProperty("itemId")
+        public AddComponentCommandEntMixInBuilder setItemId(final String itemId);
+        
+        @Override
+        @JsonProperty("position")
+        public AddComponentCommandEntMixInBuilder setPosition(final XYEnt position);
+        
     }
 
+
 }
+

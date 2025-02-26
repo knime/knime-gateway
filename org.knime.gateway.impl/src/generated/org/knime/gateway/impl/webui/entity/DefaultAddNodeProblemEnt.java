@@ -46,86 +46,103 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
-import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
+import org.knime.gateway.api.webui.entity.AddNodeProblemEnt;
 
 /**
- * DefaultAddNodeResultEnt
+ * TODO
  *
- * @param snapshotId
- * @param kind
- * @param newNodeId
+ * @param type
+ * @param title
+ * @param message
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultAddNodeResultEnt(
-    String snapshotId,
-    KindEnum kind,
-    org.knime.gateway.api.entity.NodeIDEnt newNodeId) implements AddNodeResultEnt {
+public record DefaultAddNodeProblemEnt(
+    TypeEnum type,
+    String title,
+    String message) implements AddNodeProblemEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultAddNodeResultEnt {
+    public DefaultAddNodeProblemEnt {
+        if(type == null) {
+            throw new IllegalArgumentException("<type> must not be null.");
+        }
+        if(title == null) {
+            throw new IllegalArgumentException("<title> must not be null.");
+        }
+        if(message == null) {
+            throw new IllegalArgumentException("<message> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "AddNodeResult";
+        return "AddNodeProblem";
     }
   
     @Override
-    public String getSnapshotId() {
-        return snapshotId;
+    public TypeEnum getType() {
+        return type;
     }
     
     @Override
-    public KindEnum getKind() {
-        return kind;
+    public String getTitle() {
+        return title;
     }
     
     @Override
-    public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId() {
-        return newNodeId;
+    public String getMessage() {
+        return message;
     }
     
     /**
-     * A builder for {@link DefaultAddNodeResultEnt}.
+     * A builder for {@link DefaultAddNodeProblemEnt}.
      */
-    public static class DefaultAddNodeResultEntBuilder implements AddNodeResultEntBuilder {
+    public static class DefaultAddNodeProblemEntBuilder implements AddNodeProblemEntBuilder {
 
-        private String m_snapshotId;
+        private TypeEnum m_type;
 
-        private KindEnum m_kind;
+        private String m_title;
 
-        private org.knime.gateway.api.entity.NodeIDEnt m_newNodeId;
+        private String m_message;
 
         @Override
-        public DefaultAddNodeResultEntBuilder setSnapshotId(String snapshotId) {
-             m_snapshotId = snapshotId;
+        public DefaultAddNodeProblemEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("<type> must not be null.");
+             }
+             m_type = type;
              return this;
         }
 
         @Override
-        public DefaultAddNodeResultEntBuilder setKind(KindEnum kind) {
-             m_kind = kind;
+        public DefaultAddNodeProblemEntBuilder setTitle(String title) {
+             if(title == null) {
+                 throw new IllegalArgumentException("<title> must not be null.");
+             }
+             m_title = title;
              return this;
         }
 
         @Override
-        public DefaultAddNodeResultEntBuilder setNewNodeId(org.knime.gateway.api.entity.NodeIDEnt newNodeId) {
-             m_newNodeId = newNodeId;
+        public DefaultAddNodeProblemEntBuilder setMessage(String message) {
+             if(message == null) {
+                 throw new IllegalArgumentException("<message> must not be null.");
+             }
+             m_message = message;
              return this;
         }
 
         @Override
-        public DefaultAddNodeResultEnt build() {
-            return new DefaultAddNodeResultEnt(
-                immutable(m_snapshotId),
-                immutable(m_kind),
-                immutable(m_newNodeId));
+        public DefaultAddNodeProblemEnt build() {
+            return new DefaultAddNodeProblemEnt(
+                immutable(m_type),
+                immutable(m_title),
+                immutable(m_message));
         }
     
     }

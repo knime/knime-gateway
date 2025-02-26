@@ -42,83 +42,72 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
-
-import org.knime.gateway.api.webui.entity.CommandResultEnt;
-
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+package org.knime.gateway.json.webui.entity;
 
 
-import org.knime.gateway.api.entity.GatewayEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
+import org.knime.gateway.impl.webui.entity.DefaultProblemMessageEnt.DefaultProblemMessageEntBuilder;
 
 /**
- * AddNodeResultEnt
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AddNodeResultEnt extends GatewayEntity, CommandResultEnt {
 
+@JsonDeserialize(builder=DefaultProblemMessageEntBuilder.class)
+@JsonSerialize(as=ProblemMessageEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface ProblemMessageEntMixIn extends ProblemMessageEnt {
 
-  /**
-   * The id of the new node added.
-   * @return newNodeId 
-   **/
-  public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AddNodeResultEnt)other;
-      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("newNodeId", Pair.create(getNewNodeId(), e.getNewNodeId()));
-  }
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
+    
+    @Override
+    @JsonProperty("title")
+    public String getTitle();
+    
+    @Override
+    @JsonProperty("message")
+    public String getMessage();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface AddNodeResultEntBuilder extends GatewayEntityBuilder<AddNodeResultEnt> {
 
-        /**
-         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-         * 
-         * @param snapshotId the property value,  
-         * @return this entity builder for chaining
-         */
-        AddNodeResultEntBuilder setSnapshotId(String snapshotId);
-        
-        /**
-   		 * Set kind
-         * 
-         * @param kind the property value,  
-         * @return this entity builder for chaining
-         */
-        AddNodeResultEntBuilder setKind(KindEnum kind);
-        
-        /**
-         * The id of the new node added.
-         * 
-         * @param newNodeId the property value,  
-         * @return this entity builder for chaining
-         */
-        AddNodeResultEntBuilder setNewNodeId(org.knime.gateway.api.entity.NodeIDEnt newNodeId);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        AddNodeResultEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface ProblemMessageEntMixInBuilder extends ProblemMessageEntBuilder {
     
+        @Override
+        public ProblemMessageEntMixIn build();
+    
+        @Override
+        @JsonProperty("type")
+        public ProblemMessageEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("title")
+        public ProblemMessageEntMixInBuilder setTitle(final String title);
+        
+        @Override
+        @JsonProperty("message")
+        public ProblemMessageEntMixInBuilder setMessage(final String message);
+        
     }
 
+
 }
+
