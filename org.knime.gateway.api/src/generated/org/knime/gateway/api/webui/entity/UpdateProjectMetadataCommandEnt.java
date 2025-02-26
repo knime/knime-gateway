@@ -44,7 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
@@ -64,7 +64,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, WorkflowCommandEnt, EditableProjectMetadataEnt {
+public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, WorkflowCommandEnt, EditableMetadataEnt {
 
 
 
@@ -74,6 +74,7 @@ public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, Workflow
       var e = (UpdateProjectMetadataCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("metadataType", Pair.create(getMetadataType(), e.getMetadataType()));
       valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
       valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
   }
@@ -98,6 +99,14 @@ public interface UpdateProjectMetadataCommandEnt extends GatewayEntity, Workflow
          * @return this entity builder for chaining
          */
         UpdateProjectMetadataCommandEntBuilder setDescription(TypedTextEnt description);
+        
+        /**
+         * Descriminator for different types of metadata.
+         * 
+         * @param metadataType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        UpdateProjectMetadataCommandEntBuilder setMetadataType(MetadataTypeEnum metadataType);
         
         /**
          * A collection of tags the user chose to describe the workflow

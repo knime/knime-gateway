@@ -44,15 +44,14 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import java.time.OffsetDateTime;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt;
 import org.knime.gateway.api.webui.entity.NodePortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
+import org.knime.gateway.json.webui.entity.EditableMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeDescriptionEntMixIn;
-import org.knime.gateway.json.webui.entity.ProjectMetadataEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -111,16 +110,16 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
     public TypedTextEnt getDescription();
     
     @Override
+    @JsonProperty("metadataType")
+    public MetadataTypeEnum getMetadataType();
+    
+    @Override
     @JsonProperty("tags")
     public java.util.List<String> getTags();
     
     @Override
     @JsonProperty("links")
     public java.util.List<LinkEnt> getLinks();
-    
-    @Override
-    @JsonProperty("lastEdit")
-    public OffsetDateTime getLastEdit();
     
 
     /**
@@ -168,16 +167,16 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
         public ComponentNodeDescriptionEntMixInBuilder setDescription(final TypedTextEnt description);
         
         @Override
+        @JsonProperty("metadataType")
+        public ComponentNodeDescriptionEntMixInBuilder setMetadataType(final MetadataTypeEnum metadataType);
+        
+        @Override
         @JsonProperty("tags")
         public ComponentNodeDescriptionEntMixInBuilder setTags(final java.util.List<String> tags);
         
         @Override
         @JsonProperty("links")
         public ComponentNodeDescriptionEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
-        
-        @Override
-        @JsonProperty("lastEdit")
-        public ComponentNodeDescriptionEntMixInBuilder setLastEdit(final OffsetDateTime lastEdit);
         
     }
 

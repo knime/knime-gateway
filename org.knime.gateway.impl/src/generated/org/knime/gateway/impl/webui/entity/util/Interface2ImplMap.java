@@ -120,8 +120,8 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultDynamicPortGroupDescriptionEnt;
-import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt.EditableProjectMetadataEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt.EditableMetadataEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt;
 import org.knime.gateway.api.webui.entity.EventEnt.EventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.EventTypeEnt.EventTypeEntBuilder;
@@ -466,8 +466,8 @@ public class Interface2ImplMap {
         if(clazz == DynamicPortGroupDescriptionEntBuilder.class) {
             return (B)new DefaultDynamicPortGroupDescriptionEnt.DefaultDynamicPortGroupDescriptionEntBuilder();
         }        
-        if(clazz == EditableProjectMetadataEntBuilder.class) {
-            return (B)new DefaultEditableProjectMetadataEnt.DefaultEditableProjectMetadataEntBuilder();
+        if(clazz == EditableMetadataEntBuilder.class) {
+            return (B)new DefaultEditableMetadataEnt.DefaultEditableMetadataEntBuilder();
         }        
         if(clazz == EventEntBuilder.class) {
             return (B)new DefaultEventEnt.DefaultEventEntBuilder();

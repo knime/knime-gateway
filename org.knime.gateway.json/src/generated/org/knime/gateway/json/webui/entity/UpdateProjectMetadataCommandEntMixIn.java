@@ -46,7 +46,7 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.json.webui.entity.EditableProjectMetadataEntMixIn;
+import org.knime.gateway.json.webui.entity.EditableMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
@@ -82,6 +82,10 @@ public interface UpdateProjectMetadataCommandEntMixIn extends UpdateProjectMetad
     public TypedTextEnt getDescription();
     
     @Override
+    @JsonProperty("metadataType")
+    public MetadataTypeEnum getMetadataType();
+    
+    @Override
     @JsonProperty("tags")
     public java.util.List<String> getTags();
     
@@ -109,6 +113,10 @@ public interface UpdateProjectMetadataCommandEntMixIn extends UpdateProjectMetad
         @Override
         @JsonProperty("description")
         public UpdateProjectMetadataCommandEntMixInBuilder setDescription(final TypedTextEnt description);
+        
+        @Override
+        @JsonProperty("metadataType")
+        public UpdateProjectMetadataCommandEntMixInBuilder setMetadataType(final MetadataTypeEnum metadataType);
         
         @Override
         @JsonProperty("tags")

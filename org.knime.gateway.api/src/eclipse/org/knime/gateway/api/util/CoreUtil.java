@@ -450,7 +450,7 @@ public final class CoreUtil {
 
     /**
      * Obtain the loop context of the given node, if any.
-     * 
+     *
      * @param nnc The node container to get the loop context for.
      * @return An Optional containing the loop context if available, else an empty Optional.
      */
@@ -469,7 +469,7 @@ public final class CoreUtil {
     /**
      * Determine whether the given node has a *direct* predecessor that is currently waiting to be executed. Does not
      * check predecessors outside the current workflow (e.g. via connections coming into a metanode).
-     * 
+     *
      * @param id The id of the node to consider the predecessors of.
      * @param wfm the workflow manager containing the node
      * @return {@code true} iff the node has a direct predecessor that is currently waiting to be executed. If the node
@@ -482,7 +482,7 @@ public final class CoreUtil {
 
     /**
      * Obtain the direct predecessors of the given node.
-     * 
+     *
      * @param id The node to get the direct predecessors of.
      * @param wfm The containing workflow manager
      * @return The set of nodes that are linked to the given node through connections coming into the given node.
@@ -498,7 +498,7 @@ public final class CoreUtil {
 
     /**
      * Obtain the direct successors of the given node.
-     * 
+     *
      * @param id The node to get the direct successors of
      * @param wfm The containing workflow manager
      * @return The set of nodes that are linked to the given node through connections outgoing from the given node.
@@ -514,7 +514,7 @@ public final class CoreUtil {
 
     /**
      * Get the port type based on a port type ID
-     * 
+     *
      * @param ptypeId The ID of the port type to obtain
      * @return An Optional containing the Port Type, or an empty optional if the port type could not be determined.
      */
@@ -525,7 +525,7 @@ public final class CoreUtil {
 
     /**
      * Get the port type ID of a given port type object
-     * 
+     *
      * @param ptype The port type
      * @return The ID of the given port type
      */
@@ -555,7 +555,7 @@ public final class CoreUtil {
 
     /**
      * Find a workflow annotation with given id in the given workflow manager.
-     * 
+     *
      * @param id The workflow annotation to look for.
      * @param wfm The workflow manager to search in.
      * @return The workflow annotation object corresponding to the given ID, or an empty optional if not available.
@@ -751,23 +751,26 @@ public final class CoreUtil {
     /**
      * If {@code wfm} is not a metanode, return it. Otherwise, recurse parents until a non-metanode parent is
      * encountered.
+     *
      * @param wfm
-     * @return
+     * @return the workflow manager instance or an empty optiional if wfm is the project root
+     * @throws IllegalArgumentException if the given workflow manager is not part a (or part of a) project workflow
+     *             manager
      */
-    public static Optional<WorkflowManager> nonMetanodeSelfOrParent(final WorkflowManager wfm) {
+    public static WorkflowManager getNonMetanodeSelfOrParent(final WorkflowManager wfm) {
         if (wfm.getID().isRoot()) {
-            return Optional.empty();
+            throw new IllegalArgumentException("Not a (or part of a) project workflow manager");
         }
         if (isMetanodeWfm(wfm)) {
-            return nonMetanodeSelfOrParent(getWorkflowParent(wfm));
+            return getNonMetanodeSelfOrParent(getWorkflowParent(wfm));
         }
-        return Optional.of(wfm);
+        return wfm;
     }
 
     /**
      * The concrete kind of a container node. We assume a 1-to-1 mapping from a {@link ContainerType} to a subclass of
      * {@link NodeContainer} that implements the node's container behaviour.
-     * 
+     *
      * @see CoreUtil#getContainerType(NodeID, WorkflowManager)
      */
     @SuppressWarnings("javadoc")
@@ -925,7 +928,7 @@ public final class CoreUtil {
 
     /**
      * Check if the given workflow is in a dirty state or if it has a parent that is dirty
-     * 
+     *
      * @param wfm
      * @return True if its dirty or it has a parent that is dirty, false otherwise
      */
@@ -953,7 +956,7 @@ public final class CoreUtil {
 
     /**
      * Traverse nodes in a given workflow manager, potentially recursing into child workflows.
-     * 
+     *
      * @param wfm The workflow manager to start traversing in.
      * @param nodeVisitor Predicate return value determines whether to recurse into the node (if possible). Side effects
      *            may consume the currently visited node otherwise.

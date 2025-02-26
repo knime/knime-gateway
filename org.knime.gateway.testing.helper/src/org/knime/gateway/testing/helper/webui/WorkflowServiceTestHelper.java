@@ -362,18 +362,18 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // checks the metadata of the project workflow
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow();
-        cr(workflow.getProjectMetadata(), "projectmetadataent");
-        assertNull(workflow.getComponentMetadata());
+        cr(workflow.getMetadata(), "projectmetadataent");
+        assertNull(workflow.getMetadata());
 
         // checks the metadata of a component
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(4), Boolean.FALSE, null).getWorkflow();
-        cr(workflow.getComponentMetadata(), "componentmetadataent_4");
-        assertNull(workflow.getProjectMetadata());
+        cr(workflow.getMetadata(), "componentmetadataent_4");
+        assertNull(workflow.getMetadata());
 
         // makes sure that no metadata is returned for a metanode
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), Boolean.FALSE, null).getWorkflow();
-        assertNull(workflow.getProjectMetadata());
-        assertNull(workflow.getComponentMetadata());
+        assertNull(workflow.getMetadata());
+        assertNull(workflow.getMetadata());
     }
 
     public void testCollapseConfiguredToMetanode() throws Exception {
@@ -2406,8 +2406,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
         var componentId = getRootID().appendNodeID(4);
         // extract original properties to check against them later
-        var originalMetadata =
-            ws().getWorkflow(projectId, componentId, false, null).getWorkflow().getComponentMetadata();
+        var originalMetadata = (ComponentNodeDescriptionEnt)ws().getWorkflow(projectId, componentId, false, null)
+            .getWorkflow().getMetadata();
         // new properties to be sent with the command
         var newDescription = EntityUtil.toTypedTextEnt("<p>bla bla bla</p>", ContentTypeEnum.HTML);
         var newTags = List.of("foo", "bar");
@@ -2423,20 +2423,19 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             newInPorts, newOutPorts);
         // execute
         ws().executeWorkflowCommand(projectId, componentId, command);
-        var modifiedMetadata =
-            ws().getWorkflow(projectId, componentId, false, null).getWorkflow().getComponentMetadata();
+        var modifiedMetadata = (ComponentNodeDescriptionEnt)ws().getWorkflow(projectId, componentId, false, null)
+            .getWorkflow().getMetadata();
         // assert result
-        assertProjectMetadata(modifiedMetadata, newDescription, newTags, newLinks);
         assertComponentMetadata(modifiedMetadata, newIcon, newType, newInPorts, newOutPorts);
         // undo
         ws().undoWorkflowCommand(projectId, componentId);
-        var metadataUndo = ws().getWorkflow(projectId, componentId, false, null).getWorkflow().getComponentMetadata();
-        assertProjectMetadata(metadataUndo, originalMetadata);
+        var metadataUndo = (ComponentNodeDescriptionEnt)ws().getWorkflow(projectId, componentId, false, null)
+            .getWorkflow().getMetadata();
         assertComponentMetadata(metadataUndo, originalMetadata);
         // redo
         ws().redoWorkflowCommand(projectId, componentId);
-        var metadataRedo = ws().getWorkflow(projectId, componentId, false, null).getWorkflow().getComponentMetadata();
-        assertProjectMetadata(metadataRedo, newDescription, newTags, newLinks);
+        var metadataRedo = (ComponentNodeDescriptionEnt)ws().getWorkflow(projectId, componentId, false, null)
+            .getWorkflow().getMetadata();
         assertComponentMetadata(metadataRedo, newIcon, newType, newInPorts, newOutPorts);
     }
 
@@ -2447,8 +2446,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testComponentMetadataNotUpdatedIfNoChange() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA);
         var componentId = getRootID().appendNodeID(4);
-        var originalMetadata =
-            ws().getWorkflow(projectId, componentId, false, null).getWorkflow().getComponentMetadata();
+        var originalMetadata = (ComponentNodeDescriptionEnt)ws().getWorkflow(projectId, componentId, false, null)
+            .getWorkflow().getMetadata();
         var originalType = UpdateComponentMetadataCommandEnt.TypeEnum.valueOf(originalMetadata.getType().name());
         var originalInPorts = toComponentPortDescription(originalMetadata.getInPorts());
         var originalOutPorts = toComponentPortDescription(originalMetadata.getOutPorts());
@@ -2473,7 +2472,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testUpdateProjectMetadata() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA); // This uses the legacy workflow metadata format
-        var metadataBefore = ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getProjectMetadata();
+        var metadataBefore =
+            (ProjectMetadataEnt)ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getMetadata();
         var oldDescription =
             EntityUtil.toTypedTextEnt("Workflow with metadata\n\nThe workflow description", ContentTypeEnum.PLAIN);
         var oldTags = List.of("tag1", "tag2");
@@ -2486,17 +2486,20 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var links = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
         var command = buildUpdateProjectMetadataCommand(description, tags, links);
         ws().executeWorkflowCommand(projectId, getRootID(), command);
-        var metadataAfter = ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getProjectMetadata();
+        var metadataAfter =
+            (ProjectMetadataEnt)ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getMetadata();
         assertProjectMetadata(metadataAfter, description, tags, links);
 
         // Undo
         ws().undoWorkflowCommand(projectId, getRootID());
-        var metadataUndo = ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getProjectMetadata();
+        var metadataUndo =
+            (ProjectMetadataEnt)ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getMetadata();
         assertProjectMetadata(metadataUndo, oldDescription, oldTags, oldLinks);
 
         // Redo
         ws().redoWorkflowCommand(projectId, getRootID());
-        var metadataRedo = ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getProjectMetadata();
+        var metadataRedo =
+            (ProjectMetadataEnt)ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getMetadata();
         assertProjectMetadata(metadataRedo, description, tags, links);
 
         // No undo is possible
@@ -2512,7 +2515,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testUpdateProjectMetadataNewFormat() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.METADATA2); // This uses the new workflow metadata format
-        var metadata = ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getProjectMetadata();
+        var metadata =
+            (ProjectMetadataEnt)ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getMetadata();
         var oldDescription = EntityUtil.toTypedTextEnt("My new description...", ContentTypeEnum.PLAIN);
         var oldTags = List.of("tag1", "tag2", "tag3", "tag4");
         var oldLinks = List.of(buildLinkEnt("http://www.knime.com", "The KNIME website"),
@@ -2527,13 +2531,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var links = List.of(buildLinkEnt("https://yeah.com", "sure thing"));
         var command = buildUpdateProjectMetadataCommand(description, tags, links);
         ws().executeWorkflowCommand(projectId, getRootID(), command);
-        var metadataAfter = ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getProjectMetadata();
+        var metadataAfter =
+            (ProjectMetadataEnt)ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getMetadata();
         assertProjectMetadata(metadataAfter, description, tags, links);
         assertThat("Unexpected last edit", metadataAfter.getLastEdit().toString(), is(not(oldLastEdit)));
 
         // Undo
         ws().undoWorkflowCommand(projectId, getRootID());
-        var metadataUndo = ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getProjectMetadata();
+        var metadataUndo =
+            (ProjectMetadataEnt)ws().getWorkflow(projectId, getRootID(), false, null).getWorkflow().getMetadata();
         assertProjectMetadata(metadataUndo, oldDescription, oldTags, oldLinks);
     }
 

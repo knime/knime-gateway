@@ -47,11 +47,9 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -69,8 +67,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
  * @param metaInPorts
  * @param metaOutPorts
  * @param allowedActions
- * @param componentMetadata
- * @param projectMetadata
+ * @param metadata
  * @param dirty
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -86,8 +83,7 @@ public record DefaultWorkflowEnt(
     MetaPortsEnt metaInPorts,
     MetaPortsEnt metaOutPorts,
     AllowedWorkflowActionsEnt allowedActions,
-    ComponentNodeDescriptionEnt componentMetadata,
-    ProjectMetadataEnt projectMetadata,
+    org.knime.gateway.api.webui.entity.EditableMetadataEnt metadata,
     Boolean dirty) implements WorkflowEnt {
 
     /**
@@ -108,6 +104,9 @@ public record DefaultWorkflowEnt(
         }
         if(workflowAnnotations == null) {
             throw new IllegalArgumentException("<workflowAnnotations> must not be null.");
+        }
+        if(metadata == null) {
+            throw new IllegalArgumentException("<metadata> must not be null.");
         }
         if(dirty == null) {
             throw new IllegalArgumentException("<dirty> must not be null.");
@@ -165,13 +164,8 @@ public record DefaultWorkflowEnt(
     }
     
     @Override
-    public ComponentNodeDescriptionEnt getComponentMetadata() {
-        return componentMetadata;
-    }
-    
-    @Override
-    public ProjectMetadataEnt getProjectMetadata() {
-        return projectMetadata;
+    public org.knime.gateway.api.webui.entity.EditableMetadataEnt getMetadata() {
+        return metadata;
     }
     
     @Override
@@ -202,9 +196,7 @@ public record DefaultWorkflowEnt(
 
         private AllowedWorkflowActionsEnt m_allowedActions;
 
-        private ComponentNodeDescriptionEnt m_componentMetadata;
-
-        private ProjectMetadataEnt m_projectMetadata;
+        private org.knime.gateway.api.webui.entity.EditableMetadataEnt m_metadata = null;
 
         private Boolean m_dirty;
 
@@ -278,14 +270,11 @@ public record DefaultWorkflowEnt(
         }
 
         @Override
-        public DefaultWorkflowEntBuilder setComponentMetadata(ComponentNodeDescriptionEnt componentMetadata) {
-             m_componentMetadata = componentMetadata;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowEntBuilder setProjectMetadata(ProjectMetadataEnt projectMetadata) {
-             m_projectMetadata = projectMetadata;
+        public DefaultWorkflowEntBuilder setMetadata(org.knime.gateway.api.webui.entity.EditableMetadataEnt metadata) {
+             if(metadata == null) {
+                 throw new IllegalArgumentException("<metadata> must not be null.");
+             }
+             m_metadata = metadata;
              return this;
         }
 
@@ -310,8 +299,7 @@ public record DefaultWorkflowEnt(
                 immutable(m_metaInPorts),
                 immutable(m_metaOutPorts),
                 immutable(m_allowedActions),
-                immutable(m_componentMetadata),
-                immutable(m_projectMetadata),
+                immutable(m_metadata),
                 immutable(m_dirty));
         }
     

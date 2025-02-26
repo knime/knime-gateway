@@ -45,11 +45,9 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
-import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
-import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -114,12 +112,8 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     public AllowedWorkflowActionsEnt getAllowedActions();
     
     @Override
-    @JsonProperty("componentMetadata")
-    public ComponentNodeDescriptionEnt getComponentMetadata();
-    
-    @Override
-    @JsonProperty("projectMetadata")
-    public ProjectMetadataEnt getProjectMetadata();
+    @JsonProperty("metadata")
+    public org.knime.gateway.api.webui.entity.EditableMetadataEnt getMetadata();
     
     @Override
     @JsonProperty("dirty")
@@ -175,12 +169,8 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         public WorkflowEntMixInBuilder setAllowedActions(final AllowedWorkflowActionsEnt allowedActions);
         
         @Override
-        @JsonProperty("componentMetadata")
-        public WorkflowEntMixInBuilder setComponentMetadata(final ComponentNodeDescriptionEnt componentMetadata);
-        
-        @Override
-        @JsonProperty("projectMetadata")
-        public WorkflowEntMixInBuilder setProjectMetadata(final ProjectMetadataEnt projectMetadata);
+        @JsonProperty("metadata")
+        public WorkflowEntMixInBuilder setMetadata(final org.knime.gateway.api.webui.entity.EditableMetadataEnt metadata);
         
         @Override
         @JsonProperty("dirty")

@@ -49,37 +49,47 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
-import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt;
 
 /**
  * Metadata properties of a workflow (project or component) that can be edited
  *
  * @param description
+ * @param metadataType
  * @param tags
  * @param links
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultEditableProjectMetadataEnt(
+public record DefaultEditableMetadataEnt(
     TypedTextEnt description,
+    MetadataTypeEnum metadataType,
     java.util.List<String> tags,
-    java.util.List<LinkEnt> links) implements EditableProjectMetadataEnt {
+    java.util.List<LinkEnt> links) implements EditableMetadataEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultEditableProjectMetadataEnt {
+    public DefaultEditableMetadataEnt {
+        if(metadataType == null) {
+            throw new IllegalArgumentException("<metadataType> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "EditableProjectMetadata";
+        return "EditableMetadata";
     }
   
     @Override
     public TypedTextEnt getDescription() {
         return description;
+    }
+    
+    @Override
+    public MetadataTypeEnum getMetadataType() {
+        return metadataType;
     }
     
     @Override
@@ -93,38 +103,50 @@ public record DefaultEditableProjectMetadataEnt(
     }
     
     /**
-     * A builder for {@link DefaultEditableProjectMetadataEnt}.
+     * A builder for {@link DefaultEditableMetadataEnt}.
      */
-    public static class DefaultEditableProjectMetadataEntBuilder implements EditableProjectMetadataEntBuilder {
+    public static class DefaultEditableMetadataEntBuilder implements EditableMetadataEntBuilder {
 
         private TypedTextEnt m_description;
+
+        private MetadataTypeEnum m_metadataType;
 
         private java.util.List<String> m_tags;
 
         private java.util.List<LinkEnt> m_links;
 
         @Override
-        public DefaultEditableProjectMetadataEntBuilder setDescription(TypedTextEnt description) {
+        public DefaultEditableMetadataEntBuilder setDescription(TypedTextEnt description) {
              m_description = description;
              return this;
         }
 
         @Override
-        public DefaultEditableProjectMetadataEntBuilder setTags(java.util.List<String> tags) {
+        public DefaultEditableMetadataEntBuilder setMetadataType(MetadataTypeEnum metadataType) {
+             if(metadataType == null) {
+                 throw new IllegalArgumentException("<metadataType> must not be null.");
+             }
+             m_metadataType = metadataType;
+             return this;
+        }
+
+        @Override
+        public DefaultEditableMetadataEntBuilder setTags(java.util.List<String> tags) {
              m_tags = tags;
              return this;
         }
 
         @Override
-        public DefaultEditableProjectMetadataEntBuilder setLinks(java.util.List<LinkEnt> links) {
+        public DefaultEditableMetadataEntBuilder setLinks(java.util.List<LinkEnt> links) {
              m_links = links;
              return this;
         }
 
         @Override
-        public DefaultEditableProjectMetadataEnt build() {
-            return new DefaultEditableProjectMetadataEnt(
+        public DefaultEditableMetadataEnt build() {
+            return new DefaultEditableMetadataEnt(
                 immutable(m_description),
+                immutable(m_metadataType),
                 immutable(m_tags),
                 immutable(m_links));
         }

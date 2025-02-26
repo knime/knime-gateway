@@ -53,8 +53,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt.DefaultEditableProjectMetadataEntBuilder;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt.DefaultEditableMetadataEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,10 +62,10 @@ import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt.Def
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultEditableProjectMetadataEntBuilder.class)
-@JsonSerialize(as=EditableProjectMetadataEnt.class)
+@JsonDeserialize(builder=DefaultEditableMetadataEntBuilder.class)
+@JsonSerialize(as=EditableMetadataEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface EditableProjectMetadataEntMixIn extends EditableProjectMetadataEnt {
+public interface EditableMetadataEntMixIn extends EditableMetadataEnt {
 
     @Override
     @JsonIgnore
@@ -74,6 +74,10 @@ public interface EditableProjectMetadataEntMixIn extends EditableProjectMetadata
     @Override
     @JsonProperty("description")
     public TypedTextEnt getDescription();
+    
+    @Override
+    @JsonProperty("metadataType")
+    public MetadataTypeEnum getMetadataType();
     
     @Override
     @JsonProperty("tags")
@@ -91,22 +95,26 @@ public interface EditableProjectMetadataEntMixIn extends EditableProjectMetadata
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface EditableProjectMetadataEntMixInBuilder extends EditableProjectMetadataEntBuilder {
+    public static interface EditableMetadataEntMixInBuilder extends EditableMetadataEntBuilder {
     
         @Override
-        public EditableProjectMetadataEntMixIn build();
+        public EditableMetadataEntMixIn build();
     
         @Override
         @JsonProperty("description")
-        public EditableProjectMetadataEntMixInBuilder setDescription(final TypedTextEnt description);
+        public EditableMetadataEntMixInBuilder setDescription(final TypedTextEnt description);
+        
+        @Override
+        @JsonProperty("metadataType")
+        public EditableMetadataEntMixInBuilder setMetadataType(final MetadataTypeEnum metadataType);
         
         @Override
         @JsonProperty("tags")
-        public EditableProjectMetadataEntMixInBuilder setTags(final java.util.List<String> tags);
+        public EditableMetadataEntMixInBuilder setTags(final java.util.List<String> tags);
         
         @Override
         @JsonProperty("links")
-        public EditableProjectMetadataEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
+        public EditableMetadataEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
         
     }
 

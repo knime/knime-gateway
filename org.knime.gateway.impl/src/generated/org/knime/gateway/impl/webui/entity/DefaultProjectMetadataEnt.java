@@ -49,14 +49,15 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 import java.time.OffsetDateTime;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
-import org.knime.gateway.impl.webui.entity.DefaultEditableProjectMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt;
 
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 
 /**
- * Metadata of a workflow project
+ * Metadata of a workflow project.
  *
  * @param description
+ * @param metadataType
  * @param tags
  * @param links
  * @param lastEdit
@@ -66,6 +67,7 @@ import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultProjectMetadataEnt(
     TypedTextEnt description,
+    MetadataTypeEnum metadataType,
     java.util.List<String> tags,
     java.util.List<LinkEnt> links,
     OffsetDateTime lastEdit) implements ProjectMetadataEnt {
@@ -74,6 +76,9 @@ public record DefaultProjectMetadataEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultProjectMetadataEnt {
+        if(metadataType == null) {
+            throw new IllegalArgumentException("<metadataType> must not be null.");
+        }
     }
 
     @Override
@@ -84,6 +89,11 @@ public record DefaultProjectMetadataEnt(
     @Override
     public TypedTextEnt getDescription() {
         return description;
+    }
+    
+    @Override
+    public MetadataTypeEnum getMetadataType() {
+        return metadataType;
     }
     
     @Override
@@ -108,6 +118,8 @@ public record DefaultProjectMetadataEnt(
 
         private TypedTextEnt m_description;
 
+        private MetadataTypeEnum m_metadataType;
+
         private java.util.List<String> m_tags;
 
         private java.util.List<LinkEnt> m_links;
@@ -117,6 +129,15 @@ public record DefaultProjectMetadataEnt(
         @Override
         public DefaultProjectMetadataEntBuilder setDescription(TypedTextEnt description) {
              m_description = description;
+             return this;
+        }
+
+        @Override
+        public DefaultProjectMetadataEntBuilder setMetadataType(MetadataTypeEnum metadataType) {
+             if(metadataType == null) {
+                 throw new IllegalArgumentException("<metadataType> must not be null.");
+             }
+             m_metadataType = metadataType;
              return this;
         }
 
@@ -142,6 +163,7 @@ public record DefaultProjectMetadataEnt(
         public DefaultProjectMetadataEnt build() {
             return new DefaultProjectMetadataEnt(
                 immutable(m_description),
+                immutable(m_metadataType),
                 immutable(m_tags),
                 immutable(m_links),
                 immutable(m_lastEdit));

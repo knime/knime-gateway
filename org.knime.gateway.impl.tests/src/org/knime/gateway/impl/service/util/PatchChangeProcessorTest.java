@@ -65,6 +65,7 @@ import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.TextAlignEnum;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt.MetadataTypeEnum;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt.NodeDialogOptionGroupEntBuilder;
@@ -212,12 +213,12 @@ public class PatchChangeProcessorTest {
             .setDirty(true) //
             .setNodes(Map.of());
 
-        var workflow1 = workflowBuilder
-            .setComponentMetadata(builder(ComponentNodeDescriptionEntBuilder.class).setName("blub").build()).build();
+        var workflow1 = workflowBuilder.setMetadata(builder(ComponentNodeDescriptionEntBuilder.class)
+            .setName("blub").setMetadataType(MetadataTypeEnum.COMPONENT).build()).build();
         var option = builder(NodeDialogOptionGroupEntBuilder.class).setSectionName("test").build();
         var workflow2 = workflowBuilder
-            .setComponentMetadata(
-                builder(ComponentNodeDescriptionEntBuilder.class).setName("blub").setOptions(List.of(option)).build())
+            .setMetadata(builder(ComponentNodeDescriptionEntBuilder.class).setName("blub").setOptions(List.of(option))
+                .setMetadataType(MetadataTypeEnum.COMPONENT).build())
             .build();
 
         var patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
