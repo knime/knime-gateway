@@ -1,0 +1,158 @@
+/*
+ * ------------------------------------------------------------------------
+ *
+ *  Copyright by KNIME AG, Zurich, Switzerland
+ *  Website: http://www.knime.org; Email: contact@knime.org
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License, Version 3, as
+ *  published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>.
+ *
+ *  Additional permission under GNU GPL version 3 section 7:
+ *
+ *  KNIME interoperates with ECLIPSE solely via ECLIPSE's plug-in APIs.
+ *  Hence, KNIME and ECLIPSE are both independent programs and are not
+ *  derived from each other. Should, however, the interpretation of the
+ *  GNU GPL Version 3 ("License") under any applicable laws result in
+ *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
+ *  you the additional permission to use and propagate KNIME together with
+ *  ECLIPSE with only the license terms in place for ECLIPSE applying to
+ *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
+ *  license terms of ECLIPSE themselves allow for the respective use and
+ *  propagation of ECLIPSE together with KNIME.
+ *
+ *  Additional permission relating to nodes for KNIME that extend the Node
+ *  Extension (and in particular that are based on subclasses of NodeModel,
+ *  NodeDialog, and NodeView) and that only interoperate with KNIME through
+ *  standard APIs ("Nodes"):
+ *  Nodes are deemed to be separate and independent programs and to not be
+ *  covered works.  Notwithstanding anything to the contrary in the
+ *  License, the License does not apply to Nodes, you are not required to
+ *  license Nodes under the License, and you are granted a license to
+ *  prepare and propagate Nodes, in each case even if such Nodes are
+ *  propagated with or for interoperation with KNIME.  The owner of a Node
+ *  may freely choose the license terms applicable to such Node, including
+ *  when such Node is propagated with or for interoperation with KNIME.
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Feb 28, (kampmann) created
+ */
+package org.knime.gateway.impl.webui.service;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.Map;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.service.ComponentService;
+import org.knime.gateway.impl.project.CachedProject;
+import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.gateway.testing.helper.webui.ComponentServiceTestHelper;
+import org.knime.testing.util.WorkflowManagerUtil;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+/**
+ * Tests methods in {@link DefaultComponentService} which can't be covered by {@link ComponentServiceTestHelper}.
+ *
+ * @author Tobias Kampmann, TNG Technology Consulting GmbH
+ */
+public class DefaultComponentServiceTest extends GatewayServiceTest {
+
+    private WorkflowManager m_wfm;
+
+    private String m_projectId;
+
+    private ObjectMapper m_mapper = new ObjectMapper();
+
+    @SuppressWarnings("javadoc")
+    @Before
+    public void createEmptyWorkflow() throws IOException {
+        m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var project = CachedProject.builder().setWfm(m_wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        m_projectId = project.getID();
+        ProjectManager.getInstance().addProject(project);
+    }
+
+    @SuppressWarnings("javadoc")
+    @After
+    public void tearDownWorkflow() {
+        ProjectManager.getInstance().removeProject(m_projectId);
+    }
+
+    @Override
+    @SuppressWarnings("javadoc")
+    @After
+    public void disposeServices() {
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
+    }
+
+    /**
+     * Makes sure that {@link ComponentService#reexecuteComponentNode(String, NodeIDEnt, NodeIDEnt, String, Map)} works
+     *
+     * @throws Exception
+     */
+    @Test
+    public void reexecuteComponentViaBooleanWidget() throws Exception {
+        var projectId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.COMPONENT_REEXECUTION, projectId);
+        var cs = new DefaultComponentService();
+
+        String widgetBooleanPath = "/webNodes/3:0:4/viewRepresentation/currentValue/boolean";
+        String scatterPlotInitialDataPath = "/nodeViews/3:0:3/initialData";
+        String scatterPlotYAxisLabelPath = "/result/settings/yAxisLabel";
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var compositeViewPage =
+                (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
+        JsonNode beforeJson = m_mapper.readTree(compositeViewPage);
+        JsonNode beforeBoolean = beforeJson.at(widgetBooleanPath);
+        JsonNode scatterPlotBefore = m_mapper.readTree(
+            beforeJson.at(scatterPlotInitialDataPath).asText()
+        );
+
+        //Before re-execution: `yAxisLabel` should NOT exist
+        assertTrue("yAxisLabel should not exist before re-execution",
+            scatterPlotBefore.at(scatterPlotYAxisLabelPath).isMissingNode());
+
+        cs.reexecuteComponentNode(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),"3:0:4",
+           Map.of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var compositeViewPageAfterReexecution =
+                (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
+        JsonNode afterJson = m_mapper.readTree(compositeViewPageAfterReexecution);
+        JsonNode afterBoolean = afterJson.at(widgetBooleanPath);
+        JsonNode scatterPlotAfter = m_mapper.readTree(
+            afterJson.at(scatterPlotInitialDataPath).asText()
+        );
+
+        assertFalse("Boolean value should have changed after re-execution", beforeBoolean.equals(afterBoolean));
+
+        //After re-execution: `yAxisLabel` should exist and have value "CustomLabel"
+        assertFalse("yAxisLabel should exist after re-execution",
+            scatterPlotAfter.at(scatterPlotYAxisLabelPath).isMissingNode());
+        assertTrue("yAxisLabel should have value 'CustomLabel'",
+            scatterPlotAfter.at(scatterPlotYAxisLabelPath).asText().equals("CustomLabel"));
+    }
+
+}

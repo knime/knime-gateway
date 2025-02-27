@@ -82,7 +82,8 @@ public interface CompositeViewDataProvider {
      * @return
      * @throws IOException
      */
-    public void reexecutePage(final SubNodeContainer snc, final String nodeIdThatTriggered, final Map<String, String> stateUpdates,
-        final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+    void reexecutePage(final SubNodeContainer snc, final String nodeIdThatTriggered,
+        final Map<String, String> stateUpdates, final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt)
+        throws IOException;
 
 }
