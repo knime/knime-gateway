@@ -1,0 +1,42 @@
+{
+  "description" : {
+    "contentType" : "text/plain",
+    "value" : "Some component description"
+  },
+  "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAPVJREFUOI2dk1FxwzAQRHddAoZgCmGgMCgEB0HCYCUGZZBAKIOMERRCHAZB4MuPPCPLkibT+zztrfaeRl+IJWl0zvXTNM1oVK7r1gOSInmV1LcMcl0XXT1JHwXnxu07HSUNJB8k3bIsT5J3MzuGEOZsuKjrSAoAzOxC8g/AQPJaiv6JbgdMkmtputbhJ2CrBpI8gCFGrYJlZXgg+UhaLzM75GCrCSKwHwC32OprwHYGkkYAI4CX9/5kZicAMwBXArozWJ9rrRDCzcyOAH5LQDcGCbi018dE3ygAZSLMwXkzm+LuqekG6OYzZdtcSN7zRGgA/Ve9ASTnd38pmtoyAAAAAElFTkSuQmCC",
+  "inPorts" : [ {
+    "description" : "test port desc 1",
+    "name" : "test port name 1",
+    "optional" : false,
+    "typeId" : "org.knime.core.node.BufferedDataTable",
+    "typeName" : "Table"
+  } ],
+  "links" : [ {
+    "text" : "KNIME",
+    "url" : "https://www.knime.com"
+  }, {
+    "text" : "Alteryx",
+    "url" : "https://www.alteryx.com/"
+  } ],
+  "name" : "Full Component",
+  "options" : [ {
+    "fields" : [ {
+      "description" : "... and its description",
+      "name" : "A config option"
+    } ]
+  } ],
+  "outPorts" : [ {
+    "description" : "test port desc 2",
+    "name" : "test port name 2",
+    "optional" : false,
+    "typeId" : "org.knime.core.node.BufferedDataTable",
+    "typeName" : "Table"
+  } ],
+  "tags" : [ "tag1", "tag2" ],
+  "type" : "Manipulator",
+  "views" : [ {
+    "name" : "Line Plot"
+  }, {
+    "name" : "JavaScript Table View"
+  } ]
+}

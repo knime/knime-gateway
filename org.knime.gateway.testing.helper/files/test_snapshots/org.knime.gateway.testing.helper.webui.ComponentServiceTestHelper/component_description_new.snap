@@ -1,0 +1,19 @@
+{
+  "description" : {
+    "contentType" : "text/plain",
+    "value" : ""
+  },
+  "inPorts" : [ {
+    "name" : "Port 1",
+    "optional" : false,
+    "typeId" : "org.knime.core.node.BufferedDataTable",
+    "typeName" : "Table"
+  } ],
+  "name" : "Partial Component",
+  "outPorts" : [ {
+    "name" : "Port 1",
+    "optional" : false,
+    "typeId" : "org.knime.core.node.BufferedDataTable",
+    "typeName" : "Table"
+  } ]
+}
