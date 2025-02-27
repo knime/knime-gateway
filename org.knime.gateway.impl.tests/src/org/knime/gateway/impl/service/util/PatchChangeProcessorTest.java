@@ -72,6 +72,7 @@ import org.knime.gateway.api.webui.entity.NodeDialogOptionGroupEnt.NodeDialogOpt
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
+import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -104,7 +105,9 @@ public class PatchChangeProcessorTest {
                 .setName("wf-name")//
                 .setContainerType(ContainerTypeEnum.PROJECT)//
                 .setContainerId(new NodeIDEnt(0))//
-                .build());
+                .build()) //
+            .setMetadata(builder(ProjectMetadataEntBuilder.class).setMetadataType(MetadataTypeEnum.PROJECT).build());
+
         WorkflowEnt workflow1 = workflowBuilder.setNodes(Collections.emptyMap()).setDirty(false).build();
         WorkflowEnt workflow2 =
             workflowBuilder.setNodes(Map.of("root:1", node1, "root:11", node2)).setDirty(true).build();
@@ -139,6 +142,7 @@ public class PatchChangeProcessorTest {
                 .setContainerType(ContainerTypeEnum.PROJECT)//
                 .setContainerId(new NodeIDEnt(0))//
                 .build())//
+            .setMetadata(builder(ProjectMetadataEntBuilder.class).setMetadataType(MetadataTypeEnum.PROJECT).build()) //
             .setDirty(false);
 
         var workflowAnnoBuilder = builder(WorkflowAnnotationEntBuilder.class)//
@@ -188,6 +192,7 @@ public class PatchChangeProcessorTest {
                 .setContainerType(ContainerTypeEnum.PROJECT)//
                 .setContainerId(new NodeIDEnt(0))//
                 .build())
+            .setMetadata(builder(ProjectMetadataEntBuilder.class).setMetadataType(MetadataTypeEnum.PROJECT).build())//
             .setDirty(true);
        WorkflowEnt workflow1 = workflowBuilder.setNodes(Map.of("root:1", node1)).build();
        WorkflowEnt workflow2 = workflowBuilder.setNodes(Map.of("root:1", node2)).build();
@@ -222,7 +227,7 @@ public class PatchChangeProcessorTest {
             .build();
 
         var patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
-        verify(patchCreator).added("/componentMetadata/options", List.of(option));
+        verify(patchCreator).added("/metadata/options", List.of(option));
     }
 
     /**

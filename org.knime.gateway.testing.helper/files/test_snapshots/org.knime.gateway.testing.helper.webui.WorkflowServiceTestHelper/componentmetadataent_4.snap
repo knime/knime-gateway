@@ -11,6 +11,7 @@
     "typeId" : "org.knime.core.node.BufferedDataTable",
     "typeName" : "Table"
   } ],
+  "metadataType" : "component",
   "name" : "Component",
   "options" : [ {
     "fields" : [ {

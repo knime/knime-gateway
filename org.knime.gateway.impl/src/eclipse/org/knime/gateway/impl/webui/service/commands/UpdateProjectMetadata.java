@@ -51,6 +51,7 @@ import static org.knime.gateway.api.util.EntityUtil.toLinkEnts;
 
 import org.knime.core.node.workflow.WorkflowMetadata;
 import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt.MetadataTypeEnum;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -58,9 +59,11 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
 /**
  * Update metadata of a workflow project
  */
-public final class UpdateProjectMetadata
+final class UpdateProjectMetadata
     extends AbstractUpdateWorkflowMetadata<WorkflowMetadata, UpdateProjectMetadataCommandEnt> {
-    public UpdateProjectMetadata(final UpdateProjectMetadataCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+
+    UpdateProjectMetadata(final UpdateProjectMetadataCommandEnt commandEnt,
+        final WorkflowMiddleware workflowMiddleware) {
         super(commandEnt, workflowMiddleware);
     }
 
@@ -78,7 +81,9 @@ public final class UpdateProjectMetadata
                 EntityUtil.toTypedTextEnt(metadata.getDescription().orElse(null), metadata.getContentType())) //
             .setLinks(links) //
             .setTags(tags) //
-            .setKind(WorkflowCommandEnt.KindEnum.UPDATE_PROJECT_METADATA).build();
+            .setKind(WorkflowCommandEnt.KindEnum.UPDATE_PROJECT_METADATA) //
+            .setMetadataType(MetadataTypeEnum.PROJECT) //
+            .build();
     }
 
     @Override

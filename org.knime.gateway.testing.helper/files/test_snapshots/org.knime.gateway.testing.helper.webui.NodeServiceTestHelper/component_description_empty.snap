@@ -3,5 +3,6 @@
     "contentType" : "text/plain",
     "value" : ""
   },
+  "metadataType" : "component",
   "name" : "Empty Component"
 }

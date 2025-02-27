@@ -315,6 +315,16 @@
     "name" : "general_web_ui",
     "providerType" : "LOCAL"
   },
+  "metadata" : {
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "lastEdit" : "DATE_TIME_PLACEHOLDER",
+    "links" : [ ],
+    "metadataType" : "project",
+    "tags" : [ ]
+  },
   "nodeTemplates" : {
     "de.immunonodes.knime.nodes.Variants2Proteins.Variants2ProteinsNodeFactory#MISSING Variants2Proteins" : {
       "name" : "Variants2Proteins",
@@ -2139,15 +2149,6 @@
       },
       "type" : "Visualizer"
     }
-  },
-  "projectMetadata" : {
-    "description" : {
-      "contentType" : "text/plain",
-      "value" : ""
-    },
-    "lastEdit" : "DATE_TIME_PLACEHOLDER",
-    "links" : [ ],
-    "tags" : [ ]
   },
   "workflowAnnotations" : [ {
     "backgroundColor" : "#FFFFFF",

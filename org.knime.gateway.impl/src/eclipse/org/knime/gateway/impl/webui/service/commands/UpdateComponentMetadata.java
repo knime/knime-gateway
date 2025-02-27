@@ -56,6 +56,7 @@ import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt.MetadataTypeEnum;
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
@@ -64,10 +65,11 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
 /**
  * Update metadata of a component workflow
  */
-public final class UpdateComponentMetadata
+final class UpdateComponentMetadata
     extends AbstractUpdateWorkflowMetadata<ComponentMetadata, UpdateComponentMetadataCommandEnt> {
 
-    public UpdateComponentMetadata(final UpdateComponentMetadataCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
+    UpdateComponentMetadata(final UpdateComponentMetadataCommandEnt commandEnt,
+        final WorkflowMiddleware workflowMiddleware) {
         super(commandEnt, workflowMiddleware);
     }
 
@@ -105,6 +107,7 @@ public final class UpdateComponentMetadata
             .setOutPorts(outPorts) //
             .setType(type) //
             .setKind(WorkflowCommandEnt.KindEnum.UPDATE_COMPONENT_METADATA) //
+            .setMetadataType(MetadataTypeEnum.COMPONENT) //
             .build();
     }
 

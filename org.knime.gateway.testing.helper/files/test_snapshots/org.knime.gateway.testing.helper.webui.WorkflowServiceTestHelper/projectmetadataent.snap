@@ -8,5 +8,6 @@
     "text" : "BLUB",
     "url" : "http://blub.com"
   } ],
+  "metadataType" : "project",
   "tags" : [ "tag1", "tag2" ]
 }

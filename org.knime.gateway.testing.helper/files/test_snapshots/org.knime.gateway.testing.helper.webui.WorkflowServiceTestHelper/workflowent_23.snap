@@ -1,26 +1,4 @@
 {
-  "componentMetadata" : {
-    "description" : {
-      "contentType" : "text/plain",
-      "value" : ""
-    },
-    "inPorts" : [ {
-      "name" : "Port 1",
-      "optional" : false,
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Table"
-    } ],
-    "name" : "Component",
-    "outPorts" : [ {
-      "name" : "Port 1",
-      "optional" : false,
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Table"
-    } ],
-    "views" : [ {
-      "name" : "JavaScript Table View"
-    } ]
-  },
   "connections" : {
     "root:23:0:10_1" : {
       "destNode" : "root:23:0:10",
@@ -43,6 +21,29 @@
     "containerType" : "component",
     "name" : "Component",
     "providerType" : "LOCAL"
+  },
+  "metadata" : {
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "inPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "typeId" : "org.knime.core.node.BufferedDataTable",
+      "typeName" : "Table"
+    } ],
+    "metadataType" : "component",
+    "name" : "Component",
+    "outPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "typeId" : "org.knime.core.node.BufferedDataTable",
+      "typeName" : "Table"
+    } ],
+    "views" : [ {
+      "name" : "JavaScript Table View"
+    } ]
   },
   "nodeTemplates" : {
     "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input" : {
