@@ -49,6 +49,11 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     LOOP_EXECUTION("/files/testflows/Loop Execution", "loop execution"),
 
     /**
+     * Workflow to test re-execution of component views.
+     */
+    COMPONENT_REEXECUTION("/files/testflows/ReexecutingComponent", "component_view_reexecution"),
+
+    /**
      * Workflow to test the try-catch nodes.
      */
     TRY_CATCH("/files/testflows/Try-Catch", "try_catch"),

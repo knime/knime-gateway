@@ -165,7 +165,7 @@ public class DefaultComponentService implements ComponentService {
         try {
             snc = getSubnodeContainer(projectId, workflowId, nodeId);
             return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
-        } catch (NodeNotFoundException | InvalidRequestException ex) {
+        } catch (NodeNotFoundException ex) {
             throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
         }
     }
