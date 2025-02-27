@@ -9,6 +9,7 @@
     "typeId" : "org.knime.core.node.BufferedDataTable",
     "typeName" : "Table"
   } ],
+  "metadataType" : "component",
   "name" : "Partial Component",
   "outPorts" : [ {
     "name" : "Port 1",

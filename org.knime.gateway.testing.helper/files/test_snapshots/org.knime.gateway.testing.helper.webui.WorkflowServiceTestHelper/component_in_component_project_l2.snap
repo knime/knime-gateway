@@ -6,13 +6,6 @@
     "canReset" : false,
     "canUndo" : false
   },
-  "componentMetadata" : {
-    "description" : {
-      "contentType" : "text/plain",
-      "value" : ""
-    },
-    "name" : "Component L2"
-  },
   "connections" : { },
   "dirty" : true,
   "info" : {
@@ -20,6 +13,14 @@
     "containerType" : "component",
     "name" : "Component L2",
     "providerType" : "LOCAL"
+  },
+  "metadata" : {
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "metadataType" : "component",
+    "name" : "Component L2"
   },
   "nodeTemplates" : {
     "org.knime.base.node.util.sampledata.SampleDataNodeFactory" : {

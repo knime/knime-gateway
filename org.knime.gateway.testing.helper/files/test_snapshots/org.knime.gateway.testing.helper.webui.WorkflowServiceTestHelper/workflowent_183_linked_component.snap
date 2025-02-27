@@ -1,5 +1,17 @@
 {
-  "componentMetadata" : {
+  "connections" : { },
+  "dirty" : true,
+  "info" : {
+    "containerId" : "root:183",
+    "containerType" : "component",
+    "jobManager" : {
+      "type" : "streaming"
+    },
+    "linked" : true,
+    "name" : "Streaming Component",
+    "providerType" : "LOCAL"
+  },
+  "metadata" : {
     "description" : {
       "contentType" : "text/plain",
       "value" : "A component"
@@ -15,6 +27,7 @@
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
       "typeName" : "Flow Variable"
     } ],
+    "metadataType" : "component",
     "name" : "Streaming Component",
     "outPorts" : [ {
       "optional" : false,
@@ -26,18 +39,6 @@
       "typeName" : "Generic Port"
     } ],
     "type" : "Sink"
-  },
-  "connections" : { },
-  "dirty" : true,
-  "info" : {
-    "containerId" : "root:183",
-    "containerType" : "component",
-    "jobManager" : {
-      "type" : "streaming"
-    },
-    "linked" : true,
-    "name" : "Streaming Component",
-    "providerType" : "LOCAL"
   },
   "nodeTemplates" : {
     "org.knime.base.node.flowvariable.extractvariables.ExtractVariablesNodeFactory" : {

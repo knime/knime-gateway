@@ -6,25 +6,6 @@
     "canReset" : false,
     "canUndo" : false
   },
-  "componentMetadata" : {
-    "description" : {
-      "contentType" : "text/plain",
-      "value" : "The component description"
-    },
-    "inPorts" : [ {
-      "name" : "Port 1",
-      "optional" : false,
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Table"
-    } ],
-    "name" : "component project",
-    "outPorts" : [ {
-      "name" : "Port 1",
-      "optional" : false,
-      "typeId" : "org.knime.core.node.BufferedDataTable",
-      "typeName" : "Table"
-    } ]
-  },
   "connections" : {
     "root:7_0" : {
       "allowedActions" : {
@@ -75,6 +56,26 @@
     "containerType" : "project",
     "name" : "component project",
     "providerType" : "LOCAL"
+  },
+  "metadata" : {
+    "description" : {
+      "contentType" : "text/plain",
+      "value" : "The component description"
+    },
+    "inPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "typeId" : "org.knime.core.node.BufferedDataTable",
+      "typeName" : "Table"
+    } ],
+    "metadataType" : "component",
+    "name" : "component project",
+    "outPorts" : [ {
+      "name" : "Port 1",
+      "optional" : false,
+      "typeId" : "org.knime.core.node.BufferedDataTable",
+      "typeName" : "Table"
+    } ]
   },
   "nodeTemplates" : {
     "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory" : {

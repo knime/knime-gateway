@@ -18,6 +18,7 @@
     "text" : "Alteryx",
     "url" : "https://www.alteryx.com/"
   } ],
+  "metadataType" : "component",
   "name" : "Full Component",
   "options" : [ {
     "fields" : [ {

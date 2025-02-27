@@ -125,6 +125,7 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
+import org.knime.gateway.api.webui.entity.EditableMetadataEnt.MetadataTypeEnum;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
@@ -363,17 +364,14 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // checks the metadata of the project workflow
         WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow();
         cr(workflow.getMetadata(), "projectmetadataent");
-        assertNull(workflow.getMetadata());
 
         // checks the metadata of a component
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(4), Boolean.FALSE, null).getWorkflow();
         cr(workflow.getMetadata(), "componentmetadataent_4");
-        assertNull(workflow.getMetadata());
 
-        // makes sure that no metadata is returned for a metanode
+        // check the metadata of a metanode (= project metadata)
         workflow = ws().getWorkflow(wfId, new NodeIDEnt(2), Boolean.FALSE, null).getWorkflow();
-        assertNull(workflow.getMetadata());
-        assertNull(workflow.getMetadata());
+        cr(workflow.getMetadata(), "projectmetadataent");
     }
 
     public void testCollapseConfiguredToMetanode() throws Exception {
@@ -2550,11 +2548,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("Unexpected tags", metadata.getTags(), is(tags));
     }
 
-    private static void assertProjectMetadata(final ProjectMetadataEnt actualMetadata,
-        final ProjectMetadataEnt expected) {
-        assertProjectMetadata(actualMetadata, expected.getDescription(), expected.getTags(), expected.getLinks());
-    }
-
     private void assertComponentMetadata(final ComponentNodeDescriptionEnt modifiedMetadata, final String newIcon,
         final UpdateComponentMetadataCommandEnt.TypeEnum newType, final List<ComponentPortDescriptionEnt> newInPorts,
         final List<ComponentPortDescriptionEnt> newOutPorts) {
@@ -2598,6 +2591,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setDescription(description)//
             .setTags(tags)//
             .setLinks(links)//
+            .setMetadataType(MetadataTypeEnum.PROJECT)//
             .build();
     }
 
@@ -2609,6 +2603,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(KindEnum.UPDATE_COMPONENT_METADATA).setDescription(description).setTags(tags).setLinks(links)
             .setIcon(icon).setType(type).setInPorts(inPorts) //
             .setOutPorts(outPorts) //
+            .setMetadataType(MetadataTypeEnum.COMPONENT) //
             .build();
     }
 
