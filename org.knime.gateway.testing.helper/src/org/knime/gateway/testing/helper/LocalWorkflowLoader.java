@@ -61,8 +61,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.Origin;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 
@@ -95,7 +95,10 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
         var wfm = loadWorkflowInWorkspace(workflow.getWorkflowDir());
-        var project = CachedProject.builder().setWfm(wfm).setName(workflow.getName()).setId(projectId)
+        var project = Project.builder()//
+            .setWfm(wfm)//
+            .setName(workflow.getName())//
+            .setId(projectId)//
             .setOrigin(createOriginForTesting());
         if (workflow instanceof TestWorkflow.WithVersion withVersion) {
             project.setVersionWfmLoader(ignored -> {
@@ -114,7 +117,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     }
 
     private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId,
-        final CachedProject project) {
+        final Project project) {
         wfm.setName(name); // wfm.setName marks the workflow dirty
         wfm.getNodeContainerDirectory().setDirty(false);
         ProjectManager.getInstance().addProject(project);
@@ -147,8 +150,12 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + componentURI + "\"");
         WorkflowManager.ROOT.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
         var snc = (SubNodeContainer)loadResult.getLoadedInstance();
-        addToProjectManager(snc.getWorkflowManager(), component.getName(), projectId, CachedProject.builder()
-            .setWfm(snc.getWorkflowManager()).setId(projectId).setOrigin(createOriginForTesting()).build());
+        var project = Project.builder()//
+            .setWfm(snc.getWorkflowManager())//
+            .setId(projectId)//
+            .setOrigin(createOriginForTesting())//
+            .build();
+        addToProjectManager(snc.getWorkflowManager(), component.getName(), projectId, project);
     }
 
     /**

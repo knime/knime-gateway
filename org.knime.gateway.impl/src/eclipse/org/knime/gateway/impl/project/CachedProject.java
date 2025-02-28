@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 17, 2023 (hornm): created
+ *   Feb 27, 2025 (kai): created
  */
 package org.knime.gateway.impl.project;
 
@@ -60,190 +60,210 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.util.Lazy;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Implementation that caches associated {@link WorkflowManager}s.
  * <p>
- * A {@link CachedProject} can be created either through an already-available {@link WorkflowManager} instance,
- * or a {@code Supplier<WorkflowManager>}, which may load the workflow manager. See {@link Builder}.
+ * A {@link CachedProject} can be created either through an already-available {@link WorkflowManager} instance, or a
+ * {@code Supplier<WorkflowManager>}, which may load the workflow manager. See {@link Builder}.
  * <p>
  * See also
  * <ul>
- *     <li>NXT-3356</li>
+ * <li>NXT-3356</li>
  * </ul>
+ * <p>
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
+ * @author Kai Franze, KNIME Gmbh, Germany
  */
-public final class CachedProject implements Project {
+record CachedProject ( //
+    Consumer<WorkflowManager> m_onDispose, //
+    String m_id, //
+    String m_name, //
+    Origin m_origin, //
+    Function<VersionId.Fixed, WorkflowManager> m_getVersion, //
+    Map<VersionId.Fixed, WorkflowManager> m_cachedVersions, //
+    Lazy.Init<WorkflowManager> m_cachedWfm, //
+    Runnable m_clearReport, //
+    Function<String, byte[]> m_generateReport) implements Project {
 
     private static final int VERSION_WFM_CACHE_MAX_SIZE = 5;
 
-    private final Consumer<WorkflowManager> m_onDispose;
-
-    private final String m_id;
-
-    private final String m_name;
-
-    private final Origin m_origin;
-
-    private final Function<VersionId.Fixed, WorkflowManager> m_getVersion;
-
-    private final Map<VersionId.Fixed, WorkflowManager> m_cachedVersions = new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
-
-    private final Lazy.Init<WorkflowManager> m_cachedWfm;
-
-    /**
-     * @param builder
-     */
     private CachedProject(final Builder builder) {
-        if (builder.m_loadedWfm != null) {
-            m_cachedWfm = new Lazy.Init<>(builder.m_loadedWfm);
-        } else {
-            m_cachedWfm = new Lazy.Init<>(builder.m_getWfm);
-        }
-        m_id = builder.m_id;
-        m_name = builder.m_name;
-        m_origin = builder.m_origin;
-        m_getVersion = builder.m_getVersion;
-        m_onDispose = builder.m_onDispose;
+        this( //
+            builder.m_onDispose, //
+            builder.m_id, //
+            builder.m_name, //
+            builder.m_origin, //
+            builder.m_getVersion, //
+            initializeCachedVersions(), //
+            initializeCachedWfm(builder), //
+            builder.m_clearReport, //
+            builder.m_generateReport);
     }
 
-    /**
-     * Creates a project based on a given {@link WorkflowContextV2}.
-     */
-    public static CachedProject of(final WorkflowManager wfm, final WorkflowContextV2 context,
-        final SpaceItemReferenceEnt.ProjectTypeEnum projectType, final String customProjectId,
-        final LocalSpace localSpace) {
-        final var path = context.getExecutorInfo().getLocalWorkflowPath();
-        final var itemId = localSpace.getItemId(path);
-        final var origin =
-            Origin.of(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId, projectType);
-        final var projectName = path.toFile().getName();
-        return CachedProject.builder() //
-            .setWfm(wfm) //
-            .setOrigin(origin) //
-            .setName(projectName) //
-            .setId(customProjectId) //
-            .build();
+    private static Map<VersionId.Fixed, WorkflowManager> initializeCachedVersions() {
+        return new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
     }
 
-    /**
-     * @param wfm
-     * @return a builder for {@link CachedProject}-instances
-     */
-    public static BuilderStage.RequiresWorkflow builder() {
+    private static Lazy.Init<WorkflowManager> initializeCachedWfm(final Builder builder) {
+        return builder.m_loadedWfm != null ? //
+            new Lazy.Init<>(builder.m_loadedWfm) : //
+            new Lazy.Init<>(builder.m_getWfm);
+    }
+
+    static BuilderStage.RequiresWorkflow builder() {
         return new Builder();
     }
 
     @Override
-    public String getName() {
-        return m_name;
-    }
-
-    @Override
-    public String getID() {
-        return m_id;
-    }
-
-    @Override
     public WorkflowManager getWorkflowManager() {
-        return m_cachedWfm.get();
+        return this.m_cachedWfm.get();
     }
 
     @Override
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        if (m_cachedWfm.isInitialized()) {
-            return Optional.of(m_cachedWfm.get());
-        } else {
-            return Optional.empty();
-        }
+        return this.m_cachedWfm.isInitialized() ? //
+            Optional.of(this.m_cachedWfm.get()) : //
+            Optional.empty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Optional<Origin> getOrigin() {
-        return Optional.ofNullable(m_origin);
+        return Optional.ofNullable(this.m_origin);
+    }
+
+    @Override
+    public String getName() {
+        return this.m_name;
+    }
+
+    @Override
+    public String getID() {
+        return this.m_id;
     }
 
     @Override
     public Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        if (m_getVersion == null) {
+        if (this.m_getVersion == null) {
             return Optional.empty();
         }
-        return Optional.of(m_cachedVersions.computeIfAbsent(version, m_getVersion));
+
+        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
     @Override
     public void dispose() {
-        m_cachedWfm.ifInitialized(this::disposeWorkflow);
-        m_cachedVersions.values().forEach(this::disposeWorkflow);
-        m_cachedVersions.clear();
+        this.m_cachedWfm.ifInitialized(this::disposeWorkflow);
+        this.m_cachedVersions.values().forEach(this::disposeWorkflow);
+        this.m_cachedVersions.clear();
     }
 
     private void disposeWorkflow(final WorkflowManager wfm) {
         if (wfm == null) {
             return;
         }
-        if (m_onDispose != null) {
-            m_onDispose.accept(wfm);
+
+        if (this.m_onDispose != null) {
+            this.m_onDispose.accept(wfm);
         }
+
         try {
             CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
         } catch (InterruptedException e) { // NOSONAR
-            NodeLogger.getLogger(CachedProject.class).error(e);
+            NodeLogger.getLogger(Project.class).error(e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(m_id).append(m_name).append(m_origin).build();
+    public void clearReport() {
+        if (this.m_clearReport == null) {
+            throw new UnsupportedOperationException("No clear report runnable set for project " + this.m_name + "'");
+        }
+
+        this.m_clearReport.run();
     }
 
     /**
-     * {@inheritDoc}
+     * Generates a report. See {@code org.knime.enterprise.executor.JobPool#generateReport}.
+     *
+     * @param format the report format
+     * @return the report directory or an empty optional
+     * @throws IllegalArgumentException if the format is not supported or invalid
+     * @throws IllegalStateException if report generation failed for some reason
      */
+    @Override
+    public byte[] generateReport(final String format) {
+        if (this.m_generateReport == null) {
+            throw new UnsupportedOperationException(
+                "No report generation function set for project '" + this.m_name + "'");
+        }
+
+        return this.m_generateReport.apply(format);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder() //
+            .append(this.m_id) //
+            .append(this.m_name) //
+            .append(this.m_origin) //
+            .build();
+    }
+
     @Override
     public boolean equals(final Object other) {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof CachedProject otherProject)) {
+
+        if (!(other instanceof Project otherProject)) {
             return false;
         }
-        return new EqualsBuilder().append(m_id, otherProject.getID()).append(m_name, otherProject.getName())
-            .append(m_origin, otherProject.getOrigin().orElse(null)).build();
+
+        return new EqualsBuilder() //
+            .append(this.m_id, otherProject.getID()) //
+            .append(this.m_name, otherProject.getName()) //
+            .append(this.m_origin, otherProject.getOrigin().orElse(null)) //
+            .build();
     }
 
-    @SuppressWarnings("javadoc")
-    public interface BuilderStage {
+    /**
+     * Builder for {@link Project}-instances.
+     */
+    interface BuilderStage {
 
+        /**
+         * Builder stage requiring an id.
+         */
         interface RequiresId {
             Optionals setId(final String id);
         }
 
+        /**
+         * Builder stage requiring a {@link WorkflowManager}.
+         */
         interface RequiresWorkflow {
             Optionals setWfm(final WorkflowManager wfm);
 
             RequiresName setWfmLoader(final Supplier<WorkflowManager> getWfm);
         }
 
+        /**
+         * Builder stage requiring a name.
+         */
         interface RequiresName {
             RequiresId setName(final String name);
         }
 
+        /**
+         * Builder stage offering optional properties.
+         */
         interface Optionals extends RequiresId, RequiresName {
             Optionals setOrigin(Origin origin);
 
@@ -251,18 +271,22 @@ public final class CachedProject implements Project {
 
             Optionals onDispose(Consumer<WorkflowManager> onDispose);
 
-            CachedProject build();
+            Optionals clearReport(Runnable clearReport);
+
+            Optionals generateReport(Function<String, byte[]> generateReport);
+
+            Project build();
         }
     }
 
     /**
-     * Builder for {@link CachedProject}-instances.
+     * Builder for {@link Project}-instances.
      *
      * This builder offers different routes to construct an instance. Namely, one via a supplier which requires setting
      * additional properties, and one via an instance which infers these properties from the instance.
      */
-    @SuppressWarnings({"java:S1939"}) // clearer if all implementations are listed, even though technically redundant
-    public static final class Builder implements BuilderStage.RequiresId, BuilderStage.RequiresWorkflow,
+    @SuppressWarnings({"java:S1939", "unused"}) // Clearer if all implementations are listed, even though technically redundant
+    private static final class Builder implements BuilderStage.RequiresId, BuilderStage.RequiresWorkflow,
         BuilderStage.RequiresName, BuilderStage.Optionals {
 
         private Supplier<WorkflowManager> m_getWfm;
@@ -278,6 +302,10 @@ public final class CachedProject implements Project {
         private Function<VersionId.Fixed, WorkflowManager> m_getVersion;
 
         private Consumer<WorkflowManager> m_onDispose;
+
+        private Runnable m_clearReport;
+
+        private Function<String, byte[]> m_generateReport;
 
         private Builder() {
             //
@@ -339,8 +367,8 @@ public final class CachedProject implements Project {
         }
 
         /**
-         * @param getVersion
-         * @return
+         * @param getVersionFunction
+         * @return this
          */
         @Override
         public Builder setVersionWfmLoader(final Function<VersionId.Fixed, WorkflowManager> getVersion) {
@@ -349,6 +377,10 @@ public final class CachedProject implements Project {
             return this;
         }
 
+        /**
+         * @param onDispose
+         * @return this
+         */
         @Override
         public Builder onDispose(final Consumer<WorkflowManager> onDispose) {
             Objects.requireNonNull(onDispose);
@@ -357,10 +389,32 @@ public final class CachedProject implements Project {
         }
 
         /**
-         * @return a new {@link CachedProject}-instance
+         * @param clearReport
+         * @return this
          */
         @Override
-        public CachedProject build() {
+        public Builder clearReport(final Runnable clearReport) {
+            Objects.requireNonNull(clearReport);
+            m_clearReport = clearReport;
+            return this;
+        }
+
+        /**
+         * @param generateReport
+         * @return this
+         */
+        @Override
+        public Builder generateReport(final Function<String, byte[]> generateReport) {
+            Objects.requireNonNull(generateReport);
+            m_generateReport = generateReport;
+            return this;
+        }
+
+        /**
+         * @return a new {@link Project}-instance
+         */
+        @Override
+        public Project build() {
             return new CachedProject(this);
         }
     }

@@ -73,7 +73,6 @@ import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.DefaultApplicationService;
@@ -106,7 +105,7 @@ public class AppStateUpdaterTest {
 
         var pm = ProjectManager.getInstance();
         var wfm1 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj1 = CachedProject.builder().setWfm(wfm1).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var proj1 = Project.builder().setWfm(wfm1).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj1);
 
         DefaultApplicationService.getInstance().getState(); // initializes the app-state for the AppStateUpdater
@@ -118,7 +117,7 @@ public class AppStateUpdaterTest {
 
         // update open projects and verify resulting app state changed event
         var wfm2 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj2 = CachedProject.builder().setWfm(wfm2).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var proj2 = Project.builder().setWfm(wfm2).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj2);
         appStateUpdater.updateAppState();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent",
@@ -155,7 +154,7 @@ public class AppStateUpdaterTest {
         setupServiceDependencies(appStateUpdater, eventConsumer, preferencesProvider);
 
         var pm = ProjectManager.getInstance();
-        var proj1 = CachedProject.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
+        var proj1 = Project.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
             .onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj1);
 
@@ -166,7 +165,7 @@ public class AppStateUpdaterTest {
         verify(eventConsumer, times(0)).accept(any(), any());
 
         // update open projects and check resulting app state changed event (there should be none)
-        var proj2 = CachedProject.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
+        var proj2 = Project.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
             .onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         pm.addProject(proj2);
         appStateUpdater.updateAppState();
@@ -185,7 +184,6 @@ public class AppStateUpdaterTest {
 
         pm.removeProject(proj1.getID());
         pm.removeProject(proj2.getID());
-
     }
 
     private static CompositeEventEnt buildExpectedCompositeEvent(final Project... projects) {

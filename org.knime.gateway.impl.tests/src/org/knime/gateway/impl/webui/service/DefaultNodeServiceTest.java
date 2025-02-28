@@ -91,7 +91,7 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.impl.project.CachedProject;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -115,7 +115,7 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
     @Before
     public void createEmptyWorkflow() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var project = CachedProject.builder().setWfm(m_wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var project = Project.builder().setWfm(m_wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         m_projectId = project.getID();
         ProjectManager.getInstance().addProject(project);
     }

@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.project.CachedProject;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.WorkflowServiceTestHelper;
@@ -204,7 +204,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         throws IOException, NotASubWorkflowException, NodeNotFoundException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
-        var project = CachedProject.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var project = Project.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         ProjectManager.getInstance().addProject(project);
 
         var workflowService = DefaultWorkflowService.getInstance();

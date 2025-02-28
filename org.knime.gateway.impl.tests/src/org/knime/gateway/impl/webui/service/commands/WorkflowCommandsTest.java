@@ -106,7 +106,6 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.impl.project.CachedProject;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -337,7 +336,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         }
         WorkflowManager wfm = WorkflowManager.ROOT.createAndAddProject("workflow", new WorkflowCreationHelper(
             WorkflowContextV2.forTemporaryWorkflow(workflowFile.getParentFile().toPath(), null)));
-        Project workflowProject = CachedProject.builder().setWfm(wfm) //
+        Project workflowProject = Project.builder().setWfm(wfm) //
                 .setName("workflow") //
                 .setId("wfId") //
                 .onDispose(WorkflowManagerUtil::disposeWorkflow) //

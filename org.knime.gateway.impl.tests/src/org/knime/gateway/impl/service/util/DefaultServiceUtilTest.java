@@ -72,7 +72,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.impl.project.CachedProject;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.testing.util.WorkflowManagerUtil;
 import org.mockito.Mockito;
@@ -242,7 +242,7 @@ public class DefaultServiceUtilTest {
 
     private static String addWorkflowProject(final WorkflowManager wfm) {
         String wfId = UUID.randomUUID().toString();
-        ProjectManager.getInstance().addProject(CachedProject.builder().setWfm(wfm).setId(wfId).build());
+        ProjectManager.getInstance().addProject(Project.builder().setWfm(wfm).setId(wfId).build());
         return wfId;
     }
 
