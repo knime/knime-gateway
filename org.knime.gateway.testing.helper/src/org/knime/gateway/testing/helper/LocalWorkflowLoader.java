@@ -50,7 +50,6 @@ package org.knime.gateway.testing.helper;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -169,26 +168,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     }
 
     private static Origin createOriginForTesting() {
-        return new Origin() {
-            @Override
-            public String getProviderId() {
-                return "Provider ID for testing";
-            }
-
-            @Override
-            public String getSpaceId() {
-                return "Space ID for testing";
-            }
-
-            @Override
-            public String getItemId() {
-                return "Item ID for testing";
-            }
-
-            @Override
-            public Optional<ProjectTypeEnum> getProjectType() {
-                return Optional.of(ProjectTypeEnum.WORKFLOW);
-            }
-        };
+        return Origin.of("Provider ID for testing", "Space ID for testing", "Item ID for testing",
+            ProjectTypeEnum.WORKFLOW);
     }
 }

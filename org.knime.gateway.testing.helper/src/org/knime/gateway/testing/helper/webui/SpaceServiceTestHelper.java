@@ -840,28 +840,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static Project createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
-        var origin = new Origin() {
-
-            @Override
-            public String getProviderId() {
-                return providerId;
-            }
-
-            @Override
-            public String getSpaceId() {
-                return spaceId;
-            }
-
-            @Override
-            public String getItemId() {
-                return itemId;
-            }
-
-            @Override
-            public Optional<ProjectTypeEnum> getProjectType() {
-                return Optional.of(ProjectTypeEnum.WORKFLOW);
-            }
-        };
         return new Project() {
 
             @Override
@@ -881,7 +859,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             @Override
             public Optional<Origin> getOrigin() {
-                return Optional.of(origin);
+                return Optional.of(Origin.of(providerId, spaceId, itemId, ProjectTypeEnum.WORKFLOW));
             }
         };
     }

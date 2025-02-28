@@ -81,7 +81,7 @@ import org.knime.gateway.impl.util.Lazy;
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME Gmbh, Germany
  */
-record CachedProject ( //
+record CachedProject( //
     Consumer<WorkflowManager> m_onDispose, //
     String m_id, //
     String m_name, //
