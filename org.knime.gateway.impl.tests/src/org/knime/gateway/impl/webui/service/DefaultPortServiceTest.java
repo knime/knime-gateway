@@ -95,7 +95,7 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.impl.project.CachedProject;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -119,7 +119,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
     public void testDeactivatePortDataService() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nc = createNodeWithTableOutputPort(wfm);
-        var project = CachedProject.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var project = Project.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
         var projectId = project.getID();
         var nodeIdEnt = new NodeIDEnt(nc.getID());
         ProjectManager.getInstance().addProject(project);

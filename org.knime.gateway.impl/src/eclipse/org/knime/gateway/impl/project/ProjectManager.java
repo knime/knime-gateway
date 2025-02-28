@@ -119,10 +119,10 @@ public final class ProjectManager {
             .flatMap(originalProject -> updateProject(originalProject, spaceProviderId, spaceId, itemId, projectType));
     }
 
-    private Optional<CachedProject> updateProject(final Project originalProject, final String spaceProviderId,
+    private Optional<Project> updateProject(final Project originalProject, final String spaceProviderId,
         final String spaceId, final String itemId, final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
         return originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
-            var updatedProject = CachedProject.builder() //
+            var updatedProject = Project.builder() //
                 .setWfm(wfm) //
                 .setId(originalProject.getID()) //
                 .setOrigin(Origin.of(spaceProviderId, spaceId, itemId, projectType)) //
