@@ -182,21 +182,22 @@ public final class SpaceProvidersManager {
      * point.
      */
     public synchronized void update() {
-        m_spaceProviders.values().forEach(providers -> providers.getAllSpaceProviders().forEach(m_onProviderRemoved));
-        m_spaceProviders.clear();
-
-        var spaceProvidersMap = new LinkedHashMap<String, SpaceProvider>();
+        // we keep the very same 'default' space providers instance on update and only change the contained map
+        // - otherwise we'd need to update all classes that reference it, too
+        var defaultSpaceProviders =
+            m_spaceProviders.computeIfAbsent(Key.defaultKey(), key -> new SpaceProviders(new LinkedHashMap<>()));
+        var spaceProvidersMap = defaultSpaceProviders.getMap();
+        spaceProvidersMap.values().forEach(m_onProviderRemoved);
+        spaceProvidersMap.clear();
         if (m_localSpaceProvider != null) {
             spaceProvidersMap.put(m_localSpaceProvider.getId(), m_localSpaceProvider);
         }
-
         m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProviders().forEach(provider -> {
             provider.init(m_loginErrorHandler);
             m_onProviderCreated.accept(provider);
             spaceProvidersMap.put(provider.getId(), provider);
         }));
 
-        m_spaceProviders.put(Key.defaultKey(), new SpaceProviders(spaceProvidersMap));
     }
 
     /**

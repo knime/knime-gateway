@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.spaces;
 import static org.assertj.core.api.Assertions.assertThatList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -120,8 +121,12 @@ public class SpaceProvidersManagerTest {
             is("1"));
 
         when(spaceProvidersFactory.createSpaceProviders()).thenReturn(List.of(spacerProvider1));
+        var spaceProvidersBeforeUpdate = spaceProvidersManager.getSpaceProviders(Key.defaultKey());
         spaceProvidersManager.update();
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
+        // makes sure that the 'default' space providers instance is not replaced
+        // - otherwise the classes referencing it would need to be updated, too
+        assertThat(spaceProvidersManager.getSpaceProviders(Key.defaultKey()), sameInstance(spaceProvidersBeforeUpdate));
         assertThrows(NoSuchElementException.class,
             () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2"));
     }

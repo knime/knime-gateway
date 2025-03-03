@@ -117,4 +117,8 @@ public final class SpaceProviders {
             .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType()));
     }
 
+    Map<String, SpaceProvider> getMap() {
+        return m_spaceProviders;
+    }
+
 }
