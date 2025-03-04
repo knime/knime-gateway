@@ -843,7 +843,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setWfm(null) //
             .setName("some_name") //
             .setId("some_id") //
-            .setOrigin(Origin.of(providerId, spaceId, itemId, ProjectTypeEnum.WORKFLOW)) //
+            .setOrigin(new Origin(providerId, spaceId, itemId, ProjectTypeEnum.WORKFLOW)) //
             .build();
     }
 

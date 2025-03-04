@@ -78,6 +78,26 @@ public record Origin(//
     Optional<SpaceItemVersionEnt> itemVersion) {
 
     /**
+     * @param providerId
+     * @param spaceId
+     * @param itemId
+     */
+    public Origin(final String providerId, final String spaceId, final String itemId) {
+        this(providerId, spaceId, itemId, Optional.empty(), Optional.empty());
+    }
+
+    /**
+     * @param providerId
+     * @param spaceId
+     * @param itemId
+     * @param projectType the type of the project or {@code null}
+     */
+    public Origin(final String providerId, final String spaceId, final String itemId,
+        final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
+        this(providerId, spaceId, itemId, Optional.ofNullable(projectType), Optional.empty());
+    }
+
+    /**
      * @return {@code true} if the space provider is local
      */
     public boolean isLocal() {
@@ -100,40 +120,6 @@ public record Origin(//
             .append(spaceId, other.spaceId)//
             .append(itemId, other.itemId)//
             .isEquals();
-    }
-
-    /**
-     * @param providerId
-     * @param spaceId
-     * @param itemId
-     * @return a new instance
-     */
-    public static Origin of(final String providerId, final String spaceId, final String itemId) {
-        return new Origin(providerId, spaceId, itemId, Optional.empty(), Optional.empty());
-    }
-
-    /**
-     * @param providerId
-     * @param spaceId
-     * @param itemId
-     * @param projectType the type of the project or {@code null}
-     * @return a new instance
-     */
-    public static Origin of(final String providerId, final String spaceId, final String itemId,
-        final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
-        return new Origin(providerId, spaceId, itemId, Optional.ofNullable(projectType), Optional.empty());
-    }
-
-    /**
-     * @param providerId
-     * @param spaceId
-     * @param itemId
-     * @param projectTypeOptional
-     * @return a new instance
-     */
-    public static Origin of(final String providerId, final String spaceId, final String itemId,
-        final Optional<SpaceItemReferenceEnt.ProjectTypeEnum> projectTypeOptional) {
-        return new Origin(providerId, spaceId, itemId, projectTypeOptional, Optional.empty());
     }
 
     /**

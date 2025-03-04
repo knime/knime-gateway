@@ -168,7 +168,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
     }
 
     private static Origin createOriginForTesting() {
-        return Origin.of("Provider ID for testing", "Space ID for testing", "Item ID for testing",
+        return new Origin("Provider ID for testing", "Space ID for testing", "Item ID for testing",
             ProjectTypeEnum.WORKFLOW);
     }
 }

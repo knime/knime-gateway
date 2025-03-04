@@ -125,7 +125,7 @@ public final class ProjectManager {
             var updatedProject = Project.builder() //
                 .setWfm(wfm) //
                 .setId(originalProject.getID()) //
-                .setOrigin(Origin.of(spaceProviderId, spaceId, itemId, projectType)) //
+                .setOrigin(new Origin(spaceProviderId, spaceId, itemId, projectType)) //
                 .build();
             this.addProject(updatedProject);
             return updatedProject;

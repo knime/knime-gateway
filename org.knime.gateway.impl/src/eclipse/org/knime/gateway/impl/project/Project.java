@@ -95,16 +95,18 @@ public final class Project {
     private final Function<String, byte[]> m_generateReport;
 
     private Project(final Builder builder) {
-        m_onDispose = builder.m_onDispose;
-        m_id = builder.m_id;
-        m_name = builder.m_name;
-        m_origin = builder.m_origin;
-        m_getVersion = builder.m_getVersion;
-        m_cachedWfm = builder.m_loadedWfm != null ? //
+        this.m_onDispose = builder.m_onDispose;
+        this.m_id = builder.m_id;
+        this.m_name = builder.m_name;
+        this.m_origin = builder.m_origin;
+        this.m_getVersion = builder.m_getVersion;
+        this.m_cachedWfm = builder.m_loadedWfm != null ? //
             new Lazy.Init<>(builder.m_loadedWfm) : //
             new Lazy.Init<>(builder.m_getWfm);
-        m_clearReport = builder.m_clearReport;
-        m_generateReport = builder.m_generateReport;
+        this.m_clearReport = builder.m_clearReport != null ? //
+            builder.m_clearReport : //
+            () -> {};
+        this.m_generateReport = builder.m_generateReport;
     }
 
     /**
@@ -127,7 +129,7 @@ public final class Project {
      *         loaded.
      */
     public WorkflowManager getWorkflowManager() {
-            return m_cachedWfm.get();
+        return m_cachedWfm.get();
     }
 
     /**
@@ -194,12 +196,9 @@ public final class Project {
     }
 
     /**
-     * Clears the report directory of the workflow project (if there is any).
+     * Clears the report directory of the workflow project.
      */
     public void clearReport() {
-        if (this.m_clearReport == null) {
-            throw new UnsupportedOperationException("No clear report runnable set for project " + this.m_name + "'");
-        }
         this.m_clearReport.run();
     }
 
@@ -247,7 +246,7 @@ public final class Project {
      * @return A builder to create a new {@link Project}-instance.
      */
     public static BuilderStage.RequiresWorkflow builder() {
-        return Project.builder();
+        return new Builder();
     }
 
     /**
@@ -266,9 +265,8 @@ public final class Project {
         final var path = context.getExecutorInfo().getLocalWorkflowPath();
         final var itemId = localSpace.getItemId(path);
         final var origin =
-            Origin.of(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId, projectType);
+            new Origin(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId, projectType);
         final var projectName = path.toFile().getName();
-
         return Project.builder() //
             .setWfm(wfm) //
             .setOrigin(origin) //
