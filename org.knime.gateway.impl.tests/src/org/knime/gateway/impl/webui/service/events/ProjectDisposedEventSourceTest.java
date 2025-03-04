@@ -78,7 +78,12 @@ public class ProjectDisposedEventSourceTest {
     @Test
     public void testProjectDisposedEventSource() throws InvalidRequestException {
         var projectManager = ProjectManager.getInstance();
-        projectManager.addProject(Project.builder().setWfm(null).setName("test name").setId("test id").build());
+        var project = Project.builder() //
+            .setWfmLoader(() -> null) //
+            .setName("test name") //
+            .setId("test id") //
+            .build();
+        projectManager.addProject(project);
 
         // set service dependencies
         var eventConsumer = mock(EventConsumer.class);
@@ -86,6 +91,7 @@ public class ProjectDisposedEventSourceTest {
         }, null);
         var preferenceProvider = mock(PreferencesProvider.class);
         var nodeCollections = mock(NodeCollections.class);
+        ServiceInstances.disposeAllServiceInstancesAndDependencies();
         ServiceDependencies.setDefaultServiceDependencies(projectManager, new WorkflowMiddleware(projectManager, null),
             null, eventConsumer, spaceProvidersManager, null, preferenceProvider, null, null, nodeCollections, null,
             null, null);
