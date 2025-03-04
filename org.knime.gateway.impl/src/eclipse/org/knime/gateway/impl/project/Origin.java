@@ -48,11 +48,14 @@ package org.knime.gateway.impl.project;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.net.URI;
 import java.util.Optional;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.AnalyticsPlatformExecutorInfo;
 import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
+import org.knime.core.util.Pair;
 import org.knime.core.util.hub.NamedItemVersion;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
@@ -60,8 +63,55 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
  * Identifies space and item from which this workflow/component project has been opened.
+ *
+ * @param providerId The ID of the space provider containing the workflow/component project
+ * @param spaceId The space ID of the workflow/component project
+ * @param itemId The item ID of the workflow/component project
+ * @param projectType The project type of the space item
+ * @param itemVersion The item version of the workflow/component project, or absent for latest version
  */
-public interface Origin {
+public record Origin(//
+    String providerId, //
+    String spaceId, //
+    String itemId, //
+    Optional<SpaceItemReferenceEnt.ProjectTypeEnum> projectType, //
+    Optional<SpaceItemVersionEnt> itemVersion) {
+
+    /**
+     * @return {@code true} if the space provider is local
+     */
+    public boolean isLocal() {
+        return this.providerId.equals(SpaceProvider.LOCAL_SPACE_PROVIDER_ID);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (!(obj instanceof Origin)) {
+            return false;
+        }
+
+        final Origin other = (Origin)obj;
+        return new EqualsBuilder()//
+            .append(providerId, other.providerId)//
+            .append(spaceId, other.spaceId)//
+            .append(itemId, other.itemId)//
+            .isEquals();
+    }
+
+    /**
+     * @param providerId
+     * @param spaceId
+     * @param itemId
+     * @return a new instance
+     */
+    public static Origin of(final String providerId, final String spaceId, final String itemId) {
+        return new Origin(providerId, spaceId, itemId, Optional.empty(), Optional.empty());
+    }
+
     /**
      * @param providerId
      * @param spaceId
@@ -69,29 +119,21 @@ public interface Origin {
      * @param projectType the type of the project or {@code null}
      * @return a new instance
      */
-    static Origin of(final String providerId, final String spaceId, final String itemId,
+    public static Origin of(final String providerId, final String spaceId, final String itemId,
         final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
-        return new Origin() { // NOSONAR
-            @Override
-            public String getProviderId() {
-                return providerId;
-            }
+        return new Origin(providerId, spaceId, itemId, Optional.ofNullable(projectType), Optional.empty());
+    }
 
-            @Override
-            public String getSpaceId() {
-                return spaceId;
-            }
-
-            @Override
-            public String getItemId() {
-                return itemId;
-            }
-
-            @Override
-            public Optional<SpaceItemReferenceEnt.ProjectTypeEnum> getProjectType() {
-                return Optional.ofNullable(projectType);
-            }
-        };
+    /**
+     * @param providerId
+     * @param spaceId
+     * @param itemId
+     * @param projectTypeOptional
+     * @return a new instance
+     */
+    public static Origin of(final String providerId, final String spaceId, final String itemId,
+        final Optional<SpaceItemReferenceEnt.ProjectTypeEnum> projectTypeOptional) {
+        return new Origin(providerId, spaceId, itemId, projectTypeOptional, Optional.empty());
     }
 
     /**
@@ -103,44 +145,26 @@ public interface Origin {
      * @return The newly created Origin, or empty if hubLocation or workflow manager are missing
      */
     @SuppressWarnings({"java:S1188"})
-    static Optional<Origin> of(final HubSpaceLocationInfo hubLocation, final WorkflowManager wfm,
+    public static Optional<Origin> of(final HubSpaceLocationInfo hubLocation, final WorkflowManager wfm,
         final NamedItemVersion selectedVersion) {
         if (hubLocation == null || wfm == null) {
             return Optional.empty();
         }
+
         final var context = wfm.getContextV2();
         final var apExecInfo = (AnalyticsPlatformExecutorInfo)context.getExecutorInfo();
-        final var versionInfo = selectedVersion == null ? null : Origin.buildVersionInfo(selectedVersion);
-        return Optional.of(new Origin() {
 
-            @Override
-            public String getProviderId() {
-                final var mountpoint = apExecInfo.getMountpoint()
-                    .orElseThrow(() -> new IllegalStateException("Missing Mount ID for Hub workflow '" + wfm + "'"));
-                return mountpoint.getFirst().getAuthority();
-            }
+        final var providerId = apExecInfo.getMountpoint().map(Pair::getFirst).map(URI::getAuthority).orElse(null);
+        final var spaceId = hubLocation.getSpaceItemId();
+        final var itemId = hubLocation.getWorkflowItemId();
+        final var projectType = wfm.isComponentProjectWFM() ? //
+            Optional.of(SpaceItemReferenceEnt.ProjectTypeEnum.COMPONENT) : //
+            Optional.of(SpaceItemReferenceEnt.ProjectTypeEnum.WORKFLOW);
+        final Optional<SpaceItemVersionEnt> itemVersion = selectedVersion == null ? //
+            Optional.empty() : //
+            Optional.of(buildVersionInfo(selectedVersion));
 
-            @Override
-            public String getSpaceId() {
-                return hubLocation.getSpaceItemId();
-            }
-
-            @Override
-            public String getItemId() {
-                return hubLocation.getWorkflowItemId();
-            }
-
-            @Override
-            public Optional<SpaceItemReferenceEnt.ProjectTypeEnum> getProjectType() {
-                return Optional.of(wfm.isComponentProjectWFM() ? SpaceItemReferenceEnt.ProjectTypeEnum.COMPONENT
-                    : SpaceItemReferenceEnt.ProjectTypeEnum.WORKFLOW);
-            }
-
-            @Override
-            public Optional<SpaceItemVersionEnt> getItemVersion() {
-                return Optional.ofNullable(versionInfo);
-            }
-        });
+        return Optional.of(new Origin(providerId, spaceId, itemId, projectType, itemVersion));
     }
 
     private static SpaceItemVersionEnt buildVersionInfo(final NamedItemVersion selectedVersion) {
@@ -154,35 +178,4 @@ public interface Origin {
             .build();
     }
 
-    /**
-     * @return The ID of the space provider containing the workflow/component project
-     */
-    String getProviderId();
-
-    /**
-     * @return The space ID of the workflow/component project
-     */
-    String getSpaceId();
-
-    /**
-     * @return The item ID of the workflow/component project
-     */
-    String getItemId();
-
-    /**
-     * @return The project type of the space item
-     */
-    Optional<SpaceItemReferenceEnt.ProjectTypeEnum> getProjectType();
-
-    /**
-     * @return The item version of the workflow/component project, or absent for latest version
-     * @since 5.4
-     */
-    default Optional<SpaceItemVersionEnt> getItemVersion() {
-        return Optional.empty();
-    }
-
-    default boolean isLocal() {
-        return this.getProviderId().equals(SpaceProvider.LOCAL_SPACE_PROVIDER_ID);
-    }
 }

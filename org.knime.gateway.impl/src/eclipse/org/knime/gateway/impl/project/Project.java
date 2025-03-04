@@ -45,15 +45,24 @@
  */
 package org.knime.gateway.impl.project;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
-import org.knime.gateway.impl.project.CachedProject.BuilderStage;
+import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
@@ -63,45 +72,87 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
  */
-@SuppressWarnings("javadoc")
-public interface Project {
+public final class Project {
+
+    private static final int VERSION_WFM_CACHE_MAX_SIZE = 5;
+
+    private final Consumer<WorkflowManager> m_onDispose;
+
+    private final String m_id;
+
+    private final String m_name;
+
+    private final Origin m_origin;
+
+    private final Function<VersionId.Fixed, WorkflowManager> m_getVersion;
+
+    private final Map<VersionId.Fixed, WorkflowManager> m_cachedVersions = new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
+
+    private final Lazy.Init<WorkflowManager> m_cachedWfm;
+
+    private final Runnable m_clearReport;
+
+    private final Function<String, byte[]> m_generateReport;
+
+    private Project(final Builder builder) {
+        m_onDispose = builder.m_onDispose;
+        m_id = builder.m_id;
+        m_name = builder.m_name;
+        m_origin = builder.m_origin;
+        m_getVersion = builder.m_getVersion;
+        m_cachedWfm = builder.m_loadedWfm != null ? //
+            new Lazy.Init<>(builder.m_loadedWfm) : //
+            new Lazy.Init<>(builder.m_getWfm);
+        m_clearReport = builder.m_clearReport;
+        m_generateReport = builder.m_generateReport;
+    }
 
     /**
      * @return the name of the project
      */
-    String getName();
+    public String getName() {
+        return m_name;
+    }
 
     /**
      * @return an id of the project
      */
-    String getID();
+    public String getID() {
+        return m_id;
+    }
 
     /**
-     * The root workflow manager of the {@link VersionId.CurrentState} of this project. This might mean loading it, or
-     * obtaining it via reference. If this call succeeds, the workflow manager can be understood to be loaded.
+     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project. This might mean loading
+     *         it, or obtaining it via reference. If this call succeeds, the workflow manager can be understood to be
+     *         loaded.
      */
-    WorkflowManager getWorkflowManager();
+    public WorkflowManager getWorkflowManager() {
+            return m_cachedWfm.get();
+    }
 
     /**
      * @return The root workflow manager of the {@link VersionId.CurrentState} of this project, or empty if that
      *         workflow manager is not yet loaded.
      */
-    default Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return Optional.empty();
+    public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
+        return this.m_cachedWfm.isInitialized() ? //
+            Optional.of(this.m_cachedWfm.get()) : //
+            Optional.empty();
     }
 
     /**
-     * @return describes from where this workflow/component project originates, i.e. from where it has been created; an
+     * @return Describes from where this workflow/component project originates, i.e. from where it has been created; an
      *         empty optional if the origin is unknown
      */
-    default Optional<Origin> getOrigin() {
-        return Optional.empty();
+    public Optional<Origin> getOrigin() {
+        return Optional.ofNullable(this.m_origin);
     }
 
     /**
-     * Obtain the workflow manager in the project of a given {@link VersionId}.
+     * @param version
+     * @return The workflow manager in the project of a given {@link VersionId}.
      */
-    default Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
+    public Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
         if (version instanceof VersionId.Fixed fixedVersion) {
             return this.getVersion(fixedVersion);
         }
@@ -109,31 +160,47 @@ public interface Project {
     }
 
     /**
-     * Obtain the workflow manager in the project of a given {@link VersionId.Fixed} version.
+     * @param version
+     * @return The workflow manager in the project of a given {@link VersionId.Fixed} version.
      */
-    @SuppressWarnings("unused")
-    default Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        return Optional.empty();
+    public Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
+        if (this.m_getVersion == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
     /**
      * Dispose the project.
      */
-    default void dispose() {
-        getWorkflowManagerIfLoaded().ifPresent(wfm -> {
-            try {
-                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-            } catch (InterruptedException e) { // NOSONAR
-                NodeLogger.getLogger(CachedProject.class).error(e);
-            }
-        });
+    public void dispose() {
+        this.m_cachedWfm.ifInitialized(this::disposeWorkflow);
+        this.m_cachedVersions.values().forEach(this::disposeWorkflow);
+        this.m_cachedVersions.clear();
+    }
+
+    private void disposeWorkflow(final WorkflowManager wfm) {
+        if (wfm == null) {
+            return;
+        }
+        if (this.m_onDispose != null) {
+            this.m_onDispose.accept(wfm);
+        }
+        try {
+            CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
+        } catch (InterruptedException e) { // NOSONAR
+            NodeLogger.getLogger(Project.class).error(e);
+        }
     }
 
     /**
      * Clears the report directory of the workflow project (if there is any).
      */
-    default void clearReport() {
-        throw new UnsupportedOperationException("Report generation not supported");
+    public void clearReport() {
+        if (this.m_clearReport == null) {
+            throw new UnsupportedOperationException("No clear report runnable set for project " + this.m_name + "'");
+        }
+        this.m_clearReport.run();
     }
 
     /**
@@ -144,15 +211,43 @@ public interface Project {
      * @throws IllegalArgumentException if the format is not supported or invalid
      * @throws IllegalStateException if report generation failed for some reason
      */
-    default byte[] generateReport(final String format) {
-        throw new UnsupportedOperationException("Report generation not supported");
+    public byte[] generateReport(final String format) {
+        if (this.m_generateReport == null) {
+            throw new UnsupportedOperationException(
+                "No report generation function set for project '" + this.m_name + "'");
+        }
+        return this.m_generateReport.apply(format);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder() //
+            .append(this.m_id) //
+            .append(this.m_name) //
+            .append(this.m_origin) //
+            .build();
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof Project otherProject)) {
+            return false;
+        }
+        return new EqualsBuilder() //
+            .append(this.m_id, otherProject.getID()) //
+            .append(this.m_name, otherProject.getName()) //
+            .append(this.m_origin, otherProject.getOrigin().orElse(null)) //
+            .build();
     }
 
     /**
      * @return A builder to create a new {@link Project}-instance.
      */
     public static BuilderStage.RequiresWorkflow builder() {
-        return CachedProject.builder();
+        return Project.builder();
     }
 
     /**
@@ -174,12 +269,198 @@ public interface Project {
             Origin.of(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId, projectType);
         final var projectName = path.toFile().getName();
 
-        return CachedProject.builder() //
+        return Project.builder() //
             .setWfm(wfm) //
             .setOrigin(origin) //
             .setName(projectName) //
             .setId(customProjectId) //
             .build();
+    }
+
+    /**
+     * Builder for {@link Project}-instances.
+     */
+    interface BuilderStage {
+
+        /**
+         * Builder stage requiring an id.
+         */
+        interface RequiresId {
+            Optionals setId(final String id);
+        }
+
+        /**
+         * Builder stage requiring a {@link WorkflowManager}.
+         */
+        interface RequiresWorkflow {
+            Optionals setWfm(final WorkflowManager wfm);
+
+            RequiresName setWfmLoader(final Supplier<WorkflowManager> getWfm);
+        }
+
+        /**
+         * Builder stage requiring a name.
+         */
+        interface RequiresName {
+            RequiresId setName(final String name);
+        }
+
+        /**
+         * Builder stage offering optional properties.
+         */
+        interface Optionals extends RequiresId, RequiresName {
+            Optionals setOrigin(Origin origin);
+
+            Optionals setVersionWfmLoader(Function<VersionId.Fixed, WorkflowManager> getVersion);
+
+            Optionals onDispose(Consumer<WorkflowManager> onDispose);
+
+            Optionals clearReport(Runnable clearReport);
+
+            Optionals generateReport(Function<String, byte[]> generateReport);
+
+            Project build();
+        }
+    }
+
+    /**
+     * Builder for {@link Project}-instances.
+     *
+     * This builder offers different routes to construct an instance. Namely, one via a supplier which requires setting
+     * additional properties, and one via an instance which infers these properties from the instance.
+     */
+    @SuppressWarnings({"java:S1939", "unused"}) // Clearer if all implementations are listed, even though technically redundant
+    private static final class Builder implements BuilderStage.RequiresId, BuilderStage.RequiresWorkflow,
+        BuilderStage.RequiresName, BuilderStage.Optionals {
+
+        private Supplier<WorkflowManager> m_getWfm;
+
+        private WorkflowManager m_loadedWfm;
+
+        private String m_id;
+
+        private String m_name;
+
+        private Origin m_origin;
+
+        private Function<VersionId.Fixed, WorkflowManager> m_getVersion;
+
+        private Consumer<WorkflowManager> m_onDispose;
+
+        private Runnable m_clearReport;
+
+        private Function<String, byte[]> m_generateReport;
+
+        private Builder() {
+            //
+        }
+
+        /**
+         * @param projectName
+         * @return a globally unique project id combined with the given project name
+         */
+        private static String getUniqueProjectId(final String projectName) {
+            return projectName + "_" + UUID.randomUUID();
+        }
+
+        @Override
+        public BuilderStage.Optionals setWfm(final WorkflowManager wfm) {
+            m_loadedWfm = wfm;
+            m_name = wfm.getName();
+            m_id = getUniqueProjectId(m_name);
+            return this;
+        }
+
+        @Override
+        public BuilderStage.RequiresName setWfmLoader(final Supplier<WorkflowManager> supplier) {
+            m_getWfm = supplier;
+            return this;
+        }
+
+        /**
+         * @param id the id to set
+         * @return this
+         */
+        @Override
+        public BuilderStage.Optionals setId(final String id) {
+            Objects.requireNonNull(id);
+            m_id = id;
+            return this;
+        }
+
+        /**
+         * @param name the name to set
+         * @return this
+         */
+        @Override
+        public BuilderStage.RequiresId setName(final String name) {
+            Objects.requireNonNull(name);
+            m_name = name;
+            return this;
+        }
+
+        /**
+         * @param origin the origin to set
+         * @return this
+         */
+        @Override
+        public Builder setOrigin(final Origin origin) {
+            Objects.requireNonNull(origin);
+            m_origin = origin;
+            return this;
+        }
+
+        /**
+         * @param getVersion
+         * @return this
+         */
+        @Override
+        public Builder setVersionWfmLoader(final Function<VersionId.Fixed, WorkflowManager> getVersion) {
+            Objects.requireNonNull(getVersion);
+            m_getVersion = getVersion;
+            return this;
+        }
+
+        /**
+         * @param onDispose
+         * @return this
+         */
+        @Override
+        public Builder onDispose(final Consumer<WorkflowManager> onDispose) {
+            Objects.requireNonNull(onDispose);
+            m_onDispose = onDispose;
+            return this;
+        }
+
+        /**
+         * @param clearReport
+         * @return this
+         */
+        @Override
+        public Builder clearReport(final Runnable clearReport) {
+            Objects.requireNonNull(clearReport);
+            m_clearReport = clearReport;
+            return this;
+        }
+
+        /**
+         * @param generateReport
+         * @return this
+         */
+        @Override
+        public Builder generateReport(final Function<String, byte[]> generateReport) {
+            Objects.requireNonNull(generateReport);
+            m_generateReport = generateReport;
+            return this;
+        }
+
+        /**
+         * @return a new {@link Project}-instance
+         */
+        @Override
+        public Project build() {
+            return new Project(this);
+        }
     }
 
 }

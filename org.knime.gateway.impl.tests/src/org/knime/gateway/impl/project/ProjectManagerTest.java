@@ -81,10 +81,10 @@ public class ProjectManagerTest {
         var wfm = WorkflowManager.ROOT;
         var pm = ProjectManager.getInstance();
 
-        var proj1 = CachedProject.builder().setWfm(wfm).build();
-        var proj1a = CachedProject.builder().setWfm(wfm).setId(proj1.getID()).build();
-        var proj1b = CachedProject.builder().setWfm(wfm).setName("proj1b").setId(proj1.getID()).build();
-        var proj2 = CachedProject.builder().setWfm(wfm).build();
+        var proj1 = Project.builder().setWfm(wfm).build();
+        var proj1a = Project.builder().setWfm(wfm).setId(proj1.getID()).build();
+        var proj1b = Project.builder().setWfm(wfm).setName("proj1b").setId(proj1.getID()).build();
+        var proj2 = Project.builder().setWfm(wfm).build();
 
         // add projects
         pm.addProject(proj1);

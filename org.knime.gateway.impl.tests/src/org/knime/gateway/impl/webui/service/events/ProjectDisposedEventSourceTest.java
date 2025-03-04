@@ -54,7 +54,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt.ProjectDisposedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt.ProjectDisposedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -79,24 +78,7 @@ public class ProjectDisposedEventSourceTest {
     @Test
     public void testProjectDisposedEventSource() throws InvalidRequestException {
         var projectManager = ProjectManager.getInstance();
-        projectManager.addProject(new Project() {
-
-            @Override
-            public String getName() {
-                return "test name";
-            }
-
-            @Override
-            public String getID() {
-                return "test id";
-            }
-
-            @Override
-            public WorkflowManager getWorkflowManager() {
-                return null;
-            }
-
-        });
+        projectManager.addProject(Project.builder().setWfm(null).setName("test name").setId("test id").build());
 
         // set service dependencies
         var eventConsumer = mock(EventConsumer.class);

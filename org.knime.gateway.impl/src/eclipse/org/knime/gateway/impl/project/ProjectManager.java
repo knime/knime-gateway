@@ -269,9 +269,9 @@ public final class ProjectManager {
      */
     public Optional<Project> getProject(final String providerId, final String spaceId, final String itemId) {
         return projects().filter(project -> project.getOrigin() //
-            .filter(origin -> origin.getProviderId().equals(providerId)) //
-            .filter(origin -> origin.getSpaceId().equals(spaceId)) //
-            .filter(origin -> origin.getItemId().equals(itemId)) //
+            .filter(origin -> origin.providerId().equals(providerId)) //
+            .filter(origin -> origin.spaceId().equals(spaceId)) //
+            .filter(origin -> origin.itemId().equals(itemId)) //
             .isPresent()) //
             .findFirst();
     }

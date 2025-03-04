@@ -73,7 +73,6 @@ import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hamcrest.MatcherAssert;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
@@ -840,50 +839,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static Project createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
-        var origin = new Origin() {
-
-            @Override
-            public String getProviderId() {
-                return providerId;
-            }
-
-            @Override
-            public String getSpaceId() {
-                return spaceId;
-            }
-
-            @Override
-            public String getItemId() {
-                return itemId;
-            }
-
-            @Override
-            public Optional<ProjectTypeEnum> getProjectType() {
-                return Optional.of(ProjectTypeEnum.WORKFLOW);
-            }
-        };
-        return new Project() {
-
-            @Override
-            public WorkflowManager getWorkflowManager() {
-                return null;
-            }
-
-            @Override
-            public String getName() {
-                return "some_name";
-            }
-
-            @Override
-            public String getID() {
-                return "some_id";
-            }
-
-            @Override
-            public Optional<Origin> getOrigin() {
-                return Optional.of(origin);
-            }
-        };
+        return Project.builder() //
+            .setWfm(null) //
+            .setName("some_name") //
+            .setId("some_id") //
+            .setOrigin(Origin.of(providerId, spaceId, itemId, ProjectTypeEnum.WORKFLOW)) //
+            .build();
     }
 
     public void testMoveItemsWithNameCollisionsLocal() throws Exception {

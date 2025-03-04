@@ -350,11 +350,11 @@ public final class AppStateEntityFactory {
     private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Origin origin,
         final SpaceProviders spaceProviders) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
-            .setProviderId(origin.getProviderId()) //
-            .setSpaceId(origin.getSpaceId()) //
-            .setItemId(origin.getItemId()) //
-            .setProjectType(origin.getProjectType().orElse(null)) //
-            .setVersion(origin.getItemVersion().orElse(null))
+            .setProviderId(origin.providerId()) //
+            .setSpaceId(origin.spaceId()) //
+            .setItemId(origin.itemId()) //
+            .setProjectType(origin.projectType().orElse(null)) //
+            .setVersion(origin.itemVersion().orElse(null))
             .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }
@@ -367,10 +367,10 @@ public final class AppStateEntityFactory {
         // ... in the space explorer.
         // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
         if (origin.isLocal()) {
-            var localSpace = (LocalSpace)spaceProviders.getSpace(origin.getProviderId(), origin.getSpaceId());
-            return localSpace.getAncestorItemIds(origin.getItemId());
+            var localSpace = (LocalSpace)spaceProviders.getSpace(origin.providerId(), origin.spaceId());
+            return localSpace.getAncestorItemIds(origin.itemId());
         } else {
-            return null;  // NOSONAR null return value is reasonable (want to sent entity property to null)
+            return null; // NOSONAR null return value is reasonable (want to sent entity property to null)
         }
     }
 

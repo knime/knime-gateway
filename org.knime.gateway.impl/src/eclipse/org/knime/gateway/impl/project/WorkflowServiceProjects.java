@@ -75,7 +75,7 @@ public final class WorkflowServiceProjects {
      */
     public static void registerProject(final WorkflowManager wfm) {
         ProjectManager.getInstance().addProject( //
-            CachedProject.builder().setWfm(wfm).build(), //
+            Project.builder().setWfm(wfm).build(), //
             ProjectConsumerType.WORKFLOW_SERVICE, //
             false //
         );

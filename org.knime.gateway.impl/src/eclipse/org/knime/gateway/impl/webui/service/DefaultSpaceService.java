@@ -317,7 +317,7 @@ public class DefaultSpaceService implements SpaceService {
         return m_projectManager.getProjectIds().stream()//
             .flatMap(id -> m_projectManager.getProject(id)//
                 .flatMap(Project::getOrigin)//
-                .filter(origin -> space == null || origin.getSpaceId().equals(space.getId())).map(Origin::getItemId)//
+                .filter(origin -> space == null || origin.spaceId().equals(space.getId())).map(Origin::itemId)//
                 .stream());
     }
 
