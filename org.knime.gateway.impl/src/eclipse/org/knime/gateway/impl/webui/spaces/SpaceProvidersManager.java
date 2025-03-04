@@ -186,18 +186,16 @@ public final class SpaceProvidersManager {
         // - otherwise we'd need to update all classes that reference it, too
         var defaultSpaceProviders =
             m_spaceProviders.computeIfAbsent(Key.defaultKey(), key -> new SpaceProviders(new LinkedHashMap<>()));
-        var spaceProvidersMap = defaultSpaceProviders.getMap();
-        spaceProvidersMap.values().forEach(m_onProviderRemoved);
-        spaceProvidersMap.clear();
+        defaultSpaceProviders.getAllSpaceProviders().forEach(m_onProviderRemoved);
+        defaultSpaceProviders.clear();
         if (m_localSpaceProvider != null) {
-            spaceProvidersMap.put(m_localSpaceProvider.getId(), m_localSpaceProvider);
+            defaultSpaceProviders.add(m_localSpaceProvider);
         }
         m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProviders().forEach(provider -> {
             provider.init(m_loginErrorHandler);
             m_onProviderCreated.accept(provider);
-            spaceProvidersMap.put(provider.getId(), provider);
+            defaultSpaceProviders.add(provider);
         }));
-
     }
 
     /**

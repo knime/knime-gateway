@@ -117,8 +117,18 @@ public final class SpaceProviders {
             .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType()));
     }
 
-    Map<String, SpaceProvider> getMap() {
-        return m_spaceProviders;
+    /**
+     * To clear all space providers.
+     */
+    void clear() {
+        m_spaceProviders.clear();
+    }
+
+    /**
+     * Adds a provider.
+     */
+    void add(final SpaceProvider spaceProvider) {
+        m_spaceProviders.put(spaceProvider.getId(), spaceProvider);
     }
 
 }
