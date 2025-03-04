@@ -840,7 +840,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static Project createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
         return Project.builder() //
-            .setWfm(null) //
+            .setWfmLoader(() -> null) //
             .setName("some_name") //
             .setId("some_id") //
             .setOrigin(new Origin(providerId, spaceId, itemId, ProjectTypeEnum.WORKFLOW)) //
