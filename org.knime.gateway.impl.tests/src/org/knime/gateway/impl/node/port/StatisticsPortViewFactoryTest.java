@@ -129,7 +129,7 @@ public class StatisticsPortViewFactoryTest {
             var rpcDataService = portView.createRpcDataService().get();
             var request = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getCurrentRowKeys\",\"params\":[]}";
             var responseString = rpcDataService.handleRpcRequest(request);
-            assertThat(responseString, containsString("\"result\":[\"int\",\"string\",\"long\",\"double\",\"boolean\"]"));
+            assertThat(responseString, containsString("\"result\":[\"int\",\"string\",\"long\",\"double\",\"boolean\",\"mixed-type\"]"));
         } finally {
             PortContext.removeLastContext();
             port.dispose();
