@@ -50,11 +50,13 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.Optional;
 
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.service.KaiService;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
@@ -102,8 +104,11 @@ public final class DefaultKaiService implements KaiService {
         var messages = kaiRequestEnt.getMessages().stream()//
             .map(m -> new KaiHandler.Message(fromRoleEnum(m.getRole()), m.getContent())).toList();
         var startPosition = kaiRequestEnt.getStartPosition();
-        var request = new KaiHandler.Request(kaiRequestEnt.getConversationId(), kaiChainId,
-            kaiRequestEnt.getProjectId(), kaiRequestEnt.getWorkflowId(), kaiRequestEnt.getSelectedNodes(), messages,
+        var projectId = kaiRequestEnt.getProjectId();
+        var request = new KaiHandler.Request(kaiRequestEnt.getConversationId(), kaiChainId, projectId,
+            DefaultServiceUtil.getWorkflowManager(kaiRequestEnt.getProjectId(),
+                new NodeIDEnt(kaiRequestEnt.getWorkflowId())),
+            kaiRequestEnt.getSelectedNodes(), messages,
             startPosition == null ? null : new Position(startPosition.getX(), startPosition.getY()));
         getListener().ifPresent(l -> l.onNewRequest(request));
     }

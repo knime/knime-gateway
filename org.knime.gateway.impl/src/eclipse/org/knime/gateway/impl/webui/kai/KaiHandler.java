@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.kai;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.knime.core.node.workflow.WorkflowManager;
+
 /**
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
@@ -166,12 +168,11 @@ public interface KaiHandler {
      * @param conversationId ID of the conversation (null at start of conversation)
      * @param chainType i.e. qa or build mode
      * @param projectId ID of the workflow the user is interacting with
-     * @param workflowId ID of the subworkflow the user is interacting with
      * @param selectedNodes IDs of the nodes the user selected
      * @param messages of the conversation
      * @param startPosition the position to start adding nodes (in case of build mode)
      */
-    record Request(String conversationId, String chainType, String projectId, String workflowId,
+    record Request(String conversationId, String chainType, String projectId, WorkflowManager workflowManager,
         List<String> selectedNodes, List<Message> messages, Position startPosition) {
     }
 
