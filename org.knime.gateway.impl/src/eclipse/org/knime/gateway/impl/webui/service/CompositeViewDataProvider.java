@@ -49,12 +49,15 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeViewEnt;
+
+import com.fasterxml.jackson.databind.util.RawValue;
 
 /**
  * Provider for the composite view data of components
@@ -75,15 +78,61 @@ public interface CompositeViewDataProvider {
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
 
     /**
-     * @param snc
-     * @param nodeIdThatTriggered
-     * @param stateUpdates
-     * @param createNodeViewEnt
-     * @return
+     * @param snc the container of the component to reexecute
+     * @param nodeIdThatTriggered The ID of the node that triggered the reexecution from within a component
+     * @param stateUpdates The state updates that are triggered by the reexecution
+     * @param createNodeViewEnt A function that creates a NodeViewEntity from a native node container
+     * @return the re-executed or re-executing page. This will be used to handle the partial re-execution to show
+     *         already views of nodes that are already executed
      * @throws IOException
      */
-    void reexecutePage(final SubNodeContainer snc, final String nodeIdThatTriggered,
+    PageContainer reexecutePage(final SubNodeContainer snc, final String nodeIdThatTriggered,
         final Map<String, String> stateUpdates, final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt)
         throws IOException;
+
+
+    /**
+     * Query the current page while reexecuting
+     * @param snc the container of the component to reexecute
+     * @param nodeIdThatTriggered The ID of the node that triggered the reexecution from within a component
+     * @param createNodeViewEnt A function that creates a NodeViewEntity from a native node container
+     * @return the re-executed or re-executing page. This will be used to handle the partial re-execution to show
+     *         already views of nodes that are already executed
+     * @throws IOException
+     *
+     */
+    PageContainer getReexecutingPage(final SubNodeContainer snc,final String nodeIdThatTriggered, final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt)
+        throws IOException;
+
+    /**
+     * Object that contains the wizard page and some additional information.
+     * FIXME: Duplicated from org.knime.core.wizard.rpc.PageContainer
+     *
+     * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+     * @since 4.5
+     */
+    public interface PageContainer {
+
+        /**
+         * @return the nodes that have been reset by a re-execution event and are effectively re-executed (no longer
+         *         pending re-execution; e.g. finished, failed, deactivated, etc.) or an empty list if the nodes reset
+         *         by the re-execution event are still awaiting execution.
+         */
+        List<String> getReexecutedNodes();
+
+        /**
+         * @return the nodes that have been reset or <code>null</code> if the component is in executed state and
+         *         {@link #getPage()} returns page content
+         */
+        List<String> getResetNodes();
+
+        /**
+         * Returns the actual page content, i.e. as json-serialized object.
+         *
+         * @return the actual page content or <code>null</code> if the component is in execution
+         */
+        RawValue getPage();
+
+    }
 
 }
