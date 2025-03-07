@@ -49,12 +49,15 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeViewEnt;
+
+import com.fasterxml.jackson.databind.util.RawValue;
 
 /**
  * Provider for the composite view data of components.
@@ -73,22 +76,70 @@ public interface CompositeViewDataProvider {
      *            the composite view
      * @return A string representation of the page to show, that embed the views of the containing nodes into a
      *         customizable layout.
-     * @throws IOException -
+     * @throws IOException if composite data cannot be received
      */
     String getCompositeViewData(final SubNodeContainer snc,
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
 
     /**
-     * Triggers the re-execution of the component.
+     * Will start the re-execution process by updating the values provided by stateUpdates and returns the page (maybe
+     * null), the nodes that are reset and re-executed
      *
-     * @param snc -
+     * @param snc the sub-node component container that should be re-executed
      * @param resetNodeIdSuffix The nodeId suffix, i.e., not starting with root, that triggered the re-execution
-     * @param viewValues -
-     * @param createNodeViewEnt -
-     * @throws IOException -
+     * @param viewValues updates of the in-component-node that triggered the re-execution
+     * @param createNodeViewEnt function to generate the view of a native node
+     * @return the re-executed or re-executing page. This will be used to handle the partial re-execution to show
+     *         already views of nodes that are already executed
+     * @throws IOException if re-execution cannot be triggered
      */
-    void triggerComponentReexecution(final SubNodeContainer snc, final String resetNodeIdSuffix,
+    PageContainer triggerComponentReexecution(final SubNodeContainer snc, final String resetNodeIdSuffix,
         final Map<String, String> viewValues, final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt)
         throws IOException;
+
+    /**
+     * Query the current page while reexecuting
+     *
+     * @param snc the container of the component to reexecute
+     * @param nodeIdThatTriggered The ID of the node that triggered the reexecution from within a component
+     * @param createNodeViewEnt A function that creates a NodeViewEntity from a native node container
+     * @return the re-executed or re-executing page. This will be used to handle the partial re-execution to show
+     *         already views of nodes that are already executed
+     * @throws IOException if reexecution status cannot be polled
+     *
+     */
+    PageContainer pollComponentReexecutionStatus(final SubNodeContainer snc, final String nodeIdThatTriggered,
+        final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    // TODO(NXT-3423): Duplicated from org.knime.core.wizard.rpc.PageContainer. Needs deduplication
+    /**
+     * Object that contains the wizard page and some additional information.
+     *
+     * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+     * @since 4.5
+     */
+    interface PageContainer {
+
+        /**
+         * @return the nodes that have been reset by a re-execution event and are effectively re-executed (no longer
+         *         pending re-execution; e.g. finished, failed, deactivated, etc.) or an empty list if the nodes reset
+         *         by the re-execution event are still awaiting execution.
+         */
+        List<String> getReexecutedNodes();
+
+        /**
+         * @return the nodes that have been reset or <code>null</code> if the component is in executed state and
+         *         {@link #getPage()} returns page content
+         */
+        List<String> getResetNodes();
+
+        /**
+         * Returns the actual page content, i.e. as json-serialized object.
+         *
+         * @return the actual page content or <code>null</code> if the component is in execution
+         */
+        RawValue getPage();
+
+    }
 
 }

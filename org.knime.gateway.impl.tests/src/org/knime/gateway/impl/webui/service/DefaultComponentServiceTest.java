@@ -100,8 +100,9 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         assertTrue("yAxisLabel should not exist before re-execution",
             scatterPlotBefore.at(scatterPlotYAxisLabelPath).isMissingNode());
 
-        cs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
-            .of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
+        cs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),"3:0:4",
+           Map.of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
+        var reexecutionStatus = cs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),"3:0:4");
 
         wfm.executeAllAndWaitUntilDone();
 

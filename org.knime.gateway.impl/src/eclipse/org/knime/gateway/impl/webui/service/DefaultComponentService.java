@@ -97,7 +97,6 @@ public class DefaultComponentService implements ComponentService {
     @Override
     public Object getCompositeViewPage(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws ServiceCallException {
-
         try {
             var snc = getSubnodeContainer(projectId, workflowId, nodeId);
             return getViewDataProvider().getCompositeViewData(snc, getNodeViewCreator(projectId));
@@ -107,15 +106,40 @@ public class DefaultComponentService implements ComponentService {
     }
 
     @Override
-    public void triggerComponentReexecution(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String resetNodeIdSuffix, final Map<String, String> stateUpdates) throws ServiceCallException {
+    public Object triggerComponentReexecution(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId, final String resetNodeIdSuffix, final Map<String, String> viewValues)
+        throws ServiceCallException {
         try {
             var snc = getSubnodeContainer(projectId, workflowId, nodeId);
-            getViewDataProvider().triggerComponentReexecution(snc, resetNodeIdSuffix, stateUpdates,
+            return getViewDataProvider().triggerComponentReexecution(snc, resetNodeIdSuffix, viewValues,
                 getNodeViewCreator(projectId));
         } catch (IOException | NodeNotFoundException ex) {
             throw new ServiceCallException("Could not reexecute component. " + ex.getMessage(), ex);
         }
+    }
+
+    @Override
+    public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws ServiceCallException {
+        try {
+            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
+        } catch (NodeNotFoundException ex) {
+            throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public Object pollComponentReexecutionStatus(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId, final String nodeIdThatTriggered) throws ServiceCallException {
+        try {
+            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            return getViewDataProvider().pollComponentReexecutionStatus(snc, nodeIdThatTriggered,
+                getNodeViewCreator(projectId));
+        } catch (NodeNotFoundException | IOException ex) {
+            throw new ServiceCallException("Could not get reexecuting page. " + ex.getMessage(), ex);
+        }
+
     }
 
     private static CompositeViewDataProvider getViewDataProvider() {
@@ -156,17 +180,5 @@ public class DefaultComponentService implements ComponentService {
                 return NodeViewEnt.create(nnc);
             }
         };
-    }
-
-    @Override
-    public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws ServiceCallException {
-        SubNodeContainer snc;
-        try {
-            snc = getSubnodeContainer(projectId, workflowId, nodeId);
-            return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
-        } catch (NodeNotFoundException ex) {
-            throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
-        }
     }
 }
