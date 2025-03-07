@@ -163,7 +163,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return res;
     }
 
-    private static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
+    static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
         final String workspaceName) throws IOException {
         var tempPath = PathUtils.createTempDir(directoryNamePrefix);
         var spaceProvider = createLocalSpaceProviderForTesting(tempPath);

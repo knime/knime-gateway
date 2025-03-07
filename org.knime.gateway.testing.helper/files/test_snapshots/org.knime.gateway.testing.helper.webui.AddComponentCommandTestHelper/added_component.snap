@@ -1,0 +1,54 @@
+{
+  "allowedActions" : {
+    "canCancel" : false,
+    "canCollapse" : "true",
+    "canDelete" : true,
+    "canExecute" : true,
+    "canExpand" : "true",
+    "canReset" : false
+  },
+  "annotation" : {
+    "styleRanges" : [ ],
+    "text" : {
+      "contentType" : "text/plain",
+      "value" : ""
+    },
+    "textAlign" : "center"
+  },
+  "dialogType" : "swing",
+  "id" : "root:3",
+  "inPorts" : [ {
+    "canRemove" : false,
+    "connectedVia" : "[  ]",
+    "index" : 0,
+    "name" : "Variable Inport",
+    "optional" : true,
+    "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+  } ],
+  "kind" : "component",
+  "link" : {
+    "isHubItemVersionChangeable" : false,
+    "isLinkTypeChangeable" : true,
+    "updateStatus" : "UP_TO_DATE",
+    "url" : "knime://LOCAL/component/"
+  },
+  "name" : "component",
+  "outPorts" : [ {
+    "canRemove" : false,
+    "connectedVia" : "[  ]",
+    "index" : 0,
+    "name" : "Variable Outport",
+    "portContentVersion" : "PLACEHOLDER_FOR_VERSION",
+    "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
+  } ],
+  "position" : {
+    "x" : 10,
+    "y" : 26
+  },
+  "state" : {
+    "executionState" : "IDLE",
+    "issue" : "File Reader #3: Please specify a file",
+    "resolutions" : [ ],
+    "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
+  }
+}

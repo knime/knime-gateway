@@ -51,7 +51,8 @@ public final class GatewayTestCollection {
         BendpointsTestHelper.class, //
         DeleteCommandTestHelper.class, //
         ConnectCommandsTestHelper.class, //
-        ComponentServiceTestHelper.class
+        ComponentServiceTestHelper.class, //
+        AddComponentCommandTestHelper.class //
     );
 
     private GatewayTestCollection() {
