@@ -363,6 +363,7 @@ public final class Project {
 
         @Override
         public BuilderStage.Optionals setWfm(final WorkflowManager wfm) {
+            Objects.requireNonNull(wfm);
             m_loadedWfm = wfm;
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
@@ -371,6 +372,7 @@ public final class Project {
 
         @Override
         public BuilderStage.RequiresName setWfmLoader(final Supplier<WorkflowManager> supplier) {
+            Objects.requireNonNull(supplier);
             m_getWfm = supplier;
             return this;
         }
@@ -403,7 +405,6 @@ public final class Project {
          */
         @Override
         public Builder setOrigin(final Origin origin) {
-            Objects.requireNonNull(origin);
             m_origin = origin;
             return this;
         }
@@ -414,7 +415,6 @@ public final class Project {
          */
         @Override
         public Builder setVersionWfmLoader(final Function<VersionId.Fixed, WorkflowManager> getVersion) {
-            Objects.requireNonNull(getVersion);
             m_getVersion = getVersion;
             return this;
         }
@@ -425,7 +425,6 @@ public final class Project {
          */
         @Override
         public Builder onDispose(final Consumer<WorkflowManager> onDispose) {
-            Objects.requireNonNull(onDispose);
             m_onDispose = onDispose;
             return this;
         }
@@ -436,7 +435,6 @@ public final class Project {
          */
         @Override
         public Builder clearReport(final Runnable clearReport) {
-            Objects.requireNonNull(clearReport);
             m_clearReport = clearReport;
             return this;
         }
@@ -447,7 +445,6 @@ public final class Project {
          */
         @Override
         public Builder generateReport(final Function<String, byte[]> generateReport) {
-            Objects.requireNonNull(generateReport);
             m_generateReport = generateReport;
             return this;
         }
