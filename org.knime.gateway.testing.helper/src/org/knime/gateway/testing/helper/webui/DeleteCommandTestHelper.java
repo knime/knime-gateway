@@ -157,7 +157,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
     public void deletionFailsIfNodeDoesNotExist() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var command2 = createDeleteCommandEnt(asList(new NodeIDEnt(99999999)), emptyList(), emptyList());
-        Exception ex = Assert.assertThrows(ServiceExceptions.OperationNotAllowedException.class,
+        var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
         assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
     }
@@ -166,7 +166,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var command3 =
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(99999999), 0)), emptyList());
-        var ex = Assert.assertThrows(ServiceExceptions.OperationNotAllowedException.class,
+        var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
         assertThat(ex.getMessage(), is("Some connections don't exist. Delete operation aborted."));
     }
@@ -175,7 +175,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var command4 =
             createDeleteCommandEnt(emptyList(), emptyList(), asList(new AnnotationIDEnt(getRootID(), 999999999)));
-        var ex = Assert.assertThrows(ServiceExceptions.OperationNotAllowedException.class,
+        var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
         assertThat(ex.getMessage(), is("Some workflow annotations don't exist. Delete operation aborted."));
     }
@@ -183,7 +183,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
     public void deletionFailsIfNodeUnderDeleteLock() throws Exception {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var command5 = createDeleteCommandEnt(asList(new NodeIDEnt(23, 0, 8)), emptyList(), emptyList());
-        var ex = Assert.assertThrows(ServiceExceptions.OperationNotAllowedException.class,
+        var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(23), command5));
         assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
     }
@@ -200,14 +200,14 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
         // deletion fails because of a node that cannot be deleted due to executing successors
         var command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());
-        var ex = Assert.assertThrows(ServiceExceptions.OperationNotAllowedException.class,
+        var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command6));
         assertThat(ex.getMessage(), is("Some nodes can't be deleted or don't exist. Delete operation aborted."));
 
         // deletion of a connection fails because it's connected to an executing node
         var command7 =
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(7), 0)), emptyList());
-        ex = Assert.assertThrows(ServiceExceptions.OperationNotAllowedException.class,
+        ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command7));
         assertThat(ex.getMessage(), is("Some connections can't be deleted. Delete operation aborted."));
     }

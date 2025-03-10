@@ -50,7 +50,8 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Interface specifying port editing operations
@@ -64,17 +65,17 @@ interface EditPorts {
      *
      * @param addPortEnt Add port command
      * @return The port index of the newly added port
-     * @throws OperationNotAllowedException Thrown when the add port command cannot be run
+     * @throws ServiceCallException Thrown when the add port command cannot be run
      */
-    int addPort(AddPortCommandEnt addPortEnt) throws OperationNotAllowedException;
+    int addPort(AddPortCommandEnt addPortEnt) throws ServiceCallException;
 
     /**
      * Removes a port from a node
      *
      * @param removePortEnt Remove port command
-     * @throws OperationNotAllowedException Thrown when the remove port command cannot be run
+     * @throws ServiceCallException Thrown when the remove port command cannot be run
      */
-    void removePort(RemovePortCommandEnt removePortEnt) throws OperationNotAllowedException;
+    void removePort(RemovePortCommandEnt removePortEnt) throws ServiceCallException;
 
     /**
      * Undo the port command

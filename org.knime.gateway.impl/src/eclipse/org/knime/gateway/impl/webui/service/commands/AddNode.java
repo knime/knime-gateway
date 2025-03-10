@@ -69,7 +69,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -105,7 +105,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Add node
         var positionEnt = m_commandEnt.getPosition();
@@ -120,7 +120,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         }
 
         if (factoryKeyEnt == null) {
-            throw new OperationNotAllowedException("No node factory class given");
+            throw new ServiceCallException("No node factory class given");
         }
 
         m_addedNode = new NodeCreator(wfm, factoryKeyEnt, positionEnt) //
@@ -191,7 +191,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         getWorkflowManager().removeNode(m_addedNode);
         m_addedNode = null;
     }

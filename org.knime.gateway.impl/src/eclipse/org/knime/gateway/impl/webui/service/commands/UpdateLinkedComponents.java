@@ -73,7 +73,7 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.UpdateLinkedComponentsResultEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -109,15 +109,15 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         if (m_nodeIdEnts.isEmpty()) {
-            throw new OperationNotAllowedException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
+            throw new ServiceCallException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
         }
 
         final var components = getLinkedComponents(m_nodeIdEnts, getWorkflowKey());
 
         if (components.size() != m_nodeIdEnts.size()) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "Not all of the nodes <%s> are linked components".formatted(m_nodeIdEnts));
         }
 
@@ -135,7 +135,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         if (m_updateLogs != null) {
             m_updateLogs.forEach(UpdateLinkedComponents::undoInternal);
         }

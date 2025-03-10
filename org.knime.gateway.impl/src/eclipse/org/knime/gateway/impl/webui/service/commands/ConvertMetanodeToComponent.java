@@ -77,7 +77,7 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
         try {
             var wfm = getWorkflowManager();
             var nodeID = m_nodeToConvert.get().toNodeID(wfm);
@@ -89,12 +89,12 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
             }
             return true;
         } catch (IllegalArgumentException e) { // NOSONAR: Exception is re-thrown as different type
-            throw new ServiceExceptions.OperationNotAllowedException(e.getMessage());
+            throw new ServiceExceptions.ServiceCallException(e.getMessage());
         }
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         m_metaNodeToSubNodeResult.undo();
     }
 

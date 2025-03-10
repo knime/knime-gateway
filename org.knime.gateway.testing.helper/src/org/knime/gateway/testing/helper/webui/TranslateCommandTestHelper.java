@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -300,13 +300,13 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setNodeIds(singletonList(new NodeIDEnt(9999)))
             .setAnnotationIds(singletonList(new AnnotationIDEnt("root_12345")))
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(0).setY(0).build()).build();
-        assertThrows(ServiceExceptions.NodeNotFoundException.class,
+        assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(999999), command5));
         try {
             ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command5);
         } catch (Exception e) { // NOSONAR
             assertThat("unexpected exception class", e,
-                Matchers.instanceOf(ServiceExceptions.OperationNotAllowedException.class));
+                Matchers.instanceOf(ServiceExceptions.ServiceCallException.class));
             assertThat("unexpected exception message", e.getMessage(),
                 is("Failed to execute command. Workflow parts not found: "
                     + "nodes (0:9999), workflow-annotations (0:12345)"));
@@ -338,7 +338,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(outPortsBarBoundsTranslatedUndone.getY(), is(outPortsBarBounds.getY()));
 
         // try to execute command on a component
-        var message = assertThrows(OperationNotAllowedException.class,
+        var message = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand)).getMessage();
         assertThat(message, is("Components don't have metanode-ports-bars to be moved."));
 
@@ -346,13 +346,13 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var translateCommand2 = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setMetanodeInPortsBar(Boolean.TRUE)
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
-        message = assertThrows(OperationNotAllowedException.class,
+        message = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2)).getMessage();
         assertThat(message, is("Metanode in-ports-bar can't be moved. It doesn't have a position, yet."));
     }
 
 
-    private void awaitMoved(Function<WorkflowEnt, XYEnt> accessor, int[] delta, WorkflowEnt originalWorkflow, String wfId) {
+    private void awaitMoved(final Function<WorkflowEnt, XYEnt> accessor, final int[] delta, final WorkflowEnt originalWorkflow, final String wfId) {
         awaitTrue(wfId, wf -> objectMoved(accessor, delta, originalWorkflow, wf));
     }
 

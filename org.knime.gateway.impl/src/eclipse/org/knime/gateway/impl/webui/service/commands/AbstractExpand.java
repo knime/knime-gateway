@@ -65,7 +65,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 
 /**
@@ -86,7 +86,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
         var wfm = getWorkflowManager();
         var nodeToExpand = m_commandEnt.getNodeId().toNodeID(wfm);
         if (wfm.canResetNode(nodeToExpand)) {
@@ -106,22 +106,22 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     }
 
     protected void checkCanExpandOrThrow(final WorkflowManager wfm, final NodeID nodeToExpand)
-        throws ServiceExceptions.OperationNotAllowedException {
+        throws ServiceExceptions.ServiceCallException {
         var containedWfm = CoreUtil.getContainedWfm(nodeToExpand, wfm)
-            .orElseThrow(() -> new ServiceExceptions.OperationNotAllowedException(
+            .orElseThrow(() -> new ServiceExceptions.ServiceCallException(
                 "No container node with the supplied ID can be found in workflow"));
         if (!containedWfm.isUnlocked()) {
-            throw new ServiceExceptions.OperationNotAllowedException(
+            throw new ServiceExceptions.ServiceCallException(
                 "Password-protected metanode/container needs to be unlocked first");
         }
         if (containedWfm.isWriteProtected()) {
-            throw new ServiceExceptions.OperationNotAllowedException(
+            throw new ServiceExceptions.ServiceCallException(
                 "Workflow to be expanded is write-protected (may be a linked metanode or component)");
         }
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         var wfm = getWorkflowManager();
         var expandedNodes = getExpandedNodes();
         var expandedAnnots = getExpandedAnnotations();
@@ -143,7 +143,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
             checkCanExpandOrThrow(getWorkflowManager(),
                 m_commandEnt.getNodeId().toNodeID(wfm));
             return true;
-        } catch (OperationNotAllowedException e) { // NOSONAR
+        } catch (ServiceCallException e) { // NOSONAR
             return false;
         }
     }

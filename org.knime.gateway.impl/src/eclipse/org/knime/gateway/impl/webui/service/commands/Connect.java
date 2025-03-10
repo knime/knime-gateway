@@ -51,7 +51,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 
 /**
@@ -72,14 +72,14 @@ final class Connect extends AbstractWorkflowCommand {
     }
 
     @Override
-    public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    public boolean executeWithLockedWorkflow() throws ServiceCallException {
         var wfm = getWorkflowManager();
         var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(wfm);
         var destPortIdx = m_commandEnt.getDestinationPortIdx();
         try {
             m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, destPortIdx));
         } catch (IllegalArgumentException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
 
         var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm);
@@ -93,7 +93,7 @@ final class Connect extends AbstractWorkflowCommand {
         m_newConnection =
             NodeConnector.connect(getWorkflowManager(), sourceNodeId, sourcePortIdx, destNodeId, destPortIdx, true);
         if (m_newConnection == null) {
-            throw new OperationNotAllowedException("Connection couldn't be created");
+            throw new ServiceCallException("Connection couldn't be created");
         }
         return true;
     }
@@ -104,7 +104,7 @@ final class Connect extends AbstractWorkflowCommand {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         var wfm = getWorkflowManager();
         wfm.removeConnection(m_newConnection);
         if (m_oldConnection != null) {

@@ -74,9 +74,9 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         if (!m_metaNodeCollapseResult.canUndo()) {
-            throw new ServiceExceptions.OperationNotAllowedException("Can not undo metanode creation");
+            throw new ServiceExceptions.ServiceCallException("Can not undo metanode creation");
         }
 
         m_metaNodeCollapseResult.undo();
@@ -89,7 +89,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
         var wfm = getWorkflowManager();
         stream(getNodeIDs()).filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
 
@@ -97,13 +97,13 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         var annoIDs = getAnnotationIDs();
 
         if (nodeIds.length == 0 && annoIDs.length == 0) {
-            throw new ServiceExceptions.OperationNotAllowedException(
+            throw new ServiceExceptions.ServiceCallException(
                 "No nodes and workflow annotations given to collapse into metanode or component");
         }
 
         var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(nodeIds, annoIDs);
         if (cannotCollapseReason != null) {
-            throw new ServiceExceptions.OperationNotAllowedException(cannotCollapseReason);
+            throw new ServiceExceptions.ServiceCallException(cannotCollapseReason);
         }
 
         try {
@@ -114,7 +114,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
             );
             return true;
         } catch (IllegalArgumentException e) { // NOSONAR: Exception is re-thrown as different type
-            throw new ServiceExceptions.OperationNotAllowedException(e.getMessage());
+            throw new ServiceExceptions.ServiceCallException(e.getMessage());
         }
     }
 

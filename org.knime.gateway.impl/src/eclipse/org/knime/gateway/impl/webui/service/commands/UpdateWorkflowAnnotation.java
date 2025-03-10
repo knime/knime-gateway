@@ -55,7 +55,7 @@ import java.util.function.Consumer;
 import org.knime.core.node.workflow.AnnotationData;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Updates the text and/or the border color of a workflow annotation.
@@ -76,12 +76,12 @@ final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
      */
     @Override
     protected boolean executeInternal(final WorkflowAnnotation annotation, final AnnotationData annotationDataCopy)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
         final var text = m_commandEnt.getText();
         final var borderColor = hexStringToInteger(m_commandEnt.getBorderColor());
 
         if (text == null && borderColor == null) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "Cannot update a workflow annotation with neither a border color nor a text provided.");
         }
 

@@ -62,7 +62,7 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Helper class to edit container node ports
@@ -87,11 +87,11 @@ final class EditContainerNodePorts implements EditPorts {
     }
 
     @Override
-    public int addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
+    public int addPort(final AddPortCommandEnt addPortCommandEnt) throws ServiceCallException {
         var currentPortInfos = getCurrentPortInfos();
         List<MetaPortInfo> newPortInfos = new ArrayList<>(Arrays.asList(currentPortInfos));
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
-            .orElseThrow(() -> new OperationNotAllowedException("Unknown port type"));
+            .orElseThrow(() -> new ServiceCallException("Unknown port type"));
         var newMetaPortInfo = MetaPortInfo.builder() //
             .setPortType(newPortType) //
             .setNewIndex(currentPortInfos.length) //
@@ -103,17 +103,17 @@ final class EditContainerNodePorts implements EditPorts {
     }
 
     @Override
-    public void removePort(final RemovePortCommandEnt removePortCommandEnt) throws OperationNotAllowedException {
+    public void removePort(final RemovePortCommandEnt removePortCommandEnt) throws ServiceCallException {
         var newPortInfos = new ArrayList<>(Arrays.asList(getCurrentPortInfos()));
         int indexToRemove = removePortCommandEnt.getPortIndex();
         if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove == 0) {
-            throw new ServiceExceptions.OperationNotAllowedException(
+            throw new ServiceExceptions.ServiceCallException(
                 "Can not remove fixed flow variable port at index 0");
         }
         try {
             newPortInfos.remove(indexToRemove);
         } catch (IndexOutOfBoundsException e) { // NOSONAR: Exception is thrown
-            throw new ServiceExceptions.OperationNotAllowedException(e.getMessage());
+            throw new ServiceExceptions.ServiceCallException(e.getMessage());
         }
         executeChanges(newPortInfos.toArray(MetaPortInfo[]::new));
     }

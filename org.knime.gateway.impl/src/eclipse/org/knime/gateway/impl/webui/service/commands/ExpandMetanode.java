@@ -50,7 +50,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Expand a metanode.
@@ -65,11 +65,11 @@ class ExpandMetanode extends AbstractExpand {
 
     @Override
     protected void checkCanExpandOrThrow(final WorkflowManager wfm, final NodeID nodeToExpand)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
         super.checkCanExpandOrThrow(wfm, nodeToExpand);
         var cannotExpandReason = wfm.canExpandMetaNode(nodeToExpand);
         if (cannotExpandReason != null) {
-            throw new ServiceExceptions.OperationNotAllowedException(cannotExpandReason);
+            throw new ServiceExceptions.ServiceCallException(cannotExpandReason);
         }
     }
 }

@@ -85,7 +85,7 @@ public class AutoDisconnect extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
         m_removed = AutoDisConnectUtil.autoDisconnect( //
             m_command, //
             getWorkflowManager() //
@@ -94,7 +94,7 @@ public class AutoDisconnect extends AbstractWorkflowCommand {
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         m_removed.forEach(cc -> connect(cc, getWorkflowManager()));
     }
 

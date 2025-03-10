@@ -81,14 +81,10 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "executeWorkflowCommand")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
-            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public CommandResultEnt executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommand") WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
+    public CommandResultEnt executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommand") WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().executeWorkflowCommand(projectId, workflowId, workflowCommand);    
     }
 
@@ -139,10 +135,10 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "redoWorkflowCommand")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
-            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void redoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException {
+    public void redoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException {
         m_service.get().redoWorkflowCommand(projectId, workflowId);    
     }
 
@@ -152,10 +148,10 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "undoWorkflowCommand")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
-            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void undoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException {
+    public void undoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException {
         m_service.get().undoWorkflowCommand(projectId, workflowId);    
     }
 

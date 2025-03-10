@@ -68,7 +68,7 @@ import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -165,8 +165,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      */
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
-        final WorkflowCommandEnt workflowCommandEnt)
-        throws NotASubWorkflowException, NodeNotFoundException, OperationNotAllowedException {
+        final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var spaceProviders = m_spaceProvidersManager == null ? null : //
             m_spaceProvidersManager.getSpaceProviders( //
@@ -181,8 +180,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
-        throws OperationNotAllowedException {
+    public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
@@ -191,8 +189,7 @@ public final class DefaultWorkflowService implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
-        throws OperationNotAllowedException {
+    public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }

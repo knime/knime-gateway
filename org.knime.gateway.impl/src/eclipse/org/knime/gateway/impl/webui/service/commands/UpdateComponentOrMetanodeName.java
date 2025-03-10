@@ -52,7 +52,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Workflow command to update the name of a component or metnode.
@@ -72,7 +72,7 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         var container = getWorkflowManager().getNodeContainer(m_nodeId);
         if (container instanceof WorkflowManager metanode) {
             metanode.setName(m_oldName);
@@ -83,17 +83,17 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var wfm = getWorkflowManager();
         m_nodeId = m_commandEnt.getNodeId().toNodeID(wfm);
         var container = wfm.getNodeContainer(m_nodeId);
         var newName = m_commandEnt.getName();
         if (newName.isBlank()) {
-            throw new OperationNotAllowedException("Illegal new name: <" + newName + ">");
+            throw new ServiceCallException("Illegal new name: <" + newName + ">");
         }
         if (container instanceof WorkflowManager metaNode) {
             if (metaNode.isProject()) {
-                throw new OperationNotAllowedException("Workflow projects cannot be renamed like this");
+                throw new ServiceCallException("Workflow projects cannot be renamed like this");
             }
             m_oldName = metaNode.getName();
             metaNode.setName(newName);
@@ -104,7 +104,7 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
             return true;
         } else {
             String className = container.getClass().getSimpleName();
-            throw new OperationNotAllowedException("<" + className + "> cannot be renamed");
+            throw new ServiceCallException("<" + className + "> cannot be renamed");
         }
     }
 

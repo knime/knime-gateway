@@ -60,7 +60,7 @@ import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyResultEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
@@ -101,12 +101,12 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
     }
 
     @Override
-    public void redo() throws OperationNotAllowedException {
+    public void redo() throws ServiceCallException {
         // Do nothing
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         // Do nothing
 
     }
@@ -127,7 +127,7 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var projectId = getWorkflowKey().getProjectId();
         var wfm = getWorkflowManager();
         var nodeIds = m_commandEnt.getNodeIds().stream()//

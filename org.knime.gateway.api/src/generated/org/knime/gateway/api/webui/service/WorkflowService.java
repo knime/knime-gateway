@@ -69,11 +69,9 @@ public interface WorkflowService extends GatewayService {
      * @param workflowCommand An object that describes the command to be executed.
      *
      * @return the result
-     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    CommandResultEnt executeWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException;
+    CommandResultEnt executeWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Returns the node IDs of all updatable linked components present on a workflow, even if they are deeply nested.
@@ -118,9 +116,9 @@ public interface WorkflowService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      *
      * 
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
+    void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Un-does the last command from the undo-stack.
@@ -129,8 +127,8 @@ public interface WorkflowService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      *
      * 
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void undoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.OperationNotAllowedException;
+    void undoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException;
         
 }

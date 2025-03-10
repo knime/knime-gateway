@@ -57,7 +57,7 @@ import java.util.Set;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
@@ -74,14 +74,14 @@ class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResu
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var portCommandEnt = getPortCommandEnt();
         try {
             var editor = instantiatePortEditor();
             m_newPortIdx = editor.addPort(portCommandEnt);
             return true;
         } catch (NoSuchElementException e) {
-            throw new OperationNotAllowedException("Could not determine new port index", e);
+            throw new ServiceCallException("Could not determine new port index", e);
         }
     }
 

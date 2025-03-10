@@ -87,9 +87,8 @@ import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -138,12 +137,10 @@ public final class WorkflowCommands {
      *
      * @return The instance of the executed command
      *
-     * @throws OperationNotAllowedException if the command couldn't be executed
-     * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
-     * @throws NodeNotFoundException if the reference doesn't point to a workflow
+     * @throws ServiceCallException if the command couldn't be executed
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
-        throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
+        throws ServiceCallException {
         return execute(wfKey, commandEnt, null, null, null);
     }
 
@@ -160,14 +157,11 @@ public final class WorkflowCommands {
      *
      * @return The instance of the executed command
      *
-     * @throws OperationNotAllowedException if the command couldn't be executed
-     * @throws NotASubWorkflowException if no sub-workflow (component, metanode) is referenced
-     * @throws NodeNotFoundException if the reference doesn't point to a workflow
+     * @throws ServiceCallException if the command couldn't be executed
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProviders spaceProviders)
-        throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
+        final SpaceProviders spaceProviders) throws ServiceCallException {
         var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders);
 
         var hasResult = hasCommandResult(wfKey, command);
@@ -181,7 +175,8 @@ public final class WorkflowCommands {
 
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
-        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders) throws OperationNotAllowedException {
+        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders)
+        throws ServiceCallException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
@@ -244,7 +239,7 @@ public final class WorkflowCommands {
                 command = m_workflowCommandToExecute;
                 m_workflowCommandToExecute = null;
             } else {
-                throw new OperationNotAllowedException("Command of type " + commandEnt.getClass().getSimpleName()
+                throw new ServiceCallException("Command of type " + commandEnt.getClass().getSimpleName()
                     + " cannot be executed. Unknown command.");
             }
         }
@@ -252,7 +247,7 @@ public final class WorkflowCommands {
     }
 
     private static boolean hasCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
-        throws NodeNotFoundException, NotASubWorkflowException {
+        throws ServiceCallException {
         if (command instanceof WithResult) {
             var hasResult = true;
             if (command instanceof HigherOrderCommand hoc) {
@@ -275,8 +270,7 @@ public final class WorkflowCommands {
     }
 
     private synchronized void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey,
-        final WorkflowCommand command)
-        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException {
+        final WorkflowCommand command) throws ServiceCallException {
         var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
         var redoStack = getOrCreateCommandStackFor(wfKey, m_redoStacks);
 
@@ -304,7 +298,7 @@ public final class WorkflowCommands {
 
     private static CommandResultEnt waitForCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
         final WorkflowChangeWaiter wfChangeWaiter, final WorkflowMiddleware workflowMiddleware)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
         String latestSnapshotId = null;
         if (wfChangeWaiter != null) {
             try {
@@ -312,7 +306,7 @@ public final class WorkflowCommands {
                 // Only set a snapshot id if there is a workflow change to wait for
                 latestSnapshotId = workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
             } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
-                throw new OperationNotAllowedException("Interrupted while waiting corresponding workflow change", e);
+                throw new ServiceCallException("Interrupted while waiting corresponding workflow change", e);
             }
         }
         return ((WithResult)command).buildEntity(latestSnapshotId);
@@ -329,14 +323,14 @@ public final class WorkflowCommands {
 
     /**
      * @param wfKey reference to the workflow to undo the last command for
-     * @throws OperationNotAllowedException if there is no command to be undone
+     * @throws ServiceCallException if there is no command to be undone
      */
-    public synchronized void undo(final WorkflowKey wfKey) throws OperationNotAllowedException {
+    public synchronized void undo(final WorkflowKey wfKey) throws ServiceCallException {
         var undoStack = m_undoStacks.get(wfKey);
         if (undoStack != null && !undoStack.isEmpty()) {
             undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
         } else {
-            throw new OperationNotAllowedException("No command to undo");
+            throw new ServiceCallException("No command to undo");
         }
     }
 
@@ -351,14 +345,14 @@ public final class WorkflowCommands {
 
     /**
      * @param wfKey reference to the workflow to redo the last command for
-     * @throws OperationNotAllowedException if there is no command to be redone
+     * @throws ServiceCallException if there is no command to be redone
      */
-    public synchronized void redo(final WorkflowKey wfKey) throws OperationNotAllowedException {
+    public synchronized void redo(final WorkflowKey wfKey) throws ServiceCallException {
         var redoStack = m_redoStacks.get(wfKey);
         if (redoStack != null && !redoStack.isEmpty()) {
             redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();
         } else {
-            throw new OperationNotAllowedException("No command to redo");
+            throw new ServiceCallException("No command to redo");
         }
     }
 

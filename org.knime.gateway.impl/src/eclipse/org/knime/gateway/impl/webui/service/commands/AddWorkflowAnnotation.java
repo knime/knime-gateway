@@ -61,7 +61,8 @@ import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt.AddAnnotationResultEntBuilder;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
@@ -84,7 +85,7 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         final var bounds = m_commandEnt.getBounds();
         final var borderColor = AbstractWorkflowAnnotationCommand.hexStringToInteger(m_commandEnt.getBorderColor());
@@ -100,7 +101,7 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
      * {@inheritDoc}
      */
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         wfm.removeAnnotation(m_workflowAnnotation.getID());
         m_workflowAnnotation = null;

@@ -67,7 +67,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Workflow command to replace a node.
@@ -86,12 +86,12 @@ final class ReplaceNode extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var wfm = getWorkflowManager();
         var targetNodeId = m_commandEnt.getTargetNodeId().toNodeID(wfm);
 
         if (!wfm.canRemoveNode(targetNodeId)) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "Unable to delete the targeted node. Replace operation aborted. Please check for any execution on progress.");
         }
 
@@ -116,7 +116,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
 
     private static InternalReplaceNodeResult replaceNode(final NodeFactoryKeyEnt nodeFactoryEntOrNull,
         final NodeID replacementNodeIdOrNull, final NodeContainer targetNodeContainer, final WorkflowManager wfm)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
 
         final NodeContainer replacementNodeContainer;
         NodeID[] nodesToRestoreOnUndo;
@@ -127,7 +127,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
                     CoreUtil.getNodeFactory(nodeFactoryEntOrNull.getClassName(), nodeFactoryEntOrNull.getSettings()),
                     null, -1));
             } catch (NoSuchElementException | IOException ex) {
-                throw new OperationNotAllowedException(ex.getMessage(), ex);
+                throw new ServiceCallException(ex.getMessage(), ex);
             }
             nodesToRestoreOnUndo = new NodeID[]{targetNodeId};
         } else {
@@ -167,12 +167,12 @@ final class ReplaceNode extends AbstractWorkflowCommand {
     }
 
     private static InternalReplaceNodeResult replaceNativeNodeWithNewNode(final NodeID targetNodeId,
-        final NodeFactoryKeyEnt nodeFactoryEnt, final WorkflowManager wfm) throws OperationNotAllowedException {
+        final NodeFactoryKeyEnt nodeFactoryEnt, final WorkflowManager wfm) throws ServiceCallException {
         NodeFactory<NodeModel> nodeFactory;
         try {
             nodeFactory = CoreUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
         } catch (NoSuchElementException | IOException ex) {
-            throw new OperationNotAllowedException(ex.getMessage(), ex);
+            throw new ServiceCallException(ex.getMessage(), ex);
         }
         var result = wfm.replaceNode(targetNodeId, null, nodeFactory, false);
         return new InternalReplaceNodeResult() {
@@ -315,7 +315,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         if (m_result != null) {
             m_result.undo();
             m_result = null;

@@ -52,8 +52,6 @@ import java.util.function.Supplier;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
@@ -76,8 +74,7 @@ class CollapseToComponent extends CommandSequence {
     }
 
     @Override
-    protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
+    protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey) {
         return Optional.of((WithResult)m_commands.get(0));
     }
 }

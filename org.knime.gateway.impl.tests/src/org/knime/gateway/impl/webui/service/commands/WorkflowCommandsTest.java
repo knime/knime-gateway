@@ -105,7 +105,7 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.WorkflowCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -178,8 +178,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        assertThrows(OperationNotAllowedException.class, () -> commands.undo(wfKey));
-        assertThrows(OperationNotAllowedException.class, () -> commands.redo(wfKey));
+        assertThrows(ServiceCallException.class, () -> commands.undo(wfKey));
+        assertThrows(ServiceCallException.class, () -> commands.redo(wfKey));
 
         commands.execute(wfKey, commandEntity);
         commands.execute(wfKey, commandEntity);
@@ -191,7 +191,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         assertThat(commands.getRedoStackSize(wfKey), is(0));
         assertThat(commands.canUndo(wfKey), is(true));
         assertThat(commands.canRedo(wfKey), is(false));
-        assertThrows(OperationNotAllowedException.class, () -> commands.redo(wfKey));
+        assertThrows(ServiceCallException.class, () -> commands.redo(wfKey));
 
         commands.undo(wfKey);
         commands.undo(wfKey);
@@ -214,9 +214,9 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         assertThat(commands.getRedoStackSize(wfKey), is(5));
         assertThat(commands.canUndo(wfKey), is(false));
         assertThat(commands.canRedo(wfKey), is(true));
-        assertThrows(OperationNotAllowedException.class, () -> commands.undo(wfKey));
+        assertThrows(ServiceCallException.class, () -> commands.undo(wfKey));
 
-        assertThrows(OperationNotAllowedException.class,
+        assertThrows(ServiceCallException.class,
             () -> commands.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()),
                 builder(WorkflowCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).build()));
 
@@ -462,7 +462,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         }
 
         @Override
-        public void undo() throws OperationNotAllowedException {
+        public void undo() {
             getWorkflowManager().removeAnnotation(m_annoID);
             m_annoID = null;
             sleep();
@@ -470,12 +470,12 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         }
 
         @Override
-        public void redo() throws OperationNotAllowedException {
+        public void redo() {
             executeWithLockedWorkflow();
         }
 
         @Override
-        protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+        protected boolean executeWithLockedWorkflow() {
             // modify workflow to trigger an event (which is sent asynchronously)
             // which in turn creates a workflow patch
             // which in turn call the 'canUndo' and 'canRedo' methods of WorkflowCommands

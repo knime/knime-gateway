@@ -48,7 +48,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.commands.util.AutoDisConnectUtil;
 
 /**
@@ -70,7 +70,7 @@ public final class AutoConnect extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var changes = AutoDisConnectUtil.autoConnect( //
             getWorkflowManager(), //
             m_commandEnt //
@@ -100,7 +100,7 @@ public final class AutoConnect extends AbstractWorkflowCommand {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         m_autoConnectChanges.addedConnections().forEach(wfm::removeConnection);
         m_autoConnectChanges.removedConnections().forEach(cc -> {

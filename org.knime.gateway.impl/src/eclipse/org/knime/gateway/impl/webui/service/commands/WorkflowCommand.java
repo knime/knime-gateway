@@ -48,9 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
@@ -77,12 +75,9 @@ public interface WorkflowCommand {
      * @param wfKey references the workflow to execute the command for
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command didn't do any change to the workflow
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
-    boolean execute(WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException, OperationNotAllowedException;
+    boolean execute(WorkflowKey wfKey) throws ServiceCallException;
 
     /**
      * Whether the command can be undone. Must be a rather light operation because it's potentially called repeatedly
@@ -96,9 +91,9 @@ public interface WorkflowCommand {
      * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey)} has been called before
      * already.
      *
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
-    void undo() throws OperationNotAllowedException;
+    void undo() throws ServiceCallException;
 
     /**
      * Whether the command can be redone. Must be a rather light operation because it's potentially called repeatedly
@@ -111,8 +106,8 @@ public interface WorkflowCommand {
     /**
      * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
      *
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
-    void redo() throws OperationNotAllowedException;
+    void redo() throws ServiceCallException;
 
 }

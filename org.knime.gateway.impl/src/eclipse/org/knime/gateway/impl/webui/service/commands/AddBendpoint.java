@@ -78,13 +78,13 @@ class AddBendpoint extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
 
         var wfm = getWorkflowManager();
         var connectionId =
             DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
         m_connection = CoreUtil.getConnection(connectionId, wfm).orElseThrow(
-            () -> new ServiceExceptions.OperationNotAllowedException("Connection not found: " + connectionId));
+            () -> new ServiceExceptions.ServiceCallException("Connection not found: " + connectionId));
         var connectionUIInfo = m_connection.getUIInfo();
         var nBendpoints = connectionUIInfo == null ? 0 : connectionUIInfo.getAllBendpoints().length;
 
@@ -113,7 +113,7 @@ class AddBendpoint extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         m_connection.setUIInfo(m_originalConnectionUiInfo);
     }
 

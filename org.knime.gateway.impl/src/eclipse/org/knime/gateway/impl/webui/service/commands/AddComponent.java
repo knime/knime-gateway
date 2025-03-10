@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,7 +16,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.data.container.storage.TableStoreFormatInformation;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -33,12 +31,9 @@ import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
-import org.knime.core.util.FileUtil;
 import org.knime.core.util.LoadVersion;
 import org.knime.core.util.Pair;
 import org.knime.core.util.Version;
-import org.knime.core.util.exception.ResourceAccessException;
-import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentResultEnt.AddComponentResultEntBuilder;
@@ -46,7 +41,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.ProblemMessageEnt.ProblemMessageEntBuilder;
 import org.knime.gateway.api.webui.entity.ProblemMessageEnt.TypeEnum;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -75,7 +70,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var space = m_spaceProviders.getSpace(m_commandEnt.getProviderId(), m_commandEnt.getSpaceId());
         var uri = space.toKnimeUrl(m_commandEnt.getItemId());
         var localPath = space.toLocalAbsolutePath(new ExecutionMonitor(), m_commandEnt.getItemId()).orElseThrow();
@@ -86,8 +81,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
             return m_loadResult.getStatus().isOK();
         } catch (Throwable t) {
             var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(ExceptionUtils.getRootCause(t));
-            // TODO throw proper exception
-            throw new RuntimeException(loadingFailedErrorMessage);
+            throw new ServiceCallException(loadingFailedErrorMessage);
         }
     }
 
@@ -119,7 +113,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         getWorkflowManager().removeNode(m_loadResult.getComponentId());
         m_loadResult = null;
     }
@@ -144,22 +138,6 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    private static File resolveURIToLocalFile(final URI templateURI) throws ResourceAccessException, IOException {
-        var parentFile = ResolverUtil.resolveURItoLocalOrTempFile(templateURI, new NullProgressMonitor());
-        if (parentFile.isFile()) {
-            //unzip
-            final var tempDir = FileUtil.createTempDir("template-workflow");
-            FileUtil.unzip(parentFile, tempDir);
-            Files.delete(parentFile.toPath());
-            final var extractedFiles = tempDir.listFiles();
-            if (extractedFiles.length == 0) {
-                throw new IOException("Unzipping of file '" + parentFile + "' failed");
-            }
-            parentFile = extractedFiles[0];
-        }
-        return parentFile;
     }
 
     private static WorkflowLoadHelper createWorkflowLoadHelper() {

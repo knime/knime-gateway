@@ -183,7 +183,7 @@ import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
@@ -415,8 +415,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         List<NodeIDEnt> nodesToCollapseEnts = Collections.emptyList();
         List<AnnotationIDEnt> annotsToCollapseEnts = Collections.emptyList();
         var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, annotsToCollapseEnts, ContainerTypeEnum.METANODE);
-        assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt));
+        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt));
     }
 
     @SuppressWarnings("javadoc")
@@ -556,7 +555,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
         var waitNode = 16;
         var nodesToCollapseInts = List.of(5, 3);
-        var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).collect(Collectors.toList());
+        var nodesToCollapseEnts = nodesToCollapseInts.stream().map(NodeIDEnt::new).toList();
 
         executeAndWaitUntilExecuting(wfId, waitNode);
         WorkflowEnt rootWfEnt = ws().getWorkflow(wfId, getRootID(), Boolean.TRUE, null).getWorkflow();
@@ -566,8 +565,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE));
 
         var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
-        var exceptionMessage = assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt)).getMessage();
+        var exceptionMessage =
+            assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt))
+                .getMessage();
         assertThat(exceptionMessage, containsString("Cannot move all selected nodes (successor executing?)."));
     }
 
@@ -833,7 +833,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var nodeToExpandEnt = new NodeIDEnt(nodeToExpand);
 
         var expandCommand = buildExpandCommandEnt(nodeToExpandEnt);
-        Assert.assertThrows(OperationNotAllowedException.class,
+        Assert.assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), expandCommand));
     }
 
@@ -893,12 +893,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             15, 16, result);
 
         // add a node that doesn't exists
-        Exception ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId,
-            getRootID(), buildAddNodeCommand("non-sense-factory", null, 0, 0, null, null, null)));
+        var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
+            buildAddNodeCommand("non-sense-factory", null, 0, 0, null, null, null)));
         assertThat(ex.getMessage(), is("No node found for factory key non-sense-factory"));
 
         // add a dynamic node with non-sense settings
-        ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
+        ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, "blub", 0, 0, null, null, null)));
         assertThat(ex.getMessage(), startsWith("Problem reading factory settings while trying to create node from"));
     }
@@ -939,7 +939,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             is(1));
 
         // try to connect to an incompatible port
-        var ex = assertThrows(OperationNotAllowedException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
+        var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2, NodeRelationEnum.SUCCESSORS)));
         assertThat(ex.getMessage(), is("Node couldn't be created because a connection couldn't be added."));
 
@@ -1183,15 +1183,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final List<String> emptyNames = Arrays.asList("", " ", "   ");
         emptyNames.forEach(name -> nodeIds.forEach(nodeId -> {
             final var command3 = buildUpdateComponentOrMetanodeNameCommandEnt(nodeId, name);
-            Exception exception = assertThrows(OperationNotAllowedException.class,
+            Exception exception = assertThrows(ServiceCallException.class,
                 () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
             assertThat(exception.getMessage(), containsString("Illegal new name"));
         }));
 
         // fail to rename native node
         final var command4 = buildUpdateComponentOrMetanodeNameCommandEnt(nativeNode, newName);
-        Exception exception = assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
+        Exception exception =
+            assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
         assertThat(exception.getMessage(), containsString("cannot be renamed"));
 
     }
@@ -1577,8 +1577,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var deleteFixedFlowVarPort = buildDeletePortCommandEnt(componentWithPorts, PortCommandEnt.SideEnum.INPUT, 0);
         assertThrows("Expect exception on removing port with index 0 from component (fixed flow variable port)",
-            OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), deleteFixedFlowVarPort));
+            ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), deleteFixedFlowVarPort));
         assertPortsUnchanged(wfId, getRootID(), componentWithPorts, unchangedWfEnt);
 
         assertRemoveUndoRedoContainerPorts(wfId, componentWithPorts);
@@ -1588,7 +1587,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var unchangedWfEnt = ws().getWorkflow(wfId, getRootID(), false, null).getWorkflow();
 
         var deleteImpossiblePort = buildDeletePortCommandEnt(node, PortCommandEnt.SideEnum.INPUT, -3);
-        assertThrows("Expect exception on removing port with invalid index", OperationNotAllowedException.class,
+        assertThrows("Expect exception on removing port with invalid index", ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), deleteImpossiblePort));
 
         var deleteFirst = buildDeletePortCommandEnt(node, PortCommandEnt.SideEnum.INPUT, 1);
@@ -2083,8 +2082,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setAnnotationId(new AnnotationIDEnt("root_9999"))//
             .setBounds(newBounds)//
             .build();
-        assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
+        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
 
         // test command without change
         var command3 = builder(TransformWorkflowAnnotationCommandEntBuilder.class)//
@@ -2093,7 +2091,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setBounds(boundsEnt)//
             .build();
         ws().executeWorkflowCommand(wfId, getRootID(), command3);
-        assertThrows("No command to undo", OperationNotAllowedException.class,
+        assertThrows("No command to undo", ServiceCallException.class,
             () -> ws().undoWorkflowCommand(wfId, getRootID()));
 
     }
@@ -2126,8 +2124,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setAnnotationIds(List.of(new AnnotationIDEnt("root_123456789")))//
             .setAction(ActionEnum.BRING_FORWARD)//
             .build();
-        assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(projectId, getRootID(), command));
+        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), command));
     }
 
     /**
@@ -2360,14 +2357,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var commandWithoutChange =
             buildUpdateWorkflowAnnotationCommand(annotationEntAfterUndo, null, initialBorderColor);
         ws().executeWorkflowCommand(projectId, getRootID(), commandWithoutChange);
-        assertThrows("No command to undo", OperationNotAllowedException.class,
+        assertThrows("No command to undo", ServiceCallException.class,
             () -> ws().undoWorkflowCommand(projectId, getRootID()));
 
         // Test both arguments are missing case
         var commandMissing = buildUpdateWorkflowAnnotationCommand(annotationEntAfterUndo, null, null);
         assertThrows("Cannot update a workflow annotation with neither a border color nor a text provided.",
-            OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(projectId, getRootID(), commandMissing));
+            ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), commandMissing));
     }
 
     /**
@@ -2504,7 +2500,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().undoWorkflowCommand(projectId, getRootID());
         var voidCommand = buildUpdateProjectMetadataCommand(oldDescription, oldTags, oldLinks);
         ws().executeWorkflowCommand(projectId, getRootID(), voidCommand);
-        assertThrows("No command to undo", OperationNotAllowedException.class,
+        assertThrows("No command to undo", ServiceCallException.class,
             () -> ws().undoWorkflowCommand(projectId, getRootID()));
     }
 
@@ -2636,13 +2632,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Test not a component
         var command2 = buildUpdateComponentLinkInformationCommand(new NodeIDEnt(99), newLink);
-        assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(projectId, getRootID(), command2));
+        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), command2));
 
         // Test not a linked component
         var command3 = buildUpdateComponentLinkInformationCommand(notLinkedComponent, newLink);
-        assertThrows(OperationNotAllowedException.class,
-            () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
+        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
 
         // Test unlink a component
         var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent, null);
@@ -2718,7 +2712,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(undoneBounds, is(originalMetaOutPortsBounds));
 
         // try to execute the command for a component
-        var message = assertThrows(OperationNotAllowedException.class,
+        var message = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1)).getMessage();
         assertThat(message, is("Component don't have metanode ports bars. Can't be transformed."));
     }
@@ -2783,14 +2777,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Operation not allowed
         var commandEmpty = buildUpdateLinkedComponentsCommand(List.of());
-        assertThrows("Should not be allowed for emtpy lists", OperationNotAllowedException.class,
+        assertThrows("Should not be allowed for emtpy lists", ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, getRootID(), commandEmpty));
         var commandWithNativeNode = buildUpdateLinkedComponentsCommand(List.of(nativeNode, updatableComponent1));
-        assertThrows("Should not be allowed if list contains native nodes", OperationNotAllowedException.class,
+        assertThrows("Should not be allowed if list contains native nodes", ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, getRootID(), commandWithNativeNode));
         var commandWithNotLinked = buildUpdateLinkedComponentsCommand(List.of(notLinkedComponent, updatableComponent1));
-        assertThrows("Should not be allowed if list contains components that are not links",
-            OperationNotAllowedException.class,
+        assertThrows("Should not be allowed if list contains components that are not links", ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, getRootID(), commandWithNotLinked));
 
         // Reset mocked resolver

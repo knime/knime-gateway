@@ -61,7 +61,7 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -92,7 +92,7 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         final var workflowKey = getWorkflowKey();
         final var annotationIds = m_commandEnt.getAnnotationIds().stream()//
@@ -119,7 +119,7 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         final var annotationIds = m_annotationIdToPreviousIndex.keySet().stream().toList();
         final var annotations = getAnnotions(wfm, annotationIds);
@@ -137,7 +137,7 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
     }
 
     private static List<WorkflowAnnotation> getAnnotions(final WorkflowManager wfm,
-        final List<WorkflowAnnotationID> annotationIds) throws OperationNotAllowedException {
+        final List<WorkflowAnnotationID> annotationIds) throws ServiceCallException {
         final List<WorkflowAnnotation> annotations = new ArrayList<>();
         for (final var annotationId : annotationIds) {
             final var annotation = AbstractWorkflowAnnotationCommand.getWorkflowAnnotation(wfm, annotationId);

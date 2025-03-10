@@ -50,7 +50,7 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Abstract port command
@@ -74,12 +74,12 @@ abstract class AbstractPortCommand<T extends PortCommandEnt> extends AbstractWor
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         m_editor.undo();
     }
 
     @Override
-    protected abstract boolean executeWithLockedWorkflow() throws OperationNotAllowedException;
+    protected abstract boolean executeWithLockedWorkflow() throws ServiceCallException;
 
     /**
      * Determines whether to edit the ports of a native or a container node and instantiates the editor accordingly.

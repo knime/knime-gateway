@@ -90,8 +90,13 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
-        var wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        throws ServiceExceptions.ServiceCallException {
+        WorkflowManager wfm;
+        try {
+            wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        } catch (NodeNotFoundException | NotASubWorkflowException ex) {
+            throw new ServiceExceptions.ServiceCallException(ex.getMessage());
+        }
         var takeLeft = m_predicate.apply(wfm);
         m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;
         if (m_activeCommand instanceof WithResult withResult) {
@@ -102,16 +107,12 @@ abstract class CommandIfElse extends HigherOrderCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
-        try {
-            return m_activeCommand.execute(getWorkflowKey());
-        } catch (ServiceExceptions.NodeNotFoundException | ServiceExceptions.NotASubWorkflowException e) {
-            throw new ServiceExceptions.OperationNotAllowedException("Error executing nested command", e);
-        }
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+        return m_activeCommand.execute(getWorkflowKey());
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         m_activeCommand.undo();
     }
 

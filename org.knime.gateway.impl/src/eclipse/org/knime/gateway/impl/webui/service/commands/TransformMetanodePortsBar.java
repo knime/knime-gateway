@@ -58,7 +58,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
@@ -77,10 +77,10 @@ final class TransformMetanodePortsBar extends AbstractWorkflowCommand implements
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var wfm = getWorkflowManager();
         if (CoreUtil.isComponentWFM(wfm)) {
-            throw new OperationNotAllowedException("Component don't have metanode ports bars. Can't be transformed.");
+            throw new ServiceCallException("Component don't have metanode ports bars. Can't be transformed.");
         }
         var bounds = m_command.getBounds();
         switch (m_command.getType()) {
@@ -105,7 +105,7 @@ final class TransformMetanodePortsBar extends AbstractWorkflowCommand implements
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         m_undo.run();
         m_undo = null;
     }

@@ -53,7 +53,7 @@ import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 
@@ -69,14 +69,17 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
     private WorkflowManager m_wfm;
 
     @Override
-    public boolean execute(final WorkflowKey wfKey)
-        throws OperationNotAllowedException, NodeNotFoundException, NotASubWorkflowException {
-        m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
+    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
+        try {
+            m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        } catch (NodeNotFoundException | NotASubWorkflowException ex) {
+            throw new ServiceCallException("Could not find workflow", ex);
+        }
         m_wfKey = wfKey;
         return executeWithLockAndContext();
     }
 
-    private boolean executeWithLockAndContext() throws OperationNotAllowedException {
+    private boolean executeWithLockAndContext() throws ServiceCallException {
         NodeContext.pushContext(m_wfm);
         try (WorkflowLock lock = m_wfm.lock()) {
             return executeWithLockedWorkflow();
@@ -88,23 +91,23 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
     /**
      * Executes the command.
      * <p>
-     * The call to this method is exactly surrounded by a {@link WorkflowLock} on the {@link WorkflowManager}
-     * to be modified. Implementing methods do not need to acquire a lock themselves.
+     * The call to this method is exactly surrounded by a {@link WorkflowLock} on the {@link WorkflowManager} to be
+     * modified. Implementing methods do not need to acquire a lock themselves.
      * <p>
-     * Use {@link #getWorkflowManager()} or {@link #getWorkflowKey()} to retrieve the data
-     * required to execute the command.
+     * Use {@link #getWorkflowManager()} or {@link #getWorkflowKey()} to retrieve the data required to execute the
+     * command.
      *
-     * @implNote The thread calling this method will be holding a {@link WorkflowLock}. To avoid deadlocks, any change listeners
-     * that might in turn require a lock must be dispatched on a different thread. For example, this is the case
-     * for some listeners of the classic UI, which are active if the classic UI is initialized (i.e., it has been active
-     * in this session at least once, "hybrid mode").
+     * @implNote The thread calling this method will be holding a {@link WorkflowLock}. To avoid deadlocks, any change
+     *           listeners that might in turn require a lock must be dispatched on a different thread. For example, this
+     *           is the case for some listeners of the classic UI, which are active if the classic UI is initialized
+     *           (i.e., it has been active in this session at least once, "hybrid mode").
      *
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command did not change the workflow
      *
-     * @throws OperationNotAllowedException If the command could not be executed
+     * @throws ServiceCallException If the command could not be executed
      */
-    protected abstract boolean executeWithLockedWorkflow() throws OperationNotAllowedException;
+    protected abstract boolean executeWithLockedWorkflow() throws ServiceCallException;
 
     @Override
     public boolean canUndo() {
@@ -117,7 +120,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
     }
 
     @Override
-    public void redo() throws OperationNotAllowedException {
+    public void redo() throws ServiceCallException {
         executeWithLockAndContext();
     }
 

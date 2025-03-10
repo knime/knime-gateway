@@ -71,7 +71,7 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -110,7 +110,7 @@ final class Delete extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         var wfm = getWorkflowManager();
         wfm.paste(m_copy);
         for (ConnectionContainer originalConnection : m_connectionsDeleted) {
@@ -141,13 +141,13 @@ final class Delete extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var wfm = getWorkflowManager();
         String projectId = getWorkflowKey().getProjectId();
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()
             .map(id -> id.toNodeID(wfm)).collect(Collectors.toSet());
         if (!canRemoveAllNodes(wfm, nodesToDelete)) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "Some nodes can't be deleted or don't exist. Delete operation aborted.");
         }
 
@@ -162,7 +162,7 @@ final class Delete extends AbstractWorkflowCommand {
             .map(wfm::getConnection).collect(Collectors.toCollection(HashSet::new));
 
         if (m_connectionsDeleted.size() != m_connectionIdsQueried.size()) {
-            throw new OperationNotAllowedException("Some connections don't exist. Delete operation aborted.");
+            throw new ServiceCallException("Some connections don't exist. Delete operation aborted.");
         }
 
         // add all connections that have a to-be-deleted-node as source _or_ destination (but _not_ both)
@@ -172,7 +172,7 @@ final class Delete extends AbstractWorkflowCommand {
         }
 
         if (!CoreUtil.canRemoveConnections(m_connectionsDeleted, wfm)) {
-            throw new OperationNotAllowedException("Some connections can't be deleted. Delete operation aborted.");
+            throw new ServiceCallException("Some connections can't be deleted. Delete operation aborted.");
         }
 
         var annotationIDsToDelete =
@@ -180,7 +180,7 @@ final class Delete extends AbstractWorkflowCommand {
                 .toArray(size -> new WorkflowAnnotationID[size]);
         WorkflowCopyContent content = createWorkflowCopyContent(nodesToDelete, annotationIDsToDelete);
         if (!checkThatAllWorkflowAnnotationsExist(wfm, content.getAnnotationIDs())) {
-            throw new OperationNotAllowedException("Some workflow annotations don't exist. Delete operation aborted.");
+            throw new ServiceCallException("Some workflow annotations don't exist. Delete operation aborted.");
         }
 
         m_copy = wfm.copy(true, content);

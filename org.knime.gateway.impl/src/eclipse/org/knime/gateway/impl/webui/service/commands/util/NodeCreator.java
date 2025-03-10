@@ -62,7 +62,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Helper to create a node and optionally connect it to upstream and/or downstream nodes.
@@ -169,7 +170,7 @@ public final class NodeCreator {
     }
 
     /**
-     * When enabled, the {@link #create()}-method will fail with a {@link OperationNotAllowedException} if a connecction
+     * When enabled, the {@link #create()}-method will fail with a {@link ServiceCallException} if a connecction
      * couldn't be created. The node won't be created.
      *
      * @return this creator
@@ -183,17 +184,17 @@ public final class NodeCreator {
      * Carries out the actual node creation operation.
      *
      * @return the id of the new node
-     * @throws OperationNotAllowedException if the node couldn't be created (e.g. because no node could be found for the
+     * @throws ServiceCallException if the node couldn't be created (e.g. because no node could be found for the
      *             given factory name) or a connection couldn't be created (in case {@link #failOnConnectionAttempt()}
      *             is enabled)
      */
-    public NodeID create() throws OperationNotAllowedException {
+    public NodeID create() throws ServiceCallException {
         NodeID nodeId;
         try {
             nodeId = CoreUtil.createAndAddNode(m_factoryKeyEnt.getClassName(), m_factoryKeyEnt.getSettings(), m_url,
                 m_position.getX(), m_position.getY() + m_nodeYPosCorrection, m_wfm, m_centerNode);
         } catch (IOException | NoSuchElementException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
 
         if (m_track) {
@@ -203,7 +204,7 @@ public final class NodeCreator {
 
         if (m_nodeConnector != null && !m_nodeConnector.connect(nodeId) && m_failOnConnectionAttempt) {
             m_wfm.removeNode(nodeId);
-            throw new OperationNotAllowedException("Node couldn't be created because a connection couldn't be added.");
+            throw new ServiceCallException("Node couldn't be created because a connection couldn't be added.");
         }
 
         return nodeId;

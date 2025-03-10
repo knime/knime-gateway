@@ -52,7 +52,7 @@ import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeAnnotationData;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -79,14 +79,14 @@ class UpdateNodeLabel extends AbstractWorkflowCommand {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         m_nodeAnnotation.copyFrom(m_oldNodeAnnotationData, false);
         m_nodeAnnotation = null;
         m_oldNodeAnnotationData = null;
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var nodeId = m_commandEnt.getNodeId();
         var nc = DefaultServiceUtil.getNodeContainer(getWorkflowKey().getProjectId(), nodeId);
         var newLabel = m_commandEnt.getLabel();

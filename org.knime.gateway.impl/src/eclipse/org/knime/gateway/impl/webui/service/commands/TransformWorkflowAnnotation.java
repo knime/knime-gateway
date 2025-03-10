@@ -57,7 +57,7 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Changes the size and position of a workflow annotation.
@@ -79,7 +79,7 @@ class TransformWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
      */
     @Override
     protected boolean executeInternal(final WorkflowAnnotation annotation, final AnnotationData annotationDataCopy)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
         final var bounds = m_commandEnt.getBounds();
         final var previousBounds = getBoundsFromAnnotationData(annotationDataCopy);
 

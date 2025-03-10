@@ -57,8 +57,6 @@ import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
@@ -78,8 +76,7 @@ class Cut extends CommandSequence {
      * the sequence
      */
     @Override
-    protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
+    protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey) {
         return Optional.of((WithResult)m_commands.get(0));
     }
 

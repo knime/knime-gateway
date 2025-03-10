@@ -59,7 +59,7 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.shared.workflow.def.AnnotationDataDef;
 
@@ -89,7 +89,7 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         m_annotationId = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_annotationIdEnt);
         final var annotation = getWorkflowAnnotation(getWorkflowManager(), m_annotationId);
         m_previousAnnotationData = annotation.getData().clone();
@@ -103,16 +103,16 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
      * @param annotationDataCopy a copy(!) of the annotation's data
      *
      * @return Whether the command changed the workflow or not
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
     protected abstract boolean executeInternal(final WorkflowAnnotation annotation, AnnotationData annotationDataCopy)
-        throws OperationNotAllowedException;
+        throws ServiceCallException;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         final var annotation = getWorkflowAnnotation(getWorkflowManager(), m_annotationId);
         annotation.copyFrom(m_previousAnnotationData, true);
         m_previousAnnotationData = null;
@@ -126,13 +126,13 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
      * @param annotationId The workflow annotation ID
      *
      * @return The workflow annotation
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
     static WorkflowAnnotation getWorkflowAnnotation(final WorkflowManager wfm, final WorkflowAnnotationID annotationId)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
         final var workflowAnnotation = wfm.getWorkflowAnnotations(annotationId)[0];
         if (workflowAnnotation == null) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "No workflow annotation found for id " + (new AnnotationIDEnt(annotationId)));
         }
         return workflowAnnotation;
@@ -171,16 +171,16 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
      *
      * @param hexString
      * @return The decoded integer, {@code null} if the input was {@code null}.
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
-    static Integer hexStringToInteger(final String hexString) throws OperationNotAllowedException {
+    static Integer hexStringToInteger(final String hexString) throws ServiceCallException {
         if (hexString == null) {
             return null;
         }
         try {
             return Integer.decode(hexString);
         } catch (NumberFormatException e) {
-            throw new OperationNotAllowedException("Invalid hex string <" + hexString + ">", e);
+            throw new ServiceCallException("Invalid hex string <" + hexString + ">", e);
         }
     }
 

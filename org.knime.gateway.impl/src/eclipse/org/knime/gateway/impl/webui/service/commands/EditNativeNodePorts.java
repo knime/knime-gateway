@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt.SideEnum;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Helper class to edit native node ports
@@ -83,9 +83,9 @@ final class EditNativeNodePorts implements EditPorts {
     }
 
     @Override
-    public int addPort(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
+    public int addPort(final AddPortCommandEnt addPortCommandEnt) throws ServiceCallException {
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
-            .orElseThrow(() -> new OperationNotAllowedException("Unknown port type"));
+            .orElseThrow(() -> new ServiceCallException("Unknown port type"));
         var groupName = addPortCommandEnt.getPortGroup();
         var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
@@ -114,11 +114,11 @@ final class EditNativeNodePorts implements EditPorts {
     /**
      * Finds the new port index by adding up the length of all preceding port groups on the particular side
      */
-    private int findNewPortIdx(final AddPortCommandEnt addPortCommandEnt) throws OperationNotAllowedException {
+    private int findNewPortIdx(final AddPortCommandEnt addPortCommandEnt) throws ServiceCallException {
         var portGroupId = addPortCommandEnt.getPortGroup();
         var isPortGroupInput = addPortCommandEnt.getSide() == SideEnum.INPUT;
         var portConfig = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow().getPortConfig()
-            .orElseThrow(() -> new OperationNotAllowedException("Could not retrieve port config"));
+            .orElseThrow(() -> new ServiceCallException("Could not retrieve port config"));
         var portGroupIds = portConfig.getPortGroupNames();
         return IntStream.range(0, portGroupIds.indexOf(portGroupId) + 1)//
             .mapToObj(idx -> portConfig.getGroup(portGroupIds.get(idx)))//

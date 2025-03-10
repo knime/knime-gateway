@@ -66,7 +66,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
 import org.knime.gateway.api.webui.entity.PasteResultEnt.PasteResultEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Point;
@@ -95,14 +95,14 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         var wfm = getWorkflowManager();
         Arrays.stream(m_workflowCopyContent.getNodeIDs()).forEach(wfm::removeNode);
         Arrays.stream(m_workflowCopyContent.getAnnotationIDs()).forEach(wfm::removeAnnotation);
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Paste at original position
         try {
@@ -113,7 +113,7 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
             m_workflowCopyContent = getWorkflowManager().paste(defClipboardContent);
         } catch (JsonProcessingException | IllegalArgumentException | InvalidDefClipboardContentVersionException
                 | ObfuscatorException e) {
-            throw new OperationNotAllowedException("Could not parse input string to def clipboard content: ", e);
+            throw new ServiceCallException("Could not parse input string to def clipboard content: ", e);
         }
         // Get nodes and annotations
         var nodes = Arrays.stream(m_workflowCopyContent.getNodeIDs())//

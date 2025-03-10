@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Workflow command that removes a port from a node.
@@ -63,7 +63,7 @@ class RemovePort extends AbstractPortCommand<RemovePortCommandEnt> {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         var portCommandEnt = getPortCommandEnt();
         var editor = instantiatePortEditor();
         editor.removePort(portCommandEnt);

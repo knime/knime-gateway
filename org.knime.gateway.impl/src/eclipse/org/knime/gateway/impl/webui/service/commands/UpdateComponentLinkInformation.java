@@ -60,7 +60,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Workflow command to update link types of link components. The command is accessed from outside the package.
@@ -95,25 +95,25 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         if (wfm.isWriteProtected()) {
-            throw new OperationNotAllowedException("Container is read-only.");
+            throw new ServiceCallException("Container is read-only.");
         }
 
         final var componentId = m_componentId.apply(wfm);
         final var component = wfm.getNodeContainer(componentId, SubNodeContainer.class, false);
         if (component == null) {
-            throw new OperationNotAllowedException("Not a component: " + m_componentId);
+            throw new ServiceCallException("Not a component: " + m_componentId);
         }
 
         final var templateInformation = component.getTemplateInformation();
         if (templateInformation.getRole() == Role.Template) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "Cannot set link source on component template directly: " + m_componentId);
         }
         if (templateInformation.getRole() != Role.Link) {
-            throw new OperationNotAllowedException("Component not linked: " + m_componentId);
+            throw new ServiceCallException("Component not linked: " + m_componentId);
         }
 
         final var newTemplateInfo = updateTemplateInformation(templateInformation, m_newURI);

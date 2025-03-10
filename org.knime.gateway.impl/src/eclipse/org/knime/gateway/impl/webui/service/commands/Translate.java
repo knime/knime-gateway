@@ -62,7 +62,7 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 
 /**
@@ -83,7 +83,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    public boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    public boolean executeWithLockedWorkflow() throws ServiceCallException {
         if (m_delta.isZero()) {
             return false;
         }
@@ -97,7 +97,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    public void undo() throws OperationNotAllowedException {
+    public void undo() throws ServiceCallException {
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(),
             m_metanodePortsBars, m_delta.invert());
     }
@@ -182,16 +182,16 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     private static void assertCanMoveMetanodePortsBars(final WorkflowManager wfm,
-        final MetanodePortsBars metanodePortsBars) throws OperationNotAllowedException {
+        final MetanodePortsBars metanodePortsBars) throws ServiceCallException {
         if (isComponentWFM(wfm)) {
-            throw new OperationNotAllowedException("Components don't have metanode-ports-bars to be moved.");
+            throw new ServiceCallException("Components don't have metanode-ports-bars to be moved.");
         }
         if (metanodePortsBars.in && wfm.getInPortsBarUIInfo() == null) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "Metanode in-ports-bar can't be moved. It doesn't have a position, yet.");
         }
         if (metanodePortsBars.out && wfm.getOutPortsBarUIInfo() == null) {
-            throw new OperationNotAllowedException(
+            throw new ServiceCallException(
                 "Metanode out-ports-bar can't be moved. It doesn't have a position, yet.");
         }
     }

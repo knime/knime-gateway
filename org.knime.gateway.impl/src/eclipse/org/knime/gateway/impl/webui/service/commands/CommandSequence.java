@@ -50,10 +50,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowLock;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 
@@ -79,7 +80,7 @@ abstract class CommandSequence extends HigherOrderCommand {
 
     @Override
     protected Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
+        throws ServiceCallException {
         var lastCommand = m_commands.get(m_commands.size() - 1);
         if (lastCommand instanceof WithResult withResult) {
             return Optional.of(withResult);
@@ -89,15 +90,19 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean execute(final WorkflowKey wfKey)
-        throws ServiceExceptions.OperationNotAllowedException, NodeNotFoundException, NotASubWorkflowException {
+    public boolean execute(final WorkflowKey wfKey) throws ServiceExceptions.ServiceCallException {
         m_wfKey = wfKey;
-        var wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        WorkflowManager wfm;
+        try {
+            wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        } catch (NodeNotFoundException | NotASubWorkflowException ex) {
+            throw new ServiceCallException(ex.getMessage());
+        }
         var isWorkflowModified = false;
         try (WorkflowLock lock = wfm.lock()) {
             for (var command : m_commands) {
@@ -110,7 +115,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         var iterator = m_commands.listIterator(m_commands.size());
         while (iterator.hasPrevious()) {
             iterator.previous().undo();
@@ -118,13 +123,8 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void redo() throws OperationNotAllowedException {
-        try {
-            execute(m_wfKey);
-        } catch (OperationNotAllowedException | NodeNotFoundException | NotASubWorkflowException ex) {
-            // should never happen because command has been executed at least once already
-            throw new IllegalStateException(ex);
-        }
+    public void redo() throws ServiceCallException {
+        execute(m_wfKey);
     }
 
     @Override

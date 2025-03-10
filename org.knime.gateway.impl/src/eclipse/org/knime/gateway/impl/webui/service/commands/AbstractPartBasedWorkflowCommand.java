@@ -71,7 +71,7 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
@@ -102,9 +102,9 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      * present, you may call this method at the beginning of {@link AbstractPartBasedWorkflowCommand#execute()} and,
      * going forward, assume that all workflow parts are available.
      *
-     * @throws ServiceExceptions.OperationNotAllowedException If a workflow part is not available
+     * @throws ServiceExceptions.ServiceCallException If a workflow part is not available
      */
-    private void checkPartsPresentElseThrow() throws ServiceExceptions.OperationNotAllowedException {
+    private void checkPartsPresentElseThrow() throws ServiceExceptions.ServiceCallException {
         if (m_partsChecked) {
             return;
         }
@@ -142,7 +142,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
             && bendpointsNotFound.isEmpty())) {
             String message =
                 printMissingParts(nodesNotFound, annotationsNotFound, connectionsNotFound, bendpointsNotFound);
-            throw new ServiceExceptions.OperationNotAllowedException(message);
+            throw new ServiceExceptions.ServiceCallException(message);
         }
 
         m_partsChecked = true;
@@ -192,9 +192,9 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     /**
      * @throws java.util.NoSuchElementException If a node container is not available.
      * @return The node containers for the node ids affected by this command.
-     * @throws OperationNotAllowedException if a workflow part is not available
+     * @throws ServiceCallException if a workflow part is not available
      */
-    protected final Set<NodeContainer> getNodeContainers() throws OperationNotAllowedException {
+    protected final Set<NodeContainer> getNodeContainers() throws ServiceCallException {
         checkPartsPresentElseThrow();
         return stream(getNodeIDs()) //
             .map(id -> CoreUtil.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
@@ -204,9 +204,9 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     /**
      * @throws java.util.NoSuchElementException If an annotation is not available.
      * @return The annotation objects for the annotation ids affected by this command.
-     * @throws OperationNotAllowedException if a workflow part is not available
+     * @throws ServiceCallException if a workflow part is not available
      */
-    protected final Set<WorkflowAnnotation> getAnnotations() throws OperationNotAllowedException {
+    protected final Set<WorkflowAnnotation> getAnnotations() throws ServiceCallException {
         checkPartsPresentElseThrow();
         return getAnnotations(getAnnotationIDs());
     }

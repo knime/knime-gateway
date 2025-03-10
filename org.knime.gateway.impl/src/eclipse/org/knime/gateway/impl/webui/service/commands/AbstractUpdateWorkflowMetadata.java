@@ -104,7 +104,7 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
     abstract M getOriginal();
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.OperationNotAllowedException {
+    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
         m_originalMetadata = getOriginal();
         if (m_commandEnt.equals(toEntity(m_originalMetadata))) {
             return false;
@@ -114,7 +114,7 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
     }
 
     @Override
-    public void undo() throws ServiceExceptions.OperationNotAllowedException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         apply(m_originalMetadata);
         m_originalMetadata = null;
     }

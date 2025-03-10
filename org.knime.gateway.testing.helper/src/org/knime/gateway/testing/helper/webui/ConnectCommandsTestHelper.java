@@ -74,7 +74,7 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBui
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -208,7 +208,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var command = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(10), 1);
         ws().executeWorkflowCommand(projectId, workflowId, command);
         Exception exception =
-            assertThrows(OperationNotAllowedException.class, () -> ws().undoWorkflowCommand(projectId, workflowId));
+            assertThrows(ServiceCallException.class, () -> ws().undoWorkflowCommand(projectId, workflowId));
         assertThat(exception.getMessage(), is("No command to undo"));
     }
 
@@ -227,14 +227,14 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 
         // add a connection to a node that doesn't exist
         var command2 = buildConnectCommandEnt(new NodeIDEnt(1), 1, new NodeIDEnt(9999999), 1);
-        var exception = assertThrows(OperationNotAllowedException.class,
+        var exception = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, workflowId, command2));
         assertThat(exception.getMessage(),
             containsString("9999999\" not contained in workflow, nor it's the workflow itself"));
 
         // add a connection that can't be added (here: because it creates a cycle)
         var command3 = buildConnectCommandEnt(new NodeIDEnt(27), 0, new NodeIDEnt(1), 0);
-        exception = assertThrows(OperationNotAllowedException.class,
+        exception = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, workflowId, command3));
         assertThat(exception.getMessage(), containsString("Connection couldn't be created"));
     }
