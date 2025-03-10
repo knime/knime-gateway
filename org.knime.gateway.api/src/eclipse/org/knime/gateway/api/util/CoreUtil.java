@@ -249,7 +249,11 @@ public final class CoreUtil {
         return wfm.getDirectNCParent() instanceof SubNodeContainer;
     }
 
-    public static boolean isMetanodeWfm(final WorkflowManager wfm) {
+    /**
+     * @param wfm
+     * @return Whether the given workflow corresponds to a metanode.
+     */
+    public static boolean isMetanodeWFM(final WorkflowManager wfm) {
         return CoreUtil.getContainerType(wfm) //
             .map(type -> type == CoreUtil.ContainerType.METANODE) //
             .orElse(false);
@@ -745,7 +749,7 @@ public final class CoreUtil {
      */
     public static WorkflowManager getWorkflowParent(final WorkflowManager wfm) {
         var parent = wfm.getDirectNCParent();
-        return parent instanceof SubNodeContainer snc ? snc.getParent() : (WorkflowManager)parent;
+        return (parent instanceof SubNodeContainer snc) ? snc.getParent() : (WorkflowManager)parent;
     }
 
     /**
@@ -761,7 +765,7 @@ public final class CoreUtil {
         if (wfm.getID().isRoot()) {
             throw new IllegalArgumentException("Not a (or part of a) project workflow manager");
         }
-        if (isMetanodeWfm(wfm)) {
+        if (isMetanodeWFM(wfm)) {
             return getNonMetanodeSelfOrParent(getWorkflowParent(wfm));
         }
         return wfm;

@@ -315,8 +315,7 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     /**
-     * Notify the workflow listener. This would usually be called from core side but some exceptions may validate
-     * triggering this "manually" in the gateway layer.
+     * Notify the workflow listener.
      * @param e
      */
     public void notifyWorkflowListener(final WorkflowEvent e) {
@@ -332,17 +331,16 @@ public class WorkflowChangesListener implements Closeable {
             case NODE_REMOVED -> updateWorkflowChangesTrackers(WorkflowChange.NODE_REMOVED);
             case CONNECTION_ADDED -> updateWorkflowChangesTrackers(WorkflowChange.CONNECTION_ADDED);
             case CONNECTION_REMOVED ->
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.CONNECTION_REMOVED);
-            case NODE_COLLAPSED -> updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODES_COLLAPSED);
-            case NODE_EXPANDED -> updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_EXPANDED);
+                updateWorkflowChangesTrackers(WorkflowChange.CONNECTION_REMOVED);
+            case NODE_COLLAPSED -> updateWorkflowChangesTrackers(WorkflowChange.NODES_COLLAPSED);
+            case NODE_EXPANDED -> updateWorkflowChangesTrackers(WorkflowChange.NODE_EXPANDED);
             case ANNOTATION_ADDED ->
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_ADDED);
+                updateWorkflowChangesTrackers(WorkflowChange.ANNOTATION_ADDED);
             case ANNOTATION_REMOVED ->
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANNOTATION_REMOVED);
+                updateWorkflowChangesTrackers(WorkflowChange.ANNOTATION_REMOVED);
             case NODE_PORTS_CHANGED ->
-                updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.NODE_PORTS_CHANGED);
+                updateWorkflowChangesTrackers(WorkflowChange.NODE_PORTS_CHANGED);
             case PORTS_BAR_UI_INFO_CHANGED -> updateWorkflowChangesTrackers(WorkflowChange.PORTS_BAR_MOVED);
-            case WORKFLOW_METADATA_CHANGED -> updateWorkflowChangesTrackers(WorkflowChange.ANY);
             default -> {
                 //
             }
@@ -447,7 +445,6 @@ public class WorkflowChangesListener implements Closeable {
      * Generalization of any listener that can be attached to aspects of a node/connection/annotation.
      *
      * @param <T> The target type to attach/detach the listener to/from
-     * @param <L> The type of event listener to attach / detach
      */
     private interface Listener<T> {
 

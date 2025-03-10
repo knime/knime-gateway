@@ -113,7 +113,7 @@ final class UpdateComponentMetadata
 
     @Override
     void apply(final ComponentMetadata metadata) {
-        CoreUtil.getComponentSNC(getWorkflowManager()).orElseThrow().setMetadata(metadata);
+        CoreUtil.getComponentSNC(getWorkflowManagerToModify()).orElseThrow().setMetadata(metadata);
         if (!getWorkflowManager().equals(getWorkflowManagerToModify())) {
             setDirtyAndNotifyWorkflowListener(metadata);
         }
