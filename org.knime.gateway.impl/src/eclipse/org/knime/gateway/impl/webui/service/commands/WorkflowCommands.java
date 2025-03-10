@@ -167,7 +167,7 @@ public final class WorkflowCommands {
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
         final SpaceProviders spaceProviders)
         throws OperationNotAllowedException, NotASubWorkflowException, NodeNotFoundException {
-        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware);
+        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
@@ -180,8 +180,7 @@ public final class WorkflowCommands {
 
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
-        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
-        final WorkflowMiddleware workflowMiddleware) throws OperationNotAllowedException {
+        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders) throws OperationNotAllowedException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
@@ -226,9 +225,9 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AddWorkflowAnnotationCommandEnt ce) {
             command = new AddWorkflowAnnotation(ce);
         } else if (commandEnt instanceof UpdateProjectMetadataCommandEnt ce) {
-            command = new UpdateProjectMetadata(ce, workflowMiddleware);
+            command = new UpdateProjectMetadata(ce);
         } else if (commandEnt instanceof UpdateComponentMetadataCommandEnt ce) {
-            command = new UpdateComponentMetadata(ce, workflowMiddleware);
+            command = new UpdateComponentMetadata(ce);
         } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
