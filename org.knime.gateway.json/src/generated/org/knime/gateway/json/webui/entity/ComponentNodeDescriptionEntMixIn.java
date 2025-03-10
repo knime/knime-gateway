@@ -78,6 +78,22 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
     public String getTypeID();
 
     @Override
+    @JsonProperty("description")
+    public TypedTextEnt getDescription();
+    
+    @Override
+    @JsonProperty("metadataType")
+    public MetadataTypeEnum getMetadataType();
+    
+    @Override
+    @JsonProperty("tags")
+    public java.util.List<String> getTags();
+    
+    @Override
+    @JsonProperty("links")
+    public java.util.List<LinkEnt> getLinks();
+    
+    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -105,22 +121,6 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
     @JsonProperty("outPorts")
     public java.util.List<NodePortDescriptionEnt> getOutPorts();
     
-    @Override
-    @JsonProperty("description")
-    public TypedTextEnt getDescription();
-    
-    @Override
-    @JsonProperty("metadataType")
-    public MetadataTypeEnum getMetadataType();
-    
-    @Override
-    @JsonProperty("tags")
-    public java.util.List<String> getTags();
-    
-    @Override
-    @JsonProperty("links")
-    public java.util.List<LinkEnt> getLinks();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -134,6 +134,22 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
         @Override
         public ComponentNodeDescriptionEntMixIn build();
     
+        @Override
+        @JsonProperty("description")
+        public ComponentNodeDescriptionEntMixInBuilder setDescription(final TypedTextEnt description);
+        
+        @Override
+        @JsonProperty("metadataType")
+        public ComponentNodeDescriptionEntMixInBuilder setMetadataType(final MetadataTypeEnum metadataType);
+        
+        @Override
+        @JsonProperty("tags")
+        public ComponentNodeDescriptionEntMixInBuilder setTags(final java.util.List<String> tags);
+        
+        @Override
+        @JsonProperty("links")
+        public ComponentNodeDescriptionEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
+        
         @Override
         @JsonProperty("name")
         public ComponentNodeDescriptionEntMixInBuilder setName(final String name);
@@ -161,22 +177,6 @@ public interface ComponentNodeDescriptionEntMixIn extends ComponentNodeDescripti
         @Override
         @JsonProperty("outPorts")
         public ComponentNodeDescriptionEntMixInBuilder setOutPorts(final java.util.List<NodePortDescriptionEnt> outPorts);
-        
-        @Override
-        @JsonProperty("description")
-        public ComponentNodeDescriptionEntMixInBuilder setDescription(final TypedTextEnt description);
-        
-        @Override
-        @JsonProperty("metadataType")
-        public ComponentNodeDescriptionEntMixInBuilder setMetadataType(final MetadataTypeEnum metadataType);
-        
-        @Override
-        @JsonProperty("tags")
-        public ComponentNodeDescriptionEntMixInBuilder setTags(final java.util.List<String> tags);
-        
-        @Override
-        @JsonProperty("links")
-        public ComponentNodeDescriptionEntMixInBuilder setLinks(final java.util.List<LinkEnt> links);
         
     }
 

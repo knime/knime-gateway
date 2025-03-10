@@ -60,6 +60,10 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 /**
  * Description of certain aspects of a component. This is static information for a component which remains the same even if component is not part of a workflow.
  *
+ * @param description
+ * @param metadataType
+ * @param tags
+ * @param links
  * @param name
  * @param type
  * @param icon
@@ -67,36 +71,32 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
  * @param views
  * @param inPorts
  * @param outPorts
- * @param description
- * @param metadataType
- * @param tags
- * @param links
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentNodeDescriptionEnt(
+    TypedTextEnt description,
+    MetadataTypeEnum metadataType,
+    java.util.List<String> tags,
+    java.util.List<LinkEnt> links,
     String name,
     TypeEnum type,
     String icon,
     java.util.List<NodeDialogOptionGroupEnt> options,
     java.util.List<NodeViewDescriptionEnt> views,
     java.util.List<NodePortDescriptionEnt> inPorts,
-    java.util.List<NodePortDescriptionEnt> outPorts,
-    TypedTextEnt description,
-    MetadataTypeEnum metadataType,
-    java.util.List<String> tags,
-    java.util.List<LinkEnt> links) implements ComponentNodeDescriptionEnt {
+    java.util.List<NodePortDescriptionEnt> outPorts) implements ComponentNodeDescriptionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
     public DefaultComponentNodeDescriptionEnt {
-        if(name == null) {
-            throw new IllegalArgumentException("<name> must not be null.");
-        }
         if(metadataType == null) {
             throw new IllegalArgumentException("<metadataType> must not be null.");
+        }
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
     }
 
@@ -105,6 +105,26 @@ public record DefaultComponentNodeDescriptionEnt(
         return "ComponentNodeDescription";
     }
   
+    @Override
+    public TypedTextEnt getDescription() {
+        return description;
+    }
+    
+    @Override
+    public MetadataTypeEnum getMetadataType() {
+        return metadataType;
+    }
+    
+    @Override
+    public java.util.List<String> getTags() {
+        return tags;
+    }
+    
+    @Override
+    public java.util.List<LinkEnt> getLinks() {
+        return links;
+    }
+    
     @Override
     public String getName() {
         return name;
@@ -140,30 +160,18 @@ public record DefaultComponentNodeDescriptionEnt(
         return outPorts;
     }
     
-    @Override
-    public TypedTextEnt getDescription() {
-        return description;
-    }
-    
-    @Override
-    public MetadataTypeEnum getMetadataType() {
-        return metadataType;
-    }
-    
-    @Override
-    public java.util.List<String> getTags() {
-        return tags;
-    }
-    
-    @Override
-    public java.util.List<LinkEnt> getLinks() {
-        return links;
-    }
-    
     /**
      * A builder for {@link DefaultComponentNodeDescriptionEnt}.
      */
     public static class DefaultComponentNodeDescriptionEntBuilder implements ComponentNodeDescriptionEntBuilder {
+
+        private TypedTextEnt m_description;
+
+        private MetadataTypeEnum m_metadataType;
+
+        private java.util.List<String> m_tags;
+
+        private java.util.List<LinkEnt> m_links;
 
         private String m_name;
 
@@ -179,13 +187,32 @@ public record DefaultComponentNodeDescriptionEnt(
 
         private java.util.List<NodePortDescriptionEnt> m_outPorts;
 
-        private TypedTextEnt m_description;
+        @Override
+        public DefaultComponentNodeDescriptionEntBuilder setDescription(TypedTextEnt description) {
+             m_description = description;
+             return this;
+        }
 
-        private MetadataTypeEnum m_metadataType;
+        @Override
+        public DefaultComponentNodeDescriptionEntBuilder setMetadataType(MetadataTypeEnum metadataType) {
+             if(metadataType == null) {
+                 throw new IllegalArgumentException("<metadataType> must not be null.");
+             }
+             m_metadataType = metadataType;
+             return this;
+        }
 
-        private java.util.List<String> m_tags;
+        @Override
+        public DefaultComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags) {
+             m_tags = tags;
+             return this;
+        }
 
-        private java.util.List<LinkEnt> m_links;
+        @Override
+        public DefaultComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links) {
+             m_links = links;
+             return this;
+        }
 
         @Override
         public DefaultComponentNodeDescriptionEntBuilder setName(String name) {
@@ -233,46 +260,19 @@ public record DefaultComponentNodeDescriptionEnt(
         }
 
         @Override
-        public DefaultComponentNodeDescriptionEntBuilder setDescription(TypedTextEnt description) {
-             m_description = description;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeDescriptionEntBuilder setMetadataType(MetadataTypeEnum metadataType) {
-             if(metadataType == null) {
-                 throw new IllegalArgumentException("<metadataType> must not be null.");
-             }
-             m_metadataType = metadataType;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags) {
-             m_tags = tags;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links) {
-             m_links = links;
-             return this;
-        }
-
-        @Override
         public DefaultComponentNodeDescriptionEnt build() {
             return new DefaultComponentNodeDescriptionEnt(
+                immutable(m_description),
+                immutable(m_metadataType),
+                immutable(m_tags),
+                immutable(m_links),
                 immutable(m_name),
                 immutable(m_type),
                 immutable(m_icon),
                 immutable(m_options),
                 immutable(m_views),
                 immutable(m_inPorts),
-                immutable(m_outPorts),
-                immutable(m_description),
-                immutable(m_metadataType),
-                immutable(m_tags),
-                immutable(m_links));
+                immutable(m_outPorts));
         }
     
     }

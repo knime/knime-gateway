@@ -68,7 +68,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNodeAndDescriptionEnt, NodeDescriptionEnt, EditableMetadataEnt {
+public interface ComponentNodeDescriptionEnt extends GatewayEntity, EditableMetadataEnt, ComponentNodeAndDescriptionEnt, NodeDescriptionEnt {
 
 
 
@@ -76,6 +76,10 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ComponentNodeDescriptionEnt)other;
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("metadataType", Pair.create(getMetadataType(), e.getMetadataType()));
+      valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
+      valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
@@ -83,10 +87,6 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
       valueConsumer.accept("views", Pair.create(getViews(), e.getViews()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
-      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
-      valueConsumer.accept("metadataType", Pair.create(getMetadataType(), e.getMetadataType()));
-      valueConsumer.accept("tags", Pair.create(getTags(), e.getTags()));
-      valueConsumer.accept("links", Pair.create(getLinks(), e.getLinks()));
   }
 
     /**
@@ -94,6 +94,38 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
      */
     public interface ComponentNodeDescriptionEntBuilder extends GatewayEntityBuilder<ComponentNodeDescriptionEnt> {
 
+        /**
+   		 * Set description
+         * 
+         * @param description the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setDescription(TypedTextEnt description);
+        
+        /**
+         * Descriminator for different types of metadata.
+         * 
+         * @param metadataType the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setMetadataType(MetadataTypeEnum metadataType);
+        
+        /**
+         * A collection of tags the user chose to describe the workflow
+         * 
+         * @param tags the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags);
+        
+        /**
+         * A collection of URLs attached to the workflow
+         * 
+         * @param links the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links);
+        
         /**
          * The component name.
          * 
@@ -149,38 +181,6 @@ public interface ComponentNodeDescriptionEnt extends GatewayEntity, ComponentNod
          * @return this entity builder for chaining
          */
         ComponentNodeDescriptionEntBuilder setOutPorts(java.util.List<NodePortDescriptionEnt> outPorts);
-        
-        /**
-   		 * Set description
-         * 
-         * @param description the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setDescription(TypedTextEnt description);
-        
-        /**
-         * Descriminator for different types of metadata.
-         * 
-         * @param metadataType the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setMetadataType(MetadataTypeEnum metadataType);
-        
-        /**
-         * A collection of tags the user chose to describe the workflow
-         * 
-         * @param tags the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setTags(java.util.List<String> tags);
-        
-        /**
-         * A collection of URLs attached to the workflow
-         * 
-         * @param links the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentNodeDescriptionEntBuilder setLinks(java.util.List<LinkEnt> links);
         
         
         /**

@@ -50,18 +50,36 @@ import org.knime.gateway.api.webui.entity.TypedTextEnt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.knime.gateway.api.webui.entity.EditableMetadataEnt;
 import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt.DefaultEditableMetadataEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultEditableMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "metadataType",
+    visible = true,
+    defaultImpl = DefaultEditableMetadataEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultEditableMetadataEnt.class, name="EditableMetadata")
+,
+  @Type(value = DefaultProjectMetadataEnt.class, name = "project")
+,
+  @Type(value = DefaultComponentNodeDescriptionEnt.class, name = "component")
+})
 @JsonDeserialize(builder=DefaultEditableMetadataEntBuilder.class)
 @JsonSerialize(as=EditableMetadataEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
@@ -93,7 +111,19 @@ public interface EditableMetadataEntMixIn extends EditableMetadataEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "metadataType",
+    visible = true,
+    defaultImpl = DefaultEditableMetadataEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultEditableMetadataEnt.class, name="EditableMetadata")
+,
+  @Type(value = DefaultProjectMetadataEnt.class, name = "project")
+,
+  @Type(value = DefaultComponentNodeDescriptionEnt.class, name = "component")
+})
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface EditableMetadataEntMixInBuilder extends EditableMetadataEntBuilder {
     
