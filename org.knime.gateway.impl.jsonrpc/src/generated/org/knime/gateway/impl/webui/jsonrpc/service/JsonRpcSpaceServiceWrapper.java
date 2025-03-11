@@ -217,8 +217,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void moveOrCopyItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds, @JsonRpcParam(value="destWorkflowGroupItemId") String destWorkflowGroupItemId, @JsonRpcParam(value="collisionHandling") String collisionHandling, @JsonRpcParam(value="copy") Boolean copy)  throws ServiceExceptions.ServiceCallException {
-        m_service.get().moveOrCopyItems(spaceId, spaceProviderId, itemIds, destWorkflowGroupItemId, collisionHandling, copy);    
+    public void moveOrCopyItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds, @JsonRpcParam(value="destSpaceId") String destSpaceId, @JsonRpcParam(value="destWorkflowGroupItemId") String destWorkflowGroupItemId, @JsonRpcParam(value="copy") Boolean copy, @JsonRpcParam(value="collisionHandling") String collisionHandling)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().moveOrCopyItems(spaceId, spaceProviderId, itemIds, destSpaceId, destWorkflowGroupItemId, copy, collisionHandling);    
     }
 
 	/**

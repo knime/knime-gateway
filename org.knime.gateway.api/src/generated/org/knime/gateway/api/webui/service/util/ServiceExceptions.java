@@ -169,5 +169,18 @@ public final class ServiceExceptions {
         }
     }
 
+   /**
+    * If there was a collision, e.g. due to naming conflicts
+    */
+    public static class CollisionException extends Exception {
+        public CollisionException(String message) {
+            super(message);
+        }
+        
+        public CollisionException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     
 }

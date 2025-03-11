@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.CollisionException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -256,11 +257,30 @@ public class DefaultSpaceService implements SpaceService {
      */
     @Override
     public void moveOrCopyItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
-        final String destWorkflowGroupItemId, final String collisionHandling, final Boolean copy)
-        throws ServiceCallException {
+        final String destSpaceId, final String destWorkflowGroupItemId, final Boolean copy,
+        final String collisionHandling) throws ServiceCallException, CollisionException{
+
+        if (itemIds.size() == 0) {
+            return;
+        }
+
         try {
-            var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
-            if (space instanceof LocalSpace localSpace) {
+            var spaceProvider = m_spaceProvidersManager.getSpaceProviders(projectId());
+            var sourceSpace = spaceProvider.getSpace(spaceProviderId, spaceId);
+            var destinationSpace = spaceProvider.getSpace(spaceProviderId, destSpaceId);
+
+            if (collisionHandling == null) {
+                // check for collision
+                for (var itemId : itemIds) {
+                    var itemName = destinationSpace.getItemName(itemId);
+                    if (destinationSpace.containsItemWithName(destWorkflowGroupItemId, itemName)) {
+                        throw new CollisionException(
+                            "An item with name '%s' already exists at the target location".formatted(itemName));
+                    }
+                }
+            }
+
+            if (sourceSpace instanceof LocalSpace localSpace) {
                 var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(localSpace), itemIds, localSpace);
                 if (!workflowsToClose.isEmpty()) {
                     throw new ServiceCallException(
@@ -268,9 +288,13 @@ public class DefaultSpaceService implements SpaceService {
                             + workflowsToClose);
                 }
             }
-            space.moveOrCopyItems(itemIds, destWorkflowGroupItemId, NameCollisionHandling.valueOf(collisionHandling),
-                copy);
+
+            var actualCollisionHandling =
+                NameCollisionHandling.of(collisionHandling).orElse(NameCollisionHandling.NOOP);
+
+            destinationSpace.moveOrCopyItems(itemIds, destWorkflowGroupItemId, actualCollisionHandling, copy);
         } catch (NoSuchElementException | IllegalArgumentException | IOException e) {
+            // should never happen
             throw new ServiceCallException(e.getMessage(), e);
         }
     }

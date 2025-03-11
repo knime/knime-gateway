@@ -188,14 +188,15 @@ public interface SpaceService extends GatewayService {
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
      * @param itemIds A list of identifiers of items in the space.
+     * @param destSpaceId The destination space id.
      * @param destWorkflowGroupItemId The destination workflow group item id, therefore the new parent.
-     * @param collisionHandling How to solve potential name collisions.
      * @param copy Copy instead of move items.
+     * @param collisionHandling How to solve potential name collisions.
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destWorkflowGroupItemId, String collisionHandling, Boolean copy)  throws ServiceExceptions.ServiceCallException;
+    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destSpaceId, String destWorkflowGroupItemId, Boolean copy, String collisionHandling)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Rename a space Item
