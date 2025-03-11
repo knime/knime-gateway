@@ -77,7 +77,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
   public Integer getTotalNumNodesFound();
 
   /**
-   * The total number of nodes that match the search criteria but were filtered out by the requested partion. Absent if there aren&#39;t any filtered nodes in the node repository.
+   * The total number of nodes that match the search criteria but were filtered out by the requested partition. Absent if there aren&#39;t any filtered nodes in the node repository.
    * @return totalNumFilteredNodesFound 
    **/
   public Integer getTotalNumFilteredNodesFound();
@@ -121,7 +121,7 @@ public interface NodeSearchResultEnt extends GatewayEntity {
         NodeSearchResultEntBuilder setTotalNumNodesFound(Integer totalNumNodesFound);
         
         /**
-         * The total number of nodes that match the search criteria but were filtered out by the requested partion. Absent if there aren&#39;t any filtered nodes in the node repository.
+         * The total number of nodes that match the search criteria but were filtered out by the requested partition. Absent if there aren&#39;t any filtered nodes in the node repository.
          * 
          * @param totalNumFilteredNodesFound the property value,  
          * @return this entity builder for chaining

@@ -594,7 +594,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link SpaceService#deleteItems(String, String, List)} for the local workspace.
+     * Tests {@link SpaceService#deleteItems(String, String, List, boolean)} for the local workspace.
      *
      * @throws Exception
      */
@@ -607,7 +607,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Create a workflow and delete it
         var wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
-        ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
+        ss().deleteItems(spaceId, providerId, List.of(wf.getId()), false);
         assertThat("Workflow must not exist anymore",
             !Files.exists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME)));
 
@@ -619,28 +619,28 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ss().createWorkflow(spaceId, providerId, workflowGroupId, Space.DEFAULT_WORKFLOW_NAME);
         ss().createWorkflow(spaceId, providerId, workflowGroupId, Space.DEFAULT_WORKFLOW_NAME);
         Files.createFile(workflowGroupPath.resolve(fileName));
-        ss().deleteItems(spaceId, providerId, List.of(workflowGroupId));
+        ss().deleteItems(spaceId, providerId, List.of(workflowGroupId), false);
         assertThat("Workflow group must not exist anymore", !Files.exists(workflowGroupPath));
 
         // Delete a single data file
         var filePath = testWorkspacePath.resolve(fileName);
         Files.write(filePath, new byte[]{127, 0, 0, -1, 10});
         var fileId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
-        ss().deleteItems(spaceId, providerId, List.of(fileId));
+        ss().deleteItems(spaceId, providerId, List.of(fileId), false);
         assertThat("File must not exist anymore", !Files.exists(filePath));
 
         // Call delete on the root
         assertThrows("Deleting root must fail", ServiceCallException.class,
-            () -> ss().deleteItems(spaceId, providerId, List.of("root")));
+            () -> ss().deleteItems(spaceId, providerId, List.of("root"), false));
 
         // Call delete with an item id that does not exist
         assertThrows("Deleting unknown item must fail", ServiceCallException.class,
-            () -> ss().deleteItems(spaceId, providerId, List.of("0")));
+            () -> ss().deleteItems(spaceId, providerId, List.of("0"), false));
 
         // Call delete on a workflow that was deleted by another application
         wf = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
         PathUtils.deleteDirectoryIfExists(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME));
-        ss().deleteItems(spaceId, providerId, List.of(wf.getId()));
+        ss().deleteItems(spaceId, providerId, List.of(wf.getId()), false);
 
         // Delete multiple items at once
         ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
@@ -655,7 +655,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Files.createFile(workflowGroupPath.resolve(fileName));
         ss().listWorkflowGroup(spaceId, providerId, workflowGroupId);
         var rootFiles = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
-        ss().deleteItems(spaceId, providerId, rootFiles.getItems().stream().map(SpaceItemEnt::getId).toList());
+        ss().deleteItems(spaceId, providerId,
+                rootFiles.getItems().stream().map(SpaceItemEnt::getId).toList(), false);
     }
 
     public void testMoveItemWithCollision() {

@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event emmitted in order to show a toast.
+ * Event emitted in order to show a toast.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

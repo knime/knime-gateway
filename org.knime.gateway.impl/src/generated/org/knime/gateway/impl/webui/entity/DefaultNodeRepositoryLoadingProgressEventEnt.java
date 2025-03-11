@@ -52,7 +52,7 @@ import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventEnt;
 
 /**
- * Event emmitted while loading the node repository.
+ * Event emitted while loading the node repository.
  *
  * @param progress
  * @param extensionName

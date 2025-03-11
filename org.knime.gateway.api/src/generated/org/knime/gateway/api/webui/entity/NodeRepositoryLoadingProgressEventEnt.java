@@ -57,7 +57,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Event emmitted while loading the node repository.
+ * Event emitted while loading the node repository.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

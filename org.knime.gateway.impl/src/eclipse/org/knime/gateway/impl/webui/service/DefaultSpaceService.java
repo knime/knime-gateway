@@ -228,11 +228,11 @@ public class DefaultSpaceService implements SpaceService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds)
-        throws ServiceCallException {
+    public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds,
+        final Boolean softDelete) throws ServiceCallException {
         try {
             m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
-                .deleteItems(spaceItemIds);
+                .deleteItems(spaceItemIds, softDelete);
         } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
         }

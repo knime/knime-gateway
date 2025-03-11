@@ -78,7 +78,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param portIdx The port index to be used.
      * @param nodesLimit The maximum number of node recommendations to return.
-     * @param nodeRelation The relation between connected nodes, either predecessors or succesors
+     * @param nodeRelation The relation between connected nodes, either predecessors or successors
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      *
      * @return the result
@@ -117,7 +117,7 @@ public interface NodeRepositoryService extends GatewayService {
      * @param limit The maximum number of nodes/components in the search result (mainly for pagination).
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      * @param portTypeId The port type ID of the port type all returned nodes (and components) have to be compatible with.
-     * @param nodeRelation The relation between connected nodes, either predecessors or succesors
+     * @param nodeRelation The relation between connected nodes, either predecessors or successors
      *
      * @return the result
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.

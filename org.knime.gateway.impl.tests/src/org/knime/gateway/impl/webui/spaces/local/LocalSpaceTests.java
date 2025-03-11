@@ -363,7 +363,7 @@ public final class LocalSpaceTests {
         var idsToDelete =
             workspace.m_spaceItemPathAndTypeCache.entrySet().stream().filter(e -> itemsToDelete.contains(e.getValue()))
                 .map(e -> e.getKey()).map(i -> "" + i).collect(Collectors.toList());
-        workspace.deleteItems(idsToDelete);
+        workspace.deleteItems(idsToDelete, false);
         assertIdAndTypeMapContain(workspace, itemsToKeep.toArray(Path[]::new));
     }
 
