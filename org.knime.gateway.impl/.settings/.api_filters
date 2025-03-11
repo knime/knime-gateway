@@ -108,13 +108,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/project/CachedProject.java" type="org.knime.gateway.impl.project.CachedProject">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.project.CachedProject"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/Origin.java" type="org.knime.gateway.impl.project.Origin">
         <filter id="1110441988">
             <message_arguments>
@@ -901,7 +894,22 @@
         </filter>
         <filter id="1211105284">
             <message_arguments>
+                <message_argument value="deleteItems(List&lt;String&gt;, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
                 <message_argument value="downloadInto(List&lt;String&gt;, LocalSpace, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getAPIDefinitionUrl(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getItemUrl(String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -1307,6 +1315,11 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultComponentNodeDescriptionEnt(String, ComponentNodeAndDescriptionEnt.TypeEnum, String, String, List&lt;NodeDialogOptionGroupEnt&gt;, List&lt;NodeViewDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultComponentNodeDescriptionEnt(TypedTextEnt, EditableMetadataEnt.MetadataTypeEnum, List&lt;String&gt;, List&lt;LinkEnt&gt;, String, ComponentNodeAndDescriptionEnt.TypeEnum, String, List&lt;NodeDialogOptionGroupEnt&gt;, List&lt;NodeViewDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;, List&lt;NodePortDescriptionEnt&gt;)"/>
             </message_arguments>
         </filter>
     </resource>

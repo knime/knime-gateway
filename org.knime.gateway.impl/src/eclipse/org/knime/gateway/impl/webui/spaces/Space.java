@@ -354,10 +354,11 @@ public interface Space {
      * Deletes the items from the space.
      *
      * @param itemIds item IDs
+     * @param softDelete TODO
      * @throws IOException If there was a problem deleting the items
      * @throws NoSuchElementException If one of the given item IDs does not exist
      */
-    void deleteItems(List<String> itemIds) throws IOException;
+    void deleteItems(List<String> itemIds, boolean softDelete) throws IOException;
 
     /**
      * Moves or copies the items to the new location within the space.

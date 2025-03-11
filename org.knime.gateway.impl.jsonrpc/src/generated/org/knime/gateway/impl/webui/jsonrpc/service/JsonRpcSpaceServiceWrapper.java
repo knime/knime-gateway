@@ -122,8 +122,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void deleteItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds)  throws ServiceExceptions.ServiceCallException {
-        m_service.get().deleteItems(spaceId, spaceProviderId, itemIds);    
+    public void deleteItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds, @JsonRpcParam(value="softDelete") Boolean softDelete)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().deleteItems(spaceId, spaceProviderId, itemIds, softDelete);    
     }
 
 	/**

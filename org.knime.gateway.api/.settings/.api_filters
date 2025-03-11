@@ -75,14 +75,12 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="isMetanodeWfm(WorkflowManager)"/>
+                <message_argument value="isMetanodeWFM(WorkflowManager)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/eclipse/org/knime/gateway/api/util/Either.java" type="org.knime.gateway.api.util.Either">
-        <filter id="1110441988">
+        <filter id="1143996420">
             <message_arguments>
-                <message_argument value="org.knime.gateway.api.util.Either"/>
+                <message_argument value="isMetanodeWfm(WorkflowManager)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -603,6 +601,12 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="deleteItems(String, String, List&lt;String&gt;, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
                 <message_argument value="disconnectSpaceProvider(String)"/>
             </message_arguments>
         </filter>
@@ -627,12 +631,23 @@
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="deleteItems(String, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
                 <message_argument value="getSpaceProvider(String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="connectSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="deleteItems(String, String, List&lt;String&gt;, Boolean)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
