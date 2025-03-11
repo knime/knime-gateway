@@ -52,13 +52,13 @@ import java.util.function.UnaryOperator;
 /**
  * Utilities around performing operations lazily.
  */
-@SuppressWarnings("java:S119")
 public final class Lazy {
 
     private Lazy() {
 
     }
 
+    //~ An explicit description (freeform text) is required for classes and records
     /**
      * A lazy initializer with the capability to reset it.
      *
@@ -67,10 +67,11 @@ public final class Lazy {
      * <li>org.apache.commons.lang3.concurrent.LazyInitializer</li>
      * <li>com.google.common.base.Suppliers.MemoizingSupplier</li>
      * </ul>
-     * 
+     *
      * @implNote Not thread-safe.
      * @param <V> The type of the provided value.
      */
+    //~ @param descriptions are also required for type parameters
     public static final class Init<V> {
 
         private static final Object NO_INIT = new Object();
@@ -80,19 +81,41 @@ public final class Lazy {
         @SuppressWarnings("unchecked")
         private V m_value = (V)NO_INIT;
 
+        //~ public constructors/methods/fields require description text, full @params, @return
+        //~ "@param parameterName" without a subsequent description text is not allowed by this rule
+        //~     if parameter description is really superfluous, add sth like `-`?
         /**
          * Create an instance with the given supplier.
+         *
+         * @param supplier -
          */
         public Init(final Supplier<V> supplier) {
             this.m_supplier = supplier;
         }
 
+        //~ Likewise, @throws also *requires* a description text
+        /**
+         * Explicit description
+         * @param foo -
+         * @throws IllegalArgumentException A description text is required here
+         */
+        public Init(final boolean foo) throws IllegalArgumentException {
+            //
+        }
+
         /**
          * Create an instance in already-initialised state. This is useful for when sometimes a value is already
          * available, sometimes not.
+         * 
+         * @param value -
          */
         public Init(final V value) {
             this.m_value = value;
+        }
+
+        //~ Empty constructors do *not* require javadoc
+        public Init() {
+            //
         }
 
         /**
@@ -130,7 +153,9 @@ public final class Lazy {
         }
 
         /**
-         * @param consumer Applied to the value, if present
+         * Apply the consumer to the value, if present.
+         * 
+         * @param consumer -
          */
         public void ifInitialized(final Consumer<V> consumer) {
             if (isInitialized()) {
@@ -138,12 +163,25 @@ public final class Lazy {
             }
         }
 
+        //~ no javadoc required for overrides
         @Override
         public String toString() {
             return "Init{" + "m_value=" + m_value + '}';
         }
     }
 
+    interface Foo {
+        //~ inner interface methods also require javadoc because they are implicitly public
+        /**
+         * foo
+         */
+        void bar();
+
+        //~ this is a violation and should be reported (if the rule is properly configured)
+        void baz();
+    }
+
+    //~ public inner classes also require javadoc
     /**
      * Lazy transformation of the wrapped value.
      * 
@@ -157,16 +195,30 @@ public final class Lazy {
 
         private final Init<V> m_transformed;
 
+        //~ The rule checks that *all* parameters are present in javadoc
+        /**
+         * Initialise with a (yet untransformed) value and a transformation.
+         * 
+         * @param value -
+         * @param transformation The transformation to be applied to the value
+         */
         public Transform(final V value, final UnaryOperator<V> transformation) {
             this.m_transformation = transformation;
             this.m_value = value;
             this.m_transformed = new Init<>(() -> m_transformation.apply(m_value));
         }
 
+        // ~ simple getters/setters do not require a freeform description sentence, but do require @return description
+        /**
+         * @return the original value
+         */
         public V original() {
             return m_value;
         }
 
+        /**
+         * @return the transformed value
+         */
         public V transformed() {
             return m_transformed.get();
         }
