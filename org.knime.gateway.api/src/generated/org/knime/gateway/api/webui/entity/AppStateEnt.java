@@ -192,7 +192,7 @@ public interface AppStateEnt extends GatewayEntity {
   public String getAnalyticsPlatformDownloadURL();
 
   /**
-   * Wheter to enable the locking of metanodes and components
+   * Whether to enable the locking of metanodes and components
    * @return isSubnodeLockingEnabled 
    **/
   public Boolean isSubnodeLockingEnabled();
@@ -371,7 +371,7 @@ public interface AppStateEnt extends GatewayEntity {
         AppStateEntBuilder setAnalyticsPlatformDownloadURL(String analyticsPlatformDownloadURL);
         
         /**
-         * Wheter to enable the locking of metanodes and components
+         * Whether to enable the locking of metanodes and components
          * 
          * @param isSubnodeLockingEnabled the property value,  
          * @return this entity builder for chaining

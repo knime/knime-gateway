@@ -51,7 +51,7 @@ import org.knime.gateway.impl.webui.entity.DefaultEventEnt;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt;
 
 /**
- * Event emmitted in order to show a toast.
+ * Event emitted in order to show a toast.
  *
  * @param type
  * @param headline

@@ -77,7 +77,7 @@ public interface WorkflowMonitorMessageEnt extends GatewayEntity {
   public ComponentNodeAndDescriptionEnt getComponentInfo();
 
   /**
-   * The id of the worklfow the node is contained in.
+   * The id of the workflow the node is contained in.
    * @return workflowId , never <code>null</code>
    **/
   public org.knime.gateway.api.entity.NodeIDEnt getWorkflowId();
@@ -135,7 +135,7 @@ public interface WorkflowMonitorMessageEnt extends GatewayEntity {
         WorkflowMonitorMessageEntBuilder setComponentInfo(ComponentNodeAndDescriptionEnt componentInfo);
         
         /**
-         * The id of the worklfow the node is contained in.
+         * The id of the workflow the node is contained in.
          * 
          * @param workflowId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

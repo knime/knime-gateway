@@ -102,7 +102,7 @@ public interface SpaceService extends GatewayService {
      * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
      * @param spaceProviderId Identifies a space-provider.
      * @param itemIds A list of identifiers of items in the space.
-     * @param softDelete TODO
+     * @param softDelete If true the specified items will be moved to the bin. Otherwise they will be permanently deleted.
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.

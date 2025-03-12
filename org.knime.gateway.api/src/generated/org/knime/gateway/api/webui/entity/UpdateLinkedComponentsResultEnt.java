@@ -64,7 +64,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandResultEnt {
 
   /**
-   * Whether the update succeeded or an error occured and no component link was updated.
+   * Whether the update succeeded or an error occurred and no component link was updated.
    */
   public enum StatusEnum {
     SUCCESS("success"),
@@ -88,7 +88,7 @@ public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandR
 
 
   /**
-   * Whether the update succeeded or an error occured and no component link was updated.
+   * Whether the update succeeded or an error occurred and no component link was updated.
    * @return status , never <code>null</code>
    **/
   public StatusEnum getStatus();
@@ -132,7 +132,7 @@ public interface UpdateLinkedComponentsResultEnt extends GatewayEntity, CommandR
         UpdateLinkedComponentsResultEntBuilder setKind(KindEnum kind);
         
         /**
-         * Whether the update succeeded or an error occured and no component link was updated.
+         * Whether the update succeeded or an error occurred and no component link was updated.
          * 
          * @param status the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
