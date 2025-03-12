@@ -88,7 +88,6 @@ import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -322,6 +321,8 @@ public final class WorkflowCommands {
     }
 
     /**
+     * Undoes the last command executed for the given workflow.
+     *
      * @param wfKey reference to the workflow to undo the last command for
      * @throws ServiceCallException if there is no command to be undone
      */
@@ -335,6 +336,8 @@ public final class WorkflowCommands {
     }
 
     /**
+     * Whether there is at least one command on the redo-stack for the given workflow.
+     *
      * @param wfKey reference to the workflow to check the redo-state for
      * @return whether there is at least one command on the redo-stack
      */
@@ -344,6 +347,8 @@ public final class WorkflowCommands {
     }
 
     /**
+     * Re-does the last command that has been undone for the given workflow.
+     *
      * @param wfKey reference to the workflow to redo the last command for
      * @throws ServiceCallException if there is no command to be redone
      */

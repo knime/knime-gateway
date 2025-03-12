@@ -82,7 +82,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
     /**
      * Test the AddComponent command.
      *
-     * @throws Exception
+     * @throws Exception -
      */
     public void testAddComponentCommand() throws Exception {
         var p =

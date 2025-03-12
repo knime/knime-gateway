@@ -352,7 +352,8 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
 
-    private void awaitMoved(final Function<WorkflowEnt, XYEnt> accessor, final int[] delta, final WorkflowEnt originalWorkflow, final String wfId) {
+    private void awaitMoved(final Function<WorkflowEnt, XYEnt> accessor, final int[] delta,
+        final WorkflowEnt originalWorkflow, final String wfId) {
         awaitTrue(wfId, wf -> objectMoved(accessor, delta, originalWorkflow, wf));
     }
 

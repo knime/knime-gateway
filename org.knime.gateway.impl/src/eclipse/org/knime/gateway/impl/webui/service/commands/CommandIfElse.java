@@ -95,7 +95,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceExceptions.ServiceCallException(ex.getMessage());
+            throw new ServiceExceptions.ServiceCallException(ex.getMessage(), ex);
         }
         var takeLeft = m_predicate.apply(wfm);
         m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;

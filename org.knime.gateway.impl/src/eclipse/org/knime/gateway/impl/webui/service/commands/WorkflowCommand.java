@@ -75,7 +75,7 @@ public interface WorkflowCommand {
      * @param wfKey references the workflow to execute the command for
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command didn't do any change to the workflow
-     * @throws ServiceCallException
+     * @throws ServiceCallException -
      */
     boolean execute(WorkflowKey wfKey) throws ServiceCallException;
 
@@ -91,7 +91,7 @@ public interface WorkflowCommand {
      * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey)} has been called before
      * already.
      *
-     * @throws ServiceCallException
+     * @throws ServiceCallException -
      */
     void undo() throws ServiceCallException;
 
@@ -106,7 +106,7 @@ public interface WorkflowCommand {
     /**
      * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
      *
-     * @throws ServiceCallException
+     * @throws ServiceCallException -
      */
     void redo() throws ServiceCallException;
 

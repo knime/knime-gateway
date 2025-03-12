@@ -1,3 +1,49 @@
+/*
+ * ------------------------------------------------------------------------
+ *
+ *  Copyright by KNIME AG, Zurich, Switzerland
+ *  Website: http://www.knime.org; Email: contact@knime.org
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License, Version 3, as
+ *  published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>.
+ *
+ *  Additional permission under GNU GPL version 3 section 7:
+ *
+ *  KNIME interoperates with ECLIPSE solely via ECLIPSE's plug-in APIs.
+ *  Hence, KNIME and ECLIPSE are both independent programs and are not
+ *  derived from each other. Should, however, the interpretation of the
+ *  GNU GPL Version 3 ("License") under any applicable laws result in
+ *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
+ *  you the additional permission to use and propagate KNIME together with
+ *  ECLIPSE with only the license terms in place for ECLIPSE applying to
+ *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
+ *  license terms of ECLIPSE themselves allow for the respective use and
+ *  propagation of ECLIPSE together with KNIME.
+ *
+ *  Additional permission relating to nodes for KNIME that extend the Node
+ *  Extension (and in particular that are based on subclasses of NodeModel,
+ *  NodeDialog, and NodeView) and that only interoperate with KNIME through
+ *  standard APIs ("Nodes"):
+ *  Nodes are deemed to be separate and independent programs and to not be
+ *  covered works.  Notwithstanding anything to the contrary in the
+ *  License, the License does not apply to Nodes, you are not required to
+ *  license Nodes under the License, and you are granted a license to
+ *  prepare and propagate Nodes, in each case even if such Nodes are
+ *  propagated with or for interoperation with KNIME.  The owner of a Node
+ *  may freely choose the license terms applicable to such Node, including
+ *  when such Node is propagated with or for interoperation with KNIME.
+ * ---------------------------------------------------------------------
+ *
+ */
 package org.knime.gateway.impl.webui.service.commands;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
@@ -17,6 +63,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.knime.core.data.container.storage.TableStoreFormatInformation;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.KNIMEComponentInformation;
@@ -119,29 +166,26 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     }
 
     private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM, final File parentFile,
-        final URI templateURI, final int x, final int y, final boolean snapToGrid) {
-        try {
-            final var loadHelper = createWorkflowLoadHelper();
-            final var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
-            final var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
-            parentWFM.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
+        final URI templateURI, final int x, final int y, final boolean snapToGrid)
+        throws IOException, UnsupportedWorkflowVersionException, InvalidSettingsException, CanceledExecutionException {
+        final var loadHelper = createWorkflowLoadHelper();
+        final var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
+        final var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
+        parentWFM.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
 
-            var snc = (SubNodeContainer)loadResult.getLoadedInstance();
-            if (snc == null) {
-                throw new RuntimeException("No component returned by load routine, see log for details");
-            }
-            // create extra info and set it
-            var info = NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setHasAbsoluteCoordinates(false)
-                .setSnapToGrid(snapToGrid).setIsDropLocation(true).build();
-            snc.setUIInformation(info);
-            return new LoadResultInternalRoot(loadResult);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        var snc = (SubNodeContainer)loadResult.getLoadedInstance();
+        if (snc == null) {
+            throw new IllegalStateException("No component returned by load routine, see log for details");
         }
+        // create extra info and set it
+        var info = NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setHasAbsoluteCoordinates(false)
+            .setSnapToGrid(snapToGrid).setIsDropLocation(true).build();
+        snc.setUIInformation(info);
+        return new LoadResultInternalRoot(loadResult);
     }
 
     private static WorkflowLoadHelper createWorkflowLoadHelper() {
-        // TODO NXT-3388; see GUIWorkflowLoadHelper
+        // TODO implement; see, e.g., GUIWorkflowLoadHelper - NXT-3388
         return new WorkflowLoadHelper(true, false, null) {
 
             @Override
@@ -286,7 +330,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
                 case Error -> Status.ERROR;
                 case Warning -> {
                     if (treatStateChangeWarningsAsOK && loadResult.getCause().isPresent()
-                        && loadResult.getCause().get().equals(LoadResultEntry.LoadResultEntryCause.NodeStateChanged)) {
+                        && loadResult.getCause().get() == LoadResultEntry.LoadResultEntryCause.NodeStateChanged) {
                         yield Status.OK;
                     } else {
                         yield Status.WARNING;
@@ -296,14 +340,13 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
             };
         }
 
-        protected Status aggregateStatus() {
+        protected final Status aggregateStatus() {
             return Stream
                 .concat(Stream.of(m_status), m_childLoadResults.stream().map(LoadResultInternal::aggregateStatus))
-                // TODO double-check order
                 .max(Comparator.naturalOrder()).orElseThrow();
         }
 
-        protected String aggregateMessage() {
+        protected final String aggregateMessage() {
             return Stream.concat(Stream.of(m_message),
                 m_childLoadResults.stream().filter(a -> !a.m_status.isOK()).map(LoadResultInternal::aggregateMessage))
                 .collect(Collectors.joining("\n"));

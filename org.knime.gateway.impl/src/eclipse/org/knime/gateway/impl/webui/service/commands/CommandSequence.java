@@ -101,7 +101,7 @@ abstract class CommandSequence extends HigherOrderCommand {
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceCallException(ex.getMessage());
+            throw new ServiceCallException(ex.getMessage(), ex);
         }
         var isWorkflowModified = false;
         try (WorkflowLock lock = wfm.lock()) {
