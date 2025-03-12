@@ -8,3 +8,8 @@
 **/.polyglot.build.properties
 **/.polyglot.feature.xml
 **/.polyglot.META-INF
+
+
+# IDE
+.idea
+/.idea/**
