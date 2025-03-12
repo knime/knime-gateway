@@ -315,7 +315,16 @@ public interface Space {
      * @param itemId
      * @return the location info for the given item
      */
-    LocationInfo getLocationInfo(String itemId);
+    default LocationInfo getLocationInfo(final String itemId) {
+        return getLocationInfo(itemId, VersionId.currentState());
+    }
+
+    /**
+     * @param itemId
+     * @param version
+     * @return the location info for the given item
+     */
+    LocationInfo getLocationInfo(String itemId, final VersionId version);
 
     /**
      * Gets the space item ID given a URI

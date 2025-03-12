@@ -259,7 +259,7 @@ public final class LocalSpace implements Space {
     }
 
     @Override
-    public LocationInfo getLocationInfo(final String itemId) {
+    public LocationInfo getLocationInfo(final String itemId, final VersionId version) {
         return LocalLocationInfo.getInstance(null);
     }
 
