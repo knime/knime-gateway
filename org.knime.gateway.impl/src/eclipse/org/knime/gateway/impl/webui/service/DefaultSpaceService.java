@@ -258,26 +258,20 @@ public class DefaultSpaceService implements SpaceService {
     @Override
     public void moveOrCopyItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
         final String destSpaceId, final String destWorkflowGroupItemId, final Boolean copy,
-        final String collisionHandling) throws ServiceCallException, CollisionException{
+        final String collisionHandling) throws ServiceCallException, CollisionException {
 
-        if (itemIds.size() == 0) {
+        if (itemIds.isEmpty()) {
             return;
         }
 
         try {
-            var spaceProvider = m_spaceProvidersManager.getSpaceProviders(projectId());
-            var sourceSpace = spaceProvider.getSpace(spaceProviderId, spaceId);
-            var destinationSpace = spaceProvider.getSpace(spaceProviderId, destSpaceId);
+            var spaceProvider =
+                m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
+            var destinationSpace = spaceProvider.getSpace(destSpaceId);
+            var sourceSpace = spaceProvider.getSpace(spaceId);
 
             if (collisionHandling == null) {
-                // check for collision
-                for (var itemId : itemIds) {
-                    var itemName = destinationSpace.getItemName(itemId);
-                    if (destinationSpace.containsItemWithName(destWorkflowGroupItemId, itemName)) {
-                        throw new CollisionException(
-                            "An item with name '%s' already exists at the target location".formatted(itemName));
-                    }
-                }
+                checkForCollisionsInSpace(itemIds, sourceSpace, destinationSpace, destWorkflowGroupItemId);
             }
 
             if (sourceSpace instanceof LocalSpace localSpace) {
@@ -328,6 +322,17 @@ public class DefaultSpaceService implements SpaceService {
             throw new ServiceCallException("Could not access space", e);
         } catch (OperationNotAllowedException | IOException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        }
+    }
+
+    private static void checkForCollisionsInSpace(final List<String> itemIds, final Space sourceSpace,
+        final Space destinationSpace, final String destWorkflowGroupItemId) throws CollisionException {
+        for (var itemId : itemIds) {
+            var itemName = sourceSpace.getItemName(itemId);
+            if (destinationSpace.containsItemWithName(destWorkflowGroupItemId, itemName)) {
+                throw new CollisionException(
+                    "An item with name '%s' already exists at the target location".formatted(itemName));
+            }
         }
     }
 
