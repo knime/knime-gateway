@@ -195,8 +195,9 @@ public interface SpaceService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.CollisionException If there was a collision, e.g. due to naming conflicts
      */
-    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destSpaceId, String destWorkflowGroupItemId, Boolean copy, String collisionHandling)  throws ServiceExceptions.ServiceCallException;
+    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destSpaceId, String destWorkflowGroupItemId, Boolean copy, String collisionHandling)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.CollisionException;
         
     /**
      * Rename a space Item

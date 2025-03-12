@@ -84,6 +84,9 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
         return m_service.get().getComponentDescription(projectId, workflowId, nodeId);    
     }
 
+	/**
+     * {@inheritDoc}
+     */
     @Override
     @JsonRpcMethod(value = "getCompositeViewPage")
     @JsonRpcErrors(value = {
