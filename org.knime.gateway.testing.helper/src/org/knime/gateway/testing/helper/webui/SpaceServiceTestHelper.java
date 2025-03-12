@@ -723,15 +723,15 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             var wfPathLevel0 = testWorkspacePath.resolve(wfName);
 
             // Move workflow into level1
-            ss().moveOrCopyItems(spaceId, providerId, List.of(wf.getId()), level1Id,
-                Space.NameCollisionHandling.NOOP.toString(), false);
+            ss().moveOrCopyItems(spaceId, providerId, List.of(wf.getId()), spaceId, level1Id,
+                false, Space.NameCollisionHandling.NOOP.toString());
             assertThat("The newly created workflow didn't move out of <root>", Files.notExists(wfPathLevel0));
             var wfPathLevel1 = level1Path.resolve(wfName);
             assertThat("The newly created workflow didn't move to <level1>", Files.exists(wfPathLevel1));
 
             // Move file into level1
-            ss().moveOrCopyItems(spaceId, providerId, List.of(fileId), level1Id,
-                Space.NameCollisionHandling.NOOP.toString(), false);
+            ss().moveOrCopyItems(spaceId, providerId, List.of(fileId), spaceId, level1Id,
+                false, Space.NameCollisionHandling.NOOP.toString());
             assertThat("The newly created file didn't move out of <root>", Files.notExists(filePathLevel0));
             var filePathLevel1 = level1Path.resolve(fileName);
             assertThat("The newly created file didn't move to <level1>", Files.exists(filePathLevel1));
@@ -743,8 +743,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), Space.DEFAULT_WORKFLOW_NAME), //
                 findItemId(ss().listWorkflowGroup(spaceId, providerId, level1Id), fileName)//
             );
-            ss().moveOrCopyItems(spaceId, providerId, itemsToMove, level2Id,
-                Space.NameCollisionHandling.NOOP.toString(), false);
+            ss().moveOrCopyItems(spaceId, providerId, itemsToMove, spaceId, level2Id,
+                false, Space.NameCollisionHandling.NOOP.toString());
             var wfPathLevel2 = level2Path.resolve(wfName);
             assertThat("The workflow didn't move to <level2>", Files.exists(wfPathLevel2));
             var filePathLevel2 = level2Path.resolve(fileName);
@@ -752,26 +752,26 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
             // duplicate file in <level2>
             final var itemToDuplicate = findItemId(ss().listWorkflowGroup(spaceId, providerId, level2Id), wfName);
-            ss().moveOrCopyItems(spaceId, providerId, List.of(itemToDuplicate), level2Id,
-                Space.NameCollisionHandling.AUTORENAME.toString(), true);
+            ss().moveOrCopyItems(spaceId, providerId, List.of(itemToDuplicate), spaceId, level2Id,
+                true, Space.NameCollisionHandling.AUTORENAME.toString());
             // by default a 1 gets appended: e.g. "KNIME_project" -> "KNIME_project1"
             final var duplicatedName = level2Path.resolve(wfPathLevel2.getFileName().toString() + "1");
             assertThat("The workflow was not duplicated at <level2>", Files.exists(duplicatedName));
 
             // Moving items that do not exist
             assertThrows("Invalid IDs cannot be moved", ServiceCallException.class,
-                () -> ss().moveOrCopyItems(spaceId, providerId, List.of("a", "b", "c"), Space.ROOT_ITEM_ID,
-                    Space.NameCollisionHandling.NOOP.toString(), false));
+                () -> ss().moveOrCopyItems(spaceId, providerId, List.of("a", "b", "c"), spaceId, Space.ROOT_ITEM_ID,
+                    false, Space.NameCollisionHandling.NOOP.toString()));
 
             // Moving the root
             assertThrows("The workspace root cannot be moved", ServiceCallException.class,
-                () -> ss().moveOrCopyItems(spaceId, providerId, List.of(Space.ROOT_ITEM_ID), level1Id,
-                    Space.NameCollisionHandling.NOOP.toString(), false));
+                () -> ss().moveOrCopyItems(spaceId, providerId, List.of(Space.ROOT_ITEM_ID), spaceId, level1Id,
+                    false, Space.NameCollisionHandling.NOOP.toString()));
 
             // Move item to itself
             assertThrows("Cannot move an item to itself", ServiceCallException.class,
-                () -> ss().moveOrCopyItems(spaceId, providerId, List.of(level1Id), level1Id,
-                    Space.NameCollisionHandling.NOOP.toString(), false));
+                () -> ss().moveOrCopyItems(spaceId, providerId, List.of(level1Id), spaceId, level1Id,
+                    false, Space.NameCollisionHandling.NOOP.toString()));
         } finally {
             FileUtils.deleteQuietly(testWorkspacePath.resolve(fileName).toFile());
             FileUtils.deleteQuietly(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME).toFile());
@@ -799,8 +799,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         try {
             // Try to move data file and open workflow
             assertThrows("Moving an open workflow should not work", ServiceCallException.class,
-                () -> ss().moveOrCopyItems(spaceId, providerId, List.of(wfId, fileId), wfGroupId,
-                    Space.NameCollisionHandling.NOOP.toString(), false));
+                () -> ss().moveOrCopyItems(spaceId, providerId, List.of(wfId, fileId), spaceId, wfGroupId,
+                    false, Space.NameCollisionHandling.NOOP.toString()));
         } finally {
             ProjectManager.getInstance().removeProject(wfId);
         }
@@ -830,8 +830,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ProjectManager.getInstance().addProject(hubWorkflowProject);
 
         try {
-            ss().moveOrCopyItems(spaceId, providerId, List.of(wfId), wfGroupId,
-                Space.NameCollisionHandling.NOOP.toString(), false);
+            ss().moveOrCopyItems(spaceId, providerId, List.of(wfId), spaceId, wfGroupId,
+                false, Space.NameCollisionHandling.NOOP.toString());
         } finally {
             ProjectManager.getInstance().removeProject(wfId);
             FileUtils.deleteQuietly(testWorkspacePath.resolve(wfGroupName).toFile());
@@ -868,14 +868,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             var fileIdLevel0 = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
             assertThrows("Cannot move a file that already exists at the destination",
                 ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
-                    List.of(fileIdLevel0), level1Id, Space.NameCollisionHandling.NOOP.toString(), false));
+                    List.of(fileIdLevel0), spaceId, level1Id, false, Space.NameCollisionHandling.NOOP.toString()));
             assertThrows("Cannot move a workflow that already exists at the destination",
                 ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
-                    List.of(wfLevel0.getId()), level1Id, Space.NameCollisionHandling.NOOP.toString(), false));
+                    List.of(wfLevel0.getId()), spaceId, level1Id, false, Space.NameCollisionHandling.NOOP.toString()));
 
             // Move with overwrite collision handling
-            ss().moveOrCopyItems(spaceId, providerId, List.of(fileIdLevel0, wfLevel0.getId()), level1Id,
-                Space.NameCollisionHandling.OVERWRITE.toString(), false);
+            ss().moveOrCopyItems(spaceId, providerId, List.of(fileIdLevel0, wfLevel0.getId()), spaceId, level1Id,
+                false, Space.NameCollisionHandling.OVERWRITE.toString());
             assertThat("The newly created file didn't move out of <root>",
                 Files.notExists(testWorkspacePath.resolve(fileName)));
             assertThat("The newly created file didn't move to <level1>", Files.exists(level1Path.resolve(fileName)));
@@ -890,8 +890,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
             var anotherFileIdLevel0 =
                 findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
-            ss().moveOrCopyItems(spaceId, providerId, List.of(anotherFileIdLevel0, anotherWfLevel0.getId()), level1Id,
-                Space.NameCollisionHandling.AUTORENAME.toString(), false);
+            ss().moveOrCopyItems(spaceId, providerId, List.of(anotherFileIdLevel0, anotherWfLevel0.getId()), spaceId, level1Id,
+                false, Space.NameCollisionHandling.AUTORENAME.toString());
             assertThat("The newly created file didn't move out of <root>",
                 Files.notExists(testWorkspacePath.resolve(fileName)));
             assertThat("The newly created file didn't move to <level1>",
