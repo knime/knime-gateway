@@ -57,14 +57,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.util.Lazy;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * A workflow or component project.
@@ -247,32 +243,6 @@ public final class Project {
      */
     public static BuilderStage.RequiresWorkflow builder() {
         return new Builder();
-    }
-
-    /**
-     * Creates a project based on a given {@link WorkflowContextV2}.
-     *
-     * @param wfm
-     * @param context
-     * @param projectType
-     * @param customProjectId
-     * @param localSpace
-     * @return A new {@link Project}-instance
-     */
-    public static Project of(final WorkflowManager wfm, final WorkflowContextV2 context,
-        final SpaceItemReferenceEnt.ProjectTypeEnum projectType, final String customProjectId,
-        final LocalSpace localSpace) {
-        final var path = context.getExecutorInfo().getLocalWorkflowPath();
-        final var itemId = localSpace.getItemId(path);
-        final var origin =
-            new Origin(SpaceProvider.LOCAL_SPACE_PROVIDER_ID, LocalSpace.LOCAL_SPACE_ID, itemId, projectType);
-        final var projectName = path.toFile().getName();
-        return Project.builder() //
-            .setWfm(wfm) //
-            .setOrigin(origin) //
-            .setName(projectName) //
-            .setId(customProjectId) //
-            .build();
     }
 
     /**
