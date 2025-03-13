@@ -49,9 +49,9 @@
 package org.knime.gateway.impl.project;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -103,7 +103,7 @@ public class ProjectTest {
         reset(m_wfmv2);
     }
 
-    /***
+    /**
      * Test the builder with required properties.
      *
      * @throws Exception
@@ -116,7 +116,7 @@ public class ProjectTest {
         assertBaseMethodsWork(project1);
 
         var project2 = Project.builder() //
-            .setWfmLoader(() -> m_wfm) //
+            .setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm) //
             .setName("Test project") //
             .setId("Custom project ID") //
             .build();
@@ -136,8 +136,6 @@ public class ProjectTest {
             .setName("Test project") //
             .setId("Custom project ID") //
             .setOrigin(origin) //
-            .setVersionWfmLoader(version -> m_wfm) //
-            .onDispose(wfm -> {}) //
             .clearReport(() -> {}) //
             .generateReport(input -> null) //
             .build();
@@ -160,8 +158,6 @@ public class ProjectTest {
             .setName("Test project") //
             .setId("Custom project ID") //
             .setOrigin(null) //
-            .setVersionWfmLoader(null) //
-            .onDispose(null) //
             .clearReport(null) //
             .generateReport(null) //
             .build();
@@ -176,11 +172,9 @@ public class ProjectTest {
     public void testBuilderThrows() {
         assertThrows(NullPointerException.class, () -> Project.builder().setWfm(null).build());
         assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoader(null).setName("Test project").setId("Custom project id").build());
+            () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName(null).setId("Custom project id").build());
         assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoader(() -> m_wfm).setName(null).setId("Custom project id").build());
-        assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoader(() -> m_wfm).setName("Test project").setId(null).build());
+            () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName("Test project").setId(null).build());
     }
 
     /**
@@ -217,12 +211,13 @@ public class ProjectTest {
 
     private void assertBaseMethodsWork(final Project project) throws Exception {
         assertThat(project.getName(), is("Test project"));
-        assertThat(project.getID(), not(emptyOrNullString()));
+        assertThat(project.getID(), not(isEmptyOrNullString()));
         assertThat(project.getFromCacheOrLoadWorkflowManager(), is(Optional.of(m_wfm)));
         assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.of(m_wfm)));
         assertThat(project.getOrigin(), isA(Optional.class));
         project.dispose(); // No exception thrown
-        assertThat(Integer.valueOf(project.hashCode()), isA(Integer.class));
+        assertThat(project.hashCode(), isA(Integer.class));
+        //noinspection EqualsWithItself
         assertThat(project.equals(project), is(true));
         assertThat(project.equals(null), is(false));
     }

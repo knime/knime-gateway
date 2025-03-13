@@ -67,6 +67,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
@@ -106,6 +107,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
+
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final NodeIDEnt nodeInSubWorkflow) {
@@ -114,9 +116,28 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * Gets the workflow manager from the {@link ProjectManager} for a corresponding root workflow id. Obtain the root
-     * workflow manager of the given {@link Project} and find the workflow manager of the container node identified by
-     * {@code subWorkflowId}. In the sub-workflow, find the {@code nodeInSubWorkflow}.
+     * Gets the (sub-)workflow manager for the project id and node id.
+     *
+     * @param projectId -
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
+     * @return -
+     */
+    public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
+        return getWorkflowManager(projectId, VersionId.currentState(), workflowId);
+    }
+
+    /**
+     * Gets the (sub-)workflow manager for the project id and node id.
+     *
+     * @param wfKey identifying the {@link WorkflowManager} instance
+     * @return -
+     */
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
+        return getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(), wfKey.workflowId());
+    }
+
+    /**
+     * Gets the (sub-)workflow manager for the given project and node id.
      *
      * @param projectId the id to get the wfm for
      * @param subWorkflowId the id of the sub workflow
@@ -128,7 +149,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
+    private static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final VersionId versionId, final NodeIDEnt nodeInSubWorkflow) {
         var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId, versionId);
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);

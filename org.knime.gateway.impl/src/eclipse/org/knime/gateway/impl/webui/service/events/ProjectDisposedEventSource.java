@@ -68,11 +68,12 @@ import org.knime.gateway.impl.project.ProjectManager;
 public final class ProjectDisposedEventSource
     extends EventSource<ProjectDisposedEventTypeEnt, ProjectDisposedEventEnt> {
 
-    private Set<String> m_projectIds = new HashSet<>();
+    private final Set<String> m_projectIds = new HashSet<>();
 
     /**
-     * @param eventConsumer
-     * @param projectManager
+     * Initialise the event source
+     * @param eventConsumer -
+     * @param projectManager -
      */
     public ProjectDisposedEventSource(final EventConsumer eventConsumer, final ProjectManager projectManager) {
         super(eventConsumer);

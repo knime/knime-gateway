@@ -46,17 +46,9 @@
 
 package org.knime.gateway.impl.project;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
-import java.net.URI;
 import java.util.Optional;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.AnalyticsPlatformExecutorInfo;
-import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
-import org.knime.core.util.Pair;
-import org.knime.core.util.hub.NamedItemVersion;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -78,20 +70,17 @@ public record Origin(//
     Optional<SpaceItemVersionEnt> itemVersion) {
 
     /**
-     * @param providerId
-     * @param spaceId
-     * @param itemId
+     * @see Origin
      */
+    @SuppressWarnings("java:S1176")
     public Origin(final String providerId, final String spaceId, final String itemId) {
         this(providerId, spaceId, itemId, Optional.empty(), Optional.empty());
     }
 
     /**
-     * @param providerId
-     * @param spaceId
-     * @param itemId
-     * @param projectType the type of the project or {@code null}
+     * @see Origin
      */
+    @SuppressWarnings("java:S1176")
     public Origin(final String providerId, final String spaceId, final String itemId,
         final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
         this(providerId, spaceId, itemId, Optional.ofNullable(projectType), Optional.empty());
@@ -120,48 +109,6 @@ public record Origin(//
             .append(spaceId, other.spaceId)//
             .append(itemId, other.itemId)//
             .isEquals();
-    }
-
-    /**
-     * Creates an {@link Origin} from a Hub Space and a WorkflowManager
-     *
-     * @param hubLocation location information of the item
-     * @param wfm the WorkflowManager that contains the project
-     * @param selectedVersion the version information of the item, can be empty
-     * @return The newly created Origin, or empty if hubLocation or workflow manager are missing
-     */
-    @SuppressWarnings({"java:S1188"})
-    public static Optional<Origin> of(final HubSpaceLocationInfo hubLocation, final WorkflowManager wfm,
-        final NamedItemVersion selectedVersion) {
-        if (hubLocation == null || wfm == null) {
-            return Optional.empty();
-        }
-
-        final var context = wfm.getContextV2();
-        final var apExecInfo = (AnalyticsPlatformExecutorInfo)context.getExecutorInfo();
-
-        final var providerId = apExecInfo.getMountpoint().map(Pair::getFirst).map(URI::getAuthority).orElse(null);
-        final var spaceId = hubLocation.getSpaceItemId();
-        final var itemId = hubLocation.getWorkflowItemId();
-        final var projectType = wfm.isComponentProjectWFM() ? //
-            Optional.of(SpaceItemReferenceEnt.ProjectTypeEnum.COMPONENT) : //
-            Optional.of(SpaceItemReferenceEnt.ProjectTypeEnum.WORKFLOW);
-        final Optional<SpaceItemVersionEnt> itemVersion = selectedVersion == null ? //
-            Optional.empty() : //
-            Optional.of(buildVersionInfo(selectedVersion));
-
-        return Optional.of(new Origin(providerId, spaceId, itemId, projectType, itemVersion));
-    }
-
-    private static SpaceItemVersionEnt buildVersionInfo(final NamedItemVersion selectedVersion) {
-        return builder(SpaceItemVersionEnt.SpaceItemVersionEntBuilder.class) //
-            .setVersion(selectedVersion.version()) //
-            .setTitle(selectedVersion.title()) //
-            .setDescription(selectedVersion.description()) //
-            .setAuthor(selectedVersion.author()) //
-            .setAuthorAccountId(selectedVersion.authorAccountId()) //
-            .setCreatedOn(selectedVersion.createdOn()) //
-            .build();
     }
 
 }

@@ -66,6 +66,7 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 /**
  * Manages projects that are eventually used by the service implementations.
  *
+ * @see Project
  * @author Martin Horn, University of Konstanz
  * @noreference This class is not intended to be referenced by clients.
  */
@@ -107,6 +108,11 @@ public final class ProjectManager {
      * executed by another workflow). If so, the respective project is updated to add the project-origin and mark it as
      * being used by the UI, too.
      *
+     * @param space -
+     * @param spaceProviderId -
+     * @param spaceId -
+     * @param itemId -
+     * @param projectType -
      * @return the project and workflow-manager or null if none
      */
     public Optional<Project> getAndUpdateWorkflowServiceProject(final Space space, final String spaceProviderId,
@@ -117,20 +123,12 @@ public final class ProjectManager {
         return localSpace.toLocalAbsolutePath(itemId) //
             .flatMap(WorkflowServiceProjects::getProjectIdAt) //
             .flatMap(this::getProject) //
-            .flatMap(originalProject -> updateProject(originalProject, spaceProviderId, spaceId, itemId, projectType));
-    }
-
-    private Optional<Project> updateProject(final Project originalProject, final String spaceProviderId,
-        final String spaceId, final String itemId, final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
-        return originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
-            var updatedProject = Project.builder() //
-                .setWfm(wfm) //
-                .setId(originalProject.getID()) //
-                .setOrigin(new Origin(spaceProviderId, spaceId, itemId, projectType)) //
-                .build();
-            this.addProject(updatedProject);
-            return updatedProject;
-        });
+            .flatMap(originalProject -> originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
+                var newOrigin = new Origin(spaceProviderId, spaceId, itemId, projectType);
+                var updatedProject = Project.updateOrigin(originalProject, newOrigin);
+                this.addProject(updatedProject);
+                return updatedProject;
+            }));
     }
 
     /**
@@ -298,7 +296,9 @@ public final class ProjectManager {
     }
 
     /**
-     * @param projectId
+     * Get a project by ID.
+     *
+     * @param projectId -
      * @return the project for the given id or an empty optional if it doesn't exist
      */
     public Optional<Project> getProject(final String projectId) {
@@ -308,9 +308,9 @@ public final class ProjectManager {
     /**
      * Get a {@link Project} if one is currently open that matches the given ID triplet in its {@link Origin}.
      *
-     * @param providerId
-     * @param spaceId
-     * @param itemId
+     * @param providerId -
+     * @param spaceId -
+     * @param itemId -
      * @return A currently open project matching the given IDs in its {@link Origin}.
      */
     public Optional<Project> getProject(final String providerId, final String spaceId, final String itemId) {
@@ -323,9 +323,11 @@ public final class ProjectManager {
     }
 
     /**
-     * Callback when a project with a certain ID has been removed.
+     * Add a listener to be notified when a project is removed. The ID of the removed project is provided to the
+     * listener.
      *
-     * @param listener the listener to be called
+     * @param listener the listener to be added
+     * @see #removeProject(String)
      */
     public void addProjectRemovedListener(final Consumer<String> listener) {
         m_projectRemovedListeners.add(listener);
@@ -347,6 +349,8 @@ public final class ProjectManager {
 
     /**
      * The contained projects
+     *
+     * @return -
      */
     public Stream<Project> projects() {
         return m_projectsMap.values().stream().map(ProjectInternal::project);
@@ -365,7 +369,8 @@ public final class ProjectManager {
     /**
      * Updates the list of project IDs to reflect the new order.
      *
-     * @param projectIds
+     * @param projectIds Assumed to contain all currently open projects. The order of this list defines the new
+     *            ordering.
      */
     public void updateOpenProjectsOrder(final List<String> projectIds) {
         m_projectsMap.resortKeys(projectIds);

@@ -71,8 +71,8 @@ public interface WorkflowSnapshotEnt extends GatewayEntity {
   public WorkflowEnt getWorkflow();
 
   /**
-   * A unique identifier for the snapshot.
-   * @return snapshotId , never <code>null</code>
+   * A unique identifier of this snapshot, used for listening for workflow changes. Not given if listening for changes is not applicable to this workflow.
+   * @return snapshotId 
    **/
   public String getSnapshotId();
 
@@ -99,9 +99,9 @@ public interface WorkflowSnapshotEnt extends GatewayEntity {
         WorkflowSnapshotEntBuilder setWorkflow(WorkflowEnt workflow);
         
         /**
-         * A unique identifier for the snapshot.
+         * A unique identifier of this snapshot, used for listening for workflow changes. Not given if listening for changes is not applicable to this workflow.
          * 
-         * @param snapshotId the property value, NOT <code>null</code>! 
+         * @param snapshotId the property value,  
          * @return this entity builder for chaining
          */
         WorkflowSnapshotEntBuilder setSnapshotId(String snapshotId);

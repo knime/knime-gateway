@@ -116,7 +116,7 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
     @Before
     public void createEmptyWorkflow() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var project = Project.builder().setWfm(m_wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var project = Project.builder().setWfm(m_wfm).build();
         m_projectId = project.getID();
         ProjectManager.getInstance().addProject(project);
     }
