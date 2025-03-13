@@ -86,6 +86,7 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentResultEnt.AddComponentResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
 import org.knime.gateway.api.webui.entity.ProblemMessageEnt.ProblemMessageEntBuilder;
 import org.knime.gateway.api.webui.entity.ProblemMessageEnt.TypeEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -121,13 +122,16 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         var space = m_spaceProviders.getSpace(m_commandEnt.getProviderId(), m_commandEnt.getSpaceId());
         var uri = space.toKnimeUrl(m_commandEnt.getItemId());
         var localPath = space.toLocalAbsolutePath(new ExecutionMonitor(), m_commandEnt.getItemId()).orElseThrow();
+        var xPosition = m_commandEnt.getPosition().getX();
+        var yPosition = m_commandEnt.getPosition().getY();
         var wfm = getWorkflowManager();
+
         try {
-            m_loadResult = loadComponent(wfm, localPath.toFile(), uri, m_commandEnt.getPosition().getX(),
-                m_commandEnt.getPosition().getY(), false);
+            m_loadResult = loadComponent(wfm, localPath.toFile(), uri, xPosition, yPosition, false);
             return m_loadResult.getStatus().isOK();
-        } catch (Throwable t) {
-            var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(ExceptionUtils.getRootCause(t));
+        } catch (IOException | UnsupportedWorkflowVersionException | InvalidSettingsException
+                | CanceledExecutionException | IllegalStateException ex) {
+            var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(ExceptionUtils.getRootCause(ex));
             throw new ServiceCallException(loadingFailedErrorMessage);
         }
     }
@@ -165,12 +169,20 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         m_loadResult = null;
     }
 
+    /*
+     * @return The internal result of the component loading, that also could have loaded with problems.
+     * @throws IOException
+     * @throws UnsupportedWorkflowVersionException
+     * @throws InvalidSettingsException
+     * @throws CanceledExecutionException
+     * @throws IllegalStateException
+     */
     private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM, final File parentFile,
         final URI templateURI, final int x, final int y, final boolean snapToGrid)
         throws IOException, UnsupportedWorkflowVersionException, InvalidSettingsException, CanceledExecutionException {
-        final var loadHelper = createWorkflowLoadHelper();
-        final var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
-        final var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
+        var loadHelper = createWorkflowLoadHelper();
+        var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
+        var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
         parentWFM.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
 
         var snc = (SubNodeContainer)loadResult.getLoadedInstance();
@@ -235,20 +247,29 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
             return m_aggregatedStatus;
         }
 
+        /**
+         * @return The entity representation of the component loading result. Please note that the component loading may
+         *         have been successful, but still have warnings or errors. That could happen e.g. if the load problems
+         *         are 'invalid settings', you can still fix the component by re-configuring nodes in there. Same for
+         *         missing extensions: component is added with a warning toast; user installs the extensions; saves the
+         *         workflow and restarts; the component is still there.
+         */
         CommandResultEnt buildCommandResultEnt(final String snapshotId) {
-            var builder = builder(AddComponentResultEntBuilder.class)//
+            return builder(AddComponentResultEntBuilder.class)//
                 .setKind(KindEnum.ADD_NODE_RESULT)//
                 .setNewNodeId(new NodeIDEnt(m_componentId))//
-                .setSnapshotId(snapshotId);
-            if (!m_aggregatedStatus.isOK()) {
-                var titleAndMessage = getTitleAndAggregatedMessage();
-                builder.setProblem(builder(ProblemMessageEntBuilder.class)
-                    .setType(m_aggregatedStatus == Status.WARNING ? TypeEnum.WARNING : TypeEnum.ERROR) //
-                    .setTitle(titleAndMessage.getFirst()) //
-                    .setMessage(titleAndMessage.getSecond()) //
-                    .build());
-            }
-            return builder.build();
+                .setSnapshotId(snapshotId) //
+                .setProblem(!m_aggregatedStatus.isOK() ? buildProblemMessageEnt() : null) //
+                .build();
+        }
+
+        private ProblemMessageEnt buildProblemMessageEnt() {
+            var titleAndMessage = getTitleAndAggregatedMessage();
+            return builder(ProblemMessageEntBuilder.class) //
+                .setType(m_aggregatedStatus == Status.WARNING ? TypeEnum.WARNING : TypeEnum.ERROR) //
+                .setTitle(titleAndMessage.getFirst()) //
+                .setMessage(titleAndMessage.getSecond()) //
+                .build();
         }
 
         private Pair<String, String> getTitleAndAggregatedMessage() {
@@ -272,7 +293,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         }
 
         /**
-         * (copied from LoadWorkflowRunnable)
+         * (copied from {@link LoadWorkflowRunnable})
          *
          * Depending on what's missing it returns "a missing node extension", "a missing table format extension" and
          * also respects singular/plural.
@@ -355,6 +376,9 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         enum Status {
                 OK, WARNING, ERROR;
 
+            /**
+             * @return Whether something actually was loaded or not.
+             */
             boolean isOK() {
                 return this == OK;
             }
