@@ -145,9 +145,9 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
         // add and keep track of callback added to the workflow changes listener (if not already)
         m_workflowChangesCallbacks.computeIfAbsent(workflowKey, wfKey -> {
-            String latestSnapshotId =
+            var latestSnapshotId =
                 workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
-            Runnable callback = createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
+            var callback = createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
             workflowChangesListener.addWorkflowChangeCallback(callback);
             return callback;
         });
@@ -167,8 +167,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         var wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
         return () -> {
             preEventCreation();
-            WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey,
-                patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
+            var workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey, patchEntCreator,
+                patchEntCreator.getLastSnapshotId(), true);
             if (workflowChangedEvent != null) {
                 var compositeEvent = createCompositeEvent(wfKey, wfm, workflowChangedEvent);
                 sendEvent(compositeEvent, wfKey.getProjectId());

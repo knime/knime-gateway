@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -40,84 +41,30 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ------------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.entity;
 
-import static org.knime.gateway.api.util.EntityUtil.immutable;
+package org.knime.gateway.impl.project;
 
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
-
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.util.VersionId;
 
 /**
- * A workflow with an additional snapshot id.
- *
- * @param workflow
- * @param snapshotId
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * Defines how a {@link WorkflowManager} instance is loaded.
+ * <p>
+ * "Loading" here means loading it from file representation on disk to provide an initialized and usable
+ * {@link WorkflowManager} instance. However, this method may also include fetching the files from a remote location.
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultWorkflowSnapshotEnt(
-    WorkflowEnt workflow,
-    String snapshotId) implements WorkflowSnapshotEnt {
+@FunctionalInterface
+@SuppressWarnings("java:S1711") // intentionally not using Function<VersionId, WorkflowManager> instead.
+public interface WorkflowManagerLoader {
 
     /**
-     * Validation for required parameters not being {@code null}.
+     * Load the workflow manager instance
+     * 
+     * @param version the version to load
+     * @return the loaded instance, <code>null</code> if loading failed.
      */
-    public DefaultWorkflowSnapshotEnt {
-        if(workflow == null) {
-            throw new IllegalArgumentException("<workflow> must not be null.");
-        }
-    }
-
-    @Override
-    public String getTypeID() {
-        return "WorkflowSnapshot";
-    }
-  
-    @Override
-    public WorkflowEnt getWorkflow() {
-        return workflow;
-    }
-    
-    @Override
-    public String getSnapshotId() {
-        return snapshotId;
-    }
-    
-    /**
-     * A builder for {@link DefaultWorkflowSnapshotEnt}.
-     */
-    public static class DefaultWorkflowSnapshotEntBuilder implements WorkflowSnapshotEntBuilder {
-
-        private WorkflowEnt m_workflow;
-
-        private String m_snapshotId;
-
-        @Override
-        public DefaultWorkflowSnapshotEntBuilder setWorkflow(WorkflowEnt workflow) {
-             if(workflow == null) {
-                 throw new IllegalArgumentException("<workflow> must not be null.");
-             }
-             m_workflow = workflow;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowSnapshotEntBuilder setSnapshotId(String snapshotId) {
-             m_snapshotId = snapshotId;
-             return this;
-        }
-
-        @Override
-        public DefaultWorkflowSnapshotEnt build() {
-            return new DefaultWorkflowSnapshotEnt(
-                immutable(m_workflow),
-                immutable(m_snapshotId));
-        }
-    
-    }
+    WorkflowManager load(final VersionId version);
 
 }

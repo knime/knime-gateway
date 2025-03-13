@@ -48,9 +48,10 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.workflow.NodeContainer;
@@ -71,6 +72,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -95,6 +97,9 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final SpaceProvidersManager m_spaceProvidersManager =
         ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, false);
 
+    private final ProjectManager m_projectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -109,13 +114,16 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        final var version = VersionId.parse(versionId);
+    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
+        final Boolean includeInfoOnAllowedActions, final String versionParameter)
+        throws NotASubWorkflowException, NodeNotFoundException {
+        final var version = VersionId.parse(versionParameter);
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
+        final var wfm = DefaultServiceUtil.assertProjectIdAndGetWorkflowManager(wfKey);
         final var buildContext = WorkflowBuildContext.builder();
-        if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
+        buildContext.setVersion(version);
+        // TODO NXT-3605 remove `includeInteractionInfo`
+        if (Boolean.TRUE.equals(includeInfoOnAllowedActions) && version.isCurrentState()) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
                 ? Map.of() //
                 : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
@@ -123,13 +131,22 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
                 .setSpaceProviderTypes(providerTypes) //
-                .setVersion(version) //
                 .setComponentPlaceholders(
                     m_workflowMiddleware.getComponentLoader(wfKey).getComponentPlaceholdersAndCleanUp());
         } else {
-            buildContext.includeInteractionInfo(false).setVersion(version);
+            buildContext.includeInteractionInfo(false);
         }
-        return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
+        if (version.isCurrentState()) {
+            return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
+        } else {
+            // fixed versions are not editable,
+            // we do not need to cache state, execute commands, provide change events etc. for these
+            var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(wfm, buildContext);
+            return builder(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class) //
+                .setSnapshotId(null) //
+                .setWorkflow(workflowEntity) //
+                .build();
+        }
     }
 
     @Override
@@ -140,7 +157,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         try {
             final var linkedComponentsToStateMap = CoreUtil.getLinkedComponentToStateMap(wfm);
-            final var candidateList = linkedComponentsToStateMap.entrySet().stream().map(Entry::getKey).toList();
+            final var candidateList = linkedComponentsToStateMap.keySet().stream().toList();
             final var componentUpdateResult = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(
                 wfm, "org.knime.gateway.impl", candidateList, new NullProgressMonitor());
             return componentUpdateResult.updateList().stream()//
@@ -156,6 +173,16 @@ public final class DefaultWorkflowService implements WorkflowService {
         }
     }
 
+    @Override
+    public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        m_projectManager.getProject(projectId)
+            .ifPresent(project -> project.disposeCachedWfm(VersionId.parse(versionParameter)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {

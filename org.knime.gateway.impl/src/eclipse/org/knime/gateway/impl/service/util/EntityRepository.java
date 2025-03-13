@@ -65,7 +65,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface EntityRepository<K, E extends GatewayEntity> {
 
     /**
-     * Commits the given workflow entity and returns it together with a respective snapshot id.
+     * Commits the given workflow entity and returns a respective snapshot id.
      *
      * The snapshot id is either newly generated (in case there has been some changes) or the snapshot id of the latest
      * commit (if there weren't any changes).

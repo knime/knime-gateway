@@ -62,6 +62,17 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 public interface WorkflowService extends GatewayService {
 
     /**
+     * Dispose the workflow (manager) corresponding to the given project and version.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param version The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
+     *
+     * 
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     */
+    void disposeVersion(String projectId, String version)  throws ServiceExceptions.ServiceCallException;
+        
+    /**
      * Executed a command on the referenced workflow. Every request with the same operation is idempotent.
      *
      * @param projectId ID of the workflow-project.

@@ -339,7 +339,6 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         Project workflowProject = Project.builder().setWfm(wfm) //
                 .setName("workflow") //
                 .setId("wfId") //
-                .onDispose(WorkflowManagerUtil::disposeWorkflow) //
                 .build();
         ProjectManager.getInstance().addProject(workflowProject);
         return workflowProject;

@@ -196,6 +196,9 @@ public final class LocalSpace implements Space {
     @Override
     public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId,
         final VersionId version) {
+        if (!version.isCurrentState()) {
+            return Optional.empty();  // currently not supported by this implementation
+        }
         return toLocalAbsolutePath(itemId);
     }
 

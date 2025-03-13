@@ -52,7 +52,7 @@ import java.util.Objects;
  * Identifies a workflow version, i.e. a version assigned to a specific
  * {@link org.knime.core.node.workflow.WorkflowManager}.
  *
- * @implNote `toString` and {@link this#parse(String)} are compatible with the Catalog Service API spec.
+ * @implNote {@code toString} and {@link VersionId#parse(String)} are compatible with the Catalog Service API spec.
  */
 public sealed class VersionId {
 
@@ -118,7 +118,9 @@ public sealed class VersionId {
     }
 
     /**
+     * Obtain a constant describing the "current state" / "working area" version.
      * @see CurrentState
+     * @return -
      */
     public static CurrentState currentState() {
         return CurrentState.CURRENT_STATE;
@@ -131,6 +133,7 @@ public sealed class VersionId {
         private final int m_id;
 
         /**
+         * Create an instance describing a fixed version
          * @param id identifier of that version. Can not be assumed to be sequential.
          */
         public Fixed(final int id) {
@@ -163,10 +166,9 @@ public sealed class VersionId {
 
     /**
      * Parse an instance from the given string.
-     *
-     * @param versionId
-     * @return The parsed instance
-     * @throws IllegalArgumentException
+     * @param versionId the string to parse
+     * @throws IllegalArgumentException in case the string could not be parsed
+     * @return the parsed instance
      */
     public static VersionId parse(final String versionId) throws IllegalArgumentException {
         // Note: 'versionId == null' shouldn't be necessary anymore, since parameter cannot be omitted any longer.
@@ -175,6 +177,14 @@ public sealed class VersionId {
             return new CurrentState();
         }
         return new Fixed(Integer.parseInt(versionId));
+    }
+
+    /**
+     * -
+     * @return Whether this version specifies the "current state" / "working area" version.
+     */
+    public boolean isCurrentState() {
+        return this instanceof CurrentState;
     }
 
 }

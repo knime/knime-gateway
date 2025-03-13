@@ -61,13 +61,11 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
@@ -150,14 +148,20 @@ public final class WorkflowMiddleware {
 
     private final SpaceProvidersManager m_spaceProvidersManager;
 
+    @SuppressWarnings("java:S1176") // javadoc
+    public WorkflowMiddleware(final ProjectManager projectManager) {
+        this(projectManager, null);
+    }
+
     /**
      * @param projectManager
      * @param spaceProvidersManager
      */
+    @SuppressWarnings("java:S1176") // javadoc
     public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager) {
         m_spaceProvidersManager = spaceProvidersManager;
-        projectManager
-            .addProjectRemovedListener(projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
+        projectManager.addProjectRemovedListener(
+            projectId -> clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId)));
     }
 
     private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
@@ -176,7 +180,7 @@ public final class WorkflowMiddleware {
 
     /**
      * Creates a new workflow snapshot entity. If there are any changes to the workflow, a new workflow entity is
-     * committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise the snapshot id of the
+     * committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise, the snapshot id of the
      * last commit will be used.
      *
      * @param wfKey the workflow to get/create the snapshot for
@@ -190,16 +194,13 @@ public final class WorkflowMiddleware {
         var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
 
         // try to commit the workflow entity and return the (existing or new) snapshot
-        return buildWorkflowSnapshotEnt(workflowEntity, m_workflowEntRepo.commit(wfKey, workflowEntity));
-    }
-
-    private static WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final String snapshotId) {
-        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
+        final var snapshotId = m_workflowEntRepo.commit(wfKey, workflowEntity);
+        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflowEntity).build();
     }
 
     /**
      * Builds a new {@link WorkflowMonitorStateChangeEventEnt} instance. If there are any changes to the workflow, a new
-     * workflow entity is committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise the
+     * workflow entity is committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise, the
      * snapshot id of the last commit will be used.
      *
      * @param wfKey the workflow to get/create the snapshot for
@@ -213,6 +214,8 @@ public final class WorkflowMiddleware {
     }
 
     /**
+     * Get the latest snapshot ID
+     *
      * @param wfKey The workflow to query
      * @return The snapshot-id of the most recent commit, or an empty optional if there are no commits yet.
      */
@@ -237,7 +240,7 @@ public final class WorkflowMiddleware {
      * If called for the first time, the {@link WorkflowChangesListener} will be created. Subsequent calls will always
      * return the very same instance (per workflow).
      *
-     * @param wfKey
+     * @param wfKey -
      * @return the changes listener, never <code>null</code>
      */
     public WorkflowChangesListener getWorkflowChangesListener(final WorkflowKey wfKey) {
@@ -253,7 +256,7 @@ public final class WorkflowMiddleware {
      * If called for the first time, the {@link WorkflowChangesListener} will be created. Subsequent calls will always
      * return the very same instance (per workflow).
      *
-     * @param wfKey
+     * @param wfKey -
      * @return the listener instance
      */
     public WorkflowChangesListener getWorkflowChangesListenerForWorkflowMonitor(final WorkflowKey wfKey) {
@@ -281,7 +284,7 @@ public final class WorkflowMiddleware {
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo) {
-        WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
+        var buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);
         if (includeInteractionInfo) {
@@ -333,19 +336,9 @@ public final class WorkflowMiddleware {
     }
 
     /**
-     * Builds an {@code AnnotationIDEnt} considering the {@code WorkflowBuildContext}.
+     * -
      *
-     * @param wa
-     * @param wfm
-     * @return The annotation ID entity
-     */
-    public static AnnotationIDEnt buildAnnotationIDEnt(final WorkflowAnnotation wa, final WorkflowManager wfm) {
-        final var buildContextBuilder = WorkflowBuildContext.builder().includeInteractionInfo(false);
-        return EntityFactory.Workflow.buildAnnotationIDEnt(wa, buildContextBuilder, wfm);
-    }
-
-    /**
-     * @param wfKey
+     * @param wfKey -
      * @return <code>true</code> if there is state cached for the workflow represented by the given workflow key
      */
     public boolean hasStateFor(final WorkflowKey wfKey) {
@@ -507,6 +500,7 @@ public final class WorkflowMiddleware {
             m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
         }
 
+        @SuppressWarnings("java:S1176") // javadoc
         public DependentNodeProperties get() {
             var recompute = m_dependentNodeProperties == null || m_tracker.invoke(t -> {
                 var nodeStateChanges = t.hasOccurredAtLeastOne(WorkflowChange.NODE_STATE_UPDATED);

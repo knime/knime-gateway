@@ -105,7 +105,7 @@ public class AppStateUpdaterTest {
 
         var pm = ProjectManager.getInstance();
         var wfm1 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj1 = Project.builder().setWfm(wfm1).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var proj1 = Project.builder().setWfm(wfm1).build();
         pm.addProject(proj1);
 
         DefaultApplicationService.getInstance().getState(); // initializes the app-state for the AppStateUpdater
@@ -117,7 +117,7 @@ public class AppStateUpdaterTest {
 
         // update open projects and verify resulting app state changed event
         var wfm2 = WorkflowManagerUtil.createEmptyWorkflow();
-        var proj2 = Project.builder().setWfm(wfm2).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var proj2 = Project.builder().setWfm(wfm2).build();
         pm.addProject(proj2);
         appStateUpdater.updateAppState();
         verify(eventConsumer).accept("AppStateChangedEvent:ProjectDirtyStateEvent",
@@ -155,7 +155,7 @@ public class AppStateUpdaterTest {
 
         var pm = ProjectManager.getInstance();
         var proj1 = Project.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
-            .onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+            .build();
         pm.addProject(proj1);
 
         DefaultApplicationService.getInstance().getState(); // initializes the app-state for the AppStateUpdater
@@ -166,7 +166,7 @@ public class AppStateUpdaterTest {
 
         // update open projects and check resulting app state changed event (there should be none)
         var proj2 = Project.builder().setWfm(WorkflowManagerUtil.createEmptyWorkflow())
-            .onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+            .build();
         pm.addProject(proj2);
         appStateUpdater.updateAppState();
         verify(eventConsumer, times(0)).accept(any(), any(), any());

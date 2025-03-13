@@ -90,7 +90,6 @@ import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
-import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult;
 import org.knime.core.node.workflow.action.InteractiveWebViewsResult.SingleInteractiveWebViewResult;
@@ -1189,15 +1188,15 @@ public final class WorkflowEntityFactory {
     /**
      * Builds an {@code AnnotationIDEnt} considering the {@code WorkflowBuildContext}.
      *
-     * @param wa
-     * @param buildContextBuilder
-     * @param wfm
+     * @param wa -
+     * @param buildContextBuilder -
+     * @param wfm -
      * @return The new add annotation ID entity
      */
-    public AnnotationIDEnt buildAnnotationIDEnt(final WorkflowAnnotation wa,
+    public static AnnotationIDEnt buildAnnotationIDEnt(final WorkflowAnnotation wa,
         final WorkflowBuildContextBuilder buildContextBuilder, final WorkflowManager wfm) {
-        try (WorkflowLock lock = wfm.lock()) {
-            WorkflowBuildContext buildContext = buildContextBuilder.build(wfm);
+        try (var lock = wfm.lock()) {
+            var buildContext = buildContextBuilder.build(wfm);
             return buildContext.buildAnnotationIDEnt(wa.getID());
         }
     }

@@ -62,8 +62,9 @@ import org.knime.gateway.api.webui.entity.AddAnnotationResultEnt.AddAnnotationRe
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
  * Workflow command to create a new workflow annotation
@@ -111,8 +112,11 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
      */
     @Override
     public AddAnnotationResultEnt buildEntity(final String snapshotId) {
-        final var wfm = getWorkflowManager();
-        final var newAnnotationId = WorkflowMiddleware.buildAnnotationIDEnt(m_workflowAnnotation, wfm);
+        final var newAnnotationId = WorkflowEntityFactory.buildAnnotationIDEnt( //
+            m_workflowAnnotation, //
+            WorkflowBuildContext.builder().includeInteractionInfo(false), //
+            getWorkflowManager() //
+        );
         return builder(AddAnnotationResultEntBuilder.class)//
             .setKind(KindEnum.ADD_ANNOTATION_RESULT)//
             .setSnapshotId(snapshotId)//

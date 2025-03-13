@@ -114,7 +114,7 @@ import org.mockito.Mockito;
  * @author Kai Franze, KNIME GmbH
  * @author Benjamin Moser, KNIME GmbH
  */
-@SuppressWarnings({"javadoc", "java:S112", "java:S1192", "java:S1188", "java:S1602"})
+@SuppressWarnings({"javadoc", "java:S112", "java:S1192", "java:S1188", "java:S1602", "java:S2259"})
 public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public SpaceServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
@@ -885,7 +885,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private static Project createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
         return Project.builder() //
-            .setWfmLoader(() -> null) //
+            .setWfmLoaderProvidingOnlyCurrentState(() -> null) //
             .setName("some_name") //
             .setId("some_id") //
             .setOrigin(new Origin(providerId, spaceId, itemId, ProjectTypeEnum.WORKFLOW)) //

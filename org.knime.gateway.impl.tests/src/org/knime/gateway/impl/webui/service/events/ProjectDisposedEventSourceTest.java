@@ -72,6 +72,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S1192")  // repeated string literals
 public class ProjectDisposedEventSourceTest {
 
     @SuppressWarnings("javadoc")
@@ -79,7 +80,7 @@ public class ProjectDisposedEventSourceTest {
     public void testProjectDisposedEventSource() throws InvalidRequestException {
         var projectManager = ProjectManager.getInstance();
         var project = Project.builder() //
-            .setWfmLoader(() -> null) //
+            .setWfmLoaderProvidingOnlyCurrentState(() -> null) //
             .setName("test name") //
             .setId("test id") //
             .build();
@@ -92,7 +93,8 @@ public class ProjectDisposedEventSourceTest {
         var preferenceProvider = mock(PreferencesProvider.class);
         var nodeCollections = mock(NodeCollections.class);
         ServiceInstances.disposeAllServiceInstancesAndDependencies();
-        ServiceDependencies.setDefaultServiceDependencies(projectManager, new WorkflowMiddleware(projectManager, null),
+        var workflowMiddleware = new WorkflowMiddleware(projectManager, null);
+        ServiceDependencies.setDefaultServiceDependencies(projectManager, workflowMiddleware,
             null, eventConsumer, spaceProvidersManager, null, preferenceProvider, null, null, null, nodeCollections, null,
             null, null);
 

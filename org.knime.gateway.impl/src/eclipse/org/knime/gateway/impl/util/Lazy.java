@@ -82,6 +82,7 @@ public final class Lazy {
 
         /**
          * Create an instance with the given supplier.
+         * @param supplier providing the value on initialisation
          */
         public Init(final Supplier<V> supplier) {
             this.m_supplier = supplier;
@@ -90,6 +91,7 @@ public final class Lazy {
         /**
          * Create an instance in already-initialised state. This is useful for when sometimes a value is already
          * available, sometimes not.
+         * @param value -
          */
         public Init(final V value) {
             this.m_value = value;
@@ -108,7 +110,8 @@ public final class Lazy {
                 synchronized (this) {
                     result = this.m_value;
                     if (result == NO_INIT) { // have to check under synchronisation to be certain
-                        this.m_value = result = m_supplier.get();
+                        result = m_supplier.get();
+                        this.m_value = result;
                     }
                 }
             }
@@ -119,7 +122,8 @@ public final class Lazy {
          * Clear the cached value. The next call to {@link #get()} will trigger a new initialisation.
          */
         public void clear() {
-            m_value = null;
+            //noinspection unchecked
+            m_value = (V) NO_INIT;
         }
 
         /**
@@ -130,9 +134,10 @@ public final class Lazy {
         }
 
         /**
+         * Map an operation over this instance.
          * @param consumer Applied to the value, if present
          */
-        public void ifInitialized(final Consumer<V> consumer) {
+        public void ifPresent(final Consumer<V> consumer) {
             if (isInitialized()) {
                 consumer.accept(m_value);
             }
@@ -157,16 +162,27 @@ public final class Lazy {
 
         private final Init<V> m_transformed;
 
+        /**
+         * Initialise an instance with an original value and a transformation to eventually be applied.
+         * @param value the original value
+         * @param transformation the transformation to eventually apply to the value
+         */
         public Transform(final V value, final UnaryOperator<V> transformation) {
             this.m_transformation = transformation;
             this.m_value = value;
             this.m_transformed = new Init<>(() -> m_transformation.apply(m_value));
         }
 
+        /**
+         * @return The original, untransformed value
+         */
         public V original() {
             return m_value;
         }
 
+        /**
+         * @return The transformed value
+         */
         public V transformed() {
             return m_transformed.get();
         }

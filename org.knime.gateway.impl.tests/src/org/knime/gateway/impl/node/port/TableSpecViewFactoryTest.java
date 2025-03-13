@@ -74,7 +74,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
 /**
  * Tests {@link TableSpecViewFactory}.
  */
-@SuppressWarnings({"restriction"})
+@SuppressWarnings({"restriction", "java:S1176"})
 public class TableSpecViewFactoryTest {
 
     private static final DataColumnSpec[] COLSPECS = { //

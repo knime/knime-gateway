@@ -120,7 +120,7 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
     public void testDeactivatePortDataService() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nc = createNodeWithTableOutputPort(wfm);
-        var project = Project.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var project = Project.builder().setWfm(wfm).build();
         var projectId = project.getID();
         var nodeIdEnt = new NodeIDEnt(nc.getID());
         ProjectManager.getInstance().addProject(project);

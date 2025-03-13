@@ -205,7 +205,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         throws IOException, NotASubWorkflowException, NodeNotFoundException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
-        var project = Project.builder().setWfm(wfm).onDispose(WorkflowManagerUtil::disposeWorkflow).build();
+        var project = Project.builder().setWfm(wfm).build();
         ProjectManager.getInstance().addProject(project);
 
         var workflowService = DefaultWorkflowService.getInstance();

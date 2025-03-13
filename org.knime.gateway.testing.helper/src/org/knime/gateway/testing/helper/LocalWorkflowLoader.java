@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerLoader;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -71,6 +72,9 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings({"java:S112", "java:S1176"})
+// generic `throws Exception` -- okay since only used in tests.
+// javadoc for public declarations
 public class LocalWorkflowLoader implements WorkflowLoader {
 
     private final Set<String> m_loadedWorkflows = new HashSet<>();
@@ -89,27 +93,43 @@ public class LocalWorkflowLoader implements WorkflowLoader {
      * Same as {@link #loadWorkflow(TestWorkflow)} with the additional possibility to set a custom project id (instead
      * of a randomly generated one).
      *
-     * @param workflow
-     * @param projectId
-     * @throws Exception
+     * @param workflow -
+     * @param projectId The ID to use for the created project
+     * @throws Exception -
      */
     public void loadWorkflow(final TestWorkflow workflow, final String projectId) throws Exception {
-        var wfm = loadWorkflowInWorkspace(workflow.getWorkflowDir());
-        var project = Project.builder()//
-            .setWfm(wfm)//
-            .setName(workflow.getName())//
-            .setId(projectId)//
-            .setOrigin(createOriginForTesting());
+        WorkflowManagerLoader wfmLoader;
         if (workflow instanceof TestWorkflow.WithVersion withVersion) {
-            project.setVersionWfmLoader(ignored -> {
+            wfmLoader = version -> {
                 try {
-                    return loadWorkflowInWorkspace(withVersion.getVersionWorkflowDir());
+                    var workflowDirToLoad = version.isCurrentState() ? //
+                        workflow.getWorkflowDir() //
+                        : withVersion.getVersionWorkflowDir();
+                    return loadWorkflowInWorkspace(workflowDirToLoad);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            });
+            };
+        } else {
+            wfmLoader = version -> {
+                if (!version.isCurrentState()) {
+                    throw new IllegalArgumentException("VersionId.Fixed is not supported");
+                }
+                try {
+                    return loadWorkflowInWorkspace(workflow.getWorkflowDir());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            };
         }
-        addToProjectManager(wfm, workflow.getName(), projectId, project.build());
+        var project = Project.builder()
+            .setWfmLoader(wfmLoader)
+            .setName(workflow.getName())//
+            .setId(projectId)//
+            .setOrigin(createOriginForTesting())
+            .build();
+        var loadedWfm = project.getWorkflowManager();
+        addToProjectManager(loadedWfm, workflow.getName(), projectId, project);
     }
 
     @Override
