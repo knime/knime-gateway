@@ -78,15 +78,16 @@ public final class WorkflowUtil {
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
-        WorkflowManager wfm;
         try {
-            wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId());
+            // To ensure no workflow mutation is triggered when not allowed
+            // TODO: Not ideal with the 'InternalException', but 'IllegalStateException' couldn't be used
+            return DefaultServiceUtil.getWorkflowManagerIfMutable(wfKey.getProjectId(), wfKey.getWorkflowId())
+                .orElseThrow(() -> new InternalException("Workflow Manager immutalbe, this should not happen."));
         } catch (IllegalArgumentException ex) {
             throw new NodeNotFoundException(ex.getMessage(), ex);
         } catch (IllegalStateException ex) {
             throw new NotASubWorkflowException(ex.getMessage(), ex);
         }
-        return wfm;
     }
 
     /**
@@ -101,6 +102,15 @@ public final class WorkflowUtil {
     public static void assertWorkflowExists(final WorkflowKey wfKey)
         throws NodeNotFoundException, NotASubWorkflowException {
         getWorkflowManager(wfKey);
+    }
+
+    @SuppressWarnings("serial")
+    private static class InternalException extends RuntimeException {
+
+        InternalException(final String message) {
+            super(message);
+        }
+
     }
 
 }

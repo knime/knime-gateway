@@ -47,6 +47,7 @@ package org.knime.gateway.impl.service.util;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -112,17 +113,39 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * @see this#getWorkflowManager(String, VersionId, NodeIDEnt)
+     * TODO: Do we still need this method?
+     *
+     * @param projectId
+     * @param workflowId
+     * @return the {@link WorkflowManager}-instance
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
-        return getWorkflowManager(projectId, VersionId.currentState(), workflowId);
+        final var version = ProjectManager.getInstance().getActiveProjectVersion(projectId);
+        return getWorkflowManager(projectId, version, workflowId);
+    }
+
+    /**
+     * TODO: Does this have to be public?
+     * 
+     * @param projectId
+     * @param workflowId
+     * @return the {@link WorkflowManager}-instance if the project is mutable, empty otherwise.
+     */
+    public static Optional<WorkflowManager> getWorkflowManagerIfMutable(final String projectId,
+        final NodeIDEnt workflowId) {
+        final var version = ProjectManager.getInstance().getActiveProjectVersion(projectId);
+        if (version instanceof VersionId.Fixed) {
+            return Optional.empty();
+        }
+
+        return Optional.of(getWorkflowManager(projectId, version, workflowId));
     }
 
     /**
      * Gets the (sub-)workflow manager for the given root workflow id and node id.
      *
      * @param projectId the root workflow id
-     * @param versionId specifies the version to load.
+     * @param version specifies the version to load.
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return the {@link WorkflowManager}-instance
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
@@ -130,9 +153,9 @@ public final class DefaultServiceUtil {
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    public static WorkflowManager getWorkflowManager(final String projectId, final VersionId versionId,
+    public static WorkflowManager getWorkflowManager(final String projectId, final VersionId version,
         final NodeIDEnt workflowId) {
-        return parseWfm(findNodeContainer(getProjectWfm(projectId, versionId), workflowId));
+        return parseWfm(findNodeContainer(getProjectWfmAndSetActiveVersion(projectId, version), workflowId));
     }
 
     private static NodeContainer findNodeContainer(final WorkflowManager parent, final NodeIDEnt child) {
@@ -165,27 +188,35 @@ public final class DefaultServiceUtil {
      * @throws NoSuchElementException if there is not project for the id registered
      */
     public static WorkflowManager getProjectWfm(final String projectId) {
-        return getProjectWfm(projectId, VersionId.currentState());
+        // TODO: Does 'current state' make sense here?
+        return getProjectWfmAndSetActiveVersion(projectId, VersionId.currentState());
     }
 
     /**
-     * Obtain the root workflow manager of the given project at the given version.
+     * Obtain the root workflow manager of the given project at the given version. It also takes note of the currently
+     * active version.
      *
      * @param projectId the project id
      * @param version the version to load
      * @return the {@link WorkflowManager} instance
      * @throws NoSuchElementException if there is no project for the id registered or no workflow for the given version
      */
-    private static WorkflowManager getProjectWfm(final String projectId, final VersionId version) {
-        return ProjectManager.getInstance().getProject(projectId)
+    private static WorkflowManager getProjectWfmAndSetActiveVersion(final String projectId, final VersionId version) {
+        final var wfm = ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
             .getWorkflowManager(version)
             .orElseThrow(() -> new NoSuchElementException("Workflow for version \"" + version + "\" not found."));
+
+        // Only set the active version if retrieving the workflow manager was successful.
+        // TODO: Is this the best place to put this?
+        ProjectManager.getInstance().setActiveProjectVersion(projectId, version);
+
+        return wfm;
     }
 
     /**
      * Gets the root workflow manager and the contained node container at the same time (see
-     * {@link #getNodeContainer(String, NodeIDEnt)} and {@link #getProjectWfm(String, VersionId)}).
+     * {@link #getNodeContainer(String, NodeIDEnt)} and {@link #getProjectWfmAndSetActiveVersion(String, VersionId)}).
      *
      * @param rootWorkflowID the id of the root workflow
      * @param nodeID the id of the node requested
@@ -210,7 +241,8 @@ public final class DefaultServiceUtil {
      * @return the {@link NodeID} instance
      */
     public static NodeID entityToNodeID(final String projectId, final NodeIDEnt nodeID) {
-        return nodeID.toNodeID(getProjectWfm(projectId, VersionId.currentState()));
+        // TODO: Does 'current state' make sense here?
+        return nodeID.toNodeID(getProjectWfmAndSetActiveVersion(projectId, VersionId.currentState()));
     }
 
     /**
@@ -252,12 +284,16 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if the is no node for one of the given node ids or the given node ids don't
      *             refer to the same workflow level (i.e. don't have the exact same prefix)
      * @throws IllegalStateException if the state transition is not possible, e.g., because there are executing
-     *             successors or the provided action is unknown
+     *             successors or the provided action is unknown or the workflow is immutable
      */
     public static void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final String action,
         final NodeIDEnt... nodeIdEnts) {
         NodeID[] nodeIDs = null;
-        var wfm = getWorkflowManager(projectId, workflowId);
+
+        // To ensure no workflow mutation is triggered when not allowed
+        var wfm = getWorkflowManagerIfMutable(projectId, workflowId)
+            .orElseThrow(() -> new IllegalStateException("Workflow Manager immutalbe, this should not happen."));
+
         if (nodeIdEnts != null && nodeIdEnts.length != 0) {
             nodeIDs = new NodeID[nodeIdEnts.length];
             nodeIDs[0] = nodeIdEnts[0].toNodeID(wfm);

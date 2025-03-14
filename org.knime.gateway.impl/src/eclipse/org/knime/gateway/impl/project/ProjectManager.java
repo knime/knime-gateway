@@ -59,6 +59,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -84,7 +85,7 @@ public final class ProjectManager {
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
-    private String m_activeProjectId;
+    private Pair<String, VersionId> m_activeProjectId;
 
     private ProjectManager() {
         // singleton
@@ -143,7 +144,43 @@ public final class ProjectManager {
         if (project != null && !project.hasUIConsumer) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
-        m_activeProjectId = projectId;
+
+        if (projectId == null) {
+            m_activeProjectId = null;
+        } else {
+            // Initialize with current state
+            m_activeProjectId = Pair.create(projectId, VersionId.currentState());
+        }
+    }
+
+    /**
+     * To set the version of the currently active project.
+     *
+     * @param projectId
+     * @param version
+     */
+    public void setActiveProjectVersion(final String projectId, final VersionId version) {
+        if (m_activeProjectId != null && !m_activeProjectId.getFirst().equals(projectId)) {
+            throw new IllegalStateException("To set the active version of a project, the project must be active.");
+        }
+
+        m_activeProjectId = Pair.create(projectId, version);
+    }
+
+    /**
+     * @param projectId
+     * @return The version of the currently active project.
+     */
+    public VersionId getActiveProjectVersion(final String projectId) {
+        if (m_activeProjectId == null) {
+            throw new IllegalStateException("No project active.");
+        }
+
+        if (!m_activeProjectId.getFirst().equals(projectId)) {
+            throw new IllegalStateException("To get the active version of a project, the project must be active.");
+        }
+
+        return m_activeProjectId.getSecond();
     }
 
     /**
@@ -151,7 +188,12 @@ public final class ProjectManager {
      * @return whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab).
      */
     public boolean isActiveProject(final String projectId) {
-        return m_activeProjectId != null && m_activeProjectId.equals(projectId);
+        if (m_activeProjectId == null) {
+            return false;
+        }
+
+        // Version is not relevant here
+        return m_activeProjectId.getFirst().equals(projectId);
     }
 
     /**
@@ -243,7 +285,8 @@ public final class ProjectManager {
                 removedProject.project().dispose();
             }
             m_projectRemovedListeners.forEach(l -> l.accept(projectId));
-            if (m_activeProjectId != null && m_activeProjectId.equals(projectId)) {
+            if (m_activeProjectId != null && //
+                m_activeProjectId.getFirst().equals(projectId)) { // Version is not relevant here
                 m_activeProjectId = null;
             }
         } else {
