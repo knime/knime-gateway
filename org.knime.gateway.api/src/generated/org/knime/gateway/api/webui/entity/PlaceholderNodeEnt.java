@@ -46,6 +46,7 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
@@ -60,49 +61,22 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents a node of certain kind (native node, component, metanode) in a workflow.
+ * TODO
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface NodeEnt extends GatewayEntity {
+public interface PlaceholderNodeEnt extends GatewayEntity, NodeEnt {
 
   /**
-   * Whether it&#39;s a native node, component or a metanode.
+   * TODO
    */
-  public enum KindEnum {
-    NODE("node"),
-    
-    COMPONENT("component"),
-    
-    METANODE("metanode"),
-    
-    PLACEHOLDER("placeholder");
+  public enum TypeEnum {
+    COMPONENT("COMPONENT");
 
     private String value;
 
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-  /**
-   * Indicates whether and type of dialog a node has. Not present if the node has no dialog.
-   */
-  public enum DialogTypeEnum {
-    WEB("web"),
-    
-    SWING("swing");
-
-    private String value;
-
-    DialogTypeEnum(String value) {
+    TypeEnum(String value) {
       this.value = value;
     }
 
@@ -115,70 +89,22 @@ public interface NodeEnt extends GatewayEntity {
 
 
   /**
-   * The id of the node.
-   * @return id , never <code>null</code>
+   * TODO
+   * @return type , never <code>null</code>
    **/
-  public org.knime.gateway.api.entity.NodeIDEnt getId();
+  public TypeEnum getType();
 
   /**
-   * The list of inputs.
-   * @return inPorts , never <code>null</code>
+   * TODO
+   * @return message 
    **/
-  public java.util.List<? extends NodePortEnt> getInPorts();
-
-  /**
-   * The list of outputs.
-   * @return outPorts , never <code>null</code>
-   **/
-  public java.util.List<? extends NodePortEnt> getOutPorts();
-
-  /**
-   * Get annotation
-   * @return annotation 
-   **/
-  public NodeAnnotationEnt getAnnotation();
-
-  /**
-   * Get position
-   * @return position , never <code>null</code>
-   **/
-  public XYEnt getPosition();
-
-  /**
-   * Whether it&#39;s a native node, component or a metanode.
-   * @return kind , never <code>null</code>
-   **/
-  public KindEnum getKind();
-
-  /**
-   * Indicates whether and type of dialog a node has. Not present if the node has no dialog.
-   * @return dialogType 
-   **/
-  public DialogTypeEnum getDialogType();
-
-  /**
-   * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.
-   * @return inputContentVersion 
-   **/
-  public Integer getInputContentVersion();
-
-  /**
-   * Get allowedActions
-   * @return allowedActions 
-   **/
-  public AllowedNodeActionsEnt getAllowedActions();
-
-  /**
-   * Get executionInfo
-   * @return executionInfo 
-   **/
-  public NodeExecutionInfoEnt getExecutionInfo();
+  public String getMessage();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (NodeEnt)other;
+      var e = (PlaceholderNodeEnt)other;
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
@@ -189,12 +115,14 @@ public interface NodeEnt extends GatewayEntity {
       valueConsumer.accept("inputContentVersion", Pair.create(getInputContentVersion(), e.getInputContentVersion()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
+      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("message", Pair.create(getMessage(), e.getMessage()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface NodeEntBuilder extends GatewayEntityBuilder<NodeEnt> {
+    public interface PlaceholderNodeEntBuilder extends GatewayEntityBuilder<PlaceholderNodeEnt> {
 
         /**
          * The id of the node.
@@ -202,7 +130,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
+        PlaceholderNodeEntBuilder setId(org.knime.gateway.api.entity.NodeIDEnt id);
         
         /**
          * The list of inputs.
@@ -210,7 +138,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param inPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
+        PlaceholderNodeEntBuilder setInPorts(java.util.List<? extends NodePortEnt> inPorts);
         
         /**
          * The list of outputs.
@@ -218,7 +146,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param outPorts the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
+        PlaceholderNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
         
         /**
    		 * Set annotation
@@ -226,7 +154,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param annotation the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
+        PlaceholderNodeEntBuilder setAnnotation(NodeAnnotationEnt annotation);
         
         /**
    		 * Set position
@@ -234,7 +162,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param position the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setPosition(XYEnt position);
+        PlaceholderNodeEntBuilder setPosition(XYEnt position);
         
         /**
          * Whether it&#39;s a native node, component or a metanode.
@@ -242,7 +170,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param kind the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setKind(KindEnum kind);
+        PlaceholderNodeEntBuilder setKind(KindEnum kind);
         
         /**
          * Indicates whether and type of dialog a node has. Not present if the node has no dialog.
@@ -250,7 +178,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param dialogType the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setDialogType(DialogTypeEnum dialogType);
+        PlaceholderNodeEntBuilder setDialogType(DialogTypeEnum dialogType);
         
         /**
          * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.
@@ -258,7 +186,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param inputContentVersion the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setInputContentVersion(Integer inputContentVersion);
+        PlaceholderNodeEntBuilder setInputContentVersion(Integer inputContentVersion);
         
         /**
    		 * Set allowedActions
@@ -266,7 +194,7 @@ public interface NodeEnt extends GatewayEntity {
          * @param allowedActions the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
+        PlaceholderNodeEntBuilder setAllowedActions(AllowedNodeActionsEnt allowedActions);
         
         /**
    		 * Set executionInfo
@@ -274,7 +202,23 @@ public interface NodeEnt extends GatewayEntity {
          * @param executionInfo the property value,  
          * @return this entity builder for chaining
          */
-        NodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        PlaceholderNodeEntBuilder setExecutionInfo(NodeExecutionInfoEnt executionInfo);
+        
+        /**
+         * TODO
+         * 
+         * @param type the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PlaceholderNodeEntBuilder setType(TypeEnum type);
+        
+        /**
+         * TODO
+         * 
+         * @param message the property value,  
+         * @return this entity builder for chaining
+         */
+        PlaceholderNodeEntBuilder setMessage(String message);
         
         
         /**
@@ -284,7 +228,7 @@ public interface NodeEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        NodeEnt build();
+        PlaceholderNodeEnt build();
     
     }
 

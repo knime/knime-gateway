@@ -86,7 +86,7 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
         var wfm = getWorkflowManager();
         var nodeToExpand = m_commandEnt.getNodeId().toNodeID(wfm);
         if (wfm.canResetNode(nodeToExpand)) {

@@ -75,14 +75,19 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="isMetanodeWFM(WorkflowManager)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="isMetanodeWfm(WorkflowManager)"/>
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/api/util/Either.java" type="org.knime.gateway.api.util.Either">
+    <resource path="src/eclipse/org/knime/gateway/api/util/NodePlaceholder.java" type="org.knime.gateway.api.util.NodePlaceholder">
         <filter id="1110441988">
             <message_arguments>
-                <message_argument value="org.knime.gateway.api.util.Either"/>
+                <message_argument value="org.knime.gateway.api.util.NodePlaceholder"/>
             </message_arguments>
         </filter>
     </resource>
@@ -129,7 +134,33 @@
     <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowBuildContext.java" type="org.knime.gateway.api.webui.util.WorkflowBuildContext$WorkflowBuildContextBuilder">
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="setPlaceholders(Collection&lt;NodePlaceholder&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="setVersion(VersionId)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AddComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AddComponentResultEnt.java" type="org.knime.gateway.api.webui.entity.AddComponentResultEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentResultEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AddNodeProblemEnt.java" type="org.knime.gateway.api.webui.entity.AddNodeProblemEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddNodeProblemEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -256,6 +287,27 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.EditableMetadataEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/NodeEnt.java" type="org.knime.gateway.api.webui.entity.NodeEnt$KindEnum">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="PLACEHOLDER"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/PlaceholderNodeEnt.java" type="org.knime.gateway.api.webui.entity.PlaceholderNodeEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.PlaceholderNodeEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ProblemMessageEnt.java" type="org.knime.gateway.api.webui.entity.ProblemMessageEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ProblemMessageEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -491,6 +543,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowCommandEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowCommandEnt$KindEnum">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="ADD_COMPONENT"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowEnt">
         <filter id="403804204">
             <message_arguments>
@@ -590,6 +649,14 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/NodeService.java" type="org.knime.gateway.api.webui.service.NodeService">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="getComponentDescription(String, NodeIDEnt, NodeIDEnt)"/>
             </message_arguments>
         </filter>
     </resource>

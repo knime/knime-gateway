@@ -49,7 +49,9 @@
 package org.knime.gateway.api.webui.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -65,6 +67,7 @@ import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.util.NodePlaceholder;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
@@ -104,10 +107,13 @@ public final class WorkflowBuildContext {
 
     private final Map<String, SpaceProviderEnt.TypeEnum> m_spaceProviderTypes;
 
+    private final Collection<NodePlaceholder> m_nodePlaceholders;
+
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final boolean hasComponentProjectParent,
-        final DependentNodeProperties depNodeProps) {
+        final DependentNodeProperties depNodeProps, final Collection<NodePlaceholder> placeholderNodes) {
         m_wfm = wfm;
+        m_nodePlaceholders = placeholderNodes;
         m_includeInteractionInfo = builder.m_includeInteractionInfo;
         m_isInStreamingMode = isInStreamingMode;
         m_hasComponentProjectParent = hasComponentProjectParent;
@@ -200,6 +206,10 @@ public final class WorkflowBuildContext {
         return m_version;
     }
 
+    Collection<NodePlaceholder> getNodePlacerholders() {
+        return m_nodePlaceholders;
+    }
+
     private String[] getPortGroupsPerIndex(final NativeNodeContainer nnc, final boolean inPort) {
         return getPortsConfiguration(nnc)//
             // Create map of port group to port group indices
@@ -240,6 +250,8 @@ public final class WorkflowBuildContext {
         private Map<String, SpaceProviderEnt.TypeEnum> m_spaceProviderTypes = Map.of();
 
         private VersionId m_version;
+
+        private Collection<NodePlaceholder> m_nodePlaceholders;
 
         private WorkflowBuildContextBuilder() {
             //
@@ -315,6 +327,17 @@ public final class WorkflowBuildContext {
         }
 
         /**
+         * TODO
+         *
+         * @param placeholderNodes
+         * @return
+         */
+        public WorkflowBuildContextBuilder setPlaceholders(final Collection<NodePlaceholder> placeholderNodes) {
+            m_nodePlaceholders = placeholderNodes;
+            return this;
+        }
+
+        /**
          * Builds the workflow context. This might be an operation which is a bit more involved since certain
          * characteristics of the workflow are being determined.
          *
@@ -331,7 +354,8 @@ public final class WorkflowBuildContext {
                     : m_depNodeProps.get();
             }
             return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm),
-                wfm.getProjectComponent().isPresent(), dnp);
+                wfm.getProjectComponent().isPresent(), dnp,
+                m_nodePlaceholders == null ? List.of() : m_nodePlaceholders);
         }
 
     }

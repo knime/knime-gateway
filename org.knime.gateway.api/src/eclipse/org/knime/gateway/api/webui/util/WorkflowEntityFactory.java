@@ -110,6 +110,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.util.NodePlaceholder;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
@@ -174,6 +175,8 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.NodeStateEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
+import org.knime.gateway.api.webui.entity.PlaceholderNodeEnt;
+import org.knime.gateway.api.webui.entity.PlaceholderNodeEnt.PlaceholderNodeEntBuilder;
 import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
@@ -385,6 +388,8 @@ public final class WorkflowEntityFactory {
                 }
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
+            buildAndAddPlaceholderNodeEnts(buildContext.getNodePlacerholders(), nodes);
+
             var connections = wfm.getConnectionContainers().stream()
                 .map(cc -> buildConnectionEnt(buildConnectionIDEnt(cc, buildContext), cc, buildContext))
                 .collect(Collectors.toMap(c -> c.getId().toString(), c -> c)); // NOSONAR
@@ -405,6 +410,22 @@ public final class WorkflowEntityFactory {
                 .setMetadata(metadata)//
                 .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).build();
         }
+    }
+
+    private static void buildAndAddPlaceholderNodeEnts(final Collection<NodePlaceholder> nodePlaceholders,
+        final Map<String, NodeEnt> nodes) {
+        nodePlaceholders.stream().map(WorkflowEntityFactory::buildNodePlaceholderEnt)
+            .forEach(p -> nodes.put(p.getId().toString(), p));
+    }
+
+    private static PlaceholderNodeEnt buildNodePlaceholderEnt(final NodePlaceholder nodePlaceholder) {
+        return builder(PlaceholderNodeEntBuilder.class)//
+            .setId(nodePlaceholder.id())//
+            .setType(PlaceholderNodeEnt.TypeEnum.valueOf(nodePlaceholder.type().name()))//
+            .setKind(KindEnum.PLACEHOLDER)//
+            .setMessage(nodePlaceholder.message())//
+            .setPosition(buildXYEnt(nodePlaceholder.x(), nodePlaceholder.y()))//
+            .build();
     }
 
     /**
@@ -1239,7 +1260,11 @@ public final class WorkflowEntityFactory {
             return builder(XYEntBuilder.class).setX(0).setY(0).build();
         }
         int[] bounds = uiInfo.getBounds();
-        return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
+        return buildXYEnt(bounds[0], bounds[1] + NODE_Y_POS_CORRECTION);
+    }
+
+    private static XYEnt buildXYEnt(final int x, final int y) {
+        return builder(XYEntBuilder.class).setX(x).setY(y).build();
     }
 
     private AllowedNodeActionsEnt.CanCollapseEnum canCollapseNode(final NodeID id,

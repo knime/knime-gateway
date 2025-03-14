@@ -44,8 +44,12 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
-import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
+import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt;
+import org.knime.gateway.api.webui.entity.NodeAnnotationEnt;
+import org.knime.gateway.api.webui.entity.NodeExecutionInfoEnt;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
+import org.knime.gateway.json.webui.entity.NodeEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +57,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.AddComponentResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt.DefaultAddComponentResultEntBuilder;
+import org.knime.gateway.api.webui.entity.PlaceholderNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPlaceholderNodeEnt.DefaultPlaceholderNodeEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,30 +66,62 @@ import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt.DefaultA
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultAddComponentResultEntBuilder.class)
-@JsonSerialize(as=AddComponentResultEnt.class)
+@JsonDeserialize(builder=DefaultPlaceholderNodeEntBuilder.class)
+@JsonSerialize(as=PlaceholderNodeEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface AddComponentResultEntMixIn extends AddComponentResultEnt {
+public interface PlaceholderNodeEntMixIn extends PlaceholderNodeEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("snapshotId")
-    public String getSnapshotId();
+    @JsonProperty("id")
+    public org.knime.gateway.api.entity.NodeIDEnt getId();
+    
+    @Override
+    @JsonProperty("inPorts")
+    public java.util.List<? extends NodePortEnt> getInPorts();
+    
+    @Override
+    @JsonProperty("outPorts")
+    public java.util.List<? extends NodePortEnt> getOutPorts();
+    
+    @Override
+    @JsonProperty("annotation")
+    public NodeAnnotationEnt getAnnotation();
+    
+    @Override
+    @JsonProperty("position")
+    public XYEnt getPosition();
     
     @Override
     @JsonProperty("kind")
     public KindEnum getKind();
     
     @Override
-    @JsonProperty("newNodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
+    @JsonProperty("dialogType")
+    public DialogTypeEnum getDialogType();
     
     @Override
-    @JsonProperty("problem")
-    public ProblemMessageEnt getProblem();
+    @JsonProperty("inputContentVersion")
+    public Integer getInputContentVersion();
+    
+    @Override
+    @JsonProperty("allowedActions")
+    public AllowedNodeActionsEnt getAllowedActions();
+    
+    @Override
+    @JsonProperty("executionInfo")
+    public NodeExecutionInfoEnt getExecutionInfo();
+    
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
+    
+    @Override
+    @JsonProperty("message")
+    public String getMessage();
     
 
     /**
@@ -95,26 +131,58 @@ public interface AddComponentResultEntMixIn extends AddComponentResultEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AddComponentResultEntMixInBuilder extends AddComponentResultEntBuilder {
+    public static interface PlaceholderNodeEntMixInBuilder extends PlaceholderNodeEntBuilder {
     
         @Override
-        public AddComponentResultEntMixIn build();
+        public PlaceholderNodeEntMixIn build();
     
         @Override
-        @JsonProperty("snapshotId")
-        public AddComponentResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        @JsonProperty("id")
+        public PlaceholderNodeEntMixInBuilder setId(final org.knime.gateway.api.entity.NodeIDEnt id);
+        
+        @Override
+        @JsonProperty("inPorts")
+        public PlaceholderNodeEntMixInBuilder setInPorts(final java.util.List<? extends NodePortEnt> inPorts);
+        
+        @Override
+        @JsonProperty("outPorts")
+        public PlaceholderNodeEntMixInBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts);
+        
+        @Override
+        @JsonProperty("annotation")
+        public PlaceholderNodeEntMixInBuilder setAnnotation(final NodeAnnotationEnt annotation);
+        
+        @Override
+        @JsonProperty("position")
+        public PlaceholderNodeEntMixInBuilder setPosition(final XYEnt position);
         
         @Override
         @JsonProperty("kind")
-        public AddComponentResultEntMixInBuilder setKind(final KindEnum kind);
+        public PlaceholderNodeEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("newNodeId")
-        public AddComponentResultEntMixInBuilder setNewNodeId(final org.knime.gateway.api.entity.NodeIDEnt newNodeId);
+        @JsonProperty("dialogType")
+        public PlaceholderNodeEntMixInBuilder setDialogType(final DialogTypeEnum dialogType);
         
         @Override
-        @JsonProperty("problem")
-        public AddComponentResultEntMixInBuilder setProblem(final ProblemMessageEnt problem);
+        @JsonProperty("inputContentVersion")
+        public PlaceholderNodeEntMixInBuilder setInputContentVersion(final Integer inputContentVersion);
+        
+        @Override
+        @JsonProperty("allowedActions")
+        public PlaceholderNodeEntMixInBuilder setAllowedActions(final AllowedNodeActionsEnt allowedActions);
+        
+        @Override
+        @JsonProperty("executionInfo")
+        public PlaceholderNodeEntMixInBuilder setExecutionInfo(final NodeExecutionInfoEnt executionInfo);
+        
+        @Override
+        @JsonProperty("type")
+        public PlaceholderNodeEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("message")
+        public PlaceholderNodeEntMixInBuilder setMessage(final String message);
         
     }
 

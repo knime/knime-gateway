@@ -393,6 +393,17 @@ public class WorkflowChangesListener implements Closeable {
         return (nc instanceof NativeNodeContainer nnc) ? Optional.of(nnc) : Optional.empty();
     }
 
+    /**
+     * TODO
+     *
+     * @param change
+     */
+    // TODO naming
+    public void trigger(final WorkflowChange change) {
+        updateWorkflowChangesTrackers(change);
+        callback();
+    }
+
     private void callback() {
         updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANY);
         m_callThrottle.invoke();

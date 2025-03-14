@@ -86,7 +86,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         var targetNodeId = m_commandEnt.getTargetNodeId().toNodeID(wfm);
 

@@ -90,7 +90,11 @@ public class WorkflowChangesTracker {
         /** Whenever a connection bendpoint has been modified or added or removed **/
         BENDPOINTS_MODIFIED,
         /** Whenever a metanode ports has been moved **/
-        PORTS_BAR_MOVED;
+        PORTS_BAR_MOVED,
+        /** TODO */
+        PLACERHOLDER_ADDED,
+        /** TODO */
+        PLACERHOLDER_REMOVED;
     }
 
     /**

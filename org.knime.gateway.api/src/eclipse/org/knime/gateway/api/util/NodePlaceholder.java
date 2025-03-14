@@ -42,75 +42,23 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Mar 13, 2025 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.commands;
+package org.knime.gateway.api.util;
 
-import java.util.Set;
-
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.ConnectionContainer;
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.webui.service.commands.util.AutoDisConnectUtil;
-import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
+import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
- * Disconnect the selected workflow elements.
+ * TODO
  *
- * @author Benjamin Moser, KNIME GmbH, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class AutoDisconnect extends AbstractWorkflowCommand {
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoDisconnect.class);
+public record NodePlaceholder(NodeIDEnt id, Type type, String message, int x, int y) {
 
-    private final AutoDisconnectCommandEnt m_command;
-
-    private Set<ConnectionContainer> m_removed;
-
-    AutoDisconnect(final AutoDisconnectCommandEnt commandEnt) {
-        m_command = commandEnt;
+    public static enum Type {
+            COMPONENT;
     }
 
-    private static void connect(final ConnectionContainer connection, final WorkflowManager wfm) {
-        var addedConnection = NodeConnector.connect( //
-            wfm, //
-            connection.getSource(), connection.getSourcePort(), //
-            connection.getDest(), connection.getDestPort(), //
-            false //
-        );
-        if (addedConnection == null) {
-            LOGGER.info("could not re-add connection");
-        }
-    }
-
-    @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
-        m_removed = AutoDisConnectUtil.autoDisconnect( //
-            m_command, //
-            getWorkflowManager() //
-        );
-        return !m_removed.isEmpty();
-    }
-
-    @Override
-    public void undo() throws ServiceExceptions.ServiceCallException {
-        m_removed.forEach(cc -> connect(cc, getWorkflowManager()));
-    }
-
-    @Override
-    public boolean canUndo() {
-        if (m_removed == null) {
-            return false;
-        }
-        return CoreUtil.canAddConnections(m_removed, getWorkflowManager());
-    }
-
-    @Override
-    public boolean canRedo() {
-        if (m_removed == null) {
-            return false;
-        }
-        return CoreUtil.canRemoveConnections(m_removed, getWorkflowManager());
-    }
 }

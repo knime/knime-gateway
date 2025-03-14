@@ -83,7 +83,7 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         m_nodeId = m_commandEnt.getNodeId().toNodeID(wfm);
         var container = wfm.getNodeContainer(m_nodeId);

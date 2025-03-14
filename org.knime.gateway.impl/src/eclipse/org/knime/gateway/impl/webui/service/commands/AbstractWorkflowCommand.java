@@ -64,9 +64,24 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  */
 abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
+    private final boolean m_lockWorkflow;
+
     private WorkflowKey m_wfKey;
 
     private WorkflowManager m_wfm;
+
+    protected AbstractWorkflowCommand() {
+        this(true);
+    }
+
+    /**
+     * TODO
+     *
+     * @param lockWorkflow
+     */
+    protected AbstractWorkflowCommand(final boolean lockWorkflow) {
+        m_lockWorkflow = lockWorkflow;
+    }
 
     @Override
     public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
@@ -76,13 +91,30 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
             throw new ServiceCallException("Could not find workflow", ex);
         }
         m_wfKey = wfKey;
-        return executeWithLockAndContext();
+        return executeInternal();
     }
 
-    private boolean executeWithLockAndContext() throws ServiceCallException {
+    private boolean executeInternal() throws ServiceCallException {
+        if (m_lockWorkflow) {
+            return executeWithWorkflowLockAndContextInternal();
+        } else {
+            return executeWithWorkflowContextInternal();
+        }
+    }
+
+    private boolean executeWithWorkflowLockAndContextInternal() throws ServiceCallException {
         NodeContext.pushContext(m_wfm);
         try (WorkflowLock lock = m_wfm.lock()) {
-            return executeWithLockedWorkflow();
+            return executeWithWorkflowLockAndContext();
+        } finally {
+            NodeContext.removeLastContext();
+        }
+    }
+
+    private boolean executeWithWorkflowContextInternal() throws ServiceCallException {
+        NodeContext.pushContext(m_wfm);
+        try {
+            return executeWithWorkflowContext();
         } finally {
             NodeContext.removeLastContext();
         }
@@ -107,7 +139,19 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
      *
      * @throws ServiceCallException If the command could not be executed
      */
-    protected abstract boolean executeWithLockedWorkflow() throws ServiceCallException;
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * TODO
+     *
+     * @return
+     * @throws ServiceCallException
+     */
+    protected boolean executeWithWorkflowContext() throws ServiceCallException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
     @Override
     public boolean canUndo() {
@@ -121,7 +165,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
     @Override
     public void redo() throws ServiceCallException {
-        executeWithLockAndContext();
+        executeInternal();
     }
 
     /**

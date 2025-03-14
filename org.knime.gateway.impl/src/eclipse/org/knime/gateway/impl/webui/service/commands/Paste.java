@@ -102,7 +102,7 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Paste at original position
         try {

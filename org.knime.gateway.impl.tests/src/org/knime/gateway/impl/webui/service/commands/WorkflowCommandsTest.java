@@ -471,11 +471,11 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
 
         @Override
         public void redo() {
-            executeWithLockedWorkflow();
+            executeWithWorkflowLockAndContext();
         }
 
         @Override
-        protected boolean executeWithLockedWorkflow() {
+        protected boolean executeWithWorkflowLockAndContext() {
             // modify workflow to trigger an event (which is sent asynchronously)
             // which in turn creates a workflow patch
             // which in turn call the 'canUndo' and 'canRedo' methods of WorkflowCommands

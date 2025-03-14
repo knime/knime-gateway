@@ -42,75 +42,76 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Mar 13, 2025 (hornm): created
  */
-package org.knime.gateway.impl.webui.service.commands;
+package org.knime.gateway.impl.webui;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.ConnectionContainer;
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.impl.webui.service.commands.util.AutoDisConnectUtil;
-import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
+import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.NodePlaceholder;
+import org.knime.gateway.impl.service.util.WorkflowChangesListener;
+import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
- * Disconnect the selected workflow elements.
+ * TODO
  *
- * @author Benjamin Moser, KNIME GmbH, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class AutoDisconnect extends AbstractWorkflowCommand {
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoDisconnect.class);
+// TODO thread safety?
+public final class WorkflowElementLoader {
 
-    private final AutoDisconnectCommandEnt m_command;
+    private final Map<NodeIDEnt, LoadingOperation> m_loadingOperations = new LinkedHashMap<>();
 
-    private Set<ConnectionContainer> m_removed;
+    private final WorkflowChangesListener m_workflowChangesListener;
 
-    AutoDisconnect(final AutoDisconnectCommandEnt commandEnt) {
-        m_command = commandEnt;
+    /**
+     * TODO
+     */
+    WorkflowElementLoader(final WorkflowChangesListener workflowChangesListener) {
+        m_workflowChangesListener = workflowChangesListener;
     }
 
-    private static void connect(final ConnectionContainer connection, final WorkflowManager wfm) {
-        var addedConnection = NodeConnector.connect( //
-            wfm, //
-            connection.getSource(), connection.getSourcePort(), //
-            connection.getDest(), connection.getDestPort(), //
-            false //
-        );
-        if (addedConnection == null) {
-            LOGGER.info("could not re-add connection");
-        }
+    /**
+     * TODO
+     *
+     * @param wfKey
+     * @param nodeId
+     * @param x
+     * @param y
+     * @param loadingOperation
+     */
+    public void addComponentLoader(final NodeIDEnt nodeId, final int x, final int y, final Runnable loadingOperation) {
+        var future = CompletableFuture.runAsync(loadingOperation).handle((res, ex) -> {
+            if (ex == null) {
+                m_loadingOperations.remove(nodeId);
+                m_workflowChangesListener.trigger(WorkflowChange.PLACERHOLDER_REMOVED);
+            } else {
+                // update placeholder with error
+            }
+            return null;
+        });
+        m_loadingOperations.put(nodeId,
+            new LoadingOperation(future, new NodePlaceholder(nodeId, NodePlaceholder.Type.COMPONENT, "TODO", x, y)));
+        m_workflowChangesListener.trigger(WorkflowChange.PLACERHOLDER_ADDED);
     }
 
-    @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
-        m_removed = AutoDisConnectUtil.autoDisconnect( //
-            m_command, //
-            getWorkflowManager() //
-        );
-        return !m_removed.isEmpty();
+    /**
+     * TODO
+     *
+     * @return
+     */
+    public Collection<NodePlaceholder> getPlaceholders() {
+        return m_loadingOperations.values().stream().map(LoadingOperation::placeholder).toList();
     }
 
-    @Override
-    public void undo() throws ServiceExceptions.ServiceCallException {
-        m_removed.forEach(cc -> connect(cc, getWorkflowManager()));
+    private record LoadingOperation(CompletableFuture<?> future, NodePlaceholder placeholder) {
+
     }
 
-    @Override
-    public boolean canUndo() {
-        if (m_removed == null) {
-            return false;
-        }
-        return CoreUtil.canAddConnections(m_removed, getWorkflowManager());
-    }
-
-    @Override
-    public boolean canRedo() {
-        if (m_removed == null) {
-            return false;
-        }
-        return CoreUtil.canRemoveConnections(m_removed, getWorkflowManager());
-    }
 }

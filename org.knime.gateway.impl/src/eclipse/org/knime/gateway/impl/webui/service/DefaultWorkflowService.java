@@ -126,7 +126,8 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
                 .setSpaceProviderTypes(providerTypes) //
-                .setVersion(version);
+                .setVersion(version) //
+                .setPlaceholders(m_workflowMiddleware.getWorkflowElementLoader(wfKey).getPlaceholders());
         } else {
             buildContext.includeInteractionInfo(false).setVersion(version);
         }

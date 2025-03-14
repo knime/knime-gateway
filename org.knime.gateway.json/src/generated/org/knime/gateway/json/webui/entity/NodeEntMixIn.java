@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt.DefaultNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultPlaceholderNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
 
@@ -85,6 +86,8 @@ import org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt;
   @Type(value = DefaultComponentNodeEnt.class, name = "component")
 ,
   @Type(value = DefaultMetaNodeEnt.class, name = "metanode")
+,
+  @Type(value = DefaultPlaceholderNodeEnt.class, name = "placeholder")
 })
 @JsonDeserialize(builder=DefaultNodeEntBuilder.class)
 @JsonSerialize(as=NodeEnt.class)
@@ -155,6 +158,8 @@ public interface NodeEntMixIn extends NodeEnt {
   @Type(value = DefaultComponentNodeEnt.class, name = "component")
 ,
   @Type(value = DefaultMetaNodeEnt.class, name = "metanode")
+,
+  @Type(value = DefaultPlaceholderNodeEnt.class, name = "placeholder")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface NodeEntMixInBuilder extends NodeEntBuilder {
