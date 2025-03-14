@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.PlaceholderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -69,6 +70,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
  * @param allowedActions
  * @param metadata
  * @param dirty
+ * @param placeholders
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -84,7 +86,8 @@ public record DefaultWorkflowEnt(
     MetaPortsEnt metaOutPorts,
     AllowedWorkflowActionsEnt allowedActions,
     org.knime.gateway.api.webui.entity.EditableMetadataEnt metadata,
-    Boolean dirty) implements WorkflowEnt {
+    Boolean dirty,
+    java.util.List<PlaceholderEnt> placeholders) implements WorkflowEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -173,6 +176,11 @@ public record DefaultWorkflowEnt(
         return dirty;
     }
     
+    @Override
+    public java.util.List<PlaceholderEnt> getPlaceholders() {
+        return placeholders;
+    }
+    
     /**
      * A builder for {@link DefaultWorkflowEnt}.
      */
@@ -199,6 +207,8 @@ public record DefaultWorkflowEnt(
         private org.knime.gateway.api.webui.entity.EditableMetadataEnt m_metadata = null;
 
         private Boolean m_dirty;
+
+        private java.util.List<PlaceholderEnt> m_placeholders;
 
         @Override
         public DefaultWorkflowEntBuilder setInfo(WorkflowInfoEnt info) {
@@ -288,6 +298,12 @@ public record DefaultWorkflowEnt(
         }
 
         @Override
+        public DefaultWorkflowEntBuilder setPlaceholders(java.util.List<PlaceholderEnt> placeholders) {
+             m_placeholders = placeholders;
+             return this;
+        }
+
+        @Override
         public DefaultWorkflowEnt build() {
             return new DefaultWorkflowEnt(
                 immutable(m_info),
@@ -300,7 +316,8 @@ public record DefaultWorkflowEnt(
                 immutable(m_metaOutPorts),
                 immutable(m_allowedActions),
                 immutable(m_metadata),
-                immutable(m_dirty));
+                immutable(m_dirty),
+                immutable(m_placeholders));
         }
     
     }

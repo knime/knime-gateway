@@ -48,6 +48,7 @@ import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.PlaceholderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -135,6 +136,12 @@ public interface WorkflowEnt extends GatewayEntity {
    **/
   public Boolean isDirty();
 
+  /**
+   * List of placeholders or absent if there are none.
+   * @return placeholders 
+   **/
+  public java.util.List<PlaceholderEnt> getPlaceholders();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -151,6 +158,7 @@ public interface WorkflowEnt extends GatewayEntity {
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("metadata", Pair.create(getMetadata(), e.getMetadata()));
       valueConsumer.accept("dirty", Pair.create(isDirty(), e.isDirty()));
+      valueConsumer.accept("placeholders", Pair.create(getPlaceholders(), e.getPlaceholders()));
   }
 
     /**
@@ -245,6 +253,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setDirty(Boolean dirty);
+        
+        /**
+         * List of placeholders or absent if there are none.
+         * 
+         * @param placeholders the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setPlaceholders(java.util.List<PlaceholderEnt> placeholders);
         
         
         /**

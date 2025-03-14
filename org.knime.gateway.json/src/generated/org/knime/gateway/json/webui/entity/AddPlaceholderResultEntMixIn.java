@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,33 +40,75 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Sep 26, 2022 (Kai Franze, KNIME GmbH): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.service.commands;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.AddPlaceholderResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddPlaceholderResultEnt.DefaultAddPlaceholderResultEntBuilder;
 
 /**
- * Workflow command that removes a port from a node.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
- * @author Kai Franze, KNIME GmbH
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class RemovePort extends AbstractPortCommand<RemovePortCommandEnt> {
 
-    RemovePort(final RemovePortCommandEnt removePortCommandEnt) {
-        super(removePortCommandEnt);
-    }
+@JsonDeserialize(builder=DefaultAddPlaceholderResultEntBuilder.class)
+@JsonSerialize(as=AddPlaceholderResultEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface AddPlaceholderResultEntMixIn extends AddPlaceholderResultEnt {
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
-        var portCommandEnt = getPortCommandEnt();
-        var editor = instantiatePortEditor();
-        editor.removePort(portCommandEnt);
-        return true;
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("snapshotId")
+    public String getSnapshotId();
+    
+    @Override
+    @JsonProperty("kind")
+    public KindEnum getKind();
+    
+    @Override
+    @JsonProperty("newPlaceholderId")
+    public String getNewPlaceholderId();
+    
+
+    /**
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
+     */
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface AddPlaceholderResultEntMixInBuilder extends AddPlaceholderResultEntBuilder {
+    
+        @Override
+        public AddPlaceholderResultEntMixIn build();
+    
+        @Override
+        @JsonProperty("snapshotId")
+        public AddPlaceholderResultEntMixInBuilder setSnapshotId(final String snapshotId);
+        
+        @Override
+        @JsonProperty("kind")
+        public AddPlaceholderResultEntMixInBuilder setKind(final KindEnum kind);
+        
+        @Override
+        @JsonProperty("newPlaceholderId")
+        public AddPlaceholderResultEntMixInBuilder setNewPlaceholderId(final String newPlaceholderId);
+        
     }
 
+
 }
+

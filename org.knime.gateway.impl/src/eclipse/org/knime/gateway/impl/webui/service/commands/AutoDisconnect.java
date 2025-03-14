@@ -61,7 +61,7 @@ import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
  *
  * @author Benjamin Moser, KNIME GmbH, Germany
  */
-public class AutoDisconnect extends AbstractWorkflowCommand {
+class AutoDisconnect extends AbstractWorkflowCommand {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(AutoDisconnect.class);
 
     private final AutoDisconnectCommandEnt m_command;
@@ -85,7 +85,7 @@ public class AutoDisconnect extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
         m_removed = AutoDisConnectUtil.autoDisconnect( //
             m_command, //
             getWorkflowManager() //

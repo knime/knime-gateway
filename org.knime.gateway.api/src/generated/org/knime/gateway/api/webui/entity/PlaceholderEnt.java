@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import java.math.BigDecimal;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
 
@@ -55,40 +57,28 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * CommandResultEnt
+ * Placeholder for workflow elements while they are being loaded.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface CommandResultEnt extends GatewayEntity {
+public interface PlaceholderEnt extends GatewayEntity {
 
   /**
-   * Gets or Sets kind
+   * The state of the placeholder.
    */
-  public enum KindEnum {
-    COLLAPSE_RESULT("collapse_result"),
+  public enum StateEnum {
+    LOADING("LOADING"),
     
-    EXPAND_RESULT("expand_result"),
+    ERROR("ERROR"),
     
-    CONVERT_CONTAINER_RESULT("convert_container_result"),
+    SUCCESS_WITH_WARNING("SUCCESS_WITH_WARNING"),
     
-    COPY_RESULT("copy_result"),
-    
-    PASTE_RESULT("paste_result"),
-    
-    ADD_NODE_RESULT("add_node_result"),
-    
-    ADD_PORT_RESULT("add_port_result"),
-    
-    ADD_ANNOTATION_RESULT("add_annotation_result"),
-    
-    UPDATE_LINKED_COMPONENTS_RESULT("update_linked_components_result"),
-    
-    ADD_PLACEHOLDER_RESULT("add_placeholder_result");
+    SUCCESS("SUCCESS");
 
     private String value;
 
-    KindEnum(String value) {
+    StateEnum(String value) {
       this.value = value;
     }
 
@@ -101,46 +91,106 @@ public interface CommandResultEnt extends GatewayEntity {
 
 
   /**
-   * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
-   * @return snapshotId 
+   * Globally unique identifier for the placeholder.
+   * @return id , never <code>null</code>
    **/
-  public String getSnapshotId();
+  public String getId();
 
   /**
-   * Get kind
-   * @return kind 
+   * The state of the placeholder.
+   * @return state , never <code>null</code>
    **/
-  public KindEnum getKind();
+  public StateEnum getState();
+
+  /**
+   * The id of the element this placeholder was finally replaced by. Only present in case of the &#39;success&#39; states since it&#39;s not known in advance while loading.
+   * @return replacementId 
+   **/
+  public String getReplacementId();
+
+  /**
+   * Optional loading progress.
+   * @return progress 
+   **/
+  public BigDecimal getProgress();
+
+  /**
+   * Loading-, error- or warning-message.
+   * @return message 
+   **/
+  public String getMessage();
+
+  /**
+   * Get position
+   * @return position , never <code>null</code>
+   **/
+  public XYEnt getPosition();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (CommandResultEnt)other;
-      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      var e = (PlaceholderEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("state", Pair.create(getState(), e.getState()));
+      valueConsumer.accept("replacementId", Pair.create(getReplacementId(), e.getReplacementId()));
+      valueConsumer.accept("progress", Pair.create(getProgress(), e.getProgress()));
+      valueConsumer.accept("message", Pair.create(getMessage(), e.getMessage()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface CommandResultEntBuilder extends GatewayEntityBuilder<CommandResultEnt> {
+    public interface PlaceholderEntBuilder extends GatewayEntityBuilder<PlaceholderEnt> {
 
         /**
-         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
+         * Globally unique identifier for the placeholder.
          * 
-         * @param snapshotId the property value,  
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setSnapshotId(String snapshotId);
+        PlaceholderEntBuilder setId(String id);
         
         /**
-   		 * Set kind
+         * The state of the placeholder.
          * 
-         * @param kind the property value,  
+         * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        CommandResultEntBuilder setKind(KindEnum kind);
+        PlaceholderEntBuilder setState(StateEnum state);
+        
+        /**
+         * The id of the element this placeholder was finally replaced by. Only present in case of the &#39;success&#39; states since it&#39;s not known in advance while loading.
+         * 
+         * @param replacementId the property value,  
+         * @return this entity builder for chaining
+         */
+        PlaceholderEntBuilder setReplacementId(String replacementId);
+        
+        /**
+         * Optional loading progress.
+         * 
+         * @param progress the property value,  
+         * @return this entity builder for chaining
+         */
+        PlaceholderEntBuilder setProgress(BigDecimal progress);
+        
+        /**
+         * Loading-, error- or warning-message.
+         * 
+         * @param message the property value,  
+         * @return this entity builder for chaining
+         */
+        PlaceholderEntBuilder setMessage(String message);
+        
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        PlaceholderEntBuilder setPosition(XYEnt position);
         
         
         /**
@@ -150,7 +200,7 @@ public interface CommandResultEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        CommandResultEnt build();
+        PlaceholderEnt build();
     
     }
 

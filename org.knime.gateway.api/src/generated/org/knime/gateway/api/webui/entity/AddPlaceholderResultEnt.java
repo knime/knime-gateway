@@ -45,7 +45,6 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
 
 import java.util.function.BiConsumer;
 
@@ -57,41 +56,34 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * AddComponentResultEnt
+ * AddPlaceholderResultEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AddComponentResultEnt extends GatewayEntity, CommandResultEnt {
+public interface AddPlaceholderResultEnt extends GatewayEntity, CommandResultEnt {
 
 
   /**
-   * The id of the new componet added.
-   * @return newNodeId , never <code>null</code>
+   * The id of the placeholder added.
+   * @return newPlaceholderId , never <code>null</code>
    **/
-  public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
-
-  /**
-   * Get problem
-   * @return problem 
-   **/
-  public ProblemMessageEnt getProblem();
+  public String getNewPlaceholderId();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AddComponentResultEnt)other;
+      var e = (AddPlaceholderResultEnt)other;
       valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("newNodeId", Pair.create(getNewNodeId(), e.getNewNodeId()));
-      valueConsumer.accept("problem", Pair.create(getProblem(), e.getProblem()));
+      valueConsumer.accept("newPlaceholderId", Pair.create(getNewPlaceholderId(), e.getNewPlaceholderId()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface AddComponentResultEntBuilder extends GatewayEntityBuilder<AddComponentResultEnt> {
+    public interface AddPlaceholderResultEntBuilder extends GatewayEntityBuilder<AddPlaceholderResultEnt> {
 
         /**
          * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
@@ -99,7 +91,7 @@ public interface AddComponentResultEnt extends GatewayEntity, CommandResultEnt {
          * @param snapshotId the property value,  
          * @return this entity builder for chaining
          */
-        AddComponentResultEntBuilder setSnapshotId(String snapshotId);
+        AddPlaceholderResultEntBuilder setSnapshotId(String snapshotId);
         
         /**
    		 * Set kind
@@ -107,23 +99,15 @@ public interface AddComponentResultEnt extends GatewayEntity, CommandResultEnt {
          * @param kind the property value,  
          * @return this entity builder for chaining
          */
-        AddComponentResultEntBuilder setKind(KindEnum kind);
+        AddPlaceholderResultEntBuilder setKind(KindEnum kind);
         
         /**
-         * The id of the new componet added.
+         * The id of the placeholder added.
          * 
-         * @param newNodeId the property value, NOT <code>null</code>! 
+         * @param newPlaceholderId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AddComponentResultEntBuilder setNewNodeId(org.knime.gateway.api.entity.NodeIDEnt newNodeId);
-        
-        /**
-   		 * Set problem
-         * 
-         * @param problem the property value,  
-         * @return this entity builder for chaining
-         */
-        AddComponentResultEntBuilder setProblem(ProblemMessageEnt problem);
+        AddPlaceholderResultEntBuilder setNewPlaceholderId(String newPlaceholderId);
         
         
         /**
@@ -133,7 +117,7 @@ public interface AddComponentResultEnt extends GatewayEntity, CommandResultEnt {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        AddComponentResultEnt build();
+        AddPlaceholderResultEnt build();
     
     }
 

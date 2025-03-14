@@ -79,7 +79,7 @@ abstract class AbstractPortCommand<T extends PortCommandEnt> extends AbstractWor
     }
 
     @Override
-    protected abstract boolean executeWithLockedWorkflow() throws ServiceCallException;
+    protected abstract boolean executeWithWorkflowLockAndContext() throws ServiceCallException;
 
     /**
      * Determines whether to edit the ports of a native or a container node and instantiates the editor accordingly.

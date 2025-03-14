@@ -50,12 +50,12 @@ import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt.AddBendpointCom
 import org.knime.gateway.impl.webui.entity.DefaultAddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt;
-import org.knime.gateway.api.webui.entity.AddComponentResultEnt.AddComponentResultEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
+import org.knime.gateway.api.webui.entity.AddPlaceholderResultEnt.AddPlaceholderResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddPlaceholderResultEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt.AddPortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt.AddPortResultEntBuilder;
@@ -218,6 +218,8 @@ import org.knime.gateway.api.webui.entity.PatchEnt.PatchEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPatchOpEnt;
+import org.knime.gateway.api.webui.entity.PlaceholderEnt.PlaceholderEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt.PortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
@@ -230,8 +232,6 @@ import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt.PortViewD
 import org.knime.gateway.impl.webui.entity.DefaultPortViewDescriptorMappingEnt;
 import org.knime.gateway.api.webui.entity.PortViewsEnt.PortViewsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortViewsEnt;
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt.ProblemMessageEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultProblemMessageEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt.ProjectDisposedEventEntBuilder;
@@ -367,14 +367,14 @@ public class Interface2ImplMap {
         if(clazz == AddComponentCommandEntBuilder.class) {
             return (B)new DefaultAddComponentCommandEnt.DefaultAddComponentCommandEntBuilder();
         }        
-        if(clazz == AddComponentResultEntBuilder.class) {
-            return (B)new DefaultAddComponentResultEnt.DefaultAddComponentResultEntBuilder();
-        }        
         if(clazz == AddNodeCommandEntBuilder.class) {
             return (B)new DefaultAddNodeCommandEnt.DefaultAddNodeCommandEntBuilder();
         }        
         if(clazz == AddNodeResultEntBuilder.class) {
             return (B)new DefaultAddNodeResultEnt.DefaultAddNodeResultEntBuilder();
+        }        
+        if(clazz == AddPlaceholderResultEntBuilder.class) {
+            return (B)new DefaultAddPlaceholderResultEnt.DefaultAddPlaceholderResultEntBuilder();
         }        
         if(clazz == AddPortCommandEntBuilder.class) {
             return (B)new DefaultAddPortCommandEnt.DefaultAddPortCommandEntBuilder();
@@ -619,6 +619,9 @@ public class Interface2ImplMap {
         if(clazz == PatchOpEntBuilder.class) {
             return (B)new DefaultPatchOpEnt.DefaultPatchOpEntBuilder();
         }        
+        if(clazz == PlaceholderEntBuilder.class) {
+            return (B)new DefaultPlaceholderEnt.DefaultPlaceholderEntBuilder();
+        }        
         if(clazz == PortCommandEntBuilder.class) {
             return (B)new DefaultPortCommandEnt.DefaultPortCommandEntBuilder();
         }        
@@ -636,9 +639,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == PortViewsEntBuilder.class) {
             return (B)new DefaultPortViewsEnt.DefaultPortViewsEntBuilder();
-        }        
-        if(clazz == ProblemMessageEntBuilder.class) {
-            return (B)new DefaultProblemMessageEnt.DefaultProblemMessageEntBuilder();
         }        
         if(clazz == ProjectDirtyStateEventEntBuilder.class) {
             return (B)new DefaultProjectDirtyStateEventEnt.DefaultProjectDirtyStateEventEntBuilder();

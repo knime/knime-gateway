@@ -77,7 +77,7 @@ final class TransformMetanodePortsBar extends AbstractWorkflowCommand implements
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         if (CoreUtil.isComponentWFM(wfm)) {
             throw new ServiceCallException("Component don't have metanode ports bars. Can't be transformed.");

@@ -70,7 +70,7 @@ public final class AutoConnect extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var changes = AutoDisConnectUtil.autoConnect( //
             getWorkflowManager(), //
             m_commandEnt //

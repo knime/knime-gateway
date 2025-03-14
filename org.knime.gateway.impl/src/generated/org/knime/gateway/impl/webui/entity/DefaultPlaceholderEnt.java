@@ -46,109 +46,153 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
-import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
+import java.math.BigDecimal;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
-import org.knime.gateway.api.webui.entity.AddComponentResultEnt;
+import org.knime.gateway.api.webui.entity.PlaceholderEnt;
 
 /**
- * DefaultAddComponentResultEnt
+ * Placeholder for workflow elements while they are being loaded.
  *
- * @param snapshotId
- * @param kind
- * @param newNodeId
- * @param problem
+ * @param id
+ * @param state
+ * @param replacementId
+ * @param progress
+ * @param message
+ * @param position
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultAddComponentResultEnt(
-    String snapshotId,
-    KindEnum kind,
-    org.knime.gateway.api.entity.NodeIDEnt newNodeId,
-    ProblemMessageEnt problem) implements AddComponentResultEnt {
+public record DefaultPlaceholderEnt(
+    String id,
+    StateEnum state,
+    String replacementId,
+    BigDecimal progress,
+    String message,
+    XYEnt position) implements PlaceholderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultAddComponentResultEnt {
-        if(newNodeId == null) {
-            throw new IllegalArgumentException("<newNodeId> must not be null.");
+    public DefaultPlaceholderEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
+        }
+        if(state == null) {
+            throw new IllegalArgumentException("<state> must not be null.");
+        }
+        if(position == null) {
+            throw new IllegalArgumentException("<position> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "AddComponentResult";
+        return "Placeholder";
     }
   
     @Override
-    public String getSnapshotId() {
-        return snapshotId;
+    public String getId() {
+        return id;
     }
     
     @Override
-    public KindEnum getKind() {
-        return kind;
+    public StateEnum getState() {
+        return state;
     }
     
     @Override
-    public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId() {
-        return newNodeId;
+    public String getReplacementId() {
+        return replacementId;
     }
     
     @Override
-    public ProblemMessageEnt getProblem() {
-        return problem;
+    public BigDecimal getProgress() {
+        return progress;
+    }
+    
+    @Override
+    public String getMessage() {
+        return message;
+    }
+    
+    @Override
+    public XYEnt getPosition() {
+        return position;
     }
     
     /**
-     * A builder for {@link DefaultAddComponentResultEnt}.
+     * A builder for {@link DefaultPlaceholderEnt}.
      */
-    public static class DefaultAddComponentResultEntBuilder implements AddComponentResultEntBuilder {
+    public static class DefaultPlaceholderEntBuilder implements PlaceholderEntBuilder {
 
-        private String m_snapshotId;
+        private String m_id;
 
-        private KindEnum m_kind;
+        private StateEnum m_state;
 
-        private org.knime.gateway.api.entity.NodeIDEnt m_newNodeId;
+        private String m_replacementId;
 
-        private ProblemMessageEnt m_problem;
+        private BigDecimal m_progress;
 
-        @Override
-        public DefaultAddComponentResultEntBuilder setSnapshotId(String snapshotId) {
-             m_snapshotId = snapshotId;
-             return this;
-        }
+        private String m_message;
+
+        private XYEnt m_position;
 
         @Override
-        public DefaultAddComponentResultEntBuilder setKind(KindEnum kind) {
-             m_kind = kind;
-             return this;
-        }
-
-        @Override
-        public DefaultAddComponentResultEntBuilder setNewNodeId(org.knime.gateway.api.entity.NodeIDEnt newNodeId) {
-             if(newNodeId == null) {
-                 throw new IllegalArgumentException("<newNodeId> must not be null.");
+        public DefaultPlaceholderEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("<id> must not be null.");
              }
-             m_newNodeId = newNodeId;
+             m_id = id;
              return this;
         }
 
         @Override
-        public DefaultAddComponentResultEntBuilder setProblem(ProblemMessageEnt problem) {
-             m_problem = problem;
+        public DefaultPlaceholderEntBuilder setState(StateEnum state) {
+             if(state == null) {
+                 throw new IllegalArgumentException("<state> must not be null.");
+             }
+             m_state = state;
              return this;
         }
 
         @Override
-        public DefaultAddComponentResultEnt build() {
-            return new DefaultAddComponentResultEnt(
-                immutable(m_snapshotId),
-                immutable(m_kind),
-                immutable(m_newNodeId),
-                immutable(m_problem));
+        public DefaultPlaceholderEntBuilder setReplacementId(String replacementId) {
+             m_replacementId = replacementId;
+             return this;
+        }
+
+        @Override
+        public DefaultPlaceholderEntBuilder setProgress(BigDecimal progress) {
+             m_progress = progress;
+             return this;
+        }
+
+        @Override
+        public DefaultPlaceholderEntBuilder setMessage(String message) {
+             m_message = message;
+             return this;
+        }
+
+        @Override
+        public DefaultPlaceholderEntBuilder setPosition(XYEnt position) {
+             if(position == null) {
+                 throw new IllegalArgumentException("<position> must not be null.");
+             }
+             m_position = position;
+             return this;
+        }
+
+        @Override
+        public DefaultPlaceholderEnt build() {
+            return new DefaultPlaceholderEnt(
+                immutable(m_id),
+                immutable(m_state),
+                immutable(m_replacementId),
+                immutable(m_progress),
+                immutable(m_message),
+                immutable(m_position));
         }
     
     }

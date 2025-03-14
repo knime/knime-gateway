@@ -74,7 +74,7 @@ class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResu
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var portCommandEnt = getPortCommandEnt();
         try {
             var editor = instantiatePortEditor();

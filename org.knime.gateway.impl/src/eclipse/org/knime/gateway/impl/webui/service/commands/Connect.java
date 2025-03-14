@@ -72,7 +72,7 @@ final class Connect extends AbstractWorkflowCommand {
     }
 
     @Override
-    public boolean executeWithLockedWorkflow() throws ServiceCallException {
+    public boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(wfm);
         var destPortIdx = m_commandEnt.getDestinationPortIdx();
