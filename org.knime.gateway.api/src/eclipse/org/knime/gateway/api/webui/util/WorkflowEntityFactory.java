@@ -388,6 +388,7 @@ public final class WorkflowEntityFactory {
                 }
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
+            System.out.println("buildWorkflowEnt " + buildContext.getNodePlacerholders().size());
             buildAndAddPlaceholderNodeEnts(buildContext.getNodePlacerholders(), nodes);
 
             var connections = wfm.getConnectionContainers().stream()

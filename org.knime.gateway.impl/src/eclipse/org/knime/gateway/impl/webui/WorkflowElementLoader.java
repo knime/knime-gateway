@@ -74,6 +74,7 @@ public final class WorkflowElementLoader {
      * TODO
      */
     WorkflowElementLoader(final WorkflowChangesListener workflowChangesListener) {
+        // TODO 'inverse' dependency? I.e. WorkflowChangesListener  listens to WorkflowElementLoader?
         m_workflowChangesListener = workflowChangesListener;
     }
 

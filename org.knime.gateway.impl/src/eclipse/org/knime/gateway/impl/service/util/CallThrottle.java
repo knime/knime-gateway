@@ -73,17 +73,29 @@ public final class CallThrottle {
 
     private Runnable m_call;
 
+    private final boolean m_delay;
+
     /**
      * @param call the logic to be run on {@link #invoke()}
      * @param threadName the name of the thread being used
      */
     public CallThrottle(final Runnable call, final String threadName) {
+        this(call, threadName, false);
+    }
+
+    /**
+     * @param call the logic to be run on {@link #invoke()}
+     * @param threadName the name of the thread being used
+     * @param delay TODO
+     */
+    public CallThrottle(final Runnable call, final String threadName, final boolean delay) {
         m_call = call;
         m_executorService = Executors.newSingleThreadExecutor(r -> {
             var t = new Thread(r, threadName);
             t.setDaemon(true);
             return t;
         });
+        m_delay = delay;
     }
 
     /**
@@ -91,6 +103,19 @@ public final class CallThrottle {
      * another follow-up call of this method.
      */
     public void invoke() {
+        if (m_callState.isDelaying()) {
+            return;
+        }
+        if (m_delay && m_callState.checkIsCallIdleAndChangeStateToDelaying()) {
+            m_executorService.execute(() -> {
+                sleep(30);
+                m_callState.checkIsCallInProgressAndChangeState();
+                do {
+                    throttle(m_call);
+                } while (m_callState.checkIsCallAwaitingAndChangeState());
+            });
+            return;
+        }
         if (!m_callState.checkIsCallInProgressAndChangeState()) {
             m_executorService.execute(() -> {
                 do {
@@ -110,11 +135,15 @@ public final class CallThrottle {
         var duration = System.currentTimeMillis() - start;
         var waitTimeToThrottle = MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS - duration;
         if (waitTimeToThrottle > 0) {
-            try {
-                Thread.sleep(waitTimeToThrottle);
-            } catch (InterruptedException ex) { // NOSONAR
-                // ignore
-            }
+            sleep(waitTimeToThrottle);
+        }
+    }
+
+    private static void sleep(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ex) { // NOSONAR
+            // ignore
         }
     }
 
@@ -152,12 +181,36 @@ public final class CallThrottle {
             /**
              * Call in progress, and another one awaiting
              */
-            IN_PROGRESS_AND_AWAITING;
+            IN_PROGRESS_AND_AWAITING,
+
+            /**
+             * TODO
+             */
+            DELAYING;
     }
 
     private static final class AtomicCallState {
 
         private CallState m_state = CallState.IDLE;
+
+        /**
+         * @return TODO
+         */
+        synchronized boolean checkIsCallIdleAndChangeStateToDelaying() {
+            if (m_state == CallState.IDLE) {
+                m_state = CallState.DELAYING;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * @return TODO
+         */
+        synchronized boolean isDelaying() {
+            return m_state == CallState.DELAYING;
+        }
 
         /**
          * If the call is in progress, state will change to 'in progress and one call awaiting' (2); else to 'in
@@ -166,7 +219,7 @@ public final class CallThrottle {
          * @return <code>true</code> if the call is in progress, otherwise <code>false</code>
          */
         synchronized boolean checkIsCallInProgressAndChangeState() {
-            if (m_state == CallState.IDLE) {
+            if (m_state == CallState.IDLE || m_state == CallState.DELAYING) {
                 m_state = CallState.IN_PROGRESS;
                 return false;
             } else {
