@@ -50,8 +50,8 @@ import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt.AddBendpointCom
 import org.knime.gateway.impl.webui.entity.DefaultAddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt;
-import org.knime.gateway.api.webui.entity.AddComponentResultEnt.AddComponentResultEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt;
+import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt.AddComponentPlaceholderResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentPlaceholderResultEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt.AddNodeResultEntBuilder;
@@ -102,6 +102,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentN
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt;
+import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.ComponentPlaceholderEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentPortDescriptionEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
@@ -232,8 +234,6 @@ import org.knime.gateway.api.webui.entity.PortViewDescriptorMappingEnt.PortViewD
 import org.knime.gateway.impl.webui.entity.DefaultPortViewDescriptorMappingEnt;
 import org.knime.gateway.api.webui.entity.PortViewsEnt.PortViewsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPortViewsEnt;
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt.ProblemMessageEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultProblemMessageEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt.ProjectDisposedEventEntBuilder;
@@ -369,8 +369,8 @@ public class Interface2ImplMap {
         if(clazz == AddComponentCommandEntBuilder.class) {
             return (B)new DefaultAddComponentCommandEnt.DefaultAddComponentCommandEntBuilder();
         }        
-        if(clazz == AddComponentResultEntBuilder.class) {
-            return (B)new DefaultAddComponentResultEnt.DefaultAddComponentResultEntBuilder();
+        if(clazz == AddComponentPlaceholderResultEntBuilder.class) {
+            return (B)new DefaultAddComponentPlaceholderResultEnt.DefaultAddComponentPlaceholderResultEntBuilder();
         }        
         if(clazz == AddNodeCommandEntBuilder.class) {
             return (B)new DefaultAddNodeCommandEnt.DefaultAddNodeCommandEntBuilder();
@@ -446,6 +446,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ComponentNodeEntBuilder.class) {
             return (B)new DefaultComponentNodeEnt.DefaultComponentNodeEntBuilder();
+        }        
+        if(clazz == ComponentPlaceholderEntBuilder.class) {
+            return (B)new DefaultComponentPlaceholderEnt.DefaultComponentPlaceholderEntBuilder();
         }        
         if(clazz == ComponentPortDescriptionEntBuilder.class) {
             return (B)new DefaultComponentPortDescriptionEnt.DefaultComponentPortDescriptionEntBuilder();
@@ -641,9 +644,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == PortViewsEntBuilder.class) {
             return (B)new DefaultPortViewsEnt.DefaultPortViewsEntBuilder();
-        }        
-        if(clazz == ProblemMessageEntBuilder.class) {
-            return (B)new DefaultProblemMessageEnt.DefaultProblemMessageEntBuilder();
         }        
         if(clazz == ProjectDirtyStateEventEntBuilder.class) {
             return (B)new DefaultProjectDirtyStateEventEnt.DefaultProjectDirtyStateEventEntBuilder();

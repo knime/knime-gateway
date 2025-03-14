@@ -165,7 +165,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return res;
     }
 
-    static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
+    private static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
         final String workspaceName) throws IOException {
         var tempPath = PathUtils.createTempDir(directoryNamePrefix);
         var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
@@ -539,7 +539,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return spaceProvider.getId();
     }
 
-    private static Path getTestWorkspacePath(final String name) throws IOException {
+    static Path getTestWorkspacePath(final String name) throws IOException {
         var path = CoreUtil.resolveToFile("/files/" + name, SpaceServiceTestHelper.class).toPath();
         // Windows does not consider all files starting with a dot to be hidden; a special flag has to be set
         if (SystemUtils.IS_OS_WINDOWS) {

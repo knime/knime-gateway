@@ -42,72 +42,98 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
 
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProblemMessageEnt.DefaultProblemMessageEntBuilder;
+import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * DefaultAddComponentPlaceholderResultEnt
+ *
+ * @param snapshotId
+ * @param kind
+ * @param newPlaceholderId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-
-@JsonDeserialize(builder=DefaultProblemMessageEntBuilder.class)
-@JsonSerialize(as=ProblemMessageEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ProblemMessageEntMixIn extends ProblemMessageEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("title")
-    public String getTitle();
-    
-    @Override
-    @JsonProperty("message")
-    public String getMessage();
-    
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultAddComponentPlaceholderResultEnt(
+    String snapshotId,
+    KindEnum kind,
+    String newPlaceholderId) implements AddComponentPlaceholderResultEnt {
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * Validation for required parameters not being {@code null}.
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ProblemMessageEntMixInBuilder extends ProblemMessageEntBuilder {
-    
-        @Override
-        public ProblemMessageEntMixIn build();
-    
-        @Override
-        @JsonProperty("type")
-        public ProblemMessageEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("title")
-        public ProblemMessageEntMixInBuilder setTitle(final String title);
-        
-        @Override
-        @JsonProperty("message")
-        public ProblemMessageEntMixInBuilder setMessage(final String message);
-        
+    public DefaultAddComponentPlaceholderResultEnt {
+        if(newPlaceholderId == null) {
+            throw new IllegalArgumentException("<newPlaceholderId> must not be null.");
+        }
     }
 
+    @Override
+    public String getTypeID() {
+        return "AddComponentPlaceholderResult";
+    }
+  
+    @Override
+    public String getSnapshotId() {
+        return snapshotId;
+    }
+    
+    @Override
+    public KindEnum getKind() {
+        return kind;
+    }
+    
+    @Override
+    public String getNewPlaceholderId() {
+        return newPlaceholderId;
+    }
+    
+    /**
+     * A builder for {@link DefaultAddComponentPlaceholderResultEnt}.
+     */
+    public static class DefaultAddComponentPlaceholderResultEntBuilder implements AddComponentPlaceholderResultEntBuilder {
+
+        private String m_snapshotId;
+
+        private KindEnum m_kind;
+
+        private String m_newPlaceholderId;
+
+        @Override
+        public DefaultAddComponentPlaceholderResultEntBuilder setSnapshotId(String snapshotId) {
+             m_snapshotId = snapshotId;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentPlaceholderResultEntBuilder setKind(KindEnum kind) {
+             m_kind = kind;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentPlaceholderResultEntBuilder setNewPlaceholderId(String newPlaceholderId) {
+             if(newPlaceholderId == null) {
+                 throw new IllegalArgumentException("<newPlaceholderId> must not be null.");
+             }
+             m_newPlaceholderId = newPlaceholderId;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentPlaceholderResultEnt build() {
+            return new DefaultAddComponentPlaceholderResultEnt(
+                immutable(m_snapshotId),
+                immutable(m_kind),
+                immutable(m_newPlaceholderId));
+        }
+    
+    }
 
 }
-

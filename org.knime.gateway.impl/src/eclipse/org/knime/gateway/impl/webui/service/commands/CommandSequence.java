@@ -90,7 +90,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
         throw new UnsupportedOperationException();
     }
 

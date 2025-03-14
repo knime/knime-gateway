@@ -48,15 +48,36 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+import org.knime.core.util.Version;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
+import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
+import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
+import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
+import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.SpaceGroup;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -85,11 +106,12 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
      * @throws Exception -
      */
     public void testAddComponentCommand() throws Exception {
-        var p =
-            SpaceServiceTestHelper.createTempLocalSpaceProvider("testAddComponentCommand", "test_workspace_to_list");
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            SpaceServiceTestHelper.createSpaceProvidersManager(p.getFirst()));
-        var localSpace = p.getSecond();
+        var localSpace = new LocalSpace(SpaceServiceTestHelper.getTestWorkspacePath("test_workspace_to_list"));
+        var spaceProvider = createSpaceProvider(localSpace);
+        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
+        var events = Collections.synchronizedList(new ArrayList<Object>());
+        ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
 
         final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         var componentItem = localSpace.listWorkflowGroup("root").getItems().stream()
@@ -103,10 +125,84 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
             .setItemId(itemId) //
             .build();
 
-        ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
-        var component = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow().getNodes()
-            .get("root:3");
+        // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)
+        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getSnapshotId();
+        es().addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
+            .setWorkflowId(NodeIDEnt.getRootID()).setTypeId("WorkflowChangedEventType").setSnapshotId(snapshotId)
+            .build());
+
+        // the actual test -> execute add-component command
+        var commandResult =
+            (AddComponentPlaceholderResultEnt)ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+
+        // check events
+        var placeholderPatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders", events);
+        assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
+        var placeholder = ((Collection<ComponentPlaceholderEnt>)placeholderPatch.getValue()).iterator().next();
+        assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
+        assertThat(placeholder.getState(), is(StateEnum.LOADING));
+        placeholderPatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/state", events);
+        assertThat(placeholderPatch.getOp(), is(OpEnum.REPLACE));
+        assertThat(placeholderPatch.getValue(), is(StateEnum.SUCCESS));
+        placeholderPatch =
+            EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/componentId", events);
+        assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
+        assertThat(placeholderPatch.getValue(), is("root:3"));
+
+        // check the added component
+        var workflow = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow();
+        var component = workflow.getNodes().get("root:3");
         cr(component, "added_component");
+
+        // make sure placeholders are cleaned up
+        assertThat(workflow.getComponentPlaceholders(), is(nullValue()));
+    }
+
+    private static SpaceProvider createSpaceProvider(final Space space) {
+        return new SpaceProvider() {
+
+            @Override
+            public void init(final Consumer<String> loginErrorHandler) {
+                // do nothing
+            }
+
+            @Override
+            public String getId() {
+                return "local-testing";
+            }
+
+            @Override
+            public List<SpaceGroupEnt> toEntity() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getName() {
+                return "local-testing-name";
+            }
+
+            @Override
+            public Space getSpace(final String spaceId) {
+                try {
+                    // ensures that 'component loading' takes a bit longer to make the test deterministic
+                    // (when checking for the placeholder state - which is 'loading' on the first event)
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) { // NOSONAR
+                    //
+                }
+                return Optional.of(space).filter(s -> s.getId().equals(spaceId)).orElseThrow();
+            }
+
+            @Override
+            public Version getServerVersion() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
 }

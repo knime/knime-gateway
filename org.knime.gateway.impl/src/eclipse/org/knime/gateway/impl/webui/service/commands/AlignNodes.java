@@ -95,7 +95,7 @@ final class AlignNodes extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         return alignNodes(getWorkflowManager());
     }
 

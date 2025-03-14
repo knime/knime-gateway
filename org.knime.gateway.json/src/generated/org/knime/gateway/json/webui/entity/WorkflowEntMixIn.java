@@ -45,6 +45,7 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt;
+import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
@@ -119,6 +120,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     @JsonProperty("dirty")
     public Boolean isDirty();
     
+    @Override
+    @JsonProperty("componentPlaceholders")
+    public java.util.List<ComponentPlaceholderEnt> getComponentPlaceholders();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -175,6 +180,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("dirty")
         public WorkflowEntMixInBuilder setDirty(final Boolean dirty);
+        
+        @Override
+        @JsonProperty("componentPlaceholders")
+        public WorkflowEntMixInBuilder setComponentPlaceholders(final java.util.List<ComponentPlaceholderEnt> componentPlaceholders);
         
     }
 

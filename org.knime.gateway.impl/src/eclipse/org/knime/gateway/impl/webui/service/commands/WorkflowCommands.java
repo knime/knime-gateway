@@ -162,7 +162,7 @@ public final class WorkflowCommands {
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
         final SpaceProviders spaceProviders) throws ServiceCallException {
-        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders);
+        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
@@ -175,8 +175,8 @@ public final class WorkflowCommands {
 
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
-        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders)
-        throws ServiceCallException {
+        final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
+        final WorkflowMiddleware workflowMiddleware) throws ServiceCallException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
@@ -191,7 +191,7 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AddNodeCommandEnt ce) {
             command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
         } else if (commandEnt instanceof AddComponentCommandEnt ce) {
-            command = new AddComponent(ce, spaceProviders);
+            command = new AddComponent(ce, spaceProviders, workflowMiddleware);
         } else if (commandEnt instanceof ReplaceNodeCommandEnt ce) {
             command = new ReplaceNode(ce);
         } else if (commandEnt instanceof InsertNodeCommandEnt ce) {

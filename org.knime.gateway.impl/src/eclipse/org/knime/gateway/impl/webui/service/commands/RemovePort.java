@@ -63,7 +63,7 @@ class RemovePort extends AbstractPortCommand<RemovePortCommandEnt> {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var portCommandEnt = getPortCommandEnt();
         var editor = instantiatePortEditor();
         editor.removePort(portCommandEnt);

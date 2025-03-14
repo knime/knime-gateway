@@ -109,7 +109,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         if (m_nodeIdEnts.isEmpty()) {
             throw new ServiceCallException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
         }

@@ -107,7 +107,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
         return m_activeCommand.execute(getWorkflowKey());
     }
 

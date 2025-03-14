@@ -57,6 +57,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,22 +83,21 @@ import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.util.LoadVersion;
 import org.knime.core.util.Pair;
 import org.knime.core.util.Version;
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
-import org.knime.gateway.api.webui.entity.AddComponentResultEnt.AddComponentResultEntBuilder;
+import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt.AddComponentPlaceholderResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt.ProblemMessageEntBuilder;
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt.TypeEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.webui.ComponentLoader.LoadJob;
+import org.knime.gateway.impl.webui.ComponentLoader.LoadResult;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Command to (down-)load and add a component to a workflow from a given item-id.
  *
- * Logic 'inspired' by/copied from
+ * Parts of the loading logic 'inspired' by/copied from
  * org.knime.workbench.editor2.commands.CreateMetaNodeTemplateCommand.createMetaNodeTemplate and
  * org.knime.workbench.editor2.LoadMetaNodeTemplateRunnable.
  *
@@ -110,29 +111,49 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
 
     private final SpaceProviders m_spaceProviders;
 
-    private LoadResultInternalRoot m_loadResult;
+    private final WorkflowMiddleware m_workflowMiddleware;
 
-    AddComponent(final AddComponentCommandEnt commandEnt, final SpaceProviders spaceProviders) {
+    private LoadJob m_loadJob;
+
+    AddComponent(final AddComponentCommandEnt commandEnt, final SpaceProviders spaceProviders,
+        final WorkflowMiddleware workflowMiddleware) {
+        super(false);
         m_commandEnt = commandEnt;
         m_spaceProviders = spaceProviders;
+        m_workflowMiddleware = workflowMiddleware;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    public boolean executeWithWorkflowContext() throws ServiceCallException {
+        var componentLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
+        m_loadJob = componentLoader.createComponentLoadJob(m_commandEnt.getPosition().getX(),
+            m_commandEnt.getPosition().getY(), this::loadComponent);
+        return true;
+    }
+
+    private LoadResult loadComponent(final ExecutionMonitor exec) throws CanceledExecutionException {
+        var wfm = getWorkflowManager();
         var space = m_spaceProviders.getSpace(m_commandEnt.getProviderId(), m_commandEnt.getSpaceId());
         var uri = space.toKnimeUrl(m_commandEnt.getItemId());
-        var localPath = space.toLocalAbsolutePath(new ExecutionMonitor(), m_commandEnt.getItemId()).orElseThrow();
-        var xPosition = m_commandEnt.getPosition().getX();
-        var yPosition = m_commandEnt.getPosition().getY();
-        var wfm = getWorkflowManager();
-
-        try {
-            m_loadResult = loadComponent(wfm, localPath.toFile(), uri, xPosition, yPosition, false);
-            return m_loadResult.getStatus().isOK();
-        } catch (IOException | UnsupportedWorkflowVersionException | InvalidSettingsException
-                | CanceledExecutionException | IllegalStateException ex) {
-            var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(ExceptionUtils.getRootCause(ex));
-            throw new ServiceCallException(loadingFailedErrorMessage);
+        exec.setMessage("Downloading ...");
+        var localPath = space.toLocalAbsolutePath(exec, m_commandEnt.getItemId()).orElseThrow();
+        try (var lock = wfm.lock()) {
+            exec.setMessage("Loading component ...");
+            var loadResult = loadComponent(wfm, localPath.toFile(), uri, m_commandEnt.getPosition().getX(),
+                m_commandEnt.getPosition().getY(), false, exec);
+            var isOk = loadResult.getStatus().isOK();
+            return new LoadResult(loadResult.getComponentId(),
+                isOk ? null : loadResult.getTitleAndAggregatedMessage().getFirst(),
+                isOk ? null : loadResult.getTitleAndAggregatedMessage().getSecond());
+        } catch (CanceledExecutionException e) {
+            throw e;
+        } catch (Throwable t) {
+            var rootCause = ExceptionUtils.getRootCause(t);
+            var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(rootCause);
+            throw new CompletionException(loadingFailedErrorMessage, rootCause);
         }
     }
 
@@ -160,13 +181,33 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     public boolean canUndo() {
-        return getWorkflowManager().canRemoveNode(m_loadResult.getComponentId());
+        var componentId = getComponentId();
+        return componentId == null || getWorkflowManager().canRemoveNode(componentId);
     }
 
     @Override
     public void undo() throws ServiceCallException {
-        getWorkflowManager().removeNode(m_loadResult.getComponentId());
-        m_loadResult = null;
+        var componentId = getComponentId();
+        if (componentId == null) {
+            var workflowElementLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
+            workflowElementLoader.cancelAndRemoveLoadOperation(m_loadJob.id());
+        } else {
+            getWorkflowManager().removeNode(componentId);
+        }
+        m_loadJob = null;
+    }
+
+    private NodeID getComponentId() {
+        var future = m_loadJob.future();
+        try {
+            var res = future.getNow(null);
+            if (res != null) {
+                return res.componentId();
+            }
+        } catch (CompletionException | CancellationException e) {
+            //
+        }
+        return null;
     }
 
     /*
@@ -178,12 +219,13 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
      * @throws IllegalStateException
      */
     private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM, final File parentFile,
-        final URI templateURI, final int x, final int y, final boolean snapToGrid)
+        final URI templateURI, final int x, final int y, final boolean snapToGrid, final ExecutionMonitor executionMonitor)
         throws IOException, UnsupportedWorkflowVersionException, InvalidSettingsException, CanceledExecutionException {
+        executionMonitor.checkCanceled();
         var loadHelper = createWorkflowLoadHelper();
         var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
         var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
-        parentWFM.load(loadPersistor, loadResult, new ExecutionMonitor(), false);
+        parentWFM.load(loadPersistor, loadResult, executionMonitor, false);
 
         var snc = (SubNodeContainer)loadResult.getLoadedInstance();
         if (snc == null) {
@@ -216,12 +258,13 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     public CommandResultEnt buildEntity(final String snapshotId) {
-        return m_loadResult.buildCommandResultEnt(snapshotId);
+        return builder(AddComponentPlaceholderResultEntBuilder.class).setKind(KindEnum.ADD_COMPONENT_PLACEHOLDER_RESULT)
+            .setNewPlaceholderId(m_loadJob.id()).setSnapshotId(snapshotId).build();
     }
 
     @Override
     public Set<WorkflowChange> getChangesToWaitFor() {
-        return Collections.singleton(WorkflowChange.NODE_ADDED);
+        return Collections.singleton(WorkflowChange.COMPONENT_PLACEHOLDER_ADDED);
     }
 
     private static class LoadResultInternalRoot extends LoadResultInternal {
@@ -247,36 +290,11 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
             return m_aggregatedStatus;
         }
 
-        /**
-         * @return The entity representation of the component loading result. Please note that the component loading may
-         *         have been successful, but still have warnings or errors. That could happen e.g. if the load problems
-         *         are 'invalid settings', you can still fix the component by re-configuring nodes in there. Same for
-         *         missing extensions: component is added with a warning toast; user installs the extensions; saves the
-         *         workflow and restarts; the component is still there.
-         */
-        CommandResultEnt buildCommandResultEnt(final String snapshotId) {
-            return builder(AddComponentResultEntBuilder.class)//
-                .setKind(KindEnum.ADD_NODE_RESULT)//
-                .setNewNodeId(new NodeIDEnt(m_componentId))//
-                .setSnapshotId(snapshotId) //
-                .setProblem(!m_aggregatedStatus.isOK() ? buildProblemMessageEnt() : null) //
-                .build();
-        }
-
-        private ProblemMessageEnt buildProblemMessageEnt() {
-            var titleAndMessage = getTitleAndAggregatedMessage();
-            return builder(ProblemMessageEntBuilder.class) //
-                .setType(m_aggregatedStatus == Status.WARNING ? TypeEnum.WARNING : TypeEnum.ERROR) //
-                .setTitle(titleAndMessage.getFirst()) //
-                .setMessage(titleAndMessage.getSecond()) //
-                .build();
-        }
-
         private Pair<String, String> getTitleAndAggregatedMessage() {
             var missingNodes = m_loadResult.getMissingNodes();
             var missingTableFormats = m_loadResult.getMissingTableFormats();
             if (missingNodes.isEmpty() && missingTableFormats.isEmpty()) {
-                return Pair.create("Component load", aggregateMessage());
+                return Pair.create("Component loaded with problems", aggregateMessage());
             } else {
                 var missingExtensions = Stream.concat(missingNodes.stream(), missingTableFormats.stream()) //
                     .map(KNIMEComponentInformation::getComponentName) //

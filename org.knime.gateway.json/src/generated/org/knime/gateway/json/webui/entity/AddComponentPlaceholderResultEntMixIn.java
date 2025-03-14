@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.AddNodeProblemEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddNodeProblemEnt.DefaultAddNodeProblemEntBuilder;
+import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentPlaceholderResultEnt.DefaultAddComponentPlaceholderResultEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -60,26 +61,26 @@ import org.knime.gateway.impl.webui.entity.DefaultAddNodeProblemEnt.DefaultAddNo
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultAddNodeProblemEntBuilder.class)
-@JsonSerialize(as=AddNodeProblemEnt.class)
+@JsonDeserialize(builder=DefaultAddComponentPlaceholderResultEntBuilder.class)
+@JsonSerialize(as=AddComponentPlaceholderResultEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface AddNodeProblemEntMixIn extends AddNodeProblemEnt {
+public interface AddComponentPlaceholderResultEntMixIn extends AddComponentPlaceholderResultEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
+    @JsonProperty("snapshotId")
+    public String getSnapshotId();
     
     @Override
-    @JsonProperty("title")
-    public String getTitle();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
     @Override
-    @JsonProperty("message")
-    public String getMessage();
+    @JsonProperty("newPlaceholderId")
+    public String getNewPlaceholderId();
     
 
     /**
@@ -89,22 +90,22 @@ public interface AddNodeProblemEntMixIn extends AddNodeProblemEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AddNodeProblemEntMixInBuilder extends AddNodeProblemEntBuilder {
+    public static interface AddComponentPlaceholderResultEntMixInBuilder extends AddComponentPlaceholderResultEntBuilder {
     
         @Override
-        public AddNodeProblemEntMixIn build();
+        public AddComponentPlaceholderResultEntMixIn build();
     
         @Override
-        @JsonProperty("type")
-        public AddNodeProblemEntMixInBuilder setType(final TypeEnum type);
+        @JsonProperty("snapshotId")
+        public AddComponentPlaceholderResultEntMixInBuilder setSnapshotId(final String snapshotId);
         
         @Override
-        @JsonProperty("title")
-        public AddNodeProblemEntMixInBuilder setTitle(final String title);
+        @JsonProperty("kind")
+        public AddComponentPlaceholderResultEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("message")
-        public AddNodeProblemEntMixInBuilder setMessage(final String message);
+        @JsonProperty("newPlaceholderId")
+        public AddComponentPlaceholderResultEntMixInBuilder setNewPlaceholderId(final String newPlaceholderId);
         
     }
 

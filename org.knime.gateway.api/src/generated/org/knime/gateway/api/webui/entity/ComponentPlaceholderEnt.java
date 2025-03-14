@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import java.math.BigDecimal;
+import org.knime.gateway.api.webui.entity.XYEnt;
 
 import java.util.function.BiConsumer;
 
@@ -55,24 +57,28 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * TODO
+ * Placeholder for a component why it&#39;s being loaded.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AddNodeProblemEnt extends GatewayEntity {
+public interface ComponentPlaceholderEnt extends GatewayEntity {
 
   /**
-   * Gets or Sets type
+   * The state of the placeholder.
    */
-  public enum TypeEnum {
-    ERROR("error"),
+  public enum StateEnum {
+    LOADING("LOADING"),
     
-    WARNING("warning");
+    ERROR("ERROR"),
+    
+    SUCCESS_WITH_WARNING("SUCCESS_WITH_WARNING"),
+    
+    SUCCESS("SUCCESS");
 
     private String value;
 
-    TypeEnum(String value) {
+    StateEnum(String value) {
       this.value = value;
     }
 
@@ -85,61 +91,121 @@ public interface AddNodeProblemEnt extends GatewayEntity {
 
 
   /**
-   * Get type
-   * @return type , never <code>null</code>
+   * Globally unique identifier for the placeholder.
+   * @return id , never <code>null</code>
    **/
-  public TypeEnum getType();
+  public String getId();
 
   /**
-   * Get title
-   * @return title , never <code>null</code>
+   * The state of the placeholder.
+   * @return state , never <code>null</code>
    **/
-  public String getTitle();
+  public StateEnum getState();
 
   /**
-   * Get message
-   * @return message , never <code>null</code>
+   * The id of the component this placeholder was finally replaced by. Only present in case of the &#39;success&#39; states since it&#39;s not known in advance while loading.
+   * @return componentId 
+   **/
+  public String getComponentId();
+
+  /**
+   * Optional loading progress.
+   * @return progress 
+   **/
+  public BigDecimal getProgress();
+
+  /**
+   * Loading-, error- or warning-message.
+   * @return message 
    **/
   public String getMessage();
+
+  /**
+   * Additional details for the loading-, error- or warning-message.
+   * @return details 
+   **/
+  public String getDetails();
+
+  /**
+   * Get position
+   * @return position , never <code>null</code>
+   **/
+  public XYEnt getPosition();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AddNodeProblemEnt)other;
-      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
-      valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
+      var e = (ComponentPlaceholderEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("state", Pair.create(getState(), e.getState()));
+      valueConsumer.accept("componentId", Pair.create(getComponentId(), e.getComponentId()));
+      valueConsumer.accept("progress", Pair.create(getProgress(), e.getProgress()));
       valueConsumer.accept("message", Pair.create(getMessage(), e.getMessage()));
+      valueConsumer.accept("details", Pair.create(getDetails(), e.getDetails()));
+      valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface AddNodeProblemEntBuilder extends GatewayEntityBuilder<AddNodeProblemEnt> {
+    public interface ComponentPlaceholderEntBuilder extends GatewayEntityBuilder<ComponentPlaceholderEnt> {
 
         /**
-   		 * Set type
+         * Globally unique identifier for the placeholder.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param id the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AddNodeProblemEntBuilder setType(TypeEnum type);
+        ComponentPlaceholderEntBuilder setId(String id);
         
         /**
-   		 * Set title
+         * The state of the placeholder.
          * 
-         * @param title the property value, NOT <code>null</code>! 
+         * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AddNodeProblemEntBuilder setTitle(String title);
+        ComponentPlaceholderEntBuilder setState(StateEnum state);
         
         /**
-   		 * Set message
+         * The id of the component this placeholder was finally replaced by. Only present in case of the &#39;success&#39; states since it&#39;s not known in advance while loading.
          * 
-         * @param message the property value, NOT <code>null</code>! 
+         * @param componentId the property value,  
          * @return this entity builder for chaining
          */
-        AddNodeProblemEntBuilder setMessage(String message);
+        ComponentPlaceholderEntBuilder setComponentId(String componentId);
+        
+        /**
+         * Optional loading progress.
+         * 
+         * @param progress the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentPlaceholderEntBuilder setProgress(BigDecimal progress);
+        
+        /**
+         * Loading-, error- or warning-message.
+         * 
+         * @param message the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentPlaceholderEntBuilder setMessage(String message);
+        
+        /**
+         * Additional details for the loading-, error- or warning-message.
+         * 
+         * @param details the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentPlaceholderEntBuilder setDetails(String details);
+        
+        /**
+   		 * Set position
+         * 
+         * @param position the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentPlaceholderEntBuilder setPosition(XYEnt position);
         
         
         /**
@@ -149,7 +215,7 @@ public interface AddNodeProblemEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        AddNodeProblemEnt build();
+        ComponentPlaceholderEnt build();
     
     }
 

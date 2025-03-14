@@ -77,7 +77,7 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
         try {
             var wfm = getWorkflowManager();
             var nodeID = m_nodeToConvert.get().toNodeID(wfm);

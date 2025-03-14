@@ -64,9 +64,26 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  */
 abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
+    private final boolean m_lockWorkflow;
+
     private WorkflowKey m_wfKey;
 
     private WorkflowManager m_wfm;
+
+    protected AbstractWorkflowCommand() {
+        this(true);
+    }
+
+    /**
+     * -
+     *
+     * @param lockWorkflow determines whether the workflow should be locked during the execution of the command
+     *            ({@link #executeWithWorkflowLockAndContext()} needs to be overridden) or not
+     *            ({@link #executeWithWorkflowContext()} needs to be overridden)
+     */
+    protected AbstractWorkflowCommand(final boolean lockWorkflow) {
+        m_lockWorkflow = lockWorkflow;
+    }
 
     @Override
     public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
@@ -76,13 +93,30 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
             throw new ServiceCallException("Could not find workflow", ex);
         }
         m_wfKey = wfKey;
-        return executeWithLockAndContext();
+        return executeInternal();
     }
 
-    private boolean executeWithLockAndContext() throws ServiceCallException {
+    private boolean executeInternal() throws ServiceCallException {
+        if (m_lockWorkflow) {
+            return executeWithWorkflowLockAndContextInternal();
+        } else {
+            return executeWithWorkflowContextInternal();
+        }
+    }
+
+    private boolean executeWithWorkflowLockAndContextInternal() throws ServiceCallException {
         NodeContext.pushContext(m_wfm);
         try (WorkflowLock lock = m_wfm.lock()) {
-            return executeWithLockedWorkflow();
+            return executeWithWorkflowLockAndContext();
+        } finally {
+            NodeContext.removeLastContext();
+        }
+    }
+
+    private boolean executeWithWorkflowContextInternal() throws ServiceCallException {
+        NodeContext.pushContext(m_wfm);
+        try {
+            return executeWithWorkflowContext();
         } finally {
             NodeContext.removeLastContext();
         }
@@ -98,16 +132,31 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
      * command.
      *
      * @implNote The thread calling this method will be holding a {@link WorkflowLock}. To avoid deadlocks, any change
-     *           listeners that might in turn require a lock must be dispatched on a different thread. For example, this
-     *           is the case for some listeners of the classic UI, which are active if the classic UI is initialized
-     *           (i.e., it has been active in this session at least once, "hybrid mode").
+     *           listeners that might in turn require a lock must be dispatched on a different thread.
      *
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command did not change the workflow
      *
      * @throws ServiceCallException If the command could not be executed
      */
-    protected abstract boolean executeWithLockedWorkflow() throws ServiceCallException;
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Executes the command.
+     *
+     * Use {@link #getWorkflowManager()} or {@link #getWorkflowKey()} to retrieve the data required to execute the
+     * command.
+     *
+     * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
+     *         the command did not change the workflow
+     *
+     * @throws ServiceCallException If the command could not be executed
+     */
+    protected boolean executeWithWorkflowContext() throws ServiceCallException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
     @Override
     public boolean canUndo() {
@@ -121,7 +170,7 @@ abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
     @Override
     public void redo() throws ServiceCallException {
-        executeWithLockAndContext();
+        executeInternal();
     }
 
     /**

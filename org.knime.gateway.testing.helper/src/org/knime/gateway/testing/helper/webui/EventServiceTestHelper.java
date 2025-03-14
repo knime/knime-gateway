@@ -140,7 +140,7 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
         es().removeEventListener(eventType);
     }
 
-    private static PatchOpEnt waitAndFindPatchOpForPath(final String path, final List<Object> events) {
+    static PatchOpEnt waitAndFindPatchOpForPath(final String path, final List<Object> events) {
         AtomicReference<PatchOpEnt> res = new AtomicReference<>();
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
             res.set(events.stream().flatMap(e -> ((WorkflowChangedEventEnt)e).getPatch().getOps().stream())

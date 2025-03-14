@@ -58,7 +58,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
  * @param <M> The type of the metadata
  * @param <E> The type of the command
  */
-public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMetadata, E extends WorkflowCommandEnt>
+abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMetadata, E extends WorkflowCommandEnt>
     extends AbstractWorkflowCommand {
 
     AbstractUpdateWorkflowMetadata(final E commandEnt) {
@@ -104,7 +104,7 @@ public abstract class AbstractUpdateWorkflowMetadata<M extends NodeContainerMeta
     abstract M getOriginal();
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
         m_originalMetadata = getOriginal();
         if (m_commandEnt.equals(toEntity(m_originalMetadata))) {
             return false;

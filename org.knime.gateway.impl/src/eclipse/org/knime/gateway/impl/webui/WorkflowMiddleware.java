@@ -287,7 +287,8 @@ public final class WorkflowMiddleware {
         if (includeInteractionInfo) {
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
                 .canRedo(m_commands.canRedo(wfKey))//
-                .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey));
+                .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey))//
+                .setComponentPlaceholders(getComponentLoader(wfKey).getComponentPlaceholdersAndCleanUp());
         }
         if (m_spaceProvidersManager != null) {
             buildContextBuilder.setSpaceProviderTypes(
@@ -363,6 +364,16 @@ public final class WorkflowMiddleware {
     }
 
     /**
+     * -
+     *
+     * @param wfKey -
+     * @return the {@link ComponentLoader} instance for the given workflow
+     */
+    public ComponentLoader getComponentLoader(final WorkflowKey wfKey) {
+        return getWorkflowState(wfKey).componentLoader();
+    }
+
+    /**
      * @see WorkflowMiddleware#m_workflowStateCache
      */
     private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
@@ -412,6 +423,8 @@ public final class WorkflowMiddleware {
 
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
+        private ComponentLoader m_componentLoader;
+
         private WorkflowState(final WorkflowKey wfKey) {
             m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(),
                 wfKey.getWorkflowId());
@@ -437,6 +450,13 @@ public final class WorkflowMiddleware {
                     new WorkflowChangesListener(m_wfm, Set.of(Scope.NODE_MESSAGES), true);
             }
             return m_changesListenerForWorkflowMonitor;
+        }
+
+        ComponentLoader componentLoader() {
+            if (m_componentLoader == null) {
+                m_componentLoader = new ComponentLoader(changesListener());
+            }
+            return m_componentLoader;
         }
 
         void dispose() {

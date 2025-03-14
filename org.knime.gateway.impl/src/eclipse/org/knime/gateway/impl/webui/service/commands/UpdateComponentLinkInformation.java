@@ -95,7 +95,7 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         if (wfm.isWriteProtected()) {
             throw new ServiceCallException("Container is read-only.");

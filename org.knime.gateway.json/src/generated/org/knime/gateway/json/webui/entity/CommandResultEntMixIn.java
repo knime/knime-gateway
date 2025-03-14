@@ -57,10 +57,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt.DefaultCommandResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConvertContainerResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAddComponentPlaceholderResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
@@ -99,6 +99,8 @@ import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
   @Type(value = DefaultAddAnnotationResultEnt.class, name = "add_annotation_result")
 ,
   @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
+,
+  @Type(value = DefaultAddComponentPlaceholderResultEnt.class, name = "add_component_placeholder_result")
 })
 @JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
 @JsonSerialize(as=CommandResultEnt.class)
@@ -149,6 +151,8 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
   @Type(value = DefaultAddAnnotationResultEnt.class, name = "add_annotation_result")
 ,
   @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
+,
+  @Type(value = DefaultAddComponentPlaceholderResultEnt.class, name = "add_component_placeholder_result")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {

@@ -281,9 +281,10 @@ public interface Space {
      * Resolves the item with the given ID into a local file, potentially downloading it.
      *
      * @param monitor to report progress, progress messages and for cancellation
-     * @param itemId  ID if the item to resolve
+     * @param itemId ID if the item to resolve
      * @param version The version of the item
-     * @return the local path of the item and if available, empty if not available
+     * @return the local path of the item and if available, empty if not available or the path resolution (e.g.
+     *         download) has been cancelled
      */
     Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId, final VersionId version);
 

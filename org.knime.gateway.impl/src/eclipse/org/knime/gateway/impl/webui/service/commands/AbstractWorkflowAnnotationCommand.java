@@ -89,7 +89,7 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         m_annotationId = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_annotationIdEnt);
         final var annotation = getWorkflowAnnotation(getWorkflowManager(), m_annotationId);
         m_previousAnnotationData = annotation.getData().clone();

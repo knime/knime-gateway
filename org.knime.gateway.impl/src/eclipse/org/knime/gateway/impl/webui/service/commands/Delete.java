@@ -141,7 +141,7 @@ final class Delete extends AbstractWorkflowCommand {
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         String projectId = getWorkflowKey().getProjectId();
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()

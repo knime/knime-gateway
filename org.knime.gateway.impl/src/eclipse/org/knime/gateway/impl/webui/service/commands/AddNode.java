@@ -105,7 +105,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Add node
         var positionEnt = m_commandEnt.getPosition();

@@ -82,7 +82,9 @@ public interface CommandResultEnt extends GatewayEntity {
     
     ADD_ANNOTATION_RESULT("add_annotation_result"),
     
-    UPDATE_LINKED_COMPONENTS_RESULT("update_linked_components_result");
+    UPDATE_LINKED_COMPONENTS_RESULT("update_linked_components_result"),
+    
+    ADD_COMPONENT_PLACEHOLDER_RESULT("add_component_placeholder_result");
 
     private String value;
 

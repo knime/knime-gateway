@@ -89,7 +89,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     }
 
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
         var wfm = getWorkflowManager();
         stream(getNodeIDs()).filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
 

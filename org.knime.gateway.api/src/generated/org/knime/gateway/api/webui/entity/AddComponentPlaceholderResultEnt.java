@@ -42,82 +42,83 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
-import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
+
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.AddComponentResultEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt.DefaultAddComponentResultEntBuilder;
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
- *
+ * AddComponentPlaceholderResultEnt
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface AddComponentPlaceholderResultEnt extends GatewayEntity, CommandResultEnt {
 
-@JsonDeserialize(builder=DefaultAddComponentResultEntBuilder.class)
-@JsonSerialize(as=AddComponentResultEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface AddComponentResultEntMixIn extends AddComponentResultEnt {
 
-    @Override
-    @JsonIgnore
-    public String getTypeID();
+  /**
+   * The id of the placeholder added.
+   * @return newPlaceholderId , never <code>null</code>
+   **/
+  public String getNewPlaceholderId();
 
-    @Override
-    @JsonProperty("snapshotId")
-    public String getSnapshotId();
-    
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("newNodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getNewNodeId();
-    
-    @Override
-    @JsonProperty("problem")
-    public ProblemMessageEnt getProblem();
-    
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (AddComponentPlaceholderResultEnt)other;
+      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
+      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("newPlaceholderId", Pair.create(getNewPlaceholderId(), e.getNewPlaceholderId()));
+  }
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * The builder for the entity.
      */
+    public interface AddComponentPlaceholderResultEntBuilder extends GatewayEntityBuilder<AddComponentPlaceholderResultEnt> {
 
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AddComponentResultEntMixInBuilder extends AddComponentResultEntBuilder {
+        /**
+         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
+         * 
+         * @param snapshotId the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentPlaceholderResultEntBuilder setSnapshotId(String snapshotId);
+        
+        /**
+   		 * Set kind
+         * 
+         * @param kind the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentPlaceholderResultEntBuilder setKind(KindEnum kind);
+        
+        /**
+         * The id of the placeholder added.
+         * 
+         * @param newPlaceholderId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AddComponentPlaceholderResultEntBuilder setNewPlaceholderId(String newPlaceholderId);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        AddComponentPlaceholderResultEnt build();
     
-        @Override
-        public AddComponentResultEntMixIn build();
-    
-        @Override
-        @JsonProperty("snapshotId")
-        public AddComponentResultEntMixInBuilder setSnapshotId(final String snapshotId);
-        
-        @Override
-        @JsonProperty("kind")
-        public AddComponentResultEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("newNodeId")
-        public AddComponentResultEntMixInBuilder setNewNodeId(final org.knime.gateway.api.entity.NodeIDEnt newNodeId);
-        
-        @Override
-        @JsonProperty("problem")
-        public AddComponentResultEntMixInBuilder setProblem(final ProblemMessageEnt problem);
-        
     }
 
-
 }
-

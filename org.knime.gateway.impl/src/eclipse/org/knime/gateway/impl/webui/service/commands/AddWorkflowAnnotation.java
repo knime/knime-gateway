@@ -84,7 +84,7 @@ final class AddWorkflowAnnotation extends AbstractWorkflowCommand implements Wit
      * {@inheritDoc}
      */
     @Override
-    protected boolean executeWithLockedWorkflow() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         final var bounds = m_commandEnt.getBounds();
         final var borderColor = AbstractWorkflowAnnotationCommand.hexStringToInteger(m_commandEnt.getBorderColor());

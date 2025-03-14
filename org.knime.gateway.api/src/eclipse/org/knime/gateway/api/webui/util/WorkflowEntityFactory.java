@@ -385,12 +385,14 @@ public final class WorkflowEntityFactory {
                 }
                 buildAndAddNodeEnt(buildContext.buildNodeIDEnt(nc.getID()), nc, nodes, invariants, buildContext);
             }
+
             var connections = wfm.getConnectionContainers().stream()
                 .map(cc -> buildConnectionEnt(buildConnectionIDEnt(cc, buildContext), cc, buildContext))
                 .collect(Collectors.toMap(c -> c.getId().toString(), c -> c)); // NOSONAR
             var annotations =
                 wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).toList();
             var metadata = getMetadata(wfm);
+            var componentPlaceholders = buildContext.getComponentPlacerholders().stream().toList();
             return builder(WorkflowEntBuilder.class) //
                 .setInfo(buildWorkflowInfoEnt(wfm, buildContext))//
                 .setNodes(nodes)//
@@ -403,6 +405,7 @@ public final class WorkflowEntityFactory {
                 .setMetaInPorts(buildMetaPortsEntForWorkflow(wfm, true, buildContext))//
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
                 .setMetadata(metadata)//
+                .setComponentPlaceholders(componentPlaceholders.isEmpty() ? null : componentPlaceholders)//
                 .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).build();
         }
     }
@@ -1239,7 +1242,11 @@ public final class WorkflowEntityFactory {
             return builder(XYEntBuilder.class).setX(0).setY(0).build();
         }
         int[] bounds = uiInfo.getBounds();
-        return builder(XYEntBuilder.class).setX(bounds[0]).setY(bounds[1] + NODE_Y_POS_CORRECTION).build();
+        return buildXYEnt(bounds[0], bounds[1] + NODE_Y_POS_CORRECTION);
+    }
+
+    private static XYEnt buildXYEnt(final int x, final int y) {
+        return builder(XYEntBuilder.class).setX(x).setY(y).build();
     }
 
     private AllowedNodeActionsEnt.CanCollapseEnum canCollapseNode(final NodeID id,
