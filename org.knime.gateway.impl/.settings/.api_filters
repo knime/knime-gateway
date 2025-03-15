@@ -108,13 +108,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/project/CachedProject.java" type="org.knime.gateway.impl.project.CachedProject">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.project.CachedProject"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/Origin.java" type="org.knime.gateway.impl.project.Origin">
         <filter id="1110441988">
             <message_arguments>
@@ -286,6 +279,11 @@
         </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/service/util/CallThrottle.java" type="org.knime.gateway.impl.service.util.CallThrottle">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="CallThrottle(Runnable, String, boolean)"/>
+            </message_arguments>
+        </filter>
         <filter id="1160773636">
             <message_arguments>
                 <message_argument value="CallThrottle(Runnable, String)"/>
@@ -299,6 +297,13 @@
         <filter id="1227882500">
             <message_arguments>
                 <message_argument value="invoke()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/CallThrottle.java" type="org.knime.gateway.impl.service.util.CallThrottle$CallState">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="DELAYING"/>
             </message_arguments>
         </filter>
     </resource>
@@ -330,6 +335,14 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="notifyWorkflowListener(WorkflowEvent)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/WorkflowChangesTracker.java" type="org.knime.gateway.impl.service.util.WorkflowChangesTracker$WorkflowChange">
+        <filter id="372293724">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange"/>
+                <message_argument value="ANY"/>
             </message_arguments>
         </filter>
     </resource>

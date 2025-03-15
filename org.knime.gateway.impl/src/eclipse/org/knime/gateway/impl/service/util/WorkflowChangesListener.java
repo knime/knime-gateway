@@ -145,7 +145,7 @@ public class WorkflowChangesListener implements Closeable {
         m_callThrottle = new CallThrottle(() -> {
             m_workflowChangedCallbacks.forEach(Runnable::run);
             m_postProcessCallbacks.forEach(Runnable::run);
-        }, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")");
+        }, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")", true);
 
         m_workflowListener = e -> {
             addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
@@ -394,7 +394,6 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     private void callback() {
-        updateWorkflowChangesTrackers(WorkflowChangesTracker.WorkflowChange.ANY);
         m_callThrottle.invoke();
     }
 

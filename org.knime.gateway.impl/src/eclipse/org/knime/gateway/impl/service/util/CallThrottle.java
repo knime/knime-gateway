@@ -51,7 +51,7 @@ package org.knime.gateway.impl.service.util;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.knime.core.node.NodeLogger;
+import org.knime.core.node.util.CheckUtils;
 
 /**
  * Helps to throttle calls, e.g., to an event consumer in order to not overwhelm it. It makes sure there is a minimum
@@ -67,54 +67,117 @@ public final class CallThrottle {
      */
     private static final int MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS = 100;
 
-    private final AtomicCallState m_callState = new AtomicCallState();
+    /**
+     * The time to (optionally) delay a call in case no other call is in progress. This is an optimization to prevent
+     * calls from being executed less often than necessary in case of 'call storms' (i.e. many invocations within this
+     * time interval).
+     */
+    private static final int CALL_DELAY_WHEN_IDLE_IN_MS = 30;
+
+    private CallState m_callState = CallState.IDLE;
 
     private final ExecutorService m_executorService;
 
     private Runnable m_call;
+
+    private final boolean m_delayWhenIdle;
 
     /**
      * @param call the logic to be run on {@link #invoke()}
      * @param threadName the name of the thread being used
      */
     public CallThrottle(final Runnable call, final String threadName) {
+        this(call, threadName, false);
+    }
+
+    /**
+     * @param call the logic to be run on {@link #invoke()}
+     * @param threadName the name of the thread being used
+     * @param delayWhenIdle whether to briefly delay a call while no other call is in progress - optimization to avoid
+     *            too many calls in case of calls in very rapid succession
+     */
+    public CallThrottle(final Runnable call, final String threadName, final boolean delayWhenIdle) {
+        CheckUtils.checkNotNull(call);
         m_call = call;
         m_executorService = Executors.newSingleThreadExecutor(r -> {
             var t = new Thread(r, threadName);
             t.setDaemon(true);
             return t;
         });
+        m_delayWhenIdle = delayWhenIdle;
     }
 
     /**
-     * Tries to execute the given call. It's either executed directly, queued to be the next call or superseded by
-     * another follow-up call of this method.
+     * Tries to execute the given call. It's either
+     * <ul>
+     * <li>queued to be the next call (if there is already a call in progress),</li>
+     * <li>superseded by another follow-up call of this method,</li>
+     * <li>executed immediately (if there is no other call in progress and {@code delayWhenIdle = false}),</li>
+     * <li>or briefly delayed (if {@code delayWhenIdle = true}) and then executed, in case there is currently no other
+     * call in progress. It helps to prevent the call from being executed more often than necessary in case of a 'call
+     * storm' (i.e. many invocations within a split second).</li>
+     * </ul>
      */
-    public void invoke() {
-        if (!m_callState.checkIsCallInProgressAndChangeState()) {
-            m_executorService.execute(() -> {
-                do {
-                    throttle(m_call);
-                } while (m_callState.checkIsCallAwaitingAndChangeState());
-            });
+    public synchronized void invoke() {
+        if (m_callState == CallState.IN_PROGRESS) {
+            m_callState = CallState.IN_PROGRESS_AND_AWAITING;
+        }
+
+        if (m_delayWhenIdle) {
+            if (m_callState == CallState.DELAYING) {
+                return;
+            }
+            if (m_callState == CallState.IDLE) {
+                m_callState = CallState.DELAYING;
+                m_executorService.execute(() -> {
+                    sleep(CALL_DELAY_WHEN_IDLE_IN_MS);
+                    m_callState = CallState.IN_PROGRESS;
+                    throttleAndExecuteInLoop();
+                });
+                return;
+            }
+        } else {
+            if (m_callState == CallState.IDLE) {
+                m_callState = CallState.IN_PROGRESS;
+                m_executorService.execute(() -> {
+                    throttleAndExecuteInLoop();
+                });
+                return;
+            }
         }
     }
 
-    private static void throttle(final Runnable run) {
-        if (run == null) {
-            NodeLogger.getLogger(CallThrottle.class).coding("No runnable given.");
-            return;
+    private void throttleAndExecuteInLoop() {
+        do {
+            throttleAndExecute(m_call);
+        } while (checkIsCallAwaitingAndChangeState());
+    }
+
+    private synchronized boolean checkIsCallAwaitingAndChangeState() {
+        if (m_callState == CallState.IN_PROGRESS_AND_AWAITING) {
+            m_callState = CallState.IN_PROGRESS;
+            return true;
+        } else {
+            m_callState = CallState.IDLE;
+            return false;
         }
+    }
+
+    private static void throttleAndExecute(final Runnable run) {
         var start = System.currentTimeMillis();
         run.run();
         var duration = System.currentTimeMillis() - start;
         var waitTimeToThrottle = MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS - duration;
         if (waitTimeToThrottle > 0) {
-            try {
-                Thread.sleep(waitTimeToThrottle);
-            } catch (InterruptedException ex) { // NOSONAR
-                // ignore
-            }
+            sleep(waitTimeToThrottle);
+        }
+    }
+
+    private static void sleep(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ex) { // NOSONAR
+            // ignore
         }
     }
 
@@ -124,7 +187,7 @@ public final class CallThrottle {
      * @return the current call state
      */
     public CallState getCallState() {
-        return m_callState.m_state;
+        return m_callState;
     }
 
     /**
@@ -152,44 +215,13 @@ public final class CallThrottle {
             /**
              * Call in progress, and another one awaiting
              */
-            IN_PROGRESS_AND_AWAITING;
-    }
+            IN_PROGRESS_AND_AWAITING,
 
-    private static final class AtomicCallState {
-
-        private CallState m_state = CallState.IDLE;
-
-        /**
-         * If the call is in progress, state will change to 'in progress and one call awaiting' (2); else to 'in
-         * progress, no call awaiting' (1).
-         *
-         * @return <code>true</code> if the call is in progress, otherwise <code>false</code>
-         */
-        synchronized boolean checkIsCallInProgressAndChangeState() {
-            if (m_state == CallState.IDLE) {
-                m_state = CallState.IN_PROGRESS;
-                return false;
-            } else {
-                m_state = CallState.IN_PROGRESS_AND_AWAITING;
-                return true;
-            }
-        }
-
-        /**
-         * If a call is awaiting (and another already in progress), the state will change to 'in progress' (1);
-         * otherwise it will change to 'not in progress, none awaiting' (0)
-         *
-         * @return <code>true</code> if a call is awaiting, otherwise <code>false</code>
-         */
-        synchronized boolean checkIsCallAwaitingAndChangeState() {
-            if (m_state == CallState.IN_PROGRESS_AND_AWAITING) {
-                m_state = CallState.IN_PROGRESS;
-                return true;
-            } else {
-                m_state = CallState.IDLE;
-                return false;
-            }
-        }
+            /**
+             * Call is currently being delayed (briefly) in order for to allow other calls to arrive before the actual
+             * action is carried out.
+             */
+            DELAYING;
     }
 
 }

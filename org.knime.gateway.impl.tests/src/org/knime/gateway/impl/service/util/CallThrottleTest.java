@@ -108,4 +108,52 @@ public class CallThrottleTest {
         });
     }
 
+    /**
+     * Test that {@link CallThrottle#invoke()} behaves as expected when {@link CallThrottle} is initialized with
+     * {@code delayWhenIdle = true}.
+     */
+    @Test
+    public void testInvokeWithDelayWhenIdle() {
+        var semaphore = new Semaphore(0);
+        var numCalls = new AtomicInteger();
+        Runnable call = () -> {
+            numCalls.incrementAndGet();
+            try {
+                semaphore.acquire();
+            } catch (InterruptedException ex) {
+                //
+            }
+        };
+        var callThrottle = new CallThrottle(call, "thread name", true);
+
+        callThrottle.invoke();
+        callThrottle.invoke();
+        callThrottle.invoke();
+        assertThat(numCalls.get(), is(0));
+        assertThat(callThrottle.getCallState(), is(CallState.DELAYING));
+        await().untilAsserted(() -> {
+            assertThat(numCalls.get(), is(1));
+            assertThat(callThrottle.getCallState(), is(CallState.IN_PROGRESS));
+        });
+
+        callThrottle.invoke();
+        await().untilAsserted(() -> {
+            assertThat(numCalls.get(), is(1));
+            assertThat(callThrottle.getCallState(), is(CallState.IN_PROGRESS_AND_AWAITING));
+        });
+
+        semaphore.release();
+        await().untilAsserted(() -> {
+            assertThat(numCalls.get(), is(2));
+            assertThat(callThrottle.getCallState(), is(CallState.IN_PROGRESS));
+        });
+        semaphore.release();
+        await().untilAsserted(() -> {
+            assertThat(numCalls.get(), is(2));
+            assertThat(callThrottle.getCallState(), is(CallState.IDLE));
+        });
+
+
+    }
+
 }

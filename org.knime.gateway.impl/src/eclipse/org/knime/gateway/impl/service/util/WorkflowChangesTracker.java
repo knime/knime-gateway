@@ -81,8 +81,6 @@ public class WorkflowChangesTracker {
         CONNECTION_ADDED,
         /** Tracked when a connection is removed */
         CONNECTION_REMOVED,
-        /** Tracked on any change */
-        ANY,
         /** Tracked whenever a workflow annotation has been added */
         ANNOTATION_ADDED,
         /** Tracked whenever a workflow annotation has been removed */

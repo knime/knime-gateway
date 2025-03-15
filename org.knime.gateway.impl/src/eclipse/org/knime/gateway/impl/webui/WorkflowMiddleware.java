@@ -193,21 +193,6 @@ public final class WorkflowMiddleware {
         return buildWorkflowSnapshotEnt(workflowEntity, m_workflowEntRepo.commit(wfKey, workflowEntity));
     }
 
-    private static WorkflowEnt buildWorkflowEntIfWorkflowHasChanged(final WorkflowManager wfm,
-        final WorkflowBuildContextBuilder buildContextBuilder, final WorkflowChangesTracker tracker) {
-        try (WorkflowLock lock = wfm.lock()) {
-            var workflowChanged = tracker.invoke(t -> {
-                if (Boolean.TRUE.equals(t.hasOccurredAtLeastOne(WorkflowChange.ANY))) {
-                    t.reset();
-                    return Boolean.TRUE;
-                } else {
-                    return Boolean.FALSE;
-                }
-            }).booleanValue();
-            return workflowChanged ? EntityFactory.Workflow.buildWorkflowEnt(wfm, buildContextBuilder) : null;
-        }
-    }
-
     private static WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final String snapshotId) {
         return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
     }
@@ -292,7 +277,8 @@ public final class WorkflowMiddleware {
      * @param patchEntCreator creator for the patch which is supplied with the {@link WorkflowChangedEventEnt}
      * @param snapshotId the latest snapshot id
      * @param includeInteractionInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
-     * @param changes A workflow changes tracker to determine if and how to build the event
+     * @param changes A workflow changes tracker to determine if and how to build the event (TODO unused - but still
+     *            could come handy in the future)
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
@@ -310,7 +296,8 @@ public final class WorkflowMiddleware {
             buildContextBuilder.setSpaceProviderTypes(
                 m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes());
         }
-        final var wfEnt = buildWorkflowEntIfWorkflowHasChanged(ws.m_wfm, buildContextBuilder, changes);
+        System.out.println("build workflow ent for changed event");
+        final var wfEnt = EntityFactory.Workflow.buildWorkflowEnt(ws.m_wfm, buildContextBuilder);
         if (wfEnt == null) {
             // no change
             return null;
