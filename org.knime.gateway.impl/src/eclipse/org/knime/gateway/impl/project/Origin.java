@@ -70,20 +70,17 @@ public record Origin(//
     Optional<SpaceItemVersionEnt> itemVersion) {
 
     /**
-     * @param providerId
-     * @param spaceId
-     * @param itemId
+     * @see Origin
      */
+    @SuppressWarnings("java:S1176")
     public Origin(final String providerId, final String spaceId, final String itemId) {
         this(providerId, spaceId, itemId, Optional.empty(), Optional.empty());
     }
 
     /**
-     * @param providerId
-     * @param spaceId
-     * @param itemId
-     * @param projectType the type of the project or {@code null}
+     * @see Origin
      */
+    @SuppressWarnings("java:S1176")
     public Origin(final String providerId, final String spaceId, final String itemId,
         final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
         this(providerId, spaceId, itemId, Optional.ofNullable(projectType), Optional.empty());

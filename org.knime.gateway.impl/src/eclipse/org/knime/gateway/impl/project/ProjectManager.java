@@ -106,6 +106,11 @@ public final class ProjectManager {
      * executed by another workflow). If so, the respective project is updated to add the project-origin and mark it as
      * being used by the UI, too.
      *
+     * @param space -
+     * @param spaceProviderId -
+     * @param spaceId -
+     * @param itemId -
+     * @param projectType -
      * @return the project and workflow-manager or null if none
      */
     public Optional<Project> getAndUpdateWorkflowServiceProject(final Space space, final String spaceProviderId,
@@ -147,6 +152,8 @@ public final class ProjectManager {
     }
 
     /**
+     * Check whether a project is currently marked active.
+     * 
      * @param projectId the id of the project to check
      * @return whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab).
      */
@@ -262,9 +269,9 @@ public final class ProjectManager {
     /**
      * Get a {@link Project} if one is currently open that matches the given ID triplet in its {@link Origin}.
      *
-     * @param providerId
-     * @param spaceId
-     * @param itemId
+     * @param providerId -
+     * @param spaceId -
+     * @param itemId -
      * @return A currently open project matching the given IDs in its {@link Origin}.
      */
     public Optional<Project> getProject(final String providerId, final String spaceId, final String itemId) {
@@ -277,9 +284,11 @@ public final class ProjectManager {
     }
 
     /**
-     * Callback when a project with a certain ID has been removed.
+     * Add a listener to be notified when a project is removed. The ID of the removed project is provided to the
+     * listener.
      *
-     * @param listener the listener to be called
+     * @param listener the listener to be added
+     * @see #removeProject(String)
      */
     public void addProjectRemovedListener(final Consumer<String> listener) {
         m_projectRemovedListeners.add(listener);
@@ -301,6 +310,8 @@ public final class ProjectManager {
 
     /**
      * The contained projects
+     * 
+     * @return -
      */
     public Stream<Project> projects() {
         return m_projectsMap.values().stream().map(ProjectInternal::project);
@@ -319,7 +330,8 @@ public final class ProjectManager {
     /**
      * Updates the list of project IDs to reflect the new order.
      *
-     * @param projectIds
+     * @param projectIds Assumed to contain all currently open projects. The order of this list defines the new
+     *            ordering.
      */
     public void updateOpenProjectsOrder(final List<String> projectIds) {
         m_projectsMap.resortKeys(projectIds);

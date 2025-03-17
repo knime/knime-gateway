@@ -72,6 +72,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S1192")  // repeated string literals
 public class ProjectDisposedEventSourceTest {
 
     @SuppressWarnings("javadoc")
