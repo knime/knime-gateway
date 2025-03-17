@@ -96,7 +96,9 @@ public sealed class VersionId {
     }
 
     /**
+     * Obtain a constant describing the "current state" / "working area" version.
      * @see CurrentState
+     * @return -
      */
     public static CurrentState currentState() {
         return CurrentState.CURRENT_STATE;
@@ -109,6 +111,7 @@ public sealed class VersionId {
         private final int m_id;
 
         /**
+         * Create an instance describing a fixed version
          * @param id identifier of that version. Can not be assumed to be sequential.
          */
         public Fixed(final int id) {
@@ -141,6 +144,9 @@ public sealed class VersionId {
 
     /**
      * Parse an instance from the given string.
+     * @param versionId the string to parse
+     * @throws IllegalArgumentException in case the string could not be parsed
+     * @return the parsed instance
      */
     public static VersionId parse(final String versionId) throws IllegalArgumentException {
         if (versionId == null || CurrentState.CURRENT_STATE.toString().equals(versionId)) {

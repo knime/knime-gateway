@@ -70,6 +70,9 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings({"java:S112", "java:S1176"})
+// generic `throws Exception` -- okay since only used in tests.
+// javadoc for public declarations
 public class LocalWorkflowLoader implements WorkflowLoader {
 
     private final Set<String> m_loadedWorkflows = new HashSet<>();
