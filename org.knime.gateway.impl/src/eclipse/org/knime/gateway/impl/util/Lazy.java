@@ -119,7 +119,8 @@ public final class Lazy {
          * Clear the cached value. The next call to {@link #get()} will trigger a new initialisation.
          */
         public void clear() {
-            m_value = null;
+            //noinspection unchecked
+            m_value = (V) NO_INIT;
         }
 
         /**
