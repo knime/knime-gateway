@@ -113,7 +113,7 @@ import org.mockito.Mockito;
  * @author Kai Franze, KNIME GmbH
  * @author Benjamin Moser, KNIME GmbH
  */
-@SuppressWarnings({"javadoc", "java:S112", "java:S1192", "java:S1188", "java:S1602"})
+@SuppressWarnings({"javadoc", "java:S112", "java:S1192", "java:S1188", "java:S1602", "java:S2259"})
 public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public SpaceServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
