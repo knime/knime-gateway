@@ -127,6 +127,11 @@
     <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowBuildContext.java" type="org.knime.gateway.api.webui.util.WorkflowBuildContext$WorkflowBuildContextBuilder">
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="setPlaceholders(Collection&lt;PlaceholderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="setVersion(VersionId)"/>
             </message_arguments>
         </filter>
@@ -241,6 +246,13 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setSpaceProviders(SpaceProviderAndConnectionEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/CommandResultEnt.java" type="org.knime.gateway.api.webui.entity.CommandResultEnt$KindEnum">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="ADD_PLACEHOLDER_RESULT"/>
             </message_arguments>
         </filter>
     </resource>
@@ -531,6 +543,12 @@
                 <message_argument value="getMetadata()"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt"/>
+                <message_argument value="getPlaceholders()"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt"/>
@@ -548,12 +566,23 @@
                 <message_argument value="getMetadata()"/>
             </message_arguments>
         </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getPlaceholders()"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowEnt$WorkflowEntBuilder">
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder"/>
                 <message_argument value="setMetadata(EditableMetadataEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder"/>
+                <message_argument value="setPlaceholders(List&lt;PlaceholderEnt&gt;)"/>
             </message_arguments>
         </filter>
         <filter id="405901410">
@@ -571,6 +600,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setMetadata(EditableMetadataEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setPlaceholders(List&lt;PlaceholderEnt&gt;)"/>
             </message_arguments>
         </filter>
     </resource>

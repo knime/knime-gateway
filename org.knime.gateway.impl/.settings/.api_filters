@@ -344,12 +344,29 @@
                 <message_argument value="notifyWorkflowListener(WorkflowEvent)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="trigger(WorkflowChangesTracker.WorkflowChange)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/service/util/WorkflowChangesTracker.java" type="org.knime.gateway.impl.service.util.WorkflowChangesTracker$WorkflowChange">
         <filter id="372293724">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange"/>
                 <message_argument value="ANY"/>
+            </message_arguments>
+        </filter>
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="PLACERHOLDER_ADDED"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/ComponentLoader.java" type="org.knime.gateway.impl.webui.ComponentLoader">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.ComponentLoader"/>
             </message_arguments>
         </filter>
     </resource>
@@ -613,6 +630,12 @@
         </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/AbstractUpdateWorkflowMetadata.java" type="org.knime.gateway.impl.webui.service.commands.AbstractUpdateWorkflowMetadata">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.AbstractUpdateWorkflowMetadata"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
+            </message_arguments>
+        </filter>
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.commands.AbstractUpdateWorkflowMetadata"/>
@@ -632,6 +655,14 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setProjectMetadata(NodeContainerMetadata.NeedsContentType&lt;O&gt;, EditableMetadataEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/AutoDisconnect.java" type="org.knime.gateway.impl.webui.service.commands.AutoDisconnect">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.AutoDisconnect"/>
+                <message_argument value="org.knime.gateway.impl_5.5.0"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1114,6 +1145,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultAddNodeResultEnt(String, CommandResultEnt.KindEnum, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddPlaceholderResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddPlaceholderResultEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAddPlaceholderResultEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1974,6 +2012,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultPlaceholderEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultPlaceholderEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultPlaceholderEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultPortCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt">
         <filter id="337768515">
             <message_arguments>
@@ -2440,6 +2485,11 @@
                 <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean, List&lt;PlaceholderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt$DefaultWorkflowEntBuilder">
         <filter id="338792546">
@@ -2457,6 +2507,11 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setMetadata(EditableMetadataEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setPlaceholders(List&lt;PlaceholderEnt&gt;)"/>
             </message_arguments>
         </filter>
     </resource>
