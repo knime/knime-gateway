@@ -48,15 +48,28 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddPlaceholderResultEnt;
+import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
+import org.knime.gateway.api.webui.entity.PlaceholderEnt;
+import org.knime.gateway.api.webui.entity.PlaceholderEnt.StateEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -87,8 +100,10 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
     public void testAddComponentCommand() throws Exception {
         var p =
             SpaceServiceTestHelper.createTempLocalSpaceProvider("testAddComponentCommand", "test_workspace_to_list");
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            SpaceServiceTestHelper.createSpaceProvidersManager(p.getFirst()));
+        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(p.getFirst());
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
+        var events = Collections.synchronizedList(new ArrayList<Object>());
+        ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
         var localSpace = p.getSecond();
 
         final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -103,10 +118,36 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
             .setItemId(itemId) //
             .build();
 
-        ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
-        var component = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow().getNodes()
-            .get("root:3");
+        // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)
+        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getSnapshotId();
+        es().addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
+            .setWorkflowId(NodeIDEnt.getRootID()).setTypeId("WorkflowChangedEventType").setSnapshotId(snapshotId)
+            .build());
+
+        // the actual test -> execute add-component command
+        var commandResult =
+            (AddPlaceholderResultEnt)ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+
+        // check events
+        var placeholderPatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/placeholders", events);
+        assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
+        var placeholder = ((Collection<PlaceholderEnt>) placeholderPatch.getValue()).iterator().next();
+        assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
+        assertThat(placeholder.getState(), is(StateEnum.LOADING));
+        placeholderPatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/placeholders/0/state", events);
+        assertThat(placeholderPatch.getOp(), is(OpEnum.REPLACE));
+        assertThat(placeholderPatch.getValue(), is(StateEnum.SUCCESS));
+        placeholderPatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/placeholders/0/replacementId", events);
+        assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
+        assertThat(placeholderPatch.getValue(), is("root:3"));
+
+        // check the added component
+        var workflow = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow();
+        var component = workflow.getNodes().get("root:3");
         cr(component, "added_component");
+
+        // make sure placeholders are cleaned up
+        assertThat(workflow.getPlaceholders(), is(nullValue()));
     }
 
 }
