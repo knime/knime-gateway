@@ -52,7 +52,8 @@ public final class GatewayTestCollection {
         DeleteCommandTestHelper.class, //
         ConnectCommandsTestHelper.class, //
         ComponentServiceTestHelper.class, //
-        AddComponentCommandTestHelper.class //
+        AddComponentCommandTestHelper.class, //
+        AlignNodesCommandTestHelper.class//
     );
 
     private GatewayTestCollection() {

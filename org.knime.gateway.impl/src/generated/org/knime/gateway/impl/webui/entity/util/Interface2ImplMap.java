@@ -62,6 +62,8 @@ import org.knime.gateway.api.webui.entity.AddPortResultEnt.AddPortResultEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt.AddWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAddWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt.AlignNodesCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAlignNodesCommandEnt;
 import org.knime.gateway.api.webui.entity.AllowedActionsEnt.AllowedActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
@@ -384,6 +386,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == AddWorkflowAnnotationCommandEntBuilder.class) {
             return (B)new DefaultAddWorkflowAnnotationCommandEnt.DefaultAddWorkflowAnnotationCommandEntBuilder();
+        }        
+        if(clazz == AlignNodesCommandEntBuilder.class) {
+            return (B)new DefaultAlignNodesCommandEnt.DefaultAlignNodesCommandEntBuilder();
         }        
         if(clazz == AllowedActionsEntBuilder.class) {
             return (B)new DefaultAllowedActionsEnt.DefaultAllowedActionsEntBuilder();

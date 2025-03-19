@@ -57,6 +57,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt.DefaultWorkflowCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAlignNodesCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAutoDisconnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
@@ -159,6 +160,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
 ,
   @Type(value = DefaultUpdateLinkedComponentsCommandEnt.class, name = "update_linked_components")
+,
+  @Type(value = DefaultAlignNodesCommandEnt.class, name = "align_nodes")
 })
 @JsonDeserialize(builder=DefaultWorkflowCommandEntBuilder.class)
 @JsonSerialize(as=WorkflowCommandEnt.class)
@@ -243,6 +246,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
 ,
   @Type(value = DefaultUpdateLinkedComponentsCommandEnt.class, name = "update_linked_components")
+,
+  @Type(value = DefaultAlignNodesCommandEnt.class, name = "align_nodes")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface WorkflowCommandEntMixInBuilder extends WorkflowCommandEntBuilder {

@@ -148,7 +148,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
      */
     static void performTranslation(final WorkflowManager wfm, final Set<NodeContainer> nodes,
         final Set<WorkflowAnnotation> annotations, final Delta delta) {
-        translateNodes(wfm ,nodes, delta);
+        translateNodes(wfm, nodes, delta);
         translateAnnotations(wfm, annotations, delta);
         translateAllBendpoints(wfm, nodes, delta);
     }

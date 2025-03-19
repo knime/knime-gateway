@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
@@ -233,6 +234,8 @@ public final class WorkflowCommands {
             command = new TransformMetanodePortsBar(ce);
         } else if (commandEnt instanceof UpdateLinkedComponentsCommandEnt ce) {
             command = new UpdateLinkedComponents(ce);
+        } else if (commandEnt instanceof AlignNodesCommandEnt ce) {
+            command = new AlignNodes(ce);
         } else {
             if (m_workflowCommandToExecute != null) {
                 command = m_workflowCommandToExecute;
