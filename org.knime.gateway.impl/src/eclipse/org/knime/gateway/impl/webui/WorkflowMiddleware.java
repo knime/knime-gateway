@@ -296,7 +296,6 @@ public final class WorkflowMiddleware {
             buildContextBuilder.setSpaceProviderTypes(
                 m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes());
         }
-        System.out.println("build workflow ent for changed event");
         final var wfEnt = EntityFactory.Workflow.buildWorkflowEnt(ws.m_wfm, buildContextBuilder);
         if (wfEnt == null) {
             // no change

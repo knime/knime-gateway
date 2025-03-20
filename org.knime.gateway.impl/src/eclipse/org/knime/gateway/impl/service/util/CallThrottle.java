@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.service.util;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,7 +56,7 @@ import org.knime.core.node.util.CheckUtils;
 
 /**
  * Helps to throttle calls, e.g., to an event consumer in order to not overwhelm it. It makes sure there is a minimum
- * duration between consecutive calls but also guarantees that 'latest' invocation is carried out.
+ * duration between consecutive calls but also guarantees that the 'latest' invocation is carried out.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,16 +64,17 @@ public final class CallThrottle {
 
     /**
      * The minimum time interval between two consecutive calls in order to throttle the number of calls to not overwhelm
-     * the consumer. If a calls takes longer than this amount, it won't be throttled any further.
+     * the consumer (i.e. the given {@code Runnable}). If a call takes longer than this amount, it won't be throttled
+     * any further.
      */
     private static final int MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS = 100;
 
     /**
-     * The time to (optionally) delay a call in case no other call is in progress. This is an optimization to prevent
-     * calls from being executed less often than necessary in case of 'call storms' (i.e. many invocations within this
-     * time interval).
+     * The time to (optionally) delay an initial call arriving into IDLE state, i.e. when no other call is in progress.
+     * This is an optimization to prevent calls from being executed more often than necessary in case of 'call storms'
+     * (i.e. many invocations within this time interval).
      */
-    private static final int CALL_DELAY_WHEN_IDLE_IN_MS = 30;
+    private static final int CALL_DELAY_WHEN_IDLE_IN_MS = 20;
 
     private CallState m_callState = CallState.IDLE;
 
@@ -94,7 +96,7 @@ public final class CallThrottle {
      * @param call the logic to be run on {@link #invoke()}
      * @param threadName the name of the thread being used
      * @param delayWhenIdle whether to briefly delay a call while no other call is in progress - optimization to avoid
-     *            too many calls in case of calls in very rapid succession
+     *            too many calls in case of calls in very rapid succession. Can be disabled using a system property.
      */
     public CallThrottle(final Runnable call, final String threadName, final boolean delayWhenIdle) {
         CheckUtils.checkNotNull(call);
@@ -104,7 +106,18 @@ public final class CallThrottle {
             t.setDaemon(true);
             return t;
         });
-        m_delayWhenIdle = delayWhenIdle;
+
+        m_delayWhenIdle = readSystemProperty(delayWhenIdle);
+    }
+
+    private static boolean readSystemProperty(final boolean delayWhenIdle) {
+        var sysprop =
+            Optional.ofNullable(System.getProperty("org.knime.gateway.impl.service.util.CallThrottle.delayWhenIdle"));
+        var notGivenOrTrue = sysprop.filter(Boolean::parseBoolean).isEmpty();
+        if (notGivenOrTrue) {
+            return delayWhenIdle;
+        }
+        return false;
     }
 
     /**
@@ -155,14 +168,23 @@ public final class CallThrottle {
 
     private synchronized boolean checkIsCallAwaitingAndChangeState() {
         if (m_callState == CallState.IN_PROGRESS_AND_AWAITING) {
+            // An invocation came in in the meantime -- execute the task again by continuing the do-while.
             m_callState = CallState.IN_PROGRESS;
             return true;
         } else {
+            // Since this method is called right after `throttleAndExecute`, if no invocation came in in the meantime
+            // we are now done.
             m_callState = CallState.IDLE;
             return false;
         }
     }
 
+    /**
+     * Run the given task, additionally "throttling" such that this method always takes at least
+     * {@code MINIMUM_DURATION_BETWEEN_CONSECUTIVE_CALLBACKS_IN_MS} to return.
+     *
+     * @param run The task to run
+     */
     private static void throttleAndExecute(final Runnable run) {
         var start = System.currentTimeMillis();
         run.run();
@@ -218,7 +240,7 @@ public final class CallThrottle {
             IN_PROGRESS_AND_AWAITING,
 
             /**
-             * Call is currently being delayed (briefly) in order for to allow other calls to arrive before the actual
+             * First call moving out of IDLE is currently being delayed to allow other calls to arrive before the actual
              * action is carried out.
              */
             DELAYING;
