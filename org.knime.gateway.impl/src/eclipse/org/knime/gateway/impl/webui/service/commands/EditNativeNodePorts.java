@@ -101,8 +101,6 @@ final class EditNativeNodePorts implements EditPorts {
         // instance that will be modified and used for creating the replacing node
         var newCreationConfig = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         var isInputSide = removePortCommandEnt.getSide() == SideEnum.INPUT;
-        // DONE need to map this to index within group -- would otherwise fail when removing a port from a group that is not the first one
-        //  modern UI frontend does not consider port groups, only have overall index available
         var portsConfig = newCreationConfig.getPortConfig().orElseThrow();
         var totalPortIndexToRemove = removePortCommandEnt.getPortIndex();
         var portGroup = (ExtendablePortGroup)portsConfig.getGroup(removePortCommandEnt.getPortGroup());
