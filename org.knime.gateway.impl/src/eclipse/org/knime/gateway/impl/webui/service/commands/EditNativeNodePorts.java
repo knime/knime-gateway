@@ -48,12 +48,12 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.action.ReplaceNodeResult;
@@ -98,17 +98,17 @@ final class EditNativeNodePorts implements EditPorts {
 
     @Override
     public void removePort(final RemovePortCommandEnt removePortCommandEnt) {
-        //offset to account for flow variable port index
-        var offset = 1;
-        var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
-        var groupName = removePortCommandEnt.getPortGroup();
-        var portIndex = removePortCommandEnt.getPortIndex();
-        var portGroup = getExtendablePortGroup(creationConfigCopy, groupName);
-        var removeInputPort = portGroup.definesInputPorts();
-        var removeOutputPort = portGroup.definesOutputPorts();
-        var portGroupLength = portGroup.getFixedPorts().length + portGroup.getConfiguredPorts().length + offset;
-        portGroup.removePort(portIndex - offset);
-        executeRemovePort(creationConfigCopy, portIndex, portGroupLength, removeInputPort, removeOutputPort);
+        // instance that will be modified and used for creating the replacing node
+        var newCreationConfig = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
+        var isInputSide = removePortCommandEnt.getSide() == SideEnum.INPUT;
+        // DONE need to map this to index within group -- would otherwise fail when removing a port from a group that is not the first one
+        //  modern UI frontend does not consider port groups, only have overall index available
+        var portsConfig = newCreationConfig.getPortConfig().orElseThrow();
+        var totalPortIndexToRemove = removePortCommandEnt.getPortIndex();
+        var portGroup = (ExtendablePortGroup)portsConfig.getGroup(removePortCommandEnt.getPortGroup());
+        var indexInGroupToRemove = portsConfig.getPortIndexWithinGroup(totalPortIndexToRemove, isInputSide);
+        portGroup.removePort(indexInGroupToRemove);
+        executeRemovePort(newCreationConfig, totalPortIndexToRemove, isInputSide);
     }
 
     @Override
@@ -137,89 +137,54 @@ final class EditNativeNodePorts implements EditPorts {
             .sum();
     }
 
-    private final NodeID getNodeId() {
+    private NodeID getNodeId() {
         return m_portCommandEnt.getNodeId().toNodeID(m_wfm);
     }
 
-    private void executeAddPort(final ModifiableNodeCreationConfiguration creationConfigCopy) {
-        m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), creationConfigCopy);
+    private void executeAddPort(final ModifiableNodeCreationConfiguration newCreationConfig) {
+        m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), newCreationConfig);
     }
 
-    private void executeRemovePort(final ModifiableNodeCreationConfiguration creationConfigCopy, final int portIndex,
-        final int portGroupLength, final boolean inputPort, final boolean outputPort) {
-        var portMappings =
-            getPortMappingForPortRemoval(creationConfigCopy, portIndex, portGroupLength, inputPort, outputPort);
-        m_replaceNodeResult = m_wfm.replaceNode(getNodeId(), creationConfigCopy, portMappings);
+    private void executeRemovePort(final ModifiableNodeCreationConfiguration creationConfigCopy,
+        final int totalPortIndexToRemove, final boolean isInputSide) {
+        var portMappings = getPortMappingForPortRemoval(totalPortIndexToRemove, isInputSide,
+            CoreUtil.getNodeContainer(getNodeId(), m_wfm).orElseThrow());
+        m_replaceNodeResult = m_wfm.replaceNode( //
+            getNodeId(), //
+            creationConfigCopy, //
+            portMappings.map(ReplaceNodeResult.PortMapping::toMap, ReplaceNodeResult.PortMapping::toMap) //
+        );
     }
 
-    /*
-     * maps input port indices before removal to indices after removal
+    /**
+     * @param totalPortIndexToRemove Index into the total number of ports on the node, counting implicit flow variable
+     *            port on native nodes.
+     * @param isInputSide whether port is removed on the input- or output-side
+     * @param node the node being edited
+     * @return mappings for input- and output side
      */
-    private static Map<Integer, Integer> getInputPortMapping(
-        final ModifiableNodeCreationConfiguration creationConfigCopy, final int portIndex, final int portGroupLength,
-        final boolean inputPortRemoved) {
-        Map<Integer, Integer> inputPortMapping = new HashMap<>();
-        //no input port has been removed, all input port indices remain the same
-        if (!inputPortRemoved) {
-            var portConfig = creationConfigCopy.getPortConfig();
-            var inputLength = portConfig.isPresent() ? (portConfig.get().getInputPorts().length + 1) : 0;
-            for (int i = 0; i < inputLength; i++) {
-                inputPortMapping.put(i, i);
-            }
-        } else { //removed input port at index portIndex, map portIndex to -1 and all following indices to index -1
-            for (int i = 0; i < portGroupLength; i++) {
-                if (i < portIndex) {
-                    inputPortMapping.put(i, i);
-                } else if (i == portIndex) {
-                    inputPortMapping.put(i, -1);
-                } else {
-                    inputPortMapping.put(i, (i - 1));
-                }
-            }
+    private static Pair<ReplaceNodeResult.PortMapping, ReplaceNodeResult.PortMapping> getPortMappingForPortRemoval(
+        final int totalPortIndexToRemove, final boolean isInputSide, final NodeContainer node) {
+        var pairOfMappings = new Pair<>( //
+            // Use NodeContainer#getNrInPorts / #getNrOutPorts to also count implicit flow variable port if present
+            ReplaceNodeResult.PortMapping.identity(node.getNrInPorts()), //
+            ReplaceNodeResult.PortMapping.identity(node.getNrOutPorts()) //
+        );
+        return applyToOneOfPair( //
+            pairOfMappings, //
+            isInputSide, //
+            mapping -> mapping.removeIndex(totalPortIndexToRemove) //
+        );
+    }
+
+    private static <X> Pair<X, X> applyToOneOfPair(final Pair<X, X> pair, final boolean leftOrRight,
+        final UnaryOperator<X> mapper) {
+        if (leftOrRight) {
+            pair.map(mapper, e -> e);
+        } else {
+            pair.map(e -> e, mapper);
         }
-        return inputPortMapping;
-    }
-
-    /*
-     * maps output port indices before removal to indices after removal
-     */
-    private static Map<Integer, Integer> getOutputPortMapping(
-        final ModifiableNodeCreationConfiguration creationConfigCopy, final int portIndex, final int portGroupLength,
-        final boolean outputPortRemoved) {
-        Map<Integer, Integer> outputPortMapping = new HashMap<>();
-        //no output port has been removed, all output port indices remain the same
-        if (!outputPortRemoved) {
-            var portConfig = creationConfigCopy.getPortConfig();
-            var inputLength = portConfig.isPresent() ? (portConfig.get().getInputPorts().length + 1) : 0;
-            for (int i = 0; i < inputLength; i++) {
-                outputPortMapping.put(i, i);
-            }
-        } else { //removed input port at index portIndex, map portIndex to -1 and all following indices to index -1
-            for (int i = 0; i < portGroupLength; i++) {
-                if (i < portIndex) {
-                    outputPortMapping.put(i, i);
-                } else if (i == portIndex) {
-                    outputPortMapping.put(i, -1);
-                } else {
-                    outputPortMapping.put(i, (i - 1));
-                }
-            }
-        }
-        return outputPortMapping;
-    }
-
-    /*
-     * maps port indices before removal to indices after removal, required to update connections on ports correctly
-     *  index of removed port is mapped to -1
-     */
-    private static Pair<Map<Integer, Integer>, Map<Integer, Integer>> getPortMappingForPortRemoval(
-        final ModifiableNodeCreationConfiguration creationConfigCopy, final int portIndex, final int portGroupLength,
-        final boolean inputPort, final boolean outputPort) {
-        Map<Integer, Integer> inputPortMapping =
-            getInputPortMapping(creationConfigCopy, portIndex, portGroupLength, inputPort);
-        Map<Integer, Integer> outputPortMapping =
-            getOutputPortMapping(creationConfigCopy, portIndex, portGroupLength, outputPort);
-        return new Pair<>(inputPortMapping, outputPortMapping);
+        return pair;
     }
 
     private static ExtendablePortGroup getExtendablePortGroup(final ModifiableNodeCreationConfiguration creationConfig,
