@@ -122,6 +122,13 @@
                 <message_argument value="getWorkflowManager()"/>
             </message_arguments>
         </filter>
+        <filter id="404918348">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project"/>
+                <message_argument value="8"/>
+                <message_argument value="4"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.project.Project"/>
@@ -388,6 +395,12 @@
                 <message_argument value="WorkflowMiddleware(ProjectManager, SpaceProviders)"/>
             </message_arguments>
         </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.WorkflowMiddleware"/>
+                <message_argument value="buildWorkflowChangedEvent(WorkflowKey, PatchEntCreator, String, boolean, WorkflowChangesTracker)"/>
+            </message_arguments>
+        </filter>
         <filter id="640712815">
             <message_arguments>
                 <message_argument value="WorkflowLock"/>
@@ -398,6 +411,11 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="WorkflowMiddleware(ProjectManager, SpaceProvidersManager)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildWorkflowChangedEvent(WorkflowKey, PatchEntCreator, String, boolean)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -540,11 +558,31 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultNodeService.java" type="org.knime.gateway.impl.webui.service.DefaultNodeService">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeService"/>
+                <message_argument value="getComponentDescription(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultSpaceService.java" type="org.knime.gateway.impl.webui.service.DefaultSpaceService">
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.DefaultSpaceService"/>
+                <message_argument value="deleteItems(String, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultSpaceService"/>
                 <message_argument value="getSpaceProvider(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultSpaceService"/>
+                <message_argument value="moveOrCopyItems(String, String, List&lt;String&gt;, String, String, Boolean)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -891,7 +929,19 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="deleteItems(List&lt;String&gt;, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
                 <message_argument value="toLocalAbsolutePath(ExecutionMonitor, String, VersionId)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="deleteItems(List&lt;String&gt;)"/>
             </message_arguments>
         </filter>
         <filter id="405901410">
@@ -1022,6 +1072,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddComponentCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddComponentResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAddComponentResultEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddNodeCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt">
         <filter id="337768515">
             <message_arguments>
@@ -1031,6 +1095,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultAddNodeCommandEnt(WorkflowCommandEnt.KindEnum, XYEnt, NodeFactoryKeyEnt, String, SpaceItemReferenceEnt, NodeIDEnt, Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddNodeProblemEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddNodeProblemEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAddNodeProblemEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1936,6 +2007,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultPortTypeEnt(String, PortTypeEnt.KindEnum, String, List&lt;String&gt;, Boolean, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProblemMessageEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProblemMessageEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProblemMessageEnt"/>
             </message_arguments>
         </filter>
     </resource>
