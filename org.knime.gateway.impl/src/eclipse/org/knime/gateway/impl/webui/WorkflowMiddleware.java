@@ -277,13 +277,10 @@ public final class WorkflowMiddleware {
      * @param patchEntCreator creator for the patch which is supplied with the {@link WorkflowChangedEventEnt}
      * @param snapshotId the latest snapshot id
      * @param includeInteractionInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
-     * @param changes A workflow changes tracker to determine if and how to build the event (TODO unused - but still
-     *            could come handy in the future)
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo,
-        final WorkflowChangesTracker changes) {
+        final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo) {
         WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);

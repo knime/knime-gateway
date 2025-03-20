@@ -85,6 +85,8 @@ public final class CallThrottle {
     private final boolean m_delayWhenIdle;
 
     /**
+     * -
+     *
      * @param call the logic to be run on {@link #invoke()}
      * @param threadName the name of the thread being used
      */
@@ -93,6 +95,8 @@ public final class CallThrottle {
     }
 
     /**
+     * -
+     *
      * @param call the logic to be run on {@link #invoke()}
      * @param threadName the name of the thread being used
      * @param delayWhenIdle whether to briefly delay a call while no other call is in progress - optimization to avoid
@@ -147,15 +151,11 @@ public final class CallThrottle {
                     m_callState = CallState.IN_PROGRESS;
                     throttleAndExecuteInLoop();
                 });
-                return;
             }
         } else {
             if (m_callState == CallState.IDLE) {
                 m_callState = CallState.IN_PROGRESS;
-                m_executorService.execute(() -> {
-                    throttleAndExecuteInLoop();
-                });
-                return;
+                m_executorService.execute(this::throttleAndExecuteInLoop);
             }
         }
     }
