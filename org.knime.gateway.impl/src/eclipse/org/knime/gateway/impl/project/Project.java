@@ -62,7 +62,6 @@ import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
-import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -97,6 +96,8 @@ public final class Project {
 
     private VersionId m_activeVersion = VersionId.currentState();
 
+    // TODO: Keep the previous version s.t. we could restore in case the new version fails to load
+
     private Project(final Builder builder) {
         this.m_onDispose = builder.m_onDispose;
         this.m_id = builder.m_id;
@@ -130,10 +131,10 @@ public final class Project {
      * @return The currently active root workflow manager version of this project. This might mean loading it, or
      *         obtaining it via reference. If this call succeeds, the workflow manager can be understood to be loaded.
      */
-    public WorkflowManager getWorkflowManager() {
+    public Optional<WorkflowManager> getWorkflowManager() {
         return (this.m_activeVersion instanceof VersionId.Fixed version) ? //
-            this.m_cachedVersions.get(version) : //
-            this.m_cachedWfm.get(); //
+            this.getVersion(version) : //
+            Optional.of(this.m_cachedWfm.get()); //
     }
 
     /**
@@ -150,18 +151,49 @@ public final class Project {
     }
 
     /**
-     * This only get's called when via
-     * {@link WorkflowService#getWorkflow(String, org.knime.gateway.api.entity.NodeIDEnt, Boolean, String)}.
+     * To get a fixed version, we first have to set the active version. Then we load it via
+     * {@link #getWorkflowManager()}}.
+     */
+    private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
+        if (this.m_getVersion == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
+    }
+
+    /**
+     * Set the active version of the project
      *
      * @param version
-     * @return The workflow manager in the project of a given {@link VersionId}.
      */
-    public Optional<WorkflowManager> getWorkflowManagerAndSetActiveVersion(final VersionId version) {
+    public void setActiveVersion(final VersionId version) {
+        // TODO: Consider we first set the active version and then try to load it via 'getWorkflowManager'.
+        //       In case that fails, we should reset the active version.
         this.m_activeVersion = version;
-        if (version instanceof VersionId.Fixed fixedVersion) {
-            return this.getVersion(fixedVersion);
+    }
+
+    /**
+     * @param version
+     * @return Whether the supplied version is the currently active one.
+     */
+    public boolean isActiveVersion(final VersionId version) {
+        if (version == null) {
+            return false;
         }
-        return Optional.ofNullable(this.m_cachedWfm.get());
+
+        if (version instanceof VersionId.Fixed fixedVersion) {
+            if (this.m_activeVersion instanceof VersionId.Fixed activeVersion) {
+                return activeVersion.equals(fixedVersion);
+            }
+        }
+
+        if (version instanceof VersionId.CurrentState currentState) {
+            if (this.m_activeVersion instanceof VersionId.CurrentState activeVersion) {
+                return activeVersion.equals(currentState);
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -169,13 +201,6 @@ public final class Project {
      */
     public boolean isReadOnly() {
         return this.m_activeVersion instanceof VersionId.Fixed;
-    }
-
-    private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        if (this.m_getVersion == null) {
-            return Optional.empty();
-        }
-        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
     /**

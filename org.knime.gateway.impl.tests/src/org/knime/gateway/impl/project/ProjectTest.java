@@ -184,8 +184,7 @@ public class ProjectTest {
     }
 
     /**
-     * Tests {@link Project#getWorkflowManagerAndSetActiveVersion(VersionId)} and
-     * {@link Project#getWorkflowManager()}.
+     * Tests {@link Project#getWorkflowManager()} with versions.
      *
      * @throws Exception
      */
@@ -197,24 +196,26 @@ public class ProjectTest {
             .build();
 
         // Project version is mutable
-        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.currentState()), is(Optional.of(m_wfm)));
-        assertThat(project.getWorkflowManager(), is(m_wfm));
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfm)));
+        assertThat(project.isReadOnly(), is(false));
+        project.setActiveVersion(VersionId.currentState());
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfm)));
         assertThat(project.isReadOnly(), is(false));
 
+
         // Project version 1 is immutable
-        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("1")), is(Optional.of(m_wfmv1)));
-        assertThat(project.getWorkflowManager(), is(m_wfmv1));
+        project.setActiveVersion(VersionId.parse("1"));
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfmv1)));
         assertThat(project.isReadOnly(), is(true));
 
         // Project version 2 is immutable
-        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("2")), is(Optional.of(m_wfmv2)));
-        assertThat(project.getWorkflowManager(), is(m_wfmv2));
+        project.setActiveVersion(VersionId.parse("2"));
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfmv2)));
         assertThat(project.isReadOnly(), is(true));
     }
 
     /**
-     * Tests {@link Project#getWorkflowManagerAndSetActiveVersion(VersionId)} and
-     * {@link Project#getWorkflowManagerIfLoaded()}.
+     * Tests {@link Project#getWorkflowManagerIfLoaded()} with versions.
      *
      * @throws Exception
      */
@@ -227,30 +228,31 @@ public class ProjectTest {
             .setVersionWfmLoader(m_versionLoader) //
             .build();
 
-        // Project not loaded
+        // Current version
+        project.setActiveVersion(VersionId.currentState());
         assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.empty()));
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfm)));
+        assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.of(m_wfm)));
 
-        // Project loaded
-        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.currentState()), is(Optional.of(m_wfm)));
-        assertThat(project.getWorkflowManager(), is(m_wfm));
+        // Version 1
+        project.setActiveVersion(VersionId.parse("1"));
+        assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.empty()));
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfmv1)));
+        assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.of(m_wfmv1)));
 
-        // Project version 1 loaded
-        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("1")), is(Optional.of(m_wfmv1)));
-        assertThat(project.getWorkflowManager(), is(m_wfmv1));
-
-        // Project version 2 loaded
-        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("2")), is(Optional.of(m_wfmv2)));
+        // Version 2
+        project.setActiveVersion(VersionId.parse("2"));
+        assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.empty()));
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfmv2)));
         assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.of(m_wfmv2)));
     }
 
     private void assertBaseMethodsWork(final Project project) throws Exception {
         assertThat(project.getName(), is("Test project"));
         assertThat(project.getID(), not(emptyOrNullString()));
-        assertThat(project.getWorkflowManager(), is(m_wfm));
+        assertThat(project.getWorkflowManager(), is(Optional.of(m_wfm)));
         assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.of(m_wfm)));
         assertThat(project.getOrigin(), isA(Optional.class));
-        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.currentState()), isA(Optional.class));
-        assertThat(project.isReadOnly(), is(false));
         project.dispose(); // No exception thrown
         assertThat(Integer.valueOf(project.hashCode()), isA(Integer.class));
         assertThat(project.equals(project), is(true));
