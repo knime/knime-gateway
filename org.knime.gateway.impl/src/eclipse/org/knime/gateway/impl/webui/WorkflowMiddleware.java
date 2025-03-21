@@ -153,8 +153,10 @@ public final class WorkflowMiddleware {
     @SuppressWarnings("java:S1176") // javadoc
     public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager) {
         m_spaceProvidersManager = spaceProvidersManager;
-        projectManager
-            .addProjectRemovedListener(projectId -> clearWorkflowState(k -> k.getProjectId().equals(projectId)));
+        projectManager.addProjectRemovedListener(
+            projectId -> clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId)));
+        projectManager.addVersionDisposedListener((projectId, version) -> clearWorkflowState(
+            wfKey -> wfKey.getProjectId().equals(projectId) && wfKey.getVersionId().equals(version)));
     }
 
     private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
@@ -211,6 +213,7 @@ public final class WorkflowMiddleware {
 
     /**
      * Get the latest snapshot ID
+     * 
      * @param wfKey The workflow to query
      * @return The snapshot-id of the most recent commit, or an empty optional if there are no commits yet.
      */
@@ -343,6 +346,7 @@ public final class WorkflowMiddleware {
 
     /**
      * -
+     * 
      * @param wfKey -
      * @return <code>true</code> if there is state cached for the workflow represented by the given workflow key
      */
