@@ -49,9 +49,11 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.knime.core.node.workflow.NodeContainer;
@@ -91,47 +93,51 @@ public final class AlignNodes extends AbstractPartBasedWorkflowCommand {
      */
     @Override
     protected boolean executeWithLockedWorkflow() throws ServiceCallException {
-        alignNodes(getWorkflowManager(), getNodeContainers(), m_direction);
-        return true;
+        return alignNodes(getWorkflowManager(), getNodeContainers(), m_direction);
     }
 
     /**
      * Align selected nodes
      *
-     * @param wfm The workflow manager to operate in
-     * @param nodes The nodes to align
+     * @param wfm       The workflow manager to operate in
+     * @param nodes     The nodes to align
      * @param direction The direction in which to align the nodes
+     * @return <code>true</code> if the command changed the position of nodes, <code>false</code> if the successful execution of
+     * the command did not change the position of nodes
      */
-    private void alignNodes(final WorkflowManager wfm, final Set<NodeContainer> nodes, final DirectionEnum direction) {
-        // TODO: exit early if all nodes already have same coords in given direction, decide on "firstNode" like in workbench
-
-        Optional<NodeContainer> optionalFirstNodeContainer = nodes.stream().findFirst();
-        if (optionalFirstNodeContainer.isPresent()) {
-            NodeContainer firstNodeContainer = optionalFirstNodeContainer.get();
-            int[] firstBounds = firstNodeContainer.getUIInformation().getBounds();
-
-            nodes.forEach(node -> {
-                int[] bounds = node.getUIInformation().getBounds();
-                m_previousNodeBounds.put(node.getID(), bounds);
-
-                int[] newBounds = Arrays.copyOf(bounds, bounds.length);
-
-                if (direction == DirectionEnum.HORIZONTAL) {
-                    newBounds[1] = firstBounds[1];
-                } else if (direction == DirectionEnum.VERTICAL) {
-                    newBounds[0] = firstBounds[0];
-                }
-
-                NodeUIInformation newNodeUIInfo = NodeUIInformation.builder()
-                    .setNodeLocation(newBounds[0], newBounds[1], newBounds[2], newBounds[3]).build();
-                node.setUIInformation(newNodeUIInfo);
-            });
+    private boolean alignNodes(final WorkflowManager wfm, final Set<NodeContainer> nodes, final DirectionEnum direction) {
+        if (nodes.isEmpty()) {
+            return false;
         }
 
-        // TODO better check?
-        if (!nodes.isEmpty()) {
-            wfm.setDirty();
+        List<int[]> xyCoords = nodes.stream().map(NodeContainer::getUIInformation).map(NodeUIInformation::getBounds).map(bound -> Arrays.copyOfRange(bound, 0, 2)).toList();
+        List<Integer> xVals = xyCoords.stream().map(xyCoord -> xyCoord[0]).toList();
+        List<Integer> yVals = xyCoords.stream().map(xyCoord -> xyCoord[1]).toList();
+        boolean areAlignedVertically = new HashSet<Integer>(xVals).size() <= 1;
+        boolean areAlignedHorizontally = new HashSet<Integer>(yVals).size() <= 1;
+        if (m_direction == DirectionEnum.VERTICAL && areAlignedVertically || m_direction == DirectionEnum.HORIZONTAL && areAlignedHorizontally) {
+            return false;
         }
+
+        Integer minX = Collections.min(xVals);
+        Integer minY = Collections.min(yVals);
+        nodes.forEach(node -> {
+            int[] bounds = node.getUIInformation().getBounds();
+            m_previousNodeBounds.put(node.getID(), bounds);
+
+            int[] newBounds = Arrays.copyOf(bounds, bounds.length);
+            if (direction == DirectionEnum.HORIZONTAL) {
+                newBounds[1] = minY;
+            } else if (direction == DirectionEnum.VERTICAL) {
+                newBounds[0] = minX;
+            }
+            NodeUIInformation newNodeUIInfo = NodeUIInformation.builder().setNodeLocation(newBounds[0], newBounds[1], newBounds[2], newBounds[3]).build();
+
+            node.setUIInformation(newNodeUIInfo);
+        });
+
+        wfm.setDirty();
+        return true;
     }
 
     /**
@@ -140,19 +146,18 @@ public final class AlignNodes extends AbstractPartBasedWorkflowCommand {
      * @param wfm The workflow manager to operate in
      */
     private void resetToPreviousPositions(final WorkflowManager wfm) {
+        if (m_previousNodeBounds.size() == 0) {
+            return;
+        }
+
         m_previousNodeBounds.entrySet().stream().forEach(e -> {
             NodeContainer node = wfm.getNodeContainer(e.getKey());
             int[] bounds = e.getValue();
-            NodeUIInformation nodeUIInfo =
-                NodeUIInformation.builder().setNodeLocation(bounds[0], bounds[1], bounds[2], bounds[3]).build();
+            NodeUIInformation nodeUIInfo = NodeUIInformation.builder().setNodeLocation(bounds[0], bounds[1], bounds[2], bounds[3]).build();
             node.setUIInformation(nodeUIInfo);
         });
 
-     // TODO better check?
-        if (m_previousNodeBounds.size() > 0) {
-            wfm.setDirty();
-        }
-
+        wfm.setDirty();
         m_previousNodeBounds.clear();
     }
 }
