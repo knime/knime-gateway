@@ -46,11 +46,14 @@
 package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,6 +62,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -83,6 +87,8 @@ public final class ProjectManager {
     private final ResortableMap<String, ProjectInternal> m_projectsMap = new ResortableMap<>();
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
+
+    private final Set<BiConsumer<String, VersionId>> m_versionDisposedListeners = new HashSet<>();
 
     private String m_activeProjectId;
 
@@ -259,7 +265,25 @@ public final class ProjectManager {
     }
 
     /**
-     * @param projectId
+     * Dispose of a version workflow manager instance.
+     * <p>
+     * Calling this method here allows registration and notification of general listeners not tied to a specific
+     * {@link Project} instance.
+     * 
+     * @param projectId -
+     * @param version -
+     */
+    public void disposeVersion(final String projectId, final VersionId version) {
+        getProject(projectId).ifPresent(project -> {
+            project.dispose(version);
+            m_versionDisposedListeners.forEach(l -> l.accept(project.getID(), version));
+        });
+    }
+
+    /**
+     * Get a project by ID.
+     * 
+     * @param projectId -
      * @return the project for the given id or an empty optional if it doesn't exist
      */
     public Optional<Project> getProject(final String projectId) {
@@ -292,6 +316,19 @@ public final class ProjectManager {
      */
     public void addProjectRemovedListener(final Consumer<String> listener) {
         m_projectRemovedListeners.add(listener);
+    }
+
+    /**
+     * Add a listener to be notified when a version workflow manager instance is disposed of explicitly. The project ID
+     * and corresponding version are provided to the listener. This does not trigger when the entire project is
+     * disposed.
+     * 
+     * @param listener the listener to be added
+     * @see #addProjectRemovedListener(Consumer)
+     * @see #disposeVersion(String, VersionId)
+     */
+    public void addVersionDisposedListener(final BiConsumer<String, VersionId> listener) {
+        m_versionDisposedListeners.add(listener);
     }
 
     /**

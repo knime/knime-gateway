@@ -51,7 +51,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -70,39 +69,119 @@ import org.knime.gateway.impl.util.Lazy;
  */
 public final class Project {
 
-    private static final int VERSION_WFM_CACHE_MAX_SIZE = 5;
-
-    private final Consumer<WorkflowManager> m_onDispose;
-
     private final String m_id;
 
     private final String m_name;
 
     private final Origin m_origin;
 
-    private final Function<VersionId.Fixed, WorkflowManager> m_getVersion;
-
-    private final Map<VersionId.Fixed, WorkflowManager> m_cachedVersions = new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
-
-    private final Lazy.Init<WorkflowManager> m_cachedWfm;
-
     private final Runnable m_clearReport;
 
     private final Function<String, byte[]> m_generateReport;
 
+    private final WorkflowManagerCache m_wfmCache;
+
     private Project(final Builder builder) {
-        this.m_onDispose = builder.m_onDispose;
         this.m_id = builder.m_id;
         this.m_name = builder.m_name;
         this.m_origin = builder.m_origin;
-        this.m_getVersion = builder.m_getVersion;
-        this.m_cachedWfm = builder.m_loadedWfm != null ? //
-            new Lazy.Init<>(builder.m_loadedWfm) : //
-            new Lazy.Init<>(builder.m_getWfm);
-        this.m_clearReport = builder.m_clearReport != null ? //
-            builder.m_clearReport : //
-            () -> {};
+        this.m_wfmCache = new WorkflowManagerCache(builder.m_wfmLoader, builder.m_onDispose);
+        this.m_clearReport = (builder.m_clearReport != null) ? builder.m_clearReport : () -> {
+        };
         this.m_generateReport = builder.m_generateReport;
+    }
+
+    /**
+     * Generate a unique project ID.
+     * 
+     * @param projectName The human-readable name of the project
+     * @return a globally unique project id combined with the given project name
+     */
+    public static String getUniqueProjectId(final String projectName) {
+        return projectName + "_" + UUID.randomUUID();
+    }
+
+    /**
+     * Caches loaded {@link WorkflowManager} instances associated with a project.
+     * <p>
+     * For fixed versions, we want an LRU cache. The current-state a.k.a. working area
+     * should be kept indefinitely.
+     */
+    private static class WorkflowManagerCache {
+
+        private final WorkflowManagerLoader m_wfmLoader;
+
+        private final Lazy.Init<WorkflowManager> m_currentState;
+
+        private static final int VERSION_WFM_CACHE_MAX_SIZE = 5;
+
+        private final Map<VersionId.Fixed, WorkflowManager> m_fixedVersions =
+            new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
+
+        private final Consumer<WorkflowManager> m_onDispose;
+
+        public WorkflowManagerCache(final WorkflowManagerLoader wfmLoader, final Consumer<WorkflowManager> onDispose) {
+            this.m_wfmLoader = wfmLoader;
+            this.m_onDispose = onDispose;
+            this.m_currentState = new Lazy.Init<>(() -> wfmLoader.apply(VersionId.currentState()));
+        }
+
+        /**
+         * Get a value, computing it if not yet cached.
+         * @param version
+         * @return
+         */
+        WorkflowManager get(final VersionId version) {
+            if (version instanceof VersionId.CurrentState) {
+                return m_currentState.get();
+            } else {
+                return m_fixedVersions.computeIfAbsent((VersionId.Fixed)version, m_wfmLoader);
+            }
+        }
+
+        void clearCurrentState() {
+            m_currentState.ifInitialized(this::disposeWorkflowManager);
+            m_currentState.clear();
+        }
+
+        void dispose() {
+            clearCurrentState();
+            m_fixedVersions.values().forEach(this::disposeWorkflowManager);
+            m_fixedVersions.clear();
+        }
+
+        void dispose(final VersionId version) {
+            if (version instanceof VersionId.CurrentState) {
+                clearCurrentState();
+            } else {
+                var cachedWfm = m_fixedVersions.remove(version);
+                if (cachedWfm != null) {
+                    disposeWorkflowManager(cachedWfm);
+                }
+            }
+        }
+
+        boolean contains(final VersionId version) {
+            if (version instanceof VersionId.CurrentState) {
+                return m_currentState.isInitialized();
+            } else {
+                return m_fixedVersions.containsKey(version);
+            }
+        }
+
+        private void disposeWorkflowManager(final WorkflowManager wfm) {
+            if (wfm == null) {
+                return;
+            }
+            if (this.m_onDispose != null) {
+                this.m_onDispose.accept(wfm);
+            }
+            try {
+                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
+            } catch (InterruptedException e) { // NOSONAR
+                NodeLogger.getLogger(Project.class).error(e);
+            }
+        }
     }
 
     /**
@@ -125,7 +204,7 @@ public final class Project {
      *         loaded.
      */
     public WorkflowManager getWorkflowManager() {
-        return m_cachedWfm.get();
+        return m_wfmCache.get(VersionId.currentState());
     }
 
     /**
@@ -133,8 +212,8 @@ public final class Project {
      *         workflow manager is not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return this.m_cachedWfm.isInitialized() ? //
-            Optional.of(this.m_cachedWfm.get()) : //
+        return this.m_wfmCache.contains(VersionId.currentState()) ? //
+            Optional.of(m_wfmCache.get(VersionId.currentState())) : //
             Optional.empty();
     }
 
@@ -147,48 +226,30 @@ public final class Project {
     }
 
     /**
-     * @param version
-     * @return The workflow manager in the project of a given {@link VersionId}.
+     * Obtain the workflow manager instance for the given workflow.
+     * 
+     * @param version The version of the workflow manager
+     * @return The workflow manager instance
      */
     public Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
-        if (version instanceof VersionId.Fixed fixedVersion) {
-            return this.getVersion(fixedVersion);
-        }
-        return Optional.ofNullable(this.getWorkflowManager());
+        return Optional.ofNullable(m_wfmCache.get(version));
     }
 
     /**
-     * @param version
-     * @return The workflow manager in the project of a given {@link VersionId.Fixed} version.
+     * Dispose the entire project.
      */
-    public Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        if (this.m_getVersion == null) {
-            return Optional.empty();
-        }
-        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
+    void dispose() {
+        this.m_wfmCache.dispose();
     }
 
     /**
-     * Dispose the project.
+     * Call via {@link ProjectManager#disposeVersion(String, VersionId)} to allow invocation of listeners that can not
+     * be attached to specific instances.
+     * 
+     * @param version Dispose the loaded workflow manager instance (if any) associated with this version.
      */
-    public void dispose() {
-        this.m_cachedWfm.ifInitialized(this::disposeWorkflow);
-        this.m_cachedVersions.values().forEach(this::disposeWorkflow);
-        this.m_cachedVersions.clear();
-    }
-
-    private void disposeWorkflow(final WorkflowManager wfm) {
-        if (wfm == null) {
-            return;
-        }
-        if (this.m_onDispose != null) {
-            this.m_onDispose.accept(wfm);
-        }
-        try {
-            CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-        } catch (InterruptedException e) { // NOSONAR
-            NodeLogger.getLogger(Project.class).error(e);
-        }
+    void dispose(final VersionId version) {
+        m_wfmCache.dispose(version);
     }
 
     /**
@@ -263,7 +324,7 @@ public final class Project {
         interface RequiresWorkflow {
             Optionals setWfm(final WorkflowManager wfm);
 
-            RequiresName setWfmLoader(final Supplier<WorkflowManager> getWfm);
+            RequiresName setWfmLoader(final WorkflowManagerLoader getWfm);
         }
 
         /**
@@ -276,10 +337,9 @@ public final class Project {
         /**
          * Builder stage offering optional properties.
          */
+        @SuppressWarnings("java:S1176") // javadoc
         interface Optionals extends RequiresId, RequiresName {
             Optionals setOrigin(Origin origin);
-
-            Optionals setVersionWfmLoader(Function<VersionId.Fixed, WorkflowManager> getVersion);
 
             Optionals onDispose(Consumer<WorkflowManager> onDispose);
 
@@ -301,17 +361,13 @@ public final class Project {
     private static final class Builder implements BuilderStage.RequiresId, BuilderStage.RequiresWorkflow,
         BuilderStage.RequiresName, BuilderStage.Optionals {
 
-        private Supplier<WorkflowManager> m_getWfm;
-
-        private WorkflowManager m_loadedWfm;
+        private WorkflowManagerLoader m_wfmLoader;
 
         private String m_id;
 
         private String m_name;
 
         private Origin m_origin;
-
-        private Function<VersionId.Fixed, WorkflowManager> m_getVersion;
 
         private Consumer<WorkflowManager> m_onDispose;
 
@@ -323,27 +379,19 @@ public final class Project {
             //
         }
 
-        /**
-         * @param projectName
-         * @return a globally unique project id combined with the given project name
-         */
-        private static String getUniqueProjectId(final String projectName) {
-            return projectName + "_" + UUID.randomUUID();
-        }
-
         @Override
         public BuilderStage.Optionals setWfm(final WorkflowManager wfm) {
             Objects.requireNonNull(wfm);
-            m_loadedWfm = wfm;
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
+            m_wfmLoader = WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm);
             return this;
         }
 
         @Override
-        public BuilderStage.RequiresName setWfmLoader(final Supplier<WorkflowManager> supplier) {
+        public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader supplier) {
             Objects.requireNonNull(supplier);
-            m_getWfm = supplier;
+            m_wfmLoader = supplier;
             return this;
         }
 
@@ -376,16 +424,6 @@ public final class Project {
         @Override
         public Builder setOrigin(final Origin origin) {
             m_origin = origin;
-            return this;
-        }
-
-        /**
-         * @param getVersion
-         * @return this
-         */
-        @Override
-        public Builder setVersionWfmLoader(final Function<VersionId.Fixed, WorkflowManager> getVersion) {
-            m_getVersion = getVersion;
             return this;
         }
 

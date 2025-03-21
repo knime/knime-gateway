@@ -50,7 +50,6 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.workflow.NodeContainer;
@@ -71,6 +70,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -93,6 +93,9 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final SpaceProvidersManager m_spaceProvidersManager =
         ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, false);
+
+    private final ProjectManager m_projectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -146,7 +149,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
         try {
             final var linkedComponentsToStateMap = CoreUtil.getLinkedComponentToStateMap(wfm);
-            final var candidateList = linkedComponentsToStateMap.entrySet().stream().map(Entry::getKey).toList();
+            final var candidateList = linkedComponentsToStateMap.keySet().stream().toList();
             final var componentUpdateResult = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(
                 wfm, "org.knime.gateway.impl", candidateList, new NullProgressMonitor());
             return componentUpdateResult.updateList().stream()//
@@ -160,6 +163,12 @@ public final class DefaultWorkflowService implements WorkflowService {
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
         }
+    }
+
+    @Override
+    public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        m_projectManager.disposeVersion(projectId, VersionId.parse(versionParameter));
     }
 
     /**
