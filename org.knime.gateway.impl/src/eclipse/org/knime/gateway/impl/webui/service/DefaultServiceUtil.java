@@ -65,6 +65,7 @@ import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -136,6 +137,33 @@ final class DefaultServiceUtil {
         var hiLiteHandler = tableViewManager.getHiLiteHandler(nodeWrapper).orElseThrow();
         final var selectionEventMode = SelectionEventEnt.ModeEnum.valueOf(mode.toUpperCase(Locale.ROOT));
         SelectionEventBus.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
+    }
+
+    /**
+     * Assert that the currently active project version is mutable
+     *
+     * @param projectId
+     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
+     * @throws ProjectNotMutableException if the project is not mutable
+     */
+    static void assertProjectVersionIsMutable(final String projectId) {
+        final var isReadOnly = ProjectManager.getInstance().getProject(projectId)
+            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
+            .isReadOnly();
+        if (isReadOnly) {
+            throw new ProjectNotMutableException("Project is read-only."); // TODO: Use a different exception?
+        }
+    }
+
+    /**
+     * Exception thrown when trying to modify a read-only project.
+     */
+    @SuppressWarnings("serial")
+    static class ProjectNotMutableException extends RuntimeException {
+
+        ProjectNotMutableException(final String projectId) {
+            super("Project is read-only: " + projectId);
+        }
     }
 
 }

@@ -279,6 +279,34 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 && versionWorkflow.getInfo().getVersion().equals(version.toString()));
     }
 
+    public void testExecutionThrowsWhenReadOnlyVersion() throws Exception {
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+
+        // Current version, doesn't throw
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow();
+        var command = buildAddNodeCommand("org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", null, 12, 13,
+            null, null, null);
+        ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+        ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
+        ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID());
+
+        // Earlier version, throws
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, "5").getWorkflow();
+        var ex1 = assertThrows(RuntimeException.class,
+            () -> ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command));
+        assertThat(ex1.getMessage(), containsString("Project is read-only"));
+        var ex2 =
+            assertThrows(RuntimeException.class, () -> ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
+        assertThat(ex2.getMessage(), containsString("Project is read-only"));
+        var ex3 =
+            assertThrows(RuntimeException.class, () -> ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
+        assertThat(ex3.getMessage(), containsString("Project is read-only"));
+    }
+
     /**
      * Tests to get a workflow of a component workflow.
      */

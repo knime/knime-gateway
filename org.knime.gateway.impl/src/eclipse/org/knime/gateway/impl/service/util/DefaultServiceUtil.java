@@ -112,10 +112,18 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * @see this#getWorkflowManager(String, VersionId, NodeIDEnt)
+     * Gets the (sub-)workflow manager for the given root workflow id and node id.
+     *
+     * @param projectId the root workflow id
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
+     * @return the {@link WorkflowManager}-instance of the currently active version
+     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
+     * @throws IllegalArgumentException if there is no node for the given node id
+     * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
+     *             or the workflow is encrypted
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
-        return getWorkflowManager(projectId, VersionId.currentState(), workflowId);
+        return parseWfm(findNodeContainer(getProjectWfm(projectId), workflowId));
     }
 
     /**
@@ -165,7 +173,9 @@ public final class DefaultServiceUtil {
      * @throws NoSuchElementException if there is not project for the id registered
      */
     public static WorkflowManager getProjectWfm(final String projectId) {
-        return getProjectWfm(projectId, VersionId.currentState());
+        return ProjectManager.getInstance().getProject(projectId)
+                .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
+                .getWorkflowManager(); // Always yields the 'wfm' of the currently active version
     }
 
     /**
@@ -179,7 +189,7 @@ public final class DefaultServiceUtil {
     private static WorkflowManager getProjectWfm(final String projectId, final VersionId version) {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .getWorkflowManager(version)
+            .getWorkflowManagerAndSetActiveVersion(version)
             .orElseThrow(() -> new NoSuchElementException("Workflow for version \"" + version + "\" not found."));
     }
 
@@ -210,7 +220,7 @@ public final class DefaultServiceUtil {
      * @return the {@link NodeID} instance
      */
     public static NodeID entityToNodeID(final String projectId, final NodeIDEnt nodeID) {
-        return nodeID.toNodeID(getProjectWfm(projectId, VersionId.currentState()));
+        return nodeID.toNodeID(getProjectWfm(projectId));
     }
 
     /**

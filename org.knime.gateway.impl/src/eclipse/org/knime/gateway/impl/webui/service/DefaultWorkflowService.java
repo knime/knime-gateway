@@ -167,6 +167,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
         var spaceProviders = m_spaceProvidersManager == null ? null : //
             m_spaceProvidersManager.getSpaceProviders( //
                 DefaultServiceContext.getProjectId().map(Key::of) //
@@ -182,6 +183,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
@@ -191,6 +193,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 

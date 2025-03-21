@@ -413,6 +413,7 @@ public final class WorkflowMiddleware {
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
         private WorkflowState(final WorkflowKey wfKey) {
+            // Fetches the 'wfm' of the requested version
             m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(),
                 wfKey.getWorkflowId());
         }

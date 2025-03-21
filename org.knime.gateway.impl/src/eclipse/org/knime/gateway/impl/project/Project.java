@@ -62,6 +62,7 @@ import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -94,6 +95,8 @@ public final class Project {
 
     private final Function<String, byte[]> m_generateReport;
 
+    private VersionId m_activeVersion = VersionId.currentState();
+
     private Project(final Builder builder) {
         this.m_onDispose = builder.m_onDispose;
         this.m_id = builder.m_id;
@@ -113,33 +116,66 @@ public final class Project {
      * @return the name of the project
      */
     public String getName() {
-        return m_name;
+        return this.m_name;
     }
 
     /**
      * @return an id of the project
      */
     public String getID() {
-        return m_id;
+        return this.m_id;
     }
 
     /**
-     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project. This might mean loading
-     *         it, or obtaining it via reference. If this call succeeds, the workflow manager can be understood to be
-     *         loaded.
+     * @return The currently active root workflow manager version of this project. This might mean loading it, or
+     *         obtaining it via reference. If this call succeeds, the workflow manager can be understood to be loaded.
      */
     public WorkflowManager getWorkflowManager() {
-        return m_cachedWfm.get();
+        return (this.m_activeVersion instanceof VersionId.Fixed version) ? //
+            this.m_cachedVersions.get(version) : //
+            this.m_cachedWfm.get(); //
     }
 
     /**
-     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project, or empty if that
-     *         workflow manager is not yet loaded.
+     * @return The currently active root workflow manager version of this project, or empty if that workflow manager is
+     *         not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
+        if (this.m_activeVersion instanceof VersionId.Fixed version) {
+            return Optional.ofNullable(this.m_cachedVersions.get(version));
+        }
         return this.m_cachedWfm.isInitialized() ? //
             Optional.of(this.m_cachedWfm.get()) : //
             Optional.empty();
+    }
+
+    /**
+     * This only get's called when via
+     * {@link WorkflowService#getWorkflow(String, org.knime.gateway.api.entity.NodeIDEnt, Boolean, String)}.
+     *
+     * @param version
+     * @return The workflow manager in the project of a given {@link VersionId}.
+     */
+    public Optional<WorkflowManager> getWorkflowManagerAndSetActiveVersion(final VersionId version) {
+        this.m_activeVersion = version;
+        if (version instanceof VersionId.Fixed fixedVersion) {
+            return this.getVersion(fixedVersion);
+        }
+        return Optional.ofNullable(this.m_cachedWfm.get());
+    }
+
+    /**
+     * @return Whether the currently active version is read-only.
+     */
+    public boolean isReadOnly() {
+        return this.m_activeVersion instanceof VersionId.Fixed;
+    }
+
+    private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
+        if (this.m_getVersion == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
     /**
@@ -148,28 +184,6 @@ public final class Project {
      */
     public Optional<Origin> getOrigin() {
         return Optional.ofNullable(this.m_origin);
-    }
-
-    /**
-     * @param version
-     * @return The workflow manager in the project of a given {@link VersionId}.
-     */
-    public Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
-        if (version instanceof VersionId.Fixed fixedVersion) {
-            return this.getVersion(fixedVersion);
-        }
-        return Optional.ofNullable(this.getWorkflowManager());
-    }
-
-    /**
-     * @param version
-     * @return The workflow manager in the project of a given {@link VersionId.Fixed} version.
-     */
-    public Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        if (this.m_getVersion == null) {
-            return Optional.empty();
-        }
-        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
     /**

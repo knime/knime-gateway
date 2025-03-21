@@ -85,6 +85,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAl
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
+import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
@@ -139,6 +140,33 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThrows(OperationNotAllowedException.class, () -> {
             ns().changeNodeStates(wfId, getRootID(), singletonList(new NodeIDEnt(1)), "blub");
         });
+    }
+
+    /**
+     * Tests to change the node state only possible with mutable workflow version
+     *
+     * @throws Exception
+     */
+    public void testChangeNodeStateThrowsWhenReadOnlyVersion() throws Exception {
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+
+        // Current version, doesn't throw
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow();
+        ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute");
+        ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "reset");
+
+        // Earlier version, throws
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, "5").getWorkflow();
+        var ex1 = assertThrows(RuntimeException.class,
+            () -> ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute"));
+        assertThat(ex1.getMessage(), containsString("Project is read-only"));
+        var ex2 = assertThrows(RuntimeException.class,
+            () -> ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "reset"));
+        assertThat(ex2.getMessage(), containsString("Project is read-only"));
     }
 
     /**
