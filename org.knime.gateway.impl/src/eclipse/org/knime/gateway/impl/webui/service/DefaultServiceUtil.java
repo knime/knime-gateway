@@ -63,6 +63,7 @@ import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -153,6 +154,36 @@ final class DefaultServiceUtil {
         if (isReadOnly) {
             throw new ProjectNotMutableException("Project is read-only."); // TODO: Use a different exception?
         }
+    }
+
+    /**
+     * Assert that the requested project version is the active version.
+     *
+     * @param projectId
+     * @param version
+     * @throws NoSuchElementException if there is no project for the given id
+     * @throws IllegalStateException if the requested project version is not the active version
+     */
+    static void assertIsActiveProjectVersion(final String projectId, final VersionId version) {
+        final var isActiveVersion = ProjectManager.getInstance().getProject(projectId)
+            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
+            .isActiveVersion(version);
+        if (!isActiveVersion) {
+            throw new IllegalStateException("Requested project version is not the active version.");
+        }
+    }
+
+    /**
+     * Set the active project version.
+     *
+     * @param projectId
+     * @param version
+     * @throws NoSuchElementException if there is no project for the given id
+     */
+    static void setActiveProjectVersion(final String projectId, final VersionId version) {
+        ProjectManager.getInstance().getProject(projectId)
+            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
+            .setActiveVersion(version);
     }
 
     /**

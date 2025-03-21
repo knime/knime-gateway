@@ -67,6 +67,7 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
@@ -82,6 +83,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeDescriptio
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -155,12 +157,11 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(testWorkflowWithVersion);
 
         // Current version, doesn't throw
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow();
         ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute");
         ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "reset");
 
         // Earlier version, throws
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, "5").getWorkflow();
+        ProjectManager.getInstance().getProject(projectId).orElseThrow().setActiveVersion(VersionId.parse("5"));
         var ex1 = assertThrows(RuntimeException.class,
             () -> ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute"));
         assertThat(ex1.getMessage(), containsString("Project is read-only"));

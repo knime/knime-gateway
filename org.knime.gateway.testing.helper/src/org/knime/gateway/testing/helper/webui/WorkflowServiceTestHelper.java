@@ -254,10 +254,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             TestWorkflowCollection.VERSIONS_CURRENT_STATE, //
             TestWorkflowCollection.VERSIONS_EARLIER_VERSION::getWorkflowDir //
         );
-        String wfId = loadWorkflow(testWorkflowWithVersion);
+        var wfId = loadWorkflow(testWorkflowWithVersion);
 
         // this is expected to be the "current-state" workflow
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow();
+        var workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow();
         assertTrue("Current state workflow is returned",
             workflow.getWorkflowAnnotations().stream()
                 .anyMatch(annotation -> annotation.getText().getValue().toLowerCase().contains("current state"))
@@ -271,12 +271,36 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var version = new VersionId.Fixed(5); // actual value does not matter, we always load "the other" workflow
         // using an actual value's toString to make sure this will also parse to a string inside this call
+        ws().setActiveProjectVersion(wfId, NodeIDEnt.getRootID(), version.toString());
         var versionWorkflow =
             ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.TRUE, version.toString()).getWorkflow();
         assertTrue("Version workflow is returned",
             versionWorkflow.getWorkflowAnnotations().stream()
                 .anyMatch(annotation -> annotation.getText().getValue().toLowerCase().contains("earlier version"))
                 && versionWorkflow.getInfo().getVersion().equals(version.toString()));
+    }
+
+    public void testGetWorkflowVersionThrows() throws Exception {
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EARLIER_VERSION::getWorkflowDir //
+        );
+        var wfId = loadWorkflow(testWorkflowWithVersion);
+
+        // Didn't set the active version first, throws
+        var ex1 = assertThrows(IllegalStateException.class,
+            () -> ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, "5").getWorkflow());
+        assertThat(ex1.getMessage(), containsString("Requested project version is not the active version"));
+
+        // Set the wrong version, throws
+        ws().setActiveProjectVersion(wfId, NodeIDEnt.getRootID(), "4");
+        var ex2 = assertThrows(IllegalStateException.class,
+            () -> ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, "5").getWorkflow());
+        assertThat(ex2.getMessage(), containsString("Requested project version is not the active version"));
+
+        // Set the correct version, doesn't throw
+        ws().setActiveProjectVersion(wfId, NodeIDEnt.getRootID(), "5");
+        ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, "5");
     }
 
     public void testExecutionThrowsWhenReadOnlyVersion() throws Exception {
@@ -286,16 +310,20 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
         var projectId = loadWorkflow(testWorkflowWithVersion);
 
-        // Current version, doesn't throw
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, null).getWorkflow();
+        // Current state (implicitly set), doesn't throw
         var command = buildAddNodeCommand("org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", null, 12, 13,
             null, null, null);
+        ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+        ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
+
+        // Current state (explicitly set), doesn't throw
+        ws().setActiveProjectVersion(projectId, NodeIDEnt.getRootID(), "current-state");
         ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
         ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
         ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID());
 
         // Earlier version, throws
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.FALSE, "5").getWorkflow();
+        ws().setActiveProjectVersion(projectId, NodeIDEnt.getRootID(), "5");
         var ex1 = assertThrows(RuntimeException.class,
             () -> ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command));
         assertThat(ex1.getMessage(), containsString("Project is read-only"));
