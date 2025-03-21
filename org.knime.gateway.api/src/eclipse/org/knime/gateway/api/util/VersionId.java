@@ -52,7 +52,7 @@ import java.util.Objects;
  * Identifies a workflow version, i.e. a version assigned to a specific
  * {@link org.knime.core.node.workflow.WorkflowManager}.
  *
- * @implNote `toString` and {@link this#parse(String)} are compatible with the Catalog Service API spec.
+ * @implNote `toString` and {@link VersionId#parse(String)} are compatible with the Catalog Service API spec.
  */
 public sealed class VersionId {
 

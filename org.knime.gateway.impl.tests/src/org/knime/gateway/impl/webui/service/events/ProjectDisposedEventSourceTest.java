@@ -80,7 +80,7 @@ public class ProjectDisposedEventSourceTest {
     public void testProjectDisposedEventSource() throws InvalidRequestException {
         var projectManager = ProjectManager.getInstance();
         var project = Project.builder() //
-            .setWfmLoader(() -> null) //
+            .setWfm(null) //
             .setName("test name") //
             .setId("test id") //
             .build();
