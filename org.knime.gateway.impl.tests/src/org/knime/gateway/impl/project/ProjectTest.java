@@ -59,6 +59,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,17 +75,32 @@ import org.knime.gateway.api.util.VersionId;
 public class ProjectTest {
 
     private final WorkflowManager m_wfm = mock(WorkflowManager.class);
+    private final WorkflowManager m_wfmv1 = mock(WorkflowManager.class);
+    private final WorkflowManager m_wfmv2 = mock(WorkflowManager.class);
+
+    private final Function<VersionId.Fixed, WorkflowManager> m_versionLoader = version -> {
+        if (version.equals(VersionId.parse("1"))) {
+            return m_wfmv1;
+        } else if (version.equals(VersionId.parse("2"))) {
+            return m_wfmv2;
+        }
+        return null;
+    };
 
     @SuppressWarnings("javadoc")
     @Before
     public void setUp() {
         when(m_wfm.getName()).thenReturn("Test project");
+        when(m_wfmv1.getName()).thenReturn("Test project version 1");
+        when(m_wfmv2.getName()).thenReturn("Test project version 2");
     }
 
     @SuppressWarnings("javadoc")
     @After
     public void tearDown() {
         reset(m_wfm);
+        reset(m_wfmv1);
+        reset(m_wfmv2);
     }
 
     /***
@@ -118,7 +134,7 @@ public class ProjectTest {
         var project = Project.builder() //
             .setWfm(m_wfm) //
             .setName("Test project") //
-            .setId("Custom project id") //
+            .setId("Custom project ID") //
             .setOrigin(origin) //
             .setVersionWfmLoader(version -> m_wfm) //
             .onDispose(wfm -> {}) //
@@ -142,7 +158,7 @@ public class ProjectTest {
         var project = Project.builder() //
             .setWfm(m_wfm) //
             .setName("Test project") //
-            .setId("Custom project id") //
+            .setId("Custom project ID") //
             .setOrigin(null) //
             .setVersionWfmLoader(null) //
             .onDispose(null) //
@@ -167,13 +183,74 @@ public class ProjectTest {
             () -> Project.builder().setWfmLoader(() -> m_wfm).setName("Test project").setId(null).build());
     }
 
+    /**
+     * Tests {@link Project#getWorkflowManagerAndSetActiveVersion(VersionId)} and
+     * {@link Project#getWorkflowManager()}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetWorkflowManagerWithVersions() throws Exception {
+        var project = Project.builder() //
+            .setWfm(m_wfm) //
+            .setVersionWfmLoader(m_versionLoader) //
+            .build();
+
+        // Project version is mutable
+        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.currentState()), is(Optional.of(m_wfm)));
+        assertThat(project.getWorkflowManager(), is(m_wfm));
+        assertThat(project.isReadOnly(), is(false));
+
+        // Project version 1 is immutable
+        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("1")), is(Optional.of(m_wfmv1)));
+        assertThat(project.getWorkflowManager(), is(m_wfmv1));
+        assertThat(project.isReadOnly(), is(true));
+
+        // Project version 2 is immutable
+        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("2")), is(Optional.of(m_wfmv2)));
+        assertThat(project.getWorkflowManager(), is(m_wfmv2));
+        assertThat(project.isReadOnly(), is(true));
+    }
+
+    /**
+     * Tests {@link Project#getWorkflowManagerAndSetActiveVersion(VersionId)} and
+     * {@link Project#getWorkflowManagerIfLoaded()}.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetWorkflowManagerIfLoadedWithVersions() throws Exception {
+        var project = Project.builder() //
+            .setWfmLoader(() -> m_wfm) //
+            .setName("Test project") //
+            .setId("Custom project ID") //
+            .setVersionWfmLoader(m_versionLoader) //
+            .build();
+
+        // Project not loaded
+        assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.empty()));
+
+        // Project loaded
+        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.currentState()), is(Optional.of(m_wfm)));
+        assertThat(project.getWorkflowManager(), is(m_wfm));
+
+        // Project version 1 loaded
+        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("1")), is(Optional.of(m_wfmv1)));
+        assertThat(project.getWorkflowManager(), is(m_wfmv1));
+
+        // Project version 2 loaded
+        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.parse("2")), is(Optional.of(m_wfmv2)));
+        assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.of(m_wfmv2)));
+    }
+
     private void assertBaseMethodsWork(final Project project) throws Exception {
         assertThat(project.getName(), is("Test project"));
         assertThat(project.getID(), not(emptyOrNullString()));
         assertThat(project.getWorkflowManager(), is(m_wfm));
         assertThat(project.getWorkflowManagerIfLoaded(), is(Optional.of(m_wfm)));
         assertThat(project.getOrigin(), isA(Optional.class));
-        assertThat(project.getWorkflowManager(VersionId.parse("42")), isA(Optional.class));
+        assertThat(project.getWorkflowManagerAndSetActiveVersion(VersionId.currentState()), isA(Optional.class));
+        assertThat(project.isReadOnly(), is(false));
         project.dispose(); // No exception thrown
         assertThat(Integer.valueOf(project.hashCode()), isA(Integer.class));
         assertThat(project.equals(project), is(true));

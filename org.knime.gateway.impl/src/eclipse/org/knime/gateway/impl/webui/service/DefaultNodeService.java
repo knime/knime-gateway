@@ -115,6 +115,7 @@ public final class DefaultNodeService implements NodeService {
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
         try {
             org.knime.gateway.impl.service.util.DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
@@ -129,6 +130,7 @@ public final class DefaultNodeService implements NodeService {
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
         try {
             var nc = getNodeContainer(projectId, workflowId, nodeId);
             if (nc instanceof NativeNodeContainer nnc) {
