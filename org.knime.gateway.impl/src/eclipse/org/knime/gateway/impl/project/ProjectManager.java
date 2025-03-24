@@ -69,6 +69,7 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 /**
  * Manages projects that are eventually used by the service implementations.
  *
+ * @see Project
  * @author Martin Horn, University of Konstanz
  * @noreference This class is not intended to be referenced by clients.
  */

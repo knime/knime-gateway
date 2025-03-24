@@ -64,6 +64,7 @@ import org.knime.gateway.impl.util.Lazy;
 /**
  * A workflow or component project.
  *
+ * @see ProjectManager
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
  */
@@ -123,7 +124,7 @@ public final class Project {
         public WorkflowManagerCache(final WorkflowManagerLoader wfmLoader, final Consumer<WorkflowManager> onDispose) {
             this.m_wfmLoader = wfmLoader;
             this.m_onDispose = onDispose;
-            this.m_currentState = new Lazy.Init<>(() -> wfmLoader.apply(VersionId.currentState()));
+            this.m_currentState = new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState()));
         }
 
         /**
@@ -135,7 +136,7 @@ public final class Project {
             if (version instanceof VersionId.CurrentState) {
                 return m_currentState.get();
             } else {
-                return m_fixedVersions.computeIfAbsent((VersionId.Fixed)version, m_wfmLoader);
+                return m_fixedVersions.computeIfAbsent((VersionId.Fixed)version, m_wfmLoader::load);
             }
         }
 

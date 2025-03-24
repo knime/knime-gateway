@@ -44,27 +44,12 @@
  * ---------------------------------------------------------------------
  */
 
-<<<<<<<< HEAD:org.knime.gateway.json/src/generated/org/knime/gateway/json/webui/entity/AlignNodesCommandEntMixIn.java
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
-========
 package org.knime.gateway.impl.project;
->>>>>>>> 0d96930e5 (NXT-135: Add ability to dispose of a given workflow wfm, and to invoke the same loader when it is requested again):org.knime.gateway.impl/src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-<<<<<<<< HEAD:org.knime.gateway.json/src/generated/org/knime/gateway/json/webui/entity/AlignNodesCommandEntMixIn.java
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAlignNodesCommandEnt.DefaultAlignNodesCommandEntBuilder;
-========
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.VersionId;
->>>>>>>> 0d96930e5 (NXT-135: Add ability to dispose of a given workflow wfm, and to invoke the same loader when it is requested again):org.knime.gateway.impl/src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java
 
 /**
  * Defines how a {@link WorkflowManager} instance is loaded.
@@ -72,32 +57,8 @@ import org.knime.gateway.api.util.VersionId;
  * "Loading" here means loading it from file representation on disk to provide an initialized and usable
  * {@link WorkflowManager} instance. However, this method may also include fetching the files from a remote location.
  */
-<<<<<<<< HEAD:org.knime.gateway.json/src/generated/org/knime/gateway/json/webui/entity/AlignNodesCommandEntMixIn.java
-
-@JsonDeserialize(builder=DefaultAlignNodesCommandEntBuilder.class)
-@JsonSerialize(as=AlignNodesCommandEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface AlignNodesCommandEntMixIn extends AlignNodesCommandEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
-    
-    @Override
-    @JsonProperty("nodeIds")
-    public java.util.List<org.knime.gateway.api.entity.NodeIDEnt> getNodeIds();
-    
-    @Override
-    @JsonProperty("direction")
-    public DirectionEnum getDirection();
-    
-========
-public interface WorkflowManagerLoader extends Function<VersionId, WorkflowManager> {
->>>>>>>> 0d96930e5 (NXT-135: Add ability to dispose of a given workflow wfm, and to invoke the same loader when it is requested again):org.knime.gateway.impl/src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java
+@FunctionalInterface
+public interface WorkflowManagerLoader {
 
     /**
      * Obtain a loader instance that provides only the current state version.
@@ -105,27 +66,6 @@ public interface WorkflowManagerLoader extends Function<VersionId, WorkflowManag
      * @param currentStateLoader A supplier of the current state wfm
      * @return A loader instance that provides only the current state version
      */
-<<<<<<<< HEAD:org.knime.gateway.json/src/generated/org/knime/gateway/json/webui/entity/AlignNodesCommandEntMixIn.java
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AlignNodesCommandEntMixInBuilder extends AlignNodesCommandEntBuilder {
-    
-        @Override
-        public AlignNodesCommandEntMixIn build();
-    
-        @Override
-        @JsonProperty("kind")
-        public AlignNodesCommandEntMixInBuilder setKind(final KindEnum kind);
-        
-        @Override
-        @JsonProperty("nodeIds")
-        public AlignNodesCommandEntMixInBuilder setNodeIds(final java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds);
-        
-        @Override
-        @JsonProperty("direction")
-        public AlignNodesCommandEntMixInBuilder setDirection(final DirectionEnum direction);
-        
-========
     static WorkflowManagerLoader providingOnlyCurrentState(final Supplier<WorkflowManager> currentStateLoader) {
         return version -> {
             if (!(version instanceof VersionId.CurrentState)) {
@@ -133,7 +73,6 @@ public interface WorkflowManagerLoader extends Function<VersionId, WorkflowManag
             }
             return currentStateLoader.get();
         };
->>>>>>>> 0d96930e5 (NXT-135: Add ability to dispose of a given workflow wfm, and to invoke the same loader when it is requested again):org.knime.gateway.impl/src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java
     }
 
     /**
@@ -142,6 +81,6 @@ public interface WorkflowManagerLoader extends Function<VersionId, WorkflowManag
      * @param version the version to load
      * @return the loaded instance, <code>null</code> if loading failed.
      */
-    WorkflowManager apply(final VersionId version);
+    WorkflowManager load(final VersionId version);
 
 }
