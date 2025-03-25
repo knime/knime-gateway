@@ -167,6 +167,5 @@ public final class AlignNodes extends AbstractWorkflowCommand {
         m_originalPositions.forEach(AlignNodes::setPosition);
 
         wfm.setDirty();
-        m_originalPositions.clear();
     }
 }
