@@ -57,7 +57,6 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -85,8 +84,8 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testAlignNodes() throws Exception {
-        String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        WorkflowEnt workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
+        var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        var workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
 
         // selected some nodes which have pairwise different x and y from workflowent_root.snap
         var node21 = new NodeIDEnt(21);
@@ -96,17 +95,17 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var nodeId19 = node19.toString();
         var nodeId183 = node183.toString();
         Map<String, NodeEnt> nodes = workflow.getNodes();
-        XYEnt originalPos21 = nodes.get(nodeId21).getPosition();
-        XYEnt originalPos19 = nodes.get(nodeId19).getPosition();
-        XYEnt originalPos183 = nodes.get(nodeId183).getPosition();
-        Integer minX = Math.min(Math.min(originalPos21.getX(), originalPos19.getX()), originalPos183.getX());
-        Integer minY = Math.min(Math.min(originalPos21.getY(), originalPos19.getY()), originalPos183.getY());
+        var originalPos21 = nodes.get(nodeId21).getPosition();
+        var originalPos19 = nodes.get(nodeId19).getPosition();
+        var originalPos183 = nodes.get(nodeId183).getPosition();
+        var minX = Math.min(Math.min(originalPos21.getX(), originalPos19.getX()), originalPos183.getX());
+        var minY = Math.min(Math.min(originalPos21.getY(), originalPos19.getY()), originalPos183.getY());
 
         assertThat(workflow.getAllowedActions().isCanUndo(), is(false));
         assertThat(workflow.getAllowedActions().isCanRedo(), is(false));
 
         // 1. nodes alignment vertical
-        AlignNodesCommandEnt command = builder(AlignNodesCommandEnt.AlignNodesCommandEntBuilder.class)
+        var command = builder(AlignNodesCommandEnt.AlignNodesCommandEntBuilder.class)
                 .setKind(WorkflowCommandEnt.KindEnum.ALIGN_NODES).setNodeIds(asList(node21, node19, node183)) //
                 .setDirection(AlignNodesCommandEnt.DirectionEnum.VERTICAL)
                 .build();
@@ -114,7 +113,7 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
         workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
         // assert node positions
         nodes = workflow.getNodes();
-        XYEnt pos = nodes.get(nodeId21).getPosition();
+        var pos = nodes.get(nodeId21).getPosition();
         assertPos(pos, minX, originalPos21.getY());
         pos = nodes.get(nodeId19).getPosition();
         assertPos(pos, minX, originalPos19.getY());
@@ -175,7 +174,7 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static void assertPos(final XYEnt foundPos, final Integer expectedX, final Integer expectedY) {
-        XYEnt expectedPos = builder(XYEntBuilder.class).setX(expectedX).setY(expectedY).build();
+        var expectedPos = builder(XYEntBuilder.class).setX(expectedX).setY(expectedY).build();
         assertThat(foundPos, is(expectedPos));
     }
 }
