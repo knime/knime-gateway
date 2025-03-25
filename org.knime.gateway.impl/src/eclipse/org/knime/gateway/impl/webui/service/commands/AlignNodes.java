@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeContainer;
@@ -112,27 +111,27 @@ public final class AlignNodes extends AbstractWorkflowCommand {
             return false;
         }
 
-        Set<NodeContainer> nodes = m_nodeIds.stream()
+        var nodes = m_nodeIds.stream()
                 .map(id -> wfm.getNodeContainer(id.toNodeID(wfm))).collect(Collectors.toSet());
 
 
-        List<int[]> xyCoords = nodes.stream().map(NodeContainer::getUIInformation)
+        var xyCoords = nodes.stream().map(NodeContainer::getUIInformation)
                 .map(NodeUIInformation::getBounds).map(bound -> Arrays.copyOfRange(bound, 0, 2)).toList();
-        List<Integer> xVals = xyCoords.stream().map(xyCoord -> xyCoord[0]).toList();
-        List<Integer> yVals = xyCoords.stream().map(xyCoord -> xyCoord[1]).toList();
-        boolean areAlignedVertically = new HashSet<Integer>(xVals).size() <= 1;
-        boolean areAlignedHorizontally = new HashSet<Integer>(yVals).size() <= 1;
+        var xVals = xyCoords.stream().map(xyCoord -> xyCoord[0]).toList();
+        var yVals = xyCoords.stream().map(xyCoord -> xyCoord[1]).toList();
+        var areAlignedVertically = new HashSet<>(xVals).size() <= 1;
+        var areAlignedHorizontally = new HashSet<>(yVals).size() <= 1;
         if ((m_direction == DirectionEnum.VERTICAL && areAlignedVertically) ||
                 (m_direction == DirectionEnum.HORIZONTAL && areAlignedHorizontally)) {
             return false;
         }
 
-        Integer minX = Collections.min(xVals);
-        Integer minY = Collections.min(yVals);
+        var minX = Collections.min(xVals);
+        var minY = Collections.min(yVals);
         nodes.forEach(node -> {
-            int[] bounds = node.getUIInformation().getBounds();
+            var bounds = node.getUIInformation().getBounds();
             m_previousNodeBounds.put(node.getID(), bounds);
-            int[] newBounds = Arrays.copyOf(bounds, bounds.length);
+            var newBounds = Arrays.copyOf(bounds, bounds.length);
             if (DirectionEnum.HORIZONTAL == m_direction) {
                 newBounds[1] = minY;
             } else if (DirectionEnum.VERTICAL == m_direction) {
@@ -156,10 +155,9 @@ public final class AlignNodes extends AbstractWorkflowCommand {
             return;
         }
 
-        m_previousNodeBounds.entrySet().stream().forEach(e -> {
-            NodeContainer node = wfm.getNodeContainer(e.getKey());
-            int[] bounds = e.getValue();
-            NodeUIInformation nodeUIInfo = NodeUIInformation.builder().setNodeLocation(bounds[0], bounds[1], bounds[2],
+        m_previousNodeBounds.forEach((key, bounds) -> {
+            var node = wfm.getNodeContainer(key);
+            var nodeUIInfo = NodeUIInformation.builder().setNodeLocation(bounds[0], bounds[1], bounds[2],
                     bounds[3]).build();
             node.setUIInformation(nodeUIInfo);
         });
