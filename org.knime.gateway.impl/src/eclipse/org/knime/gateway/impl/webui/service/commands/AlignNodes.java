@@ -49,21 +49,19 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
 import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt.DirectionEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 
 /**
  * Workflow command to align nodes horizontally or vertically
@@ -74,7 +72,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 public final class AlignNodes extends AbstractWorkflowCommand {
     private final DirectionEnum m_direction;
 
-    private final Map<NodeID, int[]> m_previousNodeBounds = new HashMap<>();
+    private Map<NodeContainer, Geometry.Point> m_originalPositions = new HashMap<>();
 
     private final List<NodeIDEnt> m_nodeIds;
 
@@ -104,45 +102,56 @@ public final class AlignNodes extends AbstractWorkflowCommand {
      *
      * @param wfm The workflow manager to operate in
      * @return <code>true</code> if the command changed the position of nodes, <code>false</code> if the successful
-     * execution of the command did not change the position of nodes
+     *         execution of the command did not change the position of nodes
      */
     private boolean alignNodes(final WorkflowManager wfm) {
         if (m_nodeIds.isEmpty()) {
             return false;
         }
 
-        var nodes = m_nodeIds.stream()
-                .map(id -> wfm.getNodeContainer(id.toNodeID(wfm))).collect(Collectors.toSet());
+        m_originalPositions = m_nodeIds.stream().map(id -> wfm.getNodeContainer(id.toNodeID(wfm)))
+            .collect(Collectors.toUnmodifiableMap(nc -> nc, AlignNodes::getPosition));
 
+        var areAlignedVertically = m_originalPositions.values().stream() //
+            .map(Geometry.Point::x).collect(Collectors.toSet()).size() <= 1;
+        var areAlignedHorizontally = m_originalPositions.values().stream() //
+            .map(Geometry.Point::y).collect(Collectors.toSet()).size() <= 1;
 
-        var xyCoords = nodes.stream().map(NodeContainer::getUIInformation)
-                .map(NodeUIInformation::getBounds).map(bound -> Arrays.copyOfRange(bound, 0, 2)).toList();
-        var xVals = xyCoords.stream().map(xyCoord -> xyCoord[0]).toList();
-        var yVals = xyCoords.stream().map(xyCoord -> xyCoord[1]).toList();
-        var areAlignedVertically = new HashSet<>(xVals).size() <= 1;
-        var areAlignedHorizontally = new HashSet<>(yVals).size() <= 1;
-        if ((m_direction == DirectionEnum.VERTICAL && areAlignedVertically) ||
-                (m_direction == DirectionEnum.HORIZONTAL && areAlignedHorizontally)) {
+        if ((m_direction == DirectionEnum.VERTICAL && areAlignedVertically) //
+            || (m_direction == DirectionEnum.HORIZONTAL && areAlignedHorizontally)) {
             return false;
         }
 
-        var minX = Collections.min(xVals);
-        var minY = Collections.min(yVals);
-        nodes.forEach(node -> {
-            var bounds = node.getUIInformation().getBounds();
-            m_previousNodeBounds.put(node.getID(), bounds);
-            var newBounds = Arrays.copyOf(bounds, bounds.length);
-            if (DirectionEnum.HORIZONTAL == m_direction) {
-                newBounds[1] = minY;
-            } else if (DirectionEnum.VERTICAL == m_direction) {
-                newBounds[0] = minX;
+        var minimumCoordinates = Geometry.Point.min(m_originalPositions.values().stream());
+
+        m_originalPositions.forEach((nc, originalPosition) -> { // NOSONAR size of lambda
+            switch (m_direction) { // NOSONAR switch over enum is acceptable
+                case HORIZONTAL -> {
+                    var newPosition = new Geometry.Point(originalPosition.x(), minimumCoordinates.y());
+                    setPosition(nc, newPosition);
+                }
+                case VERTICAL -> {
+                    var newPosition = new Geometry.Point(minimumCoordinates.x(), originalPosition.y());
+                    setPosition(nc, newPosition);
+                }
             }
-            node.setUIInformation(NodeUIInformation.builder().setNodeLocation(newBounds[0], newBounds[1],
-                    newBounds[2], newBounds[3]).build());
         });
 
         wfm.setDirty();
         return true;
+    }
+
+    private static Geometry.Point getPosition(final NodeContainer node) {
+        return Geometry.Bounds.of(node.getUIInformation()).orElseThrow().leftTop();
+    }
+
+    private static void setPosition(final NodeContainer node, final Geometry.Point newLocation) {
+        var oldBounds = node.getUIInformation().getBounds();
+        var newBounds = Arrays.copyOf(oldBounds, oldBounds.length);
+        newBounds[0] = newLocation.x();
+        newBounds[1] = newLocation.y();
+        node.setUIInformation(NodeUIInformation.builder()
+            .setNodeLocation(newBounds[0], newBounds[1], newBounds[2], newBounds[3]).build());
     }
 
     /**
@@ -151,18 +160,13 @@ public final class AlignNodes extends AbstractWorkflowCommand {
      * @param wfm The workflow manager to operate in
      */
     private void resetToPreviousPositions(final WorkflowManager wfm) {
-        if (m_previousNodeBounds.size() == 0) {
+        if (m_originalPositions.isEmpty()) {
             return;
         }
 
-        m_previousNodeBounds.forEach((key, bounds) -> {
-            var node = wfm.getNodeContainer(key);
-            var nodeUIInfo = NodeUIInformation.builder().setNodeLocation(bounds[0], bounds[1], bounds[2],
-                    bounds[3]).build();
-            node.setUIInformation(nodeUIInfo);
-        });
+        m_originalPositions.forEach(AlignNodes::setPosition);
 
         wfm.setDirty();
-        m_previousNodeBounds.clear();
+        m_originalPositions.clear();
     }
 }

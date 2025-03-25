@@ -47,6 +47,7 @@
 package org.knime.gateway.impl.webui.service.commands.util;
 
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
@@ -55,6 +56,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
@@ -128,7 +130,7 @@ public final class Geometry {
          */
         public static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-        Point(final int x, final int y) {
+        public Point(final int x, final int y) {
             super(x, y);
         }
 
@@ -157,7 +159,7 @@ public final class Geometry {
 
         /**
          * @param pointStreams One or multiple streams of points
-         * @return The minimal point
+         * @return A new point whose coordinates are the minimum of the individual coordinates of the given points.
          */
         @SafeVarargs
         public static Point min(final Stream<Point>... pointStreams) {
@@ -324,10 +326,35 @@ public final class Geometry {
             );
         }
 
+        /**
+         * -
+         * @param leftTop The origin of this Bounds rectangle. Width and Height extend from there.
+         * @param width -
+         * @param height -
+         */
         public Bounds(final Point leftTop, final int width, final int height) {
             super(leftTop, width, height);
         }
 
+        /**
+         * -
+         * @param uiInfo describing the given node
+         * @return The bounds of the given node
+         */
+        public static Optional<Bounds> of(final NodeUIInformation uiInfo) {
+            return Optional.ofNullable(uiInfo.getBounds()).map(arr -> //
+            new Bounds( //
+                new Point(arr[0], arr[1]), //
+                Math.max(0, arr[2]), //
+                Math.max(0, arr[3])) //
+            );
+        }
+
+        /**
+         * -
+         * @param delta The translation
+         * @return A new instance that represents the original instance translated. Width and Height remain unchanged.
+         */
         public Bounds translate(final Delta delta) {
             return new Bounds(this.leftTop().translate(delta), this.width(), this.height());
         }

@@ -62,7 +62,6 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.NodeOutPort;
-import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Bounds;
@@ -349,7 +348,7 @@ public interface Connectable {
         @Override
         public Bounds getBounds() {
             return Optional.ofNullable(m_nc.getUIInformation()) //
-                .flatMap(Connectable::readBounds).orElseThrow();
+                .flatMap(Bounds::of).orElseThrow();
         }
 
         @Override
@@ -474,7 +473,7 @@ public interface Connectable {
         @Override
         public Bounds getBounds() {
             return Optional.ofNullable(super.wfm().getInPortsBarUIInfo())//
-                .flatMap(Connectable::readBounds) //
+                .flatMap(Bounds::of) //
                 .orElse(Bounds.MIN_VALUE);
         }
 
@@ -549,7 +548,7 @@ public interface Connectable {
         @Override
         public Bounds getBounds() {
             return Optional.ofNullable(super.wfm().getOutPortsBarUIInfo())//
-                .flatMap(Connectable::readBounds) //
+                .flatMap(Bounds::of) //
                 .orElse(Bounds.MAX_VALUE);
         }
 
@@ -595,15 +594,6 @@ public interface Connectable {
                 .filter(nodeInPort -> nodeInPort.getPortType().equals(FlowVariablePortObject.TYPE)) //
                 .map(nodeInPort -> new FlowDestinationPort(this, nodeInPort, false)).toList();
         }
-    }
-
-    private static Optional<Bounds> readBounds(final NodeUIInformation uiInfo) {
-        return Optional.ofNullable(uiInfo.getBounds()).map(arr -> //
-        new Bounds( //
-            new Geometry.Point(arr[0], arr[1]), //
-            Math.max(0, arr[2]), //
-            Math.max(0, arr[3])) //
-        );
     }
 
 }
