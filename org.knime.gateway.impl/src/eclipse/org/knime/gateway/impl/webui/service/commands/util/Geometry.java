@@ -130,6 +130,11 @@ public final class Geometry {
          */
         public static final Point MAX_VALUE = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
+        /**
+         * Constructs a new Point with the specified coordinates.
+         * @param x the x coordinate of the point.
+         * @param y the y coordinate of the point.
+         */
         public Point(final int x, final int y) {
             super(x, y);
         }
