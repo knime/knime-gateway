@@ -44,6 +44,8 @@
  */
 package org.knime.gateway.api.webui.service.util;
 
+import org.knime.gateway.api.service.GatewayException;
+
 /**
  * Summarizes auto-generated exceptions that can occur in the executor.
  *
@@ -55,131 +57,181 @@ public final class ServiceExceptions {
    /**
     * If a Gateway service call failed for some reason.
     */
-    public static class ServiceCallException extends Exception {
-        public ServiceCallException(String message) {
-            super(message);
-        }
+    public static class ServiceCallException extends GatewayException {
         
-        public ServiceCallException(String message, Throwable cause) {
-            super(message, cause);
+        public ServiceCallException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public ServiceCallException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * If a Gateway service call failed due to a network error.
     */
-    public static class NetworkException extends Exception {
-        public NetworkException(String message) {
-            super(message);
-        }
+    public static class NetworkException extends GatewayException {
         
-        public NetworkException(String message, Throwable cause) {
-            super(message, cause);
+        public NetworkException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public NetworkException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * A description for a given node could not be determined.
     */
-    public static class NodeDescriptionNotAvailableException extends Exception {
-        public NodeDescriptionNotAvailableException(String message) {
-            super(message);
-        }
+    public static class NodeDescriptionNotAvailableException extends GatewayException {
         
-        public NodeDescriptionNotAvailableException(String message, Throwable cause) {
-            super(message, cause);
+        public NodeDescriptionNotAvailableException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public NodeDescriptionNotAvailableException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * The requested node was not found.
     */
-    public static class NodeNotFoundException extends Exception {
-        public NodeNotFoundException(String message) {
-            super(message);
-        }
+    public static class NodeNotFoundException extends GatewayException {
         
-        public NodeNotFoundException(String message, Throwable cause) {
-            super(message, cause);
+        public NodeNotFoundException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public NodeNotFoundException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * The requested element was not found.
     */
-    public static class NoSuchElementException extends Exception {
-        public NoSuchElementException(String message) {
-            super(message);
-        }
+    public static class NoSuchElementException extends GatewayException {
         
-        public NoSuchElementException(String message, Throwable cause) {
-            super(message, cause);
+        public NoSuchElementException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public NoSuchElementException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
     */
-    public static class NotASubWorkflowException extends Exception {
-        public NotASubWorkflowException(String message) {
-            super(message);
-        }
+    public static class NotASubWorkflowException extends GatewayException {
         
-        public NotASubWorkflowException(String message, Throwable cause) {
-            super(message, cause);
+        public NotASubWorkflowException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public NotASubWorkflowException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * If the request is invalid for a reason.
     */
-    public static class InvalidRequestException extends Exception {
-        public InvalidRequestException(String message) {
-            super(message);
-        }
+    public static class InvalidRequestException extends GatewayException {
         
-        public InvalidRequestException(String message, Throwable cause) {
-            super(message, cause);
+        public InvalidRequestException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public InvalidRequestException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * If the an operation is not allowed, e.g., because it&#39;s not applicable.
     */
-    public static class OperationNotAllowedException extends Exception {
-        public OperationNotAllowedException(String message) {
-            super(message);
-        }
+    public static class OperationNotAllowedException extends GatewayException {
         
-        public OperationNotAllowedException(String message, Throwable cause) {
-            super(message, cause);
+        public OperationNotAllowedException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public OperationNotAllowedException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * If there was an I/O error of some kind.
     */
-    public static class IOException extends Exception {
-        public IOException(String message) {
-            super(message);
-        }
+    public static class IOException extends GatewayException {
         
-        public IOException(String message, Throwable cause) {
-            super(message, cause);
+        public IOException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public IOException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
    /**
     * If there was a collision, e.g. due to naming conflicts
     */
-    public static class CollisionException extends Exception {
-        public CollisionException(String message) {
-            super(message);
-        }
+    public static class CollisionException extends GatewayException {
         
-        public CollisionException(String message, Throwable cause) {
-            super(message, cause);
+        public CollisionException(String message) {
+            super(false);
+            m_properties.put("message", message);
         }
+
+        public CollisionException(String message, Throwable cause) {
+            super(false);
+            m_properties.put("message", message);
+            initCause(cause);
+        }
+
     }
 
     
