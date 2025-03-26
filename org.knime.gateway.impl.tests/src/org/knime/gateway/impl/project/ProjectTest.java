@@ -100,7 +100,7 @@ public class ProjectTest {
         assertBaseMethodsWork(project1);
 
         var project2 = Project.builder() //
-            .setWfmLoader((version) -> m_wfm) //
+            .setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm) //
             .setName("Test project") //
             .setId("Custom project id") //
             .build();
@@ -116,7 +116,7 @@ public class ProjectTest {
     public void testBuilderWithAllProperties() throws Exception {
         var origin = new Origin("provider id", "space id", "item id");
         var project = Project.builder() //
-            .setWfmLoader((version) -> m_wfm) //
+            .setWfm(m_wfm) //
             .setName("Test project") //
             .setId("Custom project id") //
             .setOrigin(origin) //
@@ -139,7 +139,7 @@ public class ProjectTest {
     @Test
     public void testBuilderWithOptionalPropertiesNull() throws Exception {
         var project = Project.builder() //
-            .setWfmLoader((version) -> m_wfm) //
+            .setWfm(m_wfm) //
             .setName("Test project") //
             .setId("Custom project id") //
             .setOrigin(null) //
@@ -156,14 +156,13 @@ public class ProjectTest {
      */
     @Test
     public void testBuilderThrows() {
-        // todo adjust
         assertThrows(NullPointerException.class, () -> Project.builder().setWfm(null).build());
         assertThrows(NullPointerException.class,
             () -> Project.builder().setWfmLoader(null).setName("Test project").setId("Custom project id").build());
         assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoader((version) -> m_wfm).setName(null).setId("Custom project id").build());
+            () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName(null).setId("Custom project id").build());
         assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoader((version) -> m_wfm).setName("Test project").setId(null).build());
+            () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName("Test project").setId(null).build());
     }
 
     private void assertBaseMethodsWork(final Project project) throws Exception {
@@ -177,6 +176,7 @@ public class ProjectTest {
         assertThat(project.hashCode(), isA(Integer.class));
         //noinspection EqualsWithItself
         assertThat(project.equals(project), is(true));
+        assertThat(project.equals(null), is(false));
     }
 
 }
