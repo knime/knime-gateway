@@ -112,27 +112,27 @@ final class AlignNodes extends AbstractWorkflowCommand {
 
         m_originalPositions = m_nodeIds.stream().map(id -> wfm.getNodeContainer(id.toNodeID(wfm)))
             .collect(Collectors.toUnmodifiableMap(nc -> nc.getID(), AlignNodes::getPosition));
-
-        var areAlignedVertically = m_originalPositions.values().stream() //
-            .map(Geometry.Point::x).collect(Collectors.toSet()).size() <= 1;
-        var areAlignedHorizontally = m_originalPositions.values().stream() //
-            .map(Geometry.Point::y).collect(Collectors.toSet()).size() <= 1;
-
-        if ((m_direction == DirectionEnum.VERTICAL && areAlignedVertically) //
-            || (m_direction == DirectionEnum.HORIZONTAL && areAlignedHorizontally)) {
+        var minimumCoordinates = Geometry.Point.min(m_originalPositions.values().stream());
+        if (areAlreadyAligned(minimumCoordinates)) {
             return false;
         }
 
-        var minimumCoordinates = Geometry.Point.min(m_originalPositions.values().stream());
+        // y of leftmost node will be used when aligning horizontally
+        var leftMostY = m_originalPositions.values().stream()
+                .filter(position -> position.x() == minimumCoordinates.x()).findFirst().orElseThrow().y();
+        // x of topmost node will be used when aligning vertically
+        var topMostX = m_originalPositions.values().stream()
+                .filter(position -> position.y() == minimumCoordinates.y()).findFirst().orElseThrow().x();
+
 
         m_originalPositions.forEach((nodeID, originalPosition) -> { // NOSONAR size of lambda
             switch (m_direction) { // NOSONAR switch over enum is acceptable
                 case HORIZONTAL -> {
-                    var newPosition = new Geometry.Point(originalPosition.x(), minimumCoordinates.y());
+                    var newPosition = new Geometry.Point(originalPosition.x(), leftMostY);
                     setPosition(wfm.getNodeContainer(nodeID), newPosition);
                 }
                 case VERTICAL -> {
-                    var newPosition = new Geometry.Point(minimumCoordinates.x(), originalPosition.y());
+                    var newPosition = new Geometry.Point(topMostX, originalPosition.y());
                     setPosition(wfm.getNodeContainer(nodeID), newPosition);
                 }
             }
@@ -140,6 +140,26 @@ final class AlignNodes extends AbstractWorkflowCommand {
 
         wfm.setDirty();
         return true;
+    }
+
+    private boolean areAlreadyAligned(final Geometry.Point minimumCoordinates) {
+        switch (m_direction) { // NOSONAR switch over enum is acceptable
+            case HORIZONTAL -> {
+                var areHorizontallyAligned = m_originalPositions.values().stream().map(Geometry.Point::y)
+                        .allMatch(y -> y == minimumCoordinates.y());
+                if (areHorizontallyAligned) {
+                    return true;
+                }
+            }
+            case VERTICAL -> {
+                var areVerticallyAligned = m_originalPositions.values().stream().map(Geometry.Point::x)
+                        .allMatch(x -> x == minimumCoordinates.x());
+                if (areVerticallyAligned) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static Geometry.Point getPosition(final NodeContainer node) {
