@@ -48,8 +48,8 @@ package org.knime.gateway.impl.webui.repo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.impl.util.ListFunctions.enumerate;
-import static org.mockito.Mockito.mock;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -104,12 +104,18 @@ public class NodeCategoriesTest {
             List.of(), //
             List.of() //
         );
+        URL dummyUrl;
+        try {
+            dummyUrl = new URL("file://test/icon.png");
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException(ex);
+        }
         return new NodeSpec( //
             new NodeSpec.Factory("id", "className", null), //
             NodeFactory.NodeType.Unknown, //
             new NodeSpec.Ports(List.of(), List.of(), List.of(), List.of()), //
             metadata, //
-            mock(URL.class), //
+            dummyUrl, //
             false, //
             false //
         );
@@ -262,7 +268,7 @@ public class NodeCategoriesTest {
 
     /**
      * Can not insert into locked in the general case.
-     * 
+     *
      * Analog to {@link this#testNodeCanNotInduceChildofLockedIfNotCompatible()}
      */
     @Test

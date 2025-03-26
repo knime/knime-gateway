@@ -1434,6 +1434,7 @@ public final class WorkflowEntityFactory {
         if (url == null) {
             return null;
         }
+        ensureFileOrBundleURL(url);
         try (var in = url.openStream()) {
             if (in == null) {
                 throw new IOException("Could not open stream for URL: " + url);
@@ -1442,6 +1443,16 @@ public final class WorkflowEntityFactory {
         } catch (IOException ex) {
             NodeLogger.getLogger(WorkflowEntityFactory.class).error("Icon for node couldn't be read", ex);
             return null;
+        }
+    }
+
+    /*
+     * Makes sure that the provided url points to a file or bundle. Otherwise an exception is thrown.
+     */
+    private static void ensureFileOrBundleURL(final URL url) {
+        var protocol = url.getProtocol();
+        if (protocol == null || (!protocol.equals("file") && !protocol.equals("bundleresource"))) {
+            throw new IllegalStateException("An icon URL doesn't reference a file. Icon URL: " + url);
         }
     }
 

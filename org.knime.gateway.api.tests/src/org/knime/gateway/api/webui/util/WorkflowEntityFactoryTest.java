@@ -47,8 +47,11 @@
 package org.knime.gateway.api.webui.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,8 +65,10 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.TypeEnum;
 import org.knime.testing.util.WorkflowManagerUtil;
 
-@SuppressWarnings("javadoc")
-public class WorkflowEntityFactoryTest {
+/**
+ * Tests {@link WorkflowEntityFactory}.
+ */
+class WorkflowEntityFactoryTest {
 
     private WorkflowManager m_wfm;
 
@@ -78,7 +83,7 @@ public class WorkflowEntityFactoryTest {
     }
 
     @Test
-    public void missingNodeTypeDefaultReason() {
+    void testMissingNodeTypeDefaultReason() {
         var info = new NodeAndBundleInformationPersistor(MissingNodeFactory.class.getName());
         var factory = new MissingNodeFactory(info, null, new PortType[]{}, new PortType[]{});
         assertThat(factory.getReason()).isEqualTo(Reason.MISSING_EXTENSION);
@@ -88,13 +93,31 @@ public class WorkflowEntityFactoryTest {
     }
 
     @Test
-    public void missingNodeTypeForbidden() {
+    void testMissingNodeTypeForbidden() {
         var info = new NodeAndBundleInformationPersistor(MissingNodeFactory.class.getName());
-        var factory =
-            new MissingNodeFactory(info, null, new PortType[]{}, new PortType[]{}, MissingNodeFactory.Reason.GOVERNANCE_FORBIDDEN);
+        var factory = new MissingNodeFactory(info, null, new PortType[]{}, new PortType[]{},
+            MissingNodeFactory.Reason.GOVERNANCE_FORBIDDEN);
         assertThat(factory.getReason()).isEqualTo(Reason.GOVERNANCE_FORBIDDEN);
         var missingNnc = WorkflowManagerUtil.createAndAddNode(m_wfm, factory);
         var resultingEntity = WorkflowEntityFactory.buildNativeNodeInvariantsEnt(missingNnc);
         assertThat(resultingEntity.getType()).isEqualTo(TypeEnum.FORBIDDEN);
+    }
+
+    @Test
+    void testCreateIconDataURL() throws MalformedURLException {
+        var dataUrl = WorkflowEntityFactory
+            .createIconDataURL(getClass().getResource("/files/testflows/ContainerNodes/workflow.svg"));
+        assertThat(dataUrl).isNotNull().startsWith("data:image/png;base64,");
+
+        var fileUrl = new URL("file://test/blub.svg");
+        dataUrl = WorkflowEntityFactory.createIconDataURL(fileUrl);
+        assertThat(dataUrl).isNull();
+
+        var bundleresourceUrl = new URL("bundleresource://1234/blub.svg");
+        dataUrl = WorkflowEntityFactory.createIconDataURL(bundleresourceUrl);
+        assertThat(dataUrl).isNull();
+
+        var forbiddenUrl = new URL("http://blub.com");
+        assertThrows(IllegalStateException.class, () -> WorkflowEntityFactory.createIconDataURL(forbiddenUrl));
     }
 }
