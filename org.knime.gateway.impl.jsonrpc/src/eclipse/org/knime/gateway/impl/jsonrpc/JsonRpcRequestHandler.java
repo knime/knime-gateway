@@ -94,13 +94,15 @@ public class JsonRpcRequestHandler {
 
     /**
      * Handles a json rpc 2.0 request.
+     * <p>
+     * We rely on Jackson's default size limits, see com.fasterxml.jackson.core.StreamReadConstraints,
+     * StreamWriteConstraints.
      *
      * @param jsonRpcRequest the request
      * @return a jsonrpc response
      */
     public byte[] handle(final byte[] jsonRpcRequest) {
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-                ByteArrayInputStream in = new ByteArrayInputStream(jsonRpcRequest)) {
+        try (var out = new ByteArrayOutputStream(); var in = new ByteArrayInputStream(jsonRpcRequest)) {
             m_jsonRpcMultiServer.handleRequest(in, out);
             return out.toByteArray();
         } catch (IOException e) {
