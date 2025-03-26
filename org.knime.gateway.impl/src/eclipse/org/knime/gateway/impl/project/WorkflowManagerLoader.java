@@ -46,8 +46,6 @@
 
 package org.knime.gateway.impl.project;
 
-import java.util.function.Supplier;
-
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.VersionId;
 
@@ -58,22 +56,8 @@ import org.knime.gateway.api.util.VersionId;
  * {@link WorkflowManager} instance. However, this method may also include fetching the files from a remote location.
  */
 @FunctionalInterface
+@SuppressWarnings("java:S1711") // intentionally not using Function<VersionId, WorkflowManager> instead.
 public interface WorkflowManagerLoader {
-
-    /**
-     * Obtain a loader instance that provides only the current state version.
-     * 
-     * @param currentStateLoader A supplier of the current state wfm
-     * @return A loader instance that provides only the current state version
-     */
-    static WorkflowManagerLoader providingOnlyCurrentState(final Supplier<WorkflowManager> currentStateLoader) {
-        return version -> {
-            if (!(version instanceof VersionId.CurrentState)) {
-                throw new IllegalArgumentException("VersionId.Fixed is not supported");
-            }
-            return currentStateLoader.get();
-        };
-    }
 
     /**
      * Load the workflow manager instance

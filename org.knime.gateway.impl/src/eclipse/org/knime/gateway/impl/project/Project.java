@@ -51,6 +51,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -68,6 +69,7 @@ import org.knime.gateway.impl.util.Lazy;
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
  */
+// TODO can convert to record again
 public final class Project {
 
     private final String m_id;
@@ -94,7 +96,7 @@ public final class Project {
 
     /**
      * Generate a unique project ID.
-     * 
+     *
      * @param projectName The human-readable name of the project
      * @return a globally unique project id combined with the given project name
      */
@@ -105,8 +107,7 @@ public final class Project {
     /**
      * Caches loaded {@link WorkflowManager} instances associated with a project.
      * <p>
-     * For fixed versions, we want an LRU cache. The current-state a.k.a. working area
-     * should be kept indefinitely.
+     * For fixed versions, we want an LRU cache. The current-state a.k.a. working area should be kept indefinitely.
      */
     private static class WorkflowManagerCache {
 
@@ -129,6 +130,7 @@ public final class Project {
 
         /**
          * Get a value, computing it if not yet cached.
+         *
          * @param version
          * @return
          */
@@ -228,7 +230,7 @@ public final class Project {
 
     /**
      * Obtain the workflow manager instance for the given workflow.
-     * 
+     *
      * @param version The version of the workflow manager
      * @return The workflow manager instance
      */
@@ -246,7 +248,7 @@ public final class Project {
     /**
      * Call via {@link ProjectManager#disposeVersion(String, VersionId)} to allow invocation of listeners that can not
      * be attached to specific instances.
-     * 
+     *
      * @param version Dispose the loaded workflow manager instance (if any) associated with this version.
      */
     void dispose(final VersionId version) {
@@ -326,6 +328,8 @@ public final class Project {
             Optionals setWfm(final WorkflowManager wfm);
 
             RequiresName setWfmLoader(final WorkflowManagerLoader getWfm);
+
+            RequiresName setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> supplier);
         }
 
         /**
@@ -385,15 +389,40 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmLoader = WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm);
+            m_wfmLoader = providingCurrentStateOnly(() -> wfm);
             return this;
         }
 
         @Override
-        public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader supplier) {
-            Objects.requireNonNull(supplier);
-            m_wfmLoader = supplier;
+        public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader loader) {
+            Objects.requireNonNull(loader);
+            m_wfmLoader = loader;
             return this;
+        }
+
+        @Override
+        public BuilderStage.RequiresName
+            setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> currentStateLoader) {
+            Objects.requireNonNull(currentStateLoader);
+            m_wfmLoader = providingCurrentStateOnly(currentStateLoader);
+            return this;
+        }
+
+        /**
+         * Intended to be only used in unit-test setups based off a single {@link WorkflowManager} instance where
+         * versions are not considered.
+         *
+         * @param currentStateLoader Loads the {@link WorkflowManager} instance
+         * @return -
+         */
+        private static WorkflowManagerLoader
+            providingCurrentStateOnly(final Supplier<WorkflowManager> currentStateLoader) {
+            return version -> {
+                if (!(version instanceof VersionId.CurrentState)) {
+                    throw new IllegalArgumentException("VersionId.Fixed is not supported");
+                }
+                return currentStateLoader.get();
+            };
         }
 
         /**
