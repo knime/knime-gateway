@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -69,10 +70,10 @@ import org.knime.gateway.impl.webui.service.commands.util.Geometry;
  * @author Jan-Timm Kuhr, TNG Technology Consulting GmbH
  * @since 5.5
  */
-public final class AlignNodes extends AbstractWorkflowCommand {
+final class AlignNodes extends AbstractWorkflowCommand {
     private final DirectionEnum m_direction;
 
-    private Map<NodeContainer, Geometry.Point> m_originalPositions = new HashMap<>();
+    private Map<NodeID, Geometry.Point> m_originalPositions = new HashMap<>();
 
     private final List<NodeIDEnt> m_nodeIds;
 
@@ -110,7 +111,7 @@ public final class AlignNodes extends AbstractWorkflowCommand {
         }
 
         m_originalPositions = m_nodeIds.stream().map(id -> wfm.getNodeContainer(id.toNodeID(wfm)))
-            .collect(Collectors.toUnmodifiableMap(nc -> nc, AlignNodes::getPosition));
+            .collect(Collectors.toUnmodifiableMap(nc -> nc.getID(), AlignNodes::getPosition));
 
         var areAlignedVertically = m_originalPositions.values().stream() //
             .map(Geometry.Point::x).collect(Collectors.toSet()).size() <= 1;
@@ -124,15 +125,15 @@ public final class AlignNodes extends AbstractWorkflowCommand {
 
         var minimumCoordinates = Geometry.Point.min(m_originalPositions.values().stream());
 
-        m_originalPositions.forEach((nc, originalPosition) -> { // NOSONAR size of lambda
+        m_originalPositions.forEach((nodeID, originalPosition) -> { // NOSONAR size of lambda
             switch (m_direction) { // NOSONAR switch over enum is acceptable
                 case HORIZONTAL -> {
                     var newPosition = new Geometry.Point(originalPosition.x(), minimumCoordinates.y());
-                    setPosition(nc, newPosition);
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
                 }
                 case VERTICAL -> {
                     var newPosition = new Geometry.Point(minimumCoordinates.x(), originalPosition.y());
-                    setPosition(nc, newPosition);
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
                 }
             }
         });
@@ -164,7 +165,7 @@ public final class AlignNodes extends AbstractWorkflowCommand {
             return;
         }
 
-        m_originalPositions.forEach(AlignNodes::setPosition);
+        m_originalPositions.forEach((nodeID, originalPosition) -> setPosition(wfm.getNodeContainer(nodeID), originalPosition));
 
         wfm.setDirty();
     }
