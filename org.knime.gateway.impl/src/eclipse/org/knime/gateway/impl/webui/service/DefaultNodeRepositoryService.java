@@ -151,6 +151,7 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String nodeRelation,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
             nodeRelation == null ? null : NodeRelation.valueOf(nodeRelation), fullTemplateInfo);
     }
