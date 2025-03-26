@@ -91,14 +91,14 @@ public interface WorkflowService extends GatewayService {
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param versionId Version ID of the project.
      * @param includeInteractionInfo Whether to enclose information that is required when the user is interacting with the returned workflow. E.g. the allowed actions (reset, execute, cancel) for contained nodes and the entire workflow itself.
-     * @param version The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
      *
      * @return the result
      * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, Boolean includeInteractionInfo, String version)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Returns the current state of the workflow monitor.
@@ -121,16 +121,15 @@ public interface WorkflowService extends GatewayService {
     void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException;
         
     /**
-     * Sets the currently active project version
+     * Sets the active project including its version.
      *
      * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param version The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
+     * @param versionId Version ID of the project.
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void setActiveProjectVersion(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String version)  throws ServiceExceptions.ServiceCallException;
+    void setActiveProjectWithVersion(String projectId, String versionId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Un-does the last command from the undo-stack.

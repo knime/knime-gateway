@@ -108,11 +108,10 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
-        final Boolean includeInfoOnAllowedActions, final String versionParameter)
-        throws NotASubWorkflowException, NodeNotFoundException {
+    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        final var version = VersionId.parse(versionParameter);
+        final var version = VersionId.parse(versionId);
         DefaultServiceUtil.assertIsActiveProjectVersion(projectId, version);
 
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
@@ -133,11 +132,11 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void setActiveProjectVersion(final String projectId, final NodeIDEnt workflowId,
-        final String versionParameter) throws ServiceCallException {
+    public void setActiveProjectWithVersion(final String projectId, final String versionId)
+        throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         // To set the active project version explicitly via the API
-        DefaultServiceUtil.setActiveProjectVersion(projectId, VersionId.parse(versionParameter));
+        DefaultServiceUtil.setActiveProjectVersion(projectId, VersionId.parse(versionId));
     }
 
     @Override
