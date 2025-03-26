@@ -111,13 +111,16 @@ public class LocalWorkflowLoader implements WorkflowLoader {
                 }
             };
         } else {
-            wfmLoader = WorkflowManagerLoader.providingOnlyCurrentState(() -> {
+            wfmLoader = version -> {
+                if (!(version instanceof VersionId.CurrentState)) {
+                    throw new IllegalArgumentException("VersionId.Fixed is not supported");
+                }
                 try {
                     return loadWorkflowInWorkspace(workflow.getWorkflowDir());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            });
+            };
         }
         var project = Project.builder()
             .setWfmLoader(wfmLoader)
