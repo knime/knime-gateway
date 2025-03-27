@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ final class AlignNodes extends AbstractWorkflowCommand {
      *
      * @param wfm The workflow manager to operate in
      * @return <code>true</code> if the command changed the position of nodes, <code>false</code> if the successful
-     *         execution of the command did not change the position of nodes
+     * execution of the command did not change the position of nodes
      */
     private boolean alignNodes(final WorkflowManager wfm) {
         if (m_nodeIds.isEmpty()) {
@@ -111,52 +112,44 @@ final class AlignNodes extends AbstractWorkflowCommand {
         }
 
         m_originalPositions = m_nodeIds.stream().map(id -> wfm.getNodeContainer(id.toNodeID(wfm)))
-            .collect(Collectors.toUnmodifiableMap(nc -> nc.getID(), AlignNodes::getPosition));
-        var minimumCoordinates = Geometry.Point.min(m_originalPositions.values().stream());
-        if (areAlreadyAligned(minimumCoordinates)) {
+                .collect(Collectors.toUnmodifiableMap(nc -> nc.getID(), AlignNodes::getPosition));
+        if (areAlreadyAligned()) {
             return false;
         }
 
         // y of leftmost node will be used when aligning horizontally
         var leftMostY = m_originalPositions.values().stream()
-                .filter(position -> position.x() == minimumCoordinates.x()).findFirst().orElseThrow().y();
+                .min(Comparator.comparingInt(Geometry.Point::x)).orElseThrow().y();
         // x of topmost node will be used when aligning vertically
         var topMostX = m_originalPositions.values().stream()
-                .filter(position -> position.y() == minimumCoordinates.y()).findFirst().orElseThrow().x();
+                .min(Comparator.comparingInt(Geometry.Point::y)).orElseThrow().x();
 
 
-        m_originalPositions.forEach((nodeID, originalPosition) -> { // NOSONAR size of lambda
-            switch (m_direction) { // NOSONAR switch over enum is acceptable
-                case HORIZONTAL -> {
-                    var newPosition = new Geometry.Point(originalPosition.x(), leftMostY);
-                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
-                }
-                case VERTICAL -> {
-                    var newPosition = new Geometry.Point(topMostX, originalPosition.y());
-                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
-                }
-            }
-        });
+        switch (m_direction) { // NOSONAR switch over enum is acceptable
+            case HORIZONTAL -> m_originalPositions.forEach((nodeID, originalPosition) -> { // NOSONAR size of lambda
+                var newPosition = new Geometry.Point(originalPosition.x(), leftMostY);
+                setPosition(wfm.getNodeContainer(nodeID), newPosition);
+            });
+            case VERTICAL -> m_originalPositions.forEach((nodeID, originalPosition) -> { // NOSONAR size of lambda
+                var newPosition = new Geometry.Point(topMostX, originalPosition.y());
+                setPosition(wfm.getNodeContainer(nodeID), newPosition);
+            });
+        }
 
         wfm.setDirty();
         return true;
     }
 
-    private boolean areAlreadyAligned(final Geometry.Point minimumCoordinates) {
+    private boolean areAlreadyAligned() {
+        var somePosition = m_originalPositions.values().iterator().next();
         switch (m_direction) { // NOSONAR switch over enum is acceptable
             case HORIZONTAL -> {
-                var areHorizontallyAligned = m_originalPositions.values().stream().map(Geometry.Point::y)
-                        .allMatch(y -> y == minimumCoordinates.y());
-                if (areHorizontallyAligned) {
-                    return true;
-                }
+                return m_originalPositions.values().stream().map(Geometry.Point::y)
+                        .allMatch(y -> y == somePosition.y());
             }
             case VERTICAL -> {
-                var areVerticallyAligned = m_originalPositions.values().stream().map(Geometry.Point::x)
-                        .allMatch(x -> x == minimumCoordinates.x());
-                if (areVerticallyAligned) {
-                    return true;
-                }
+                return m_originalPositions.values().stream().map(Geometry.Point::x)
+                        .allMatch(x -> x == somePosition.x());
             }
         }
         return false;
@@ -172,7 +165,7 @@ final class AlignNodes extends AbstractWorkflowCommand {
         newBounds[0] = newLocation.x();
         newBounds[1] = newLocation.y();
         node.setUIInformation(NodeUIInformation.builder()
-            .setNodeLocation(newBounds[0], newBounds[1], newBounds[2], newBounds[3]).build());
+                .setNodeLocation(newBounds[0], newBounds[1], newBounds[2], newBounds[3]).build());
     }
 
     /**
@@ -185,7 +178,8 @@ final class AlignNodes extends AbstractWorkflowCommand {
             return;
         }
 
-        m_originalPositions.forEach((nodeID, originalPosition) -> setPosition(wfm.getNodeContainer(nodeID), originalPosition));
+        m_originalPositions.forEach((nodeID, originalPosition) ->
+                setPosition(wfm.getNodeContainer(nodeID), originalPosition));
 
         wfm.setDirty();
     }
