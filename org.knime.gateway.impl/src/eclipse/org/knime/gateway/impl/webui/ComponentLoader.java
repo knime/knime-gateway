@@ -108,7 +108,7 @@ public final class ComponentLoader {
         Supplier<LoadResult> supplier = () -> {
             try {
                 return loadComponent.apply(exec);
-            } catch (CanceledExecutionException ex) {
+            } catch (CanceledExecutionException ex) { // NOSONAR
                 throw new CancellationException(ex.getMessage());
             }
         };
@@ -181,9 +181,9 @@ public final class ComponentLoader {
     /**
      * Cancels the load operation for the given id and removes it.
      *
-     * @param id
+     * @param id the id of the load job to cancel and remove
      */
-    public void cancelAndRemoveLoadOperation(final String id) {
+    public void cancelAndRemoveLoadJob(final String id) {
         var loader = m_loaders.remove(id);
         if (loader != null && !loader.loadJob().future().isDone()) {
             loader.exec().getProgressMonitor().setExecuteCanceled();
@@ -200,7 +200,7 @@ public final class ComponentLoader {
      * @return the currently present placeholders or an empty list if none
      */
     public Collection<ComponentPlaceholderEnt> getComponentPlaceholdersAndCleanUp() {
-        var placeholders = m_loaders.values().stream().map(loader -> loader.placeholder()).toList();
+        var placeholders = m_loaders.values().stream().map(Loader::placeholder).toList();
         m_loaders.values().removeIf(loader -> !isVisiblePlaceholder(loader.placeholder()));
         return placeholders;
     }
@@ -226,6 +226,8 @@ public final class ComponentLoader {
     }
 
     /**
+     * Represents the load result once the {@link LoadJob} finished successfully.
+     *
      * @param componentId the id of the successfully added component
      * @param message a message on warnings/problems during load; can be {@code null}
      * @param details some more details regarding the loading problems; can be {@code null}

@@ -94,10 +94,12 @@ import org.mockito.Mockito;
 public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
-     * @param entityResultChecker
-     * @param serviceProvider
-     * @param workflowLoader
-     * @param workflowExecutor
+     * -
+     *
+     * @param entityResultChecker -
+     * @param serviceProvider -
+     * @param workflowLoader -
+     * @param workflowExecutor -
      */
     public EventServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {

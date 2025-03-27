@@ -150,7 +150,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
                 isOk ? null : loadResult.getTitleAndAggregatedMessage().getSecond());
         } catch (CanceledExecutionException e) {
             throw e;
-        } catch (Throwable t) {
+        } catch (Throwable t) { // NOSONAR
             var rootCause = ExceptionUtils.getRootCause(t);
             var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(rootCause);
             throw new CompletionException(loadingFailedErrorMessage, rootCause);
@@ -190,7 +190,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         var componentId = getComponentId();
         if (componentId == null) {
             var workflowElementLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
-            workflowElementLoader.cancelAndRemoveLoadOperation(m_loadJob.id());
+            workflowElementLoader.cancelAndRemoveLoadJob(m_loadJob.id());
         } else {
             getWorkflowManager().removeNode(componentId);
         }
@@ -204,7 +204,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
             if (res != null) {
                 return res.componentId();
             }
-        } catch (CompletionException | CancellationException e) {
+        } catch (CompletionException | CancellationException e) { // NOSONAR
             //
         }
         return null;
@@ -219,7 +219,8 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
      * @throws IllegalStateException
      */
     private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM, final File parentFile,
-        final URI templateURI, final int x, final int y, final boolean snapToGrid, final ExecutionMonitor executionMonitor)
+        final URI templateURI, final int x, final int y, final boolean snapToGrid,
+        final ExecutionMonitor executionMonitor)
         throws IOException, UnsupportedWorkflowVersionException, InvalidSettingsException, CanceledExecutionException {
         executionMonitor.checkCanceled();
         var loadHelper = createWorkflowLoadHelper();
