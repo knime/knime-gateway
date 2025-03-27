@@ -186,6 +186,10 @@ public final class CallThrottle {
      * @param run The task to run
      */
     private static void throttleAndExecute(final Runnable run) {
+        if (run == null) {
+            // can happen when the call-throttle is disposed
+            return;
+        }
         var start = System.currentTimeMillis();
         run.run();
         var duration = System.currentTimeMillis() - start;
