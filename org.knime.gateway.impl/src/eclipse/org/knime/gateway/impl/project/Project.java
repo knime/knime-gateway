@@ -94,9 +94,6 @@ public final class Project {
 
     private final Function<String, byte[]> m_generateReport;
 
-    // Note: This will be tracked somewhere else in the future
-    private VersionId m_activeVersion = VersionId.currentState();
-
     private Project(final Builder builder) {
         this.m_onDispose = builder.m_onDispose;
         this.m_id = builder.m_id;
@@ -126,19 +123,27 @@ public final class Project {
         return this.m_id;
     }
 
-    /**
-     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project. This might mean loading
-     *         it, or obtaining it via reference. If this call succeeds, the workflow manager can be understood to be
-     *         loaded.
-     */
-    public Optional<WorkflowManager> getWorkflowManager() {
+    public Optional<WorkflowManager> loadWorkflowManager() {
         return Optional.of(m_cachedWfm.get());
     }
 
     /**
-     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project, or empty if that
-     *         workflow manager is not yet loaded.
+     * @param version
+     * @return The workflow manager of the project of a given {@link VersionId}.
      */
+    public Optional<WorkflowManager> loadWorkflowManager(final VersionId version) {
+        return version instanceof VersionId.Fixed fixedVersion ? //
+            this.getVersion(fixedVersion) : //
+            this.loadWorkflowManager();
+    }
+
+    private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
+        if (this.m_getVersion == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
+    }
+
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
         return this.m_cachedWfm.isInitialized() ? //
             Optional.of(this.m_cachedWfm.get()) : //
@@ -147,69 +152,17 @@ public final class Project {
 
     /**
      * @param version
-     * @return The workflow manager in the project of a given {@link VersionId}.
+     * @return The root workflow manager of the project of a given {@link VersionId}, or empty if that workflow manager
+     *         is not yet loaded.
      */
-    public Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
-        return version instanceof VersionId.Fixed fixedVersion ? //
-            this.getVersion(fixedVersion) : //
-            this.getWorkflowManager();
-    }
-
-    /**
-     * To get a fixed version, we first have to set the active version. Then we load it via
-     * {@link #getWorkflowManager()}}.
-     */
-    private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        if (this.m_getVersion == null) {
-            return Optional.empty();
-        }
-        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
-    }
-
-    /**
-     * TODO: This logic might move somewhere else soon.
-     *
-     * Set the active version of the project
-     *
-     * @param version
-     */
-    public void setActiveVersion(final VersionId version) {
-        this.m_activeVersion = version;
-    }
-
-    /**
-     * TODO: This logic might move somewhere else soon.
-     *
-     * @param version
-     * @return Whether the supplied version is the currently active one.
-     */
-    public boolean isActiveVersion(final VersionId version) {
-        if (version == null) {
-            return false;
-        }
-
+    public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
+        // TODO: Use this method to double check if the version is loaded
         if (version instanceof VersionId.Fixed fixedVersion) {
-            if (this.m_activeVersion instanceof VersionId.Fixed activeVersion) {
-                return activeVersion.equals(fixedVersion);
-            }
+            return this.m_cachedVersions.containsKey(fixedVersion) ? //
+                Optional.of(this.m_cachedVersions.get(fixedVersion)) : //
+                Optional.empty();
         }
-
-        if (version instanceof VersionId.CurrentState currentState) {
-            if (this.m_activeVersion instanceof VersionId.CurrentState activeVersion) {
-                return activeVersion.equals(currentState);
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * TODO: This logic might move somewhere else soon.
-     *
-     * @return Whether the currently active version is read-only.
-     */
-    public boolean isCurrentState() {
-        return this.m_activeVersion instanceof VersionId.CurrentState;
+        return this.getWorkflowManagerIfLoaded();
     }
 
     /**

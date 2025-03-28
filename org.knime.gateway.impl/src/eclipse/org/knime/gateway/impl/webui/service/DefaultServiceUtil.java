@@ -141,35 +141,21 @@ final class DefaultServiceUtil {
     }
 
     /**
-     * Assert that the currently active project version is mutable
-     *
      * @param projectId
-     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
-     * @throws ProjectNotMutableException if the project is not mutable
+     * @param versionId
+     * @throws IllegalStateException if no project for the given ID could be found
+     * @throws ProjectVersionException if the active project version is not the given version
      */
-    static void assertProjectVersionIsMutable(final String projectId) {
-        final var isReadOnly = ProjectManager.getInstance().getProject(projectId)
-            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .isReadOnly();
-        if (isReadOnly) {
-            throw new ProjectNotMutableException("Project is read-only."); // TODO: Use a different exception?
+    static void assertProjectVersion(final String projectId, final VersionId versionId) {
+        if (versionId instanceof VersionId.Fixed fixedVersion) {
+            ProjectManager.getInstance().getProject(projectId)//
+                .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))//
+                .getWorkflowManagerIfLoaded(fixedVersion)//
+                .orElseThrow(() -> new ProjectVersionException("Project version \"" + versionId + "\" is not loaded"));
         }
-    }
 
-    /**
-     * Assert that the requested project version is the active version.
-     *
-     * @param projectId
-     * @param version
-     * @throws NoSuchElementException if there is no project for the given id
-     * @throws IllegalStateException if the requested project version is not the active version
-     */
-    static void assertIsActiveProjectVersion(final String projectId, final VersionId version) {
-        final var isActiveVersion = ProjectManager.getInstance().getProject(projectId)
-            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .isActiveVersion(version);
-        if (!isActiveVersion) {
-            throw new IllegalStateException("Requested project version is not the active version.");
+        if (!ProjectManager.getInstance().isCurrentState(projectId)) {
+            throw new ProjectVersionException("Active project version is not the current state");
         }
     }
 
@@ -178,22 +164,17 @@ final class DefaultServiceUtil {
      *
      * @param projectId
      * @param version
-     * @throws NoSuchElementException if there is no project for the given id
+     * @throws IllegalStateException if the given project-id is not the expected one
      */
-    static void setActiveProjectVersion(final String projectId, final VersionId version) {
-        ProjectManager.getInstance().getProject(projectId)
-            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .setActiveVersion(version);
+    static void setActiveProjectVersion(final String projectId, final VersionId versionId) {
+        ProjectManager.getInstance().setActiveVersion(projectId, versionId);
     }
 
-    /**
-     * Exception thrown when trying to modify a read-only project.
-     */
     @SuppressWarnings("serial")
-    static class ProjectNotMutableException extends RuntimeException {
+    static class ProjectVersionException extends RuntimeException {
 
-        ProjectNotMutableException(final String projectId) {
-            super("Project is read-only: " + projectId);
+        ProjectVersionException(final String message) {
+            super(message);
         }
     }
 

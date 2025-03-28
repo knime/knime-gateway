@@ -59,6 +59,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -84,7 +85,11 @@ public final class ProjectManager {
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
+    // TODO: Merge with active version ID
     private String m_activeProjectId;
+
+    // TODO: Merge with active project ID
+    private VersionId m_activeVersionId = VersionId.currentState();
 
     private ProjectManager() {
         // singleton
@@ -152,6 +157,32 @@ public final class ProjectManager {
      */
     public boolean isActiveProject(final String projectId) {
         return m_activeProjectId != null && m_activeProjectId.equals(projectId);
+    }
+
+    /**
+     * TODO Merge with active project ID
+     */
+    public void setActiveVersion(final String projectId, final VersionId versionId) {
+        if (!isActiveProject(projectId)) {
+            throw new IllegalStateException("Can only set the active version for the active project");
+        }
+
+        getProject(projectId) //
+            .flatMap(project -> project.getWorkflowManagerIfLoaded(versionId)) //
+            .orElseThrow(() -> new IllegalStateException("Cannot set a project version active that's not loaded"));
+
+        m_activeVersionId = versionId;
+    }
+
+    /**
+     * @param projectId
+     * @return Whether the currently active version is read-only.
+     */
+    public boolean isCurrentState(final String projectId) {
+        if (!isActiveProject(projectId)) {
+            throw new IllegalStateException("Can only check the active version for the active project");
+        }
+        return this.m_activeVersionId instanceof VersionId.CurrentState;
     }
 
     /**

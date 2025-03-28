@@ -142,7 +142,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
-            ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+            ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         var originalNumConnections = connections.size();
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
             is(NODE_ID_DATA_GENERATOR));
@@ -150,14 +150,14 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         // replace existing connection
         var command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(10), 1);
         ws().executeWorkflowCommand(projectId, workflowId, command);
-        connections = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+        connections = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
             is(NODE_ID_CONCATENATE));
 
         // undo
         ws().undoWorkflowCommand(projectId, workflowId);
-        connections = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+        connections = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
             is(NODE_ID_DATA_GENERATOR));
@@ -172,7 +172,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
-            ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+            ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         var originalNumConnections = connections.size();
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
             is(NODE_ID_DATA_GENERATOR));
@@ -180,13 +180,13 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         // new connection
         var command = buildConnectCommandEnt(new NodeIDEnt(27), 1, new NodeIDEnt(21), 2);
         ws().executeWorkflowCommand(projectId, workflowId, command);
-        connections = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+        connections = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections + 1));
         assertThat(connections.get("root:21_2").getSourceNode().toString(), is(NODE_ID_CONCATENATE));
 
         // undo
         ws().undoWorkflowCommand(projectId, workflowId);
-        connections = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+        connections = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat(connections.size(), is(originalNumConnections));
         assertNull(connections.get("root:21_2"));
     }
@@ -200,7 +200,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
-            ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+            ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
             is(NODE_ID_DATA_GENERATOR));
 
@@ -221,7 +221,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
-            ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+            ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
             is(NODE_ID_DATA_GENERATOR));
 
@@ -248,7 +248,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
         Map<String, ConnectionEnt> connections =
-            ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+            ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat(connections.get(CONNECTION_ID_DATA_GENERATOR_SRC).getSourceNode().toString(),
             is(NODE_ID_DATA_GENERATOR));
 
@@ -257,12 +257,12 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var deleteCommand =
             createDeleteCommandEnt(emptyList(), List.of(new ConnectionIDEnt(new NodeIDEnt(23, 0, 9), 1)), emptyList());
         ws().executeWorkflowCommand(projectId, component23Id, deleteCommand);
-        var component23ConnectionRemoved = ws().getWorkflow(projectId, component23Id, false, null);
+        var component23ConnectionRemoved = ws().getWorkflow(projectId, component23Id, null, false);
         assertThat(component23ConnectionRemoved.getWorkflow().getConnections().size(), is(1));
         var command4 = buildConnectCommandEnt(new NodeIDEnt(23, 0, 10), 1, new NodeIDEnt(23, 0, 9), 1);
         ws().executeWorkflowCommand(projectId, component23Id, command4);
         Awaitility.await().atMost(2, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            var component23ConnectionAdded = ws().getWorkflow(projectId, component23Id, false, null);
+            var component23ConnectionAdded = ws().getWorkflow(projectId, component23Id, null, false);
             assertThat(component23ConnectionAdded.getWorkflow().getConnections().size(), is(2));
         });
     }
@@ -336,7 +336,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var command = buildAutoConnectCommandEnt(List.of(childA, childB), true, true);
         assertAutoConnect(projectId, parentWf, 0, 3, command);
 
-        var connections = ws().getWorkflow(projectId, parentWf, false, null).getWorkflow().getConnections().values();
+        var connections = ws().getWorkflow(projectId, parentWf, null, false).getWorkflow().getConnections().values();
         assertConnection(connections, parentWf, childA);
         assertConnection(connections, childA, childB);
         assertConnection(connections, childB, parentWf);
@@ -359,7 +359,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         assertAutoConnect(projectId, workflowId, NUMBER_OF_EXISTING_CONNECTIONS, NUMBER_OF_EXISTING_CONNECTIONS,
             buildAutoConnectCommandEnt(List.of(c42, c44)));
 
-        var connections = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections().values();
+        var connections = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections().values();
         assertConnection(connections, new NodeIDEnt(42), new NodeIDEnt(44));
     }
 
@@ -380,7 +380,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
             .setFlowVariablePortsOnly(true) //
             .build();
         ws().executeWorkflowCommand(projectId, workflowId, command);
-        var workflowAfter = ws().getWorkflow(projectId, workflowId, true, null).getWorkflow();
+        var workflowAfter = ws().getWorkflow(projectId, workflowId, null, true).getWorkflow();
         var connectionsAfter = workflowAfter.getConnections().values();
         assertThat("Connection visible-to-hidden should be made even if visible destination is available", //
             connectionsAfter.stream().anyMatch(c -> //
@@ -458,7 +458,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
                 .build();
 
         ws().executeWorkflowCommand(projectId, workflowId, command);
-        var workflowAfter = ws().getWorkflow(projectId, workflowId, true, null).getWorkflow();
+        var workflowAfter = ws().getWorkflow(projectId, workflowId, null, true).getWorkflow();
         var connectionsAfter = workflowAfter.getConnections().entrySet().stream().map(Map.Entry::getValue).toList();
 
         assertThat("Should disconnect nodes", connectionsAfter.stream()
@@ -507,29 +507,29 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
 
     private List<ConnectionEnt> getConnectionsFromWorkflow(final String projectId, final NodeIDEnt workflowId)
             throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException {
-        var workflow = ws().getWorkflow(projectId, workflowId, true, null).getWorkflow();
+        var workflow = ws().getWorkflow(projectId, workflowId, null, true).getWorkflow();
         return workflow.getConnections().entrySet().stream().map(Map.Entry::getValue).toList();
     }
 
     private void assertAutoConnect(final String projectId, final NodeIDEnt workflowId, final int numConnectionsBefore,
         final int numConnectionsAfter, final AutoConnectCommandEnt command) throws Exception { // NOSONAR
-        var connectionsBefore = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+        var connectionsBefore = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
         assertThat("Unexpected number of connections before command execution", connectionsBefore.size(),
             is(numConnectionsBefore));
         ws().executeWorkflowCommand(projectId, workflowId, command);
-        var workflowAfter = ws().getWorkflow(projectId, workflowId, true, null).getWorkflow();
+        var workflowAfter = ws().getWorkflow(projectId, workflowId, null, true).getWorkflow();
         var connectionsAfter = getConnectionsFromWorkflow(projectId, workflowId);
         assertThat("Unexpected number of connections after command execution", connectionsAfter.size(),
             is(numConnectionsAfter));
 
         if (Boolean.TRUE.equals(workflowAfter.getAllowedActions().isCanUndo())) { // Only undo if we can
             ws().undoWorkflowCommand(projectId, workflowId);
-            var connectionsUndo = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+            var connectionsUndo = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
             assertThat("Unexpected number of connections after command undo", connectionsUndo.size(),
                 is(numConnectionsBefore));
 
             ws().redoWorkflowCommand(projectId, workflowId);
-            var connectionsRedo = ws().getWorkflow(projectId, workflowId, false, null).getWorkflow().getConnections();
+            var connectionsRedo = ws().getWorkflow(projectId, workflowId, null, false).getWorkflow().getConnections();
             assertThat("Unexpected number of connections after command redo", connectionsRedo.size(),
                 is(numConnectionsAfter));
         }

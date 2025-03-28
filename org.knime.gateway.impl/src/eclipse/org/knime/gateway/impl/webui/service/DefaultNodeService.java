@@ -74,6 +74,7 @@ import org.knime.gateway.api.entity.NodeDialogEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
@@ -115,7 +116,7 @@ public final class DefaultNodeService implements NodeService {
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
             org.knime.gateway.impl.service.util.DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
@@ -130,7 +131,7 @@ public final class DefaultNodeService implements NodeService {
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
             var nc = getNodeContainer(projectId, workflowId, nodeId);
             if (nc instanceof NativeNodeContainer nnc) {
@@ -174,7 +175,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException, InvalidRequestException { // TODO: Add versionId
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var snc = getNC(projectId, workflowId, nodeId, SingleNodeContainer.class);
         if (!NodeDialogManager.hasNodeDialog(snc)) {
@@ -185,7 +186,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException, InvalidRequestException { // TODO: Add versionId
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
 
@@ -271,7 +272,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String extensionType, final String serviceType, final String request)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException, InvalidRequestException { // TODO: Add versionId
         DefaultServiceContext.assertWorkflowProjectId(projectId);
 
         var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
@@ -291,8 +292,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String extensionType) throws NodeNotFoundException, InvalidRequestException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        final String extensionType) throws NodeNotFoundException, InvalidRequestException { // Add versionId?
         NodeContainer nc;
         try {
             nc = getNC(projectId, workflowId, nodeId, NodeContainer.class);
@@ -319,7 +319,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String mode, final List<String> selection) throws NodeNotFoundException {
+        final String mode, final List<String> selection) throws NodeNotFoundException { // Add versionId
         DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, nodeId, mode, selection, NodeWrapper::of);
     }
 

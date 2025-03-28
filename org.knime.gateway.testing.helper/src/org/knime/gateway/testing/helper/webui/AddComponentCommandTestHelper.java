@@ -104,7 +104,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
             .build();
 
         ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
-        var component = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow().getNodes()
+        var component = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.TRUE).getWorkflow().getNodes()
             .get("root:3");
         cr(component, "added_component");
     }

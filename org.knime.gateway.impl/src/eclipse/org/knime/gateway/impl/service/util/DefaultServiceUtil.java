@@ -45,6 +45,9 @@
  */
 package org.knime.gateway.impl.service.util;
 
+import static org.knime.gateway.impl.service.util.WorkflowManagerResolver.findNodeContainer;
+import static org.knime.gateway.impl.service.util.WorkflowManagerResolver.getProjectWfm;
+
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -106,60 +109,9 @@ public final class DefaultServiceUtil {
 
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
-        final NodeIDEnt nodeInSubWorkflow) {
-        var subWorkflow = getWorkflowManager(projectId, subWorkflowId);
+        final NodeIDEnt nodeInSubWorkflow) { // TODO: Add 'versionId' parameter?
+        var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId); // TODO: Version?
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);
-    }
-
-    /**
-     * Gets the (sub-)workflow manager for the given root workflow id and node id.
-     *
-     * @param projectId the root workflow id
-     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
-     * @return the {@link WorkflowManager}-instance of the currently active version
-     * @throws NoSuchElementException if there is no root workflow for the given root workflow id
-     * @throws IllegalArgumentException if there is no node for the given node id
-     * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
-     *             or the workflow is encrypted
-     */
-    public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
-        return parseWfm(findNodeContainer(getProjectWfm(projectId), workflowId));
-    }
-
-    private static NodeContainer findNodeContainer(final WorkflowManager parent, final NodeIDEnt child) {
-        if (child.equals(NodeIDEnt.getRootID())) {
-            return parent;
-        }
-        return parent.findNodeContainer(child.toNodeID(parent));
-    }
-
-    private static WorkflowManager parseWfm(final NodeContainer nc) {
-        WorkflowManager wfm;
-        if (nc instanceof SubNodeContainer subNodeContainer) {
-            wfm = subNodeContainer.getWorkflowManager();
-        } else if (nc instanceof WorkflowManager metanodeWfm) {
-            wfm = metanodeWfm;
-        } else {
-            throw new IllegalStateException("The node id '" + nc.getID() + "' doesn't reference a sub workflow.");
-        }
-        if (wfm.isEncrypted() && !wfm.isUnlocked()) {
-            throw new IllegalStateException("Workflow is locked and cannot be accessed.");
-        }
-        return wfm;
-    }
-
-    /**
-     * Obtain the root workflow manager of the given project.
-     *
-     * @param projectId the project id
-     * @return the {@link WorkflowManager}
-     * @throws NoSuchElementException if there is not project for the id registered
-     */
-    public static WorkflowManager getProjectWfm(final String projectId) {
-        return ProjectManager.getInstance().getProject(projectId)
-            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .getWorkflowManager() // Always yields the active version
-            .orElseThrow(() -> new NoSuchElementException("Workflow not found."));
     }
 
     /**
@@ -236,7 +188,7 @@ public final class DefaultServiceUtil {
     public static void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final String action,
         final NodeIDEnt... nodeIdEnts) {
         NodeID[] nodeIDs = null;
-        var wfm = getWorkflowManager(projectId, workflowId);
+        var wfm = WorkflowManagerResolver.get(projectId, workflowId); // No version is needed.
         if (nodeIdEnts != null && nodeIdEnts.length != 0) {
             nodeIDs = new NodeID[nodeIdEnts.length];
             nodeIDs[0] = nodeIdEnts[0].toNodeID(wfm);

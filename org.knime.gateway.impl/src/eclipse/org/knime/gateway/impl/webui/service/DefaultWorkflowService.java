@@ -112,8 +112,6 @@ public final class DefaultWorkflowService implements WorkflowService {
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var version = VersionId.parse(versionId);
-        DefaultServiceUtil.assertIsActiveProjectVersion(projectId, version);
-
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
         final var buildContext = WorkflowBuildContext.builder();
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
@@ -135,8 +133,12 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void setActiveProjectWithVersion(final String projectId, final String versionId)
         throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        // To set the active project version explicitly via the API
-        DefaultServiceUtil.setActiveProjectVersion(projectId, VersionId.parse(versionId));
+        try {
+            DefaultServiceUtil.setActiveProjectVersion(projectId, VersionId.parse(versionId));
+        } catch (IllegalStateException ex) {
+            throw new ServiceCallException(ex.getMessage(), ex);
+        }
+
     }
 
     @Override
@@ -167,7 +169,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         var spaceProviders = m_spaceProvidersManager == null ? null : //
             m_spaceProvidersManager.getSpaceProviders( //
                 DefaultServiceContext.getProjectId().map(Key::of) //
@@ -180,14 +182,14 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersionIsMutable(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 
