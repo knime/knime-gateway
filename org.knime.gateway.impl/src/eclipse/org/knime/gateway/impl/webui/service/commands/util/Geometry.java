@@ -46,6 +46,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands.util;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -58,6 +60,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.gateway.api.webui.entity.XYEnt;
+
 
 /**
  * Utility class for geometric objects.
@@ -160,6 +163,14 @@ public final class Geometry {
          */
         public static Point min(final Point a, final Point b) {
             return min(a, b, Point::new);
+        }
+
+        /**
+         * Convert this point into an {@link XYEnt}
+         * @return the entity
+         */
+        public XYEnt toEnt() {
+            return builder(XYEnt.XYEntBuilder.class).setX(this.x()).setY(this.y()).build();
         }
 
         /**
