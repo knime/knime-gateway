@@ -70,9 +70,9 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.ComponentPlaceholderEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
-import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 
 /**
  * Manages component-loading jobs for a single workflow.
@@ -92,62 +92,88 @@ public final class ComponentLoader {
     /**
      * Creates a new component loading job.
      *
-     * @param x x coordinate to show the placeholder and the successfully loaded component
-     * @param y y coordinate to show the placeholder and the successfully loaded component
+     * @param position coordinate to show the placeholder and the successfully loaded component
      * @param loadComponent the actual component loading logic
      *
      * @return the job/placeholder id
      */
-    public LoadJob createComponentLoadJob(final int x, final int y,
+    public LoadJob createComponentLoadJob(final Geometry.Point position,
         final FailableFunction<ExecutionMonitor, LoadResult, CanceledExecutionException> loadComponent) {
-        var id = UUID.randomUUID().toString();
+        var placeholderId = UUID.randomUUID().toString();
         var exec = new ExecutionMonitor();
-        NodeProgressListener progressListener = progressEvent -> updatePlaceholderWithMessageAndProgress(id,
-            progressEvent.getNodeProgress().getMessage(), null, progressEvent.getNodeProgress().getProgress());
+        NodeProgressListener progressListener = progressEvent -> updatePlaceholderWithMessageAndProgress(placeholderId,
+            progressEvent.getNodeProgress().getMessage(), progressEvent.getNodeProgress().getProgress());
         exec.getProgressMonitor().addProgressListener(progressListener);
-        Supplier<LoadResult> supplier = () -> {
+        Supplier<LoadResult> componentLoader = () -> {
             try {
                 return loadComponent.apply(exec);
             } catch (CanceledExecutionException ex) { // NOSONAR
                 throw new CancellationException(ex.getMessage());
             }
         };
-        var future = CompletableFuture.<LoadResult> supplyAsync(supplier).handle((result, ex) -> {
-            exec.getProgressMonitor().removeAllProgressListener();
-            if (ex == null) {
-                updatePlaceholderWithSuccess(id, new NodeIDEnt(result.componentId).toString(), result.message,
-                    result.details);
-            } else {
-                updatePlaceholderWithError(id, "Component could not be loaded", ex.getMessage());
-            }
-            return result;
-        });
-        var loaderInternal = new Loader(new LoadJob(id, future), buildComponentPlaceholderEnt(id, StateEnum.LOADING, x,
-            y, null, exec.getProgressMonitor().getMessage(), null, exec.getProgressMonitor().getProgress()), exec);
-        m_loaders.put(id, loaderInternal);
+        var future = CompletableFuture //
+            .supplyAsync(componentLoader) //
+            .handle((result, ex) -> {
+                exec.getProgressMonitor().removeAllProgressListener();
+                if (ex == null) {
+                    updatePlaceholderWithSuccess(placeholderId, new NodeIDEnt(result.componentId()).toString(),
+                        result.message(), result.details());
+                } else {
+                    updatePlaceholderWithError(placeholderId, "Component could not be loaded", ex.getMessage());
+                }
+                return result;
+            });
+        final var progress = exec.getProgressMonitor().getProgress();
+        var placeholder = builder(ComponentPlaceholderEntBuilder.class) //
+            .setId(placeholderId) //
+            .setState(StateEnum.LOADING) //
+            .setPosition(position.toEnt()) //
+            .setComponentId(null) //
+            .setMessage(exec.getProgressMonitor().getMessage()) //
+            .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
+            .build();
+
+        var loader = new Loader(new LoadJob(placeholderId, future), placeholder, exec);
+        m_loaders.put(placeholderId, loader);
         m_workflowChangesListener.trigger(WorkflowChange.COMPONENT_PLACEHOLDER_ADDED);
-        return loaderInternal.loadJob();
+        return loader.loadJob();
     }
 
-    private void updatePlaceholderWithMessageAndProgress(final String id, final String message, final String details,
-        final Double progress) {
+    private void updatePlaceholderWithMessageAndProgress(final String id, final String message, final Double progress) {
         replacePlaceholderEnt(id,
-            placeholder -> buildComponentPlaceholderEnt(id, placeholder.getState(), placeholder.getPosition().getX(),
-                placeholder.getPosition().getY(), placeholder.getComponentId(), message, details, progress));
+            previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
+                .setState(previousEnt.getState()) //
+                .setPosition(previousEnt.getPosition()) //
+                .setComponentId(previousEnt.getComponentId()) //
+                .setMessage(message) //
+                .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
+                .build() //
+        );
     }
 
     private void updatePlaceholderWithSuccess(final String id, final String replacementId, final String warningMessage,
         final String details) {
         replacePlaceholderEnt(id,
-            placeholder -> buildComponentPlaceholderEnt(id,
-                warningMessage == null ? StateEnum.SUCCESS : StateEnum.SUCCESS_WITH_WARNING,
-                placeholder.getPosition().getX(), placeholder.getPosition().getY(), replacementId, warningMessage,
-                details, null));
+            previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
+                .setState(warningMessage == null ? StateEnum.SUCCESS : StateEnum.SUCCESS_WITH_WARNING) //
+                .setPosition(previousEnt.getPosition()) //
+                .setComponentId(replacementId) //
+                .setMessage(warningMessage) //
+                .setDetails(details) //
+                .build() //
+        );
     }
 
     private void updatePlaceholderWithError(final String id, final String message, final String details) {
-        replacePlaceholderEnt(id, placeholder -> buildComponentPlaceholderEnt(id, StateEnum.ERROR,
-            placeholder.getPosition().getX(), placeholder.getPosition().getY(), null, message, details, null));
+        replacePlaceholderEnt(id,
+            previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
+                .setState(StateEnum.ERROR) //
+                .setPosition(previousEnt.getPosition()) //
+                .setComponentId(null) //
+                .setMessage(message) //
+                .setDetails(details) //
+                .build() //
+        );
     }
 
     private void replacePlaceholderEnt(final String id, final UnaryOperator<ComponentPlaceholderEnt> replacer) {
@@ -159,23 +185,6 @@ public final class ComponentLoader {
         var newPlaceholder = replacer.apply(placeholder);
         m_loaders.put(id, new Loader(loader.loadJob(), newPlaceholder, loader.exec()));
         m_workflowChangesListener.trigger(null);
-    }
-
-    private static ComponentPlaceholderEnt buildComponentPlaceholderEnt(final String id, final StateEnum state,
-        final int x, final int y, final String componentId, final String message, final String details,
-        final Double progress) {
-        return builder(ComponentPlaceholderEntBuilder.class) //
-            .setId(id) //
-            .setState(state) //
-            .setPosition(builder(XYEntBuilder.class) //
-                .setX(x) //
-                .setY(y) //
-                .build()) //
-            .setComponentId(componentId) //
-            .setMessage(message) //
-            .setDetails(details) //
-            .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
-            .build();
     }
 
     /**

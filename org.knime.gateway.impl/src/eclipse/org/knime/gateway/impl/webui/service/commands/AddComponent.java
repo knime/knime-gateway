@@ -92,6 +92,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
 import org.knime.gateway.impl.webui.ComponentLoader.LoadJob;
 import org.knime.gateway.impl.webui.ComponentLoader.LoadResult;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -129,8 +130,8 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     @Override
     public boolean executeWithWorkflowContext() throws ServiceCallException {
         var componentLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
-        m_loadJob = componentLoader.createComponentLoadJob(m_commandEnt.getPosition().getX(),
-            m_commandEnt.getPosition().getY(), this::loadComponent);
+        var position = Geometry.Point.of(m_commandEnt.getPosition());
+        m_loadJob = componentLoader.createComponentLoadJob(position, this::loadComponent);
         return true;
     }
 
@@ -138,16 +139,18 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         var wfm = getWorkflowManager();
         var space = m_spaceProviders.getSpace(m_commandEnt.getProviderId(), m_commandEnt.getSpaceId());
         var uri = space.toKnimeUrl(m_commandEnt.getItemId());
-        exec.setMessage("Downloading ...");
+        exec.setMessage("Downloading...");
         var localPath = space.toLocalAbsolutePath(exec, m_commandEnt.getItemId()).orElseThrow();
         try (var lock = wfm.lock()) {
-            exec.setMessage("Loading component ...");
-            var loadResult = loadComponent(wfm, localPath.toFile(), uri, m_commandEnt.getPosition().getX(),
-                m_commandEnt.getPosition().getY(), false, exec);
+            exec.setMessage("Loading component...");
+            var position = Geometry.Point.of(m_commandEnt.getPosition());
+            var loadResult = loadComponent(wfm, localPath.toFile(), uri, position, exec);
             var isOk = loadResult.getStatus().isOK();
-            return new LoadResult(loadResult.getComponentId(),
-                isOk ? null : loadResult.getTitleAndAggregatedMessage().getFirst(),
-                isOk ? null : loadResult.getTitleAndAggregatedMessage().getSecond());
+            return new LoadResult( //
+                loadResult.getComponentId(), //
+                isOk ? null : loadResult.getTitleAndAggregatedMessage().getFirst(), //
+                isOk ? null : loadResult.getTitleAndAggregatedMessage().getSecond() //
+            );
         } catch (CanceledExecutionException e) {
             throw e;
         } catch (Throwable t) { // NOSONAR
@@ -210,17 +213,8 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         return null;
     }
 
-    /*
-     * @return The internal result of the component loading, that also could have loaded with problems.
-     * @throws IOException
-     * @throws UnsupportedWorkflowVersionException
-     * @throws InvalidSettingsException
-     * @throws CanceledExecutionException
-     * @throws IllegalStateException
-     */
     private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM, final File parentFile,
-        final URI templateURI, final int x, final int y, final boolean snapToGrid,
-        final ExecutionMonitor executionMonitor)
+        final URI templateURI, final Geometry.Point position, final ExecutionMonitor executionMonitor)
         throws IOException, UnsupportedWorkflowVersionException, InvalidSettingsException, CanceledExecutionException {
         executionMonitor.checkCanceled();
         var loadHelper = createWorkflowLoadHelper();
@@ -233,8 +227,8 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
             throw new IllegalStateException("No component returned by load routine, see log for details");
         }
         // create extra info and set it
-        var info = NodeUIInformation.builder().setNodeLocation(x, y, -1, -1).setHasAbsoluteCoordinates(false)
-            .setSnapToGrid(snapToGrid).setIsDropLocation(true).build();
+        var info = NodeUIInformation.builder().setNodeLocation(position.x(), position.y(), -1, -1)
+            .setHasAbsoluteCoordinates(false).setSnapToGrid(false).setIsDropLocation(true).build();
         snc.setUIInformation(info);
         return new LoadResultInternalRoot(loadResult);
     }

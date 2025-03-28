@@ -392,7 +392,7 @@ public final class WorkflowEntityFactory {
             var annotations =
                 wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).toList();
             var metadata = getMetadata(wfm);
-            var componentPlaceholders = buildContext.getComponentPlacerholders().stream().toList();
+            var componentPlaceholders = buildContext.getComponentPlaceholders().stream().toList();
             return builder(WorkflowEntBuilder.class) //
                 .setInfo(buildWorkflowInfoEnt(wfm, buildContext))//
                 .setNodes(nodes)//

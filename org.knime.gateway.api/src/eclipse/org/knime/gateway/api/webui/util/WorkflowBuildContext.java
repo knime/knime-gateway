@@ -206,7 +206,7 @@ public final class WorkflowBuildContext {
         return m_version;
     }
 
-    Collection<ComponentPlaceholderEnt> getComponentPlacerholders() {
+    Collection<ComponentPlaceholderEnt> getComponentPlaceholders() {
         return m_componentPlaceholders;
     }
 
