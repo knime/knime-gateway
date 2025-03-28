@@ -193,6 +193,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         var callback = m_workflowChangesCallbacks.remove(wfKey);
         if (callback != null && m_workflowMiddleware.hasStateFor(wfKey)) {
             m_workflowMiddleware.getWorkflowChangesListener(wfKey).removeCallback(callback);
+            m_workflowMiddleware.clearStateCacheFor(wfKey);
         }
     }
 

@@ -294,14 +294,9 @@ public final class WorkflowMiddleware {
                 m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes());
         }
         final var wfEnt = EntityFactory.Workflow.buildWorkflowEnt(ws.m_wfm, buildContextBuilder);
-        if (wfEnt == null) {
-            // no change
-            return null;
-        } else {
-            var patch = m_workflowEntRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
-            return patch == null ? null : builder(WorkflowChangedEventEntBuilder.class).setPatch(patch)
-                .setSnapshotId(patchEntCreator.getLastSnapshotId()).build();
-        }
+        var patch = m_workflowEntRepo.getChangesAndCommit(snapshotId, wfEnt, patchEntCreator).orElse(null);
+        return patch == null ? null : builder(WorkflowChangedEventEntBuilder.class).setPatch(patch)
+            .setSnapshotId(patchEntCreator.getLastSnapshotId()).build();
     }
 
     /**
@@ -349,6 +344,15 @@ public final class WorkflowMiddleware {
      */
     public boolean hasStateFor(final WorkflowKey wfKey) {
         return m_workflowStateCache.containsKey(wfKey);
+    }
+
+    /**
+     * TODO
+     *
+     * @param wfKey
+     */
+    public void clearStateCacheFor(final WorkflowKey wfKey) {
+        getWorkflowState(wfKey).clearCache();
     }
 
     /**
@@ -451,6 +455,10 @@ public final class WorkflowMiddleware {
             }
         }
 
+        void clearCache() {
+            m_depNodeProperties.m_dependentNodeProperties = null;
+        }
+
     }
 
     /**
@@ -474,12 +482,12 @@ public final class WorkflowMiddleware {
         }
 
         public DependentNodeProperties get() {
-            var recompute = m_tracker.invoke(t -> {
+            var recompute = m_dependentNodeProperties == null || m_tracker.invoke(t -> {
                 var nodeStateChanges = t.hasOccurredAtLeastOne(WorkflowChange.NODE_STATE_UPDATED);
                 var nodeOrConnectionAddedOrRemoved = t.hasOccurredAtLeastOne(WorkflowChange.NODE_ADDED,
                     WorkflowChange.NODE_REMOVED, WorkflowChange.CONNECTION_ADDED, WorkflowChange.CONNECTION_REMOVED);
                 t.reset();
-                return m_dependentNodeProperties == null || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
+                return nodeStateChanges || nodeOrConnectionAddedOrRemoved;
             });
             if (Boolean.TRUE.equals(recompute)) {
                 m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(m_wfm);
