@@ -58,11 +58,13 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -98,7 +100,7 @@ import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
- * {@link Space}-implementation that represents the local workspace.
+ * {@link Space}-implementation that represents the local Eclipse RCP workspace.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
@@ -121,7 +123,10 @@ public final class LocalSpace implements Space {
 
     private final Path m_rootPath;
 
+    private final Set<Consumer<String>> m_itemRemovedListeners = new HashSet<>();
+
     /**
+     * -
      * @param rootPath the path to the root of the local workspace
      */
     public LocalSpace(final Path rootPath) {
@@ -261,7 +266,7 @@ public final class LocalSpace implements Space {
         // Check if there are any item IDs that do not exist
         assertAllItemIdsExistOrElseThrow(itemIds);
 
-        var deletedPaths = new ArrayList<Path>(itemIds.size());
+        var deletedItems = new ArrayList<Pair<String, Path>>(itemIds.size());
         try {
             for (var itemId : itemIds) {
                 var path = m_spaceItemPathAndTypeCache.getPath(itemId);
@@ -270,11 +275,15 @@ public final class LocalSpace implements Space {
                 }
                 // NB: This also works for files
                 PathUtils.deleteDirectoryIfExists(path);
-                deletedPaths.add(path);
+                deletedItems.add(new Pair<>(itemId,path));
             }
         } finally {
             // NB: We only remove the paths that were deleted successfully
-            deletedPaths.forEach(m_spaceItemPathAndTypeCache::prunePath);
+            deletedItems.forEach(deletedItem -> {
+                m_spaceItemPathAndTypeCache.prunePath(deletedItem.getSecond());
+                m_itemRemovedListeners.forEach(listener -> listener.accept(deletedItem.getFirst()));
+            });
+
         }
     }
 
@@ -690,6 +699,14 @@ public final class LocalSpace implements Space {
             final var isOpenedAsProject = localProjectWithId.isPresent();
             return Optional.of(Pair.create(path, new Collision(typesCompatible, !isOpenedAsProject, true)));
         }
+    }
+
+    /**
+     * Add a listener that is notified when an item has been successfully removed from the space
+     * @param listener Notified with the item ID of the removed item
+     */
+    public void addItemRemovedListener(final Consumer<String> listener) {
+        m_itemRemovedListeners.add(listener);
     }
 
 }
