@@ -70,6 +70,7 @@ import org.knime.gateway.impl.service.util.PatchEntCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.WorkflowMiddleware.WorkflowChangedEventBuilder;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
@@ -84,6 +85,9 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     // In a multi-user scenario we will need to keep track of the callbacks
     // per 'user/client' instead of per workflow - see NXT-2599
     private final Map<WorkflowKey, Runnable> m_workflowChangesCallbacks = new HashMap<>();
+
+    // TODO let the middleware keep track of it?
+    private final Map<WorkflowKey, WorkflowChangedEventBuilder> m_workflowChangedEventBuilders = new HashMap<>();
 
     private final ProjectManager m_projectManager;
 
@@ -130,10 +134,12 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
 
+        var workflowChangedEventBuilder = m_workflowChangedEventBuilders.computeIfAbsent(workflowKey,
+            m_workflowMiddleware::createWorkflowChangedEventBuilder);
+
         // create very first changed event to be sent first (and thus catch up with the most recent
         // workflow version)
-        var workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent( //
-            workflowKey, //
+        var workflowChangedEvent = workflowChangedEventBuilder.buildWorkflowChangedEvent( //
             new PatchEntCreator(null), //
             wfEventType.getSnapshotId(), //
             true //
@@ -162,8 +168,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         var wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId());
         return () -> {
             preEventCreation();
-            WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey,
-                patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
+            WorkflowChangedEventEnt workflowChangedEvent = m_workflowChangedEventBuilders.get(wfKey)
+                .buildWorkflowChangedEvent(patchEntCreator, patchEntCreator.getLastSnapshotId(), true);
             if (workflowChangedEvent != null) {
                 var compositeEvent = createCompositeEvent(wfKey, wfm, workflowChangedEvent);
                 sendEvent(compositeEvent, wfKey.getProjectId());
@@ -184,6 +190,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      */
     @Override
     public void removeEventListener(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
+        // TODO remove event listener when client disconnects? NXT-2599
         var wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         removeEventListener(wfKey);
     }
@@ -193,7 +200,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         var callback = m_workflowChangesCallbacks.remove(wfKey);
         if (callback != null && m_workflowMiddleware.hasStateFor(wfKey)) {
             m_workflowMiddleware.getWorkflowChangesListener(wfKey).removeCallback(callback);
-            m_workflowMiddleware.clearStateCacheFor(wfKey);
+            m_workflowChangedEventBuilders.remove(wfKey).dispose();
         }
     }
 

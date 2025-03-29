@@ -423,6 +423,18 @@
                 <message_argument value="clearStateCacheFor(WorkflowKey)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="createWorkflowChangedEventBuilder(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/WorkflowMiddleware.java" type="org.knime.gateway.impl.webui.WorkflowMiddleware$WorkflowChangedEventBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowChangedEventBuilder"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory">
         <filter id="338792546">
