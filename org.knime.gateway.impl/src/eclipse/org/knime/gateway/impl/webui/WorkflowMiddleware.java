@@ -400,57 +400,19 @@ public final class WorkflowMiddleware {
     }
 
     /**
-     * Wrapper around {@link DependentNodeProperties} that tracks the given workflow for changes affecting the dependent
-     * node properties and recomputes them if needed.
-     */
-    private static final class CachedDependentNodeProperties {
-
-        private DependentNodeProperties m_dependentNodeProperties;
-
-        private final WorkflowChangesTracker m_tracker;
-
-        private final WorkflowChangesListener m_wfChangesListener;
-
-        private final WorkflowManager m_wfm;
-
-        CachedDependentNodeProperties(final WorkflowManager wfm, final WorkflowChangesListener wfChangesListener) {
-            m_wfm = wfm;
-            m_wfChangesListener = wfChangesListener;
-            m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
-        }
-
-        public DependentNodeProperties get() {
-            var recompute = m_dependentNodeProperties == null || m_tracker.invoke(t -> {
-                var nodeStateChanges = t.hasOccurredAtLeastOne(WorkflowChange.NODE_STATE_UPDATED);
-                var nodeOrConnectionAddedOrRemoved = t.hasOccurredAtLeastOne(WorkflowChange.NODE_ADDED,
-                    WorkflowChange.NODE_REMOVED, WorkflowChange.CONNECTION_ADDED, WorkflowChange.CONNECTION_REMOVED);
-                t.reset();
-                return nodeStateChanges || nodeOrConnectionAddedOrRemoved;
-            });
-            if (Boolean.TRUE.equals(recompute)) {
-                m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(m_wfm);
-            }
-            return m_dependentNodeProperties;
-        }
-
-        void dispose() {
-            m_wfChangesListener.removeWorkflowChangesTracker(m_tracker);
-        }
-    }
-
-    /**
      * TODO
      */
     public final class WorkflowChangedEventBuilder {
 
-        private final CachedDependentNodeProperties m_depNodeProperties;
+        private final WorkflowChangesTracker m_tracker;
 
         private final WorkflowKey m_wfKey;
 
+        private DependentNodeProperties m_dependentNodeProperties;
+
         private WorkflowChangedEventBuilder(final WorkflowKey wfKey) {
             m_wfKey = wfKey;
-            m_depNodeProperties =
-                new CachedDependentNodeProperties(getWorkflowState(wfKey).m_wfm, getWorkflowChangesListener(wfKey));
+            m_tracker = getWorkflowChangesListener(wfKey).createWorkflowChangeTracker();
         }
 
         /**
@@ -476,7 +438,7 @@ public final class WorkflowMiddleware {
             if (includeInteractionInfo) {
                 buildContextBuilder.canUndo(m_commands.canUndo(m_wfKey))//
                     .canRedo(m_commands.canRedo(m_wfKey))//
-                    .setDependentNodeProperties(() -> m_depNodeProperties.get());
+                    .setDependentNodeProperties(this::getDependentNodeProperties);
             }
             if (m_spaceProvidersManager != null) {
                 buildContextBuilder.setSpaceProviderTypes(
@@ -488,11 +450,27 @@ public final class WorkflowMiddleware {
                 .setSnapshotId(patchEntCreator.getLastSnapshotId()).build();
         }
 
+        private DependentNodeProperties getDependentNodeProperties() {
+            var recompute = m_dependentNodeProperties == null || m_tracker.invoke(t -> {
+                var nodeStateChanges = t.hasOccurredAtLeastOne(WorkflowChange.NODE_STATE_UPDATED);
+                var nodeOrConnectionAddedOrRemoved = t.hasOccurredAtLeastOne(WorkflowChange.NODE_ADDED,
+                    WorkflowChange.NODE_REMOVED, WorkflowChange.CONNECTION_ADDED, WorkflowChange.CONNECTION_REMOVED);
+                t.reset();
+                return nodeStateChanges || nodeOrConnectionAddedOrRemoved;
+            });
+            if (Boolean.TRUE.equals(recompute)) {
+                m_dependentNodeProperties =
+                    DependentNodeProperties.determineDependentNodeProperties(getWorkflowState(m_wfKey).m_wfm);
+            }
+            return m_dependentNodeProperties;
+        }
+
         /**
          * TODO
          */
         public void dispose() {
-            m_depNodeProperties.dispose();
+            getWorkflowChangesListener(m_wfKey).removeWorkflowChangesTracker(m_tracker);
+            m_dependentNodeProperties = null;
         }
 
     }
