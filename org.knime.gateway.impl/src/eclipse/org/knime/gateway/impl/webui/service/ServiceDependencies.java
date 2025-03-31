@@ -60,6 +60,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
@@ -137,7 +138,6 @@ public final class ServiceDependencies {
     /**
      * Helper to set all dependencies required by the default service implementations.
      *
-     * @param exampleProjects
      * @param projectManager
      * @param workflowMiddleware
      * @param appStateUpdater The application state updater
@@ -147,6 +147,7 @@ public final class ServiceDependencies {
      * @param preferencesProvider
      * @param nodeFactoryProvider
      * @param kaiHandler handle K-AI related requests
+     * @param codeKaiHandler handle K-AI requests of scripting editors
      * @param nodeCollections
      * @param nodeRepo
      * @param nodeCategoryExtensions
@@ -162,8 +163,10 @@ public final class ServiceDependencies {
         final PreferencesProvider preferencesProvider, //
         final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
+        final CodeKaiHandler codeKaiHandler, //
         final NodeCollections nodeCollections, //
-        final NodeRepository nodeRepo, final NodeCategoryExtensions nodeCategoryExtensions,
+        final NodeRepository nodeRepo, //
+        final NodeCategoryExtensions nodeCategoryExtensions, //
         final SelectionEventBus selectionEventBus) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
@@ -175,6 +178,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);
             ServiceDependencies.setServiceDependency(NodeFactoryProvider.class, nodeFactoryProvider);
             ServiceDependencies.setServiceDependency(KaiHandler.class, kaiHandler);
+            ServiceDependencies.setServiceDependency(CodeKaiHandler.class, codeKaiHandler);
             ServiceDependencies.setServiceDependency(NodeCollections.class, nodeCollections);
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
             ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
