@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -44,50 +44,68 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 6, 2024 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   15 Sep 2023 (chaubold): created
  */
 package org.knime.gateway.impl.webui.kai;
 
-import org.knime.core.node.workflow.contextv2.RestLocationInfo;
-import org.knime.core.util.auth.CouldNotAuthorizeException;
-import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import java.io.IOException;
+
+import org.knime.gateway.impl.webui.kai.KaiHandlerFactory.AuthTokenProvider;
 
 /**
- * Factory for {@link KaiHandler} instances that are registered at an extension point.
+ * Interface for a service that provides code suggestions via K-AI.
  *
- * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @author Carsten Haubold, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
  */
-public interface KaiHandlerFactory {
+public interface CodeKaiHandler {
 
     /**
-     * @param eventConsumer for sending events to the frontend
-     * @param tokenProvider
-     * @return a new KaiHandler
+     * @return whether all K-AI-related features are enabled
      */
-    KaiHandler createKaiHandler(final EventConsumer eventConsumer, AuthTokenProvider tokenProvider);
+    boolean isKaiEnabled();
 
     /**
-     * Create a handler for the code generation assistant.
+     * @return the ID of the Hub hosting the backend
+     */
+    String getHubId();
+
+    /**
+     * Log in to the currently selected Hub end point
      *
-     * @param tokenProvider if {@code null} defaults to getting the auth token from the ExplorerMountTable, which is
-     *            only valid in local AP.
-     * @return a new handler for the code generation assistant
+     * @return true if already logged in or the login was successful
      */
-    CodeKaiHandler createCodeKaiHandler(AuthTokenProvider tokenProvider);
+    boolean loginToHub();
 
     /**
-     * Provides token required for authorization with the respective hub services.
+     * @param projectId the projectId of the current project
+     * @return true if the user is logged in to the currently selected Hub end point
      */
-    interface AuthTokenProvider {
-        /**
-         *
-         * @param projectId the project-id; if in Hub the auth token is associated with the workflow project (see
-         *            {@link RestLocationInfo#getAuthenticator()}.
-         * @param hubId the id of the Hub that provides the KAI-services; only available for the desktop application,
-         *            i.e. can be {@code null}
-         * @return the token for authorization
-         * @throws CouldNotAuthorizeException if the auth token couldn't be retrieved
-         */
-        String getAuthToken(String projectId, String hubId) throws CouldNotAuthorizeException;
+    boolean isLoggedIn(String projectId);
+
+    /**
+     * @return the disclaimer users have to accept before they can use the code generation AI
+     */
+    String getDisclaimer();
+
+    /**
+     * Send a POST request to the provided end point path at the selected KNIME Hub
+     *
+     * @param projectId the projectId of the current project
+     * @param endpointPath The end point at the selected KNIME Hub to call
+     * @param request An object that will be turned into JSON using Jackson and sent as data to the endpoint
+     * @return The response of the request as String (probably contains JSON content)
+     * @throws IOException In case of connection errors or malformed request data.
+     */
+    String sendRequest(String projectId, final String endpointPath, final Object request) throws IOException;
+
+    /**
+     * A data service dependency that provides the project id of the current project such that it can be passed to
+     * {@link CodeKaiHandler#isLoggedIn} and {@link CodeKaiHandler#sendRequest} which needs this information to get the
+     * authentication token from the {@link AuthTokenProvider}.
+     *
+     * @param projectId the projectId of the current project
+     */
+    public record ProjectId(String projectId) {
     }
 }
