@@ -53,6 +53,7 @@ import java.util.Optional;
 
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
+import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
@@ -83,6 +84,8 @@ public class GatewayImplPlugin implements BundleActivator {
         // Temporary solution to register port views with port types/objects.
         // To be removed once it's part of the PortObject/PortType API.
         // NOTE: the port-object-class-names are used to avoid the initialization of the PortTypeRegistry at this point
+
+        PageResourceManager.setBaseUrlOverwrite("http://localhost:" + 7000 + "/");
 
         PortViewManager.registerPortViews("org.knime.core.node.BufferedDataTable", //
             List.of( //
