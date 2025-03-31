@@ -84,6 +84,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -98,6 +99,10 @@ public final class DefaultNodeService implements NodeService {
 
     private final SelectionEventBus m_selectionEventBus =
         ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
+
+    // TODO(martin) it would be easy to make it not required
+    private final CodeKaiHandler m_codeKaiHandler =
+        ServiceDependencies.getServiceDependency(CodeKaiHandler.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -277,7 +282,7 @@ public final class DefaultNodeService implements NodeService {
 
         final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
-        var serviceDependencies = Map.<Class<?>, Object> of();
+        var serviceDependencies = Map.<Class<?>, Object> of(CodeKaiHandler.class, m_codeKaiHandler);
         if ("initial_data".equals(serviceType)) {
             return dataServiceManager.callInitialDataService(nncWrapper); // TODO also add the dependencies here
         } else if ("data".equals(serviceType)) {

@@ -119,4 +119,15 @@ public final class KaiHandlerFactoryRegistry {
         final AuthTokenProvider authTokenProvider) {
         return getKaiHandlerFactory().map(f -> f.createKaiHandler(eventConsumer, authTokenProvider));
     }
+
+    /**
+     * Create a handler for the code generation assistant.
+     *
+     * @param authTokenProvider the {@link AuthTokenProvider}
+     * @return a {@link CodeKaiHandler} instance or {@link Optional#empty()} if no {@link KaiHandlerFactory} is
+     *         registered
+     */
+    public static Optional<CodeKaiHandler> createCodeKaiHandler(final AuthTokenProvider authTokenProvider) {
+        return getKaiHandlerFactory().map(f -> f.createCodeKaiHandler(authTokenProvider));
+    }
 }
