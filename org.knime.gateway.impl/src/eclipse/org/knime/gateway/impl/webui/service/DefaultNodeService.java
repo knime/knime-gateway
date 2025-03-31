@@ -50,6 +50,7 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeCont
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
@@ -64,6 +65,7 @@ import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.data.DataServiceDependencies;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
@@ -85,6 +87,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
+import org.knime.gateway.impl.webui.kai.CodeKaiHandler.ProjectId;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -99,6 +103,9 @@ public final class DefaultNodeService implements NodeService {
 
     private final SelectionEventBus m_selectionEventBus =
         ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
+
+    private final CodeKaiHandler m_codeKaiHandler =
+        ServiceDependencies.getServiceDependency(CodeKaiHandler.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -174,6 +181,13 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
+    private Map<Class<?>, Object> createDialogDataServiceDependencies(final String projectId) {
+        return DataServiceDependencies.dependencies( //
+            CodeKaiHandler.class, m_codeKaiHandler, //
+            ProjectId.class, new ProjectId(projectId) //
+        );
+    }
+
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
@@ -184,8 +198,8 @@ public final class DefaultNodeService implements NodeService {
         if (!NodeDialogManager.hasNodeDialog(snc)) {
             throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
         }
-
-        return new NodeDialogEnt(snc);
+        return DataServiceDependencies.runWithDependencies(createDialogDataServiceDependencies(projectId),
+            () -> new NodeDialogEnt(snc));
     }
 
     @Override
@@ -282,16 +296,18 @@ public final class DefaultNodeService implements NodeService {
         var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
         final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
-
-        if ("initial_data".equals(serviceType)) {
-            return dataServiceManager.callInitialDataService(nncWrapper);
-        } else if ("data".equals(serviceType)) {
-            return dataServiceManager.callRpcDataService(nncWrapper, request);
-        } else if ("apply_data".equals(serviceType)) {
-            return dataServiceManager.callApplyDataService(nncWrapper, request);
-        } else {
-            throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
-        }
+        
+        return DataServiceDependencies.runWithDependencies(createDialogDataServiceDependencies(projectId), () -> {
+            if ("initial_data".equals(serviceType)) {
+                return dataServiceManager.callInitialDataService(nncWrapper);
+            } else if ("data".equals(serviceType)) {
+                return dataServiceManager.callRpcDataService(nncWrapper, request);
+            } else if ("apply_data".equals(serviceType)) {
+                return dataServiceManager.callApplyDataService(nncWrapper, request);
+            } else {
+                throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
+            }
+        });
     }
 
     @Override
