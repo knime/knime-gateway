@@ -55,6 +55,7 @@ import static org.hamcrest.Matchers.is;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -152,7 +153,8 @@ public class FlowVariablePortViewFactoryTest {
                 .readTree(portView.createRpcDataService().get().handleRpcRequest(
                     """
                             {"jsonrpc":"2.0","method":"getTable","params":[["Owner ID","Data Type","Variable Name","Value"],0,3,[null,null,null,null],false,false,true,false],"id":1}
-                            """))
+                            """,
+                    Map.of()))
                 .get("result").get("rows");
             assertThat(rows.get(0).get(4).textValue(), is("variable_1")); // name
             assertThat(rows.get(1).get(4).textValue(), is("variable_2")); // name

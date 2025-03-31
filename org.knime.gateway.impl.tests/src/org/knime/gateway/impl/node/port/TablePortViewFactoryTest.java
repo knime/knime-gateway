@@ -55,6 +55,7 @@ import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
 import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -172,7 +173,7 @@ public class TablePortViewFactoryTest {
         try {
             var jsonRpcResponse =
                 new TablePortViewFactory().createPortView(bdt).createRpcDataService().get().handleRpcRequest(
-                    jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false", "false"));
+                    jsonRpcRequest("getTable", "string", "0", "2", null, "false", "true", "false", "false"), Map.of());
             assertThat(jsonRpcResponse, containsString("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":"));
         } finally {
             PortContext.removeLastContext();

@@ -51,6 +51,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
@@ -128,7 +129,7 @@ public class StatisticsPortViewFactoryTest {
             );
             var rpcDataService = portView.createRpcDataService().get();
             var request = "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getCurrentRowKeys\",\"params\":[]}";
-            var responseString = rpcDataService.handleRpcRequest(request);
+            var responseString = rpcDataService.handleRpcRequest(request, Map.of());
             assertThat(responseString, containsString("\"result\":[\"int\",\"string\",\"long\",\"double\",\"boolean\",\"mixed-type\"]"));
         } finally {
             PortContext.removeLastContext();

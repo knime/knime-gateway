@@ -53,6 +53,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JComponent;
 
@@ -128,7 +129,7 @@ public class DirectAccessTablePortViewFactoryTest {
                         "params" : [100],
                         "id" : 1
                     }
-                    """);
+                    """, Map.of());
             var mapper = new ObjectMapper();
             var result = deserializeAndTruncateTableViewInitialData(
                 mapper.readTree(jsonRpcResponseString).get("result").textValue(), mapper);

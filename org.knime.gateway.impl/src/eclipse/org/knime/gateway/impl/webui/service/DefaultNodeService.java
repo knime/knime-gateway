@@ -50,6 +50,7 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeCont
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
@@ -276,10 +277,11 @@ public final class DefaultNodeService implements NodeService {
 
         final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
+        var serviceDependencies = Map.<Class<?>, Object> of();
         if ("initial_data".equals(serviceType)) {
-            return dataServiceManager.callInitialDataService(nncWrapper);
+            return dataServiceManager.callInitialDataService(nncWrapper); // TODO also add the dependencies here
         } else if ("data".equals(serviceType)) {
-            return dataServiceManager.callRpcDataService(nncWrapper, request);
+            return dataServiceManager.callRpcDataService(nncWrapper, request, serviceDependencies);
         } else if ("apply_data".equals(serviceType)) {
             return dataServiceManager.callApplyDataService(nncWrapper, request);
         } else {
