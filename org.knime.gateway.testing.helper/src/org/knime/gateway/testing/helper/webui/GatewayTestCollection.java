@@ -53,8 +53,10 @@ public final class GatewayTestCollection {
         PortServiceTestHelper.class, //
         SpaceServiceTestHelper.class, //
         StreamingExecutionTestHelper.class, //
+        WorkflowServiceTestHelper.class, //
         TranslateCommandTestHelper.class, //
-        WorkflowServiceTestHelper.class //
+        WorkflowServiceTestHelper.class , //
+        EditPortsTestHelper.class
     );
 
     private GatewayTestCollection() {

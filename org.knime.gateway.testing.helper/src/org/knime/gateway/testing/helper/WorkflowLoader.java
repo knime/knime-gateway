@@ -17,6 +17,9 @@
  */
 package org.knime.gateway.testing.helper;
 
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
+
 /**
  * Loads workflows into memory that are later (directly or indirectly) accessed from the gateway's
  * WorkflowProjectManager.
@@ -34,7 +37,17 @@ public interface WorkflowLoader {
 	 */
 	String loadWorkflow(TestWorkflow workflow) throws Exception;
 
-    /**
+	/**
+	 * Create and load a temporary empty workflow
+	 *
+	 * @return Project ID and workflow manager instance
+	 * @throws Exception if the loading fails
+	 */
+	default Pair<String, WorkflowManager> createEmptyWorkflow() throws Exception {
+		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	/**
      * Loads a component.
      *
      * @param component component to load

@@ -59,6 +59,7 @@ import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
@@ -109,6 +110,15 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             });
         }
         addToProjectManager(wfm, workflow.getName(), projectId, project.build());
+    }
+
+    @Override
+    public Pair<String, WorkflowManager> createEmptyWorkflow() throws Exception {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var projectId = UUID.randomUUID().toString();
+        ProjectManager.getInstance().addProject(Project.builder().setWfm(wfm).setId(projectId).build());
+        m_loadedWorkflows.add(projectId);
+        return new Pair<>(projectId, wfm);
     }
 
     private static WorkflowManager loadWorkflowInWorkspace(final File workflowDir) throws Exception {
