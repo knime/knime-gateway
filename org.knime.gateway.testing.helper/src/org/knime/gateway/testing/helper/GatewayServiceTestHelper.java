@@ -45,6 +45,9 @@
  */
 package org.knime.gateway.testing.helper;
 
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.Pair;
+
 /**
  * Helper to test service implementations. This is usually done by loading a workflow, optionally executing it and then
  * retrieving the entities under test and compare them to a stored snapshot (via {@link #cr(Object, String)}).
@@ -98,6 +101,15 @@ public class GatewayServiceTestHelper {
      */
     protected String loadWorkflow(final TestWorkflow workflow) throws Exception {
         return m_workflowLoader.loadWorkflow(workflow);
+    }
+
+    /**
+     * @return The project ID
+     * @throws Exception -
+     * @see WorkflowLoader#createEmptyWorkflow()
+     */
+    protected Pair<String, WorkflowManager> createEmptyWorkflow() throws Exception {
+        return m_workflowLoader.createEmptyWorkflow();
     }
 
     /**

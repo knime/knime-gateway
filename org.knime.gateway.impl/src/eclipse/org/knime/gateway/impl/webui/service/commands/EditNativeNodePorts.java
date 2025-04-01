@@ -103,7 +103,8 @@ final class EditNativeNodePorts implements EditPorts {
         var isInputSide = removePortCommandEnt.getSide() == SideEnum.INPUT;
         var portsConfig = newCreationConfig.getPortConfig().orElseThrow();
         var totalPortIndexToRemove = removePortCommandEnt.getPortIndex();
-        var portGroup = (ExtendablePortGroup)portsConfig.getGroup(removePortCommandEnt.getPortGroup());
+        var portGroupName = portsConfig.getPortGroupsPerIndex(isInputSide)[totalPortIndexToRemove - 1];
+        var portGroup = (ExtendablePortGroup)portsConfig.getGroup(portGroupName);
         var indexInGroupToRemove = portsConfig.getPortIndexWithinGroup(totalPortIndexToRemove, isInputSide);
         portGroup.removePort(indexInGroupToRemove);
         executeRemovePort(newCreationConfig, totalPortIndexToRemove, isInputSide);

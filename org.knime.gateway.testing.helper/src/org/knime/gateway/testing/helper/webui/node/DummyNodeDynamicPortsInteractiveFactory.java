@@ -48,29 +48,16 @@
  */
 package org.knime.gateway.testing.helper.webui.node;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ConfigurableNodeFactory;
-import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.NodeView;
-import org.knime.core.node.context.NodeCreationConfiguration;
-import org.knime.core.node.port.PortObjectSpec;
 
 /**
  * Configurable dummy node with interactive and non-interactive dynamic ports
  *
  * @author Kai Franze, KNIME GmbH
  */
-public class DummyNodeDynamicPortsInteractiveFactory extends ConfigurableNodeFactory<NodeModel> {
+public class DummyNodeDynamicPortsInteractiveFactory extends NoOpDummyNodeFactory {
 
     static final String INPUT_PORT_GROUP = "Inputs";
 
@@ -85,61 +72,6 @@ public class DummyNodeDynamicPortsInteractiveFactory extends ConfigurableNodeFac
         return Optional.of(builder);
     }
 
-    @Override
-    protected NodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
-        final var config = creationConfig.getPortConfig().orElseThrow();
-        return new NodeModel(config.getInputPorts(), config.getOutputPorts()) {
-            @Override
-            protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-                return null;
-            }
 
-            @Override
-            protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                throws IOException, CanceledExecutionException {
-            }
-
-            @Override
-            protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                throws IOException, CanceledExecutionException {
-            }
-
-            @Override
-            protected void saveSettingsTo(final NodeSettingsWO settings) {
-            }
-
-            @Override
-            protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-            }
-
-            @Override
-            protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-            }
-
-            @Override
-            protected void reset() {
-            }
-        };
-    }
-
-    @Override
-    protected NodeDialogPane createNodeDialogPane(final NodeCreationConfiguration creationConfig) {
-        return null;
-    }
-
-    @Override
-    protected int getNrNodeViews() {
-        return 0;
-    }
-
-    @Override
-    public NodeView<NodeModel> createNodeView(final int viewIndex, final NodeModel nodeModel) {
-        return null;
-    }
-
-    @Override
-    protected boolean hasDialog() {
-        return false;
-    }
 
 }
