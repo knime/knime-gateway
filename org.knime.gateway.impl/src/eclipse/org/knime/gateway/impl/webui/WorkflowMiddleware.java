@@ -353,6 +353,18 @@ public final class WorkflowMiddleware {
     }
 
     /**
+     * Clears the cached {@link DependentNodeProperties} to make sure those are re-computed when calling
+     * {@link #buildWorkflowChangedEvent(WorkflowKey, PatchEntCreator, String, boolean)} the next time.
+     *
+     * This is just a temporary solution and will be clean-up with NXT-3469.
+     *
+     * @param wfKey the workflow to clear the cache for
+     */
+    public void clearCachedDependentNodeProperties(final WorkflowKey wfKey) {
+        getWorkflowState(wfKey).m_depNodeProperties.clearCache();
+    }
+
+    /**
      * Obtain the dependent node properties for the given workflow. Recalculate if the the workflow has pending changes
      * or use cached data otherwise.
      *
@@ -494,12 +506,12 @@ public final class WorkflowMiddleware {
         }
 
         public DependentNodeProperties get() {
-            var recompute = m_tracker.invoke(t -> {
+            var recompute = m_dependentNodeProperties == null || m_tracker.invoke(t -> {
                 var nodeStateChanges = t.hasOccurredAtLeastOne(WorkflowChange.NODE_STATE_UPDATED);
                 var nodeOrConnectionAddedOrRemoved = t.hasOccurredAtLeastOne(WorkflowChange.NODE_ADDED,
                     WorkflowChange.NODE_REMOVED, WorkflowChange.CONNECTION_ADDED, WorkflowChange.CONNECTION_REMOVED);
                 t.reset();
-                return m_dependentNodeProperties == null || nodeStateChanges || nodeOrConnectionAddedOrRemoved;
+                return nodeStateChanges || nodeOrConnectionAddedOrRemoved;
             });
             if (Boolean.TRUE.equals(recompute)) {
                 m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(m_wfm);
@@ -507,9 +519,14 @@ public final class WorkflowMiddleware {
             return m_dependentNodeProperties;
         }
 
+        void clearCache() {
+            m_dependentNodeProperties = null;
+        }
+
         void dispose() {
             m_wfChangesListener.removeWorkflowChangesTracker(m_tracker);
         }
+
     }
 
     /**

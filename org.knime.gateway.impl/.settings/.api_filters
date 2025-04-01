@@ -452,6 +452,11 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="clearCachedDependentNodeProperties(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="getComponentLoader(WorkflowKey)"/>
             </message_arguments>
         </filter>

@@ -186,6 +186,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     public void removeEventListener(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
         var wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         removeEventListener(wfKey);
+        m_workflowMiddleware.clearCachedDependentNodeProperties(wfKey);
     }
 
     @SuppressWarnings("resource")
