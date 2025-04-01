@@ -55,9 +55,9 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
  *
  * @param kind
  * @param side
- * @param portGroup
  * @param nodeId
  * @param portTypeId
+ * @param portGroup
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -65,9 +65,9 @@ import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 public record DefaultAddPortCommandEnt(
     KindEnum kind,
     SideEnum side,
-    String portGroup,
     org.knime.gateway.api.entity.NodeIDEnt nodeId,
-    String portTypeId) implements AddPortCommandEnt {
+    String portTypeId,
+    String portGroup) implements AddPortCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -103,11 +103,6 @@ public record DefaultAddPortCommandEnt(
     }
     
     @Override
-    public String getPortGroup() {
-        return portGroup;
-    }
-    
-    @Override
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
         return nodeId;
     }
@@ -115,6 +110,11 @@ public record DefaultAddPortCommandEnt(
     @Override
     public String getPortTypeId() {
         return portTypeId;
+    }
+    
+    @Override
+    public String getPortGroup() {
+        return portGroup;
     }
     
     /**
@@ -126,11 +126,11 @@ public record DefaultAddPortCommandEnt(
 
         private SideEnum m_side;
 
-        private String m_portGroup;
-
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
         private String m_portTypeId;
+
+        private String m_portGroup;
 
         @Override
         public DefaultAddPortCommandEntBuilder setKind(KindEnum kind) {
@@ -147,12 +147,6 @@ public record DefaultAddPortCommandEnt(
                  throw new IllegalArgumentException("<side> must not be null.");
              }
              m_side = side;
-             return this;
-        }
-
-        @Override
-        public DefaultAddPortCommandEntBuilder setPortGroup(String portGroup) {
-             m_portGroup = portGroup;
              return this;
         }
 
@@ -175,13 +169,19 @@ public record DefaultAddPortCommandEnt(
         }
 
         @Override
+        public DefaultAddPortCommandEntBuilder setPortGroup(String portGroup) {
+             m_portGroup = portGroup;
+             return this;
+        }
+
+        @Override
         public DefaultAddPortCommandEnt build() {
             return new DefaultAddPortCommandEnt(
                 immutable(m_kind),
                 immutable(m_side),
-                immutable(m_portGroup),
                 immutable(m_nodeId),
-                immutable(m_portTypeId));
+                immutable(m_portTypeId),
+                immutable(m_portGroup));
         }
     
     }

@@ -79,10 +79,6 @@ public interface RemovePortCommandEntMixIn extends RemovePortCommandEnt {
     public SideEnum getSide();
     
     @Override
-    @JsonProperty("portGroup")
-    public String getPortGroup();
-    
-    @Override
     @JsonProperty("nodeId")
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
@@ -110,10 +106,6 @@ public interface RemovePortCommandEntMixIn extends RemovePortCommandEnt {
         @Override
         @JsonProperty("side")
         public RemovePortCommandEntMixInBuilder setSide(final SideEnum side);
-        
-        @Override
-        @JsonProperty("portGroup")
-        public RemovePortCommandEntMixInBuilder setPortGroup(final String portGroup);
         
         @Override
         @JsonProperty("nodeId")

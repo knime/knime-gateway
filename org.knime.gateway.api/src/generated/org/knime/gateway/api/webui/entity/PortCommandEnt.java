@@ -92,12 +92,6 @@ public interface PortCommandEnt extends GatewayEntity, WorkflowCommandEnt {
   public SideEnum getSide();
 
   /**
-   * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
-   * @return portGroup 
-   **/
-  public String getPortGroup();
-
-  /**
    * Get nodeId
    * @return nodeId , never <code>null</code>
    **/
@@ -110,7 +104,6 @@ public interface PortCommandEnt extends GatewayEntity, WorkflowCommandEnt {
       var e = (PortCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("side", Pair.create(getSide(), e.getSide()));
-      valueConsumer.accept("portGroup", Pair.create(getPortGroup(), e.getPortGroup()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
   }
 
@@ -134,14 +127,6 @@ public interface PortCommandEnt extends GatewayEntity, WorkflowCommandEnt {
          * @return this entity builder for chaining
          */
         PortCommandEntBuilder setSide(SideEnum side);
-        
-        /**
-         * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
-         * 
-         * @param portGroup the property value,  
-         * @return this entity builder for chaining
-         */
-        PortCommandEntBuilder setPortGroup(String portGroup);
         
         /**
    		 * Set nodeId
