@@ -55,7 +55,6 @@ import org.knime.gateway.api.webui.entity.PortCommandEnt;
  *
  * @param kind
  * @param side
- * @param portGroup
  * @param nodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -64,7 +63,6 @@ import org.knime.gateway.api.webui.entity.PortCommandEnt;
 public record DefaultPortCommandEnt(
     KindEnum kind,
     SideEnum side,
-    String portGroup,
     org.knime.gateway.api.entity.NodeIDEnt nodeId) implements PortCommandEnt {
 
     /**
@@ -98,11 +96,6 @@ public record DefaultPortCommandEnt(
     }
     
     @Override
-    public String getPortGroup() {
-        return portGroup;
-    }
-    
-    @Override
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
         return nodeId;
     }
@@ -115,8 +108,6 @@ public record DefaultPortCommandEnt(
         private KindEnum m_kind;
 
         private SideEnum m_side;
-
-        private String m_portGroup;
 
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
@@ -139,12 +130,6 @@ public record DefaultPortCommandEnt(
         }
 
         @Override
-        public DefaultPortCommandEntBuilder setPortGroup(String portGroup) {
-             m_portGroup = portGroup;
-             return this;
-        }
-
-        @Override
         public DefaultPortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
                  throw new IllegalArgumentException("<nodeId> must not be null.");
@@ -158,7 +143,6 @@ public record DefaultPortCommandEnt(
             return new DefaultPortCommandEnt(
                 immutable(m_kind),
                 immutable(m_side),
-                immutable(m_portGroup),
                 immutable(m_nodeId));
         }
     
