@@ -70,6 +70,12 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
    **/
   public String getPortTypeId();
 
+  /**
+   * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
+   * @return portGroup 
+   **/
+  public String getPortGroup();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -77,9 +83,9 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
       var e = (AddPortCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("side", Pair.create(getSide(), e.getSide()));
-      valueConsumer.accept("portGroup", Pair.create(getPortGroup(), e.getPortGroup()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
       valueConsumer.accept("portTypeId", Pair.create(getPortTypeId(), e.getPortTypeId()));
+      valueConsumer.accept("portGroup", Pair.create(getPortGroup(), e.getPortGroup()));
   }
 
     /**
@@ -104,14 +110,6 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
         AddPortCommandEntBuilder setSide(SideEnum side);
         
         /**
-         * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
-         * 
-         * @param portGroup the property value,  
-         * @return this entity builder for chaining
-         */
-        AddPortCommandEntBuilder setPortGroup(String portGroup);
-        
-        /**
    		 * Set nodeId
          * 
          * @param nodeId the property value, NOT <code>null</code>! 
@@ -126,6 +124,14 @@ public interface AddPortCommandEnt extends GatewayEntity, PortCommandEnt {
          * @return this entity builder for chaining
          */
         AddPortCommandEntBuilder setPortTypeId(String portTypeId);
+        
+        /**
+         * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
+         * 
+         * @param portGroup the property value,  
+         * @return this entity builder for chaining
+         */
+        AddPortCommandEntBuilder setPortGroup(String portGroup);
         
         
         /**

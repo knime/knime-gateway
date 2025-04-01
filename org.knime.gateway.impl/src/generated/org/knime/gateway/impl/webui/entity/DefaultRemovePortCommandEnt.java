@@ -55,7 +55,6 @@ import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
  *
  * @param kind
  * @param side
- * @param portGroup
  * @param nodeId
  * @param portIndex
  *
@@ -65,7 +64,6 @@ import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 public record DefaultRemovePortCommandEnt(
     KindEnum kind,
     SideEnum side,
-    String portGroup,
     org.knime.gateway.api.entity.NodeIDEnt nodeId,
     Integer portIndex) implements RemovePortCommandEnt {
 
@@ -100,11 +98,6 @@ public record DefaultRemovePortCommandEnt(
     }
     
     @Override
-    public String getPortGroup() {
-        return portGroup;
-    }
-    
-    @Override
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
         return nodeId;
     }
@@ -122,8 +115,6 @@ public record DefaultRemovePortCommandEnt(
         private KindEnum m_kind;
 
         private SideEnum m_side;
-
-        private String m_portGroup;
 
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
@@ -148,12 +139,6 @@ public record DefaultRemovePortCommandEnt(
         }
 
         @Override
-        public DefaultRemovePortCommandEntBuilder setPortGroup(String portGroup) {
-             m_portGroup = portGroup;
-             return this;
-        }
-
-        @Override
         public DefaultRemovePortCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
              if(nodeId == null) {
                  throw new IllegalArgumentException("<nodeId> must not be null.");
@@ -173,7 +158,6 @@ public record DefaultRemovePortCommandEnt(
             return new DefaultRemovePortCommandEnt(
                 immutable(m_kind),
                 immutable(m_side),
-                immutable(m_portGroup),
                 immutable(m_nodeId),
                 immutable(m_portIndex));
         }

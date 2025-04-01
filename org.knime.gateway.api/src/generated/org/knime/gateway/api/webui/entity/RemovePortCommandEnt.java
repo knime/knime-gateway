@@ -44,11 +44,16 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.PortCommandEnt;
+
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Remove a port from a node
@@ -72,7 +77,6 @@ public interface RemovePortCommandEnt extends GatewayEntity, PortCommandEnt {
       var e = (RemovePortCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("side", Pair.create(getSide(), e.getSide()));
-      valueConsumer.accept("portGroup", Pair.create(getPortGroup(), e.getPortGroup()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
       valueConsumer.accept("portIndex", Pair.create(getPortIndex(), e.getPortIndex()));
   }
@@ -97,14 +101,6 @@ public interface RemovePortCommandEnt extends GatewayEntity, PortCommandEnt {
          * @return this entity builder for chaining
          */
         RemovePortCommandEntBuilder setSide(SideEnum side);
-        
-        /**
-         * The identifier (name) of the modified port group. Required for native nodes, absent for container nodes.
-         * 
-         * @param portGroup the property value,  
-         * @return this entity builder for chaining
-         */
-        RemovePortCommandEntBuilder setPortGroup(String portGroup);
         
         /**
    		 * Set nodeId
