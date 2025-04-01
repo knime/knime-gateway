@@ -401,11 +401,10 @@
                 <message_argument value="buildWorkflowChangedEvent(WorkflowKey, PatchEntCreator, String, boolean, WorkflowChangesTracker)"/>
             </message_arguments>
         </filter>
-        <filter id="640712815">
+        <filter id="338792546">
             <message_arguments>
-                <message_argument value="WorkflowLock"/>
-                <message_argument value="WorkflowMiddleware"/>
-                <message_argument value="close()"/>
+                <message_argument value="org.knime.gateway.impl.webui.WorkflowMiddleware"/>
+                <message_argument value="getCommands()"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -415,7 +414,29 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="buildWorkflowChangedEvent(WorkflowKey, PatchEntCreator, String, boolean)"/>
+                <message_argument value="createWorkflowChangedEventBuilder(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getCommands(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="runOnProjectDisposal(String, Runnable)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="runOnWorkflowDisposal(WorkflowKey, Runnable)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/WorkflowMiddleware.java" type="org.knime.gateway.impl.webui.WorkflowMiddleware$WorkflowChangedEventBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowChangedEventBuilder"/>
             </message_arguments>
         </filter>
     </resource>
@@ -674,15 +695,102 @@
         </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/WorkflowCommands.java" type="org.knime.gateway.impl.webui.service.commands.WorkflowCommands">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="WorkflowCommands(int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="canRedo(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="canUndo(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="disposeUndoAndRedoStacks(Predicate&lt;WorkflowKey&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="execute(WorkflowKey, E)"/>
+            </message_arguments>
+        </filter>
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
                 <message_argument value="execute(WorkflowKey, E, WorkflowMiddleware, NodeFactoryProvider, SpaceProviders)"/>
             </message_arguments>
         </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="redo(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="undo(WorkflowKey)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowCommands(WorkflowCommands.CommandStack, WorkflowCommands.CommandStack)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="WorkflowCommands(WorkflowKey, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="canRedo()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="canUndo()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="disposeUndoAndRedoStacks()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="execute(E)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="execute(E, WorkflowMiddleware, NodeFactoryProvider, SpaceProviders)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="execute(WorkflowKey, E, WorkflowMiddleware, NodeFactoryProvider, SpaceProvidersManager)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="redo()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="undo()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1138,6 +1246,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultAddPortResultEnt(String, CommandResultEnt.KindEnum, Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAlignNodesCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAlignNodesCommandEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAlignNodesCommandEnt"/>
             </message_arguments>
         </filter>
     </resource>

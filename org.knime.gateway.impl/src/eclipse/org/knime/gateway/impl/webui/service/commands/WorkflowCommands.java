@@ -49,13 +49,10 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
@@ -108,40 +105,39 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  */
 public final class WorkflowCommands {
 
-    private final Map<WorkflowKey, CommandStack> m_redoStacks;
-
-    private final Map<WorkflowKey, CommandStack> m_undoStacks;
-
-    private final int m_maxNumUndoAndRedoCommandsPerWorkflow;
-
     private WorkflowCommand m_workflowCommandToExecute;
+
+    private final CommandStack m_undoStack;
+
+    private final CommandStack m_redoStack;
+
+    private final WorkflowKey m_wfKey;
 
     /**
      * Creates a new instance with initially empty undo- and redo-stacks.
      *
-     * @param maxNumUndoAndRedoCommandsPerWorkflow the maximum size of undo- and redo-stack for each workflow
+     * @param wfKey
+     * @param maxNumUndoAndRedoCommands the maximum size of undo- and redo-stack for each workflow
      */
-    public WorkflowCommands(final int maxNumUndoAndRedoCommandsPerWorkflow) {
-        m_maxNumUndoAndRedoCommandsPerWorkflow = maxNumUndoAndRedoCommandsPerWorkflow;
-        m_redoStacks = new HashMap<>();
-        m_undoStacks = new HashMap<>();
+    public WorkflowCommands(final WorkflowKey wfKey, final int maxNumUndoAndRedoCommands) {
+        m_undoStack = new CommandStack(maxNumUndoAndRedoCommands);
+        m_redoStack = new CommandStack(maxNumUndoAndRedoCommands);
+        m_wfKey = wfKey;
     }
 
     /**
-     * Executes the given workflow command, represented by the command entity, to a workflow referenced by the given
-     * {@link WorkflowKey}.
+     * Executes the given workflow command, represented by the command entity.
      *
      * @param <E> the type of workflow command
-     * @param wfKey reference to the workflow to execute the command for
      * @param commandEnt the workflow command entity to execute
      *
      * @return The instance of the executed command
      *
      * @throws ServiceCallException if the command couldn't be executed
      */
-    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
+    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final E commandEnt)
         throws ServiceCallException {
-        return execute(wfKey, commandEnt, null, null, null);
+        return execute(commandEnt, null, null, null);
     }
 
     /**
@@ -159,18 +155,18 @@ public final class WorkflowCommands {
      *
      * @throws ServiceCallException if the command couldn't be executed
      */
-    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
+    public <E extends WorkflowCommandEnt> CommandResultEnt execute(final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
         final SpaceProviders spaceProviders) throws ServiceCallException {
         var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders);
 
-        var hasResult = hasCommandResult(wfKey, command);
+        var hasResult = hasCommandResult(m_wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
         if (hasResult) {
-            wfChangeWaiter = prepareCommandResult(wfKey, command, workflowMiddleware).orElse(null);
+            wfChangeWaiter = prepareCommandResult(m_wfKey, command, workflowMiddleware).orElse(null);
         }
-        executeCommandAndModifyCommandStacks(wfKey, command);
-        return hasResult ? waitForCommandResult(wfKey, command, wfChangeWaiter, workflowMiddleware) : null;
+        executeCommandAndModifyCommandStacks(m_wfKey, command);
+        return hasResult ? waitForCommandResult(m_wfKey, command, wfChangeWaiter, workflowMiddleware) : null;
     }
 
     @SuppressWarnings("java:S1541")
@@ -273,29 +269,22 @@ public final class WorkflowCommands {
 
     private synchronized void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey,
         final WorkflowCommand command) throws ServiceCallException {
-        var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
-        var redoStack = getOrCreateCommandStackFor(wfKey, m_redoStacks);
 
-        try (var lock1 = undoStack.lock(); var lock2 = redoStack.lock()) {
+        try (var lock1 = m_undoStack.lock(); var lock2 = m_redoStack.lock()) {
             // The undo- and redo-stacks need to be updated before the command is being executed.
             // That's because during the command-execution events are fired which in turn access the
             // canUndo- and canRedo-methods in here. If the stacks would be updated after the command-execution
             // there is a chance, that canUndo or canRedo don't return the correct values, yet (race-condition).
             // (see NXT-965)
-            undoStack.add(command);
-            redoStack.clear();
+            m_undoStack.add(command);
+            m_redoStack.clear();
             var workflowModified = command.execute(wfKey);
             if (workflowModified) {
                 // acknowledge the changes made to the stacks
-                undoStack.commitPendingChange();
-                redoStack.commitPendingChange();
+                m_undoStack.commitPendingChange();
+                m_redoStack.commitPendingChange();
             }
         }
-    }
-
-    private CommandStack getOrCreateCommandStackFor(final WorkflowKey wfKey,
-        final Map<WorkflowKey, CommandStack> stacks) {
-        return stacks.computeIfAbsent(wfKey, k -> new CommandStack(m_maxNumUndoAndRedoCommandsPerWorkflow));
     }
 
     private static CommandResultEnt waitForCommandResult(final WorkflowKey wfKey, final WorkflowCommand command,
@@ -315,24 +304,20 @@ public final class WorkflowCommands {
     }
 
     /**
-     * @param wfKey reference to the workflow to check the undo-state for
      * @return whether there is at least one command on the undo-stack
      */
-    public synchronized boolean canUndo(final WorkflowKey wfKey) {
-        var stack = m_undoStacks.get(wfKey);
-        return stack != null && stack.peek().map(WorkflowCommand::canUndo).orElse(Boolean.FALSE);
+    public synchronized boolean canUndo() {
+        return m_undoStack.peek().map(WorkflowCommand::canUndo).orElse(Boolean.FALSE);
     }
 
     /**
      * Undoes the last command executed for the given workflow.
      *
-     * @param wfKey reference to the workflow to undo the last command for
      * @throws ServiceCallException if there is no command to be undone
      */
-    public synchronized void undo(final WorkflowKey wfKey) throws ServiceCallException {
-        var undoStack = m_undoStacks.get(wfKey);
-        if (undoStack != null && !undoStack.isEmpty()) {
-            undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
+    public synchronized void undo() throws ServiceCallException {
+        if (!m_undoStack.isEmpty()) {
+            m_undoStack.getHeadAndTransferTo(m_redoStack).undo();
         } else {
             throw new ServiceCallException("No command to undo");
         }
@@ -341,48 +326,33 @@ public final class WorkflowCommands {
     /**
      * Whether there is at least one command on the redo-stack for the given workflow.
      *
-     * @param wfKey reference to the workflow to check the redo-state for
      * @return whether there is at least one command on the redo-stack
      */
-    public synchronized boolean canRedo(final WorkflowKey wfKey) {
-        var stack = m_redoStacks.get(wfKey);
-        return stack != null && stack.peek().map(WorkflowCommand::canRedo).orElse(Boolean.FALSE);
+    public synchronized boolean canRedo() {
+        return m_redoStack.peek().map(WorkflowCommand::canRedo).orElse(Boolean.FALSE);
     }
 
     /**
      * Re-does the last command that has been undone for the given workflow.
      *
-     * @param wfKey reference to the workflow to redo the last command for
      * @throws ServiceCallException if there is no command to be redone
      */
-    public synchronized void redo(final WorkflowKey wfKey) throws ServiceCallException {
-        var redoStack = m_redoStacks.get(wfKey);
-        if (redoStack != null && !redoStack.isEmpty()) {
-            redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();
+    public synchronized void redo() throws ServiceCallException {
+        if (!m_redoStack.isEmpty()) {
+            m_redoStack.getHeadAndTransferTo(m_undoStack).redo();
         } else {
             throw new ServiceCallException("No command to redo");
         }
     }
 
     /**
-     * Removes all commands from the undo- and redo-stacks for all workflows of a workflow project referenced by its
-     * project-id.
-     *
-     * @param projectId the project-id of the workflow to clear all stacks for
+     * Removes all commands from the undo- and redo-stacks.
      */
-    void disposeUndoAndRedoStacks(final String projectId) {
-        disposeUndoAndRedoStacks(k -> k.getProjectId().equals(projectId));
-    }
-
-    /**
-     * Removes all commands from the undo- and redo-stacks for all workflows of a workflow project referenced by its
-     * project-id.
-     *
-     * @param keyFilter
-     */
-    public synchronized void disposeUndoAndRedoStacks(final Predicate<WorkflowKey> keyFilter) {
-        m_undoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
-        m_redoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));
+    public synchronized void disposeUndoAndRedoStacks() {
+        try (var lock1 = m_undoStack.lock(); var lock2 = m_redoStack.lock()) {
+            m_undoStack.clear();
+            m_redoStack.clear();
+        }
     }
 
     /**
@@ -390,9 +360,8 @@ public final class WorkflowCommands {
      *
      * @return
      */
-    int getUndoStackSize(final WorkflowKey wfKey) {
-        CommandStack undoStack = m_undoStacks.get(wfKey);
-        return undoStack == null ? 0 : undoStack.size();
+    int getUndoStackSize() {
+        return m_undoStack.size();
     }
 
     /**
@@ -400,9 +369,8 @@ public final class WorkflowCommands {
      *
      * @return
      */
-    int getRedoStackSize(final WorkflowKey wfKey) {
-        CommandStack redoStack = m_redoStacks.get(wfKey);
-        return redoStack == null ? 0 : redoStack.size();
+    int getRedoStackSize() {
+        return m_redoStack.size();
     }
 
     private static final class CommandStack {

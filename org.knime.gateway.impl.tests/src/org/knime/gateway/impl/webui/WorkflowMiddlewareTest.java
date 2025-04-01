@@ -91,7 +91,7 @@ public class WorkflowMiddlewareTest {
      * @throws Exception
      */
     @Test
-    public void testWorkflowStateCacheCleanUpOnSubWorkflowRemoval() throws Exception {
+    public void testWorkflowStateCleanUpOnSubWorkflowRemoval() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var projectManager = ProjectManager.getInstance();
         var projectId = wfm.getNameWithID();
@@ -102,17 +102,23 @@ public class WorkflowMiddlewareTest {
 
         var metanodeIDs = createNestedMetanodesOrComponents(wfm, false);
         createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.METANODE, metanodeIDs);
-        assertThat(middleware.m_workflowStateCache.size(), is(3));
+        for (var metanodeID : metanodeIDs) {
+            assertThat(middleware.hasStateFor(new WorkflowKey(projectId, new NodeIDEnt(metanodeID))), is(true));
+        }
 
         wfm.removeNode(metanodeIDs[0]);
-        await().untilAsserted(() -> assertThat(middleware.m_workflowStateCache.size(), is(1)));
+        await().untilAsserted(() -> assertThat(
+            middleware.hasStateFor(new WorkflowKey(projectId, new NodeIDEnt(metanodeIDs[0]))), is(false)));
 
         var componentIDs = createNestedMetanodesOrComponents(wfm, true);
         createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.COMPONENT, componentIDs);
-        assertThat(middleware.m_workflowStateCache.size(), is(3));
+        for (var componentID : componentIDs) {
+            assertThat(middleware.hasStateFor(new WorkflowKey(projectId, new NodeIDEnt(componentID))), is(true));
+        }
 
         wfm.removeNode(componentIDs[0]);
-        await().untilAsserted(() -> assertThat(middleware.m_workflowStateCache.size(), is(1)));
+        await().untilAsserted(() -> assertThat(
+            middleware.hasStateFor(new WorkflowKey(projectId, new NodeIDEnt(componentIDs[0]))), is(false)));
 
         ProjectManager.getInstance().removeProject(projectId);
     }

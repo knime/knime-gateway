@@ -84,7 +84,6 @@ public final class WorkflowMonitorStateChangedEventSource
         final ProjectManager projectManager, final WorkflowMiddleware workflowMiddleware) {
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
-        projectManager.addProjectRemovedListener(m_workflowChangeCallbacks::remove);
     }
 
     /**
@@ -118,6 +117,8 @@ public final class WorkflowMonitorStateChangedEventSource
             return callback;
         });
 
+        m_workflowMiddleware.runOnWorkflowDisposal(wfKey, () -> removeEventListener(projectId));
+
         return Optional.ofNullable(initialEvent);
     }
 
@@ -131,10 +132,9 @@ public final class WorkflowMonitorStateChangedEventSource
 
     private void removeEventListener(final String projectId) {
         var callback = m_workflowChangeCallbacks.remove(projectId);
-        if (callback != null) {
-            m_workflowMiddleware
-                .getWorkflowChangesListenerForWorkflowMonitor(new WorkflowKey(projectId, NodeIDEnt.getRootID()))
-                .removeCallback(callback);
+        var wfKey = new WorkflowKey(projectId, NodeIDEnt.getRootID());
+        if (callback != null && m_workflowMiddleware.hasStateFor(wfKey)) {
+            m_workflowMiddleware.getWorkflowChangesListenerForWorkflowMonitor(wfKey).removeCallback(callback);
         }
     }
 

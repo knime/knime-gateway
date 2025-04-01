@@ -152,6 +152,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AlignNodesCommandEnt.java" type="org.knime.gateway.api.webui.entity.AlignNodesCommandEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AlignNodesCommandEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt">
         <filter id="403804204">
             <message_arguments>
@@ -521,6 +528,11 @@
         <filter id="1177550852">
             <message_arguments>
                 <message_argument value="ADD_COMPONENT"/>
+            </message_arguments>
+        </filter>
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="ALIGN_NODES"/>
             </message_arguments>
         </filter>
     </resource>

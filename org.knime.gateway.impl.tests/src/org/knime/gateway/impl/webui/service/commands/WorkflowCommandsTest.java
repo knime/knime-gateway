@@ -138,9 +138,9 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testRedoCommandOrder() throws Exception {
         Project wp = createEmptyWorkflowProject();
 
-        WorkflowCommands commands = new WorkflowCommands(5);
-        WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
+        WorkflowCommands commands = new WorkflowCommands(wfKey, 5);
+        WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
 
         var wfm = wp.getWorkflowManager();
         var sleepNodeClassname = "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory";
@@ -148,16 +148,16 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         var n1 = addNodeDirectly(sleepNodeClassname, wfm);
         var n2 = addNodeDirectly(sleepNodeClassname, wfm);
 
-        commands.execute(wfKey, buildDeleteCommandEnt(n2), workflowMiddleware, null, null);
-        commands.execute(wfKey, buildDeleteCommandEnt(n1), workflowMiddleware, null, null);
+        commands.execute(buildDeleteCommandEnt(n2), workflowMiddleware, null, null);
+        commands.execute(buildDeleteCommandEnt(n1), workflowMiddleware, null, null);
 
-        commands.undo(wfKey);
-        commands.undo(wfKey);
+        commands.undo();
+        commands.undo();
 
-        commands.redo(wfKey);
+        commands.redo();
         assertFalse("Expect that most recent undo is re-done", wfm.containsNodeContainer(n2));
 
-        commands.redo(wfKey);
+        commands.redo();
         assertFalse("Expect that second redo corresponds to first undo", wfm.containsNodeContainer(n1));
 
         disposeWorkflowProject(wp);
@@ -173,59 +173,58 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testUndoAndRedoStackSizes() throws Exception {
         Project wp = createEmptyWorkflowProject();
 
-        WorkflowCommands commands = new WorkflowCommands(5);
+        WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
+        WorkflowCommands commands = new WorkflowCommands(wfKey, 5);
         TranslateCommandEnt commandEntity = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
-        WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        assertThrows(ServiceCallException.class, () -> commands.undo(wfKey));
-        assertThrows(ServiceCallException.class, () -> commands.redo(wfKey));
+        assertThrows(ServiceCallException.class, () -> commands.undo());
+        assertThrows(ServiceCallException.class, () -> commands.redo());
 
-        commands.execute(wfKey, commandEntity);
-        commands.execute(wfKey, commandEntity);
-        commands.execute(wfKey, commandEntity);
-        commands.execute(wfKey, commandEntity);
-        commands.execute(wfKey, commandEntity);
-        commands.execute(wfKey, commandEntity);
-        assertThat(commands.getUndoStackSize(wfKey), is(5));
-        assertThat(commands.getRedoStackSize(wfKey), is(0));
-        assertThat(commands.canUndo(wfKey), is(true));
-        assertThat(commands.canRedo(wfKey), is(false));
-        assertThrows(ServiceCallException.class, () -> commands.redo(wfKey));
+        commands.execute(commandEntity);
+        commands.execute(commandEntity);
+        commands.execute(commandEntity);
+        commands.execute(commandEntity);
+        commands.execute(commandEntity);
+        commands.execute(commandEntity);
+        assertThat(commands.getUndoStackSize(), is(5));
+        assertThat(commands.getRedoStackSize(), is(0));
+        assertThat(commands.canUndo(), is(true));
+        assertThat(commands.canRedo(), is(false));
+        assertThrows(ServiceCallException.class, () -> commands.redo());
 
-        commands.undo(wfKey);
-        commands.undo(wfKey);
-        assertThat(commands.getUndoStackSize(wfKey), is(3));
-        assertThat(commands.getRedoStackSize(wfKey), is(2));
-        assertThat(commands.canUndo(wfKey), is(true));
-        assertThat(commands.canRedo(wfKey), is(true));
+        commands.undo();
+        commands.undo();
+        assertThat(commands.getUndoStackSize(), is(3));
+        assertThat(commands.getRedoStackSize(), is(2));
+        assertThat(commands.canUndo(), is(true));
+        assertThat(commands.canRedo(), is(true));
 
-        commands.redo(wfKey);
-        assertThat(commands.getUndoStackSize(wfKey), is(4));
-        assertThat(commands.getRedoStackSize(wfKey), is(1));
-        assertThat(commands.canUndo(wfKey), is(true));
-        assertThat(commands.canRedo(wfKey), is(true));
+        commands.redo();
+        assertThat(commands.getUndoStackSize(), is(4));
+        assertThat(commands.getRedoStackSize(), is(1));
+        assertThat(commands.canUndo(), is(true));
+        assertThat(commands.canRedo(), is(true));
 
-        commands.undo(wfKey);
-        commands.undo(wfKey);
-        commands.undo(wfKey);
-        commands.undo(wfKey);
-        assertThat(commands.getUndoStackSize(wfKey), is(0));
-        assertThat(commands.getRedoStackSize(wfKey), is(5));
-        assertThat(commands.canUndo(wfKey), is(false));
-        assertThat(commands.canRedo(wfKey), is(true));
-        assertThrows(ServiceCallException.class, () -> commands.undo(wfKey));
+        commands.undo();
+        commands.undo();
+        commands.undo();
+        commands.undo();
+        assertThat(commands.getUndoStackSize(), is(0));
+        assertThat(commands.getRedoStackSize(), is(5));
+        assertThat(commands.canUndo(), is(false));
+        assertThat(commands.canRedo(), is(true));
+        assertThrows(ServiceCallException.class, () -> commands.undo());
 
         assertThrows(ServiceCallException.class,
-            () -> commands.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()),
-                builder(WorkflowCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).build()));
+            () -> commands.execute(builder(WorkflowCommandEntBuilder.class).setKind(KindEnum.TRANSLATE).build()));
 
-        commands.redo(wfKey);
-        assertThat(commands.getUndoStackSize(wfKey), is(1));
-        assertThat(commands.getRedoStackSize(wfKey), is(4));
-        commands.disposeUndoAndRedoStacks(wfKey.getProjectId());
-        assertThat(commands.getUndoStackSize(wfKey), is(0));
-        assertThat(commands.getRedoStackSize(wfKey), is(0));
+        commands.redo();
+        assertThat(commands.getUndoStackSize(), is(1));
+        assertThat(commands.getRedoStackSize(), is(4));
+        commands.disposeUndoAndRedoStacks();
+        assertThat(commands.getUndoStackSize(), is(0));
+        assertThat(commands.getRedoStackSize(), is(0));
 
         disposeWorkflowProject(wp);
     }
@@ -398,13 +397,13 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         var workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
-        var commands = workflowMiddleware.getCommands();
         var wfKey = new WorkflowKey(wfId, getRootID());
+        var commands = workflowMiddleware.getCommands(wfKey);
         AtomicInteger eventConsumerCalls = new AtomicInteger();
         EventConsumer eventConsumer = (n, e) -> {
             eventConsumerCalls.addAndGet(1);
-            commands.canRedo(wfKey);
-            commands.canUndo(wfKey);
+            commands.canRedo();
+            commands.canUndo();
         };
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
@@ -421,17 +420,17 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         commands.setCommandToExecute(testCommand);
 
         try {
-            commands.execute(wfKey, null, workflowMiddleware, null, null);
+            commands.execute(null, workflowMiddleware, null, null);
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
                 .until(() -> eventConsumerCalls.get() == 1);
 
             testCommand.m_executeFinished = false;
-            commands.undo(wfKey);
+            commands.undo();
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
                 .until(() -> eventConsumerCalls.get() == 2);
 
             testCommand.m_executeFinished = false;
-            commands.redo(wfKey);
+            commands.redo();
             await().pollInterval(200, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS)
                 .until(() -> eventConsumerCalls.get() == 3);
         } finally {

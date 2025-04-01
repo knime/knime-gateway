@@ -118,13 +118,14 @@ public final class DefaultWorkflowService implements WorkflowService {
         var version = VersionId.parse(versionParameter);
         var wfKey = new WorkflowKey(projectId, workflowId, version);
         var buildContext = WorkflowBuildContext.builder();
-        if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
+        if (Boolean.TRUE.equals(includeInfoOnAllowedActions) && version.isCurrentState()) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
                 ? Map.of() //
                 : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
+            var commands = m_workflowMiddleware.getCommands(wfKey);
             buildContext.includeInteractionInfo(true)//
-                .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
-                .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
+                .canUndo(commands.canUndo())//
+                .canRedo(commands.canRedo())//
                 .setSpaceProviderTypes(providerTypes) //
                 .setVersion(version);
         } else {
@@ -172,7 +173,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                 DefaultServiceContext.getProjectId().map(Key::of) //
                     .orElse(Key.defaultKey()) //
             );
-        return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
+        return m_workflowMiddleware.getCommands(new WorkflowKey(projectId, workflowId)).execute(workflowCommandEnt,
             m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
     }
 
@@ -182,7 +183,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
+        m_workflowMiddleware.getCommands(new WorkflowKey(projectId, workflowId)).undo();
     }
 
     /**
@@ -191,7 +192,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
+        m_workflowMiddleware.getCommands(new WorkflowKey(projectId, workflowId)).redo();
     }
 
     /**

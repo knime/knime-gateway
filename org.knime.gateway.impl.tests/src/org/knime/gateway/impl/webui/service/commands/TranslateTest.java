@@ -94,8 +94,8 @@ public class TranslateTest {
         TranslateCommandEnt translate = builder(TranslateCommandEntBuilder.class)
             .setNodeIds(List.of(new NodeIDEnt(nc.getID()))).setKind(KindEnum.TRANSLATE)
             .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
-        var commands = new WorkflowCommands(5);
-        commands.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()), translate);
+        var commands = new WorkflowCommands(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()), 5);
+        commands.execute(translate);
         assertThat(nc.getUIInformation().getBounds(), is(new int[]{10, 10, 0, 0}));
         assertThat(nc.isDirty(), is(false));
 

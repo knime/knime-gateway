@@ -54,11 +54,18 @@ import java.util.Objects;
  *
  * @implNote `toString` and {@link this#parse(String)} are compatible with the Catalog Service API spec.
  */
-public sealed class VersionId {
+public sealed abstract class VersionId {
 
     private VersionId() {
 
     }
+
+    /**
+     * TODO
+     *
+     * @return
+     */
+    public abstract boolean isCurrentState();
 
     /**
      * Corresponds to the "draft" (or "working area") concept.
@@ -92,6 +99,11 @@ public sealed class VersionId {
         @Override
         public int hashCode() {
             return this.toString().hashCode();
+        }
+
+        @Override
+        public boolean isCurrentState() {
+            return true;
         }
     }
 
@@ -135,6 +147,11 @@ public sealed class VersionId {
         @Override
         public int hashCode() {
             return Objects.hash(m_id);
+        }
+
+        @Override
+        public boolean isCurrentState() {
+            return false;
         }
 
     }
