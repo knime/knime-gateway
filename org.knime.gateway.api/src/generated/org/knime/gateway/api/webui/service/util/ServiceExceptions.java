@@ -61,12 +61,12 @@ public final class ServiceExceptions {
         
         public ServiceCallException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public ServiceCallException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -79,12 +79,12 @@ public final class ServiceExceptions {
         
         public NetworkException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public NetworkException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -97,12 +97,12 @@ public final class ServiceExceptions {
         
         public NodeDescriptionNotAvailableException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public NodeDescriptionNotAvailableException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -115,12 +115,12 @@ public final class ServiceExceptions {
         
         public NodeNotFoundException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public NodeNotFoundException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -133,12 +133,12 @@ public final class ServiceExceptions {
         
         public NoSuchElementException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public NoSuchElementException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -151,12 +151,12 @@ public final class ServiceExceptions {
         
         public NotASubWorkflowException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public NotASubWorkflowException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -169,12 +169,12 @@ public final class ServiceExceptions {
         
         public InvalidRequestException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public InvalidRequestException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -187,12 +187,12 @@ public final class ServiceExceptions {
         
         public OperationNotAllowedException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public OperationNotAllowedException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -205,12 +205,12 @@ public final class ServiceExceptions {
         
         public IOException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public IOException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 
@@ -223,12 +223,12 @@ public final class ServiceExceptions {
         
         public CollisionException(String message) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
         }
 
         public CollisionException(String message, Throwable cause) {
             super(false);
-            m_properties.put("message", message);
+            addProperty("message", message);
             initCause(cause);
         }
 

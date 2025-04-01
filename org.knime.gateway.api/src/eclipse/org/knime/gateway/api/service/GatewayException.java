@@ -61,21 +61,43 @@ import java.util.stream.Collectors;
 public abstract class GatewayException extends Exception {
 
     private static final long serialVersionUID = 1L;
-    protected static final Map<String, String> m_properties = new HashMap<>();
+
+    private final Map<String, String> m_properties = new HashMap<>();
+
     private final boolean m_canCopy;
 
+    /**
+     * New instance
+     *
+     * @param canCopy Boolean indicating whether exception properties can be copied.
+     */
     protected GatewayException(final boolean canCopy) {
         m_canCopy = canCopy;
     }
 
+    /**
+     * Gets the title of the exception as per "Problem Details” / RFC9457 standard.
+     *
+     * @return Exception title property if present or {@code null} if not present
+     */
     public String getTitle() {
         return m_properties.get("title");
     }
 
+    /**
+     * Gets the details of the exception as per "Problem Details” / RFC9457 standard.
+     *
+     * @return Exception details property if present or {@code null} if not present
+     */
     public String getDetails() {
         return m_properties.get("details");
     }
 
+    /**
+     * Checks whether exception properties can be copied
+     *
+     * @return {@code true} if copying properties is possible, {@code false} otherwise.
+     */
     public boolean isCanCopy() {
         return m_canCopy;
     }
@@ -85,6 +107,22 @@ public abstract class GatewayException extends Exception {
         return m_properties.get("message");
     }
 
+    /**
+     * Add a new property to the exception.
+     *
+     * @param key the name of the property to be set
+     * @param value the value the property should be set to
+     */
+    public void addProperty(final String key, final String value) {
+        m_properties.put(key, value);
+    }
+
+    /**
+     * Retrieves additional exception properties, excluding "title" and "details". Map of property names to property
+     * value.
+     *
+     * @return Key-values pairs of additional properties, excluding "title" and "details".
+     */
     public Map<String, String> getAdditionalProperties() {
         return m_properties.entrySet().stream()
             .filter(entry -> !entry.getKey().equals("title") && !entry.getKey().equals("details"))
