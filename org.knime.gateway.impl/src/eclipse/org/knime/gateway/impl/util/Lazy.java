@@ -110,7 +110,8 @@ public final class Lazy {
                 synchronized (this) {
                     result = this.m_value;
                     if (result == NO_INIT) { // have to check under synchronisation to be certain
-                        this.m_value = result = m_supplier.get();
+                        result = m_supplier.get();
+                        this.m_value = result;
                     }
                 }
             }
@@ -136,7 +137,7 @@ public final class Lazy {
          * Map an operation over this instance.
          * @param consumer Applied to the value, if present
          */
-        public void ifInitialized(final Consumer<V> consumer) {
+        public void ifPresent(final Consumer<V> consumer) {
             if (isInitialized()) {
                 consumer.accept(m_value);
             }

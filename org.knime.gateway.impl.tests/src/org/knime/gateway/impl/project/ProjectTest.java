@@ -120,7 +120,6 @@ public class ProjectTest {
             .setName("Test project") //
             .setId("Custom project id") //
             .setOrigin(origin) //
-            .onDispose(wfm -> {}) //
             .clearReport(() -> {}) //
             .generateReport(input -> null) //
             .build();
@@ -143,7 +142,6 @@ public class ProjectTest {
             .setName("Test project") //
             .setId("Custom project id") //
             .setOrigin(null) //
-            .onDispose(null) //
             .clearReport(null) //
             .generateReport(null) //
             .build();
@@ -158,7 +156,7 @@ public class ProjectTest {
     public void testBuilderThrows() {
         assertThrows(NullPointerException.class, () -> Project.builder().setWfm(null).build());
         assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoader(null).setName("Test project").setId("Custom project id").build());
+            () -> Project.builder().setWfmCache(null).setName("Test project").setId("Custom project id").build());
         assertThrows(NullPointerException.class,
             () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName(null).setId("Custom project id").build());
         assertThrows(NullPointerException.class,

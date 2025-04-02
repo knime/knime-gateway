@@ -55,6 +55,7 @@ import java.util.Map;
 
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerCache;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
@@ -139,6 +140,7 @@ public final class ServiceDependencies {
      *
      * @param exampleProjects
      * @param projectManager
+     * @param workflowManagerCache
      * @param workflowMiddleware
      * @param appStateUpdater The application state updater
      * @param eventConsumer The event consumer
@@ -154,6 +156,7 @@ public final class ServiceDependencies {
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
+        WorkflowManagerCache workflowManagerCache, //
         final WorkflowMiddleware workflowMiddleware, //
         final AppStateUpdater appStateUpdater, //
         final EventConsumer eventConsumer, //
@@ -168,6 +171,7 @@ public final class ServiceDependencies {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
+            ServiceDependencies.setServiceDependency(WorkflowManagerCache.class, workflowManagerCache);
             ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
             ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
             ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProvidersManager);
