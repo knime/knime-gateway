@@ -86,7 +86,7 @@ public class WorkflowChangedEventSourceTest {
         projectManager.addProject(Project.builder().setWfm(wfm).setId("id2").build());
 
         // create event source
-        var workflowMiddleware = new WorkflowMiddleware(projectManager, null);
+        var workflowMiddleware = new WorkflowMiddleware(projectManager, null, null);
         var eventSource = new WorkflowChangedEventSource(mock(EventConsumer.class), workflowMiddleware, projectManager);
 
         // add event listeners

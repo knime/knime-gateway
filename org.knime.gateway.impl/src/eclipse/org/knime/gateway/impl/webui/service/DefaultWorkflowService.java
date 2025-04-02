@@ -70,7 +70,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerCache;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -94,8 +94,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final SpaceProvidersManager m_spaceProvidersManager =
         ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, false);
 
-    private final ProjectManager m_projectManager =
-        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+    private final WorkflowManagerCache m_workflowManagerCache =
+        ServiceDependencies.getServiceDependency(WorkflowManagerCache.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -168,7 +168,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_projectManager.disposeVersion(projectId, VersionId.parse(versionParameter));
+        m_workflowManagerCache.getProjectCache(projectId)
+            .ifPresent(cache -> cache.dispose(VersionId.parse(versionParameter)));
     }
 
     /**

@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt.ProjectDis
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerCache;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
@@ -93,7 +94,9 @@ public class ProjectDisposedEventSourceTest {
         var preferenceProvider = mock(PreferencesProvider.class);
         var nodeCollections = mock(NodeCollections.class);
         ServiceInstances.disposeAllServiceInstancesAndDependencies();
-        ServiceDependencies.setDefaultServiceDependencies(projectManager, new WorkflowMiddleware(projectManager, null),
+        var wfmCache = new WorkflowManagerCache();
+        var workflowMiddleware = new WorkflowMiddleware(projectManager, null, wfmCache);
+        ServiceDependencies.setDefaultServiceDependencies(projectManager, wfmCache, workflowMiddleware,
             null, eventConsumer, spaceProvidersManager, null, preferenceProvider, null, null, nodeCollections, null,
             null, null);
 
