@@ -74,6 +74,7 @@ import org.knime.gateway.api.entity.NodeDialogEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
@@ -115,7 +116,9 @@ public final class DefaultNodeService implements NodeService {
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
+            // Because there is no better way to reference this method
             org.knime.gateway.impl.service.util.DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
         } catch (IllegalArgumentException e) {
@@ -129,6 +132,7 @@ public final class DefaultNodeService implements NodeService {
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
             var nc = getNodeContainer(projectId, workflowId, nodeId);
             if (nc instanceof NativeNodeContainer nnc) {
@@ -171,22 +175,25 @@ public final class DefaultNodeService implements NodeService {
     }
 
     @Override
-    public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws NodeNotFoundException, InvalidRequestException {
+    public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var snc = getNC(projectId, workflowId, nodeId, SingleNodeContainer.class);
+        var version = VersionId.parse(versionId);
+        var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
+
         if (!NodeDialogManager.hasNodeDialog(snc)) {
             throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
         }
+
         return new NodeDialogEnt(snc);
     }
 
     @Override
-    public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws NodeNotFoundException, InvalidRequestException {
+    public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
-
+        var version = VersionId.parse(versionId);
+        var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
         return getNodeView(nnc, projectId, m_selectionEventBus);
     }
 
@@ -249,11 +256,11 @@ public final class DefaultNodeService implements NodeService {
 
     }
 
-    private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
+    private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final VersionId versionId,
+        final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
         NodeContainer nc;
         try {
-            nc = getNodeContainer(projectId, workflowId, nodeId);
+            nc = getNodeContainer(projectId, workflowId, versionId, nodeId);
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
@@ -267,15 +274,15 @@ public final class DefaultNodeService implements NodeService {
     }
 
     @Override
-    public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String extensionType, final String serviceType, final String request)
+    public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final NodeIDEnt nodeId, final String extensionType, final String serviceType, final String request)
         throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-
-        var nnc = getNC(projectId, workflowId, nodeId, NativeNodeContainer.class);
-
+        var version = VersionId.parse(versionId);
+        var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
         final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
+
         if ("initial_data".equals(serviceType)) {
             return dataServiceManager.callInitialDataService(nncWrapper);
         } else if ("data".equals(serviceType)) {
@@ -288,14 +295,14 @@ public final class DefaultNodeService implements NodeService {
     }
 
     @Override
-    public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String extensionType) throws NodeNotFoundException, InvalidRequestException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
+    public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final NodeIDEnt nodeId, final String extensionType) throws NodeNotFoundException, InvalidRequestException {
+        var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
-            nc = getNC(projectId, workflowId, nodeId, NodeContainer.class);
+            nc = getNC(projectId, workflowId, version, nodeId, NodeContainer.class);
         } catch (NoSuchElementException e) {
-            // in case there is no rpoject for the given id
+            // in case there is no project for the given id
             throw new InvalidRequestException(e.getMessage(), e);
         }
         var dataServiceManager = getDataServiceManager(extensionType);
@@ -316,9 +323,11 @@ public final class DefaultNodeService implements NodeService {
     }
 
     @Override
-    public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String mode, final List<String> selection) throws NodeNotFoundException {
-        DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, nodeId, mode, selection, NodeWrapper::of);
+    public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final NodeIDEnt nodeId, final String mode, final List<String> selection) throws NodeNotFoundException {
+        var version = VersionId.parse(versionId);
+        DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
+            NodeWrapper::of);
     }
 
     @Override

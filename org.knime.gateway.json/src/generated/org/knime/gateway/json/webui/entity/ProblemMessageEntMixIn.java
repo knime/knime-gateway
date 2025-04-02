@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,66 +40,74 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Mar 12, 2021 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.ProblemMessageEnt;
+import org.knime.gateway.impl.webui.entity.DefaultProblemMessageEnt.DefaultProblemMessageEntBuilder;
 
 /**
- * Utility methods to operate on a workflow represented by a {@link WorkflowKey}.
- *
- * The actual {@link WorkflowManager}-instance is accessed via the {@link ProjectManager}.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class WorkflowUtil {
 
-    private WorkflowUtil() {
-        // utility class
-    }
+@JsonDeserialize(builder=DefaultProblemMessageEntBuilder.class)
+@JsonSerialize(as=ProblemMessageEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface ProblemMessageEntMixIn extends ProblemMessageEnt {
 
-    /**
-     * Helper method to get the workflow manager from a project-id and workflow-id (referencing a sub-workflow or
-     * 'root').
-     *
-     * @param wfKey
-     * @return the workflow manager
-     * @throws NodeNotFoundException if there is no metanode or component for the given workflow-id
-     * @throws NotASubWorkflowException if the workflow-id doesn't reference a metanode or a component
-     */
-    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
-        WorkflowManager wfm;
-        try {
-            wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId()); // No version needed, only current state
-        } catch (IllegalArgumentException ex) {
-            throw new NodeNotFoundException(ex.getMessage(), ex);
-        } catch (IllegalStateException ex) {
-            throw new NotASubWorkflowException(ex.getMessage(), ex);
-        }
-        return wfm;
-    }
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
+    
+    @Override
+    @JsonProperty("title")
+    public String getTitle();
+    
+    @Override
+    @JsonProperty("message")
+    public String getMessage();
+    
 
     /**
-     * Asserts that a workflow manager for the given workflow key exists. Otherwise respective exceptions are thrown.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
-     * All other methods assume that a workflow exists and will otherwise fail with a runtime exceptions.
-     *
-     * @param wfKey
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
+     * @author Martin Horn, University of Konstanz
      */
-    public static void assertWorkflowExists(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
-        getWorkflowManager(wfKey);
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface ProblemMessageEntMixInBuilder extends ProblemMessageEntBuilder {
+    
+        @Override
+        public ProblemMessageEntMixIn build();
+    
+        @Override
+        @JsonProperty("type")
+        public ProblemMessageEntMixInBuilder setType(final TypeEnum type);
+        
+        @Override
+        @JsonProperty("title")
+        public ProblemMessageEntMixInBuilder setTitle(final String title);
+        
+        @Override
+        @JsonProperty("message")
+        public ProblemMessageEntMixInBuilder setMessage(final String message);
+        
     }
+
 
 }
+

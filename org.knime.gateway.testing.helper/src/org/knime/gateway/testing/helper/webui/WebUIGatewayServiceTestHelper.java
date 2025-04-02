@@ -397,7 +397,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
     WorkflowEnt getWorkflow(final String workflowId) {
         WorkflowEnt workflow;
         try {
-            workflow = ws().getWorkflow(workflowId, NodeIDEnt.getRootID(), true, null).getWorkflow();
+            workflow = ws().getWorkflow(workflowId, NodeIDEnt.getRootID(), null, true).getWorkflow();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

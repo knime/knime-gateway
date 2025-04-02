@@ -149,14 +149,14 @@ public class GatewayJsonRpcWrapperServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                ProjectManager.getInstance().getProject(wfId).map(Project::getWorkflowManager) //
+                ProjectManager.getInstance().getProject(wfId).flatMap(Project::getWorkflowManagerIfLoaded) //
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
                     .executeAll();
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                ProjectManager.getInstance().getProject(wfId).map(Project::getWorkflowManager) //
+                ProjectManager.getInstance().getProject(wfId).flatMap(Project::getWorkflowManagerIfLoaded) //
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
                     .executeAllAndWaitUntilDone();
             }

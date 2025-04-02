@@ -104,7 +104,7 @@ public class UnexpectedJsonRpcErrorTest {
             new JsonRpcClient(mapper, new TestExceptionResolver(Matchers.is("an unexpected exception")));
         WorkflowService workflowServiceProxy = createClientProxy(WorkflowService.class, handler, jsonRpcClient);
         assertThrows(UnsupportedOperationException.class,
-            () -> workflowServiceProxy.getWorkflow(null, null, Boolean.FALSE, null));
+            () -> workflowServiceProxy.getWorkflow(null, null, null, Boolean.FALSE));
     }
 
     private static class TestExceptionResolver implements ExceptionResolver {

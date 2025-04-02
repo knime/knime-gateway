@@ -62,6 +62,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorMessageEnt;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.service.DefaultWorkflowService;
 import org.knime.gateway.impl.webui.service.GatewayServiceTest;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -97,9 +98,9 @@ public class EncryptedComponentAndMetanodeTest extends GatewayServiceTest {
     @Test
     public void testDefaultServiceUtil() {
         assertThrows(IllegalStateException.class,
-            () -> DefaultServiceUtil.getWorkflowManager(m_wfm.getFirst().toString(), ENCRYPTED_COMPONENT));
+            () -> WorkflowManagerResolver.get(m_wfm.getFirst().toString(), ENCRYPTED_COMPONENT));
         assertThrows(IllegalStateException.class,
-            () -> DefaultServiceUtil.getWorkflowManager(m_wfm.getFirst().toString(), ENCRYPTED_METANODE));
+            () -> WorkflowManagerResolver.get(m_wfm.getFirst().toString(), ENCRYPTED_METANODE));
     }
 
     @Test
@@ -142,7 +143,8 @@ public class EncryptedComponentAndMetanodeTest extends GatewayServiceTest {
     public void testWorkflowService() {
         var ws = DefaultWorkflowService.getInstance();
         var projectId = m_wfm.getFirst().toString();
-        assertThrows(IllegalStateException.class, () -> ws.getWorkflow(projectId, new NodeIDEnt(2), Boolean.FALSE, null));
+        assertThrows(IllegalStateException.class,
+            () -> ws.getWorkflow(projectId, new NodeIDEnt(2), null, Boolean.FALSE));
 
         var monitorState = ws.getWorkflowMonitorState(projectId).getState();
         assertThat(monitorState.getErrors()).isEmpty();

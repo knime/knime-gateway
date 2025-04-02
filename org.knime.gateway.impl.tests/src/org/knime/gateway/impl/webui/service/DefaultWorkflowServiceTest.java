@@ -99,14 +99,14 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
     public void testThatWorkflowEntitiesAreNotCached() throws Exception {
         var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
-        var ent = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false, null);
-        var ent2 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false, null);
+        var ent = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), null, false);
+        var ent2 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), null, false);
         assertFalse(ent.getWorkflow() == ent2.getWorkflow());
 
         // change
         NodeUIInformation.moveNodeBy(wfm.getNodeContainers().iterator().next(), new int[]{10, 10});
 
-        var ent3 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), false, null);
+        var ent3 = DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), null, false);
         assertFalse(ent2.getWorkflow() == ent3.getWorkflow());
     }
 
@@ -122,14 +122,15 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         var wfm = loadWorkflow(TestWorkflowCollection.VIEW_NODES, wfId);
         var workflowService = DefaultWorkflowService.getInstance();
 
-        var allowedActionsMap = workflowService.getWorkflow(wfId, getRootID(), true, null).getWorkflow().getNodes().entrySet()
-            .stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
+        var allowedActionsMap = workflowService.getWorkflow(wfId, getRootID(), null, true).getWorkflow().getNodes()
+            .entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
         cr(allowedActionsMap, "allowed_actions_for_view_nodes");
 
         wfm.executeAllAndWaitUntilDone();
 
-        var allowedActionsMapExecuted = workflowService.getWorkflow(wfId, getRootID(), true, null).getWorkflow().getNodes()
-            .entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
+        var allowedActionsMapExecuted =
+            workflowService.getWorkflow(wfId, getRootID(), null, true).getWorkflow().getNodes().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getAllowedActions()));
         cr(allowedActionsMapExecuted, "allowed_actions_for_view_nodes_executed");
     }
 
@@ -145,15 +146,15 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         var wfm = loadWorkflow(TestWorkflowCollection.NODE_MESSAGE, wfId);
 
         var workflowService = DefaultWorkflowService.getInstance();
-        var stateEnt = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false, null).getWorkflow().getNodes()
-            .get("root:4")).getState();
+        var stateEnt = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), null, false).getWorkflow()
+            .getNodes().get("root:4")).getState();
         assertThat(stateEnt.getWarning(), is(nullValue()));
         assertThat(stateEnt.getIssue(), is(nullValue()));
         assertThat(stateEnt.getResolutions(), is(nullValue()));
 
         wfm.executeAllAndWaitUntilDone();
 
-        var stateEntExecuted = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), false, null).getWorkflow()
+        var stateEntExecuted = ((NativeNodeEnt)workflowService.getWorkflow(wfId, getRootID(), null, false).getWorkflow()
             .getNodes().get("root:4")).getState();
         assertThat(stateEntExecuted.getWarning(), containsString("can not be transformed"));
         assertThat(stateEntExecuted.getIssue(), containsString("For input string"));
@@ -171,7 +172,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS, wfId);
         var workflowService = DefaultWorkflowService.getInstance();
-        var nodes = workflowService.getWorkflow(wfId, getRootID(), false, null).getWorkflow().getNodes();
+        var nodes = workflowService.getWorkflow(wfId, getRootID(), null, false).getWorkflow().getNodes();
         var metanode = (MetaNodeEnt)nodes.get("root:27");
         var component = (ComponentNodeEnt)nodes.get("root:28");
         assertThat(metanode.isLocked(), is(Boolean.TRUE));
@@ -185,7 +186,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         };
         ((WorkflowManager)wfm.getNodeContainer(wfm.getID().createChild(27))).unlock(prompt);
         ((SubNodeContainer)wfm.getNodeContainer(wfm.getID().createChild(28))).getWorkflowManager().unlock(prompt);
-        nodes = workflowService.getWorkflow("wf_id", getRootID(), false, null).getWorkflow().getNodes();
+        nodes = workflowService.getWorkflow("wf_id", getRootID(), null, false).getWorkflow().getNodes();
         metanode = (MetaNodeEnt)nodes.get("root:27");
         component = (ComponentNodeEnt)nodes.get("root:28");
         assertThat(metanode.isLocked(), is(Boolean.FALSE));
@@ -208,11 +209,12 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
         ProjectManager.getInstance().addProject(project);
 
         var workflowService = DefaultWorkflowService.getInstance();
-        var nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE, null).getWorkflow().getNodes();
+        var nodes =
+            workflowService.getWorkflow(project.getID(), getRootID(), null, Boolean.FALSE).getWorkflow().getNodes();
         assertThat(nodes.get("root:1").getKind().name(), is("METANODE"));
 
         metanode.hideInUI();
-        nodes = workflowService.getWorkflow(project.getID(), getRootID(), Boolean.FALSE, null).getWorkflow().getNodes();
+        nodes = workflowService.getWorkflow(project.getID(), getRootID(), null, Boolean.FALSE).getWorkflow().getNodes();
         assertThat(nodes.isEmpty(), is(true));
 
         ProjectManager.getInstance().removeProject(project.getID());

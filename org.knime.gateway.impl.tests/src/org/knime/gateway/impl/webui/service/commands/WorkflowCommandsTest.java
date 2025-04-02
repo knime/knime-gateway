@@ -142,7 +142,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        var wfm = wp.getWorkflowManager();
+        var wfm = wp.getWorkflowManagerIfLoaded().orElseThrow();
         var sleepNodeClassname = "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory";
 
         var n1 = addNodeDirectly(sleepNodeClassname, wfm);
@@ -239,7 +239,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @Test
     public void testUndoAndRedoWhileWorkflowIsExecuting() throws Exception {
         var wp = createEmptyWorkflowProject();
-        var wfm = wp.getWorkflowManager();
+        var wfm = wp.getWorkflowManagerIfLoaded().orElseThrow();
         var waitNodeID = WorkflowManagerUtil.createAndAddNode(wfm,
             FileNativeNodeContainerPersistor.loadNodeFactory("org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"))
             .getID();
@@ -286,8 +286,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
 
     /**
      * Makes sure that the 'undo'-flag is correctly updated (through a workflow changed event) if a workflow is changed
-     * (e.g. a node deleted).
-     * There used to be a race condition where the respective event didn't contain the 'undo'-flag update (see NXT-965).
+     * (e.g. a node deleted). There used to be a race condition where the respective event didn't contain the
+     * 'undo'-flag update (see NXT-965).
      *
      * @throws Exception
      */
@@ -308,8 +308,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         };
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         String projectId = loadWorkflow(TestWorkflowCollection.EXECUTION_STATES).getFirst().toString();
-        var snapshotId =
-            DefaultWorkflowService.getInstance().getWorkflow(projectId, NodeIDEnt.getRootID(), true, null).getSnapshotId();
+        var snapshotId = DefaultWorkflowService.getInstance().getWorkflow(projectId, NodeIDEnt.getRootID(), null, true)
+            .getSnapshotId();
 
         DefaultEventService.getInstance()
             .addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
@@ -410,8 +410,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManagerInstance());
 
-        var snapshotId = DefaultWorkflowService.getInstance()
-            .getWorkflow(wfId, getRootID(), true, null).getSnapshotId();
+        var snapshotId =
+            DefaultWorkflowService.getInstance().getWorkflow(wfId, getRootID(), null, true).getSnapshotId();
         var eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId(wfId).setWorkflowId(getRootID()).setSnapshotId(snapshotId)
             .setTypeId("WorkflowChangedEventType").build();
@@ -525,7 +525,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
             new WorkflowMiddleware(ProjectManager.getInstance(), null));
 
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI).getFirst().toString();
-        var snapshotId = DefaultWorkflowService.getInstance().getWorkflow(projectId, getRootID(), true, null).getSnapshotId();
+        var snapshotId =
+            DefaultWorkflowService.getInstance().getWorkflow(projectId, getRootID(), null, true).getSnapshotId();
         var eventType = EntityBuilderManager.builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
             .setWorkflowId(getRootID()).setSnapshotId(snapshotId).setTypeId("WorkflowChangedEventType").build();
         DefaultEventService.getInstance().addEventListener(eventType);
