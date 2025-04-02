@@ -45,31 +45,26 @@
  */
 package org.knime.gateway.impl.project;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.LRUCache;
-import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.impl.util.Lazy;
 
 /**
  * A workflow or component project.
+ *
+ *
  *
  * @see ProjectManager
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
  */
-// TODO can convert to record again
 public final class Project {
 
     private final String m_id;
@@ -82,16 +77,47 @@ public final class Project {
 
     private final Function<String, byte[]> m_generateReport;
 
-    private final WorkflowManagerCache m_wfmCache;
+    private final ProjectWfmCache m_projectWfmCache;
 
     private Project(final Builder builder) {
-        this.m_id = builder.m_id;
-        this.m_name = builder.m_name;
-        this.m_origin = builder.m_origin;
-        this.m_wfmCache = new WorkflowManagerCache(builder.m_wfmLoader, builder.m_onDispose);
-        this.m_clearReport = (builder.m_clearReport != null) ? builder.m_clearReport : () -> {
-        };
-        this.m_generateReport = builder.m_generateReport;
+        this( //
+            builder.m_id, //
+            builder.m_name, //
+            builder.m_origin, //
+            builder.m_wfmCache, //
+            Optional.ofNullable(builder.m_clearReport).orElse(() -> {
+            }), //
+            builder.m_generateReport //
+        );
+    }
+
+    private Project(final String projectId, final String name, final Origin origin, final ProjectWfmCache cache,
+        final Runnable clearReport, final Function<String, byte[]> generateReport) {
+        this.m_id = projectId;
+        this.m_name = name;
+        this.m_origin = origin;
+        this.m_projectWfmCache = cache;
+        this.m_clearReport = clearReport;
+        this.m_generateReport = generateReport;
+    }
+
+    /**
+     * -
+     * 
+     * @param originalProject -
+     * @param newOrigin -
+     * @return A new instance with same property values and updated origin property
+     */
+    public static Project updateOrigin(final Project originalProject, final Origin newOrigin) {
+        return new Project( //
+            originalProject.m_id, //
+            originalProject.m_name, //
+            newOrigin, //
+            originalProject.m_projectWfmCache, //
+            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
+            }), //
+            originalProject.m_generateReport //
+        );
     }
 
     /**
@@ -102,89 +128,6 @@ public final class Project {
      */
     public static String getUniqueProjectId(final String projectName) {
         return projectName + "_" + UUID.randomUUID();
-    }
-
-    /**
-     * Caches loaded {@link WorkflowManager} instances associated with a project.
-     * <p>
-     * For fixed versions, we want an LRU cache. The current-state a.k.a. working area should be kept indefinitely.
-     */
-    private static class WorkflowManagerCache {
-
-        private final WorkflowManagerLoader m_wfmLoader;
-
-        private final Lazy.Init<WorkflowManager> m_currentState;
-
-        private static final int VERSION_WFM_CACHE_MAX_SIZE = 5;
-
-        private final Map<VersionId.Fixed, WorkflowManager> m_fixedVersions =
-            new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
-
-        private final Consumer<WorkflowManager> m_onDispose;
-
-        public WorkflowManagerCache(final WorkflowManagerLoader wfmLoader, final Consumer<WorkflowManager> onDispose) {
-            this.m_wfmLoader = wfmLoader;
-            this.m_onDispose = onDispose;
-            this.m_currentState = new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState()));
-        }
-
-        /**
-         * Get a value, computing it if not yet cached.
-         *
-         * @param version
-         * @return
-         */
-        WorkflowManager get(final VersionId version) {
-            if (version instanceof VersionId.CurrentState) {
-                return m_currentState.get();
-            } else {
-                return m_fixedVersions.computeIfAbsent((VersionId.Fixed)version, m_wfmLoader::load);
-            }
-        }
-
-        void clearCurrentState() {
-            m_currentState.ifInitialized(this::disposeWorkflowManager);
-            m_currentState.clear();
-        }
-
-        void dispose() {
-            clearCurrentState();
-            m_fixedVersions.values().forEach(this::disposeWorkflowManager);
-            m_fixedVersions.clear();
-        }
-
-        void dispose(final VersionId version) {
-            if (version instanceof VersionId.CurrentState) {
-                clearCurrentState();
-            } else {
-                var cachedWfm = m_fixedVersions.remove(version);
-                if (cachedWfm != null) {
-                    disposeWorkflowManager(cachedWfm);
-                }
-            }
-        }
-
-        boolean contains(final VersionId version) {
-            if (version instanceof VersionId.CurrentState) {
-                return m_currentState.isInitialized();
-            } else {
-                return m_fixedVersions.containsKey(version);
-            }
-        }
-
-        private void disposeWorkflowManager(final WorkflowManager wfm) {
-            if (wfm == null) {
-                return;
-            }
-            if (this.m_onDispose != null) {
-                this.m_onDispose.accept(wfm);
-            }
-            try {
-                CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-            } catch (InterruptedException e) { // NOSONAR
-                NodeLogger.getLogger(Project.class).error(e);
-            }
-        }
     }
 
     /**
@@ -207,7 +150,7 @@ public final class Project {
      *         loaded.
      */
     public WorkflowManager getWorkflowManager() {
-        return m_wfmCache.get(VersionId.currentState());
+        return this.m_projectWfmCache.getWorkflowManager(VersionId.currentState());
     }
 
     /**
@@ -215,8 +158,8 @@ public final class Project {
      *         workflow manager is not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return this.m_wfmCache.contains(VersionId.currentState()) ? //
-            Optional.of(m_wfmCache.get(VersionId.currentState())) : //
+        return this.m_projectWfmCache.contains(VersionId.currentState()) ? //
+            Optional.of(m_projectWfmCache.getWorkflowManager(VersionId.currentState())) : //
             Optional.empty();
     }
 
@@ -235,24 +178,14 @@ public final class Project {
      * @return The workflow manager instance
      */
     public Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
-        return Optional.ofNullable(m_wfmCache.get(version));
+        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
     }
 
     /**
      * Dispose the entire project.
      */
     void dispose() {
-        this.m_wfmCache.dispose();
-    }
-
-    /**
-     * Call via {@link ProjectManager#disposeVersion(String, VersionId)} to allow invocation of listeners that can not
-     * be attached to specific instances.
-     *
-     * @param version Dispose the loaded workflow manager instance (if any) associated with this version.
-     */
-    void dispose(final VersionId version) {
-        m_wfmCache.dispose(version);
+        this.m_projectWfmCache.dispose();
     }
 
     /**
@@ -327,7 +260,9 @@ public final class Project {
         interface RequiresWorkflow {
             Optionals setWfm(final WorkflowManager wfm);
 
-            RequiresName setWfmLoader(final WorkflowManagerLoader getWfm);
+            RequiresName setWfmCache(final ProjectWfmCache projectWfmCache);
+
+            RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader);
 
             RequiresName setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> supplier);
         }
@@ -345,8 +280,6 @@ public final class Project {
         @SuppressWarnings("java:S1176") // javadoc
         interface Optionals extends RequiresId, RequiresName {
             Optionals setOrigin(Origin origin);
-
-            Optionals onDispose(Consumer<WorkflowManager> onDispose);
 
             Optionals clearReport(Runnable clearReport);
 
@@ -374,14 +307,21 @@ public final class Project {
 
         private Origin m_origin;
 
-        private Consumer<WorkflowManager> m_onDispose;
-
         private Runnable m_clearReport;
 
         private Function<String, byte[]> m_generateReport;
 
+        private ProjectWfmCache m_wfmCache;
+
         private Builder() {
             //
+        }
+
+        @Override
+        public BuilderStage.RequiresName setWfmCache(final ProjectWfmCache cache) {
+            Objects.requireNonNull(cache);
+            m_wfmCache = cache;
+            return this;
         }
 
         @Override
@@ -389,14 +329,15 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmLoader = providingCurrentStateOnly(() -> wfm);
+            setWfmLoader(providingCurrentStateOnly(() -> wfm));
             return this;
         }
 
         @Override
-        public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader loader) {
-            Objects.requireNonNull(loader);
-            m_wfmLoader = loader;
+        public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
+            Objects.requireNonNull(wfmLoader);
+            Objects.requireNonNull(this.m_id);
+            setWfmCache(new ProjectWfmCache(m_id, wfmLoader));
             return this;
         }
 
@@ -404,7 +345,7 @@ public final class Project {
         public BuilderStage.RequiresName
             setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> currentStateLoader) {
             Objects.requireNonNull(currentStateLoader);
-            m_wfmLoader = providingCurrentStateOnly(currentStateLoader);
+            setWfmLoader(providingCurrentStateOnly(currentStateLoader));
             return this;
         }
 
@@ -454,16 +395,6 @@ public final class Project {
         @Override
         public Builder setOrigin(final Origin origin) {
             m_origin = origin;
-            return this;
-        }
-
-        /**
-         * @param onDispose
-         * @return this
-         */
-        @Override
-        public Builder onDispose(final Consumer<WorkflowManager> onDispose) {
-            m_onDispose = onDispose;
             return this;
         }
 

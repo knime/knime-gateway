@@ -217,7 +217,7 @@ public class GatewayDefaultServiceTests {
     public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(ProjectManager.getInstance(), null));
+            new WorkflowMiddleware(ProjectManager.getInstance(), null, null));
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, null);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(NodeRepository.class, new NodeRepository());

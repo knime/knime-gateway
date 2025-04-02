@@ -84,6 +84,7 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerCache;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.PatchCreator;
@@ -151,12 +152,14 @@ public final class WorkflowMiddleware {
     private final SpaceProvidersManager m_spaceProvidersManager;
 
     @SuppressWarnings("java:S1176") // javadoc
-    public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager) {
+    public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager,
+        final WorkflowManagerCache wfmCache) {
         m_spaceProvidersManager = spaceProvidersManager;
         projectManager.addProjectRemovedListener(
             projectId -> clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId)));
-        projectManager.addVersionDisposedListener((projectId, version) -> clearWorkflowState(
-            wfKey -> wfKey.getProjectId().equals(projectId) && wfKey.getVersionId().equals(version)));
+        if (wfmCache != null) {
+            wfmCache.getDisposeListeners().add(this::clearWorkflowState);
+        }
     }
 
     private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
