@@ -135,16 +135,19 @@ public interface SpaceProvider {
      *
      * @param localWorkflow workflow directory
      * @param targetUri target KNIME URL
+     * @param spaceId the Id of the parent space which is needed for upload to a hub instance
+     * @param parentId the Id of the parent workflow group which is needed for upload to a hub instance
      * @param deleteSource flag indicating that the operation is a move instead of a copy operation
      * @param excludeDataInWorkflows data exclusion flag
      * @param progressMonitor monitor for aborting or receiving progress updates
      * @throws CoreException if errors occur during upload
      * @throws IOException if I/O errors occur during upload
      * @throws UnsupportedOperationException for local space providers
+     * @since 5.5
      */
-    default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri, final boolean deleteSource,
-        final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
-        throws CoreException, IOException {
+    default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri, final String spaceId,
+        final String parentId, final boolean deleteSource, final boolean excludeDataInWorkflows,
+        final IProgressMonitor progressMonitor) throws CoreException, IOException {
         throw new UnsupportedOperationException();
     }
 

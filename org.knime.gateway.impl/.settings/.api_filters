@@ -1062,6 +1062,12 @@
                 <message_argument value="toEntity()"/>
             </message_arguments>
         </filter>
+        <filter comment="Added parentIdURI to syncUploadWorkflow such that it can use the new upload flow" id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
+                <message_argument value="syncUploadWorkflow(Path, URI, boolean, boolean, IProgressMonitor)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
