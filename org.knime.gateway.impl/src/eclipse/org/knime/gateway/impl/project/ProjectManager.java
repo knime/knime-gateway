@@ -85,10 +85,8 @@ public final class ProjectManager {
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
-    // TODO: Merge with active version ID
     private String m_activeProjectId;
 
-    // TODO: Merge with active project ID
     private VersionId m_activeVersionId = VersionId.currentState();
 
     private ProjectManager() {
@@ -160,7 +158,8 @@ public final class ProjectManager {
     }
 
     /**
-     * TODO Merge with active project ID
+     * @param projectId
+     * @param versionId
      */
     public void setActiveVersion(final String projectId, final VersionId versionId) {
         if (!isActiveProject(projectId)) {

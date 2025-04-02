@@ -57,6 +57,8 @@ import java.util.function.Function;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeTimer;
+import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.port.PortViewManager;
@@ -163,37 +165,58 @@ final class DefaultServiceUtil {
     /**
      * @param projectId
      * @param versionId
-     * @throws IllegalStateException if no project for the given ID could be found
-     * @throws ProjectVersionException if the active project version is not the given version
+     * @throws NoSuchElementException if no project for the given ID could be found
+     * @throws ProjectOrVersionException if the active project version is not the given version
      */
     static void assertProjectVersion(final String projectId, final VersionId versionId) {
         if (versionId instanceof VersionId.Fixed fixedVersion) {
             ProjectManager.getInstance().getProject(projectId)//
                 .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))//
                 .getWorkflowManagerIfLoaded(fixedVersion)//
-                .orElseThrow(() -> new ProjectVersionException("Project version \"" + versionId + "\" is not loaded"));
+                .orElseThrow(() -> new ProjectOrVersionException("Project version \"" + versionId + "\" is not loaded"));
         }
 
         if (!ProjectManager.getInstance().isCurrentState(projectId)) {
-            throw new ProjectVersionException("Active project version is not the current state");
+            throw new ProjectOrVersionException("Active project version is not the current state");
         }
     }
 
     /**
-     * Set the active project version.
+     * Set the active project and ensure it's loaded.
      *
      * @param projectId
-     * @param version
-     * @throws IllegalStateException if the given project-id is not the expected one
+     * @param versionId
+     * @throws IllegalStateException If the version could not be set as active
+     * @throws NoSuchElementException If the project couldn't be found
+     * @throws ProjectOrVersionException if the project version couldn't be loaded
      */
-    static void setActiveProjectVersion(final String projectId, final VersionId versionId) {
+    static void setProjectActiveAndEnsureItsLoaded(final String projectId, final VersionId versionId) {
+        var project = ProjectManager.getInstance().getProject(projectId)//
+            .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."));
+
+        if (project.getWorkflowManagerIfLoaded(versionId).isPresent()) {
+            ProjectManager.getInstance().setProjectActive(projectId);
+            return;
+        }
+
+        var wfm = project.loadWorkflowManager(versionId).orElse(null);
+        if (wfm == null) {
+            ProjectManager.getInstance().removeProject(projectId);
+            throw new ProjectOrVersionException(
+                "Project version \"" + versionId + "\" couldn't be loaded. Project closed");
+        }
+
+        // TODO: Improve tracking of project loading
+        NodeTimer.GLOBAL_TIMER.incWorkflowOpening(wfm, WorkflowType.LOCAL);
+
+        ProjectManager.getInstance().setProjectActive(projectId);
         ProjectManager.getInstance().setActiveVersion(projectId, versionId);
     }
 
     @SuppressWarnings("serial")
-    static class ProjectVersionException extends RuntimeException {
+    static class ProjectOrVersionException extends RuntimeException {
 
-        ProjectVersionException(final String message) {
+        ProjectOrVersionException(final String message) {
             super(message);
         }
     }
