@@ -146,13 +146,13 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "setActiveProjectWithVersion")
+    @JsonRpcMethod(value = "setProjectActiveAndEnsureItsLoaded")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void setActiveProjectWithVersion(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="versionId") String versionId)  throws ServiceExceptions.ServiceCallException {
-        m_service.get().setActiveProjectWithVersion(projectId, versionId);    
+    public void setProjectActiveAndEnsureItsLoaded(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="versionId") String versionId)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().setProjectActiveAndEnsureItsLoaded(projectId, versionId);    
     }
 
 	/**

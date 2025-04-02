@@ -102,6 +102,8 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx)
         throws NodeNotFoundException, InvalidRequestException {
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         var outPort = nc.getOutPort(portIdx);
 
@@ -138,6 +140,8 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer rowIdx, final Integer colIdx)
         throws NodeNotFoundException, InvalidRequestException {
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         return new DataValueViewEnt(DataValueWrapper.of(nc, portIdx, rowIdx, colIdx),
             DataValueViewManager.getInstance());
@@ -156,6 +160,8 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String serviceType,
         final String body) throws NodeNotFoundException, InvalidRequestException {
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         var portViewManager = PortViewManager.getInstance();
 
@@ -175,6 +181,8 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx)
         throws NodeNotFoundException, InvalidRequestException {
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         NodeContainer nc;
         try {
             nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
@@ -182,6 +190,7 @@ public class DefaultPortService implements PortService {
             // in case there is no project for the given id
             throw new InvalidRequestException(e.getMessage(), e);
         }
+
         PortViewManager.getInstance().getDataServiceManager()
             .deactivateDataServices(NodePortWrapper.of(nc, portIdx, viewIdx));
     }
@@ -191,6 +200,8 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String mode,
         final List<String> selection) throws NodeNotFoundException {
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             nc -> NodePortWrapper.of(nc, portIdx, viewIdx));
     }

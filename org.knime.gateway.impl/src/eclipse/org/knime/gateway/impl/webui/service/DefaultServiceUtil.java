@@ -173,11 +173,14 @@ final class DefaultServiceUtil {
             ProjectManager.getInstance().getProject(projectId)//
                 .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))//
                 .getWorkflowManagerIfLoaded(fixedVersion)//
-                .orElseThrow(() -> new ProjectOrVersionException("Project version \"" + versionId + "\" is not loaded"));
+                .orElseThrow(
+                    () -> new ProjectOrVersionException("Project version \"" + versionId + "\" is not loaded"));
         }
 
-        if (!ProjectManager.getInstance().isCurrentState(projectId)) {
-            throw new ProjectOrVersionException("Active project version is not the current state");
+        if (versionId instanceof VersionId.CurrentState) {
+            if (!ProjectManager.getInstance().isCurrentState(projectId)) {
+                throw new ProjectOrVersionException("Active project version is not the current state");
+            }
         }
     }
 

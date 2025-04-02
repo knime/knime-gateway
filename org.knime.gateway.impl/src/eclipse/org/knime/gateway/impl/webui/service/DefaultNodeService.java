@@ -179,8 +179,9 @@ public final class DefaultNodeService implements NodeService {
         final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
-        var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
 
+        var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
         if (!NodeDialogManager.hasNodeDialog(snc)) {
             throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
         }
@@ -193,6 +194,8 @@ public final class DefaultNodeService implements NodeService {
         final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
         return getNodeView(nnc, projectId, m_selectionEventBus);
     }
@@ -279,6 +282,8 @@ public final class DefaultNodeService implements NodeService {
         throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
         final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
@@ -298,6 +303,8 @@ public final class DefaultNodeService implements NodeService {
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final String extensionType) throws NodeNotFoundException, InvalidRequestException {
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         NodeContainer nc;
         try {
             nc = getNC(projectId, workflowId, version, nodeId, NodeContainer.class);
@@ -326,6 +333,8 @@ public final class DefaultNodeService implements NodeService {
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final String mode, final List<String> selection) throws NodeNotFoundException {
         var version = VersionId.parse(versionId);
+        DefaultServiceUtil.assertProjectVersion(projectId, version);
+
         DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             NodeWrapper::of);
     }

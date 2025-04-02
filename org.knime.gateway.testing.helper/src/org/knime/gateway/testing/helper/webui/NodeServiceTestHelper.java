@@ -155,16 +155,14 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
         var projectId = loadWorkflow(testWorkflowWithVersion);
 
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE);
-        ws().setActiveProjectWithVersion(projectId, null);
+        ws().setProjectActiveAndEnsureItsLoaded(projectId, VersionId.currentState().toString());
 
         // Current version, doesn't throw
         ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute");
         ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "reset");
 
         var version = VersionId.parse("5");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
-        ws().setActiveProjectWithVersion(projectId, version.toString());
+        ws().setProjectActiveAndEnsureItsLoaded(projectId, version.toString());
 
         // Earlier version, throws
         var ex1 = assertThrows(RuntimeException.class,

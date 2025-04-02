@@ -121,7 +121,7 @@ public interface WorkflowService extends GatewayService {
     void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException;
         
     /**
-     * Sets the active project including its version.
+     * Sets a project and its version active and ensures it is loaded.
      *
      * @param projectId ID of the workflow-project.
      * @param versionId Version ID of the project.
@@ -129,7 +129,7 @@ public interface WorkflowService extends GatewayService {
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void setActiveProjectWithVersion(String projectId, String versionId)  throws ServiceExceptions.ServiceCallException;
+    void setProjectActiveAndEnsureItsLoaded(String projectId, String versionId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Un-does the last command from the undo-stack.
