@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.NativeNodeContainer.LoopStatus;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.data.DataServiceDependencies;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
@@ -100,9 +101,10 @@ public final class DefaultNodeService implements NodeService {
     private final SelectionEventBus m_selectionEventBus =
         ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
 
-    // TODO(martin) it would be easy to make it not required
-    private final CodeKaiHandler m_codeKaiHandler =
-        ServiceDependencies.getServiceDependency(CodeKaiHandler.class, true);
+    // TODO(benny) can this be required? What if K-AI is not installed?
+    private final Map<Class<?>, Object> m_dialogDataServiceDependencies = Map.of( //
+        CodeKaiHandler.class, ServiceDependencies.getServiceDependency(CodeKaiHandler.class, true) //
+    );
 
     /**
      * Returns the singleton instance for this service.
@@ -184,7 +186,8 @@ public final class DefaultNodeService implements NodeService {
         if (!NodeDialogManager.hasNodeDialog(snc)) {
             throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
         }
-        return new NodeDialogEnt(snc);
+        return DataServiceDependencies.runWithDependencies(m_dialogDataServiceDependencies,
+            () -> new NodeDialogEnt(snc));
     }
 
     @Override
@@ -282,16 +285,17 @@ public final class DefaultNodeService implements NodeService {
 
         final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
-        var serviceDependencies = Map.<Class<?>, Object> of(CodeKaiHandler.class, m_codeKaiHandler);
-        if ("initial_data".equals(serviceType)) {
-            return dataServiceManager.callInitialDataService(nncWrapper); // TODO also add the dependencies here
-        } else if ("data".equals(serviceType)) {
-            return dataServiceManager.callRpcDataService(nncWrapper, request, serviceDependencies);
-        } else if ("apply_data".equals(serviceType)) {
-            return dataServiceManager.callApplyDataService(nncWrapper, request);
-        } else {
-            throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
-        }
+        return DataServiceDependencies.runWithDependencies(m_dialogDataServiceDependencies, () -> {
+            if ("initial_data".equals(serviceType)) {
+                return dataServiceManager.callInitialDataService(nncWrapper);
+            } else if ("data".equals(serviceType)) {
+                return dataServiceManager.callRpcDataService(nncWrapper, request);
+            } else if ("apply_data".equals(serviceType)) {
+                return dataServiceManager.callApplyDataService(nncWrapper, request);
+            } else {
+                throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
+            }
+        });
     }
 
     @Override
