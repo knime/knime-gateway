@@ -107,7 +107,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
      */
     public void testAddComponentCommand() throws Exception {
         var localSpace = new LocalSpace(SpaceServiceTestHelper.getTestWorkspacePath("test_workspace_to_list"));
-        var spaceProvider = createSpaceProvider(localSpace);
+        var spaceProvider = createSpaceProvider(localSpace, 200);
         var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
         var events = Collections.synchronizedList(new ArrayList<Object>());
@@ -158,7 +158,12 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
         assertThat(workflow.getComponentPlaceholders(), is(nullValue()));
     }
 
-    private static SpaceProvider createSpaceProvider(final Space space) {
+    /**
+     * @param space the space to return on {@link SpaceProvider#getSpace(String)}
+     * @param getSpaceDelayInMs the time the {@link SpaceProvider#getSpace(String)} should be delayed until it returns -
+     *            helps to mimic a longer component-loading operation
+     */
+    static SpaceProvider createSpaceProvider(final Space space, final long getSpaceDelayInMs) {
         return new SpaceProvider() {
 
             @Override
@@ -186,7 +191,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
                 try {
                     // ensures that 'component loading' takes a bit longer to make the test deterministic
                     // (when checking for the placeholder state - which is 'loading' on the first event)
-                    Thread.sleep(200);
+                    Thread.sleep(getSpaceDelayInMs);
                 } catch (InterruptedException ex) { // NOSONAR
                     //
                 }

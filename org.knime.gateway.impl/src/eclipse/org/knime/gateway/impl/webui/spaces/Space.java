@@ -60,6 +60,7 @@ import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
@@ -285,14 +286,29 @@ public interface Space {
      * @param version The version of the item
      * @return the local path of the item and if available, empty if not available or the path resolution (e.g.
      *         download) has been cancelled
+     * @throws CanceledExecutionException if the operation was cancelled
      */
-    Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId, final VersionId version);
+    Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId, final VersionId version)
+        throws CanceledExecutionException;
 
     /**
      * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
      */
-    default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId) {
+    default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId)
+        throws CanceledExecutionException {
         return toLocalAbsolutePath(monitor, itemId, VersionId.currentState());
+    }
+
+    /**
+     * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
+     */
+    default Optional<Path> toLocalAbsolutePath(final String itemId) {
+        try {
+            return toLocalAbsolutePath(null, itemId, VersionId.currentState());
+        } catch (CanceledExecutionException ex) {
+            // can never happen since no execution-monitor is passed
+            throw new IllegalStateException("local path resolution cancelled", ex);
+        }
     }
 
     /**

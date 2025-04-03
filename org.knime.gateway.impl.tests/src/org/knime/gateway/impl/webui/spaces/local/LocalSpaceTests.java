@@ -320,7 +320,7 @@ public final class LocalSpaceTests {
 
         for (final var itemId : itemIds) {
             final var itemName = m_space.getItemName(itemId);
-            final var oldPath = m_space.toLocalAbsolutePath(null, itemId).orElseThrow().toRealPath();
+            final var oldPath = m_space.toLocalAbsolutePath(itemId).orElseThrow().toRealPath();
             assertThat(itemName, equalTo(Files.isDirectory(oldPath) ? "workflow" : "data.txt"));
             assertThat(oldPath.getFileName().toString(), equalTo(itemName));
 
@@ -328,7 +328,7 @@ public final class LocalSpaceTests {
             final String newItemName = itemName.toUpperCase();
             assertThat(m_space.renameItem(itemId, newItemName).getName(), equalTo(newItemName));
 
-            final var newPath = m_space.toLocalAbsolutePath(null, itemId).orElseThrow().toRealPath();
+            final var newPath = m_space.toLocalAbsolutePath(itemId).orElseThrow().toRealPath();
             assertThat(newPath.getFileName().toString(), equalTo(newItemName));
             assertThat(m_space.getItemName(itemId), equalTo(newItemName));
         }

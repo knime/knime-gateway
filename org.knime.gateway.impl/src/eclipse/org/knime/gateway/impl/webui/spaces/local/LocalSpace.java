@@ -202,6 +202,7 @@ public final class LocalSpace implements Space {
      * @param itemId ID if the item to resolve
      * @return the local path of the item and if available, empty if not available
      */
+    @Override
     public Optional<Path> toLocalAbsolutePath(final String itemId) {
         var path = m_spaceItemPathAndTypeCache.getPath(itemId);
         if (path == null || !Files.exists(path)) {
@@ -298,7 +299,7 @@ public final class LocalSpace implements Space {
         var newName = queriedName.trim();
         assertValidItemNameOrThrow(newName);
 
-        var sourcePath = toLocalAbsolutePath(null, itemId) //
+        var sourcePath = toLocalAbsolutePath(itemId) //
             .orElseThrow(() -> new IOException("Unknown item ID: '%s'".formatted(itemId)));
         var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
         var destinationPath = sourcePath.resolveSibling(newName);
@@ -634,7 +635,7 @@ public final class LocalSpace implements Space {
 
     @Override
     public Optional<ProjectTypeEnum> getProjectType(final String itemId) {
-        var path = toLocalAbsolutePath(null, itemId).orElse(null);
+        var path = toLocalAbsolutePath(itemId).orElse(null);
         if (path == null) {
             return Optional.empty();
         }

@@ -57,7 +57,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -113,7 +112,7 @@ public final class ProjectManager {
         if (!(space instanceof LocalSpace localSpace)) {
             return Optional.empty();
         }
-        return localSpace.toLocalAbsolutePath(new ExecutionMonitor(), itemId) //
+        return localSpace.toLocalAbsolutePath(itemId) //
             .flatMap(WorkflowServiceProjects::getProjectIdAt) //
             .flatMap(this::getProject) //
             .flatMap(originalProject -> updateProject(originalProject, spaceProviderId, spaceId, itemId, projectType));

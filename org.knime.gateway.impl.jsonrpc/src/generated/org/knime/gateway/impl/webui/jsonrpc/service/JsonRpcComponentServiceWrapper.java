@@ -75,6 +75,19 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "cancelOrRetryComponentLoadJob")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public void cancelOrRetryComponentLoadJob(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="placeholderId") String placeholderId, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().cancelOrRetryComponentLoadJob(projectId, workflowId, placeholderId, action);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getComponentDescription")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,

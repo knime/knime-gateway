@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -97,14 +98,34 @@ public final class ComponentLoader {
      *
      * @return the job/placeholder id
      */
-    public LoadJob createComponentLoadJob(final Geometry.Point position,
+    public LoadJob createLoadJob(final Geometry.Point position,
         final FailableFunction<ExecutionMonitor, LoadResult, CanceledExecutionException> loadComponent) {
         var placeholderId = UUID.randomUUID().toString();
         var exec = new ExecutionMonitor();
-        NodeProgressListener progressListener = progressEvent -> updatePlaceholderWithMessageAndProgress(placeholderId,
-            progressEvent.getNodeProgress().getMessage(), progressEvent.getNodeProgress().getProgress());
-        exec.getProgressMonitor().addProgressListener(progressListener);
+        var loadJob = createLoadJob(placeholderId, exec, loadComponent);
+        final var progress = exec.getProgressMonitor().getProgress();
+        var placeholder = builder(ComponentPlaceholderEntBuilder.class) //
+            .setId(placeholderId) //
+            .setState(StateEnum.LOADING) //
+            .setPosition(position.toEnt()) //
+            .setComponentId(null) //
+            .setMessage(exec.getProgressMonitor().getMessage()) //
+            .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
+            .build();
+
+        var loader = new Loader(loadJob, placeholder, exec, loadComponent);
+        m_loaders.put(placeholderId, loader);
+        m_workflowChangesListener.trigger(WorkflowChange.COMPONENT_PLACEHOLDER_ADDED);
+        return loader.loadJob();
+    }
+
+    private LoadJob createLoadJob(final String placeholderId, final ExecutionMonitor exec,
+        final FailableFunction<ExecutionMonitor, LoadResult, CanceledExecutionException> loadComponent) {
         Supplier<LoadResult> componentLoader = () -> {
+            NodeProgressListener progressListener =
+                progressEvent -> updatePlaceholderWithMessageAndProgress(placeholderId,
+                    progressEvent.getNodeProgress().getMessage(), progressEvent.getNodeProgress().getProgress());
+            exec.getProgressMonitor().addProgressListener(progressListener);
             try {
                 return loadComponent.apply(exec);
             } catch (CanceledExecutionException ex) { // NOSONAR
@@ -118,33 +139,21 @@ public final class ComponentLoader {
                 if (ex == null) {
                     updatePlaceholderWithSuccess(placeholderId, new NodeIDEnt(result.componentId()).toString(),
                         result.message(), result.details());
+                } else if (ex instanceof CompletionException ce && ce.getCause() instanceof CancellationException) {
+                    updatePlaceholderWithError(placeholderId, "Component loading cancelled", null);
                 } else {
                     updatePlaceholderWithError(placeholderId, "Component could not be loaded", ex.getMessage());
                 }
                 return result;
             });
-        final var progress = exec.getProgressMonitor().getProgress();
-        var placeholder = builder(ComponentPlaceholderEntBuilder.class) //
-            .setId(placeholderId) //
-            .setState(StateEnum.LOADING) //
-            .setPosition(position.toEnt()) //
-            .setComponentId(null) //
-            .setMessage(exec.getProgressMonitor().getMessage()) //
-            .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
-            .build();
-
-        var loader = new Loader(new LoadJob(placeholderId, future), placeholder, exec);
-        m_loaders.put(placeholderId, loader);
-        m_workflowChangesListener.trigger(WorkflowChange.COMPONENT_PLACEHOLDER_ADDED);
-        return loader.loadJob();
+        return new LoadJob(placeholderId, future);
     }
 
     private void updatePlaceholderWithMessageAndProgress(final String id, final String message, final Double progress) {
         replacePlaceholderEnt(id,
             previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
-                .setState(previousEnt.getState()) //
+                .setState(StateEnum.LOADING) //
                 .setPosition(previousEnt.getPosition()) //
-                .setComponentId(previousEnt.getComponentId()) //
                 .setMessage(message) //
                 .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
                 .build() //
@@ -169,7 +178,6 @@ public final class ComponentLoader {
             previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
                 .setState(StateEnum.ERROR) //
                 .setPosition(previousEnt.getPosition()) //
-                .setComponentId(null) //
                 .setMessage(message) //
                 .setDetails(details) //
                 .build() //
@@ -183,7 +191,7 @@ public final class ComponentLoader {
         }
         var placeholder = loader.placeholder();
         var newPlaceholder = replacer.apply(placeholder);
-        m_loaders.put(id, new Loader(loader.loadJob(), newPlaceholder, loader.exec()));
+        m_loaders.put(id, new Loader(loader.loadJob(), newPlaceholder, loader.exec(), loader.loadLogic()));
         m_workflowChangesListener.trigger(null);
     }
 
@@ -193,13 +201,38 @@ public final class ComponentLoader {
      * @param id the id of the load job to cancel and remove
      */
     public void cancelAndRemoveLoadJob(final String id) {
-        var loader = m_loaders.remove(id);
+        cancelLoadJob(m_loaders.remove(id));
+        m_workflowChangesListener.trigger(null);
+    }
+
+    /**
+     * Cancels the load operation for the given id (provided the job isn't done, yet).
+     *
+     * @param id the id of the load job to cancel
+     */
+    public void cancelLoadJob(final String id) {
+        cancelLoadJob(m_loaders.get(id));
+    }
+
+    private static void cancelLoadJob(final Loader loader) {
         if (loader != null && !loader.loadJob().future().isDone()) {
             loader.exec().getProgressMonitor().setExecuteCanceled();
-            loader.loadJob().future().cancel(true);
         }
-        // send workflow changed event to update placeholders
-        m_workflowChangesListener.trigger(null);
+    }
+
+    /**
+     * Reruns the load job for the given id (provided the job is done).
+     *
+     * @param id
+     */
+    public void rerunLoadJob(final String id) {
+        var loader = m_loaders.get(id);
+        if (loader != null && loader.loadJob().future.isDone()) {
+            var exec = new ExecutionMonitor();
+            m_loaders.put(id, new Loader(createLoadJob(id, exec, loader.loadLogic()), loader.placeholder(), exec,
+                loader.loadLogic()));
+        }
+
     }
 
     /**
@@ -219,7 +252,8 @@ public final class ComponentLoader {
         return state == StateEnum.LOADING || state == StateEnum.ERROR;
     }
 
-    private record Loader(LoadJob loadJob, ComponentPlaceholderEnt placeholder, ExecutionMonitor exec) {
+    private record Loader(LoadJob loadJob, ComponentPlaceholderEnt placeholder, ExecutionMonitor exec,
+        FailableFunction<ExecutionMonitor, LoadResult, CanceledExecutionException> loadLogic) {
 
     }
 

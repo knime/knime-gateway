@@ -58,6 +58,19 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 public interface ComponentService extends GatewayService {
 
     /**
+     * Returns all the information on a node view required to render it.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param placeholderId The id of the placeholder that represents the component load job.
+     * @param action The action to be performed on the component load job.
+     *
+     * 
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     */
+    void cancelOrRetryComponentLoadJob(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String placeholderId, String action)  throws ServiceExceptions.ServiceCallException;
+        
+    /**
      * Get a components description, will only work for component nodes.
      *
      * @param projectId ID of the workflow-project.

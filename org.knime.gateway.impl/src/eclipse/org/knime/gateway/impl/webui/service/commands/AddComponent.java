@@ -131,7 +131,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     public boolean executeWithWorkflowContext() throws ServiceCallException {
         var componentLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
         var position = Geometry.Point.of(m_commandEnt.getPosition());
-        m_loadJob = componentLoader.createComponentLoadJob(position, this::loadComponent);
+        m_loadJob = componentLoader.createLoadJob(position, this::loadComponent);
         return true;
     }
 

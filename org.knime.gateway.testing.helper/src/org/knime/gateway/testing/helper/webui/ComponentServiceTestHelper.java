@@ -51,11 +51,29 @@ package org.knime.gateway.testing.helper.webui;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
+import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
+import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
+import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -140,6 +158,67 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Non-existing node
         var nan = new NodeIDEnt(99);
         assertThrows(ServiceCallException.class, () -> cs().getComponentDescription(projectId, getRootID(), nan));
+    }
+
+    /**
+     * Tests {@link ComponentService#cancelOrRetryComponentLoadJob(String, NodeIDEnt, String, String)} .
+     *
+     * @throws Exception
+     */
+    public void testCancelAndRetryComponentLoadJob() throws Exception {
+        var localSpace = new LocalSpace(SpaceServiceTestHelper.getTestWorkspacePath("test_workspace_to_list"));
+        var spaceProvider = AddComponentCommandTestHelper.createSpaceProvider(localSpace, 1000);
+        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
+        var events = Collections.synchronizedList(new ArrayList<Object>());
+        ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
+
+        final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        var componentItem = localSpace.listWorkflowGroup("root").getItems().stream()
+            .filter(item -> item.getType() == TypeEnum.COMPONENT).findFirst().orElseThrow();
+        var itemId = componentItem.getId();
+        var command = builder(AddComponentCommandEntBuilder.class) //
+            .setKind(KindEnum.ADD_COMPONENT) //
+            .setPosition(builder(XYEntBuilder.class).setX(10).setY(20).build()) //
+            .setProviderId("local-testing") //
+            .setSpaceId(LocalSpace.LOCAL_SPACE_ID) //
+            .setItemId(itemId) //
+            .build();
+
+        // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)
+        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getSnapshotId();
+        es().addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
+            .setWorkflowId(NodeIDEnt.getRootID()).setTypeId("WorkflowChangedEventType").setSnapshotId(snapshotId)
+            .build());
+
+        // execute add-component command
+        var commandResult =
+            (AddComponentPlaceholderResultEnt)ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+        // sanity check
+        var placeholderPatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders", events);
+        assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
+        var placeholder = ((Collection<ComponentPlaceholderEnt>)placeholderPatch.getValue()).iterator().next();
+        assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
+        assertThat(placeholder.getState(), is(StateEnum.LOADING));
+        events.clear();
+
+        // the actual test -> cancel
+        cs().cancelOrRetryComponentLoadJob(projectId, getRootID(), commandResult.getNewPlaceholderId(), "cancel");
+        var statePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/state", events);
+        assertThat(statePatch.getOp(), is(OpEnum.REPLACE));
+        assertThat(statePatch.getValue(), is(StateEnum.ERROR));
+        var messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
+        assertThat(messagePatch.getOp(), is(OpEnum.ADD));
+        assertThat(messagePatch.getValue(), is("Component loading cancelled"));
+        events.clear();
+
+        // retry
+        cs().cancelOrRetryComponentLoadJob(projectId, getRootID(), commandResult.getNewPlaceholderId(), "retry");
+        statePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/state", events);
+        assertThat(statePatch.getOp(), is(OpEnum.REPLACE));
+        assertThat(statePatch.getValue(), is(StateEnum.SUCCESS));
+        messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
+        assertThat(messagePatch.getOp(), is(OpEnum.REMOVE));
     }
 
 }

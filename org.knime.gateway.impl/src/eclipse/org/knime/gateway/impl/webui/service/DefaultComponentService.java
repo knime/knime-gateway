@@ -65,6 +65,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -78,6 +80,9 @@ public class DefaultComponentService implements ComponentService {
 
     private final SelectionEventBus m_selectionEventBus =
         ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
+
+    private final WorkflowMiddleware m_workflowMiddleware =
+        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
     private static CompositeViewDataProvider m_cachedCompositeViewDataProvider;
 
@@ -180,5 +185,19 @@ public class DefaultComponentService implements ComponentService {
                 return NodeViewEnt.create(nnc);
             }
         };
+    }
+
+    @Override
+    public void cancelOrRetryComponentLoadJob(final String projectId, final NodeIDEnt workflowId,
+        final String placeholderId, final String action) throws ServiceCallException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        var componentLoader = m_workflowMiddleware.getComponentLoader(new WorkflowKey(projectId, workflowId));
+        if ("cancel".equals(action)) {
+            componentLoader.cancelLoadJob(placeholderId);
+        } else if ("retry".equals(action)) {
+            componentLoader.rerunLoadJob(placeholderId);
+        } else {
+            throw new ServiceCallException("Unknown action: " + action);
+        }
     }
 }
