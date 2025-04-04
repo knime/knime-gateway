@@ -69,7 +69,7 @@ public interface KaiHandlerFactory {
     /**
      * Create a handler for the code generation assistant.
      *
-     * @param tokenProvider
+     * @param tokenProvider -- TODO can be null
      * @return a new handler for the code generation assistant
      */
     CodeKaiHandler createCodeKaiHandler(AuthTokenProvider tokenProvider);
