@@ -85,11 +85,8 @@ public final class ProjectManager {
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
-    // TODO: Merge with active version ID
-    private String m_activeProjectId;
-
-    // TODO: Merge with active project ID
-    private VersionId m_activeVersionId = VersionId.currentState();
+    // Note: We want to support multiple active projects in the future.
+    private ProjectIdAndVersionId m_activeProject;
 
     private ProjectManager() {
         // singleton
@@ -144,11 +141,23 @@ public final class ProjectManager {
      * @param projectId the id to add or {@code null} to unset the active project
      */
     public void setProjectActive(final String projectId) {
+        setProjectActive(projectId, VersionId.currentState()); // TODO: Is this implicit 'current state' always correct?
+    }
+
+    /**
+     * Marks the given project as being active (e.g., meaning that it's visible to the user in an opened tab). All other
+     * opened projects are considered <b>not</b> active after this call.
+     *
+     * @param projectId the id to add or {@code null} to unset the active project
+     * @param versionId the version id to set as active
+     */
+    public void setProjectActive(final String projectId, final VersionId versionId) {
+        // Note: We want to support multiple active projects in the future.
         var project = m_projectsMap.get(projectId);
         if (project != null && !project.hasUIConsumer) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
-        m_activeProjectId = projectId;
+        m_activeProject = new ProjectIdAndVersionId(projectId, versionId);
     }
 
     /**
@@ -156,33 +165,30 @@ public final class ProjectManager {
      * @return whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab).
      */
     public boolean isActiveProject(final String projectId) {
-        return m_activeProjectId != null && m_activeProjectId.equals(projectId);
-    }
-
-    /**
-     * TODO Merge with active project ID
-     */
-    public void setActiveVersion(final String projectId, final VersionId versionId) {
-        if (!isActiveProject(projectId)) {
-            throw new IllegalStateException("Can only set the active version for the active project");
+        // Note: We want to support multiple active projects in the future.
+        if (m_activeProject == null) {
+            return false;
         }
-
-        getProject(projectId) //
-            .flatMap(project -> project.getWorkflowManagerIfLoaded(versionId)) //
-            .orElseThrow(() -> new IllegalStateException("Cannot set a project version active that's not loaded"));
-
-        m_activeVersionId = versionId;
+        if (m_activeProject.projectId() == null) {
+            return false;
+        }
+        return m_activeProject.projectId().equals(projectId);
     }
 
     /**
      * @param projectId
      * @return Whether the currently active version is read-only.
      */
-    public boolean isCurrentState(final String projectId) {
-        if (!isActiveProject(projectId)) {
-            throw new IllegalStateException("Can only check the active version for the active project");
+    public boolean isActiveProjectWithActiveCurrentState(final String projectId) {
+        // If no active project is set, we assume the active version wasn't set. In that case we return 'true', since
+        // we are most likely in the browser context, where the concept of an active project doesn't exist.
+        if (m_activeProject == null) {
+            return true;
         }
-        return this.m_activeVersionId instanceof VersionId.CurrentState;
+        if (m_activeProject.projectId() == null || !m_activeProject.projectId().equals(projectId)) {
+            return false;
+        }
+        return m_activeProject.versionId() instanceof VersionId.CurrentState;
     }
 
     /**
@@ -274,8 +280,11 @@ public final class ProjectManager {
                 removedProject.project().dispose();
             }
             m_projectRemovedListeners.forEach(l -> l.accept(projectId));
-            if (m_activeProjectId != null && m_activeProjectId.equals(projectId)) {
-                m_activeProjectId = null;
+            if (m_activeProject != null) {
+                // Note: We want to support multiple active projects in the future.
+                if (m_activeProject.projectId() != null && m_activeProject.projectId().equals(projectId)) {
+                    m_activeProject = null;
+                }
             }
         } else {
             m_projectsMap.put(projectId, projectInternal);
@@ -360,7 +369,7 @@ public final class ProjectManager {
      * Clears the entire state. For testing purposes only.
      */
     void clearState() {
-        m_activeProjectId = null;
+        m_activeProject = null;
         m_projectsMap.clear();
         m_projectRemovedListeners.clear();
     }
@@ -408,5 +417,9 @@ public final class ProjectManager {
         }
 
     }
+
+    private record ProjectIdAndVersionId(String projectId, VersionId versionId) {
+        //
+   }
 
 }

@@ -132,18 +132,6 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void setActiveProjectWithVersion(final String projectId, final String versionId)
-        throws ServiceCallException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        try {
-            DefaultServiceUtil.setActiveProjectVersion(projectId, VersionId.parse(versionId));
-        } catch (IllegalStateException ex) {
-            throw new ServiceCallException(ex.getMessage(), ex);
-        }
-
-    }
-
-    @Override
     public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);

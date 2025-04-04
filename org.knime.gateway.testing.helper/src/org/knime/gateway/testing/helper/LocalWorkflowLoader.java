@@ -59,7 +59,6 @@ import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
-import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
@@ -123,7 +122,6 @@ public class LocalWorkflowLoader implements WorkflowLoader {
 
         ProjectManager.getInstance().addProject(project);
         ProjectManager.getInstance().setProjectActive(projectId);
-        ProjectManager.getInstance().setActiveVersion(projectId, VersionId.currentState());
 
         m_loadedWorkflows.add(projectId);
     }

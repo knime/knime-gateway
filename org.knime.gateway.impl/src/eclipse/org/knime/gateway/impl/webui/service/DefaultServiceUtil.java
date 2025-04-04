@@ -174,20 +174,9 @@ final class DefaultServiceUtil {
                 .orElseThrow(() -> new ProjectVersionException("Project version \"" + versionId + "\" is not loaded"));
         }
 
-        if (!ProjectManager.getInstance().isCurrentState(projectId)) {
+        if (!ProjectManager.getInstance().isActiveProjectWithActiveCurrentState(projectId)) {
             throw new ProjectVersionException("Active project version is not the current state");
         }
-    }
-
-    /**
-     * Set the active project version.
-     *
-     * @param projectId
-     * @param version
-     * @throws IllegalStateException if the given project-id is not the expected one
-     */
-    static void setActiveProjectVersion(final String projectId, final VersionId versionId) {
-        ProjectManager.getInstance().setActiveVersion(projectId, versionId);
     }
 
     @SuppressWarnings("serial")

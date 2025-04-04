@@ -183,7 +183,7 @@ public final class WorkflowManagerResolver {
     static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId) {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .loadWorkflowManager(versionId) //
+            .getFromCacheOrLoadWorkflowManager(versionId) //
             .orElseThrow(() -> new NoSuchElementException("Workflow not found."));
     }
 

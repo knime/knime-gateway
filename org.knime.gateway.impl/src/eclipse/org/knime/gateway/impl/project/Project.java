@@ -123,7 +123,10 @@ public final class Project {
         return this.m_id;
     }
 
-    public Optional<WorkflowManager> loadWorkflowManager() {
+    /**
+     * @return The workflow manager of the project of the current state
+     */
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager() {
         return Optional.of(m_cachedWfm.get());
     }
 
@@ -131,10 +134,10 @@ public final class Project {
      * @param version
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
-    public Optional<WorkflowManager> loadWorkflowManager(final VersionId version) {
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
         return version instanceof VersionId.Fixed fixedVersion ? //
             this.getVersion(fixedVersion) : //
-            this.loadWorkflowManager();
+            this.getFromCacheOrLoadWorkflowManager();
     }
 
     private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
@@ -144,6 +147,10 @@ public final class Project {
         return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
+    /**
+     * @return The root workflow manager of the project of the current state, or empty if that workflow manager is not
+     *         yet loaded.
+     */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
         return this.m_cachedWfm.isInitialized() ? //
             Optional.of(this.m_cachedWfm.get()) : //
