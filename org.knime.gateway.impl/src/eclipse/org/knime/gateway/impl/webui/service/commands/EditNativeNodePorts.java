@@ -105,9 +105,12 @@ final class EditNativeNodePorts implements EditPorts {
         var totalPortIndexToRemove = removePortCommandEnt.getPortIndex();
         var portGroupName = portsConfig.getPortGroupsPerIndex(isInputSide)[totalPortIndexToRemove - 1];
         var portGroup = (ExtendablePortGroup)portsConfig.getGroup(portGroupName);
+        // it is possible that a port group defines input and output ports
+        var removeInputPort = portGroup.definesInputPorts();
+        var removeOutputPort = portGroup.definesOutputPorts();
         var indexInGroupToRemove = portsConfig.getPortIndexWithinGroup(totalPortIndexToRemove, isInputSide);
         portGroup.removePort(indexInGroupToRemove);
-        executeRemovePort(newCreationConfig, totalPortIndexToRemove, isInputSide);
+        executeRemovePort(newCreationConfig, totalPortIndexToRemove, removeInputPort, removeOutputPort);
     }
 
     @Override
@@ -145,8 +148,8 @@ final class EditNativeNodePorts implements EditPorts {
     }
 
     private void executeRemovePort(final ModifiableNodeCreationConfiguration creationConfigCopy,
-        final int totalPortIndexToRemove, final boolean isInputSide) {
-        var portMappings = getPortMappingForPortRemoval(totalPortIndexToRemove, isInputSide,
+        final int totalPortIndexToRemove, final boolean removeInputPort, final boolean removeOutputPort) {
+        var portMappings = getPortMappingForPortRemoval(totalPortIndexToRemove, removeInputPort, removeOutputPort,
             CoreUtil.getNodeContainer(getNodeId(), m_wfm).orElseThrow());
         m_replaceNodeResult = m_wfm.replaceNode( //
             getNodeId(), //
@@ -158,30 +161,33 @@ final class EditNativeNodePorts implements EditPorts {
     /**
      * @param totalPortIndexToRemove Index into the total number of ports on the node, counting implicit flow variable
      *            port on native nodes.
-     * @param isInputSide whether port is removed on the input- or output-side
+     * @param removeInputPort whether port is removed on the input- or output-side
      * @param node the node being edited
      * @return mappings for input- and output side
      */
     private static Pair<ReplaceNodeResult.PortMapping, ReplaceNodeResult.PortMapping> getPortMappingForPortRemoval(
-        final int totalPortIndexToRemove, final boolean isInputSide, final NodeContainer node) {
+        final int totalPortIndexToRemove, final boolean removeInputPort, final boolean removeOutputPort, final NodeContainer node) {
         var pairOfMappings = new Pair<>( //
             // Use NodeContainer#getNrInPorts / #getNrOutPorts to also count implicit flow variable port if present
             ReplaceNodeResult.PortMapping.identity(node.getNrInPorts()), //
             ReplaceNodeResult.PortMapping.identity(node.getNrOutPorts()) //
         );
-        return applyToOneOfPair( //
+        return applyRemoval( //
             pairOfMappings, //
-            isInputSide, //
+            removeInputPort, //
+            removeOutputPort, //
             mapping -> mapping.removeIndex(totalPortIndexToRemove) //
         );
     }
 
-    private static <X> Pair<X, X> applyToOneOfPair(final Pair<X, X> pair, final boolean leftOrRight,
-        final UnaryOperator<X> mapper) {
-        if (leftOrRight) {
+    private static <X> Pair<X, X> applyRemoval(final Pair<X, X> pair, final boolean leftSide,
+        final boolean rightSide, final UnaryOperator<X> mapper) {
+        if (!leftSide) {
+            pair.map(e -> e, mapper);
+        } else if (!rightSide) {
             pair.map(mapper, e -> e);
         } else {
-            pair.map(e -> e, mapper);
+            pair.map(mapper, mapper);
         }
         return pair;
     }
