@@ -94,4 +94,9 @@ public interface CodeKaiHandler {
      * @throws IOException In case of connection errors or malformed request data.
      */
     String sendRequest(final String endpointPath, final Object request) throws IOException;
+
+    // TODO pass this as a data service dependency
+    record ProjectId(String projectId) {
+
+    }
 }
