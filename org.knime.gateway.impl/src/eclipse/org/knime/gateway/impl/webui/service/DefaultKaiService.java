@@ -49,17 +49,28 @@
 package org.knime.gateway.impl.webui.service;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.service.KaiService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.WorkflowKey;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.WorkflowUtil;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
+import org.knime.gateway.impl.webui.kai.KaiHandler.KaiCommand;
+import org.knime.gateway.impl.webui.kai.KaiHandler.KaiCommandExecutor;
 import org.knime.gateway.impl.webui.kai.KaiHandler.Position;
 import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
+import org.knime.gateway.impl.webui.service.commands.WorkflowCommand;
 
 /**
  * Receives calls from the frontend and delegates them to a {@link KaiHandler}.
@@ -68,7 +79,82 @@ import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
  */
 public final class DefaultKaiService implements KaiService {
 
+    private final class KaiCommandExecutorImpl implements KaiCommandExecutor {
+        private final WorkflowKey m_workflowKey;
+
+        private KaiCommandExecutorImpl(final WorkflowKey workflowKey) {
+            m_workflowKey = workflowKey;
+        }
+
+        @Override
+        public void execute(final KaiCommand kaiCommand) {
+            WorkflowCommand command = new KaiCommandAdapter(kaiCommand);
+            var commands = m_workflowMiddleware.getCommands();
+            commands.setCommandToExecute(command);
+            try {
+                commands.execute(m_workflowKey, null);
+            } catch (ServiceCallException ex) {
+                throw new IllegalStateException(ex.getMessage(), ex);
+            }
+        }
+
+        @Override
+        public void executeWorkflowAction(final Consumer<WorkflowManager> workflowAction) {
+            try {
+                var wfm = WorkflowUtil.getWorkflowManager(m_workflowKey);
+                workflowAction.accept(wfm);
+            } catch (NodeNotFoundException | NotASubWorkflowException ex) {
+                throw new IllegalStateException("Could not find workflow", ex);
+            }
+        }
+    }
+
+    private static class KaiCommandAdapter implements WorkflowCommand {
+
+        private final KaiCommand m_kaiCommand;
+
+        private WorkflowManager m_wfm;
+
+        KaiCommandAdapter(final KaiCommand kaiCommand) {
+            m_kaiCommand = kaiCommand;
+        }
+
+
+        @Override
+        public void undo() {
+            m_kaiCommand.undo(m_wfm);
+        }
+
+        @Override
+        public void redo() {
+            m_kaiCommand.execute(m_wfm);
+        }
+
+        @Override
+        public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
+            try {
+                m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
+            } catch (NodeNotFoundException | NotASubWorkflowException ex) {
+                throw new ServiceCallException("Could not find workflow", ex);
+            }
+            return m_kaiCommand.execute(m_wfm);
+        }
+
+        @Override
+        public boolean canUndo() {
+            return true;
+        }
+
+        @Override
+        public boolean canRedo() {
+            return true;
+        }
+    }
+
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
+
+    private final WorkflowMiddleware m_workflowMiddleware =
+        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
     /**
      * @return the singleton instance of this service
@@ -99,13 +185,21 @@ public final class DefaultKaiService implements KaiService {
 
     @Override
     public void makeAiRequest(final String kaiChainId, final KaiRequestEnt kaiRequestEnt) {
+        var projectId = kaiRequestEnt.getProjectId();
+        var workflowKey = new WorkflowKey(kaiRequestEnt.getProjectId(),
+            kaiRequestEnt.getWorkflowId());
+        var commandExecutor = new KaiCommandExecutorImpl(workflowKey);
+
         var messages = kaiRequestEnt.getMessages().stream()//
-            .map(m -> new KaiHandler.Message(fromRoleEnum(m.getRole()), m.getContent())).toList();
+                .map(m -> new KaiHandler.Message(fromRoleEnum(m.getRole()), m.getContent()))//
+                .toList();
+
         var startPosition = kaiRequestEnt.getStartPosition();
-        var request = new KaiHandler.Request(kaiRequestEnt.getConversationId(), kaiChainId,
-            kaiRequestEnt.getProjectId(), kaiRequestEnt.getWorkflowId(), kaiRequestEnt.getSelectedNodes(), messages,
+        var request = new KaiHandler.Request(kaiRequestEnt.getConversationId(), kaiChainId, projectId, commandExecutor,
+            kaiRequestEnt.getSelectedNodes(), messages,
             startPosition == null ? null : new Position(startPosition.getX(), startPosition.getY()));
         getListener().ifPresent(l -> l.onNewRequest(request));
+
     }
 
     private static KaiHandler.Role fromRoleEnum(final RoleEnum role) {
