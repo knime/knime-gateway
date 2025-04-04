@@ -152,6 +152,11 @@ public final class WorkflowMiddleware {
     private final SpaceProvidersManager m_spaceProvidersManager;
 
     @SuppressWarnings("java:S1176") // javadoc
+    public WorkflowMiddleware(final ProjectManager projectManager) {
+        this(projectManager, null, null);
+    }
+
+    @SuppressWarnings("java:S1176") // javadoc
     public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager,
         final WorkflowManagerCache wfmCache) {
         m_spaceProvidersManager = spaceProvidersManager;
@@ -367,7 +372,7 @@ public final class WorkflowMiddleware {
      * @param wfKey the workflow to clear the cache for
      */
     public void clearCachedDependentNodeProperties(final WorkflowKey wfKey) {
-        getWorkflowState(wfKey).m_depNodeProperties.clearCache();
+        Optional.ofNullable(getWorkflowState(wfKey).m_depNodeProperties).ifPresent(CachedDependentNodeProperties::clearCache);
     }
 
     /**
