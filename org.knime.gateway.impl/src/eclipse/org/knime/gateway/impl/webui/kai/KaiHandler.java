@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.kai;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.knime.core.node.workflow.WorkflowManager;
+
 /**
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
@@ -160,20 +162,65 @@ public interface KaiHandler {
     }
 
     /**
+     * Commands that can be executed by K-AI.
+     *
+     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+     * @since 5.5
+     */
+    interface KaiCommand {
+        /**
+         * Executes the command on the workflow.
+         *
+         * @param wfm the workflow manager
+         * @return true if the command was executed successfully, false otherwise
+         */
+        boolean execute(WorkflowManager wfm);
+
+        /**
+         * Undoes the command on the workflow.
+         *
+         * @param wfm the workflow manager
+         */
+        void undo(WorkflowManager wfm);
+    }
+
+
+    /**
+     * Executor for {@link KaiCommand} and workflow Actions performed by K-AI.
+     *
+     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+     * @since 5.5
+     */
+    interface KaiCommandExecutor {
+        /**
+         * Executes commands that need to be put onto the command stack.
+         * @param command to execute on the workflow
+         */
+        void execute(KaiCommand command);
+
+        /**
+         * Executes actions that require the workflow but do not need to be put on the command stack.
+         * @param workflowAction action to execute on the workflow
+         */
+        void executeWorkflowAction(Consumer<WorkflowManager> workflowAction);
+    }
+
+    /**
      * Represents a user request sent to K-AI.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      * @param conversationId ID of the conversation (null at start of conversation)
      * @param chainType i.e. qa or build mode
      * @param projectId ID of the workflow the user is interacting with
-     * @param workflowId ID of the subworkflow the user is interacting with
+     * @param kaiCommandExecutor executor for commands K-AI invokes
      * @param selectedNodes IDs of the nodes the user selected
      * @param messages of the conversation
      * @param startPosition the position to start adding nodes (in case of build mode)
      */
-    record Request(String conversationId, String chainType, String projectId, String workflowId,
+    record Request(String conversationId, String chainType, String projectId, KaiCommandExecutor kaiCommandExecutor,
         List<String> selectedNodes, List<Message> messages, Position startPosition) {
     }
+
 
     /**
      * Represents a 2-dim position.

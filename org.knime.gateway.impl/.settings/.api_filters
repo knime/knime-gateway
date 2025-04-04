@@ -514,25 +514,17 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandler.java" type="org.knime.gateway.impl.webui.kai.KaiHandler">
-        <filter id="403804204">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
-                <message_argument value="addIsKaiEnabledStateChangeListener(Consumer&lt;Boolean&gt;)"/>
-            </message_arguments>
-        </filter>
-        <filter id="403804204">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
-                <message_argument value="isKaiEnabled()"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandler.java" type="org.knime.gateway.impl.webui.kai.KaiHandler$Request">
         <filter id="338722907">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler.Request"/>
-                <message_argument value="Request(String, String, String, String, List&lt;String&gt;, List&lt;KaiHandler.Message&gt;)"/>
+                <message_argument value="Request(String, String, String, String, List&lt;String&gt;, List&lt;KaiHandler.Message&gt;, KaiHandler.Position)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler.Request"/>
+                <message_argument value="workflowId()"/>
             </message_arguments>
         </filter>
     </resource>
