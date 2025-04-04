@@ -50,9 +50,10 @@ package org.knime.gateway.impl.webui.kai;
 
 import java.io.IOException;
 
+import org.knime.gateway.impl.webui.kai.KaiHandlerFactory.AuthTokenProvider;
+
 /**
- * Interface that needs to be implemented by a Hub endpoint providing AI capabilities
- * TODO update javadoc
+ * Interface that needs to be implemented by a Hub endpoint providing AI capabilities TODO update javadoc
  *
  * @author Carsten Haubold, KNIME GmbH, Konstanz, Germany
  */
@@ -76,9 +77,10 @@ public interface CodeKaiHandler {
     boolean loginToHub();
 
     /**
+     * @param projectId the projectId of the current project
      * @return true if the user is logged in to the currently selected Hub end point
      */
-    boolean isLoggedIn();
+    boolean isLoggedIn(String projectId);
 
     /**
      * @return the disclaimer users have to accept before they can use the code generation AI
@@ -88,15 +90,23 @@ public interface CodeKaiHandler {
     /**
      * Send a POST request to the provided end point path at the selected KNIME Hub
      *
+     * @param projectId the projectId of the current project
      * @param endpointPath The end point at the selected KNIME Hub to call
      * @param request An object that will be turned into JSON using Jackson and sent as data to the endpoint
      * @return The response of the request as String (probably contains JSON content)
      * @throws IOException In case of connection errors or malformed request data.
      */
-    String sendRequest(final String endpointPath, final Object request) throws IOException;
+    String sendRequest(String projectId, final String endpointPath, final Object request) throws IOException;
 
     // TODO pass this as a data service dependency
-    record ProjectId(String projectId) {
 
+    /**
+     * A data service dependency that provides the project id of the current project such that it can be passed to
+     * {@link CodeKaiHandler#isLoggedIn} and {@link CodeKaiHandler#sendRequest} which needs this information to get the
+     * authentication token from the {@link AuthTokenProvider}.
+     *
+     * @param projectId the projectId of the current project
+     */
+    public record ProjectId(String projectId) {
     }
 }
