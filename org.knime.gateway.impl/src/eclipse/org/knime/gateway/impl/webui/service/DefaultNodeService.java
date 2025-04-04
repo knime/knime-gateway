@@ -86,6 +86,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
+import org.knime.gateway.impl.webui.kai.CodeKaiHandler.ProjectId;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -101,10 +102,8 @@ public final class DefaultNodeService implements NodeService {
     private final SelectionEventBus m_selectionEventBus =
         ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
 
-    // TODO(benny) can this be required? What if K-AI is not installed?
-    private final Map<Class<?>, Object> m_dialogDataServiceDependencies = Map.of( //
-        CodeKaiHandler.class, ServiceDependencies.getServiceDependency(CodeKaiHandler.class, true) //
-    );
+    private final CodeKaiHandler m_codeKaiHandler =
+        ServiceDependencies.getServiceDependency(CodeKaiHandler.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -178,6 +177,13 @@ public final class DefaultNodeService implements NodeService {
         }
     }
 
+    private Map<Class<?>, Object> createDialogDataServiceDependencies(final String projectId) {
+        return Map.of( //
+            CodeKaiHandler.class, m_codeKaiHandler, //
+            ProjectId.class, new ProjectId(projectId) //
+        );
+    }
+
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NodeNotFoundException, InvalidRequestException {
@@ -186,7 +192,7 @@ public final class DefaultNodeService implements NodeService {
         if (!NodeDialogManager.hasNodeDialog(snc)) {
             throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
         }
-        return DataServiceDependencies.runWithDependencies(m_dialogDataServiceDependencies,
+        return DataServiceDependencies.runWithDependencies(createDialogDataServiceDependencies(projectId),
             () -> new NodeDialogEnt(snc));
     }
 
@@ -285,7 +291,7 @@ public final class DefaultNodeService implements NodeService {
 
         final var dataServiceManager = getDataServiceManager(extensionType);
         var nncWrapper = NodeWrapper.of(nnc);
-        return DataServiceDependencies.runWithDependencies(m_dialogDataServiceDependencies, () -> {
+        return DataServiceDependencies.runWithDependencies(createDialogDataServiceDependencies(projectId), () -> {
             if ("initial_data".equals(serviceType)) {
                 return dataServiceManager.callInitialDataService(nncWrapper);
             } else if ("data".equals(serviceType)) {
