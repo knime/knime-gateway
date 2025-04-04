@@ -139,7 +139,7 @@ public class WorkflowChangedEventSourceTest {
         projectManager.addProject(Project.builder().setWfm(wfm).setId(projectId).build());
 
         // create event source, add and remove event listener
-        var workflowMiddleware = new WorkflowMiddleware(projectManager, null);
+        var workflowMiddleware = new WorkflowMiddleware(projectManager);
         var eventSource = new WorkflowChangedEventSource(mock(EventConsumer.class), workflowMiddleware, projectManager);
         var wfKey = new WorkflowKey(projectId, NodeIDEnt.getRootID());
         var workflowSnapshot = workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,

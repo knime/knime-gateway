@@ -132,7 +132,8 @@ public class ProjectWfmCache {
 
     void dispose() {
         this.dispose(VersionId.currentState());
-        m_fixedVersions.keySet().forEach(this::dispose);
+        //noinspection SimplifyStreamApiCallChains -- required to avoid concurrent modification
+        m_fixedVersions.keySet().stream().forEach(this::dispose);
     }
 
     /**
