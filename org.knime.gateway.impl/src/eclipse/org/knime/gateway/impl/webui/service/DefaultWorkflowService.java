@@ -51,7 +51,6 @@ package org.knime.gateway.impl.webui.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.workflow.NodeContainer;
@@ -72,12 +71,10 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
-import org.knime.gateway.impl.webui.service.DefaultServiceUtil.ProjectOrVersionException;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
@@ -96,9 +93,6 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final SpaceProvidersManager m_spaceProvidersManager =
         ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, false);
-
-    private final AppStateUpdater m_appStateUpdater =
-        ServiceDependencies.getServiceDependency(AppStateUpdater.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -141,17 +135,12 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void setActiveProjectWithVersion(final String projectId, final String versionId)
         throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var version = VersionId.parse(versionId);
         try {
-            DefaultServiceUtil.setProjectActiveAndEnsureItsLoaded(projectId, version);
-        } catch (NoSuchElementException ex) { // Project could not be found
-            throw new ServiceCallException(ex.getMessage(), ex);
-        } catch (ProjectOrVersionException ex) { // Project could not be loaded
-            m_appStateUpdater.updateAppState();
-            throw new ServiceCallException(ex.getMessage(), ex);
-        } catch (IllegalStateException ex) { // Version could not be set active
+            DefaultServiceUtil.setActiveProjectVersion(projectId, VersionId.parse(versionId));
+        } catch (IllegalStateException ex) {
             throw new ServiceCallException(ex.getMessage(), ex);
         }
+
     }
 
     @Override

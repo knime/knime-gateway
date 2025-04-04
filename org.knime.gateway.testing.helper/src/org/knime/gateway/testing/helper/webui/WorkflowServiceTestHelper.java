@@ -2939,29 +2939,4 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return project.getNodes();
     }
 
-    /**
-     * Test to set a project and it's version active and ensure it's loaded.
-     * @throws Exception
-     */
-    public void testSetActiveProjectWithVersion() throws Exception {
-        // TODO
-
-//        WorkflowManager m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-//        var wpm = ProjectManager.getInstance();
-//        var origin = new Origin("providerId", "spaceId", "itemId", ProjectTypeEnum.WORKFLOW);
-//        var projectId = "projectId";
-//        var project = Project.builder() //
-//            .setWfm(m_wfm) //
-//            .setOrigin(origin) //
-//            .setId(projectId) //
-//            .build();
-//        wpm.addProject(project);
-//
-//        ProjectAPI.setProjectActiveAndEnsureItsLoaded(projectId);
-//
-//        assertThat(wpm.getProject(projectId)).isNotEmpty();
-//        assertThat(wpm.getProject(projectId).flatMap(Project::getWorkflowManagerIfLoaded)).isNotEmpty();
-//        assertThat(wpm.isActiveProject(projectId)).isTrue();
-    }
-
 }
