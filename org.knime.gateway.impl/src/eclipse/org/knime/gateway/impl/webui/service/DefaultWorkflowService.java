@@ -118,8 +118,6 @@ public final class DefaultWorkflowService implements WorkflowService {
         final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var version = VersionId.parse(versionId);
-        DefaultServiceUtil.assertProjectVersion(projectId, version);
-
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
         final var buildContext = WorkflowBuildContext.builder();
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
@@ -140,11 +138,10 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void setProjectActiveAndEnsureItsLoaded(final String projectId, final String versionId)
+    public void setActiveProjectWithVersion(final String projectId, final String versionId)
         throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
-
         try {
             DefaultServiceUtil.setProjectActiveAndEnsureItsLoaded(projectId, version);
         } catch (NoSuchElementException ex) { // Project could not be found

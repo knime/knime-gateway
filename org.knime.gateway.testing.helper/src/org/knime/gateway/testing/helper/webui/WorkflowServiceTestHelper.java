@@ -254,15 +254,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             TestWorkflowCollection.VERSIONS_CURRENT_STATE, //
             TestWorkflowCollection.VERSIONS_EARLIER_VERSION::getWorkflowDir //
         );
-        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var wfId = loadWorkflow(testWorkflowWithVersion);
 
         // this is expected to be the "current-state" workflow
-        var workflow = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.TRUE).getWorkflow();
+        var workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, Boolean.TRUE).getWorkflow();
         assertTrue("Current state workflow is returned",
             workflow.getWorkflowAnnotations().stream()
                 .anyMatch(annotation -> annotation.getText().getValue().toLowerCase().contains("current state"))
                 && workflow.getInfo().getVersion() == null);
-        workflow = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), Boolean.TRUE)
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), Boolean.TRUE)
             .getWorkflow();
         assertTrue("Current state workflow is returned",
             workflow.getWorkflowAnnotations().stream()
@@ -271,9 +271,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var version = new VersionId.Fixed(5); // actual value does not matter, we always load "the other" workflow
         // using an actual value's toString to make sure this will also parse to a string inside this call
-        ws().setProjectActiveAndEnsureItsLoaded(projectId, version.toString());
         var versionWorkflow =
-            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.TRUE).getWorkflow();
+            ws().getWorkflow(wfId, NodeIDEnt.getRootID(), version.toString(), Boolean.TRUE).getWorkflow();
         assertTrue("Version workflow is returned",
             versionWorkflow.getWorkflowAnnotations().stream()
                 .anyMatch(annotation -> annotation.getText().getValue().toLowerCase().contains("earlier version"))
@@ -289,21 +288,21 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var version = new VersionId.Fixed(4);
         var version_diff = new VersionId.Fixed(5);
-        ws().setProjectActiveAndEnsureItsLoaded(projectId, version.toString());
-
-        // Try to get the workflow for a different project ID, throws
-        var ex1 = assertThrows(NoSuchElementException.class,
-            () -> ws().getWorkflow(projectId + "_diff", NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE));
-        assertThat(ex1.getMessage(), containsString("Project for ID \"" + (projectId + "_diff") + "\" not found."));
-
-        // Try to the workflow for a different version, throws
-        var ex2 = assertThrows(RuntimeException.class,
-            () -> ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version_diff.toString(), Boolean.FALSE));
-        assertThat(ex2.getMessage(),
-            containsString("Project version \"" + version_diff.toString() + "\" is not loaded"));
-
-        // Get the correct version, doesn't throw
         ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
+
+        // Try to set the version for a different project ID, throws
+        var ex1 = assertThrows(ServiceCallException.class,
+            () -> ws().setActiveProjectWithVersion(projectId + "_diff", version.toString()));
+        assertThat(ex1.getMessage(), containsString("Can only set the active version for the active project"));
+
+        // Try to set the version for a different project ID, throws
+        var ex2 = assertThrows(ServiceCallException.class,
+            () -> ws().setActiveProjectWithVersion(projectId, version_diff.toString()));
+        assertThat(ex2.getMessage(), containsString("Cannot set a project version active that's not loaded"));
+
+        // Set the version correctly, doesn't throw
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
+        ws().setActiveProjectWithVersion(projectId, version.toString());
     }
 
     public void testExecutionThrowsWhenNotCurrentState() throws Exception {
@@ -320,14 +319,15 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
 
         // Current state (explicitly set), doesn't throw
-        ws().setProjectActiveAndEnsureItsLoaded(projectId, VersionId.currentState().toString());
+        ws().setActiveProjectWithVersion(projectId, VersionId.currentState().toString());
         ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
         ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
         ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID());
 
         // Earlier version, throws
         var version = new VersionId.Fixed(5);
-        ws().setProjectActiveAndEnsureItsLoaded(projectId, version.toString());
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
+        ws().setActiveProjectWithVersion(projectId, version.toString());
         var ex1 = assertThrows(RuntimeException.class,
             () -> ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command));
         assertThat(ex1.getMessage(), containsString("Active project version is not the current state"));

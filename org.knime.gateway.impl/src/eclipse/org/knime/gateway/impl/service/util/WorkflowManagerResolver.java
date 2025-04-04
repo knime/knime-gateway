@@ -74,7 +74,17 @@ public final class WorkflowManagerResolver {
      * @throws NoSuchElementException
      */
     public static WorkflowManager load(final String projectId) {
-        return load(projectId, NodeIDEnt.getRootID(), VersionId.currentState());
+        return load(projectId, VersionId.currentState());
+    }
+
+    /**
+     * @param projectId
+     * @param versionId
+     * @return The {@link WorkflowManager}-instance
+     * @throws NoSuchElementException
+     */
+    public static WorkflowManager load(final String projectId, final VersionId versionId) {
+        return load(projectId, NodeIDEnt.getRootID(), versionId);
     }
 
     /**
@@ -105,7 +115,17 @@ public final class WorkflowManagerResolver {
      * @throws NoSuchElementException
      */
     public static WorkflowManager get(final String projectId) {
-        return get(projectId, NodeIDEnt.getRootID(), VersionId.currentState());
+        return get(projectId, VersionId.currentState());
+    }
+
+    /**
+     * @param projectId
+     * @param versionId
+     * @return The {@link WorkflowManager}-instance
+     * @throws NoSuchElementException
+     */
+    public static WorkflowManager get(final String projectId, final VersionId versionId) {
+        return get(projectId, NodeIDEnt.getRootID(), versionId);
     }
 
     /**
@@ -156,7 +176,11 @@ public final class WorkflowManagerResolver {
         return wfm;
     }
 
-   private static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId) {
+    static WorkflowManager loadProjectWfm(final String projectId) {
+        return loadProjectWfm(projectId, VersionId.currentState());
+    }
+
+    static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId) {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
             .loadWorkflowManager(versionId) //
@@ -167,7 +191,7 @@ public final class WorkflowManagerResolver {
         return getProjectWfm(projectId, VersionId.currentState());
     }
 
-    private static WorkflowManager getProjectWfm(final String projectId, final VersionId versionId) {
+    static WorkflowManager getProjectWfm(final String projectId, final VersionId versionId) {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
             .getWorkflowManagerIfLoaded(versionId) //
