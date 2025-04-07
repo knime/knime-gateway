@@ -304,7 +304,7 @@ public interface Space {
      */
     default Optional<Path> toLocalAbsolutePath(final String itemId) {
         try {
-            return toLocalAbsolutePath(null, itemId, VersionId.currentState());
+            return toLocalAbsolutePath(new ExecutionMonitor(), itemId, VersionId.currentState());
         } catch (CanceledExecutionException ex) {
             // can never happen since no execution-monitor is passed
             throw new IllegalStateException("local path resolution cancelled", ex);
