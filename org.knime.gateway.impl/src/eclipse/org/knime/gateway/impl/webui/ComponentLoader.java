@@ -227,11 +227,12 @@ public final class ComponentLoader {
      */
     public void rerunLoadJob(final String id) {
         var loader = m_loaders.get(id);
-        if (loader != null && loader.loadJob().future.isDone()) {
-            var exec = new ExecutionMonitor();
-            m_loaders.put(id, new Loader(createLoadJob(id, exec, loader.loadLogic()), loader.placeholder(), exec,
-                loader.loadLogic()));
+        if (loader == null || !loader.loadJob().future().isDone()) {
+            return;
         }
+        var exec = new ExecutionMonitor();
+        var loadJob = createLoadJob(id, exec, loader.loadLogic());
+        m_loaders.put(id, new Loader(loadJob, loader.placeholder(), exec, loader.loadLogic()));
 
     }
 
