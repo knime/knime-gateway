@@ -186,6 +186,7 @@ public final class DefaultKaiService implements KaiService {
     @Override
     public void makeAiRequest(final String kaiChainId, final KaiRequestEnt kaiRequestEnt) {
         var projectId = kaiRequestEnt.getProjectId();
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         var workflowKey = new WorkflowKey(kaiRequestEnt.getProjectId(),
             kaiRequestEnt.getWorkflowId());
         var commandExecutor = new KaiCommandExecutorImpl(workflowKey);
