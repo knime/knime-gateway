@@ -70,6 +70,7 @@ import org.knime.gateway.impl.webui.kai.KaiHandler.KaiCommand;
 import org.knime.gateway.impl.webui.kai.KaiHandler.KaiCommandExecutor;
 import org.knime.gateway.impl.webui.kai.KaiHandler.Position;
 import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
+import org.knime.gateway.impl.webui.service.commands.AbstractWorkflowCommand;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommand;
 
 /**
@@ -109,46 +110,24 @@ public final class DefaultKaiService implements KaiService {
         }
     }
 
-    private static class KaiCommandAdapter implements WorkflowCommand {
+    private static class KaiCommandAdapter extends AbstractWorkflowCommand {
 
         private final KaiCommand m_kaiCommand;
-
-        private WorkflowManager m_wfm;
 
         KaiCommandAdapter(final KaiCommand kaiCommand) {
             m_kaiCommand = kaiCommand;
         }
 
-
         @Override
         public void undo() {
-            m_kaiCommand.undo(m_wfm);
+            m_kaiCommand.undo(getWorkflowManager());
         }
 
         @Override
         public void redo() {
-            m_kaiCommand.execute(m_wfm);
+            m_kaiCommand.execute(getWorkflowManager());
         }
 
-        @Override
-        public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
-            try {
-                m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
-            } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-                throw new ServiceCallException("Could not find workflow", ex);
-            }
-            return m_kaiCommand.execute(m_wfm);
-        }
-
-        @Override
-        public boolean canUndo() {
-            return true;
-        }
-
-        @Override
-        public boolean canRedo() {
-            return true;
-        }
     }
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
