@@ -107,17 +107,13 @@ public final class DefaultWorkflowService implements WorkflowService {
         //
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
-        final Boolean includeInfoOnAllowedActions, final String versionParameter)
-        throws NotASubWorkflowException, NodeNotFoundException {
+    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final Boolean includeInfoOnAllowedActions) throws NotASubWorkflowException, NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var version = VersionId.parse(versionParameter);
-        var wfKey = new WorkflowKey(projectId, workflowId, version);
-        var buildContext = WorkflowBuildContext.builder();
+        final var version = VersionId.parse(versionId);
+        final var wfKey = new WorkflowKey(projectId, workflowId, version);
+        final var buildContext = WorkflowBuildContext.builder();
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
                 ? Map.of() //
@@ -135,9 +131,6 @@ public final class DefaultWorkflowService implements WorkflowService {
         return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
         throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
@@ -162,13 +155,11 @@ public final class DefaultWorkflowService implements WorkflowService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         var spaceProviders = m_spaceProvidersManager == null ? null : //
             m_spaceProvidersManager.getSpaceProviders( //
                 DefaultServiceContext.getProjectId().map(Key::of) //
@@ -178,27 +169,20 @@ public final class DefaultWorkflowService implements WorkflowService {
             m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WorkflowMonitorStateSnapshotEnt getWorkflowMonitorState(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);

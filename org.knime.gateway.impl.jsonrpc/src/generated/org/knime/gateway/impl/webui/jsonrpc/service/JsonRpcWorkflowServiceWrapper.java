@@ -116,8 +116,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="includeInteractionInfo") Boolean includeInteractionInfo, @JsonRpcParam(value="version") String version)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
-        return m_service.get().getWorkflow(projectId, workflowId, includeInteractionInfo, version);    
+    public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="includeInteractionInfo") Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+        return m_service.get().getWorkflow(projectId, workflowId, versionId, includeInteractionInfo);    
     }
 
 	/**

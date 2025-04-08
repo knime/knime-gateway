@@ -109,7 +109,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testCompositeViewPage() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
         var compositeViewPage =
-            (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:11"));
+            (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:11"));
         var compositeViewPageTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(compositeViewPage);
         var nodeView = compositeViewPageTree.get("nodeViews").get("11:0:10");
         assertThat(nodeView.get("nodeInfo").get("nodeAnnotation").asText(), is("novel view-node"));
@@ -127,37 +127,37 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // New component
         var componentNew = new NodeIDEnt(9);
-        var descNew = cs().getComponentDescription(projectId, getRootID(), componentNew);
+        var descNew = cs().getComponentDescription(projectId, getRootID(), null, componentNew);
         cr(descNew, "component_description_new");
 
         // Component with partial description
         var componentPartial = new NodeIDEnt(4);
-        var descPartial = cs().getComponentDescription(projectId, getRootID(), componentPartial);
+        var descPartial = cs().getComponentDescription(projectId, getRootID(), null, componentPartial);
         cr(descPartial, "component_description_partial");
 
         // Component with full description
         var componentFull = new NodeIDEnt(6);
-        var descFull = cs().getComponentDescription(projectId, getRootID(), componentFull);
+        var descFull = cs().getComponentDescription(projectId, getRootID(), null, componentFull);
         cr(descFull, "component_description_full");
 
         // Empty component
         var componentEmpty = new NodeIDEnt(11);
-        var descEmpty = cs().getComponentDescription(projectId, getRootID(), componentEmpty);
+        var descEmpty = cs().getComponentDescription(projectId, getRootID(), null, componentEmpty);
         cr(descEmpty, "component_description_empty");
 
         // Metanode
         var metanode = new NodeIDEnt(2);
         assertThrows(ServiceCallException.class,
-            () -> cs().getComponentDescription(projectId, getRootID(), metanode));
+            () -> cs().getComponentDescription(projectId, getRootID(), null, metanode));
 
         // Native node
         var nativeNode = new NodeIDEnt(5);
         assertThrows(ServiceCallException.class,
-            () -> cs().getComponentDescription(projectId, getRootID(), nativeNode));
+            () -> cs().getComponentDescription(projectId, getRootID(), null, nativeNode));
 
         // Non-existing node
         var nan = new NodeIDEnt(99);
-        assertThrows(ServiceCallException.class, () -> cs().getComponentDescription(projectId, getRootID(), nan));
+        assertThrows(ServiceCallException.class, () -> cs().getComponentDescription(projectId, getRootID(), null, nan));
     }
 
     /**
@@ -186,7 +186,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .build();
 
         // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)
-        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getSnapshotId();
+        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.TRUE).getSnapshotId();
         es().addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
             .setWorkflowId(NodeIDEnt.getRootID()).setTypeId("WorkflowChangedEventType").setSnapshotId(snapshotId)
             .build());

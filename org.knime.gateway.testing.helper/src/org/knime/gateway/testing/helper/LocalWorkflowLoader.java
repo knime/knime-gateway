@@ -119,7 +119,10 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         final Project project) {
         wfm.setName(name); // wfm.setName marks the workflow dirty
         wfm.getNodeContainerDirectory().setDirty(false);
+
         ProjectManager.getInstance().addProject(project);
+        ProjectManager.getInstance().setProjectActive(projectId);
+
         m_loadedWorkflows.add(projectId);
     }
 

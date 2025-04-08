@@ -91,6 +91,7 @@ import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.DataValueViewEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.PortViewEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
@@ -135,11 +136,11 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
         var portService = DefaultPortService.getInstance();
 
         // 'use' port view
-        portService.getPortView(projectId, NodeIDEnt.getRootID(), nodeIdEnt, 1, 0);
-        portService.callPortDataService(projectId, NodeIDEnt.getRootID(), nodeIdEnt, 1, 0, "data", "foo");
+        portService.getPortView(projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), nodeIdEnt, 1, 0);
+        portService.callPortDataService(projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), nodeIdEnt, 1, 0, "data", "foo");
 
         // the actual check
-        portService.deactivatePortDataServices(projectId, NodeIDEnt.getRootID(), nodeIdEnt, 1, 0);
+        portService.deactivatePortDataServices(projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), nodeIdEnt, 1, 0);
         assertThat(deactivateRunnablesCalled, is(new boolean[]{true, true}));
 
         // clean up
@@ -260,9 +261,10 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var ps = DefaultPortService.getInstance();
-        ps.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(2), 1, 1, "add", List.of("Row2", "Row5"));
+        ps.updateDataPointSelection(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(2), 1, 1, "add", List.of("Row2", "Row5"));
 
-        var portView = (PortViewEnt)ps.getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
+        var portView =
+            (PortViewEnt)ps.getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 1);
         assertThat(portView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
     }
 
@@ -284,13 +286,16 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
 
         var ps = DefaultPortService.getInstance();
-        ps.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(2), 1, 1, "add", List.of("Row2", "Row5"));
+        ps.updateDataPointSelection(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(2), 1, 1,
+            "add", List.of("Row2", "Row5"));
 
-        var portView = (PortViewEnt)ps.getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
+        var portView =
+            (PortViewEnt)ps.getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 1);
         assertThat(portView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
         assertThat(selectionEventBus.getNumEventEmitters(), is(1));
 
-        ps.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(2), 1, 1, "add", List.of("Row3"));
+        ps.updateDataPointSelection(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(2), 1, 1,
+            "add", List.of("Row3"));
         await().atMost(2, TimeUnit.SECONDS)
             .untilAsserted(() -> verify(selectionEventConsumer).accept(builder(SelectionEventEntBuilder.class)
                 .setProjectId(wfId).setWorkflowId(getRootID()).setNodeId(new NodeIDEnt(1)).setPortIndex(1)
@@ -306,8 +311,8 @@ public class DefaultPortServiceTest extends GatewayServiceTest {
         var wfId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, wfId);
         wfm.executeAllAndWaitUntilDone();
-        final var dataValueView =
-            DefaultPortService.getInstance().getDataValueView(wfId, getRootID(), new NodeIDEnt(27), 1, 1, 4);
+        final var dataValueView = DefaultPortService.getInstance().getDataValueView(wfId, getRootID(),
+            VersionId.currentState().toString(), new NodeIDEnt(27), 1, 1, 4);
 
         assertThat(dataValueView, instanceOf(DataValueViewEnt.class));
         assertThat(((DataValueViewEnt)dataValueView).getResourceInfo().getPath(),

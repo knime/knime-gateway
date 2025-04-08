@@ -169,7 +169,7 @@ public abstract class GatewayServiceTest {
     protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String projectId) throws Exception {
         m_workflowLoader.loadWorkflow(wf, projectId);
         return ProjectManager.getInstance().getProject(projectId) //
-                .map(Project::getWorkflowManager) //
+                .flatMap(Project::getFromCacheOrLoadWorkflowManager) //
                 .orElse(null);
     }
 
@@ -184,7 +184,7 @@ public abstract class GatewayServiceTest {
     protected WorkflowManager loadComponent(final TestWorkflow wf, final String projectId) throws Exception {
         m_workflowLoader.loadComponent(wf, projectId);
         return ProjectManager.getInstance().getProject(projectId) //
-                .map(Project::getWorkflowManager) //
+                .flatMap(Project::getFromCacheOrLoadWorkflowManager) //
                 .orElse(null);
     }
 

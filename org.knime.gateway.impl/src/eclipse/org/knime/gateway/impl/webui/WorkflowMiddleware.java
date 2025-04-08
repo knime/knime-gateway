@@ -84,7 +84,6 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.PatchCreator;
 import org.knime.gateway.impl.service.util.PatchEntCreator;
@@ -92,6 +91,7 @@ import org.knime.gateway.impl.service.util.SimpleRepository;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -438,8 +438,7 @@ public final class WorkflowMiddleware {
         private ComponentLoader m_componentLoader;
 
         private WorkflowState(final WorkflowKey wfKey) {
-            m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(),
-                wfKey.getWorkflowId());
+            m_wfm = WorkflowManagerResolver.load(wfKey.getProjectId(), wfKey.getWorkflowId(), wfKey.getVersionId());
         }
 
         DependentNodeProperties getDependentNodeProperties() {

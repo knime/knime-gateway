@@ -85,7 +85,7 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testAlignNodes() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
-        var workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
+        var workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, true).getWorkflow();
 
         // selected some nodes which have pairwise different x and y from workflowent_root.snap
         var node21 = new NodeIDEnt(21);
@@ -110,7 +110,7 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
                 .setDirection(AlignNodesCommandEnt.DirectionEnum.VERTICAL)
                 .build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, true).getWorkflow();
         // assert node positions
         nodes = workflow.getNodes();
         var pos = nodes.get(nodeId21).getPosition();
@@ -125,7 +125,7 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
         // undo
         ws().undoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, true).getWorkflow();
         nodes = workflow.getNodes();
         pos = nodes.get(nodeId21).getPosition();
         assertThat(pos, is(originalPos21));
@@ -139,7 +139,7 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
         // redo
         ws().redoWorkflowCommand(wfId, NodeIDEnt.getRootID());
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, true).getWorkflow();
         nodes = workflow.getNodes();
         pos = nodes.get(nodeId21).getPosition();
         assertPos(pos, minX, originalPos21.getY());
@@ -158,7 +158,7 @@ public class AlignNodesCommandTestHelper extends WebUIGatewayServiceTestHelper {
                 .setDirection(AlignNodesCommandEnt.DirectionEnum.HORIZONTAL)
                 .build();
         ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command);
-        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), true, null).getWorkflow();
+        workflow = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, true).getWorkflow();
 
         // assert node positions
         nodes = workflow.getNodes();

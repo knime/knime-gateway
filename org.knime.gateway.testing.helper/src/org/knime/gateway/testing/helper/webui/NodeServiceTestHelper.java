@@ -52,6 +52,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -67,6 +68,7 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
@@ -82,9 +84,11 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeDescriptio
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
+import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
@@ -120,12 +124,12 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // one test that it generally works
-        NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow()
+        NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, getRootID(), null, Boolean.FALSE).getWorkflow()
             .getNodes().get("root:1");
         assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         ns().changeNodeStates(wfId, getRootID(), singletonList(new NodeIDEnt(1)), "execute");
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), Boolean.FALSE, null)
+            NativeNodeEnt nodeEnt2 = (NativeNodeEnt)ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, Boolean.FALSE)
                 .getWorkflow().getNodes().get("root:1");
             assertThat(nodeEnt2.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
@@ -142,6 +146,39 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests to change the node state only possible with mutable workflow version
+     *
+     * @throws Exception
+     */
+    public void testChangeNodeStateThrowsIfNotCurrentState() throws Exception {
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE);
+
+        // Current version, doesn't throw
+        ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute");
+        ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "reset");
+
+        var version = VersionId.parse("5");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
+        ProjectManager.getInstance().setProjectActive(projectId, version);
+
+        // Earlier version, throws
+        var ex1 = assertThrows(Throwable.class,
+            () -> ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute"));
+        assertThat(ex1.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
+            containsString("unexpected error code")));
+        var ex2 = assertThrows(Throwable.class,
+            () -> ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "reset"));
+        assertThat(ex2.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
+            containsString("unexpected error code")));
+    }
+
+    /**
      * Tests to change the node state of all nodes contained in a (sub-)workflow.
      *
      * @throws Exception
@@ -151,14 +188,14 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE, null)
+            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), null, Boolean.FALSE)
                 .getWorkflow().getNodes().get("root:5:0:4");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
 
         ns().changeNodeStates(wfId, getRootID(), emptyList(), "execute");
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), Boolean.FALSE, null)
+            NativeNodeEnt nodeEnt = (NativeNodeEnt)ws().getWorkflow(wfId, new NodeIDEnt(5), null, Boolean.FALSE)
                 .getWorkflow().getNodes().get("root:5:0:4");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTED));
         });
@@ -218,14 +255,14 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         final String wfId = loadWorkflow(TestWorkflowCollection.STREAMING_EXECUTION);
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "execute");
         Awaitility.await().untilAsserted(() -> {
-            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow()
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), null, Boolean.FALSE).getWorkflow()
                 .getNodes().get("root:5");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.EXECUTING));
         });
 
         ns().changeNodeStates(wfId, new NodeIDEnt(5), emptyList(), "cancel");
         Awaitility.await().untilAsserted(() -> {
-            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow()
+            var nodeEnt = (ComponentNodeEnt)ws().getWorkflow(wfId, getRootID(), null, Boolean.FALSE).getWorkflow()
                 .getNodes().get("root:5");
             assertThat(nodeEnt.getState().getExecutionState(), is(ExecutionStateEnum.CONFIGURED));
         });
@@ -242,6 +279,15 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests 'changeLoopExecutionState' wouldn't run if active project is not current state.
+     *
+     * @throws Exception
+     */
+    public void testChangeLoopExecutionStateThrowsIfNotCurrentState() throws Exception {
+        // TODO
+    }
+
+    /**
      * Tests the change of the loop execution state (step, pause, resume) within a sub-workflow.
      *
      * @throws Exception
@@ -252,7 +298,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         testChangeLoopExecutionState(wfId, component);
         ns().changeNodeStates(wfId, component, Collections.emptyList(), "cancel");
         await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            WorkflowEnt wf = ws().getWorkflow(wfId, getRootID(), Boolean.FALSE, null).getWorkflow();
+            WorkflowEnt wf = ws().getWorkflow(wfId, getRootID(), null, Boolean.FALSE).getWorkflow();
             assertThat(((ComponentNodeEnt)wf.getNodes().get("root:5")).getState().getExecutionState(),
                 is(not(ExecutionStateEnum.EXECUTING)));
         });
@@ -320,7 +366,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     private NativeNodeEnt getNativeNodeEnt(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws NotASubWorkflowException, NodeNotFoundException {
-        return (NativeNodeEnt)ws().getWorkflow(projectId, workflowId, Boolean.TRUE, null).getWorkflow().getNodes()
+        return (NativeNodeEnt)ws().getWorkflow(projectId, workflowId, null, Boolean.TRUE).getWorkflow().getNodes()
             .get(nodeId.toString());
     }
 
@@ -387,13 +433,14 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
 
-        var workflow = ws().getWorkflow(projectId, getRootID(), Boolean.FALSE, null).getWorkflow();
+        var workflow = ws().getWorkflow(projectId, getRootID(), null, Boolean.FALSE).getWorkflow();
         assertThat(((NativeNodeEnt)workflow.getNodes().get("root:1")).getDialogType(), is(DialogTypeEnum.WEB));
         assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).getDialogType(), is(DialogTypeEnum.SWING));
         assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:17")).getDialogType(), is(DialogTypeEnum.WEB));
 
         // dialog of a native node
-        var dialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(1));
+        var dialogEnt =
+            ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1));
         var nodeDialogJsonNode =
             ObjectMapperUtil.getInstance().getObjectMapper().convertValue(dialogEnt, JsonNode.class);
         assertThat(nodeDialogJsonNode.get("projectId").textValue(), containsString("view nodes"));
@@ -406,16 +453,19 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(resourceInfo.get("type").textValue(), is("SHADOW_APP"));
 
         var message = assertThrows(InvalidRequestException.class,
-            () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
+            () -> ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(3)))
+                .getMessage();
         assertThat(message, containsString("doesn't have a dialog"));
 
         // request dialog of a component without any configuration nodes
         message = assertThrows(InvalidRequestException.class,
-            () -> ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(14))).getMessage();
+            () -> ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(14)))
+                .getMessage();
         assertThat(message, containsString("doesn't have a dialog"));
 
         // request dialog of a component with a configuration node
-        var componentDialogEnt = ns().getNodeDialog(projectId, getRootID(), new NodeIDEnt(17));
+        var componentDialogEnt =
+            ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(17));
         nodeDialogJsonNode =
             ObjectMapperUtil.getInstance().getObjectMapper().convertValue(componentDialogEnt, JsonNode.class);
         assertThat(nodeDialogJsonNode.get("extensionType").textValue(), is("dialog"));
@@ -432,6 +482,15 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
+     * Tests 'getNodeDialog' with different versions.
+     *
+     * @throws Exception
+     */
+    public void testGetNodeDialogWithVersions() throws Exception {
+        // TODO
+    }
+
+    /**
      * Tests {@link NodeService#getNodeView(String, NodeIDEnt, NodeIDEnt)}.
      *
      * @throws Exception
@@ -440,15 +499,16 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
 
         var message = assertThrows(InvalidRequestException.class,
-            () -> ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1))).getMessage();
+            () -> ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1)))
+                .getMessage();
         assertThat(message, containsString("is not executed"));
 
         executeWorkflow(projectId);
 
-        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), Boolean.FALSE, null).getWorkflow()
+        assertThat(((NativeNodeEnt)ws().getWorkflow(projectId, getRootID(), null, Boolean.FALSE).getWorkflow()
             .getNodes().get("root:1")).hasView(), is(Boolean.TRUE));
 
-        var viewEnt = ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1));
+        var viewEnt = ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1));
         var nodeViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(viewEnt, JsonNode.class);
         assertThat(nodeViewJsonNode.get("projectId").textValue(), containsString("view nodes"));
         assertThat(nodeViewJsonNode.get("workflowId").textValue(), is("root"));
@@ -461,8 +521,18 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(resourceInfo.get("type").textValue(), is("HTML"));
 
         message = assertThrows(InvalidRequestException.class,
-            () -> ns().getNodeView(projectId, getRootID(), new NodeIDEnt(3))).getMessage();
+            () -> ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(3)))
+                .getMessage();
         assertThat(message, containsString("does not have a view"));
+    }
+
+    /**
+     * Tests 'getNodeView' with different versions.
+     *
+     * @throws Exception
+     */
+    public void testGetNodeViewWithVersion() throws Exception {
+        // TODO
     }
 
     /**
@@ -475,30 +545,38 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeWorkflow(projectId);
 
         // preparation - populates the view settings
-        ns().getNodeView(projectId, getRootID(), new NodeIDEnt(1));
+        ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1));
 
         // initialData
-        var initialData =
-            ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "initial_data", "");
+        var initialData = ns().callNodeDataService(projectId, getRootID(), VersionId.currentState().toString(),
+            new NodeIDEnt(1), "view", "initial_data", "");
         var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
         assertThat(jsonNode.get("result").get("data"), notNullValue());
 
         // data
         var jsonRpcRequest = RpcDataService.jsonRpcRequest("getData", "Universe_0_0", "Universe_0_1", "<none>", "2");
-        var data = ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "data", jsonRpcRequest);
+        var data = ns().callNodeDataService(projectId, getRootID(), VersionId.currentState().toString(),
+            new NodeIDEnt(1), "view", "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("points"), notNullValue());
         assertThat(jsonNode.get("id").intValue(), is(1));
 
         // errors
-        var message = assertThrows(InvalidRequestException.class,
-            () -> ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "view", "nonsense", ""))
-                .getMessage();
+        var message = assertThrows(InvalidRequestException.class, () -> ns().callNodeDataService(projectId, getRootID(),
+            VersionId.currentState().toString(), new NodeIDEnt(1), "view", "nonsense", "")).getMessage();
         assertThat(message, containsString("Unknown service type"));
-        message = assertThrows(InvalidRequestException.class,
-            () -> ns().callNodeDataService(projectId, getRootID(), new NodeIDEnt(1), "nonsense", "data", ""))
-                .getMessage();
+        message = assertThrows(InvalidRequestException.class, () -> ns().callNodeDataService(projectId, getRootID(),
+            VersionId.currentState().toString(), new NodeIDEnt(1), "nonsense", "data", "")).getMessage();
         assertThat(message, containsString("Unknown target"));
+    }
+
+    /**
+     * Tests 'callNodeDataService' with different versions.
+     *
+     * @throws Exception
+     */
+    public void testCallNodeDataServiceWithVersion() throws Exception {
+        // TODO
     }
 
 }

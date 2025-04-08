@@ -59,6 +59,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.ExtPointUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
@@ -100,10 +101,11 @@ public class DefaultComponentService implements ComponentService {
     }
 
     @Override
-    public Object getCompositeViewPage(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws ServiceCallException {
+    public Object getCompositeViewPage(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final NodeIDEnt nodeId) throws ServiceCallException {
+        var version = VersionId.parse(versionId);
         try {
-            var snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            var snc = getSubnodeContainer(projectId, workflowId, version, nodeId);
             return getViewDataProvider().getCompositeViewData(snc, getNodeViewCreator(projectId));
         } catch (IOException | NodeNotFoundException ex) {
             throw new ServiceCallException("Could not create component view data. " + ex.getMessage(), ex);
@@ -125,9 +127,10 @@ public class DefaultComponentService implements ComponentService {
 
     @Override
     public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws ServiceCallException {
+        final String versionId, final NodeIDEnt nodeId) throws ServiceCallException {
+        var version = VersionId.parse(versionId);
         try {
-            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, version, nodeId);
             return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
         } catch (NodeNotFoundException ex) {
             throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
@@ -162,7 +165,12 @@ public class DefaultComponentService implements ComponentService {
 
     private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
-        var nc = DefaultServiceUtil.assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        return getSubnodeContainer(projectId, workflowId, VersionId.currentState(), nodeId);
+    }
+
+    private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
+        final VersionId versionId, final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
+        var nc = DefaultServiceUtil.assertProjectIdAndGetNodeContainer(projectId, workflowId, versionId, nodeId);
         if (nc instanceof SubNodeContainer snc) {
             return snc;
         }

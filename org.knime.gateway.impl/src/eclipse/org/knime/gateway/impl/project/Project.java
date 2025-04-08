@@ -113,28 +113,43 @@ public final class Project {
      * @return the name of the project
      */
     public String getName() {
-        return m_name;
+        return this.m_name;
     }
 
     /**
      * @return an id of the project
      */
     public String getID() {
-        return m_id;
+        return this.m_id;
     }
 
     /**
-     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project. This might mean loading
-     *         it, or obtaining it via reference. If this call succeeds, the workflow manager can be understood to be
-     *         loaded.
+     * @return The workflow manager of the project of the current state
      */
-    public WorkflowManager getWorkflowManager() {
-        return m_cachedWfm.get();
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager() {
+        return Optional.ofNullable(m_cachedWfm.get());
     }
 
     /**
-     * @return The root workflow manager of the {@link VersionId.CurrentState} of this project, or empty if that
-     *         workflow manager is not yet loaded.
+     * @param version
+     * @return The workflow manager of the project of a given {@link VersionId}.
+     */
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
+        return version instanceof VersionId.Fixed fixedVersion ? //
+            this.getVersion(fixedVersion) : //
+            this.getFromCacheOrLoadWorkflowManager();
+    }
+
+    private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
+        if (this.m_getVersion == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
+    }
+
+    /**
+     * @return The root workflow manager of the project of the current state, or empty if that workflow manager is not
+     *         yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
         return this.m_cachedWfm.isInitialized() ? //
@@ -143,33 +158,26 @@ public final class Project {
     }
 
     /**
+     * @param version
+     * @return The root workflow manager of the project of a given {@link VersionId}, or empty if that workflow manager
+     *         is not yet loaded.
+     */
+    public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
+        // TODO: Use this method to double check if the version is loaded
+        if (version instanceof VersionId.Fixed fixedVersion) {
+            return this.m_cachedVersions.containsKey(fixedVersion) ? //
+                Optional.of(this.m_cachedVersions.get(fixedVersion)) : //
+                Optional.empty();
+        }
+        return this.getWorkflowManagerIfLoaded();
+    }
+
+    /**
      * @return Describes from where this workflow/component project originates, i.e. from where it has been created; an
      *         empty optional if the origin is unknown
      */
     public Optional<Origin> getOrigin() {
         return Optional.ofNullable(this.m_origin);
-    }
-
-    /**
-     * @param version
-     * @return The workflow manager in the project of a given {@link VersionId}.
-     */
-    public Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
-        if (version instanceof VersionId.Fixed fixedVersion) {
-            return this.getVersion(fixedVersion);
-        }
-        return Optional.ofNullable(this.getWorkflowManager());
-    }
-
-    /**
-     * @param version
-     * @return The workflow manager in the project of a given {@link VersionId.Fixed} version.
-     */
-    public Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        if (this.m_getVersion == null) {
-            return Optional.empty();
-        }
-        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
     /**

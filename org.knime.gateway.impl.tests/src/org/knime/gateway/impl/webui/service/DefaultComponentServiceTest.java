@@ -91,7 +91,7 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var compositeViewPage =
-            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
+            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
         var beforeJson = m_mapper.readTree(compositeViewPage);
         var beforeBoolean = beforeJson.at(widgetBooleanPath);
         var scatterPlotBefore = m_mapper.readTree(beforeJson.at(scatterPlotInitialDataPath).asText());
@@ -107,7 +107,7 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var compositeViewPageAfterReexecution =
-            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
+            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
         var afterJson = m_mapper.readTree(compositeViewPageAfterReexecution);
         var afterBoolean = afterJson.at(widgetBooleanPath);
         var scatterPlotAfter = m_mapper.readTree(afterJson.at(scatterPlotInitialDataPath).asText());

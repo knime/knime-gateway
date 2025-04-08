@@ -131,7 +131,7 @@ public class GatewayDefaultServiceTests {
             public void executeWorkflowAsync(final String wfId) throws Exception {
                 ProjectManager.getInstance() //
                     .getProject(wfId) //
-                    .map(Project::getWorkflowManager) //
+                    .flatMap(Project::getWorkflowManagerIfLoaded) //
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
                     .executeAll();
             }
@@ -140,7 +140,7 @@ public class GatewayDefaultServiceTests {
             public void executeWorkflow(final String wfId) throws Exception {
                 ProjectManager.getInstance() //
                     .getProject(wfId) //
-                    .map(Project::getWorkflowManager) //
+                    .flatMap(Project::getWorkflowManagerIfLoaded) //
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
                     .executeAllAndWaitUntilDone();
             }

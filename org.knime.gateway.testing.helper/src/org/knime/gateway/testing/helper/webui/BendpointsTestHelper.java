@@ -144,7 +144,7 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var removalIndex = 0;
         var connection = connectionWithTwoBendpoints.toString();
-        var removedBendpointPosition = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), false, null).getWorkflow()
+        var removedBendpointPosition = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, false).getWorkflow()
             .getConnections().get(connection).getBendpoints().get(removalIndex);
         executeWorkflowCommand( //
             deleteBendpoint(connectionWithTwoBendpoints, removalIndex), //
@@ -194,11 +194,11 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
             .build();
     }
 
-    private void awaitBendpointPresentAt(String wfId, String connection, int insertionIndex, XYEnt position) {
+    private void awaitBendpointPresentAt(final String wfId, final String connection, final int insertionIndex, final XYEnt position) {
         awaitTrue(wfId, wf -> bendpointPresentAt(wf, connection, insertionIndex, position));
     }
 
-    private void awaitNoBendpointPresentAt(String wfId, String connection, int insertionIndex, XYEnt position) {
+    private void awaitNoBendpointPresentAt(final String wfId, final String connection, final int insertionIndex, final XYEnt position) {
         awaitFalse(wfId, wf -> bendpointPresentAt(wf, connection, insertionIndex, position));
     }
 

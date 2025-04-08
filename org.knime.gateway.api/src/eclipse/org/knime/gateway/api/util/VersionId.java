@@ -57,7 +57,28 @@ import java.util.Objects;
 public sealed class VersionId {
 
     private VersionId() {
+        // Cannot be instantiated directly.
+    }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        if (obj instanceof CurrentState cs) {
+            return cs.equals(this);
+        }
+
+        if (obj instanceof Fixed fixed) {
+            return fixed.equals(this);
+        }
+
+        return false;
     }
 
     /**
@@ -66,7 +87,7 @@ public sealed class VersionId {
     public static final class CurrentState extends VersionId {
 
         private CurrentState() {
-
+            // Factory method only
         }
 
 
@@ -141,8 +162,14 @@ public sealed class VersionId {
 
     /**
      * Parse an instance from the given string.
+     *
+     * @param versionId
+     * @return The parsed instance
+     * @throws IllegalArgumentException
      */
     public static VersionId parse(final String versionId) throws IllegalArgumentException {
+        // Note: 'versionId == null' shouldn't be necessary anymore, since parameter cannot be omitted any longer.
+        // But we keep it for test compatibility.
         if (versionId == null || CurrentState.CURRENT_STATE.toString().equals(versionId)) {
             return new CurrentState();
         }

@@ -58,6 +58,7 @@ import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.json.util.ObjectMapperUtil;
@@ -97,52 +98,58 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // get table port view (registered at index 1) for a non-executed node
-        var message =
-            assertThrows(InvalidRequestException.class,
-                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1))
+        var message = assertThrows(InvalidRequestException.class,
+            () -> ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 1))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
 
         // get flow variable 'spec' view 0
-        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 0);
+        var portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 0, 0);
         assertPortView(portView, "root:1", "flowvariableview", "SHADOW_APP");
 
         // get flow variable port view 1
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 0, 1);
+        portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 0, 1);
         assertPortView(portView, "root:1", "flowvariableview", "SHADOW_APP");
 
         // check table spec view (registered at index 0)
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 0);
+        portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 0);
         assertPortView(portView, "root:1", "tableview", "SHADOW_APP");
 
         executeWorkflow(wfId);
 
         // get table port view 1 now that node is executed
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 1);
+        portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 1);
         assertPortView(portView, "root:1", "tableview", "SHADOW_APP");
 
         // get table statistics  now that node is executed
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(1), 1, 2);
+        portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 2);
         assertPortView(portView, "root:1", "tableview", "SHADOW_APP");
 
         // get data for an inactive port
-        message =
-            assertThrows(InvalidRequestException.class,
-                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(14), 1, 0))
+        message = assertThrows(InvalidRequestException.class,
+            () -> ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(14), 1, 0))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
 
         // get data for a metanode port
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 1);
+        portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(6), 0, 1);
         var portViewJsonNode = ObjectMapperUtil.getInstance().getObjectMapper().convertValue(portView, JsonNode.class);
         assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("tableview"));
 
         // get data for a metanode port that is not executed
-        message =
-            assertThrows(InvalidRequestException.class,
-                () -> ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 2, 1))
+        message = assertThrows(InvalidRequestException.class,
+            () -> ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(6), 2, 1))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
+    }
+
+    /**
+     * Tests {@link PortService#getPortView(String, NodeIDEnt, NodeIDEnt, Integer)} with different versions.
+     *
+     * @throws Exception
+     */
+    public void testGetPortViewWithVersions() throws Exception {
+        // TODO
     }
 
     /**
@@ -155,11 +162,12 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeWorkflow(wfId);
 
         // get port view for a component
-        var portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(23), 1, 1);
+        var portView =
+            ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(23), 1, 1);
         assertPortView(portView, "root:23", "tableview", "SHADOW_APP");
 
         // get port view for a metanode
-        portView = ps().getPortView(wfId, getRootID(), new NodeIDEnt(6), 0, 1);
+        portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(6), 0, 1);
         assertPortView(portView, "root:6", "tableview", "SHADOW_APP");
     }
 
@@ -174,12 +182,12 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var waitNodeIdx = 2;  // a non-executed wait node (has a flow variable outport)
         var waitNodeId = new NodeIDEnt(waitNodeIdx);
 
-        var portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 0);
-        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "SHADOW_APP",
+        var portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), waitNodeId, 1, 0);
+        assertPortView(portView, "root:" + waitNodeIdx, "flowvariableview", "SHADOW_APP",
             TestWorkflowCollection.EXECUTION_STATES);
 
-        portView = ps().getPortView(wfId, getRootID(), waitNodeId, 1, 1);
-        assertPortView(portView, "root:"+waitNodeIdx, "flowvariableview", "SHADOW_APP",
+        portView = ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), waitNodeId, 1, 1);
+        assertPortView(portView, "root:" + waitNodeIdx, "flowvariableview", "SHADOW_APP",
             TestWorkflowCollection.EXECUTION_STATES);
     }
 
@@ -213,18 +221,28 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         executeWorkflow(wfId);
 
         // initialData
-        var initialData =
-            ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 1, "initial_data", "");
+        var initialData = ps().callPortDataService(wfId, getRootID(), VersionId.currentState().toString(),
+            new NodeIDEnt(1), 1, 1, "initial_data", "");
         var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialData);
         assertThat(jsonNode.get("result").get("table"), notNullValue());
 
         // data
         var jsonRpcRequest = RpcDataService.jsonRpcRequest("getTable", "Universe_0_0", "0", "2", null, "false", "true",
             "false", "false");
-        var data = ps().callPortDataService(wfId, getRootID(), new NodeIDEnt(1), 1, 1, "data", jsonRpcRequest);
+        var data = ps().callPortDataService(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 1, "data", jsonRpcRequest);
         jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(data);
         assertThat(jsonNode.get("result").get("rows"), notNullValue());
         assertThat(jsonNode.get("id").intValue(), is(1));
+    }
+
+    /**
+     * Tests {@link PortService#callPortDataService(String, NodeIDEnt, NodeIDEnt, Integer, String, String)} with
+     * different versions.
+     *
+     * @throws Exception
+     */
+    public void testCallPortDataServiceWithVersions() throws Exception {
+        // TODO
     }
 
 }

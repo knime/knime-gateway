@@ -63,8 +63,10 @@ import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -85,17 +87,19 @@ final class DefaultServiceUtil {
      * @param projectId
      * @param workflowId
      * @param nodeId
+     * @param versionId
      * @return
      * @throws NodeNotFoundException if the node container couldn't be found
      * @throws IllegalStateException if the given project-id is not the expected one
      * @throws NoSuchElementException if there is no project for the given id
      */
     static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException {
+        final VersionId versionId, final NodeIDEnt nodeId) throws NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         NodeContainer nc;
         try {
-            nc = org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+            nc = org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer(projectId, workflowId,
+                versionId, nodeId);
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
@@ -108,6 +112,7 @@ final class DefaultServiceUtil {
      * @param projectId
      * @param workflowId
      * @param nodeId
+     * @param versionId
      * @param portIdx can be {@code null} if not a port view
      * @param viewIdx can be {@code null} if not a port view
      * @param mode
@@ -116,9 +121,9 @@ final class DefaultServiceUtil {
      * @throws IllegalStateException If there was a problem with translating teh strings to row-keys
      */
     static <N extends NodeWrapper> void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final String mode, final List<String> selection,
+        final VersionId versionId, final NodeIDEnt nodeId, final String mode, final List<String> selection,
         final Function<NodeContainer, N> getNodeWrapper) throws NodeNotFoundException {
-        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, nodeId);
+        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, versionId, nodeId);
         var nodeWrapper = getNodeWrapper.apply(nc);
         TableViewManager<N> tableViewManager;
         if (nodeWrapper instanceof NodePortWrapper) {
@@ -136,6 +141,26 @@ final class DefaultServiceUtil {
         var hiLiteHandler = tableViewManager.getHiLiteHandler(nodeWrapper).orElseThrow();
         final var selectionEventMode = SelectionEventEnt.ModeEnum.valueOf(mode.toUpperCase(Locale.ROOT));
         SelectionEventBus.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
+    }
+
+    /**
+     * @param projectId
+     * @param versionId
+     * @throws IllegalStateException if no project for the given ID could be found
+     * @throws ProjectVersionException if the active project version is not the given version
+     */
+    static void assertProjectVersion(final String projectId, final VersionId versionId) {
+        if (!ProjectManager.getInstance().isActiveProjectVersion(projectId, versionId)) {
+            throw new ProjectVersionException("Project version \"" + versionId + "\" is not active");
+        }
+    }
+
+    @SuppressWarnings("serial")
+    static class ProjectVersionException extends RuntimeException {
+
+        ProjectVersionException(final String message) {
+            super(message);
+        }
     }
 
 }

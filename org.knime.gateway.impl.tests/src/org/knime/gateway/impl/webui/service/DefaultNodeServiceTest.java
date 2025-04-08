@@ -87,6 +87,7 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.ModeEnum;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
@@ -150,11 +151,13 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
         var nodeService = DefaultNodeService.getInstance();
 
         // 'use' the node view
-        nodeService.getNodeView(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt);
-        nodeService.callNodeDataService(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "view", "data", "foo");
+        nodeService.getNodeView(m_projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), nodeIdEnt);
+        nodeService.callNodeDataService(m_projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(),
+            nodeIdEnt, "view", "data", "foo");
 
         // the actual check
-        nodeService.deactivateNodeDataServices(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "view");
+        nodeService.deactivateNodeDataServices(m_projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(),
+            nodeIdEnt, "view");
         assertThat(deactivateRunnablesCalled, is(new boolean[]{true, true}));
     }
 
@@ -214,11 +217,13 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
         var nodeService = DefaultNodeService.getInstance();
 
         // 'use' the node view
-        nodeService.getNodeDialog(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt);
-        nodeService.callNodeDataService(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "dialog", "data", "foo");
+        nodeService.getNodeDialog(m_projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), nodeIdEnt);
+        nodeService.callNodeDataService(m_projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(),
+            nodeIdEnt, "dialog", "data", "foo");
 
         // the actual check
-        nodeService.deactivateNodeDataServices(m_projectId, NodeIDEnt.getRootID(), nodeIdEnt, "dialog");
+        nodeService.deactivateNodeDataServices(m_projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(),
+            nodeIdEnt, "dialog");
         assertThat(deactivateRunnableCalled.get(), is(true));
     }
 
@@ -276,9 +281,11 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var ns = DefaultNodeService.getInstance();
-        ns.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(15), "add", List.of("Row2", "Row5"));
+        ns.updateDataPointSelection(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(15), "add",
+            List.of("Row2", "Row5"));
 
-        var nodeView = (NodeViewEnt)ns.getNodeView(wfId, getRootID(), new NodeIDEnt(1));
+        var nodeView =
+            (NodeViewEnt)ns.getNodeView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1));
         assertThat(nodeView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
     }
 
@@ -300,13 +307,15 @@ public class DefaultNodeServiceTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
 
         var ns = DefaultNodeService.getInstance();
-        ns.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(15), "add", List.of("Row2", "Row5"));
+        ns.updateDataPointSelection(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(15), "add", List.of("Row2", "Row5"));
 
-        var nodeView = (NodeViewEnt)ns.getNodeView(wfId, getRootID(), new NodeIDEnt(1));
+        var nodeView =
+            (NodeViewEnt)ns.getNodeView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1));
         assertThat(nodeView.getInitialSelection(), containsInAnyOrder("Row2", "Row5"));
         assertThat(selectionEventBus.getNumEventEmitters(), is(1));
 
-        ns.updateDataPointSelection(wfId, getRootID(), new NodeIDEnt(15), "add", List.of("Row3"));
+        ns.updateDataPointSelection(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(15), "add",
+            List.of("Row3"));
         await().atMost(2, TimeUnit.SECONDS)
             .untilAsserted(() -> verify(selectionEventConsumer)
                 .accept(builder(SelectionEventEntBuilder.class).setProjectId(wfId).setWorkflowId(getRootID())

@@ -126,7 +126,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
             .build();
 
         // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)
-        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getSnapshotId();
+        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.TRUE).getSnapshotId();
         es().addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
             .setWorkflowId(NodeIDEnt.getRootID()).setTypeId("WorkflowChangedEventType").setSnapshotId(snapshotId)
             .build());
@@ -150,7 +150,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
         assertThat(placeholderPatch.getValue(), is("root:3"));
 
         // check the added component
-        var workflow = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), Boolean.TRUE, null).getWorkflow();
+        var workflow = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.TRUE).getWorkflow();
         var component = workflow.getNodes().get("root:3");
         cr(component, "added_component");
 

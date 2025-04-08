@@ -58,6 +58,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -83,7 +84,8 @@ public final class ProjectManager {
 
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
-    private String m_activeProjectId;
+    // Note: We want to support multiple active projects in the future.
+    private ProjectIdAndVersionId m_activeProject;
 
     private ProjectManager() {
         // singleton
@@ -138,11 +140,23 @@ public final class ProjectManager {
      * @param projectId the id to add or {@code null} to unset the active project
      */
     public void setProjectActive(final String projectId) {
+        setProjectActive(projectId, VersionId.currentState()); // TODO: Is this implicit 'current state' always correct?
+    }
+
+    /**
+     * Marks the given project as being active (e.g., meaning that it's visible to the user in an opened tab). All other
+     * opened projects are considered <b>not</b> active after this call.
+     *
+     * @param projectId the id to add or {@code null} to unset the active project
+     * @param versionId the version id to set as active
+     */
+    public void setProjectActive(final String projectId, final VersionId versionId) {
+        // Note: We want to support multiple active projects in the future.
         var project = m_projectsMap.get(projectId);
         if (project != null && !project.hasUIConsumer) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
-        m_activeProjectId = projectId;
+        m_activeProject = new ProjectIdAndVersionId(projectId, versionId);
     }
 
     /**
@@ -150,7 +164,31 @@ public final class ProjectManager {
      * @return whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab).
      */
     public boolean isActiveProject(final String projectId) {
-        return m_activeProjectId != null && m_activeProjectId.equals(projectId);
+        // Note: We want to support multiple active projects in the future.
+        if (m_activeProject == null) {
+            return false;
+        }
+        if (m_activeProject.projectId() == null) {
+            return false;
+        }
+        return m_activeProject.projectId().equals(projectId);
+    }
+
+    /**
+     * @param projectId
+     * @param versionId
+     * @return Whether the currently active version is the one expected.
+     */
+    public boolean isActiveProjectVersion(final String projectId, final VersionId versionId) {
+        // If no active project is set, we assume the active version wasn't set. In that case we return 'true', since
+        // we are most likely in the browser context, where the concept of an active project doesn't exist.
+        if (m_activeProject == null) {
+            return true;
+        }
+        if (m_activeProject.projectId() == null || !m_activeProject.projectId().equals(projectId)) {
+            return false;
+        }
+        return m_activeProject.versionId().equals(versionId);
     }
 
     /**
@@ -242,8 +280,12 @@ public final class ProjectManager {
                 removedProject.project().dispose();
             }
             m_projectRemovedListeners.forEach(l -> l.accept(projectId));
-            if (m_activeProjectId != null && m_activeProjectId.equals(projectId)) {
-                m_activeProjectId = null;
+            if (m_activeProject != null) {
+                // Note: We want to support multiple active projects in the future.
+                if (m_activeProject.projectId() != null && m_activeProject.projectId().equals(projectId)) {
+                    // To indicate that there's no active project anymore
+                    m_activeProject = new ProjectIdAndVersionId();
+                }
             }
         } else {
             m_projectsMap.put(projectId, projectInternal);
@@ -328,7 +370,7 @@ public final class ProjectManager {
      * Clears the entire state. For testing purposes only.
      */
     void clearState() {
-        m_activeProjectId = null;
+        m_activeProject = null;
         m_projectsMap.clear();
         m_projectRemovedListeners.clear();
     }
@@ -376,5 +418,13 @@ public final class ProjectManager {
         }
 
     }
+
+    private record ProjectIdAndVersionId(String projectId, VersionId versionId) {
+
+        ProjectIdAndVersionId() {
+            this(null, null);
+        }
+
+   }
 
 }

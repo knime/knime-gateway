@@ -52,7 +52,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 
 /**
  * Utility methods to operate on a workflow represented by a {@link WorkflowKey}.
@@ -80,7 +80,7 @@ public final class WorkflowUtil {
         throws NodeNotFoundException, NotASubWorkflowException {
         WorkflowManager wfm;
         try {
-            wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getWorkflowId());
+            wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId()); // No version needed, only current state
         } catch (IllegalArgumentException ex) {
             throw new NodeNotFoundException(ex.getMessage(), ex);
         } catch (IllegalStateException ex) {
