@@ -61,8 +61,9 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  * Base class for implementations of {@link WorkflowCommand}s.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @since 5.5
  */
-abstract class AbstractWorkflowCommand implements WorkflowCommand {
+public abstract class AbstractWorkflowCommand implements WorkflowCommand {
 
     private final boolean m_lockWorkflow;
 
