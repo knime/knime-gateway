@@ -518,16 +518,17 @@ public interface Space {
      * Result of an item transfer from/to a Hub.
      *
      * @param successful whether the operation was (completely) successful or unsuccessful
-     * @param errorTitleAndDescription description of the error (so it can be presented to the user),
-     *     {@code null} if {@link #successful()} is {@code true} or if the user aborted the operation
+     * @param errorTitleAndDescription description of the error (so it can be presented to the user), {@code null} if
+     *            {@link #successful()} is {@code true} or if the user aborted the operation
+     * @param itemIds IDs of the items that were successfully transferred to a remote hub, always {@code null} if the
+     *            operation was unsuccessful
      */
-    public record TransferResult(boolean successful, Pair<String, String> errorTitleAndDescription) {
+    public record TransferResult(boolean successful, Pair<String, String> errorTitleAndDescription, List<String> itemIds) {
 
-        /** A successful transfer. */
-        public static final TransferResult SUCCESS = new TransferResult(true, null);
+        public static final TransferResult SUCCESS = new TransferResult(true, null, null);
 
         /** A cancelled transfer. */
-        public static final TransferResult CANCELLED = new TransferResult(false, null);
+        public static final TransferResult CANCELLED = new TransferResult(false, null, null);
 
         /**
          * Creates a failure with the given title and description.
@@ -537,7 +538,7 @@ public interface Space {
          * @return failure result
          */
         public static TransferResult failureWithError(final String title, final String description) {
-            return new TransferResult(false, Pair.create(title, description));
+            return new TransferResult(false, Pair.create(title, description), null);
         }
     }
 
