@@ -98,7 +98,7 @@ public final class ComponentLoader {
      *
      * @return the job/placeholder id
      */
-    public LoadJob createLoadJob(final Geometry.Point position,
+    public LoadJob startLoadJob(final Geometry.Point position,
         final FailableFunction<ExecutionMonitor, LoadResult, CanceledExecutionException> loadComponent) {
         var placeholderId = UUID.randomUUID().toString();
         var exec = new ExecutionMonitor();
@@ -223,7 +223,7 @@ public final class ComponentLoader {
     /**
      * Reruns the load job for the given id (provided the job is done).
      *
-     * @param id
+     * @param id -
      */
     public void rerunLoadJob(final String id) {
         var loader = m_loaders.get(id);
