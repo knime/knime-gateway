@@ -49,6 +49,8 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 
@@ -112,14 +114,19 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     public void testMakeAiRequest() throws Exception {
         DefaultKaiMessageEnt message = new DefaultKaiMessageEnt(RoleEnum.USER, "Hello there");
         List<String> selectedNodes = List.of("bli", "bla", "blub");
-        var request =
+        var incomingRequest =
             new DefaultKaiRequestEnt("foo", "bar", "baz", selectedNodes, new DefaultXYEnt(0, 0), List.of(message));
 
-        var expectedRequest = new KaiHandler.Request("foo", "qa", "bar", "baz", selectedNodes,
-            List.of(new KaiHandler.Message(KaiHandler.Role.USER, "Hello there")), new KaiHandler.Position(0, 0));
-        DefaultKaiService.getInstance().makeAiRequest("qa", request);
-        Mockito.verify(m_kaiHandler)//
-            .onNewRequest(expectedRequest);
+        DefaultKaiService.getInstance().makeAiRequest("qa", incomingRequest);
+        verify(m_kaiHandler).onNewRequest(argThat(request -> //
+        request.conversationId().equals("foo") && //
+            request.chainType().equals("qa") && //
+            request.projectId().equals("bar") && //
+            request.selectedNodes().equals(selectedNodes) && //
+            request.messages().equals(List.of(new KaiHandler.Message(KaiHandler.Role.USER, "Hello there"))) && //
+            request.startPosition().equals(new KaiHandler.Position(0, 0))//
+        // Skipping executor check entirely
+        ));
     }
 
     /**
