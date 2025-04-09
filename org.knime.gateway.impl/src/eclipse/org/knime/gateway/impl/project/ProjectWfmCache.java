@@ -46,7 +46,6 @@
 
 package org.knime.gateway.impl.project;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.node.NodeLogger;
@@ -72,7 +71,7 @@ class ProjectWfmCache {
 
     private static final int VERSION_WFM_CACHE_MAX_SIZE = 5;
 
-    private final Map<VersionId.Fixed, WorkflowManager> m_fixedVersions = new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
+    private final LRUCache<VersionId.Fixed, WorkflowManager> m_fixedVersions;
 
     /**
      * -
@@ -82,6 +81,8 @@ class ProjectWfmCache {
     public ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
         this.m_wfmLoader = wfmLoader;
         this.m_currentState = new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState()));
+        this.m_fixedVersions = new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
+        this.m_fixedVersions.addOnRemoveListener((version, wfm) -> disposeWorkflowManager(wfm));
     }
 
     /**

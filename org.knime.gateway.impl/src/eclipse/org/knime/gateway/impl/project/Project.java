@@ -336,7 +336,7 @@ public final class Project {
         @Override
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
-            Objects.requireNonNull(this.m_id);
+            m_id = getUniqueProjectId(m_name);
             m_wfmCache = new ProjectWfmCache(wfmLoader);
             return this;
         }

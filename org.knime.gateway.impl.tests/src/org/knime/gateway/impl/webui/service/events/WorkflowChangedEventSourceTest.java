@@ -58,9 +58,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.junit.Test;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -91,14 +94,14 @@ public class WorkflowChangedEventSourceTest {
         projectManager.addProject(Project.builder().setWfm(wfm).setId("id2").build());
 
         // create event source
-        var workflowMiddleware = new WorkflowMiddleware(projectManager, null);
+        var workflowMiddleware = new WorkflowMiddleware(projectManager);
         var eventSource = new WorkflowChangedEventSource(mock(EventConsumer.class), workflowMiddleware, projectManager);
 
         // add event listeners
-        var snapshotId1 = workflowMiddleware.commitEntity(new WorkflowKey("id1", NodeIDEnt.getRootID()), null);
+        var snapshotId1 = commitEntity(workflowMiddleware, new WorkflowKey("id1", NodeIDEnt.getRootID()), wfm);
         eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId("id1").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId1).build(), null);
-        var snapshotId2 = workflowMiddleware.commitEntity(new WorkflowKey("id2", NodeIDEnt.getRootID()), null);
+        var snapshotId2 = commitEntity(workflowMiddleware, new WorkflowKey("id2", NodeIDEnt.getRootID()), wfm);
         eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId2).build(), null);
 
@@ -139,7 +142,7 @@ public class WorkflowChangedEventSourceTest {
         var workflowMiddleware = new WorkflowMiddleware(projectManager);
         var eventSource = new WorkflowChangedEventSource(mock(EventConsumer.class), workflowMiddleware, projectManager);
         var wfKey = new WorkflowKey(projectId, NodeIDEnt.getRootID());
-        var snapshotId = workflowMiddleware.commitEntity(wfKey, null);
+        var snapshotId = commitEntity(workflowMiddleware, wfKey, wfm);
         var eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
             .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId).build();
         var event = eventSource.addEventListenerAndGetInitialEventFor(eventType, projectId);
@@ -151,8 +154,8 @@ public class WorkflowChangedEventSourceTest {
         Awaitility.await().until(() -> wfm.getNodeContainerState().isExecutionInProgress());
 
         // get current workflow state (dependent node properties are re-computed)
-        snapshotId = workflowMiddleware.commitEntity(wfKey, null);
-        eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId("1")
+        snapshotId = commitEntity(workflowMiddleware, wfKey, wfm);
+        eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
             .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId).build();
 
         // the actual test: there must not be any events, because the cached dependent node properties have been cleared
@@ -164,6 +167,11 @@ public class WorkflowChangedEventSourceTest {
         wfm.getParent().cancelExecution(wfm);
         wfm.waitWhileInExecution(5, TimeUnit.SECONDS);
         WorkflowManagerUtil.disposeWorkflow(wfm);
+    }
+
+    private static String commitEntity(final WorkflowMiddleware workflowMiddleware, final WorkflowKey wfKey, final WorkflowManager wfm) {
+        var wfEnt = EntityFactory.Workflow.buildWorkflowEnt(wfm, WorkflowBuildContext.builder().includeInteractionInfo(true));
+        return workflowMiddleware.commitEntity(wfKey, wfEnt);
     }
 
     private static final String CLIPBOARD_CONTENT_WAIT_NODES =
