@@ -435,8 +435,7 @@ public final class WorkflowMiddleware {
         private ComponentLoader m_componentLoader;
 
         private WorkflowState(final WorkflowKey wfKey) {
-            m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(),
-                wfKey.getWorkflowId());
+            m_wfm = DefaultServiceUtil.getWorkflowManager(wfKey);
         }
 
         DependentNodeProperties getDependentNodeProperties() {

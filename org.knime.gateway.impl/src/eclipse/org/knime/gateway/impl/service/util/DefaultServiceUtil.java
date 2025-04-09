@@ -64,6 +64,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Helper methods useful for the default service implementations (shared between different api implementations, i.e.
@@ -103,7 +104,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
-
+     * 
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final NodeIDEnt nodeInSubWorkflow) {
@@ -112,14 +113,28 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * @see this#getWorkflowManager(String, VersionId, NodeIDEnt)
+     * Gets the (sub-)workflow manager for the project id and node id.
+     * 
+     * @param projectId -
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
+     * @return -
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
         return getWorkflowManager(projectId, VersionId.currentState(), workflowId);
     }
 
     /**
-     * Gets the (sub-)workflow manager for the given root workflow id and node id.
+     * Gets the (sub-)workflow manager for the project id and node id.
+     * 
+     * @param wfKey identifying the {@link WorkflowManager} instance
+     * @return -
+     */
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
+        return getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(), wfKey.workflowId());
+    }
+
+    /**
+     * Gets the (sub-)workflow manager for the given project and node id.
      *
      * @param projectId the root workflow id
      * @param versionId specifies the version to load.
@@ -130,7 +145,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    public static WorkflowManager getWorkflowManager(final String projectId, final VersionId versionId,
+    private static WorkflowManager getWorkflowManager(final String projectId, final VersionId versionId,
         final NodeIDEnt workflowId) {
         return parseWfm(findNodeContainer(getProjectWfm(projectId, versionId), workflowId));
     }

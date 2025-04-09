@@ -114,8 +114,7 @@ final class DefaultServiceUtil {
     static WorkflowManager assertProjectIdAndGetWorkflowManager(final WorkflowKey wfKey) throws NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(wfKey.getProjectId());
         try {
-            return org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(wfKey.projectId(),
-                wfKey.workflowId());
+            return org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(wfKey);
         } catch (NoSuchElementException | IllegalArgumentException | IllegalStateException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
