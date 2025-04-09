@@ -296,4 +296,27 @@ public final class DefaultServiceUtil {
         }
     }
 
+    /**
+     * @param projectId
+     * @param versionId
+     * @throws IllegalStateException if no project for the given ID could be found
+     * @throws ProjectVersionException if the active project version is not the given version
+     */
+    public static void assertProjectVersion(final String projectId, final VersionId versionId) {
+        if (!ProjectManager.getInstance().isActiveProjectVersion(projectId, versionId)) {
+            throw new ProjectVersionException("Project version \"" + versionId + "\" is not active");
+        }
+    }
+
+    /**
+     * Exception thrown when the project version is not the expected one.
+     */
+    @SuppressWarnings("serial")
+    public static class ProjectVersionException extends RuntimeException {
+
+        ProjectVersionException(final String message) {
+            super(message);
+        }
+    }
+
 }

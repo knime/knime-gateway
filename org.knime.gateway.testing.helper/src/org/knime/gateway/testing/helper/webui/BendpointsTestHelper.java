@@ -194,13 +194,14 @@ public class BendpointsTestHelper extends WebUIGatewayServiceTestHelper {
             .build();
     }
 
-    private void awaitBendpointPresentAt(final String wfId, final String connection, final int insertionIndex, final XYEnt position) {
+    private void awaitBendpointPresentAt(final String wfId, final String connection, final int insertionIndex,
+        final XYEnt position) {
         awaitTrue(wfId, wf -> bendpointPresentAt(wf, connection, insertionIndex, position));
     }
 
-    private void awaitNoBendpointPresentAt(final String wfId, final String connection, final int insertionIndex, final XYEnt position) {
+    private void awaitNoBendpointPresentAt(final String wfId, final String connection, final int insertionIndex,
+        final XYEnt position) {
         awaitFalse(wfId, wf -> bendpointPresentAt(wf, connection, insertionIndex, position));
     }
-
 
 }

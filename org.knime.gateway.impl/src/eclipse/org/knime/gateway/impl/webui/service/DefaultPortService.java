@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.impl.webui.service.DefaultNodeService.createInitialSelectionSupplier;
-import static org.knime.gateway.impl.webui.service.DefaultServiceUtil.assertProjectIdAndGetNodeContainer;
+import static org.knime.gateway.impl.webui.service.ServiceUtilities.assertProjectIdAndGetNodeContainer;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -191,7 +191,7 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String mode,
         final List<String> selection) throws NodeNotFoundException {
         var version = VersionId.parse(versionId);
-        DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
+        ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             nc -> NodePortWrapper.of(nc, portIdx, viewIdx));
     }
 

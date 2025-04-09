@@ -124,6 +124,8 @@ public final class Project {
     }
 
     /**
+     * Get the {@link WorkflowManager} from cache or load it
+     *
      * @return The workflow manager of the project of the current state
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager() {
@@ -131,6 +133,8 @@ public final class Project {
     }
 
     /**
+     * Get the {@link WorkflowManager} for the version specified from cache or load it
+     *
      * @param version
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
@@ -148,6 +152,8 @@ public final class Project {
     }
 
     /**
+     * Get the {@link WorkflowManager} from cache if it is already loaded
+     *
      * @return The root workflow manager of the project of the current state, or empty if that workflow manager is not
      *         yet loaded.
      */
@@ -158,6 +164,8 @@ public final class Project {
     }
 
     /**
+     * Get the {@link WorkflowManager} for the version specified from cache if it is already loaded
+     *
      * @param version
      * @return The root workflow manager of the project of a given {@link VersionId}, or empty if that workflow manager
      *         is not yet loaded.

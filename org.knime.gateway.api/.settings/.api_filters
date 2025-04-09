@@ -84,6 +84,13 @@
             </message_arguments>
         </filter>
     </resource>
+        <resource path="src/eclipse/org/knime/gateway/api/util/VersionId.java" type="org.knime.gateway.api.util.VersionId">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.util.VersionId"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/webui/util/SpaceEntityFactory.java" type="org.knime.gateway.api.webui.util.SpaceEntityFactory">
         <filter id="338792546">
             <message_arguments>

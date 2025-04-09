@@ -140,7 +140,7 @@ public final class ProjectManager {
      * @param projectId the id to add or {@code null} to unset the active project
      */
     public void setProjectActive(final String projectId) {
-        setProjectActive(projectId, VersionId.currentState()); // TODO: Is this implicit 'current state' always correct?
+        setProjectActive(projectId, VersionId.currentState());
     }
 
     /**
@@ -160,6 +160,8 @@ public final class ProjectManager {
     }
 
     /**
+     * Checks whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab).
+     *
      * @param projectId the id of the project to check
      * @return whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab).
      */
@@ -175,9 +177,12 @@ public final class ProjectManager {
     }
 
     /**
+     * Checks whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab) and
+     * the version is active.
+     *
      * @param projectId
      * @param versionId
-     * @return Whether the currently active version is the one expected.
+     * @return Whether the project is active and the version is the active version.
      */
     public boolean isActiveProjectVersion(final String projectId, final VersionId versionId) {
         // If no active project is set, we assume the active version wasn't set. In that case we return 'true', since
@@ -185,10 +190,10 @@ public final class ProjectManager {
         if (m_activeProject == null) {
             return true;
         }
-        if (m_activeProject.projectId() == null || !m_activeProject.projectId().equals(projectId)) {
+        if (m_activeProject.projectId() == null) {
             return false;
         }
-        return m_activeProject.versionId().equals(versionId);
+        return m_activeProject.projectId().equals(projectId) && m_activeProject.versionId().equals(versionId);
     }
 
     /**
@@ -280,12 +285,12 @@ public final class ProjectManager {
                 removedProject.project().dispose();
             }
             m_projectRemovedListeners.forEach(l -> l.accept(projectId));
-            if (m_activeProject != null) {
-                // Note: We want to support multiple active projects in the future.
-                if (m_activeProject.projectId() != null && m_activeProject.projectId().equals(projectId)) {
-                    // To indicate that there's no active project anymore
-                    m_activeProject = new ProjectIdAndVersionId();
-                }
+
+            // Note: We want to support multiple active projects in the future.
+            if (m_activeProject != null && m_activeProject.projectId() != null
+                && m_activeProject.projectId().equals(projectId)) {
+                // To indicate that there's no active project anymore
+                m_activeProject = new ProjectIdAndVersionId();
             }
         } else {
             m_projectsMap.put(projectId, projectInternal);

@@ -291,22 +291,16 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var version = new VersionId.Fixed(4);
         var version_diff = new VersionId.Fixed(5);
         ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
+        ProjectManager.getInstance().setProjectActive(projectId, version);
 
-        // TODO: set active version
+        // Try to get the workflow for a different project ID, throws
+        var ex1 = assertThrows(Throwable.class,
+            () -> ws().getWorkflow(projectId + "_diff", NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE));
+        assertThat(ex1.getMessage(), anyOf(containsString("Project for ID \"" + projectId + "_diff\" not found"),
+            containsString("unexpected error code")));
 
-//        // Try to set the version for a different project ID, throws
-//        var ex1 = assertThrows(ServiceCallException.class,
-//            () -> ws().setActiveProjectWithVersion(projectId + "_diff", version.toString()));
-//        assertThat(ex1.getMessage(), containsString("Can only set the active version for the active project"));
-//
-//        // Try to set the version for a different project ID, throws
-//        var ex2 = assertThrows(ServiceCallException.class,
-//            () -> ws().setActiveProjectWithVersion(projectId, version_diff.toString()));
-//        assertThat(ex2.getMessage(), containsString("Cannot set a project version active that's not loaded"));
-//
-//        // Set the version correctly, doesn't throw
-//        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
-//        ws().setActiveProjectWithVersion(projectId, version.toString());
+        // Get the correct workflow, doesn't throw
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
     }
 
     public void testExecutionThrowsWhenNotCurrentState() throws Exception {
@@ -316,18 +310,11 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
         var projectId = loadWorkflow(testWorkflowWithVersion);
 
-        // Current state (implicitly set), doesn't throw
+        // Current state, doesn't throw
         var command = buildAddNodeCommand("org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", null, 12, 13,
             null, null, null);
         ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
         ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
-
-        ProjectManager.getInstance().setProjectActive(projectId, VersionId.currentState());
-
-        // Current state (explicitly set), doesn't throw
-        ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
-        ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
-        ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID());
 
         var version = new VersionId.Fixed(5);
         ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);

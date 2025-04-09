@@ -84,6 +84,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -118,8 +119,7 @@ public final class DefaultNodeService implements NodeService {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
-            // Because there is no better way to reference this method
-            org.knime.gateway.impl.service.util.DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
+            DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
@@ -326,7 +326,7 @@ public final class DefaultNodeService implements NodeService {
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final String mode, final List<String> selection) throws NodeNotFoundException {
         var version = VersionId.parse(versionId);
-        DefaultServiceUtil.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
+        ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             NodeWrapper::of);
     }
 

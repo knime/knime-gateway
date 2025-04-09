@@ -65,20 +65,21 @@ public sealed class VersionId {
         if (obj == this) {
             return true;
         }
-
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
         }
-
         if (obj instanceof CurrentState cs) {
             return cs.equals(this);
         }
+        return ((Fixed)obj).equals(this);
+    }
 
-        if (obj instanceof Fixed fixed) {
-            return fixed.equals(this);
+    @Override
+    public int hashCode() {
+        if (this instanceof CurrentState cs) {
+            return cs.hashCode();
         }
-
-        return false;
+        return ((Fixed)this).hashCode();
     }
 
     /**

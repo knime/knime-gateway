@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;

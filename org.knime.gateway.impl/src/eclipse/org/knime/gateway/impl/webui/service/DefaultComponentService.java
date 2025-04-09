@@ -170,7 +170,7 @@ public class DefaultComponentService implements ComponentService {
 
     private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
         final VersionId versionId, final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
-        var nc = DefaultServiceUtil.assertProjectIdAndGetNodeContainer(projectId, workflowId, versionId, nodeId);
+        var nc = ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId, versionId, nodeId);
         if (nc instanceof SubNodeContainer snc) {
             return snc;
         }

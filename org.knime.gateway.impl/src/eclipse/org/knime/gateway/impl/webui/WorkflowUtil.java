@@ -80,7 +80,8 @@ public final class WorkflowUtil {
         throws NodeNotFoundException, NotASubWorkflowException {
         WorkflowManager wfm;
         try {
-            wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId()); // No version needed, only current state
+            // No version needed, only current state
+            wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
         } catch (IllegalArgumentException ex) {
             throw new NodeNotFoundException(ex.getMessage(), ex);
         } catch (IllegalStateException ex) {

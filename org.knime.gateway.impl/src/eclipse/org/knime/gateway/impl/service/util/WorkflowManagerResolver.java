@@ -71,7 +71,7 @@ public final class WorkflowManagerResolver {
     /**
      * Loads the {@link WorkflowManager} for the given project id.
      *
-     * @param projectId
+     * @param projectId the root workflow id
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
@@ -82,8 +82,8 @@ public final class WorkflowManagerResolver {
     /**
      * Loads the {@link WorkflowManager} for the given project id and version id
      *
-     * @param projectId
-     * @param versionId
+     * @param projectId the root workflow id
+     * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
@@ -94,8 +94,8 @@ public final class WorkflowManagerResolver {
     /**
      * Loads the {@link WorkflowManager} for the given project id and workflow id.
      *
-     * @param projectId
-     * @param workflowId
+     * @param projectId the root workflow id
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
@@ -106,9 +106,9 @@ public final class WorkflowManagerResolver {
     /**
      * Loads the {@link WorkflowManager} for the given project id and workflow id and version id.
      *
-     * @param projectId
-     * @param workflowId
-     * @param versionId
+     * @param projectId the root workflow id
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
+     * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
@@ -119,7 +119,7 @@ public final class WorkflowManagerResolver {
     /**
      * Retrieves the {@link WorkflowManager} for the given project id.
      *
-     * @param projectId
+     * @param projectId the root workflow id
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
@@ -130,8 +130,8 @@ public final class WorkflowManagerResolver {
     /**
      * Retrieves the {@link WorkflowManager} for the given project id and version id.
      *
-     * @param projectId
-     * @param versionId
+     * @param projectId the root workflow id
+     * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
@@ -157,9 +157,9 @@ public final class WorkflowManagerResolver {
     /**
      * Retrieves the (sub-)workflow manager for the given root workflow id and node id and version id.
      *
-     * @param projectId
-     * @param workflowId
-     * @param versionId
+     * @param projectId the root workflow id
+     * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
+     * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
      */
     public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId,

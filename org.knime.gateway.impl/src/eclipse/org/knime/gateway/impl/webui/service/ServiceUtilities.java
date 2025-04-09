@@ -66,7 +66,6 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -74,9 +73,9 @@ import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class DefaultServiceUtil {
+final class ServiceUtilities {
 
-    private DefaultServiceUtil() {
+    private ServiceUtilities() {
         // utility
     }
 
@@ -141,26 +140,6 @@ final class DefaultServiceUtil {
         var hiLiteHandler = tableViewManager.getHiLiteHandler(nodeWrapper).orElseThrow();
         final var selectionEventMode = SelectionEventEnt.ModeEnum.valueOf(mode.toUpperCase(Locale.ROOT));
         SelectionEventBus.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
-    }
-
-    /**
-     * @param projectId
-     * @param versionId
-     * @throws IllegalStateException if no project for the given ID could be found
-     * @throws ProjectVersionException if the active project version is not the given version
-     */
-    static void assertProjectVersion(final String projectId, final VersionId versionId) {
-        if (!ProjectManager.getInstance().isActiveProjectVersion(projectId, versionId)) {
-            throw new ProjectVersionException("Project version \"" + versionId + "\" is not active");
-        }
-    }
-
-    @SuppressWarnings("serial")
-    static class ProjectVersionException extends RuntimeException {
-
-        ProjectVersionException(final String message) {
-            super(message);
-        }
     }
 
 }

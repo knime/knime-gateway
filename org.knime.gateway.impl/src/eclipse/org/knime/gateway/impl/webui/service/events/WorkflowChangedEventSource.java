@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.events;
 
+import static org.knime.gateway.impl.service.util.DefaultServiceUtil.assertProjectVersion;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +58,7 @@ import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
@@ -121,6 +124,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     public Optional<CompositeEventEnt>
         addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
         assertValidProjectId(projectId, wfEventType.getProjectId());
+        assertProjectVersion(wfEventType.getProjectId(), VersionId.currentState());
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         var workflowChangesListener = m_workflowMiddleware.getWorkflowChangesListener(workflowKey);
 
@@ -159,7 +163,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     }
 
     private Runnable createWorkflowChangesCallback(final WorkflowKey wfKey, final PatchEntCreator patchEntCreator) {
-        var wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId()); // No version needed, only current state
+        // No version needed, only current state
+        var wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
         return () -> {
             preEventCreation();
             WorkflowChangedEventEnt workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey,
