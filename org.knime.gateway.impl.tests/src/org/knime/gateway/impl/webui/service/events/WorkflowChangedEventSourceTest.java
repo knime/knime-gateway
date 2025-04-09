@@ -49,7 +49,9 @@
 package org.knime.gateway.impl.webui.service.events;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.Mockito.mock;
 
@@ -60,10 +62,12 @@ import org.awaitility.Awaitility;
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil.ProjectVersionException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
@@ -95,15 +99,29 @@ public class WorkflowChangedEventSourceTest {
         var workflowMiddleware = new WorkflowMiddleware(projectManager, null);
         var eventSource = new WorkflowChangedEventSource(mock(EventConsumer.class), workflowMiddleware, projectManager);
 
-        // add event listeners
+        // set active project
+        projectManager.setProjectActive("id1", VersionId.currentState());
+
+        // add event listener with active project
         var snapshotId1 = workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey("id1", NodeIDEnt.getRootID()),
             () -> WorkflowBuildContext.builder()).getSnapshotId();
         eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId("id1").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId1).build(), null);
+
+        // add another listener, not the active project, should throw
         var snapshotId2 = workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey("id2", NodeIDEnt.getRootID()),
             () -> WorkflowBuildContext.builder()).getSnapshotId();
+        var ex = assertThrows(ProjectVersionException.class,
+            () -> eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
+                .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId2).build(), null));
+        assertThat(ex.getMessage(), containsString("Project version \"current-state\" is not active"));
+
+        // add another listener with active project
+        projectManager.setProjectActive("id2", VersionId.currentState());
+        var snapshotId3 = workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey("id2", NodeIDEnt.getRootID()),
+            () -> WorkflowBuildContext.builder()).getSnapshotId();
         eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
-            .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId2).build(), null);
+            .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId3).build(), null);
 
         // check
         assertThat(eventSource.getNumRegisteredListeners(), is(2));
@@ -146,6 +164,8 @@ public class WorkflowChangedEventSourceTest {
             () -> WorkflowBuildContext.builder().includeInteractionInfo(true));
         var eventType = builder(WorkflowChangedEventTypeEntBuilder.class)
         .setProjectId(projectId).setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(workflowSnapshot.getSnapshotId()).build();
+
+        projectManager.setProjectActive(projectId, VersionId.currentState());
         var event = eventSource.addEventListenerAndGetInitialEventFor(eventType, projectId);
         eventSource.removeEventListener(eventType, projectId);
         assertThat(event.isEmpty(), is(true));
