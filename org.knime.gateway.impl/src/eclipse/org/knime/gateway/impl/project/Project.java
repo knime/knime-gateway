@@ -95,32 +95,32 @@ public final class Project {
     private final Function<String, byte[]> m_generateReport;
 
     private Project(final Builder builder) {
-        this.m_onDispose = builder.m_onDispose;
-        this.m_id = builder.m_id;
-        this.m_name = builder.m_name;
-        this.m_origin = builder.m_origin;
-        this.m_getVersion = builder.m_getVersion;
-        this.m_cachedWfm = builder.m_loadedWfm != null ? //
+        m_onDispose = builder.m_onDispose;
+        m_id = builder.m_id;
+        m_name = builder.m_name;
+        m_origin = builder.m_origin;
+        m_getVersion = builder.m_getVersion;
+        m_cachedWfm = builder.m_loadedWfm != null ? //
             new Lazy.Init<>(builder.m_loadedWfm) : //
             new Lazy.Init<>(builder.m_getWfm);
-        this.m_clearReport = builder.m_clearReport != null ? //
+        m_clearReport = builder.m_clearReport != null ? //
             builder.m_clearReport : //
             () -> {};
-        this.m_generateReport = builder.m_generateReport;
+        m_generateReport = builder.m_generateReport;
     }
 
     /**
      * @return the name of the project
      */
     public String getName() {
-        return this.m_name;
+        return m_name;
     }
 
     /**
      * @return an id of the project
      */
     public String getID() {
-        return this.m_id;
+        return m_id;
     }
 
     /**
@@ -136,15 +136,15 @@ public final class Project {
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
         return version instanceof VersionId.Fixed fixedVersion ? //
-            this.getVersion(fixedVersion) : //
-            this.getFromCacheOrLoadWorkflowManager();
+            getVersion(fixedVersion) : //
+            getFromCacheOrLoadWorkflowManager();
     }
 
     private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
         if (this.m_getVersion == null) {
             return Optional.empty();
         }
-        return Optional.of(this.m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
+        return Optional.of(m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
     }
 
     /**
@@ -152,8 +152,8 @@ public final class Project {
      *         yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return this.m_cachedWfm.isInitialized() ? //
-            Optional.of(this.m_cachedWfm.get()) : //
+        return m_cachedWfm.isInitialized() ? //
+            Optional.of(m_cachedWfm.get()) : //
             Optional.empty();
     }
 
@@ -165,8 +165,8 @@ public final class Project {
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
         // TODO: Use this method to double check if the version is loaded
         if (version instanceof VersionId.Fixed fixedVersion) {
-            return this.m_cachedVersions.containsKey(fixedVersion) ? //
-                Optional.of(this.m_cachedVersions.get(fixedVersion)) : //
+            return m_cachedVersions.containsKey(fixedVersion) ? //
+                Optional.of(m_cachedVersions.get(fixedVersion)) : //
                 Optional.empty();
         }
         return this.getWorkflowManagerIfLoaded();
@@ -177,24 +177,24 @@ public final class Project {
      *         empty optional if the origin is unknown
      */
     public Optional<Origin> getOrigin() {
-        return Optional.ofNullable(this.m_origin);
+        return Optional.ofNullable(m_origin);
     }
 
     /**
      * Dispose the project.
      */
     public void dispose() {
-        this.m_cachedWfm.ifInitialized(this::disposeWorkflow);
-        this.m_cachedVersions.values().forEach(this::disposeWorkflow);
-        this.m_cachedVersions.clear();
+        m_cachedWfm.ifInitialized(this::disposeWorkflow);
+        m_cachedVersions.values().forEach(this::disposeWorkflow);
+        m_cachedVersions.clear();
     }
 
     private void disposeWorkflow(final WorkflowManager wfm) {
         if (wfm == null) {
             return;
         }
-        if (this.m_onDispose != null) {
-            this.m_onDispose.accept(wfm);
+        if (m_onDispose != null) {
+            m_onDispose.accept(wfm);
         }
         try {
             CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
@@ -207,7 +207,7 @@ public final class Project {
      * Clears the report directory of the workflow project.
      */
     public void clearReport() {
-        this.m_clearReport.run();
+        m_clearReport.run();
     }
 
     /**
@@ -219,7 +219,7 @@ public final class Project {
      * @throws IllegalStateException if report generation failed for some reason
      */
     public byte[] generateReport(final String format) {
-        if (this.m_generateReport == null) {
+        if (m_generateReport == null) {
             throw new UnsupportedOperationException(
                 "No report generation function set for project '" + this.m_name + "'");
         }
@@ -229,9 +229,9 @@ public final class Project {
     @Override
     public int hashCode() {
         return new HashCodeBuilder() //
-            .append(this.m_id) //
-            .append(this.m_name) //
-            .append(this.m_origin) //
+            .append(m_id) //
+            .append(m_name) //
+            .append(m_origin) //
             .build();
     }
 
@@ -244,9 +244,9 @@ public final class Project {
             return false;
         }
         return new EqualsBuilder() //
-            .append(this.m_id, otherProject.getID()) //
-            .append(this.m_name, otherProject.getName()) //
-            .append(this.m_origin, otherProject.getOrigin().orElse(null)) //
+            .append(m_id, otherProject.getID()) //
+            .append(m_name, otherProject.getName()) //
+            .append(m_origin, otherProject.getOrigin().orElse(null)) //
             .build();
     }
 
