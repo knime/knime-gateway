@@ -107,7 +107,7 @@ public abstract class GatewayServiceTest {
         final var projectManager = ProjectManager.getInstance();
         final var spaceProvidersManager = createSpaceProvidersManager();
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(projectManager, spaceProvidersManager, null));
+            new WorkflowMiddleware(projectManager, spaceProvidersManager));
         ServiceDependencies.setServiceDependency(EventConsumer.class, createEventConsumer());
         ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));

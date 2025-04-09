@@ -156,8 +156,6 @@ public class ProjectTest {
     public void testBuilderThrows() {
         assertThrows(NullPointerException.class, () -> Project.builder().setWfm(null).build());
         assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmCache(null).setName("Test project").setId("Custom project id").build());
-        assertThrows(NullPointerException.class,
             () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName(null).setId("Custom project id").build());
         assertThrows(NullPointerException.class,
             () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName("Test project").setId(null).build());

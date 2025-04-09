@@ -189,6 +189,15 @@ public final class Project {
     }
 
     /**
+     * Dispose the loaded {@link WorkflowManager} instance for the given version.
+     * 
+     * @param version -
+     */
+    public void disposeCachedWfm(final VersionId version) {
+        this.m_projectWfmCache.dispose(version);
+    }
+
+    /**
      * Clears the report directory of the workflow project.
      */
     public void clearReport() {
@@ -260,8 +269,6 @@ public final class Project {
         interface RequiresWorkflow {
             Optionals setWfm(final WorkflowManager wfm);
 
-            RequiresName setWfmCache(final ProjectWfmCache projectWfmCache);
-
             RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader);
 
             RequiresName setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> supplier);
@@ -318,13 +325,6 @@ public final class Project {
         }
 
         @Override
-        public BuilderStage.RequiresName setWfmCache(final ProjectWfmCache cache) {
-            Objects.requireNonNull(cache);
-            m_wfmCache = cache;
-            return this;
-        }
-
-        @Override
         public BuilderStage.Optionals setWfm(final WorkflowManager wfm) {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
@@ -337,7 +337,7 @@ public final class Project {
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
             Objects.requireNonNull(this.m_id);
-            setWfmCache(new ProjectWfmCache(m_id, wfmLoader));
+            m_wfmCache = new ProjectWfmCache(wfmLoader);
             return this;
         }
 

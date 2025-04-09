@@ -46,67 +46,15 @@
 
 package org.knime.gateway.impl.project;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.times;
-
-import java.util.function.Consumer;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.VersionId;
-import org.mockito.Mockito;
 
 class ProjectWfmCacheTest {
 
     @Test
-    void testWfmDisposeCallbackForCurrentState() {
-        var projectId = "some id";
-        var instance = new ProjectWfmCache(projectId, ignored -> null);
-        var wfmDisposeListener = Mockito.spy((Consumer<Pair<String, VersionId>>)ignored -> {
-        });
-        instance.getWfmDisposeListeners().add(wfmDisposeListener);
-        instance.getWorkflowManager(VersionId.currentState());
-
-        instance.dispose(VersionId.currentState());
-        Mockito.verify(wfmDisposeListener, times(1)).accept(
-            argThat(arg -> arg.getFirst().equals(projectId) && arg.getSecond().equals(VersionId.currentState())));
-    }
-
-    @Test
-    void testWfmDisposeCallbackForFixedVersion() {
-        var projectId = "some id";
-        var instance = new ProjectWfmCache(projectId, ignored -> null);
-        var wfmDisposeListener = Mockito.spy((Consumer<Pair<String, VersionId>>)ignored -> {
-        });
-        instance.getWfmDisposeListeners().add(wfmDisposeListener);
-        instance.getWorkflowManager(someVersion());
-
-        instance.dispose(someVersion());
-        Mockito.verify(wfmDisposeListener, times(1))
-            .accept(argThat(arg -> arg.getFirst().equals(projectId) && arg.getSecond().equals(someVersion())));
-
-    }
-
-    @Test
-    void testInstanceDisposeCallback() {
-        var projectId = "some id";
-        var instance = new ProjectWfmCache(projectId, ignored -> null);
-        var instanceDisposeListener = Mockito.spy((Consumer<String>)ignored -> {
-        });
-        instance.getInstanceDisposeListeners().add(instanceDisposeListener);
-        instance.getWorkflowManager(VersionId.currentState());
-        instance.getWorkflowManager(someVersion());
-        instance.dispose(VersionId.currentState());
-        Mockito.verify(instanceDisposeListener, times(0)).accept(any());
-        instance.dispose(someVersion());
-        Mockito.verify(instanceDisposeListener, times(1)).accept(argThat(arg -> arg.equals(projectId)));
-    }
-
-    @Test
     void testContains() {
-        var instance = new ProjectWfmCache("some id", ignored -> null);
+        var instance = new ProjectWfmCache(ignored -> null);
         Assertions.assertFalse(instance.contains(VersionId.currentState()));
         Assertions.assertFalse(instance.contains(someVersion()));
         instance.getWorkflowManager(VersionId.currentState());

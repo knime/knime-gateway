@@ -78,13 +78,10 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.Wor
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt.WorkflowMonitorStateSnapshotEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
-import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.project.WorkflowManagerCache;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.EntityRepository;
 import org.knime.gateway.impl.service.util.PatchCreator;
@@ -100,9 +97,10 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 /**
  * Provides utility methods to operate on a workflow represented by a {@link WorkflowKey} where the methods require to
- * keep a state per workflow (e.g. cached objects, undo & redo stack, entity history). The state per workflow is cleared
- * as soon as it's removed from memory (the actual {@link WorkflowManager}-instances are accessed via the
- * {@link ProjectManager}).
+ * keep a state per workflow (e.g. cached objects, undo & redo stack, entity history).
+ *
+ * The state per workflow is cleared as soon as it's removed from memory (the actual {@link WorkflowManager}-instances
+ * are accessed via the {@link ProjectManager}).
  *
  * The purpose is to remove this complexity from the default service implementations.
  *
@@ -153,18 +151,14 @@ public final class WorkflowMiddleware {
 
     @SuppressWarnings("java:S1176") // javadoc
     public WorkflowMiddleware(final ProjectManager projectManager) {
-        this(projectManager, null, null);
+        this(projectManager, null);
     }
 
     @SuppressWarnings("java:S1176") // javadoc
-    public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager,
-        final WorkflowManagerCache wfmCache) {
+    public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager) {
         m_spaceProvidersManager = spaceProvidersManager;
         projectManager.addProjectRemovedListener(
             projectId -> clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId)));
-        if (wfmCache != null) {
-            wfmCache.getDisposeListeners().add(this::clearWorkflowState);
-        }
     }
 
     private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
@@ -182,31 +176,22 @@ public final class WorkflowMiddleware {
     }
 
     /**
-     * Creates a new workflow snapshot entity. If there are any changes to the workflow, a new workflow entity is
-     * committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise the snapshot id of the
-     * last commit will be used.
+     * If there are any changes to the workflow, a new workflow entity is committed to the {@link EntityRepository} and
+     * the respective snapshot id is used. Otherwise, the snapshot id of the last commit is used.
      *
-     * @param wfKey the workflow to get/create the snapshot for
-     * @param buildContextSupplier the information required to build a workflow entity - provided in a lazy manner
-     *            because if won't be used if the entity is retrieved from cache
-     * @return a new entity instance
+     * @param wfKey identifying the workflow
+     * @param workflowEntity representing the workflow
+     * @return the snapshot ID
      */
-    public WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowKey wfKey,
-        final Supplier<WorkflowBuildContextBuilder> buildContextSupplier) {
-        var workflowState = getWorkflowState(wfKey);
-        var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(workflowState.m_wfm, buildContextSupplier.get());
-
+    public String commitEntity(final WorkflowKey wfKey, final WorkflowEnt workflowEntity) {
+        getWorkflowState(wfKey); // create cache entries
         // try to commit the workflow entity and return the (existing or new) snapshot
-        return buildWorkflowSnapshotEnt(workflowEntity, m_workflowEntRepo.commit(wfKey, workflowEntity));
-    }
-
-    private static WorkflowSnapshotEnt buildWorkflowSnapshotEnt(final WorkflowEnt workflow, final String snapshotId) {
-        return builder(WorkflowSnapshotEntBuilder.class).setSnapshotId(snapshotId).setWorkflow(workflow).build();
+        return m_workflowEntRepo.commit(wfKey, workflowEntity);
     }
 
     /**
      * Builds a new {@link WorkflowMonitorStateChangeEventEnt} instance. If there are any changes to the workflow, a new
-     * workflow entity is committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise the
+     * workflow entity is committed to the {@link EntityRepository} and the respective snapshot id used. Otherwise, the
      * snapshot id of the last commit will be used.
      *
      * @param wfKey the workflow to get/create the snapshot for
@@ -272,8 +257,8 @@ public final class WorkflowMiddleware {
     /**
      * Helper to create a {@link WorkflowChangedEventEnt}-instance.
      *
-     * When calling this, it is assumed that {@link #buildWorkflowSnapshotEnt(WorkflowKey, Supplier)} has been called at
-     * least once before for the given workflow key.
+     * When calling this, it is assumed that {@link #commitEntity(WorkflowKey, WorkflowEnt)} has been called at least
+     * once before for the given workflow key.
      *
      * State information (maintained by this {@link WorkflowMiddleware}-instance) is used to <br>
      * - avoid unnecessary calculations of {@link DependentNodeProperties} on workflow changes tracked by the associated
@@ -290,7 +275,7 @@ public final class WorkflowMiddleware {
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo) {
-        WorkflowBuildContextBuilder buildContextBuilder = WorkflowBuildContext.builder()//
+        var buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);
         if (includeInteractionInfo) {
@@ -372,7 +357,8 @@ public final class WorkflowMiddleware {
      * @param wfKey the workflow to clear the cache for
      */
     public void clearCachedDependentNodeProperties(final WorkflowKey wfKey) {
-        Optional.ofNullable(getWorkflowState(wfKey).m_depNodeProperties).ifPresent(CachedDependentNodeProperties::clearCache);
+        Optional.ofNullable(getWorkflowState(wfKey).m_depNodeProperties)
+            .ifPresent(CachedDependentNodeProperties::clearCache);
     }
 
     /**

@@ -61,7 +61,6 @@ import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
-import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -92,16 +91,14 @@ public class WorkflowChangedEventSourceTest {
         projectManager.addProject(Project.builder().setWfm(wfm).setId("id2").build());
 
         // create event source
-        var workflowMiddleware = new WorkflowMiddleware(projectManager, null, null);
+        var workflowMiddleware = new WorkflowMiddleware(projectManager, null);
         var eventSource = new WorkflowChangedEventSource(mock(EventConsumer.class), workflowMiddleware, projectManager);
 
         // add event listeners
-        var snapshotId1 = workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey("id1", NodeIDEnt.getRootID()),
-            () -> WorkflowBuildContext.builder()).getSnapshotId();
+        var snapshotId1 = workflowMiddleware.commitEntity(new WorkflowKey("id1", NodeIDEnt.getRootID()), null);
         eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId("id1").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId1).build(), null);
-        var snapshotId2 = workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey("id2", NodeIDEnt.getRootID()),
-            () -> WorkflowBuildContext.builder()).getSnapshotId();
+        var snapshotId2 = workflowMiddleware.commitEntity(new WorkflowKey("id2", NodeIDEnt.getRootID()), null);
         eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId2).build(), null);
 
@@ -142,10 +139,9 @@ public class WorkflowChangedEventSourceTest {
         var workflowMiddleware = new WorkflowMiddleware(projectManager);
         var eventSource = new WorkflowChangedEventSource(mock(EventConsumer.class), workflowMiddleware, projectManager);
         var wfKey = new WorkflowKey(projectId, NodeIDEnt.getRootID());
-        var workflowSnapshot = workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
-            () -> WorkflowBuildContext.builder().includeInteractionInfo(true));
-        var eventType = builder(WorkflowChangedEventTypeEntBuilder.class)
-        .setProjectId(projectId).setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(workflowSnapshot.getSnapshotId()).build();
+        var snapshotId = workflowMiddleware.commitEntity(wfKey, null);
+        var eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
+            .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId).build();
         var event = eventSource.addEventListenerAndGetInitialEventFor(eventType, projectId);
         eventSource.removeEventListener(eventType, projectId);
         assertThat(event.isEmpty(), is(true));
@@ -155,10 +151,9 @@ public class WorkflowChangedEventSourceTest {
         Awaitility.await().until(() -> wfm.getNodeContainerState().isExecutionInProgress());
 
         // get current workflow state (dependent node properties are re-computed)
-        workflowSnapshot = workflowMiddleware.buildWorkflowSnapshotEnt(wfKey,
-            () -> WorkflowBuildContext.builder().includeInteractionInfo(true));
-        eventType = builder(WorkflowChangedEventTypeEntBuilder.class)
-        .setProjectId("1").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(workflowSnapshot.getSnapshotId()).build();
+        snapshotId = workflowMiddleware.commitEntity(wfKey, null);
+        eventType = builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId("1")
+            .setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId).build();
 
         // the actual test: there must not be any events, because the cached dependent node properties have been cleared
         // and are expected to be re-computed when creating the workflow snapshot in order to determine the returned 'workflow changed event'

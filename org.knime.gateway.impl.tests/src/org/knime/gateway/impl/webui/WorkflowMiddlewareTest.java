@@ -59,8 +59,6 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
-import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.js.core.JSCorePlugin;
@@ -95,20 +93,19 @@ public class WorkflowMiddlewareTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var projectManager = ProjectManager.getInstance();
         var projectId = wfm.getNameWithID();
-        projectManager.addProject(
-            Project.builder().setWfm(wfm).setId(projectId).build());
-        var middleware = new WorkflowMiddleware(projectManager, null, null);
-        createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.PROJECT, wfm.getID());
+        projectManager.addProject(Project.builder().setWfm(wfm).setId(projectId).build());
+        var middleware = new WorkflowMiddleware(projectManager, null);
+        commitWorkflowSnapshotEnts(projectId, middleware, wfm.getID());
 
         var metanodeIDs = createNestedMetanodesOrComponents(wfm, false);
-        createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.METANODE, metanodeIDs);
+        commitWorkflowSnapshotEnts(projectId, middleware, metanodeIDs);
         assertThat(middleware.m_workflowStateCache.size(), is(3));
 
         wfm.removeNode(metanodeIDs[0]);
         await().untilAsserted(() -> assertThat(middleware.m_workflowStateCache.size(), is(1)));
 
         var componentIDs = createNestedMetanodesOrComponents(wfm, true);
-        createWorkflowSnapshotEnts(projectId, middleware, ContainerTypeEnum.COMPONENT, componentIDs);
+        commitWorkflowSnapshotEnts(projectId, middleware, componentIDs);
         assertThat(middleware.m_workflowStateCache.size(), is(3));
 
         wfm.removeNode(componentIDs[0]);
@@ -139,12 +136,10 @@ public class WorkflowMiddlewareTest {
         }
     }
 
-    private static void createWorkflowSnapshotEnts(final String projectId, final WorkflowMiddleware middleware,
-        final ContainerTypeEnum expectedContainerType, final NodeID... nodeIds) {
+    private static void commitWorkflowSnapshotEnts(final String projectId, final WorkflowMiddleware middleware,
+        final NodeID... nodeIds) {
         for (var nodeId : nodeIds) {
-            var snapshot = middleware.buildWorkflowSnapshotEnt(new WorkflowKey(projectId, new NodeIDEnt(nodeId)),
-                WorkflowBuildContext::builder);
-            assertThat(snapshot.getWorkflow().getInfo().getContainerType(), is(expectedContainerType));
+            middleware.commitEntity(new WorkflowKey(projectId, new NodeIDEnt(nodeId)), null);
         }
     }
 

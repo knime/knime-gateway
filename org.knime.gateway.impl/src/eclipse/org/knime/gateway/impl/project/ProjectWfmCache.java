@@ -52,23 +52,19 @@ import java.util.Optional;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LRUCache;
-import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.util.Lazy;
-import org.knime.gateway.impl.util.Listeners;
 
 /**
- * Caches loaded {@link WorkflowManager} instances associated with a project. There is at most one instance of this class per project.
+ * Caches loaded {@link WorkflowManager} instances associated with a project. There is at most one instance of this
+ * class per project.
  * <p>
  * For fixed versions, we want an LRU cache. The current-state a.k.a. working area should be kept indefinitely.
+ * 
+ * @see Project
  */
-public class ProjectWfmCache {
-
-    /**
-     * The ID of the project this instance is associated with
-     */
-    private final String m_projectId;
+class ProjectWfmCache {
 
     private final WorkflowManagerLoader m_wfmLoader;
 
@@ -79,45 +75,17 @@ public class ProjectWfmCache {
     private final Map<VersionId.Fixed, WorkflowManager> m_fixedVersions = new LRUCache<>(VERSION_WFM_CACHE_MAX_SIZE);
 
     /**
-     * Notified when the last WorkflowManager instance has been disposed, i.e. this cache becomes "empty".
-     */
-    private final Listeners<String> m_instanceDisposeListeners = new Listeners<>();
-
-    /**
-     * Notified when a WorkflowManager instance has been disposed
-     */
-    private final Listeners<Pair<String, VersionId>> m_wfmDisposeListeners = new Listeners<>();
-
-    /**
-     *
-     * @see this#m_instanceDisposeListeners
-     * @return -
-     */
-    public Listeners<String> getInstanceDisposeListeners() {
-        return m_instanceDisposeListeners;
-    }
-
-    /**
-     * @see this#m_wfmDisposeListeners
-     * @return -
-     */
-    public Listeners<Pair<String, VersionId>> getWfmDisposeListeners() {
-        return m_wfmDisposeListeners;
-    }
-
-    /**
      * -
-     * @param projectId -
+     * 
      * @param wfmLoader -
      */
-    public ProjectWfmCache(final String projectId, final WorkflowManagerLoader wfmLoader) {
-        this.m_projectId = projectId;
+    public ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
         this.m_wfmLoader = wfmLoader;
         this.m_currentState = new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState()));
     }
 
     /**
-     * Get a value, computing it if not yet cached.
+     * Get an instance, loading it using the given loader if not yet cached.
      *
      * @param version -
      * @return -
@@ -132,46 +100,37 @@ public class ProjectWfmCache {
 
     void dispose() {
         this.dispose(VersionId.currentState());
-        //noinspection SimplifyStreamApiCallChains -- required to avoid concurrent modification
-        m_fixedVersions.keySet().stream().forEach(this::dispose);
+        m_fixedVersions.keySet().stream().toList().forEach(this::dispose);
     }
 
     /**
      * Dispose the workflow manager instance corresponding to the given version, if present.
+     * 
      * @param version -
      */
     public void dispose(final VersionId version) {
         if (version instanceof VersionId.CurrentState) {
-            m_currentState.ifPresent(wfm -> {
-                disposeWorkflowManager(wfm);
-                getWfmDisposeListeners().notify(new Pair<>(m_projectId, VersionId.currentState()));
-            });
+            m_currentState.ifPresent(ProjectWfmCache::disposeWorkflowManager);
             m_currentState.clear();
         } else {
-            Optional.ofNullable(m_fixedVersions.remove(version)).ifPresent(wfm -> {
-                disposeWorkflowManager(wfm);
-                getWfmDisposeListeners().notify(new Pair<>(m_projectId, version));
-            });
+            Optional.ofNullable(m_fixedVersions.remove(version)) //
+                .ifPresent(ProjectWfmCache::disposeWorkflowManager);
         }
-        if (this.isEmpty()) {
-            getInstanceDisposeListeners().notify(m_projectId);
-        }
-    }
-
-    private boolean isEmpty() {
-        return !m_currentState.isInitialized() && m_fixedVersions.isEmpty();
     }
 
     /**
      * -
+     * 
      * @param version -
      * @return Whether a workflow manager instance corresponding to the given version is already loaded
      */
     public boolean contains(final VersionId version) {
-        if (version instanceof VersionId.CurrentState) {
+        if (version instanceof VersionId.Fixed fixedVersion) {
+            return m_fixedVersions.containsKey(fixedVersion);
+        } else if (version instanceof VersionId.CurrentState) {
             return m_currentState.isInitialized();
         } else {
-            return m_fixedVersions.containsKey(version);
+            return false;
         }
     }
 

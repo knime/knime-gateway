@@ -139,7 +139,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         Project wp = createEmptyWorkflowProject();
 
         WorkflowCommands commands = new WorkflowCommands(5);
-        WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null, null);
+        WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
         var wfm = wp.getWorkflowManager();
@@ -295,7 +295,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testUndoFlagUpdateOnWorkflowChange() throws Exception {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(ProjectManager.getInstance(), null, null));
+            new WorkflowMiddleware(ProjectManager.getInstance(), null));
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManagerInstance());
@@ -396,7 +396,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, new AppStateUpdater());
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
-        var workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null, null);
+        var workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
         var commands = workflowMiddleware.getCommands();
         var wfKey = new WorkflowKey(wfId, getRootID());
         AtomicInteger eventConsumerCalls = new AtomicInteger();
@@ -521,7 +521,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         ServiceDependencies.setServiceDependency(EventConsumer.class,
             (n, e) -> events.push((WorkflowChangedEventEnt)((CompositeEventEnt)e).getEvents().get(0)));
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(ProjectManager.getInstance(), null, null));
+            new WorkflowMiddleware(ProjectManager.getInstance(), null));
 
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI).getFirst().toString();
         var snapshotId = DefaultWorkflowService.getInstance().getWorkflow(projectId, getRootID(), true, null).getSnapshotId();

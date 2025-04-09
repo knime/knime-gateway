@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +72,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflo
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
-import org.knime.gateway.impl.project.WorkflowManagerCache;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -94,8 +96,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final SpaceProvidersManager m_spaceProvidersManager =
         ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, false);
 
-    private final WorkflowManagerCache m_workflowManagerCache =
-        ServiceDependencies.getServiceDependency(WorkflowManagerCache.class, true);
+    private final ProjectManager m_projectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -117,10 +119,11 @@ public final class DefaultWorkflowService implements WorkflowService {
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
         final Boolean includeInfoOnAllowedActions, final String versionParameter)
         throws NotASubWorkflowException, NodeNotFoundException {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionParameter);
         var wfKey = new WorkflowKey(projectId, workflowId, version);
+        var wfm = DefaultServiceUtil.assertProjectIdAndGetWorkflowManager(wfKey);
         var buildContext = WorkflowBuildContext.builder();
+        buildContext.setVersion(version);
         if (Boolean.TRUE.equals(includeInfoOnAllowedActions)) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
                 ? Map.of() //
@@ -129,13 +132,20 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
                 .setSpaceProviderTypes(providerTypes) //
-                .setVersion(version) //
                 .setComponentPlaceholders(
                     m_workflowMiddleware.getComponentLoader(wfKey).getComponentPlaceholdersAndCleanUp());
         } else {
-            buildContext.includeInteractionInfo(false).setVersion(version);
+            buildContext.includeInteractionInfo(false);
         }
-        return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
+        var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(wfm, buildContext);
+        var snapshotId = version instanceof VersionId.CurrentState //
+            ? m_workflowMiddleware.commitEntity(wfKey, workflowEntity) //
+            // fixed versions are not editable, we do not need to cache state, execute commands, provide change events etc. for these
+            : null;
+        return builder(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class) //
+            .setSnapshotId(snapshotId) //
+            .setWorkflow(workflowEntity) //
+            .build();
     }
 
     /**
@@ -168,8 +178,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_workflowManagerCache.getProjectCache(projectId)
-            .ifPresent(cache -> cache.dispose(VersionId.parse(versionParameter)));
+        m_projectManager.getProject(projectId)
+            .ifPresent(project -> project.disposeCachedWfm(VersionId.parse(versionParameter)));
     }
 
     /**

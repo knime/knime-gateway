@@ -240,7 +240,7 @@ public class GatewayJsonRpcWrapperServiceTests {
     public void setupServiceDependencies() {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, null);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(ProjectManager.getInstance(), null, null));
+            new WorkflowMiddleware(ProjectManager.getInstance(), null));
         ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, Mockito.mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(NodeRepository.class, new NodeRepository());

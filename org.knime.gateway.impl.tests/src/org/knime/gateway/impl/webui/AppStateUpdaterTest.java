@@ -215,7 +215,7 @@ public class AppStateUpdaterTest {
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
         final var projectManager = ProjectManager.getInstance();
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(projectManager, null, null));
+            new WorkflowMiddleware(projectManager, null));
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         ServiceDependencies.setServiceDependency(ProjectManager.class, projectManager);
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, preferencesProvider);

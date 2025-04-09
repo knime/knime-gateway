@@ -57,6 +57,7 @@ import java.util.function.Function;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.port.PortViewManager;
@@ -65,6 +66,7 @@ import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -79,13 +81,13 @@ final class DefaultServiceUtil {
     }
 
     /**
-     * Call {@link DefaultServiceContext#assertWorkflowProjectId(String)} and returns the {@link NodeContainer}
-     * associated with the given ids.
+     * Call {@link DefaultServiceContext#assertWorkflowProjectId(String)} and return the {@link NodeContainer}
+     * associated with the given id.
      *
-     * @param projectId
-     * @param workflowId
-     * @param nodeId
-     * @return
+     * @param projectId -
+     * @param workflowId -
+     * @param nodeId -
+     * @return -
      * @throws NodeNotFoundException if the node container couldn't be found
      * @throws IllegalStateException if the given project-id is not the expected one
      * @throws NoSuchElementException if there is no project for the given id
@@ -93,28 +95,46 @@ final class DefaultServiceUtil {
     static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId) throws NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        NodeContainer nc;
         try {
-            nc = org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+            return org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer(projectId, workflowId,
+                nodeId);
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
-        return nc;
+    }
+
+    /**
+     * Call {@link DefaultServiceContext#assertWorkflowProjectId(String)} and return the {@link WorkflowManager}
+     * instance identified by the given {@link WorkflowKey}.
+     * 
+     * @param wfKey -
+     * @return -
+     * @throws NodeNotFoundException -
+     */
+    static WorkflowManager assertProjectIdAndGetWorkflowManager(final WorkflowKey wfKey) throws NodeNotFoundException {
+        DefaultServiceContext.assertWorkflowProjectId(wfKey.getProjectId());
+        try {
+            return org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(wfKey.projectId(),
+                wfKey.workflowId());
+        } catch (NoSuchElementException | IllegalArgumentException | IllegalStateException e) {
+            throw new NodeNotFoundException(e.getMessage(), e);
+        }
     }
 
     /**
      * Updates the data point selection (aka hiliting) for the given node/port.
      *
-     * @param projectId
-     * @param workflowId
-     * @param nodeId
-     * @param portIdx can be {@code null} if not a port view
-     * @param viewIdx can be {@code null} if not a port view
-     * @param mode
-     * @param selection
+     * @param projectId -
+     * @param workflowId -
+     * @param nodeId -
+     * @param mode -
+     * @param selection -
+     * @param getNodeWrapper -
+     * @param <N> -
      * @throws NodeNotFoundException if the node for the given id couldn't be found
      * @throws IllegalStateException If there was a problem with translating teh strings to row-keys
      */
+    @SuppressWarnings("unchecked")
     static <N extends NodeWrapper> void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final String mode, final List<String> selection,
         final Function<NodeContainer, N> getNodeWrapper) throws NodeNotFoundException {
