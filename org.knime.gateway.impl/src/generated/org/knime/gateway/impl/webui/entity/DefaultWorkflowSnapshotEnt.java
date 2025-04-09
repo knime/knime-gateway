@@ -70,9 +70,6 @@ public record DefaultWorkflowSnapshotEnt(
         if(workflow == null) {
             throw new IllegalArgumentException("<workflow> must not be null.");
         }
-        if(snapshotId == null) {
-            throw new IllegalArgumentException("<snapshotId> must not be null.");
-        }
     }
 
     @Override
@@ -110,9 +107,6 @@ public record DefaultWorkflowSnapshotEnt(
 
         @Override
         public DefaultWorkflowSnapshotEntBuilder setSnapshotId(String snapshotId) {
-             if(snapshotId == null) {
-                 throw new IllegalArgumentException("<snapshotId> must not be null.");
-             }
              m_snapshotId = snapshotId;
              return this;
         }

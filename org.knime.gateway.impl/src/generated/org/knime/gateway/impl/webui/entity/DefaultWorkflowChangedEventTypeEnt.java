@@ -77,9 +77,6 @@ public record DefaultWorkflowChangedEventTypeEnt(
         if(workflowId == null) {
             throw new IllegalArgumentException("<workflowId> must not be null.");
         }
-        if(snapshotId == null) {
-            throw new IllegalArgumentException("<snapshotId> must not be null.");
-        }
     }
 
     @Override
@@ -146,9 +143,6 @@ public record DefaultWorkflowChangedEventTypeEnt(
 
         @Override
         public DefaultWorkflowChangedEventTypeEntBuilder setSnapshotId(String snapshotId) {
-             if(snapshotId == null) {
-                 throw new IllegalArgumentException("<snapshotId> must not be null.");
-             }
              m_snapshotId = snapshotId;
              return this;
         }
