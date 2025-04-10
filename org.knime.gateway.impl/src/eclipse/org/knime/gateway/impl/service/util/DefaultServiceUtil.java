@@ -297,8 +297,10 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * @param projectId
-     * @param versionId
+     * Asserts that the given project version is active.
+     *
+     * @param projectId the id of the project
+     * @param versionId the version id to check
      * @throws IllegalStateException if no project for the given ID could be found
      * @throws ProjectVersionException if the active project version is not the given version
      */

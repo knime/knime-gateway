@@ -135,7 +135,7 @@ public final class Project {
     /**
      * Get the {@link WorkflowManager} for the version specified from cache or load it
      *
-     * @param version
+     * @param version The version id
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
@@ -166,12 +166,11 @@ public final class Project {
     /**
      * Get the {@link WorkflowManager} for the version specified from cache if it is already loaded
      *
-     * @param version
+     * @param version The version id
      * @return The root workflow manager of the project of a given {@link VersionId}, or empty if that workflow manager
      *         is not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
-        // TODO: Use this method to double check if the version is loaded
         if (version instanceof VersionId.Fixed fixedVersion) {
             return m_cachedVersions.containsKey(fixedVersion) ? //
                 Optional.of(m_cachedVersions.get(fixedVersion)) : //

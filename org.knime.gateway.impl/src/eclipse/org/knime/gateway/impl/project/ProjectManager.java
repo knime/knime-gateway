@@ -180,8 +180,8 @@ public final class ProjectManager {
      * Checks whether the project for the given id is active (e.g., meaning that it's to the user in an opened tab) and
      * the version is active.
      *
-     * @param projectId
-     * @param versionId
+     * @param projectId the id of the project to check
+     * @param versionId the version id to check
      * @return Whether the project is active and the version is the active version.
      */
     public boolean isActiveProjectVersion(final String projectId, final VersionId versionId) {

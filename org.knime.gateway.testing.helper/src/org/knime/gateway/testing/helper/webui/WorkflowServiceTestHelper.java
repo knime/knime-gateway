@@ -289,7 +289,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(testWorkflowWithVersion);
 
         var version = new VersionId.Fixed(4);
-        var version_diff = new VersionId.Fixed(5);
         ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
         ProjectManager.getInstance().setProjectActive(projectId, version);
 

@@ -195,67 +195,66 @@ public class DirectAccessTablePortViewFactoryTest {
     }
 
     private static final String TABLE_VIEW_INITIAL_DATA_SNAPSHOT =
-        """
-                {
-                  "table" : {
-                    "rows" : [ [ "1", "0", "0", "0", "0", "0.0", "false", "1.7976931348623157E308" ], [ "2", "1", "?", "?", "?", "?", "?", "?" ] ],
-                    "rowCount" : 2,
-                    "columnCount" : 6,
-                    "displayedColumns" : [ "int", "string", "long", "double", "boolean", "mixed-type" ],
-                    "columnContentTypes" : [ "txt", "txt", "txt", "txt", "txt", "txt" ],
-                    "columnFormatterDescriptions" : [ null, null, null, null, null, null ],
-                    "totalSelected" : 0,
-                    "firstRowImageDimensions" : {},
-                    "columnNamesColors": [],
-                    "rowIndices":[0,1]
-                  },
-                  "settings" : {
-                    "displayedColumns" : {
-                      "selected" : ["int","string","long","double","boolean","mixed-type"],
-                      "mode" : "MANUAL",
-                      "patternFilter" : {
-                        "pattern" : "",
-                        "isCaseSensitive" : false,
-                        "isInverted" : false
+            """
+                    {
+                      "table" : {
+                        "rows" : [ [ "1", "0", "0", "0", "0", "0.0", "false", "1.7976931348623157E308" ], [ "2", "1", "?", "?", "?", "?", "?", "?" ] ],
+                        "rowCount" : 2,
+                        "columnCount" : 6,
+                        "displayedColumns" : [ "int", "string", "long", "double", "boolean", "mixed-type" ],
+                        "columnContentTypes" : [ "txt", "txt", "txt", "txt", "txt", "txt" ],
+                        "columnFormatterDescriptions" : [ null, null, null, null, null, null ],
+                        "totalSelected" : 0,
+                        "firstRowImageDimensions" : {},
+                        "columnNamesColors": [],
+                        "rowIndices":[0,1]
                       },
-                      "manualFilter" : {
-                        "manuallySelected" : [ "int", "string", "long", "double", "boolean", "mixed-type" ],
-                        "manuallyDeselected" : [ ],
-                        "includeUnknownColumns" : false
+                      "settings" : {
+                        "displayedColumns" : {
+                          "mode" : "MANUAL",
+                          "patternFilter" : {
+                            "pattern" : "",
+                            "isCaseSensitive" : false,
+                            "isInverted" : false
+                          },
+                          "manualFilter" : {
+                            "manuallySelected" : [ "int", "string", "long", "double", "boolean", "mixed-type" ],
+                            "manuallyDeselected" : [ ],
+                            "includeUnknownColumns" : false
+                          },
+                          "typeFilter" : {
+                            "selectedTypes" : [ ],
+                            "typeDisplays" : [ ]
+                          }
+                        },
+                        "showRowIndices" : true,
+                        "showRowKeys" : true,
+                        "showColumnDataType" : true,
+                        "showTableSize" : false,
+                        "title" : "",
+                        "enablePagination" : true,
+                        "pageSize" : 100,
+                        "autoSizeColumnsToContent":"FIXED",
+                        "rowHeightMode":"CUSTOM",
+                        "verticalPaddingMode":"COMPACT",
+                        "customRowHeight" : 24,
+                        "maxAutoRowHeight" : 120,
+                        "enableGlobalSearch" : false,
+                        "enableColumnSearch" : false,
+                        "enableSortingByHeader" : false,
+                        "enableRendererSelection" : false,
+                        "enableCellCopying" : true,
+                        "selectionMode": "OFF",
+                        "skipRemainingColumns" : false,
+                        "showTableSize" : false,
+                        "showOnlySelectedRows" : false,
+                        "showOnlySelectedRowsConfigurable": false,
+                        "enableDataValueViews" : false,
+                        "rowLabel":"Rows",
+                        "showColumnCount": true
                       },
-                      "typeFilter" : {
-                        "selectedTypes" : [ ],
-                        "typeDisplays" : [ ]
-                      }
-                    },
-                    "showRowIndices" : true,
-                    "showRowKeys" : true,
-                    "showColumnDataType" : true,
-                    "showTableSize" : false,
-                    "title" : "",
-                    "enablePagination" : true,
-                    "pageSize" : 100,
-                    "autoSizeColumnsToContent":"FIXED",
-                    "rowHeightMode":"CUSTOM",
-                    "verticalPaddingMode":"COMPACT",
-                    "customRowHeight" : 24,
-                    "maxAutoRowHeight" : 120,
-                    "enableGlobalSearch" : false,
-                    "enableColumnSearch" : false,
-                    "enableSortingByHeader" : false,
-                    "enableRendererSelection" : false,
-                    "enableCellCopying" : true,
-                    "selectionMode": "OFF",
-                    "skipRemainingColumns" : false,
-                    "showTableSize" : false,
-                    "showOnlySelectedRows" : false,
-                    "showOnlySelectedRowsConfigurable": false,
-                    "enableDataValueViews" : false,
-                    "rowLabel":"Rows",
-                    "showColumnCount": true
-                  },
-                  "columnDomainValues" : { }
-                }
-                            """;
+                      "columnDomainValues" : { }
+                    }
+                                """;
 
 }
