@@ -119,6 +119,11 @@ public final class DefaultKaiService implements KaiService {
         }
 
         @Override
+        protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+            return m_kaiCommand.execute(getWorkflowManager());
+        }
+
+        @Override
         public void undo() {
             m_kaiCommand.undo(getWorkflowManager());
         }
