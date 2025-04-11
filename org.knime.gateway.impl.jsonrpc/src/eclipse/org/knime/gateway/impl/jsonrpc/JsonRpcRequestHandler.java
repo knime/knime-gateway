@@ -104,6 +104,7 @@ public class JsonRpcRequestHandler {
     public byte[] handle(final byte[] jsonRpcRequest) {
         try (var out = new ByteArrayOutputStream(); var in = new ByteArrayInputStream(jsonRpcRequest)) {
             m_jsonRpcMultiServer.handleRequest(in, out);
+            // TODO: Limit response byte array size here?
             return out.toByteArray();
         } catch (IOException e) {
             NodeLogger.getLogger(getClass()).warn("Problem handling json rpc request", e);
