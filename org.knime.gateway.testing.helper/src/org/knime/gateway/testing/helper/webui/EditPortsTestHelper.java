@@ -278,7 +278,7 @@ public class EditPortsTestHelper extends WebUIGatewayServiceTestHelper {
 
     private List<? extends NodePortEnt> getPortList(final String wfId, final boolean isInPort, final NodeIDEnt node)
         throws Exception {
-        var wfEnt = ws().getWorkflow(wfId, getRootID(), true, null).getWorkflow();
+        var wfEnt = ws().getWorkflow(wfId, getRootID(), null, true).getWorkflow();
         var nodeEnt = wfEnt.getNodes().get(node.toString());
         return isInPort ? nodeEnt.getInPorts() : nodeEnt.getOutPorts();
     }
