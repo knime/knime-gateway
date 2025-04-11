@@ -93,12 +93,13 @@ public final class ComponentLoader {
     /**
      * Creates a new component loading job.
      *
+     * @param componentName name of the component to be added
      * @param position coordinate to show the placeholder and the successfully loaded component
      * @param loadComponent the actual component loading logic
      *
      * @return the job/placeholder id
      */
-    public LoadJob startLoadJob(final Geometry.Point position,
+    public LoadJob startLoadJob(final String componentName, final Geometry.Point position,
         final FailableFunction<ExecutionMonitor, LoadResult, CanceledExecutionException> loadComponent) {
         var placeholderId = UUID.randomUUID().toString();
         var exec = new ExecutionMonitor();
@@ -107,6 +108,7 @@ public final class ComponentLoader {
         var placeholder = builder(ComponentPlaceholderEntBuilder.class) //
             .setId(placeholderId) //
             .setState(StateEnum.LOADING) //
+            .setName(componentName) //
             .setPosition(position.toEnt()) //
             .setComponentId(null) //
             .setMessage(exec.getProgressMonitor().getMessage()) //
@@ -153,6 +155,7 @@ public final class ComponentLoader {
         replacePlaceholderEnt(id,
             previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
                 .setState(StateEnum.LOADING) //
+                .setName(previousEnt.getName()) //
                 .setPosition(previousEnt.getPosition()) //
                 .setMessage(message) //
                 .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
@@ -165,6 +168,7 @@ public final class ComponentLoader {
         replacePlaceholderEnt(id,
             previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
                 .setState(warningMessage == null ? StateEnum.SUCCESS : StateEnum.SUCCESS_WITH_WARNING) //
+                .setName(previousEnt.getName()) //
                 .setPosition(previousEnt.getPosition()) //
                 .setComponentId(replacementId) //
                 .setMessage(warningMessage) //
@@ -177,6 +181,7 @@ public final class ComponentLoader {
         replacePlaceholderEnt(id,
             previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
                 .setState(StateEnum.ERROR) //
+                .setName(previousEnt.getName()) //
                 .setPosition(previousEnt.getPosition()) //
                 .setMessage(message) //
                 .setDetails(details) //

@@ -64,7 +64,6 @@ import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
-import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -73,7 +72,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -166,22 +164,21 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCancelAndRetryComponentLoadJob() throws Exception {
-        var localSpace = new LocalSpace(SpaceServiceTestHelper.getTestWorkspacePath("test_workspace_to_list"));
-        var spaceProvider = AddComponentCommandTestHelper.createSpaceProvider(localSpace, 1000);
+        var itemId = "test-item-id";
+        var spaceId = "test-space-id";
+        var space = AddComponentCommandTestHelper.createSpace(spaceId, itemId, "component name", 1000);
+        var spaceProvider = AddComponentCommandTestHelper.createSpaceProvider(space);
         var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
         var events = Collections.synchronizedList(new ArrayList<Object>());
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
 
         final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        var componentItem = localSpace.listWorkflowGroup("root").getItems().stream()
-            .filter(item -> item.getType() == TypeEnum.COMPONENT).findFirst().orElseThrow();
-        var itemId = componentItem.getId();
         var command = builder(AddComponentCommandEntBuilder.class) //
             .setKind(KindEnum.ADD_COMPONENT) //
             .setPosition(builder(XYEntBuilder.class).setX(10).setY(20).build()) //
             .setProviderId("local-testing") //
-            .setSpaceId(LocalSpace.LOCAL_SPACE_ID) //
+            .setSpaceId(spaceId) //
             .setItemId(itemId) //
             .build();
 
@@ -199,6 +196,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
         var placeholder = ((Collection<ComponentPlaceholderEnt>)placeholderPatch.getValue()).iterator().next();
         assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
+        assertThat(placeholder.getName(), is("component name"));
         assertThat(placeholder.getState(), is(StateEnum.LOADING));
         events.clear();
 

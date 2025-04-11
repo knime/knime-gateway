@@ -539,7 +539,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return spaceProvider.getId();
     }
 
-    static Path getTestWorkspacePath(final String name) throws IOException {
+    private static Path getTestWorkspacePath(final String name) throws IOException {
         var path = CoreUtil.resolveToFile("/files/" + name, SpaceServiceTestHelper.class).toPath();
         // Windows does not consider all files starting with a dot to be hidden; a special flag has to be set
         if (SystemUtils.IS_OS_WINDOWS) {

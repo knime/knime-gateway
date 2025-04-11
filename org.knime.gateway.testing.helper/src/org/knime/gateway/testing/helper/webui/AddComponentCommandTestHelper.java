@@ -52,7 +52,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,8 +65,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.util.Version;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
@@ -69,7 +76,6 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
@@ -79,12 +85,12 @@ import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.mockito.Mockito;
 
 /**
  * Tests for execution of the {@link AddComponentCommandEnt}.
@@ -106,22 +112,21 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
      * @throws Exception -
      */
     public void testAddComponentCommand() throws Exception {
-        var localSpace = new LocalSpace(SpaceServiceTestHelper.getTestWorkspacePath("test_workspace_to_list"));
-        var spaceProvider = createSpaceProvider(localSpace, 200);
+        var itemId = "test-item-id";
+        var spaceId = "test-space-id";
+        var space = createSpace(spaceId, itemId, "component name", 200);
+        var spaceProvider = createSpaceProvider(space);
         var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
         var events = Collections.synchronizedList(new ArrayList<Object>());
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
 
         final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        var componentItem = localSpace.listWorkflowGroup("root").getItems().stream()
-            .filter(item -> item.getType() == TypeEnum.COMPONENT).findFirst().orElseThrow();
-        var itemId = componentItem.getId();
         var command = builder(AddComponentCommandEntBuilder.class) //
             .setKind(KindEnum.ADD_COMPONENT) //
             .setPosition(builder(XYEntBuilder.class).setX(10).setY(20).build()) //
             .setProviderId("local-testing") //
-            .setSpaceId(LocalSpace.LOCAL_SPACE_ID) //
+            .setSpaceId(spaceId) //
             .setItemId(itemId) //
             .build();
 
@@ -160,10 +165,8 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
 
     /**
      * @param space the space to return on {@link SpaceProvider#getSpace(String)}
-     * @param getSpaceDelayInMs the time the {@link SpaceProvider#getSpace(String)} should be delayed until it returns -
-     *            helps to mimic a longer component-loading operation
      */
-    static SpaceProvider createSpaceProvider(final Space space, final long getSpaceDelayInMs) {
+    static SpaceProvider createSpaceProvider(final Space space) {
         return new SpaceProvider() {
 
             @Override
@@ -188,13 +191,6 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
 
             @Override
             public Space getSpace(final String spaceId) {
-                try {
-                    // ensures that 'component loading' takes a bit longer to make the test deterministic
-                    // (when checking for the placeholder state - which is 'loading' on the first event)
-                    Thread.sleep(getSpaceDelayInMs);
-                } catch (InterruptedException ex) { // NOSONAR
-                    //
-                }
                 return Optional.of(space).filter(s -> s.getId().equals(spaceId)).orElseThrow();
             }
 
@@ -208,6 +204,40 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    /**
+     *
+     * @param spaceId
+     * @param componentItemId
+     * @param componentName
+     * @param toKnimeUrlDelayInMs the time the {@link Space#toKnimeUrl(String)}-call should be delayed until it returns
+     *            - helps to mimic a longer component-loading operation
+     * @return a mocked space
+     */
+    static Space createSpace(final String spaceId, final String componentItemId, final String componentName,
+        final long toKnimeUrlDelayInMs) {
+        var spaceMock = Mockito.mock(Space.class);
+        when(spaceMock.getId()).thenReturn(spaceId);
+        when(spaceMock.getItemName(componentItemId)).thenReturn(componentName);
+        try {
+            when(spaceMock.toKnimeUrl(componentItemId)).thenAnswer(i -> {
+                try {
+                    // ensures that 'component loading' takes a bit longer to make the test deterministic
+                    // (when checking for the placeholder state - which is 'loading' on the first event)
+                    Thread.sleep(toKnimeUrlDelayInMs);
+                } catch (InterruptedException ex) { // NOSONAR
+                    //
+                }
+                return new URI("knime://LOCAL/component/");
+            });
+            var componentPath = CoreUtil
+                .resolveToFile("/files/test_workspace_to_list/component", AddComponentCommandTestHelper.class).toPath();
+            when(spaceMock.toLocalAbsolutePath(any(), eq(componentItemId))).thenReturn(Optional.of(componentPath));
+        } catch (CanceledExecutionException | IOException ex) {
+            throw new AssertionError(ex);
+        }
+        return spaceMock;
     }
 
 }
