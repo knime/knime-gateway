@@ -199,6 +199,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
         var placeholder = ((Collection<ComponentPlaceholderEnt>)placeholderPatch.getValue()).iterator().next();
         assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
+        assertThat(placeholder.getName(), is("component"));
         assertThat(placeholder.getState(), is(StateEnum.LOADING));
         events.clear();
 

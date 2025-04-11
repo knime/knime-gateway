@@ -76,6 +76,10 @@ public interface ComponentPlaceholderEntMixIn extends ComponentPlaceholderEnt {
     public String getId();
     
     @Override
+    @JsonProperty("name")
+    public String getName();
+    
+    @Override
     @JsonProperty("state")
     public StateEnum getState();
     
@@ -115,6 +119,10 @@ public interface ComponentPlaceholderEntMixIn extends ComponentPlaceholderEnt {
         @Override
         @JsonProperty("id")
         public ComponentPlaceholderEntMixInBuilder setId(final String id);
+        
+        @Override
+        @JsonProperty("name")
+        public ComponentPlaceholderEntMixInBuilder setName(final String name);
         
         @Override
         @JsonProperty("state")

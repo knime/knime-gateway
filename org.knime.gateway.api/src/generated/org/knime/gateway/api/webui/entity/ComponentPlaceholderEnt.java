@@ -97,6 +97,12 @@ public interface ComponentPlaceholderEnt extends GatewayEntity {
   public String getId();
 
   /**
+   * The name of the to be added copmonent.
+   * @return name 
+   **/
+  public String getName();
+
+  /**
    * The state of the placeholder.
    * @return state , never <code>null</code>
    **/
@@ -138,6 +144,7 @@ public interface ComponentPlaceholderEnt extends GatewayEntity {
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ComponentPlaceholderEnt)other;
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("componentId", Pair.create(getComponentId(), e.getComponentId()));
       valueConsumer.accept("progress", Pair.create(getProgress(), e.getProgress()));
@@ -158,6 +165,14 @@ public interface ComponentPlaceholderEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ComponentPlaceholderEntBuilder setId(String id);
+        
+        /**
+         * The name of the to be added copmonent.
+         * 
+         * @param name the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentPlaceholderEntBuilder setName(String name);
         
         /**
          * The state of the placeholder.

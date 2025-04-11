@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
  * Placeholder for a component why it&#39;s being loaded.
  *
  * @param id
+ * @param name
  * @param state
  * @param componentId
  * @param progress
@@ -67,6 +68,7 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentPlaceholderEnt(
     String id,
+    String name,
     StateEnum state,
     String componentId,
     BigDecimal progress,
@@ -97,6 +99,11 @@ public record DefaultComponentPlaceholderEnt(
     @Override
     public String getId() {
         return id;
+    }
+    
+    @Override
+    public String getName() {
+        return name;
     }
     
     @Override
@@ -136,6 +143,8 @@ public record DefaultComponentPlaceholderEnt(
 
         private String m_id;
 
+        private String m_name;
+
         private StateEnum m_state;
 
         private String m_componentId;
@@ -154,6 +163,12 @@ public record DefaultComponentPlaceholderEnt(
                  throw new IllegalArgumentException("<id> must not be null.");
              }
              m_id = id;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentPlaceholderEntBuilder setName(String name) {
+             m_name = name;
              return this;
         }
 
@@ -203,6 +218,7 @@ public record DefaultComponentPlaceholderEnt(
         public DefaultComponentPlaceholderEnt build() {
             return new DefaultComponentPlaceholderEnt(
                 immutable(m_id),
+                immutable(m_name),
                 immutable(m_state),
                 immutable(m_componentId),
                 immutable(m_progress),
