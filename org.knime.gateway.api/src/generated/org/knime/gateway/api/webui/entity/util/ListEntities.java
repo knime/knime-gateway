@@ -92,6 +92,7 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandResultEnt;
 import org.knime.gateway.api.webui.entity.ExtensionEnt;
+import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
@@ -263,6 +264,7 @@ public class ListEntities {
         res.add(ExpandCommandEnt.class);
         res.add(ExpandResultEnt.class);
         res.add(ExtensionEnt.class);
+        res.add(GatewayProblemDescriptionEnt.class);
         res.add(InsertNodeCommandEnt.class);
         res.add(JobManagerEnt.class);
         res.add(KaiFeedbackEnt.class);
@@ -419,6 +421,7 @@ public class ListEntities {
         res.add(ExpandCommandEnt.ExpandCommandEntBuilder.class);
         res.add(ExpandResultEnt.ExpandResultEntBuilder.class);
         res.add(ExtensionEnt.ExtensionEntBuilder.class);
+        res.add(GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder.class);
         res.add(InsertNodeCommandEnt.InsertNodeCommandEntBuilder.class);
         res.add(JobManagerEnt.JobManagerEntBuilder.class);
         res.add(KaiFeedbackEnt.KaiFeedbackEntBuilder.class);
