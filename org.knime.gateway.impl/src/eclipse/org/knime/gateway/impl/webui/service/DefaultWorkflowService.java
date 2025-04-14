@@ -114,16 +114,15 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId,
-        final Boolean includeInfoOnAllowedActions, final String versionParameter)
-        throws NotASubWorkflowException, NodeNotFoundException {
-        final var version = VersionId.parse(versionParameter);
+    public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
+        final Boolean includeInteractionInfo) throws NotASubWorkflowException, NodeNotFoundException {
+        final var version = VersionId.parse(versionId);
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
-        final var wfm = DefaultServiceUtil.assertProjectIdAndGetWorkflowManager(wfKey);
+        final var wfm = ServiceUtilities.assertProjectIdAndGetWorkflowManager(wfKey);
         final var buildContext = WorkflowBuildContext.builder();
         buildContext.setVersion(version);
         // TODO NXT-3605 remove `includeInteractionInfo`
-        if (Boolean.TRUE.equals(includeInfoOnAllowedActions) && version.isCurrentState()) {
+        if (Boolean.TRUE.equals(includeInteractionInfo) && version.isCurrentState()) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
                 ? Map.of() //
                 : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();

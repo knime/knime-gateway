@@ -133,7 +133,6 @@ public final class Project {
     /**
      * @return the name of the project
      */
-    // TODO what is this even used for?
     public String getName() {
         return m_name;
     }
@@ -161,16 +160,7 @@ public final class Project {
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
-        return version instanceof VersionId.Fixed fixedVersion ? //
-            getVersion(fixedVersion) : //
-            getFromCacheOrLoadWorkflowManager();
-    }
-
-    private Optional<WorkflowManager> getVersion(final VersionId.Fixed version) {
-        if (this.m_getVersion == null) {
-            return Optional.empty();
-        }
-        return Optional.of(m_cachedVersions.computeIfAbsent(version, this.m_getVersion));
+        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
     }
 
     /**
@@ -193,12 +183,11 @@ public final class Project {
      *         is not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
-        if (version instanceof VersionId.Fixed fixedVersion) {
-            return m_cachedVersions.containsKey(fixedVersion) ? //
-                Optional.of(m_cachedVersions.get(fixedVersion)) : //
-                Optional.empty();
+        if (m_projectWfmCache.contains(version)) {
+            return Optional.of(m_projectWfmCache.getWorkflowManager(version));
+        } else {
+            return Optional.empty();
         }
-        return this.getWorkflowManagerIfLoaded();
     }
 
     /**
@@ -216,20 +205,6 @@ public final class Project {
      */
     public void dispose() {
         m_projectWfmCache.dispose();
-    }
-
-    private void disposeWorkflow(final WorkflowManager wfm) {
-        if (wfm == null) {
-            return;
-        }
-        if (m_onDispose != null) {
-            m_onDispose.accept(wfm);
-        }
-        try {
-            CoreUtil.cancelAndCloseLoadedWorkflow(wfm);
-        } catch (InterruptedException e) { // NOSONAR
-            NodeLogger.getLogger(Project.class).error(e);
-        }
     }
 
     /**

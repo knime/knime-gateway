@@ -58,8 +58,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.junit.After;
 import org.junit.Before;
@@ -75,16 +75,18 @@ import org.knime.gateway.api.util.VersionId;
 public class ProjectTest {
 
     private final WorkflowManager m_wfm = mock(WorkflowManager.class);
+
     private final WorkflowManager m_wfmv1 = mock(WorkflowManager.class);
+
     private final WorkflowManager m_wfmv2 = mock(WorkflowManager.class);
 
-    private final Function<VersionId.Fixed, WorkflowManager> m_versionLoader = version -> {
-        if (version.equals(VersionId.parse("1"))) {
-            return m_wfmv1;
-        } else if (version.equals(VersionId.parse("2"))) {
-            return m_wfmv2;
-        }
-        return null;
+    private final WorkflowManagerLoader m_wfmLoader = version -> {
+        var wfms = Map.of( //
+            VersionId.currentState(), m_wfm, //
+            VersionId.parse("1"), m_wfmv1, //
+            VersionId.parse("2"), m_wfmv2 //
+        );
+        return wfms.get(version);
     };
 
     @SuppressWarnings("javadoc")
@@ -136,7 +138,8 @@ public class ProjectTest {
             .setName("Test project") //
             .setId("Custom project ID") //
             .setOrigin(origin) //
-            .clearReport(() -> {}) //
+            .clearReport(() -> {
+            }) //
             .generateReport(input -> null) //
             .build();
 
@@ -171,24 +174,22 @@ public class ProjectTest {
     @Test
     public void testBuilderThrows() {
         assertThrows(NullPointerException.class, () -> Project.builder().setWfm(null).build());
-        assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName(null).setId("Custom project id").build());
-        assertThrows(NullPointerException.class,
-            () -> Project.builder().setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName("Test project").setId(null).build());
+        assertThrows(NullPointerException.class, () -> Project.builder()
+            .setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName(null).setId("Custom project id").build());
+        assertThrows(NullPointerException.class, () -> Project.builder()
+            .setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName("Test project").setId(null).build());
     }
 
     /**
-     * Tests {@link Project#getWorkflowManager()} with versions.
      *
      * @throws Exception
      */
     @Test
     public void testGetAndLoadWorkflowManagerWithVersions() throws Exception {
         var project = Project.builder() //
-            .setWfmLoader(() -> m_wfm) //
+            .setWfmLoader(m_wfmLoader) //
             .setName("Test project") //
             .setId("Custom project ID") //
-            .setVersionWfmLoader(m_versionLoader) //
             .build();
 
         // Project

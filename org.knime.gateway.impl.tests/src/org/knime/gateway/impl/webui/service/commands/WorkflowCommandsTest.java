@@ -142,7 +142,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        var wfm = wp.getWorkflowManagerIfLoaded().orElseThrow();
+        var wfm = wp.getFromCacheOrLoadWorkflowManager().orElseThrow();
         var sleepNodeClassname = "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory";
 
         var n1 = addNodeDirectly(sleepNodeClassname, wfm);
@@ -239,7 +239,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @Test
     public void testUndoAndRedoWhileWorkflowIsExecuting() throws Exception {
         var wp = createEmptyWorkflowProject();
-        var wfm = wp.getWorkflowManagerIfLoaded().orElseThrow();
+        var wfm = wp.getFromCacheOrLoadWorkflowManager().orElseThrow();
         var waitNodeID = WorkflowManagerUtil.createAndAddNode(wfm,
             FileNativeNodeContainerPersistor.loadNodeFactory("org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"))
             .getID();

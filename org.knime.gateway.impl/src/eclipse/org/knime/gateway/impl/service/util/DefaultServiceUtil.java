@@ -123,7 +123,7 @@ public final class DefaultServiceUtil {
      * @return -
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
-        return getWorkflowManager(projectId, VersionId.currentState(), workflowId);
+        return WorkflowManagerResolver.get(projectId, workflowId, VersionId.currentState());
     }
 
     /**
@@ -133,7 +133,7 @@ public final class DefaultServiceUtil {
      * @return -
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
-        return getWorkflowManager(wfKey.getProjectId(), wfKey.getVersionId(), wfKey.workflowId());
+        return WorkflowManagerResolver.get(wfKey.getProjectId(),  wfKey.workflowId(), wfKey.getVersionId());
     }
 
     /**
@@ -149,7 +149,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    private static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
+    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final VersionId versionId, final NodeIDEnt nodeInSubWorkflow) {
         var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId, versionId);
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);

@@ -83,7 +83,7 @@ public class TranslateTest {
     @Test
     public void testThatNodeAreNotDirtyAfterTranslate() throws Exception {
         var wp = WorkflowCommandsTest.createEmptyWorkflowProject();
-        var wfm = wp.getWorkflowManagerIfLoaded().orElseThrow();
+        var wfm = wp.getFromCacheOrLoadWorkflowManager().orElseThrow();
         var nc = WorkflowManagerUtil.createAndAddNode(wfm, NodeFactoryProvider.getInstance() //
             .getNodeFactory("org.knime.base.node.util.sampledata.SampleDataNodeFactory").get());
         nc.setUIInformation(NodeUIInformation.builder().setNodeLocation(0, 0, 0, 0).build());
