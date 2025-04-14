@@ -48,10 +48,14 @@
  */
 package org.knime.gateway.impl.jsonrpc;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.knime.gateway.api.service.GatewayException;
+import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -86,7 +90,16 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
      */
     @Override
     public Object getData(final Throwable t, final JsonRpcError errorAnnotation) {
-        return errorAnnotation == null ? getExceptionDetails(t) : errorAnnotation.data();
+        if (t instanceof GatewayException && errorAnnotation != null) {
+            return builder(GatewayProblemDescriptionEntBuilder.class) //
+                .setTitle(t.getMessage()) //
+                .setCode(t.getClass().getSimpleName()) //
+                .setCanCopy(((GatewayException)t).isCanCopy()) //
+                .setAdditionalProperties(((GatewayException)t).getAdditionalProperties()) //
+                .build();
+        } else {
+            return getExceptionDetails(t);
+        }
     }
 
     @Override
