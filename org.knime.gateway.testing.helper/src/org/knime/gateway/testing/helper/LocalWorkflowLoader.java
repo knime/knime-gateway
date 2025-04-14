@@ -117,6 +117,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var projectId = UUID.randomUUID().toString();
         ProjectManager.getInstance().addProject(Project.builder().setWfm(wfm).setId(projectId).build());
+        ProjectManager.getInstance().setProjectActive(projectId);
         m_loadedWorkflows.add(projectId);
         return new Pair<>(projectId, wfm);
     }
