@@ -118,7 +118,9 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         if (!m_appStateUpdater.filterProjectSpecificInfosFromEvents()
             && !m_projectManager.getDirtyProjectsMap().isEmpty()) {
             var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-                .setDirtyProjectsMap(m_projectManager.getDirtyProjectsMap()).setShouldReplace(true).build();
+                .setDirtyProjectsMap(m_projectManager.getDirtyProjectsMap()) //
+                .setShouldReplace(true) //
+                .build();
             var compositeEvent = EntityBuilderManager.builder(CompositeEventEntBuilder.class)
                 .setEvents(asList(null, projectDirtyStateEvent)).build();
             return Optional.of(compositeEvent);

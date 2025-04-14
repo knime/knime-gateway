@@ -200,7 +200,7 @@ public class AppStateUpdaterTest {
 
     private static ProjectDirtyStateEventEnt buildProjectDirtyStateEvent(final Project... projects) {
         return builder(ProjectDirtyStateEventEntBuilder.class).setDirtyProjectsMap( //
-            Arrays.stream(projects).map(Project::getID).collect(Collectors.toMap(k -> k, k -> Boolean.TRUE)) //
+            Arrays.stream(projects).map(Project::getID).collect(Collectors.toMap(k -> k, k -> false)) //
         ).setShouldReplace(Boolean.TRUE).build();
     }
 

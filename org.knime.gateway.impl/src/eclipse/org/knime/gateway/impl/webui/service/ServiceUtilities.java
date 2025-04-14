@@ -117,7 +117,7 @@ final class ServiceUtilities {
         DefaultServiceContext.assertWorkflowProjectId(wfKey.getProjectId());
         try {
             return org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(wfKey);
-        } catch (NoSuchElementException | IllegalArgumentException | IllegalStateException e) {
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         }
     }
