@@ -296,7 +296,7 @@ public class GatewayJsonRpcWrapperServiceTests {
             assertThat("unexpected error code", error.get("code").asInt(), is(-32600));
             var message = error.get("message").asText();
             assertThat("unexpected exception message", message, is(notNullValue()));
-            return createExceptionInstance(error.get("data").asText(), message);
+            return createExceptionInstance(error.get("data").get("code").asText(), message);
         }
 
         private static Throwable createExceptionInstance(final String exceptionName, final String message) {
@@ -311,7 +311,9 @@ public class GatewayJsonRpcWrapperServiceTests {
                     }
                 }
             }
-            throw new AssertionError("Exception couldn't be created from the json-rpc error");
+            throw new AssertionError(
+                "Exception couldn't be created from the json-rpc error, no matching exception class was found for: "
+                    + exceptionName);
         }
 
     }
