@@ -100,7 +100,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, NodeIDEnt)}.
+     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, String, NodeIDEnt)}.
      *
      * @throws Exception
      */
@@ -116,7 +116,16 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link ComponentService#getComponentDescription(String, NodeIDEnt, NodeIDEnt)}.
+     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, String, NodeIDEnt)} with versions.
+     *
+     * @throws Exception
+     */
+    public void testCompositeViewPageWithVersions() throws Exception {
+        // TODO
+    }
+
+    /**
+     * Tests {@link ComponentService#getComponentDescription(String, NodeIDEnt, String, NodeIDEnt)}.
      *
      * @throws Exception
      */
@@ -156,6 +165,15 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Non-existing node
         var nan = new NodeIDEnt(99);
         assertThrows(ServiceCallException.class, () -> cs().getComponentDescription(projectId, getRootID(), null, nan));
+    }
+
+    /**
+     * Tests {@link ComponentService#getComponentDescription(String, NodeIDEnt, String, NodeIDEnt)}.
+     *
+     * @throws Exception
+     */
+    public void testGetComponentDescriptionWithVersions() throws Exception {
+        // TODO
     }
 
     /**

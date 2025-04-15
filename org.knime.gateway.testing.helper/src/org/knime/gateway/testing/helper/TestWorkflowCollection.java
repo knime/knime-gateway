@@ -128,7 +128,17 @@ public enum TestWorkflowCollection implements org.knime.gateway.testing.helper.T
     /**
      * Minimal workflow to represent an earlier version of a project.
      */
-    VERSIONS_EARLIER_VERSION("/files/testflows/Versions/Earlier Version", "earlier_Version");
+    VERSIONS_EARLIER_VERSION("/files/testflows/Versions/Earlier Version", "earlier_Version"),
+
+    /**
+     * Extended workflow to represent the current version of a project.
+     */
+    VERSIONS_EXTENDED_CURRENT_STATE("/files/testflows/Versions_Extended/Current Version", "current_state_ext"),
+
+    /**
+     * Extended workflow to represent an earlier version of a project.
+     */
+    VERSIONS_EXTENDED_EARLIER_VERSION("/files/testflows/Versions_Extended/Earlier Version", "earlier_Version_ext");
 
     private final String m_workflowDir;
 
