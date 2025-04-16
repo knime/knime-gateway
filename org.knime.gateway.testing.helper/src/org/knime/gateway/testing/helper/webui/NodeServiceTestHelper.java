@@ -637,7 +637,22 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCallNodeDataServiceWithVersion() throws Exception {
-        // TODO This needs to be done, then the tests for 'NodeService' are done.
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt(4);
+
+        // Preparation - populates the view settings
+        ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), nodeId);
+
+        // TODO: This doesn't really work. Why?
+        var dataServiceRequest = RpcDataService.jsonRpcRequest("getTable", "[\"String column\", \"Integer column\"]",
+            "0", "1", "[null, null]", "false", "false", "false", "false");
+        var currentStateData = ns().callNodeDataService(projectId, getRootID(), VersionId.currentState().toString(),
+            nodeId, "view", "data", dataServiceRequest);
+        var currentStateNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateData);
     }
 
 }
