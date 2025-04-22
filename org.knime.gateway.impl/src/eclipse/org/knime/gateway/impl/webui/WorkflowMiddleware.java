@@ -91,8 +91,8 @@ import org.knime.gateway.impl.service.util.SimpleRepository;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
-import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
@@ -361,7 +361,10 @@ public final class WorkflowMiddleware {
      * @param wfKey the workflow to clear the cache for
      */
     public void clearCachedDependentNodeProperties(final WorkflowKey wfKey) {
-        getWorkflowState(wfKey).m_depNodeProperties.clearCache();
+        var state = m_workflowStateCache.get(wfKey);
+        if (state != null) {
+            state.m_depNodeProperties.clearCache();
+        }
     }
 
     /**
