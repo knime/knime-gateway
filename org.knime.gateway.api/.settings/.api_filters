@@ -70,6 +70,11 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="getPortIndexWithinGroup(String[], int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="getWorkflowParent(WorkflowManager)"/>
             </message_arguments>
         </filter>
@@ -84,7 +89,7 @@
             </message_arguments>
         </filter>
     </resource>
-        <resource path="src/eclipse/org/knime/gateway/api/util/VersionId.java" type="org.knime.gateway.api.util.VersionId">
+    <resource path="src/eclipse/org/knime/gateway/api/util/VersionId.java" type="org.knime.gateway.api.util.VersionId">
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.util.VersionId"/>
@@ -307,6 +312,22 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/PortCommandEnt.java" type="org.knime.gateway.api.webui.entity.PortCommandEnt">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.PortCommandEnt"/>
+                <message_argument value="getPortGroup()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/PortCommandEnt.java" type="org.knime.gateway.api.webui.entity.PortCommandEnt$PortCommandEntBuilder">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.PortCommandEnt.PortCommandEntBuilder"/>
+                <message_argument value="setPortGroup(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ProjectMetadataEnt.java" type="org.knime.gateway.api.webui.entity.ProjectMetadataEnt">
         <filter id="404791350">
             <message_arguments>
@@ -325,6 +346,14 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setMetadataType(EditableMetadataEnt.MetadataTypeEnum)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/RemovePortCommandEnt.java" type="org.knime.gateway.api.webui.entity.RemovePortCommandEnt$RemovePortCommandEntBuilder">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder"/>
+                <message_argument value="setPortGroup(String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -698,10 +727,182 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/NodeService.java" type="org.knime.gateway.api.webui.service.NodeService">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="callNodeDataService(String, NodeIDEnt, String, NodeIDEnt, String, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="deactivateNodeDataServices(String, NodeIDEnt, String, NodeIDEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="getNodeDialog(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="getNodeView(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, String, NodeIDEnt, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="callNodeDataService(String, NodeIDEnt, NodeIDEnt, String, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="deactivateNodeDataServices(String, NodeIDEnt, NodeIDEnt, String)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
                 <message_argument value="getComponentDescription(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="getNodeDialog(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="getNodeView(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.NodeService"/>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, NodeIDEnt, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="callNodeDataService(String, NodeIDEnt, String, NodeIDEnt, String, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="deactivateNodeDataServices(String, NodeIDEnt, String, NodeIDEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getNodeDialog(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getNodeView(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, String, NodeIDEnt, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/PortService.java" type="org.knime.gateway.api.webui.service.PortService">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="callPortDataService(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="deactivatePortDataServices(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="getDataValueView(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="getPortView(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="callPortDataService(String, NodeIDEnt, NodeIDEnt, Integer, Integer, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="deactivatePortDataServices(String, NodeIDEnt, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="getDataValueView(String, NodeIDEnt, NodeIDEnt, Integer, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="getPortView(String, NodeIDEnt, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.PortService"/>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, NodeIDEnt, Integer, Integer, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="callPortDataService(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="deactivatePortDataServices(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getDataValueView(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getPortView(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer, String, List&lt;String&gt;)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -809,6 +1010,12 @@
                 <message_argument value="getWorkflow(String, NodeIDEnt, Boolean, String)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
+                <message_argument value="getWorkflow(String, NodeIDEnt, String, Boolean)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
@@ -818,6 +1025,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getWorkflow(String, NodeIDEnt, Boolean, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getWorkflow(String, NodeIDEnt, String, Boolean)"/>
             </message_arguments>
         </filter>
     </resource>

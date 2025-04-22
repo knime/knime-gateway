@@ -258,12 +258,22 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="isActiveProjectVersion(String, VersionId)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="projects()"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="removeProject(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setProjectActive(String, VersionId)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -324,7 +334,23 @@
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.service.util.DefaultServiceUtil"/>
+                <message_argument value="getWorkflowManager(String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.DefaultServiceUtil"/>
                 <message_argument value="getWorkflowProject(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="assertProjectVersion(String, VersionId)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getNodeContainer(String, NodeIDEnt, VersionId, NodeIDEnt)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -335,6 +361,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="getWorkflowManager(String, VersionId, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/DefaultServiceUtil.java" type="org.knime.gateway.impl.service.util.DefaultServiceUtil$ProjectVersionException">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="ProjectVersionException"/>
             </message_arguments>
         </filter>
     </resource>
@@ -375,6 +408,13 @@
         <filter id="1177550852">
             <message_arguments>
                 <message_argument value="PLACERHOLDER_ADDED"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/WorkflowManagerResolver.java" type="org.knime.gateway.impl.service.util.WorkflowManagerResolver">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.WorkflowManagerResolver"/>
             </message_arguments>
         </filter>
     </resource>
@@ -596,7 +636,69 @@
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeService"/>
+                <message_argument value="callNodeDataService(String, NodeIDEnt, NodeIDEnt, String, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeService"/>
+                <message_argument value="deactivateNodeDataServices(String, NodeIDEnt, NodeIDEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeService"/>
                 <message_argument value="getComponentDescription(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeService"/>
+                <message_argument value="getNodeDialog(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeService"/>
+                <message_argument value="getNodeView(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultNodeService"/>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, NodeIDEnt, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultPortService.java" type="org.knime.gateway.impl.webui.service.DefaultPortService">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultPortService"/>
+                <message_argument value="callPortDataService(String, NodeIDEnt, NodeIDEnt, Integer, Integer, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultPortService"/>
+                <message_argument value="deactivatePortDataServices(String, NodeIDEnt, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultPortService"/>
+                <message_argument value="getDataValueView(String, NodeIDEnt, NodeIDEnt, Integer, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultPortService"/>
+                <message_argument value="getPortView(String, NodeIDEnt, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultPortService"/>
+                <message_argument value="updateDataPointSelection(String, NodeIDEnt, NodeIDEnt, Integer, Integer, String, List&lt;String&gt;)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1167,6 +1269,17 @@
         <filter id="337768515">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAddPortCommandEnt"/>
+                <message_argument value="DefaultAddPortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, String, NodeIDEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultAddPortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, NodeIDEnt, String, String)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -2040,9 +2153,40 @@
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt"/>
+                <message_argument value="DefaultPortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt"/>
+                <message_argument value="getPortGroup()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt"/>
+                <message_argument value="portGroup()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultPortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultPortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultPortCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt$DefaultPortCommandEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt.DefaultPortCommandEntBuilder"/>
+                <message_argument value="setPortGroup(String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -2112,9 +2256,40 @@
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt"/>
+                <message_argument value="DefaultRemovePortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, String, NodeIDEnt, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt"/>
+                <message_argument value="getPortGroup()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt"/>
+                <message_argument value="portGroup()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultRemovePortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, NodeIDEnt, Integer)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultRemovePortCommandEnt(WorkflowCommandEnt.KindEnum, PortCommandEnt.SideEnum, String, NodeIDEnt, Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultRemovePortCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt$DefaultRemovePortCommandEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder"/>
+                <message_argument value="setPortGroup(String)"/>
             </message_arguments>
         </filter>
     </resource>
