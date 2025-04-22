@@ -49,6 +49,8 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
@@ -156,7 +158,7 @@ final class EditNativeNodePorts implements EditPorts {
         m_replaceNodeResult = m_wfm.replaceNode( //
             getNodeId(), //
             creationConfigCopy, //
-            portMappings.map(ReplaceNodeResult.PortMapping::toMap, ReplaceNodeResult.PortMapping::toMap) //
+            portMappings //
         );
     }
 
@@ -167,18 +169,19 @@ final class EditNativeNodePorts implements EditPorts {
      * @param node the node being edited
      * @return mappings for input- and output side
      */
-    private static Pair<ReplaceNodeResult.PortMapping, ReplaceNodeResult.PortMapping> getPortMappingForPortRemoval(
-        final int totalPortIndexToRemove, final boolean removeInputPort, final boolean removeOutputPort, final NodeContainer node) {
+    private static Pair<Map<Integer, Integer>, Map<Integer, Integer>> getPortMappingForPortRemoval(
+        final int totalPortIndexToRemove, final boolean removeInputPort, final boolean removeOutputPort,
+        final NodeContainer node) {
         var pairOfMappings = new Pair<>( //
             // Use NodeContainer#getNrInPorts / #getNrOutPorts to also count implicit flow variable port if present
-            ReplaceNodeResult.PortMapping.identity(node.getNrInPorts()), //
-            ReplaceNodeResult.PortMapping.identity(node.getNrOutPorts()) //
+            identityPortMapping(node.getNrInPorts()), //
+            identityPortMapping(node.getNrOutPorts()) //
         );
         return applyRemoval( //
             pairOfMappings, //
             removeInputPort, //
             removeOutputPort, //
-            mapping -> mapping.removeIndex(totalPortIndexToRemove) //
+            mapping -> removeIndex(mapping, totalPortIndexToRemove) //
         );
     }
 
@@ -247,6 +250,24 @@ final class EditNativeNodePorts implements EditPorts {
             }
         }
         return portIndexWithinGroup;
+    }
+
+    private static Map<Integer, Integer> identityPortMapping(final int totalNumberOfPorts) {
+        var map = new HashMap<Integer, Integer>();
+        IntStream.range(0, totalNumberOfPorts).forEach(i -> map.put(i, i));
+        return map;
+    }
+
+    /**
+     * Set an index to removed (map to {@code -1}) and shift all succeeding indices.
+     *
+     * @param indexToRemove The index to set to removed
+     * @return the modified mapping
+     */
+    private static Map<Integer, Integer> removeIndex(final Map<Integer, Integer> portMapping, final int indexToRemove) {
+        portMapping.put(indexToRemove, -1);
+        IntStream.range(indexToRemove + 1, portMapping.size()).forEach(i -> portMapping.put(i, i - 1));
+        return portMapping;
     }
 
 }
