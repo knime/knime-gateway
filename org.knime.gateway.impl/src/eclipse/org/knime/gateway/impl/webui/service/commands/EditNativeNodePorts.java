@@ -48,11 +48,13 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.Arrays;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
+import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -103,12 +105,12 @@ final class EditNativeNodePorts implements EditPorts {
         var isInputSide = removePortCommandEnt.getSide() == SideEnum.INPUT;
         var portsConfig = newCreationConfig.getPortConfig().orElseThrow();
         var totalPortIndexToRemove = removePortCommandEnt.getPortIndex();
-        var portGroupName = portsConfig.getPortGroupsPerIndex(isInputSide)[totalPortIndexToRemove - 1];
+        var portGroupName = getPortGroupsPerIndex(isInputSide, portsConfig)[totalPortIndexToRemove - 1];
         var portGroup = (ExtendablePortGroup)portsConfig.getGroup(portGroupName);
         // it is possible that a port group defines input and output ports
         var removeInputPort = portGroup.definesInputPorts();
         var removeOutputPort = portGroup.definesOutputPorts();
-        var indexInGroupToRemove = portsConfig.getPortIndexWithinGroup(totalPortIndexToRemove, isInputSide);
+        var indexInGroupToRemove = getPortIndexWithinGroup(totalPortIndexToRemove, isInputSide, portsConfig);
         portGroup.removePort(indexInGroupToRemove);
         executeRemovePort(newCreationConfig, totalPortIndexToRemove, removeInputPort, removeOutputPort);
     }
@@ -196,6 +198,55 @@ final class EditNativeNodePorts implements EditPorts {
         final String groupName) {
         var portsConfig = creationConfig.getPortConfig().orElseThrow();
         return (ExtendablePortGroup)portsConfig.getGroup(groupName);
+    }
+
+    /**
+     * returned array does not include position for implicit flow variable port
+     *
+     * @param isInputSide Whether to consider input or output ports
+     * @return Port group names/IDs repeated such that lookup at index {@code i} yields the port group name/ID that the
+     *         {@code i}-th port belongs to. Does not include position for implicit flow variable port.
+     */
+    private static String[] getPortGroupsPerIndex(final boolean isInputSide,
+        final ModifiablePortsConfiguration portsConfig) {
+        var locations = isInputSide ? portsConfig.getInputPortLocation() : portsConfig.getOutputPortLocation();
+        var totalNumberOfPorts =
+            isInputSide ? (portsConfig.getInputPorts().length) : (portsConfig.getOutputPorts().length);
+        var portGroupNamePerIndex = new String[totalNumberOfPorts];
+        locations.forEach((portGroupName, indicesInPortGroup) -> Arrays.stream(indicesInPortGroup)
+            .forEach(i -> portGroupNamePerIndex[i] = portGroupName));
+        return portGroupNamePerIndex;
+    }
+
+    /**
+     * @see #getPortIndexWithinGroup(String[], int)
+     */
+    private static int getPortIndexWithinGroup(final int totalPortIndex, final boolean isInputSide,
+        final ModifiablePortsConfiguration portsConfig) {
+        var portIndexToPortGroupMap = getPortGroupsPerIndex(isInputSide, portsConfig);
+        return getPortIndexWithinGroup(portIndexToPortGroupMap, totalPortIndex);
+    }
+
+    /**
+     * Map a total port index (i.e. counting over all ports of the node) to the index within its port group.
+     * <p>
+     * For example, consider port groups [[p0, p1, p2], [p3, p4, p5]]. Then getPortIndexWithinGroup(4) = 1
+     *
+     * @param portIndexToPortGroupMap see {@link ModifiablePortsConfiguration#getPortGroupsPerIndex(boolean)}
+     * @param totalPortIndex index over all ports on this side, including implicit flow variable port
+     * @return The index of that port within its port group
+     */
+    private static int getPortIndexWithinGroup(final String[] portIndexToPortGroupMap, final int totalPortIndex) {
+        var portGroupName = portIndexToPortGroupMap[totalPortIndex - 1];
+        var portIndexWithinGroup = 0;
+        var previousPortGroupName = portGroupName;
+        while (totalPortIndex - 1 - portIndexWithinGroup > 0 && portGroupName.equals(previousPortGroupName)) {
+            previousPortGroupName = portIndexToPortGroupMap[totalPortIndex - 2 - portIndexWithinGroup];
+            if (previousPortGroupName.equals(portGroupName)) {
+                portIndexWithinGroup++;
+            }
+        }
+        return portIndexWithinGroup;
     }
 
 }
