@@ -374,7 +374,10 @@ public final class WorkflowMiddleware {
      * @param wfKey the workflow to clear the cache for
      */
     public void clearCachedDependentNodeProperties(final WorkflowKey wfKey) {
-        getWorkflowState(wfKey).m_depNodeProperties.clearCache();
+        var state = m_workflowStateCache.get(wfKey);
+        if (state != null) {
+            state.m_depNodeProperties.clearCache();
+        }
     }
 
     /**
