@@ -57,7 +57,6 @@ import org.knime.core.node.NodeProgressMonitor;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.context.ports.ExtendablePortGroup;
-import org.knime.core.node.context.ports.ModifiablePortsConfiguration;
 import org.knime.core.node.dialog.DialogNodeValue;
 import org.knime.core.node.dialog.SubNodeDescriptionProvider;
 import org.knime.core.node.extension.NodeSpec;
@@ -1366,8 +1365,7 @@ public final class WorkflowEntityFactory {
             // Check if port can be removed
             .map(portIndexToPortGroupMap -> {
                 var portGroupName = portIndexToPortGroupMap[portIndex - 1];
-                var portIndexWithinGroup =
-                    ModifiablePortsConfiguration.getPortIndexWithinGroup(portIndexToPortGroupMap, portIndex);
+                var portIndexWithinGroup = CoreUtil.getPortIndexWithinGroup(portIndexToPortGroupMap, portIndex);
                 return hasPortsAddedToPortGroup(nnc, buildContext, portGroupName)
                     && !isFixedPort(nnc, buildContext, portGroupName, portIndexWithinGroup);
             })//

@@ -203,6 +203,7 @@ final class EditNativeNodePorts implements EditPorts {
         return (ExtendablePortGroup)portsConfig.getGroup(groupName);
     }
 
+
     /**
      * returned array does not include position for implicit flow variable port
      *
@@ -227,29 +228,7 @@ final class EditNativeNodePorts implements EditPorts {
     private static int getPortIndexWithinGroup(final int totalPortIndex, final boolean isInputSide,
         final ModifiablePortsConfiguration portsConfig) {
         var portIndexToPortGroupMap = getPortGroupsPerIndex(isInputSide, portsConfig);
-        return getPortIndexWithinGroup(portIndexToPortGroupMap, totalPortIndex);
-    }
-
-    /**
-     * Map a total port index (i.e. counting over all ports of the node) to the index within its port group.
-     * <p>
-     * For example, consider port groups [[p0, p1, p2], [p3, p4, p5]]. Then getPortIndexWithinGroup(4) = 1
-     *
-     * @param portIndexToPortGroupMap see {@link ModifiablePortsConfiguration#getPortGroupsPerIndex(boolean)}
-     * @param totalPortIndex index over all ports on this side, including implicit flow variable port
-     * @return The index of that port within its port group
-     */
-    private static int getPortIndexWithinGroup(final String[] portIndexToPortGroupMap, final int totalPortIndex) {
-        var portGroupName = portIndexToPortGroupMap[totalPortIndex - 1];
-        var portIndexWithinGroup = 0;
-        var previousPortGroupName = portGroupName;
-        while (totalPortIndex - 1 - portIndexWithinGroup > 0 && portGroupName.equals(previousPortGroupName)) {
-            previousPortGroupName = portIndexToPortGroupMap[totalPortIndex - 2 - portIndexWithinGroup];
-            if (previousPortGroupName.equals(portGroupName)) {
-                portIndexWithinGroup++;
-            }
-        }
-        return portIndexWithinGroup;
+        return CoreUtil.getPortIndexWithinGroup(portIndexToPortGroupMap, totalPortIndex);
     }
 
     private static Map<Integer, Integer> identityPortMapping(final int totalNumberOfPorts) {
