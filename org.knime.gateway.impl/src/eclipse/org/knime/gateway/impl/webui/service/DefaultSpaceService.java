@@ -326,13 +326,36 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private static void checkForCollisionsInSpace(final List<String> itemIds, final Space sourceSpace,
-        final Space destinationSpace, final String destWorkflowGroupItemId) throws CollisionException {
+        final Space destinationSpace, final String destWorkflowGroupItemId)
+        throws CollisionException, ServiceCallException {
         for (var itemId : itemIds) {
             var itemName = sourceSpace.getItemName(itemId);
-            if (destinationSpace.containsItemWithName(destWorkflowGroupItemId, itemName)) {
+            var destinationItemId = destinationSpace.getItemIdForName(destWorkflowGroupItemId, itemName);
+            if (destinationItemId.isPresent()) {
+                checkForDestinationContainingSource(itemId, sourceSpace, destinationItemId.get(), destinationSpace,
+                    itemName);
                 throw new CollisionException(
                     "An item with name '%s' already exists at the target location".formatted(itemName));
             }
+        }
+    }
+
+    private static void checkForDestinationContainingSource(final String sourceItemId, final Space sourceSpace,
+        final String destinationItemId, final Space destinationSpace, final String itemName) throws ServiceCallException {
+        var isSameSpace = sourceSpace.getId().equals(destinationSpace.getId());
+        if (!isSameSpace) {
+            return;
+        }
+
+        try {
+            var anchestorItemIds = sourceSpace.getAncestorItemIds(sourceItemId);
+            if (anchestorItemIds.contains(destinationItemId)) {
+                throw new ServiceCallException(
+                    "The item with name '%s' can't overwrite itself. I.e. the destination item is a parent of the source item."
+                        .formatted(itemName));
+            }
+        } catch (ResourceAccessException ex) {
+            throw new ServiceCallException("A problem occurred while checking for collisions", ex);
         }
     }
 

@@ -466,10 +466,15 @@ public final class LocalSpace implements Space {
     }
 
     @Override
-    public boolean containsItemWithName(final String workflowGroupItemId, final String itemName)
+    public Optional<String> getItemIdForName(final String workflowGroupItemId, final String itemName)
         throws NoSuchElementException {
         var workflowGroup = getAbsolutePath(workflowGroupItemId);
-        return Files.exists(workflowGroup.resolve(itemName));
+        var itemPath = workflowGroup.resolve(itemName);
+        if (Files.exists(itemPath)) {
+            return Optional.of(m_spaceItemPathAndTypeCache.determineItemIdOrGetFromCache(itemPath));
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**

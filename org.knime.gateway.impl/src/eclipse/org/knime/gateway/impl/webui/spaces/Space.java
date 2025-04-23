@@ -430,6 +430,16 @@ public interface Space {
     List<String> getAncestorItemIds(String itemId) throws ResourceAccessException;
 
     /**
+     * Determines the item id for the given name for a item within a certain workflow group (or the space root).
+     *
+     * @param workflowGroupItemId The workflow group item ID
+     * @param itemName The item name to check
+     * @return the item id if there is an item for the given name, empty otherwise
+     * @throws NoSuchElementException If there is no workflow group for the given id.
+     */
+    Optional<String> getItemIdForName(String workflowGroupItemId, String itemName) throws NoSuchElementException;
+
+    /**
      * Checks whether a certain workflow group (or the workspace root) already contains an item with the given name.
      *
      * @param workflowGroupItemId The workflow group item ID
@@ -437,7 +447,9 @@ public interface Space {
      * @return Returns {@code true} if an item with that name already exists, {@code false} otherwise.
      * @throws NoSuchElementException If there is no workflow group for the given id.
      */
-    boolean containsItemWithName(String workflowGroupItemId, String itemName) throws NoSuchElementException;
+    default boolean containsItemWithName(final String workflowGroupItemId, final String itemName) {
+        return getItemIdForName(workflowGroupItemId, itemName).isPresent();
+    }
 
     /**
      * Returns the name of a space item.

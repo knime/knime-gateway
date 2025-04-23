@@ -49,6 +49,7 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
@@ -667,9 +668,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var sourceSpace = mock(Space.class);
         var sourceSpaceId = "source-space-id";
+        when(sourceSpace.getId()).thenReturn(sourceSpaceId);
 
         var destinationSpace = mock(Space.class);
         var destinationSpaceId = "destination-space-id";
+        when(destinationSpace.getId()).thenReturn(destinationSpaceId);
 
         when(provider.getSpace(sourceSpaceId)).thenReturn(sourceSpace);
         when(provider.getSpace(destinationSpaceId)).thenReturn(destinationSpace);
@@ -677,7 +680,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         List<String> itemIds = List.of("moved-item-id");
         var destWorkflowGroupItemId = "destination-workflow-group-id";
         when(sourceSpace.getItemName("moved-item-id")).thenReturn("Item name");
-        when(destinationSpace.containsItemWithName(destWorkflowGroupItemId, "Item name")).thenReturn(true);
+        when(destinationSpace.getItemIdForName(destWorkflowGroupItemId, "Item name")).thenReturn(Optional.of("dest-item-id"));
 
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
 
@@ -947,6 +950,34 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             FileUtils.deleteQuietly(testWorkspacePath.resolve(Space.DEFAULT_WORKFLOW_NAME).toFile());
             FileUtils.deleteQuietly(level1Path.toFile());
         }
+    }
+
+    /**
+     * Test for NXT-3467: Disallow moving/copying items overwriting 'itself'
+     *
+     * @throws IOException
+     * @throws NetworkException
+     * @throws ServiceCallException
+     * @throws CollisionException
+     */
+    public void testMoveItemsWithDestinationContainingSource()
+        throws IOException, ServiceCallException, NetworkException, CollisionException {
+        var testWorkspacePath = FileUtil.createTempDir("move-with-destination-containing-source").toPath();
+        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var spaceId = LocalSpace.LOCAL_SPACE_ID;
+        var wfGroupName = "wfGroup";
+        var wfGroupPath = testWorkspacePath.resolve(wfGroupName);
+        var nestedWfGroupPath = wfGroupPath.resolve(wfGroupName);
+
+        Files.createDirectory(wfGroupPath);
+        Files.createDirectory(nestedWfGroupPath);
+        var wfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), wfGroupName);
+        var nestedWfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, wfGroupId), wfGroupName);
+
+        var message = assertThrows(ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
+            List.of(nestedWfGroupId), spaceId, Space.ROOT_ITEM_ID, false, null)).getMessage();
+        assertThat(message, is(
+            "The item with name 'wfGroup' can't overwrite itself. I.e. the destination item is a parent of the source item."));
     }
 
     /**
