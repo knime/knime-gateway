@@ -63,11 +63,13 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.entity.UIExtensionEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.StatusEnum;
@@ -284,7 +286,16 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testChangeLoopExecutionStateThrowsIfNotCurrentState() throws Exception {
-        // TODO
+        var projectId = loadWorkflow(TestWorkflowCollection.LOOP_EXECUTION);
+        var version = VersionId.parse("5");
+        ProjectManager.getInstance().setProjectActive(projectId, version);
+
+        // Throws since cannot change loop execution state for fixed versions
+        var n4 = NodeIDEnt.getRootID().appendNodeID(4);
+        var ex =
+            assertThrows(Throwable.class, () -> ns().changeLoopState(projectId, NodeIDEnt.getRootID(), n4, "step"));
+        assertThat(ex.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
+            containsString("unexpected error code")));
     }
 
     /**
@@ -487,7 +498,32 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetNodeDialogWithVersions() throws Exception {
-        // TODO
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt(2);
+
+        var currentVersionInitialData =
+            getInitialData(ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), nodeId));
+        var currentVersionNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentVersionInitialData);
+
+        // Initially fetch workflow entity to load the workflow manager
+        var version = VersionId.parse("2");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+
+        var earlierVersionInitialData =
+            getInitialData(ns().getNodeDialog(projectId, getRootID(), version.toString(), nodeId));
+        var earlierVersionNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(earlierVersionInitialData);
+
+        // 'schema' and 'ui_schema' should be the same, but 'data' should differ
+        assertThat(currentVersionNode.get("result").get("schema"),
+            is((earlierVersionNode.get("result").get("schema"))));
+        assertThat(currentVersionNode.get("result").get("ui_schema"),
+            is((earlierVersionNode.get("result").get("ui_schema"))));
+        assertThat(currentVersionNode.get("result").get("data"),
+            is(not((earlierVersionNode.get("result").get("data")))));
     }
 
     /**
@@ -532,7 +568,30 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetNodeViewWithVersion() throws Exception {
-        // TODO
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt(4);
+
+        var currentVersionInitialData =
+            getInitialData(ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), nodeId));
+        var currentVersionNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentVersionInitialData);
+
+        // Initially fetch workflow entity to load the workflow manager
+        var version = VersionId.parse("2");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+
+        var earlierVersionInitialData =
+            getInitialData(ns().getNodeView(projectId, getRootID(), version.toString(), nodeId));
+        var earlierVersionNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(earlierVersionInitialData);
+
+        // 'settings' should be the same, but 'table' should differ
+        assertThat(currentVersionNode.get("result").get("settings"),
+            is((earlierVersionNode.get("result").get("settings"))));
+        assertThat(currentVersionNode.get("result").get("table"),
+            is(not((earlierVersionNode.get("result").get("table")))));
     }
 
     /**
@@ -576,7 +635,44 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCallNodeDataServiceWithVersion() throws Exception {
-        // TODO
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt(6); // Scatter plot
+
+        ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), nodeId);
+        var dataServiceRequest =
+            RpcDataService.jsonRpcRequest("getData", "Universe_0_0", "Universe_0_1", "<none>", "2");
+
+        // Current state
+        var currentStateData = ns().callNodeDataService(projectId, getRootID(), VersionId.currentState().toString(),
+            nodeId, "view", "data", dataServiceRequest);
+        var currentStateNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateData);
+
+        // Initially fetch workflow entity to load the workflow manager
+        var version = VersionId.parse("2");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+
+        // Earlier version
+        var versionedData = ns().callNodeDataService(projectId, getRootID(), version.toString(), nodeId, "view", "data",
+            dataServiceRequest);
+        var versionedNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(versionedData);
+
+        // 'results' are different
+        assertThat(currentStateNode.get("result"), is(not((versionedNode.get("result")))));
+    }
+
+    private static String getInitialData(final Object uiExtensionEnt) {
+        if (uiExtensionEnt instanceof Map map) {
+            // when done through json-rpc we can't deserialize it into the NodeDialogEnt etc.
+            return (String)map.get("initialData");
+        } else if (uiExtensionEnt instanceof UIExtensionEnt<?> uiExtensionEntClass) {
+            return uiExtensionEntClass.getInitialData();
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-metadata content-type="text/html" xmlns="http://www.knime.org/core/node/workflow/metadata/v1.0">
+    <last-modified>2025-04-23T13:59:44.553+02:00</last-modified>
+    <description>&lt;p>Earlier Description&lt;/p></description>
+    <in-ports>
+        <port name="Port 1">No description available</port>
+    </in-ports>
+    <out-ports/>
+</component-metadata>

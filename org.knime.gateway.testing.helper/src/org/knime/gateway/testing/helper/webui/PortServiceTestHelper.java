@@ -51,6 +51,7 @@ package org.knime.gateway.testing.helper.webui;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThrows;
@@ -64,6 +65,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequest
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
+import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
@@ -149,7 +151,30 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testGetPortViewWithVersions() throws Exception {
-        // TODO
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt(2); // Row filter
+
+        // Current state
+        var currentStatePortView =
+            ps().getPortView(projectId, NodeIDEnt.getRootID(), VersionId.currentState().toString(), nodeId, 1, 1);
+        var currentStatePortViewNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(currentStatePortView, JsonNode.class);
+
+        var version = VersionId.parse("2");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+
+        // Earlier version
+        var earlierVersionPortView =
+            ps().getPortView(projectId, NodeIDEnt.getRootID(), version.toString(), nodeId, 1, 1);
+        var earlierVersionPortViewNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().convertValue(earlierVersionPortView, JsonNode.class);
+
+        // "initial data" should be different
+        assertThat(currentStatePortViewNode.get("initialData"), is(not(earlierVersionPortViewNode.get("initialData"))));
     }
 
     /**
@@ -243,7 +268,41 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws Exception
      */
     public void testCallPortDataServiceWithVersions() throws Exception {
-        // TODO
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt(2); // Row filter
+
+        // Current state
+        var currentStateInitialData = ps().callPortDataService(projectId, getRootID(),
+            VersionId.currentState().toString(), nodeId, 1, 1, "initial_data", "");
+        var currentStateInitialDataNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateInitialData);
+
+        var jsonRpcRequest = RpcDataService.jsonRpcRequest("getTable", "String column", "0", "1", null, "false",
+            "false", "true", "false");
+        var currentStateData = ps().callPortDataService(projectId, getRootID(), VersionId.currentState().toString(),
+            nodeId, 1, 1, "data", jsonRpcRequest);
+        var currentStateDataNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateData);
+
+        var version = VersionId.parse("2");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+
+        // Earlier version
+        var earlierVersionInitialData =
+            ps().callPortDataService(projectId, getRootID(), version.toString(), nodeId, 1, 1, "initial_data", "");
+        var earlierVersionInitialDataNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().readTree(earlierVersionInitialData);
+
+        var earlierVersionData =
+            ps().callPortDataService(projectId, getRootID(), version.toString(), nodeId, 1, 1, "data", jsonRpcRequest);
+        var earlierVersionDataNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(earlierVersionData);
+
+        // "initial data" and "data" are different
+        assertThat(currentStateInitialDataNode.get("result"), is(not(earlierVersionInitialDataNode.get("result"))));
+        assertThat(currentStateDataNode.get("result"), is(not(earlierVersionDataNode.get("result"))));
     }
 
 }

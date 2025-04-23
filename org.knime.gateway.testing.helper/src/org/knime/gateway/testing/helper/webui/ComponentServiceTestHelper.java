@@ -50,6 +50,7 @@ package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
@@ -59,6 +60,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
@@ -75,6 +77,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
+import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
@@ -100,7 +103,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, NodeIDEnt)}.
+     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, String, NodeIDEnt)}.
      *
      * @throws Exception
      */
@@ -116,7 +119,39 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link ComponentService#getComponentDescription(String, NodeIDEnt, NodeIDEnt)}.
+     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, String, NodeIDEnt)} with versions.
+     *
+     * @throws Exception
+     */
+    public void testCompositeViewPageWithVersions() throws Exception {
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt("root:9"); // Component
+
+        // Current state
+        var currentStateCompositeViewPage = (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(),
+            VersionId.currentState().toString(), nodeId);
+        var currentStateCompositeViewNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateCompositeViewPage);
+
+        var version = VersionId.parse("2");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+
+        // Earlier version
+        var versionCompositeViewPage =
+            (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(), version.toString(), nodeId);
+        var versionCompositeViewNode =
+            ObjectMapperUtil.getInstance().getObjectMapper().readTree(versionCompositeViewPage);
+
+        // the views should be different
+        assertThat(currentStateCompositeViewNode.get("nodeViews"), is(not(versionCompositeViewNode.get("nodeViews"))));
+    }
+
+    /**
+     * Tests {@link ComponentService#getComponentDescription(String, NodeIDEnt, String, NodeIDEnt)}.
      *
      * @throws Exception
      */
@@ -156,6 +191,33 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Non-existing node
         var nan = new NodeIDEnt(99);
         assertThrows(ServiceCallException.class, () -> cs().getComponentDescription(projectId, getRootID(), null, nan));
+    }
+
+    /**
+     * Tests {@link ComponentService#getComponentDescription(String, NodeIDEnt, String, NodeIDEnt)}.
+     *
+     * @throws Exception
+     */
+    public void testGetComponentDescriptionWithVersions() throws Exception {
+        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
+            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
+            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
+        );
+        var projectId = loadWorkflow(testWorkflowWithVersion);
+        var nodeId = new NodeIDEnt("root:9"); // Component
+
+        // Current state
+        var currentCompDesc =
+            cs().getComponentDescription(projectId, getRootID(), VersionId.currentState().toString(), nodeId);
+
+        var version = VersionId.parse("2");
+        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+
+        // Earlier version
+        var versionCompDesc = cs().getComponentDescription(projectId, getRootID(), version.toString(), nodeId);
+
+        // the descriptions should be different
+        assertThat(currentCompDesc.getDescription().getValue(), is(not(versionCompDesc.getDescription().getValue())));
     }
 
     /**

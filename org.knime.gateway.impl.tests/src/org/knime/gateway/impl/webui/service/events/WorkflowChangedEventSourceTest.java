@@ -111,10 +111,10 @@ public class WorkflowChangedEventSourceTest {
         // add another listener, not the active project, should throw
         var snapshotId2 = workflowMiddleware.buildWorkflowSnapshotEnt(new WorkflowKey("id2", NodeIDEnt.getRootID()),
             () -> WorkflowBuildContext.builder()).getSnapshotId();
-        var ex = assertThrows(ProjectVersionException.class,
+        var ex1 = assertThrows(ProjectVersionException.class,
             () -> eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
                 .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId2).build(), null));
-        assertThat(ex.getMessage(), containsString("Project version \"current-state\" is not active"));
+        assertThat(ex1.getMessage(), containsString("Project version \"current-state\" is not active"));
 
         // add another listener with active project
         projectManager.setProjectActive("id2", VersionId.currentState());
@@ -122,6 +122,13 @@ public class WorkflowChangedEventSourceTest {
             () -> WorkflowBuildContext.builder()).getSnapshotId();
         eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
             .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId3).build(), null);
+
+        // set active project to a version, should throw
+        projectManager.setProjectActive("id2", VersionId.parse("2"));
+        var ex2 = assertThrows(ProjectVersionException.class,
+            () -> eventSource.addEventListenerAndGetInitialEventFor(builder(WorkflowChangedEventTypeEntBuilder.class)
+                .setProjectId("id2").setWorkflowId(NodeIDEnt.getRootID()).setSnapshotId(snapshotId2).build(), null));
+        assertThat(ex2.getMessage(), containsString("Project version \"current-state\" is not active"));
 
         // check
         assertThat(eventSource.getNumRegisteredListeners(), is(2));
