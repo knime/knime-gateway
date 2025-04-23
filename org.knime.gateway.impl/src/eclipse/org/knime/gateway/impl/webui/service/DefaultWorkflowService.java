@@ -177,6 +177,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_projectManager.getProject(projectId)
             .ifPresent(project -> project.disposeCachedWfm(VersionId.parse(versionParameter)));
+        m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
     }
 
     /**

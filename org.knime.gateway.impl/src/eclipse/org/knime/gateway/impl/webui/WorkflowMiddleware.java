@@ -164,7 +164,12 @@ public final class WorkflowMiddleware {
             projectId -> clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId)));
     }
 
-    private synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
+    /**
+     * TODO NXT-3637 re-visit - might not need to be public anymore
+     *
+     * @param keyFilter -
+     */
+    public synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
         m_workflowEntRepo.disposeHistory(keyFilter);
         m_workflowMonitorStateEntRepo.disposeHistory(keyFilter);
         m_commands.disposeUndoAndRedoStacks(keyFilter);
