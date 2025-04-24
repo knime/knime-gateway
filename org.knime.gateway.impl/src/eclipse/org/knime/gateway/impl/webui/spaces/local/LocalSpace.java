@@ -265,32 +265,28 @@ public final class LocalSpace implements Space {
 
     @Override
     public void deleteItems(final List<String> itemIds, final boolean softDelete) throws IOException {
-        // Check if the root is part of the IDs
         if (itemIds.contains(Space.ROOT_ITEM_ID)) {
             throw new UnsupportedOperationException("The root of the space cannot be deleted.");
         }
 
-        // Check if there are any item IDs that do not exist
         assertAllItemIdsExistOrElseThrow(itemIds);
 
-        var deletedItems = new ArrayList<Pair<String, Path>>(itemIds.size());
+        var deletedItems = new ArrayList<DeletedItem>(itemIds.size());
         try {
             for (var itemId : itemIds) {
                 var path = m_spaceItemPathAndTypeCache.getPath(itemId);
                 if (path == null) {
                     continue;
                 }
-                // NB: This also works for files
+
                 PathUtils.deleteDirectoryIfExists(path);
-                deletedItems.add(new Pair<>(itemId,path));
+                deletedItems.add(new DeletedItem(itemId, path));
             }
         } finally {
-            // NB: We only remove the paths that were deleted successfully
             deletedItems.forEach(deletedItem -> {
-                m_spaceItemPathAndTypeCache.prunePath(deletedItem.getSecond());
-                m_itemRemovedListeners.forEach(listener -> listener.accept(deletedItem.getFirst()));
+                m_spaceItemPathAndTypeCache.prunePath(deletedItem.path());
+                m_itemRemovedListeners.forEach(listener -> listener.accept(deletedItem.itemId()));
             });
-
         }
     }
 
@@ -733,6 +729,10 @@ public final class LocalSpace implements Space {
      */
     public void addItemRemovedListener(final Consumer<String> listener) {
         m_itemRemovedListeners.add(listener);
+    }
+
+    private static record DeletedItem(String itemId, Path path) {
+        //
     }
 
 }

@@ -144,12 +144,12 @@ public final class ServiceDependencies {
      * @param eventConsumer The event consumer
      * @param spaceProvidersManager The space providers
      * @param updateStateProvider The update state provider
+     * @param nodeRepo
      * @param preferencesProvider
      * @param nodeFactoryProvider
      * @param kaiHandler handle K-AI related requests
      * @param codeKaiHandler handle K-AI requests of scripting editors
      * @param nodeCollections
-     * @param nodeRepo
      * @param nodeCategoryExtensions
      * @param selectionEventBus
      * @since 5.5
@@ -161,12 +161,12 @@ public final class ServiceDependencies {
         final EventConsumer eventConsumer, //
         final SpaceProvidersManager spaceProvidersManager, //
         final UpdateStateProvider updateStateProvider, //
+        final NodeRepository nodeRepo, //
         final PreferencesProvider preferencesProvider, //
         final NodeFactoryProvider nodeFactoryProvider, //
         final KaiHandler kaiHandler, //
         final CodeKaiHandler codeKaiHandler, //
         final NodeCollections nodeCollections, //
-        final NodeRepository nodeRepo, //
         final NodeCategoryExtensions nodeCategoryExtensions, //
         final SelectionEventBus selectionEventBus) {
         if (!ServiceInstances.areServicesInitialized()) {
