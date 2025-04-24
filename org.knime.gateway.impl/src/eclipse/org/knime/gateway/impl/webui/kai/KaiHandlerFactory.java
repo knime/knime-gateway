@@ -72,6 +72,7 @@ public interface KaiHandlerFactory {
      * @param tokenProvider if {@code null} defaults to getting the auth token from the ExplorerMountTable, which is
      *            only valid in local AP.
      * @return a new handler for the code generation assistant
+     * @since 5.5
      */
     CodeKaiHandler createCodeKaiHandler(AuthTokenProvider tokenProvider);
 

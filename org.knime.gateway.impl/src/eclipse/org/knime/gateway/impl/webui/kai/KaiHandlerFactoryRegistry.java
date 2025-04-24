@@ -127,6 +127,7 @@ public final class KaiHandlerFactoryRegistry {
      *            only valid in local AP.
      * @return a {@link CodeKaiHandler} instance or {@link Optional#empty()} if no {@link KaiHandlerFactory} is
      *         registered
+     * @since 5.5
      */
     public static Optional<CodeKaiHandler> createCodeKaiHandler(final AuthTokenProvider authTokenProvider) {
         return getKaiHandlerFactory().map(f -> f.createCodeKaiHandler(authTokenProvider));

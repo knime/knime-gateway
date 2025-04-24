@@ -57,6 +57,7 @@ import org.knime.gateway.impl.webui.kai.KaiHandlerFactory.AuthTokenProvider;
  *
  * @author Carsten Haubold, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
+ * @since 5.5
  */
 public interface CodeKaiHandler {
 
