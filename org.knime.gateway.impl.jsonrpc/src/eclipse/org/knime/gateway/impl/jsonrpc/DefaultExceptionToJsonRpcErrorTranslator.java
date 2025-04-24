@@ -90,12 +90,12 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
      */
     @Override
     public Object getData(final Throwable t, final JsonRpcError errorAnnotation) {
-        if (t instanceof GatewayException && errorAnnotation != null) {
+        if (t instanceof GatewayException ge && errorAnnotation != null) {
             return builder(GatewayProblemDescriptionEntBuilder.class) //
                 .setTitle(t.getMessage()) //
                 .setCode(t.getClass().getSimpleName()) //
-                .setCanCopy(((GatewayException)t).isCanCopy()) //
-                .setAdditionalProperties(((GatewayException)t).getAdditionalProperties()) //
+                .setCanCopy(ge.isCanCopy()) //
+                .setAdditionalProperties(ge.getAdditionalProperties()) //
                 .build();
         } else {
             return getExceptionDetails(t);

@@ -57,7 +57,7 @@ import java.util.Map;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * GatewayProblemDescriptionEnt
+ * Represents a thrown instance of x-knime-gateway-executor-exceptions i.e. GatewayException.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -66,19 +66,19 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
 
 
   /**
-   * Get title
+   * Message of the thrown exception.
    * @return title 
    **/
   public String getTitle();
 
   /**
-   * Get code
+   * Name of the thrown exception.
    * @return code 
    **/
   public String getCode();
 
   /**
-   * Get canCopy
+   * Indicating whether error details can be copied by the user.
    * @return canCopy 
    **/
   public Boolean isCanCopy();
@@ -105,7 +105,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
     public interface GatewayProblemDescriptionEntBuilder extends GatewayEntityBuilder<GatewayProblemDescriptionEnt> {
 
         /**
-   		 * Set title
+         * Message of the thrown exception.
          * 
          * @param title the property value,  
          * @return this entity builder for chaining
@@ -113,7 +113,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
         GatewayProblemDescriptionEntBuilder setTitle(String title);
         
         /**
-   		 * Set code
+         * Name of the thrown exception.
          * 
          * @param code the property value,  
          * @return this entity builder for chaining
@@ -121,7 +121,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
         GatewayProblemDescriptionEntBuilder setCode(String code);
         
         /**
-   		 * Set canCopy
+         * Indicating whether error details can be copied by the user.
          * 
          * @param canCopy the property value,  
          * @return this entity builder for chaining

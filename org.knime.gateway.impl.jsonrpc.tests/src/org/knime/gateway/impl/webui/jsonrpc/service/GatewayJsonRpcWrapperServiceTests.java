@@ -54,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -91,6 +92,7 @@ import org.knime.gateway.testing.helper.webui.WebUIGatewayServiceTestHelper;
 import org.knime.js.core.JSCorePlugin;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -289,6 +291,8 @@ public class GatewayJsonRpcWrapperServiceTests {
 
     private static class TestExceptionResolver implements ExceptionResolver {
 
+        private static final ObjectMapper MAPPER = ObjectMapperUtil.getInstance().getObjectMapper();
+
         @Override
         public Throwable resolveException(final ObjectNode response) {
             assertThat(response.get("jsonrpc").asText(), is("2.0"));
@@ -296,15 +300,22 @@ public class GatewayJsonRpcWrapperServiceTests {
             assertThat("unexpected error code", error.get("code").asInt(), is(-32600));
             var message = error.get("message").asText();
             assertThat("unexpected exception message", message, is(notNullValue()));
-            return createExceptionInstance(error.get("data").get("code").asText(), message);
+            var gatewayProblemDescription =
+                MAPPER.convertValue(error.get("data"), new TypeReference<Map<String, String>>() {
+                });
+            return createExceptionInstance(gatewayProblemDescription);
         }
 
-        private static Throwable createExceptionInstance(final String exceptionName, final String message) {
+        private static Throwable createExceptionInstance(final Map<String, String> gatewayProblemDescription) {
             var knownExceptionClasses = ServiceExceptions.class.getDeclaredClasses();
+            var code = gatewayProblemDescription.get("code");
             for (var knownExceptionClass : knownExceptionClasses) {
-                if (knownExceptionClass.getSimpleName().equals(exceptionName)) {
+                if (knownExceptionClass.getSimpleName().equals(code)) {
                     try {
-                        return (Throwable)knownExceptionClass.getConstructor(String.class).newInstance(message);
+                        return (Throwable)knownExceptionClass.getConstructor(Map.class)
+                            .newInstance(gatewayProblemDescription.entrySet().stream()
+                                .filter(entry -> !entry.getKey().equals("code"))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
                     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                             | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                         throw new AssertionError("Exception couldn't be created from the json-rpc error", ex);
@@ -313,7 +324,7 @@ public class GatewayJsonRpcWrapperServiceTests {
             }
             throw new AssertionError(
                 "Exception couldn't be created from the json-rpc error, no matching exception class was found for: "
-                    + exceptionName);
+                    + code);
         }
 
     }

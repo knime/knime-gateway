@@ -67,12 +67,25 @@ public abstract class GatewayException extends Exception {
     private final boolean m_canCopy;
 
     /**
-     * New instance
+     * New instance to represent any known exceptions to be passed to FE.
      *
      * @param canCopy Boolean indicating whether exception properties can be copied.
      */
     protected GatewayException(final boolean canCopy) {
         m_canCopy = canCopy;
+    }
+
+    /**
+     * New {@code GatewayException} to represent de-serialised GatewayPoblemDescription schema.
+     * For testing purposes only.
+     *
+     * @param gatewayProblemDescription map of gateway problem description property names to property values.
+     */
+    protected GatewayException(final Map<String, String> gatewayProblemDescription) {
+        for (Map.Entry<String, String> entry : gatewayProblemDescription.entrySet()) {
+            m_properties.put(entry.getKey(), entry.getValue());
+        }
+        m_canCopy = Boolean.valueOf(m_properties.get("canCopy"));
     }
 
     /**

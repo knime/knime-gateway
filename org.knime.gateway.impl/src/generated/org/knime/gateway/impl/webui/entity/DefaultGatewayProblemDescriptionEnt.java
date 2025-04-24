@@ -53,7 +53,7 @@ import java.util.Map;
 
 
 /**
- * DefaultGatewayProblemDescriptionEnt
+ * Represents a thrown instance of x-knime-gateway-executor-exceptions i.e. GatewayException.
  *
  * @param title
  * @param code

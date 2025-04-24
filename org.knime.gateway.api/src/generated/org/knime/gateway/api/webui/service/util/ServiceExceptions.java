@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.service.util;
 
 import org.knime.gateway.api.service.GatewayException;
+import java.util.Map;
 
 /**
  * Summarizes auto-generated exceptions that can occur in the executor.
@@ -70,6 +71,13 @@ public final class ServiceExceptions {
             initCause(cause);
         }
 
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public ServiceCallException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
+        }
+
     }
 
    /**
@@ -86,6 +94,13 @@ public final class ServiceExceptions {
             super(false);
             addProperty("message", message);
             initCause(cause);
+        }
+
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public NetworkException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
         }
 
     }
@@ -106,6 +121,13 @@ public final class ServiceExceptions {
             initCause(cause);
         }
 
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public NodeDescriptionNotAvailableException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
+        }
+
     }
 
    /**
@@ -122,6 +144,13 @@ public final class ServiceExceptions {
             super(false);
             addProperty("message", message);
             initCause(cause);
+        }
+
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public NodeNotFoundException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
         }
 
     }
@@ -142,6 +171,13 @@ public final class ServiceExceptions {
             initCause(cause);
         }
 
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public NoSuchElementException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
+        }
+
     }
 
    /**
@@ -158,6 +194,13 @@ public final class ServiceExceptions {
             super(false);
             addProperty("message", message);
             initCause(cause);
+        }
+
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public NotASubWorkflowException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
         }
 
     }
@@ -178,6 +221,13 @@ public final class ServiceExceptions {
             initCause(cause);
         }
 
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public InvalidRequestException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
+        }
+
     }
 
    /**
@@ -194,6 +244,13 @@ public final class ServiceExceptions {
             super(false);
             addProperty("message", message);
             initCause(cause);
+        }
+
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public OperationNotAllowedException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
         }
 
     }
@@ -214,6 +271,13 @@ public final class ServiceExceptions {
             initCause(cause);
         }
 
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public IOException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
+        }
+
     }
 
    /**
@@ -230,6 +294,13 @@ public final class ServiceExceptions {
             super(false);
             addProperty("message", message);
             initCause(cause);
+        }
+
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public CollisionException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
         }
 
     }
