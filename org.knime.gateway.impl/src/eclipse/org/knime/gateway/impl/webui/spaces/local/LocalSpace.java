@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.spaces.local;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -56,6 +57,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,6 +72,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -412,18 +415,32 @@ public final class LocalSpace implements Space {
     public SpaceItemEnt importWorkflowOrWorkflowGroup(final Path srcPath, final String workflowGroupItemId,
         final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
         final IProgressMonitor progressMonitor) throws IOException {
-        var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
-        var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
-        FileUtil.unzip(srcPath.toFile(), tmpDir);
-        var tmpSrcPath = tmpDir.listFiles()[0].toPath();
-        var fileName = tmpSrcPath.getFileName().toString();
 
-        Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
-        var destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
+        final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+        final var tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
 
-        FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
+        final Path destPath;
+        try {
+            FileUtil.unzip(srcPath.toFile(), tmpDir);
+
+            final File[] contents = tmpDir.listFiles();
+            if (contents.length != 1) {
+                throw new IOException("Expected '%s' to have a single root folder, found %s" //
+                    .formatted(srcPath, Arrays.stream(contents).map(File::getName).toList()));
+            }
+
+            final var tmpSrcPath = contents[0].toPath();
+            final var fileName = tmpSrcPath.getFileName().toString();
+            Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
+            destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
+
+            FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
+        } finally {
+            // don't bother the user if something goes wrong here, it's only temp data and AP tries again on shutdown
+            FileUtils.deleteQuietly(tmpDir);
+        }
+
         createMetaInfoFileFor.accept(destPath);
-
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
     }
 
