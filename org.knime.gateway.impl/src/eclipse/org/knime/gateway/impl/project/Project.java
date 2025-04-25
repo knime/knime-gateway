@@ -348,14 +348,13 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            setWfmLoader(providingCurrentStateOnly(() -> wfm));
+            m_wfmCache = new ProjectWfmCache(wfm);
             return this;
         }
 
         @Override
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
-            m_id = getUniqueProjectId(m_name);
             m_wfmCache = new ProjectWfmCache(wfmLoader);
             return this;
         }
@@ -364,25 +363,8 @@ public final class Project {
         public BuilderStage.RequiresName
             setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> currentStateLoader) {
             Objects.requireNonNull(currentStateLoader);
-            setWfmLoader(providingCurrentStateOnly(currentStateLoader));
+            m_wfmCache = new ProjectWfmCache(currentStateLoader);
             return this;
-        }
-
-        /**
-         * Intended to be only used in unit-test setups based off a single {@link WorkflowManager} instance where
-         * versions are not considered.
-         *
-         * @param currentStateLoader Loads the {@link WorkflowManager} instance
-         * @return -
-         */
-        private static WorkflowManagerLoader
-            providingCurrentStateOnly(final Supplier<WorkflowManager> currentStateLoader) {
-            return version -> {
-                if (!version.isCurrentState()) {
-                    throw new IllegalArgumentException("VersionId.Fixed is not supported");
-                }
-                return currentStateLoader.get();
-            };
         }
 
         /**

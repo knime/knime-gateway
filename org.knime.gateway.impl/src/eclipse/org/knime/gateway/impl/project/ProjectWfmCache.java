@@ -47,6 +47,7 @@
 package org.knime.gateway.impl.project;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -60,7 +61,7 @@ import org.knime.gateway.impl.util.Lazy;
  * class per project.
  * <p>
  * For fixed versions, we want an LRU cache. The current-state a.k.a. working area should be kept indefinitely.
- * 
+ *
  * @see Project
  */
 class ProjectWfmCache {
@@ -75,13 +76,35 @@ class ProjectWfmCache {
 
     /**
      * -
-     * 
+     *
+     * @param wfm -
+     */
+    ProjectWfmCache(final WorkflowManager wfm) {
+        this(null, new Lazy.Init<>(wfm));
+    }
+
+    /**
+     * -
+     *
+     * @param wfmSupplier -
+     */
+    ProjectWfmCache(final Supplier<WorkflowManager> wfmSupplier) {
+        this(null, new Lazy.Init<>(wfmSupplier));
+    }
+
+    /**
+     * -
+     *
      * @param wfmLoader -
      */
-    public ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
-        this.m_wfmLoader = wfmLoader;
-        this.m_currentState = new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState()));
-        this.m_fixedVersions = new LRUCache<>( //
+    ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
+        this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
+    }
+
+    private ProjectWfmCache(final WorkflowManagerLoader wfmLoader, final Lazy.Init<WorkflowManager> currentState) {
+        m_wfmLoader = wfmLoader;
+        m_currentState = currentState;
+        m_fixedVersions = new LRUCache<>( //
             VERSION_WFM_CACHE_MAX_SIZE, //
             (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
     }
@@ -92,11 +115,15 @@ class ProjectWfmCache {
      * @param version -
      * @return -
      */
-    public WorkflowManager getWorkflowManager(final VersionId version) {
-        if (version.isCurrentState()) {
-            return m_currentState.get();
+    WorkflowManager getWorkflowManager(final VersionId version) {
+        if (version instanceof VersionId.Fixed fixedVersion) {
+            if (m_wfmLoader == null) {
+                throw new IllegalArgumentException(
+                        "Can't load any workflow versions. Most likely an implementation problem.");
+            }
+            return m_fixedVersions.computeIfAbsent(fixedVersion, m_wfmLoader::load);
         } else {
-            return m_fixedVersions.computeIfAbsent((VersionId.Fixed)version, m_wfmLoader::load);
+            return m_currentState.get();
         }
     }
 
@@ -107,10 +134,10 @@ class ProjectWfmCache {
 
     /**
      * Dispose the workflow manager instance corresponding to the given version, if present.
-     * 
+     *
      * @param version -
      */
-    public void dispose(final VersionId version) {
+    void dispose(final VersionId version) {
         if (version.isCurrentState()) {
             m_currentState.ifPresent(ProjectWfmCache::disposeWorkflowManager);
             m_currentState.clear();
@@ -122,11 +149,11 @@ class ProjectWfmCache {
 
     /**
      * -
-     * 
+     *
      * @param version -
      * @return Whether a workflow manager instance corresponding to the given version is already loaded
      */
-    public boolean contains(final VersionId version) {
+    boolean contains(final VersionId version) {
         if (version instanceof VersionId.Fixed fixedVersion) {
             return m_fixedVersions.containsKey(fixedVersion);
         } else if (version.isCurrentState()) {
