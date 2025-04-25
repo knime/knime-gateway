@@ -958,10 +958,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws IOException
      * @throws NetworkException
      * @throws ServiceCallException
-     * @throws CollisionException
      */
     public void testMoveItemsWithDestinationContainingSource()
-        throws IOException, ServiceCallException, NetworkException, CollisionException {
+        throws IOException, ServiceCallException, NetworkException {
         var testWorkspacePath = FileUtil.createTempDir("move-with-destination-containing-source").toPath();
         var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;

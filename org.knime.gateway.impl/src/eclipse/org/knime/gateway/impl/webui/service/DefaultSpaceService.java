@@ -341,10 +341,10 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private static void checkForDestinationContainingSource(final String sourceItemId, final Space sourceSpace,
-        final String destinationItemId, final Space destinationSpace, final String itemName) throws ServiceCallException {
-        var isSameSpace = sourceSpace.getId().equals(destinationSpace.getId());
-        if (!isSameSpace) {
-            return;
+        final String destinationItemId, final Space destinationSpace, final String itemName)
+        throws ServiceCallException {
+        if (!sourceSpace.getId().equals(destinationSpace.getId())) {
+            return; // Different spaces, no collision
         }
 
         try {
