@@ -131,6 +131,7 @@ public final class DefaultServiceUtil {
      *
      * @param wfKey identifying the {@link WorkflowManager} instance
      * @return -
+     * @since 5.5
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
         return WorkflowManagerResolver.get(wfKey.getProjectId(),  wfKey.workflowId(), wfKey.getVersionId());

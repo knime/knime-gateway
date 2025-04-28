@@ -323,6 +323,7 @@ public interface Space {
      * @param itemId
      * @param version
      * @return the location info for the given item
+     * @since 5.5
      */
     LocationInfo getLocationInfo(String itemId, final VersionId version);
 
@@ -445,6 +446,7 @@ public interface Space {
      * @param itemName The item name to check
      * @return the item id if there is an item for the given name, empty otherwise
      * @throws NoSuchElementException If there is no workflow group for the given id.
+     * @since 5.5
      */
     Optional<String> getItemIdForName(String workflowGroupItemId, String itemName) throws NoSuchElementException;
 

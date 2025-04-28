@@ -470,14 +470,13 @@
         <filter id="338792546">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.WorkflowMiddleware"/>
-                <message_argument value="buildWorkflowChangedEvent(WorkflowKey, PatchEntCreator, String, boolean, WorkflowChangesTracker)"/>
+                <message_argument value="buildAnnotationIDEnt(WorkflowAnnotation, WorkflowManager)"/>
             </message_arguments>
         </filter>
-        <filter id="640712815">
+        <filter id="338792546">
             <message_arguments>
-                <message_argument value="WorkflowLock"/>
-                <message_argument value="WorkflowMiddleware"/>
-                <message_argument value="close()"/>
+                <message_argument value="org.knime.gateway.impl.webui.WorkflowMiddleware"/>
+                <message_argument value="buildWorkflowChangedEvent(WorkflowKey, PatchEntCreator, String, boolean, WorkflowChangesTracker)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -1093,6 +1092,18 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
                 <message_argument value="deleteItems(List&lt;String&gt;, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="getItemIdForName(String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="getLocationInfo(String, VersionId)"/>
             </message_arguments>
         </filter>
         <filter id="403804204">
@@ -1785,6 +1796,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultExpandResultEnt(String, CommandResultEnt.KindEnum, List&lt;NodeIDEnt&gt;, List&lt;AnnotationIDEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultGatewayProblemDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt"/>
             </message_arguments>
         </filter>
     </resource>

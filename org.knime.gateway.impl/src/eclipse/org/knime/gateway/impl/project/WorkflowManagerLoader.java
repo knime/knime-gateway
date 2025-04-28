@@ -54,6 +54,7 @@ import org.knime.gateway.api.util.VersionId;
  * <p>
  * "Loading" here means loading it from file representation on disk to provide an initialized and usable
  * {@link WorkflowManager} instance. However, this method may also include fetching the files from a remote location.
+ * @since 5.5
  */
 @FunctionalInterface
 @SuppressWarnings("java:S1711") // intentionally not using Function<VersionId, WorkflowManager> instead.
@@ -61,7 +62,7 @@ public interface WorkflowManagerLoader {
 
     /**
      * Load the workflow manager instance
-     * 
+     *
      * @param version the version to load
      * @return the loaded instance, <code>null</code> if loading failed.
      */

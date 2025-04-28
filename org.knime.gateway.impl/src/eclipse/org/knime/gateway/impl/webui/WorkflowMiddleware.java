@@ -148,6 +148,10 @@ public final class WorkflowMiddleware {
 
     private final SpaceProvidersManager m_spaceProvidersManager;
 
+    /**
+     * @param projectManager
+     * @since 5.5
+     */
     @SuppressWarnings("java:S1176") // javadoc
     public WorkflowMiddleware(final ProjectManager projectManager) {
         this(projectManager, null);
@@ -168,6 +172,7 @@ public final class WorkflowMiddleware {
      * TODO NXT-3637 re-visit - might not need to be public anymore
      *
      * @param keyFilter -
+     * @since 5.5
      */
     public synchronized void clearWorkflowState(final Predicate<WorkflowKey> keyFilter) {
         m_workflowEntRepo.disposeHistory(keyFilter);
