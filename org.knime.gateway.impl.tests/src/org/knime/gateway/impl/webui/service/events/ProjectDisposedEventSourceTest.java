@@ -72,7 +72,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("java:S1192")  // repeated string literals
+@SuppressWarnings("java:S1192") // repeated string literals
 public class ProjectDisposedEventSourceTest {
 
     @SuppressWarnings("javadoc")
@@ -80,7 +80,7 @@ public class ProjectDisposedEventSourceTest {
     public void testProjectDisposedEventSource() throws InvalidRequestException {
         var projectManager = ProjectManager.getInstance();
         var project = Project.builder() //
-            .setWfmLoader(() -> null) //
+            .setWfmLoaderProvidingOnlyCurrentState(() -> null) //
             .setName("test name") //
             .setId("test id") //
             .build();

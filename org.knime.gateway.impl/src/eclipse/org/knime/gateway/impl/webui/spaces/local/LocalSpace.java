@@ -104,6 +104,9 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
  * {@link Space}-implementation that represents the local Eclipse RCP workspace.
+ * <p>
+ * This state may become stale if the workspace directory contents are modified by other means, for example if
+ * projects/workflows are deleted via the OS file explorer.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
@@ -130,6 +133,7 @@ public final class LocalSpace implements Space {
 
     /**
      * -
+     * 
      * @param rootPath the path to the root of the local workspace
      */
     public LocalSpace(final Path rootPath) {
@@ -725,6 +729,7 @@ public final class LocalSpace implements Space {
 
     /**
      * Add a listener that is notified when an item has been successfully removed from the space
+     * 
      * @param listener Notified with the item ID of the removed item
      */
     public void addItemRemovedListener(final Consumer<String> listener) {
