@@ -65,11 +65,6 @@
                 <message_argument value="buildSpaceProviderEnt(SpaceProviderEnt.TypeEnum, List&lt;SpaceGroupEnt&gt;)"/>
             </message_arguments>
         </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="buildSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, boolean, SpaceProviderEnt.ConnectionModeEnum, String, String)"/>
-            </message_arguments>
-        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowBuildContext.java" type="org.knime.gateway.api.webui.util.WorkflowBuildContext$WorkflowBuildContextBuilder">
         <filter id="1143996420">
@@ -116,7 +111,18 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt"/>
+                <message_argument value="getCanvasRenderer()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt"/>
                 <message_argument value="getSpaceProviders()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getCanvasRenderer()"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -129,12 +135,30 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
+                <message_argument value="setCanvasRenderer(AppStateEnt.CanvasRendererEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
                 <message_argument value="setSpaceProviders(List&lt;SpaceProviderEnt&gt;)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
+                <message_argument value="setCanvasRenderer(AppStateEnt.CanvasRendererEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
                 <message_argument value="setSpaceProviders(List&lt;SpaceProviderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt$CanvasRendererEnum">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="CanvasRendererEnum"/>
             </message_arguments>
         </filter>
     </resource>
@@ -359,6 +383,12 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getResetOnUpload()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
                 <message_argument value="getUsername()"/>
             </message_arguments>
         </filter>
@@ -391,6 +421,11 @@
         </filter>
         <filter id="1211105284">
             <message_arguments>
+                <message_argument value="getResetOnUpload()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
                 <message_argument value="getUsername()"/>
             </message_arguments>
         </filter>
@@ -404,6 +439,13 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="ConnectionModeEnum"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt$ResetOnUploadEnum">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="ResetOnUploadEnum"/>
             </message_arguments>
         </filter>
     </resource>
@@ -430,6 +472,12 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
                 <message_argument value="setName(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setResetOnUpload(SpaceProviderEnt.ResetOnUploadEnum)"/>
             </message_arguments>
         </filter>
         <filter id="403804204">
@@ -462,6 +510,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setName(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setResetOnUpload(SpaceProviderEnt.ResetOnUploadEnum)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -880,6 +933,12 @@
                 <message_argument value="getWorkflow(String, NodeIDEnt, String, Boolean)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
+                <message_argument value="saveProject(String, String)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
@@ -894,6 +953,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getWorkflow(String, NodeIDEnt, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="saveProject(String, String)"/>
             </message_arguments>
         </filter>
     </resource>

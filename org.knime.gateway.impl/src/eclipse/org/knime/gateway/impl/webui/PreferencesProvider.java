@@ -48,9 +48,9 @@
  */
 package org.knime.gateway.impl.webui;
 
-import org.knime.gateway.api.webui.entity.AppStateEnt;
-
 import java.util.function.Predicate;
+
+import org.knime.gateway.api.webui.entity.AppStateEnt;
 
 /**
  * Provides user preferences.

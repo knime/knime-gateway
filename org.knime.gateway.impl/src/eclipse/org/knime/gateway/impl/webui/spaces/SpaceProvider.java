@@ -61,6 +61,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 
 /**
@@ -258,6 +259,16 @@ public interface SpaceProvider {
      */
     default Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) {
         return Optional.empty();
+    }
+
+    /**
+     * The (remote) space provider's setting regarding resetting workflows before upload.
+     *
+     * @return the setting
+     * @since 5.5
+     */
+    default ResetOnUploadEnum getResetOnUploadMode() {
+        return ResetOnUploadEnum.NO_PREFERENCE;
     }
 
     /**

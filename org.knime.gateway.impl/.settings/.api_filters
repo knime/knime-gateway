@@ -129,46 +129,6 @@
                 <message_argument value="removeProject(String, Consumer&lt;WorkflowManager&gt;)"/>
             </message_arguments>
         </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="disposeAll()"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="getAndUpdateWorkflowServiceProject(Space, String, String, String, SpaceItemReferenceEnt.ProjectTypeEnum)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="getProject(String, String, String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="isActiveProjectVersion(String, VersionId)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="projects()"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="removeProject(String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="setProjectActive(String, VersionId)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="updateOpenProjectsOrder(List&lt;String&gt;)"/>
-            </message_arguments>
-        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowServiceProjects.java" type="org.knime.gateway.impl.project.WorkflowServiceProjects">
         <filter id="338792546">
@@ -289,6 +249,19 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.ComponentLoadJobManager"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/PreferencesProvider.java" type="org.knime.gateway.impl.webui.PreferencesProvider">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.PreferencesProvider"/>
+                <message_argument value="canvasRenderer()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="canvasRenderer()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1052,11 +1025,16 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean, List&lt;SpaceProviderEnt&gt;)"/>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, AppStateEnt.CanvasRendererEnum, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean, List&lt;SpaceProviderEnt&gt;)"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAppStateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt$DefaultAppStateEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setCanvasRenderer(AppStateEnt.CanvasRendererEnum)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setSpaceProviders(List&lt;SpaceProviderEnt&gt;)"/>
@@ -1355,7 +1333,7 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="DefaultSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, String, Boolean, Boolean, SpaceProviderEnt.ConnectionModeEnum, String)"/>
+                <message_argument value="DefaultSpaceProviderEnt(String, String, SpaceProviderEnt.TypeEnum, String, Boolean, Boolean, SpaceProviderEnt.ConnectionModeEnum, String, SpaceProviderEnt.ResetOnUploadEnum)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1384,6 +1362,11 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setName(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setResetOnUpload(SpaceProviderEnt.ResetOnUploadEnum)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">

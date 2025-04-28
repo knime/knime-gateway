@@ -60,6 +60,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
  * @param connected
  * @param connectionMode
  * @param username
+ * @param resetOnUpload
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -72,7 +73,8 @@ public record DefaultSpaceProviderEnt(
     Boolean isCommunityHub,
     Boolean connected,
     ConnectionModeEnum connectionMode,
-    String username) implements SpaceProviderEnt {
+    String username,
+    ResetOnUploadEnum resetOnUpload) implements SpaceProviderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -140,6 +142,11 @@ public record DefaultSpaceProviderEnt(
         return username;
     }
     
+    @Override
+    public ResetOnUploadEnum getResetOnUpload() {
+        return resetOnUpload;
+    }
+    
     /**
      * A builder for {@link DefaultSpaceProviderEnt}.
      */
@@ -160,6 +167,8 @@ public record DefaultSpaceProviderEnt(
         private ConnectionModeEnum m_connectionMode;
 
         private String m_username;
+
+        private ResetOnUploadEnum m_resetOnUpload;
 
         @Override
         public DefaultSpaceProviderEntBuilder setId(String id) {
@@ -225,6 +234,12 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
+        public DefaultSpaceProviderEntBuilder setResetOnUpload(ResetOnUploadEnum resetOnUpload) {
+             m_resetOnUpload = resetOnUpload;
+             return this;
+        }
+
+        @Override
         public DefaultSpaceProviderEnt build() {
             return new DefaultSpaceProviderEnt(
                 immutable(m_id),
@@ -234,7 +249,8 @@ public record DefaultSpaceProviderEnt(
                 immutable(m_isCommunityHub),
                 immutable(m_connected),
                 immutable(m_connectionMode),
-                immutable(m_username));
+                immutable(m_username),
+                immutable(m_resetOnUpload));
         }
     
     }

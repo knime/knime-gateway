@@ -101,6 +101,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
     @JsonProperty("username")
     public String getUsername();
     
+    @Override
+    @JsonProperty("resetOnUpload")
+    public ResetOnUploadEnum getResetOnUpload();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -145,6 +149,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
         @Override
         @JsonProperty("username")
         public SpaceProviderEntMixInBuilder setUsername(final String username);
+        
+        @Override
+        @JsonProperty("resetOnUpload")
+        public SpaceProviderEntMixInBuilder setResetOnUpload(final ResetOnUploadEnum resetOnUpload);
         
     }
 

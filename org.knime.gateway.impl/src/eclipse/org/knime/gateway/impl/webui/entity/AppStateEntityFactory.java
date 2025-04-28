@@ -418,7 +418,8 @@ public final class AppStateEntityFactory {
         return EntityFactory.Space.buildSpaceProviderEnt(spaceProvider.getId(), spaceProvider.getName(), type,
             isLocalSpaceProvider || spaceProvider.getConnection(false).isPresent(), connectionMode,
             isLocalSpaceProvider ? null : spaceProvider.getServerAddress().orElse(null),
-            isLocalSpaceProvider ? null : username);
+            isLocalSpaceProvider ? null : username,
+            spaceProvider.getResetOnUploadMode());
     }
 
     /**

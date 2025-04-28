@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder;
@@ -96,12 +97,15 @@ public final class SpaceEntityFactory {
      * @param connectionMode
      * @param hostname
      * @param username
+     * @param resetOnUpload
      *
      * @return new {@link SpaceProviderEnt}-instance
+     * @since 5.5
      */
     public SpaceProviderEnt buildSpaceProviderEnt(final String id, final String name,
         final SpaceProviderEnt.TypeEnum type, final boolean connected,
-        final SpaceProviderEnt.ConnectionModeEnum connectionMode, final String hostname, final String username) {
+        final SpaceProviderEnt.ConnectionModeEnum connectionMode, final String hostname, final String username,
+        final ResetOnUploadEnum resetOnUpload) {
         return builder(SpaceProviderEntBuilder.class) //
             .setId(id) //
             .setName(name) //
@@ -110,6 +114,7 @@ public final class SpaceEntityFactory {
             .setConnectionMode(connectionMode) //
             .setHostname(hostname) //
             .setUsername(username) //
+            .setResetOnUpload(resetOnUpload) //
             .build();
     }
 
