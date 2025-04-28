@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt.WorkflowGroupContentEntBuilder;
@@ -96,9 +97,23 @@ public final class SpaceEntityFactory {
      */
     public SpaceProviderEnt buildSpaceProviderEnt(final SpaceProviderEnt.TypeEnum type,
             final List<SpaceGroupEnt> groups) {
+        return buildSpaceProviderEnt(type, groups, null);
+    }
+
+    /**
+     * @param type
+     * @param groups
+     * @param resetOnUpload
+     *
+     * @return a new {@link SpaceProviderEnt}-instance
+     * @since 5.4
+     */
+    public SpaceProviderEnt buildSpaceProviderEnt(final SpaceProviderEnt.TypeEnum type,
+            final List<SpaceGroupEnt> groups, final ResetOnUploadEnum resetOnUpload) {
         return builder(SpaceProviderEntBuilder.class) //
             .setSpaceGroups(groups) //
             .setType(type) //
+            .setResetOnUpload(resetOnUpload) //
             .build();
     }
 

@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
  * @param type
  * @param hostname
  * @param isCommunityHub
+ * @param resetOnUpload
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -65,7 +66,8 @@ public record DefaultSpaceProviderEnt(
     java.util.List<SpaceGroupEnt> spaceGroups,
     TypeEnum type,
     String hostname,
-    Boolean isCommunityHub) implements SpaceProviderEnt {
+    Boolean isCommunityHub,
+    ResetOnUploadEnum resetOnUpload) implements SpaceProviderEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -104,6 +106,11 @@ public record DefaultSpaceProviderEnt(
         return isCommunityHub;
     }
     
+    @Override
+    public ResetOnUploadEnum getResetOnUpload() {
+        return resetOnUpload;
+    }
+    
     /**
      * A builder for {@link DefaultSpaceProviderEnt}.
      */
@@ -116,6 +123,8 @@ public record DefaultSpaceProviderEnt(
         private String m_hostname;
 
         private Boolean m_isCommunityHub;
+
+        private ResetOnUploadEnum m_resetOnUpload;
 
         @Override
         public DefaultSpaceProviderEntBuilder setSpaceGroups(java.util.List<SpaceGroupEnt> spaceGroups) {
@@ -148,12 +157,19 @@ public record DefaultSpaceProviderEnt(
         }
 
         @Override
+        public DefaultSpaceProviderEntBuilder setResetOnUpload(ResetOnUploadEnum resetOnUpload) {
+             m_resetOnUpload = resetOnUpload;
+             return this;
+        }
+
+        @Override
         public DefaultSpaceProviderEnt build() {
             return new DefaultSpaceProviderEnt(
                 immutable(m_spaceGroups),
                 immutable(m_type),
                 immutable(m_hostname),
-                immutable(m_isCommunityHub));
+                immutable(m_isCommunityHub),
+                immutable(m_resetOnUpload));
         }
     
     }

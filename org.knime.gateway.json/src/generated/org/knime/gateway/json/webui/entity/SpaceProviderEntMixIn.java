@@ -86,6 +86,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
     @JsonProperty("isCommunityHub")
     public Boolean isCommunityHub();
     
+    @Override
+    @JsonProperty("resetOnUpload")
+    public ResetOnUploadEnum getResetOnUpload();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -114,6 +118,10 @@ public interface SpaceProviderEntMixIn extends SpaceProviderEnt {
         @Override
         @JsonProperty("isCommunityHub")
         public SpaceProviderEntMixInBuilder setIsCommunityHub(final Boolean isCommunityHub);
+        
+        @Override
+        @JsonProperty("resetOnUpload")
+        public SpaceProviderEntMixInBuilder setResetOnUpload(final ResetOnUploadEnum resetOnUpload);
         
     }
 

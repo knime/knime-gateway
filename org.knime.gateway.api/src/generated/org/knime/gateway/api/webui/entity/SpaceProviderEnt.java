@@ -86,6 +86,27 @@ public interface SpaceProviderEnt extends GatewayEntity {
 
   }
 
+  /**
+   * Preference of a (remote) space provider regarding reset of uploaded workflows.
+   */
+  public enum ResetOnUploadEnum {
+    ENCOURAGED("ENCOURAGED"),
+    
+    MANDATORY("MANDATORY");
+
+    private String value;
+
+    ResetOnUploadEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * The groups contained in this provider to which the user have access to.
@@ -111,6 +132,12 @@ public interface SpaceProviderEnt extends GatewayEntity {
    **/
   public Boolean isCommunityHub();
 
+  /**
+   * Preference of a (remote) space provider regarding reset of uploaded workflows.
+   * @return resetOnUpload 
+   **/
+  public ResetOnUploadEnum getResetOnUpload();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -120,6 +147,7 @@ public interface SpaceProviderEnt extends GatewayEntity {
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("hostname", Pair.create(getHostname(), e.getHostname()));
       valueConsumer.accept("isCommunityHub", Pair.create(isCommunityHub(), e.isCommunityHub()));
+      valueConsumer.accept("resetOnUpload", Pair.create(getResetOnUpload(), e.getResetOnUpload()));
   }
 
     /**
@@ -158,6 +186,14 @@ public interface SpaceProviderEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceProviderEntBuilder setIsCommunityHub(Boolean isCommunityHub);
+        
+        /**
+         * Preference of a (remote) space provider regarding reset of uploaded workflows.
+         * 
+         * @param resetOnUpload the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceProviderEntBuilder setResetOnUpload(ResetOnUploadEnum resetOnUpload);
         
         
         /**

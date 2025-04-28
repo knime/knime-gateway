@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
     <resource path="META-INF/MANIFEST.MF">
-        <filter id="923795461">
+        <filter id="924844039">
             <message_arguments>
-                <message_argument value="5.1.0"/>
-                <message_argument value="5.0.0"/>
+                <message_argument value="5.4.4"/>
+                <message_argument value="5.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/NodeCategories.java" type="org.knime.gateway.impl.webui.NodeCategories">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.NodeCategories"/>
+                <message_argument value="getCategory(List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getCategoryEnt(List&lt;String&gt;)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -31,6 +44,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="searchNodes(String, List&lt;String&gt;, Boolean, Integer, Integer, Boolean, String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/WorkflowMiddleware.java" type="org.knime.gateway.impl.webui.WorkflowMiddleware">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="clearCachedDependentNodeProperties(WorkflowKey)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -114,6 +134,22 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="AppStateChangedEventSource(EventConsumer, AppStateUpdater, WorkflowProjectManager, PreferencesProvider, SpaceProviders, NodeFactoryProvider)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/Space.java" type="org.knime.gateway.impl.webui.spaces.Space">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space"/>
+                <message_argument value="getItemIdForName(String, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/local/LocalWorkspace.java" type="org.knime.gateway.impl.webui.spaces.local.LocalWorkspace">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.local.LocalWorkspace"/>
+                <message_argument value="containsItemWithName(String, String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1034,9 +1070,27 @@
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt"/>
+                <message_argument value="DefaultSpaceProviderEnt(List&lt;SpaceGroupEnt&gt;, SpaceProviderEnt.TypeEnum, String, Boolean)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultSpaceProviderEnt(List&lt;SpaceEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultSpaceProviderEnt(List&lt;SpaceGroupEnt&gt;, SpaceProviderEnt.TypeEnum, String, Boolean, SpaceProviderEnt.ResetOnUploadEnum)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceProviderEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt$DefaultSpaceProviderEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setResetOnUpload(SpaceProviderEnt.ResetOnUploadEnum)"/>
             </message_arguments>
         </filter>
     </resource>

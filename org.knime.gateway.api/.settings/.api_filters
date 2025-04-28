@@ -7,6 +7,12 @@
                 <message_argument value="5.0.0"/>
             </message_arguments>
         </filter>
+        <filter id="924844039">
+            <message_arguments>
+                <message_argument value="5.4.4"/>
+                <message_argument value="5.4.0"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/api/entity/GatewayEntity.java" type="org.knime.gateway.api.entity.GatewayEntity">
         <filter id="403804204">
@@ -44,6 +50,39 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setFileExtensionToNodeTemplateId(Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt"/>
+                <message_argument value="getResetOnUpload()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getResetOnUpload()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt$ResetOnUploadEnum">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="ResetOnUploadEnum"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceProviderEnt.java" type="org.knime.gateway.api.webui.entity.SpaceProviderEnt$SpaceProviderEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder"/>
+                <message_argument value="setResetOnUpload(SpaceProviderEnt.ResetOnUploadEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setResetOnUpload(SpaceProviderEnt.ResetOnUploadEnum)"/>
             </message_arguments>
         </filter>
     </resource>
