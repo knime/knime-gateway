@@ -128,6 +128,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
             .setProviderId("local-testing") //
             .setSpaceId(spaceId) //
             .setItemId(itemId) //
+            .setName("component") //
             .build();
 
         // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)

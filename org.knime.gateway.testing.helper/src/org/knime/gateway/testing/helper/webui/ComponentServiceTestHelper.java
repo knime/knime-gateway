@@ -242,6 +242,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
             .setProviderId("local-testing") //
             .setSpaceId(spaceId) //
             .setItemId(itemId) //
+            .setName("component name") //
             .build();
 
         // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)

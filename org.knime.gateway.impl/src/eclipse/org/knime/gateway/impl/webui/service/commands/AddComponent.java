@@ -93,7 +93,6 @@ import org.knime.gateway.impl.webui.ComponentLoader.LoadJob;
 import org.knime.gateway.impl.webui.ComponentLoader.LoadResult;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry;
-import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -132,15 +131,15 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     public boolean executeWithWorkflowContext() throws ServiceCallException {
         var componentLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
         var position = Geometry.Point.of(m_commandEnt.getPosition());
-        var space = m_spaceProviders.getSpace(m_commandEnt.getProviderId(), m_commandEnt.getSpaceId());
-        var name = space.getItemName(m_commandEnt.getItemId());
-        m_loadJob = componentLoader.startLoadJob(name, position, exec -> loadComponent(name, space, exec));
+        var name = m_commandEnt.getName();
+        m_loadJob = componentLoader.startLoadJob(name, position, exec -> loadComponent(name, exec));
         return true;
     }
 
-    private LoadResult loadComponent(final String componentName, final Space space, final ExecutionMonitor exec)
+    private LoadResult loadComponent(final String componentName, final ExecutionMonitor exec)
         throws CanceledExecutionException {
         var wfm = getWorkflowManager();
+        var space = m_spaceProviders.getSpace(m_commandEnt.getProviderId(), m_commandEnt.getSpaceId());
         var uri = space.toKnimeUrl(m_commandEnt.getItemId());
         exec.setMessage("Downloading...");
         var localPath = space.toLocalAbsolutePath(exec, m_commandEnt.getItemId()).orElseThrow();

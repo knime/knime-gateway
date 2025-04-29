@@ -91,6 +91,10 @@ public interface AddComponentCommandEntMixIn extends AddComponentCommandEnt {
     @JsonProperty("position")
     public XYEnt getPosition();
     
+    @Override
+    @JsonProperty("name")
+    public String getName();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -123,6 +127,10 @@ public interface AddComponentCommandEntMixIn extends AddComponentCommandEnt {
         @Override
         @JsonProperty("position")
         public AddComponentCommandEntMixInBuilder setPosition(final XYEnt position);
+        
+        @Override
+        @JsonProperty("name")
+        public AddComponentCommandEntMixInBuilder setName(final String name);
         
     }
 

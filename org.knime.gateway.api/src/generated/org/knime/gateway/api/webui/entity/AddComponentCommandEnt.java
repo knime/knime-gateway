@@ -89,6 +89,12 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
    **/
   public XYEnt getPosition();
 
+  /**
+   * The name of the component to be added. Such that it can already be used for the loading placeholder before the component is loaded.
+   * @return name , never <code>null</code>
+   **/
+  public String getName();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -99,6 +105,7 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
       valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
       valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
   }
 
     /**
@@ -145,6 +152,14 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
          * @return this entity builder for chaining
          */
         AddComponentCommandEntBuilder setPosition(XYEnt position);
+        
+        /**
+         * The name of the component to be added. Such that it can already be used for the loading placeholder before the component is loaded.
+         * 
+         * @param name the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        AddComponentCommandEntBuilder setName(String name);
         
         
         /**

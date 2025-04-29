@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
  * @param spaceId
  * @param itemId
  * @param position
+ * @param name
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -68,7 +69,8 @@ public record DefaultAddComponentCommandEnt(
     String providerId,
     String spaceId,
     String itemId,
-    XYEnt position) implements AddComponentCommandEnt {
+    XYEnt position,
+    String name) implements AddComponentCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -88,6 +90,9 @@ public record DefaultAddComponentCommandEnt(
         }
         if(position == null) {
             throw new IllegalArgumentException("<position> must not be null.");
+        }
+        if(name == null) {
+            throw new IllegalArgumentException("<name> must not be null.");
         }
     }
 
@@ -121,6 +126,11 @@ public record DefaultAddComponentCommandEnt(
         return position;
     }
     
+    @Override
+    public String getName() {
+        return name;
+    }
+    
     /**
      * A builder for {@link DefaultAddComponentCommandEnt}.
      */
@@ -135,6 +145,8 @@ public record DefaultAddComponentCommandEnt(
         private String m_itemId;
 
         private XYEnt m_position;
+
+        private String m_name;
 
         @Override
         public DefaultAddComponentCommandEntBuilder setKind(KindEnum kind) {
@@ -182,13 +194,23 @@ public record DefaultAddComponentCommandEnt(
         }
 
         @Override
+        public DefaultAddComponentCommandEntBuilder setName(String name) {
+             if(name == null) {
+                 throw new IllegalArgumentException("<name> must not be null.");
+             }
+             m_name = name;
+             return this;
+        }
+
+        @Override
         public DefaultAddComponentCommandEnt build() {
             return new DefaultAddComponentCommandEnt(
                 immutable(m_kind),
                 immutable(m_providerId),
                 immutable(m_spaceId),
                 immutable(m_itemId),
-                immutable(m_position));
+                immutable(m_position),
+                immutable(m_name));
         }
     
     }
