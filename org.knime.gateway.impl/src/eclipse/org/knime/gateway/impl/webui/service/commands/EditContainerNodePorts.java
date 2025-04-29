@@ -56,6 +56,7 @@ import java.util.stream.IntStream;
 
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
@@ -114,6 +115,21 @@ final class EditContainerNodePorts implements EditPorts {
             newPortInfos.remove(indexToRemove);
         } catch (IndexOutOfBoundsException e) { // NOSONAR: Exception is thrown
             throw new ServiceExceptions.ServiceCallException(e.getMessage());
+        }
+        // when removing a port other than the last one from a component
+        // port metadata is at some point just truncated to the right length
+        // reordering ports in metadata ensures correct port is removed from metadata
+        if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove != newPortInfos.size()) {
+            SubNodeContainer container = m_wfm.getNodeContainer(getNodeId(), SubNodeContainer.class, true);
+            var updatedMetadata = container.getMetadata();
+            if (m_portCommandEnt.getSide() == PortCommandEnt.SideEnum.INPUT) {
+                // offset index by one to account for flow variable port
+                updatedMetadata.reorderInputPorts(indexToRemove - 1);
+            } else {
+                // offset index by one to account for flow variable port
+                updatedMetadata.reorderOutputPorts(indexToRemove - 1);
+            }
+            container.setMetadata(updatedMetadata);
         }
         executeChanges(newPortInfos.toArray(MetaPortInfo[]::new));
     }
