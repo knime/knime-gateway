@@ -134,11 +134,12 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         var position = Geometry.Point.of(m_commandEnt.getPosition());
         var space = m_spaceProviders.getSpace(m_commandEnt.getProviderId(), m_commandEnt.getSpaceId());
         var name = space.getItemName(m_commandEnt.getItemId());
-        m_loadJob = componentLoader.startLoadJob(name, position, exec -> loadComponent(space, exec));
+        m_loadJob = componentLoader.startLoadJob(name, position, exec -> loadComponent(name, space, exec));
         return true;
     }
 
-    private LoadResult loadComponent(final Space space, final ExecutionMonitor exec) throws CanceledExecutionException {
+    private LoadResult loadComponent(final String componentName, final Space space, final ExecutionMonitor exec)
+        throws CanceledExecutionException {
         var wfm = getWorkflowManager();
         var uri = space.toKnimeUrl(m_commandEnt.getItemId());
         exec.setMessage("Downloading...");
@@ -146,7 +147,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         try (var lock = wfm.lock()) {
             exec.setMessage("Loading component...");
             var position = Geometry.Point.of(m_commandEnt.getPosition());
-            var loadResult = loadComponent(wfm, localPath.toFile(), uri, position, exec);
+            var loadResult = loadComponent(wfm, localPath.toFile(), uri, componentName, position, exec);
             var isOk = loadResult.getStatus().isOK();
             return new LoadResult( //
                 loadResult.getComponentId(), //
@@ -216,11 +217,13 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     }
 
     private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM, final File parentFile,
-        final URI templateURI, final Geometry.Point position, final ExecutionMonitor executionMonitor)
+        final URI templateURI, final String componentName, final Geometry.Point position,
+        final ExecutionMonitor executionMonitor)
         throws IOException, UnsupportedWorkflowVersionException, InvalidSettingsException, CanceledExecutionException {
         executionMonitor.checkCanceled();
         var loadHelper = createWorkflowLoadHelper();
         var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
+        loadPersistor.setNameOverwrite(componentName);
         var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
         parentWFM.load(loadPersistor, loadResult, executionMonitor, false);
 
