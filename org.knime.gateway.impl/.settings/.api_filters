@@ -1172,6 +1172,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/Space.java" type="org.knime.gateway.impl.webui.spaces.Space$TransferResult">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.Space.TransferResult"/>
+                <message_argument value="TransferResult(boolean, Pair&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProvider.java" type="org.knime.gateway.impl.webui.spaces.SpaceProvider">
         <filter id="403804204">
             <message_arguments>

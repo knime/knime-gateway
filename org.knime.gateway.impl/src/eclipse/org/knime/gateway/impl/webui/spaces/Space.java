@@ -55,6 +55,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -520,10 +521,11 @@ public interface Space {
      * @param successful whether the operation was (completely) successful or unsuccessful
      * @param errorTitleAndDescription description of the error (so it can be presented to the user), {@code null} if
      *            {@link #successful()} is {@code true} or if the user aborted the operation
-     * @param itemIds IDs of the items that were successfully transferred to a remote hub, always {@code null} if the
-     *            operation was unsuccessful
+     * @param itemPaths the paths of the items that were successfully transferred to a remote hub, always {@code null}
+     *            if the operation was unsuccessful
      */
-    public record TransferResult(boolean successful, Pair<String, String> errorTitleAndDescription, List<String> itemIds) {
+    public record TransferResult(boolean successful, Pair<String, String> errorTitleAndDescription,
+        Set<IPath> itemPaths) {
 
         public static final TransferResult SUCCESS = new TransferResult(true, null, null);
 
