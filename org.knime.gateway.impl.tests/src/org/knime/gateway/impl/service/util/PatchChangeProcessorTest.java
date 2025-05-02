@@ -98,8 +98,8 @@ public class PatchChangeProcessorTest {
         NativeNodeEntBuilder nodeBuilder = builder(NativeNodeEntBuilder.class).setInPorts(Collections.emptyList())
             .setOutPorts(Collections.emptyList()).setPosition(builder(XYEntBuilder.class).setX(0).setY(0).build())
             .setKind(KindEnum.NODE).setTemplateId("templateId");
-        NodeEnt node1 = nodeBuilder.setId(new NodeIDEnt(1)).build();
-        NodeEnt node2 = nodeBuilder.setId(new NodeIDEnt(11)).build();
+        NodeEnt node1 = nodeBuilder.setId(new NodeIDEnt(1)).setHasView(true).build();
+        NodeEnt node2 = nodeBuilder.setId(new NodeIDEnt(11)).setHasView(true).build();
         WorkflowEntBuilder workflowBuilder = builder(WorkflowEntBuilder.class)//
             .setInfo(builder(WorkflowInfoEntBuilder.class)//
                 .setName("wf-name")//
@@ -181,10 +181,12 @@ public class PatchChangeProcessorTest {
         NodeEnt node1 = nodeBuilder//
                 .setId(new NodeIDEnt(1))//
                 .setPortGroups(Map.of("groupName", portGroupBuilder.setInputRange(List.of(1, 2)).build()))//
+                .setHasView(true)//
                 .build();
         NodeEnt node2 = nodeBuilder//
                 .setId(new NodeIDEnt(1))//
                 .setPortGroups(Map.of("groupName", portGroupBuilder.setInputRange(List.of(2, 4)).build()))//
+                .setHasView(true)//
                 .build();
         WorkflowEntBuilder workflowBuilder = builder(WorkflowEntBuilder.class)//
             .setInfo(builder(WorkflowInfoEntBuilder.class)//

@@ -16,6 +16,7 @@
     "textAlign" : "center"
   },
   "dialogType" : "swing",
+  "hasView" : false,
   "id" : "root:3",
   "inPorts" : [ {
     "canRemove" : false,

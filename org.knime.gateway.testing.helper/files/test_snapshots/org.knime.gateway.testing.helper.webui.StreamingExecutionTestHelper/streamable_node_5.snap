@@ -3,6 +3,7 @@
   "executionInfo" : {
     "streamable" : true
   },
+  "hasView" : false,
   "id" : "root:3:0:5",
   "inPorts" : [ {
     "connectedVia" : "[  ]",

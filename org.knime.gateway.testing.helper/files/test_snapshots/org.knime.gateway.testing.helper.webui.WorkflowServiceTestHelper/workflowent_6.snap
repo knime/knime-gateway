@@ -118,6 +118,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:6:3",
       "inPorts" : [ {
         "canRemove" : false,

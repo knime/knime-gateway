@@ -52,6 +52,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:5:0:5",
       "inPorts" : [ {
         "canRemove" : false,
@@ -88,6 +89,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:5:0:6",
       "inPorts" : [ {
         "canRemove" : false,
@@ -133,6 +135,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:5:0:7",
       "inPorts" : [ {
         "canRemove" : false,

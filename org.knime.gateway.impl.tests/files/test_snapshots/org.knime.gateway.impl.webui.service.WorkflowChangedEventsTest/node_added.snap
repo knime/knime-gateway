@@ -12,6 +12,7 @@
       "canReset" : false
     },
     "dialogType" : "web",
+    "hasView" : false,
     "id" : "root:186",
     "inPorts" : [ {
       "canRemove" : false,

@@ -296,6 +296,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:10",
       "inPorts" : [ {
         "canRemove" : false,
@@ -345,6 +346,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:11",
       "inPorts" : [ {
         "canRemove" : false,
@@ -403,6 +405,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:12",
       "inPorts" : [ {
         "canRemove" : false,
@@ -461,6 +464,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:13",
       "inPorts" : [ {
         "canRemove" : false,
@@ -520,6 +524,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:14",
       "inPorts" : [ {
         "canRemove" : false,
@@ -571,6 +576,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:15",
       "inPorts" : [ {
         "canRemove" : false,
@@ -614,6 +620,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:16",
       "inPorts" : [ {
         "canRemove" : false,
@@ -673,6 +680,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:172",
       "inPorts" : [ {
         "canRemove" : false,
@@ -720,6 +728,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:18",
       "inPorts" : [ {
         "canRemove" : false,
@@ -779,6 +788,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:182",
       "inPorts" : [ {
         "canRemove" : false,
@@ -832,6 +842,7 @@
           "type" : "streaming"
         }
       },
+      "hasView" : false,
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwUlEQVR4nGOQlpYy1tBQfwqk/2PD6uqqj0Fq/HtcWQL63beEzfR5GDjBff7///8ZQJgBqPlJU1Pj/0ePHv5/8uQJCgaJgeSUlZXu+3e75sWtCfmRcTDuf8g075dwA0C2gBTiAiA5NUul/6EzvN+ANCdtj/of2Oe2BsUAkG24AEjOrcbuf+rO6P/p+2OBBnk98elykcAw4P6z+/8Pnt///+aDmygGHDi5/3/U0sD/mYfi/seuDvnr1+GcA9OMYkDx4jyw8+KWhvw/c+0MWPP3H9/+5y7M+J9+IPZ/2q6Y/8BA3IOsGSUMmlfV/U/fG/sf5M/4pUH/j108+n/dwbX/U7dEgm0Pm+372afNWQ/DABUV5YegkD53+cz//MWZ/1N3x/zPBNoYvzIUaFA42MC4tSH//LpcKtE1w1xgrKam8gjkEg17lf/+fW5g54ICDOSiVCD2n+Bxx6/blQOrAegCXs2OKiFTvO6k7YoC2x421/etT5uTMTbNWA2AGiIbNMnjVPB070fAgGsGiZ3kkOY6L6G2+bKS/kMQBrFBYlgNwIZBGh64ev1/7B8IxiA2SIxoA0C2wjTDMEiMfgZQ7AVcgQgAUT6awwoY0YUAAAAASUVORK5CYII=",
       "id" : "root:183",
       "inPorts" : [ {
@@ -911,6 +922,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:185",
       "inPorts" : [ {
         "canRemove" : false,
@@ -967,6 +979,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:19",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1026,6 +1039,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "web",
+      "hasView" : false,
       "id" : "root:2",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1085,6 +1099,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:20",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1157,6 +1172,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:21",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1237,6 +1253,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:22",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1304,6 +1321,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:23",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1353,6 +1371,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:25",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1423,6 +1442,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:26",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1489,6 +1509,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "web",
+      "hasView" : false,
       "id" : "root:27",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1574,6 +1595,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:5",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1625,6 +1647,7 @@
         "canExpand" : "true",
         "canReset" : false
       },
+      "hasView" : false,
       "id" : "root:6",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1683,6 +1706,7 @@
         "canReset" : false
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:8",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1741,6 +1765,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
+      "hasView" : false,
       "icon" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAXdJREFUOI2tk09LAlEUxc/8jdEJQ7TBhW5apYIgGa36CCKCq2gRtWohCJIuWrhoowiBHyICRapPERRBkCtb5SIMkaSxoRmfr4XO+GdIojzLwz2/d9+97zGU4l/iAYBhJka8lAjwklhmBS7EcowMAENC1aFBGgNNz96cXL2YtZQCDKUTQLKSygkOMSP73QoncjMnEZ1AbXXbxqd+Xk9XizZAspLKSR751OlzyYta7r/2VK2jntXT1SKlAGu2LTjEzHT4YHMPq4Kd5fS5ZMEhZuKlRAAYA3hJLMt+tzJduKNsobCdR2w9aoPIfrfCS2LZArACF5q/MwDIghNHwX0chw+xtuKyfE7kwApcaAIYT/snRTxhFGJ5RL0RyzMz7KLgb8QDoz0vKnrsPOGiWcP7V8/yzMwIYJAG0Ulwfg6q0cdls467t4cZn+gEQ4M0LMBA07Nqq7vr2vBam7ht36P2fI0Pw96c2uq2B5qeBZbwkJb3lE396TP9R9+1vLhEuvvtyQAAAABJRU5ErkJggg==",
       "id" : "root:9",
       "inPorts" : [ {

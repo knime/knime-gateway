@@ -74,6 +74,7 @@
       "executionInfo" : {
         "streamable" : false
       },
+      "hasView" : false,
       "id" : "root:183:0:14",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -114,6 +115,7 @@
       "executionInfo" : {
         "streamable" : true
       },
+      "hasView" : false,
       "id" : "root:183:0:17",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -155,6 +157,7 @@
       "executionInfo" : {
         "streamable" : true
       },
+      "hasView" : false,
       "id" : "root:183:0:18",
       "inPorts" : [ {
         "connectedVia" : "[  ]",

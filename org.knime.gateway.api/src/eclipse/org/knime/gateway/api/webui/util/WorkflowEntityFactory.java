@@ -561,30 +561,52 @@ public final class WorkflowEntityFactory {
         return createIconDataURL(snc.getMetadata().getIcon().orElse(null));
     }
 
-    private ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer nc,
+    private ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer snc,
         final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
-        ComponentMetadata metadata = nc.getMetadata();
+        ComponentMetadata metadata = snc.getMetadata();
         var type =
             metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
-        var inputContentVersion = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(nc)
-            ? ContentVersions.getInputContentVersion(nc) : null;
-        return builder(ComponentNodeEntBuilder.class).setName(nc.getName())//
+        var inputContentVersion = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(snc)
+            ? ContentVersions.getInputContentVersion(snc) : null;
+        return builder(ComponentNodeEntBuilder.class).setName(snc.getName())//
             .setId(id)//
             .setType(type) //
-            .setOutPorts(buildNodePortEnts(nc, false, buildContext))//
-            .setAnnotation(buildNodeAnnotationEnt(nc.getNodeAnnotation()))//
-            .setInPorts(buildNodePortEnts(nc, true, buildContext))//
-            .setPosition(buildXYEnt(nc.getUIInformation()))//
-            .setState(buildNodeStateEnt(nc))//
-            .setIcon(createIconDataURL(nc.getMetadata().getIcon().orElse(null)))//
+            .setOutPorts(buildNodePortEnts(snc, false, buildContext))//
+            .setAnnotation(buildNodeAnnotationEnt(snc.getNodeAnnotation()))//
+            .setInPorts(buildNodePortEnts(snc, true, buildContext))//
+            .setPosition(buildXYEnt(snc.getUIInformation()))//
+            .setState(buildNodeStateEnt(snc))//
+            .setIcon(createIconDataURL(snc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
-            .setLink(buildTemplateLinkEnt(nc, buildContext))//
-            .setDialogType(getDialogType(nc)) //
+            .setLink(buildTemplateLinkEnt(snc, buildContext))//
+            .setDialogType(getDialogType(snc)) //
             .setAllowedActions(allowedActions)//
-            .setExecutionInfo(buildNodeExecutionInfoEnt(nc)) //
-            .setIsLocked(CoreUtil.isLocked(nc).orElse(null)) //
+            .setExecutionInfo(buildNodeExecutionInfoEnt(snc)) //
+            .setIsLocked(CoreUtil.isLocked(snc).orElse(null)) //
             .setInputContentVersion(inputContentVersion) //
+            .setHasView(hasNodeView(snc))//
             .build();
+    }
+
+    private static Boolean hasNodeView(final SubNodeContainer snc) {
+        var childNcs = snc.getWorkflowManager().getNodeContainers();
+        return childNcs.stream().anyMatch(childNc -> hasNodeView(childNc));
+    }
+
+    // this function calls itself recursively if a ComponentNode (=SubNodeContainer) contains another component node
+    // this may lead to performance issues for deeply nested components. If that is a concern a maxDepth parameter
+    // could be introduced
+    private static Boolean hasNodeView(final NodeContainer nc) {
+        if (nc instanceof NativeNodeContainer nnc) {
+            return NodeViewManager.hasNodeView(nnc);
+        } else if (nc instanceof WorkflowManager) {
+            return false;
+        } else if (nc instanceof SubNodeContainer snc) {
+            return hasNodeView(snc);
+        } else {
+            throw new IllegalArgumentException(
+                "Node container " + nc.getClass().getName() + " cannot be mapped to a node entity.");
+        }
     }
 
     private static DialogTypeEnum getDialogType(final NodeContainer nc) {
@@ -716,6 +738,7 @@ public final class WorkflowEntityFactory {
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .setIsLocked(CoreUtil.isLocked(wm).orElse(null)) //
             .setDialogType(null) //
+            .setHasView(false)//
             .build();
     }
 
@@ -782,7 +805,7 @@ public final class WorkflowEntityFactory {
         var inPorts = buildNodePortEnts(nnc, true, buildContext);
         var outPorts = buildNodePortEnts(nnc, false, buildContext);
         var portGroups = buildPortGroupEntsMapOptional(nnc, inPorts, outPorts, buildContext).orElse(null);
-        var hasView = NodeViewManager.hasNodeView(nnc) ? Boolean.TRUE : null;
+        var hasView = NodeViewManager.hasNodeView(nnc);
         Boolean isReexecutable = null;
         if (nnc.getNodeModel() instanceof ReExecutable) {
             isReexecutable = ((ReExecutable<?>)nnc.getNodeModel()).canTriggerReExecution();

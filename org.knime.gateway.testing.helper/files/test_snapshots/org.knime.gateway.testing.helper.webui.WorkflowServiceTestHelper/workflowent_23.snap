@@ -76,6 +76,7 @@
   "nodes" : {
     "root:23:0:10" : {
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:23:0:10",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -114,6 +115,7 @@
     },
     "root:23:0:8" : {
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:23:0:8",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
@@ -147,6 +149,7 @@
     },
     "root:23:0:9" : {
       "dialogType" : "swing",
+      "hasView" : false,
       "id" : "root:23:0:9",
       "inPorts" : [ {
         "connectedVia" : "[  ]",
