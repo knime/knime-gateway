@@ -272,7 +272,7 @@ public final class Project {
     /**
      * Builder for {@link Project}-instances.
      */
-    interface BuilderStage {
+    public interface BuilderStage {
 
         /**
          * Builder stage requiring an id.
@@ -286,6 +286,8 @@ public final class Project {
          */
         interface RequiresWorkflow {
             Optionals setWfm(final WorkflowManager wfm);
+
+            Optionals setWfmAndLoader(final WorkflowManager wfm, WorkflowManagerLoader wfmLoader);
 
             RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader);
 
@@ -355,6 +357,16 @@ public final class Project {
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
             m_wfmCache = new ProjectWfmCache(wfmLoader);
+            return this;
+        }
+
+        @Override
+        public BuilderStage.Optionals setWfmAndLoader(final WorkflowManager wfm,
+            final WorkflowManagerLoader wfmLoader) {
+            Objects.requireNonNull(wfm);
+            m_name = wfm.getName();
+            m_id = getUniqueProjectId(m_name);
+            m_wfmCache = new ProjectWfmCache(wfm, wfmLoader);
             return this;
         }
 

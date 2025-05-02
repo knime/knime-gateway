@@ -66,7 +66,7 @@ import org.knime.gateway.impl.util.Lazy;
  */
 class ProjectWfmCache {
 
-    private final WorkflowManagerLoader m_wfmLoader;
+    private WorkflowManagerLoader m_wfmLoader;
 
     private final Lazy.Init<WorkflowManager> m_currentState;
 
@@ -101,6 +101,10 @@ class ProjectWfmCache {
         this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
     }
 
+    ProjectWfmCache(final WorkflowManager wfm, final WorkflowManagerLoader wfmLoader) {
+        this(wfmLoader, new Lazy.Init<>(wfm));
+    }
+
     private ProjectWfmCache(final WorkflowManagerLoader wfmLoader, final Lazy.Init<WorkflowManager> currentState) {
         m_wfmLoader = wfmLoader;
         m_currentState = currentState;
@@ -119,7 +123,7 @@ class ProjectWfmCache {
         if (version instanceof VersionId.Fixed fixedVersion) {
             if (m_wfmLoader == null) {
                 throw new IllegalArgumentException(
-                        "Can't load any workflow versions. Most likely an implementation problem.");
+                        "No workflow loader set for this project (required for dynamically loading some version)");
             }
             return m_fixedVersions.computeIfAbsent(fixedVersion, m_wfmLoader::load);
         } else {

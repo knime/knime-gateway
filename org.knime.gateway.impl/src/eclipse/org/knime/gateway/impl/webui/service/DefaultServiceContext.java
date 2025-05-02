@@ -73,7 +73,7 @@ public final class DefaultServiceContext {
     /**
      * Sets the context for the current thread initialized with the given workflow project id.
      *
-     * @param workflowProjectId
+     * @param workflowProjectId -
      * @return a closable to be used to unset the context again (i.e. equivalent to calling {@link #unset()}).
      * @throws IllegalStateException if there is already a context set
      */

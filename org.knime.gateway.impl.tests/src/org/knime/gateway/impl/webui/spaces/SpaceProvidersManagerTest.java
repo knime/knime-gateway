@@ -96,16 +96,19 @@ public class SpaceProvidersManagerTest {
         var wfContext = WorkflowContextV2.forTemporaryWorkflow(Path.of("/"), Path.of("/"));
         var projectId = "project-id";
 
+        // only available factory returns empty optional -> obtained SpaceProviders instance does not contain a SpaceProvider instance
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.empty());
-        spaceProvidersManager.update(Key.of(projectId), wfContext);
-        assertThrows(NoSuchElementException.class, () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)));
+        var spaceProviders = spaceProvidersManager.update(Key.of(projectId), wfContext);
+        assertThat(spaceProviders.getAllSpaceProviders().isEmpty(), is(true));
 
+        // only available factory returns SpaceProvider instance -> instance is stored and can be retrieved via correct ID
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.of(spacerProvider1));
         spaceProvidersManager.update(Key.of(projectId), wfContext);
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
         assertThrows(NoSuchElementException.class,
             () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2"));
 
+        // `update` replaces the SpaceProviders instance
         when(spaceProvidersFactory.createSpaceProvider(wfContext)).thenReturn(Optional.of(spacerProvider2));
         spaceProvidersManager.update(Key.of(projectId), wfContext);
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2").getId(), is("2"));
@@ -113,10 +116,12 @@ public class SpaceProvidersManagerTest {
         spaceProvidersManager.remove(Key.of(projectId));
         assertThrows(NoSuchElementException.class, () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)));
 
+        // several SpaceProvider instances are handled property
         when(spaceProvidersFactory.createSpaceProviders()).thenReturn(List.of(spacerProvider1, spacerProvider2));
         spaceProvidersManager.update();
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("2").getId(), is("2"));
+        // misses fall back to default key
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of("unknown-project-id")).getSpaceProvider("1").getId(),
             is("1"));
 

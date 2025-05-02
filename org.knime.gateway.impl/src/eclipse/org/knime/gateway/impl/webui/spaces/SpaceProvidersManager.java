@@ -53,8 +53,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
@@ -81,6 +83,16 @@ public final class SpaceProvidersManager {
     private final List<SpaceProviderFactory> m_spaceProvidersFactories;
 
     /**
+     * Creates a new manager with the default key and no local space provider.
+     */
+    public SpaceProvidersManager() {
+        this(id -> {
+        }, null);
+    }
+
+    /**
+     * -
+     * 
      * @param loginErrorHandler error handler for login errors
      * @param localSpaceProvider the local space provider or {@code null} if none
      */
@@ -90,6 +102,8 @@ public final class SpaceProvidersManager {
     }
 
     /**
+     * -
+     * 
      * @param loginErrorHandler error handler for login errors
      * @param onProviderCreated callback for newly created space providers
      * @param onProviderRemoved callback for removed space providers
@@ -103,6 +117,8 @@ public final class SpaceProvidersManager {
     }
 
     /**
+     * -
+     * 
      * @param loginErrorHandler error handler for login errors
      * @param localSpaceProvider the local space provider or {@code null} if none
      * @param spaceProviderFactories the factories to create the space providers from
@@ -113,6 +129,8 @@ public final class SpaceProvidersManager {
     }
 
     /**
+     * -
+     * 
      * @param loginErrorHandler error handler for login errors
      * @param onProviderCreated callback for newly created space providers
      * @param onProviderRemoved callback for removed space providers
@@ -123,16 +141,22 @@ public final class SpaceProvidersManager {
         final Consumer<SpaceProvider> onProviderCreated, final Consumer<SpaceProvider> onProviderRemoved,
         final LocalSpaceProvider localSpaceProvider, final List<SpaceProviderFactory> spaceProviderFactories) {
         m_loginErrorHandler = loginErrorHandler;
-        m_onProviderCreated = onProviderCreated == null ? (provider -> {}) : onProviderCreated;
-        m_onProviderRemoved = onProviderRemoved == null ? (provider -> {}) : onProviderRemoved;
+        m_onProviderCreated = onProviderCreated == null ? (provider -> {
+        }) : onProviderCreated;
+        m_onProviderRemoved = onProviderRemoved == null ? (provider -> {
+        }) : onProviderRemoved;
         m_localSpaceProvider = localSpaceProvider;
         m_spaceProvidersFactories = spaceProviderFactories;
     }
 
     /**
-     * @param key
-     * @return the {@link SpaceProviders} instance for the given key or the default key if none is found
-     * @throws NoSuchElementException if no {@link SpaceProviders} instance is found for the given key
+     * -
+     * 
+     * @param key -
+     * @return non-null; the {@link SpaceProviders} instance for the given key or the default key if none is found. The
+     *         returned instance may be empty if there are no providers.
+     * @throws NoSuchElementException if no {@link SpaceProviders} instance could be determined for this key. This is
+     *             different from the case that there exist no space providers for this key.
      */
     public SpaceProviders getSpaceProviders(final Key key) {
         var res = m_spaceProviders.get(key);
@@ -140,7 +164,7 @@ public final class SpaceProvidersManager {
             res = m_spaceProviders.get(Key.defaultKey());
         }
         if (res == null) {
-            throw new NoSuchElementException("No space providers found for key '" + key + "'");
+            throw new NoSuchElementException("Space providers for '" + key + "' could not be determined.");
         }
         return res;
     }
@@ -157,14 +181,26 @@ public final class SpaceProvidersManager {
      * created for the projects workflow context.
      *
      * @param key the key to create or the space providers for
-     * @param context
+     * @param context -
+     * @return -
      */
-    public void update(final Key key, final WorkflowContextV2 context) {
-        m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProvider(context).ifPresent(provider -> {
-            provider.init(m_loginErrorHandler);
-            m_onProviderCreated.accept(provider);
-            m_spaceProviders.put(key, new SpaceProviders(Map.of(provider.getId(), provider)));
-        }));
+    public SpaceProviders update(final Key key, final WorkflowContextV2 context) {
+        var createdProviders = m_spaceProvidersFactories.stream() //
+            .map(factory -> factory.createSpaceProvider(context)) //
+            .filter(Optional::isPresent) //
+            .flatMap(Optional::stream) //
+            .toList();
+        createdProviders.forEach(m_onProviderCreated);
+        var spaceProviders = new SpaceProviders( //
+            createdProviders.stream().collect(Collectors.toMap( //
+                SpaceProvider::getId, //
+                provider -> provider)) //
+        );
+        m_spaceProviders.put( //
+            key, //
+            spaceProviders //
+        );
+        return spaceProviders;
     }
 
     /**
@@ -210,6 +246,8 @@ public final class SpaceProvidersManager {
         }
 
         /**
+         * -
+         * 
          * @param key
          * @return a key for the given string
          */
