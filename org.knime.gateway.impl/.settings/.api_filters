@@ -943,6 +943,12 @@
                 <message_argument value="toEntity()"/>
             </message_arguments>
         </filter>
+        <filter comment="Added spaceId argument to uploadSync to determine upload limit" id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
+                <message_argument value="syncUploadWorkflow(Path, URI, boolean, boolean, IProgressMonitor)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
@@ -957,6 +963,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="init(Consumer&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Added spaceId to synchUpload to determine upload limit" id="1211105284">
+            <message_arguments>
+                <message_argument value="syncUploadWorkflow(Path, URI, String, boolean, boolean, IProgressMonitor)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
