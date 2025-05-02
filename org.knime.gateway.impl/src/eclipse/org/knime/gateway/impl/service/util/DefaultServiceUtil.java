@@ -95,6 +95,22 @@ public final class DefaultServiceUtil {
     }
 
     /**
+     * Obtain the {@link NodeContainer} with the given id in the root workflow manager of the given {@link Project}.
+     *
+     * @param projectId id of the root workflow (project)
+     * @param versionId the version of the project
+     * @param nodeId the id of the actual node
+     * @return the node container
+     * @throws IllegalArgumentException if there is no node for the given node id
+     * @throws NoSuchElementException if there is no project for the id registered
+     */
+    public static NodeContainer getNodeContainer(final String projectId, final VersionId versionId,
+        final NodeIDEnt nodeId) {
+        var parent = WorkflowManagerResolver.get(projectId, versionId);
+        return findNodeContainer(parent, nodeId);
+    }
+
+    /**
      * Gets the workflow manager from the {@link ProjectManager} for a corresponding root workflow id. Obtain the root
      * workflow manager of the given {@link Project} and find the workflow manager of the container node identified by
      * {@code subWorkflowId}. In the sub-workflow, find the {@code nodeInSubWorkflow}.
@@ -112,6 +128,25 @@ public final class DefaultServiceUtil {
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final NodeIDEnt nodeInSubWorkflow) {
         var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId);
+        return findNodeContainer(subWorkflow, nodeInSubWorkflow);
+    }
+
+    /**
+     * Gets the (sub-)workflow manager for the given project and node id.
+     *
+     * @param projectId the id to get the wfm for
+     * @param subWorkflowId the id of the sub workflow
+     * @param versionId the version of the project
+     * @param nodeInSubWorkflow the id of the node in the sub workflow
+     * @return the node container, never null
+     * @throws NoSuchElementException if there is no workflow manager for the id registered
+     * @throws IllegalArgumentException if there is no node for the given node id
+     * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
+     *             or the workflow is encrypted
+     */
+    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
+        final VersionId versionId, final NodeIDEnt nodeInSubWorkflow) {
+        var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId, versionId);
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);
     }
 
@@ -135,25 +170,6 @@ public final class DefaultServiceUtil {
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
         return WorkflowManagerResolver.get(wfKey.getProjectId(),  wfKey.workflowId(), wfKey.getVersionId());
-    }
-
-    /**
-     * Gets the (sub-)workflow manager for the given project and node id.
-     *
-     * @param projectId the id to get the wfm for
-     * @param subWorkflowId the id of the sub workflow
-     * @param versionId the version of the project
-     * @param nodeInSubWorkflow the id of the node in the sub workflow
-     * @return the node container, never null
-     * @throws NoSuchElementException if there is no workflow manager for the id registered
-     * @throws IllegalArgumentException if there is no node for the given node id
-     * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
-     *             or the workflow is encrypted
-     */
-    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
-        final VersionId versionId, final NodeIDEnt nodeInSubWorkflow) {
-        var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId, versionId);
-        return findNodeContainer(subWorkflow, nodeInSubWorkflow);
     }
 
     /**
