@@ -115,6 +115,7 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
       valueConsumer.accept("annotation", Pair.create(getAnnotation(), e.getAnnotation()));
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
@@ -156,6 +157,14 @@ public interface MetaNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         MetaNodeEntBuilder setOutPorts(java.util.List<MetaNodePortEnt> outPorts);
+        
+        /**
+         * Indicates whether the node has a view.
+         * 
+         * @param hasView the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        MetaNodeEntBuilder setHasView(Boolean hasView);
         
         /**
    		 * Set annotation

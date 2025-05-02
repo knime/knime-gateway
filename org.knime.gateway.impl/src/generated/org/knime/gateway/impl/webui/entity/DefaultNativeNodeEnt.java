@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param id
  * @param inPorts
  * @param outPorts
+ * @param hasView
  * @param annotation
  * @param position
  * @param kind
@@ -75,7 +76,6 @@ import org.knime.gateway.api.webui.entity.NativeNodeEnt;
  * @param state
  * @param loopInfo
  * @param portGroups
- * @param hasView
  * @param isReexecutable
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -85,6 +85,7 @@ public record DefaultNativeNodeEnt(
     org.knime.gateway.api.entity.NodeIDEnt id,
     java.util.List<? extends NodePortEnt> inPorts,
     java.util.List<? extends NodePortEnt> outPorts,
+    Boolean hasView,
     NodeAnnotationEnt annotation,
     XYEnt position,
     KindEnum kind,
@@ -96,7 +97,6 @@ public record DefaultNativeNodeEnt(
     NodeStateEnt state,
     LoopInfoEnt loopInfo,
     java.util.Map<String, PortGroupEnt> portGroups,
-    Boolean hasView,
     Boolean isReexecutable) implements NativeNodeEnt {
 
     /**
@@ -111,6 +111,9 @@ public record DefaultNativeNodeEnt(
         }
         if(outPorts == null) {
             throw new IllegalArgumentException("<outPorts> must not be null.");
+        }
+        if(hasView == null) {
+            throw new IllegalArgumentException("<hasView> must not be null.");
         }
         if(position == null) {
             throw new IllegalArgumentException("<position> must not be null.");
@@ -141,6 +144,11 @@ public record DefaultNativeNodeEnt(
     @Override
     public java.util.List<? extends NodePortEnt> getOutPorts() {
         return outPorts;
+    }
+    
+    @Override
+    public Boolean hasView() {
+        return hasView;
     }
     
     @Override
@@ -199,11 +207,6 @@ public record DefaultNativeNodeEnt(
     }
     
     @Override
-    public Boolean hasView() {
-        return hasView;
-    }
-    
-    @Override
     public Boolean isReexecutable() {
         return isReexecutable;
     }
@@ -218,6 +221,8 @@ public record DefaultNativeNodeEnt(
         private java.util.List<? extends NodePortEnt> m_inPorts = new java.util.ArrayList<>();
 
         private java.util.List<? extends NodePortEnt> m_outPorts = new java.util.ArrayList<>();
+
+        private Boolean m_hasView;
 
         private NodeAnnotationEnt m_annotation;
 
@@ -240,8 +245,6 @@ public record DefaultNativeNodeEnt(
         private LoopInfoEnt m_loopInfo;
 
         private java.util.Map<String, PortGroupEnt> m_portGroups;
-
-        private Boolean m_hasView;
 
         private Boolean m_isReexecutable;
 
@@ -269,6 +272,15 @@ public record DefaultNativeNodeEnt(
                  throw new IllegalArgumentException("<outPorts> must not be null.");
              }
              m_outPorts = outPorts;
+             return this;
+        }
+
+        @Override
+        public DefaultNativeNodeEntBuilder setHasView(Boolean hasView) {
+             if(hasView == null) {
+                 throw new IllegalArgumentException("<hasView> must not be null.");
+             }
+             m_hasView = hasView;
              return this;
         }
 
@@ -348,12 +360,6 @@ public record DefaultNativeNodeEnt(
         }
 
         @Override
-        public DefaultNativeNodeEntBuilder setHasView(Boolean hasView) {
-             m_hasView = hasView;
-             return this;
-        }
-
-        @Override
         public DefaultNativeNodeEntBuilder setIsReexecutable(Boolean isReexecutable) {
              m_isReexecutable = isReexecutable;
              return this;
@@ -365,6 +371,7 @@ public record DefaultNativeNodeEnt(
                 immutable(m_id),
                 immutable(m_inPorts),
                 immutable(m_outPorts),
+                immutable(m_hasView),
                 immutable(m_annotation),
                 immutable(m_position),
                 immutable(m_kind),
@@ -376,7 +383,6 @@ public record DefaultNativeNodeEnt(
                 immutable(m_state),
                 immutable(m_loopInfo),
                 immutable(m_portGroups),
-                immutable(m_hasView),
                 immutable(m_isReexecutable));
         }
     

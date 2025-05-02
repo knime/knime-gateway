@@ -108,6 +108,10 @@ public interface NodeEntMixIn extends NodeEnt {
     public java.util.List<? extends NodePortEnt> getOutPorts();
     
     @Override
+    @JsonProperty("hasView")
+    public Boolean hasView();
+    
+    @Override
     @JsonProperty("annotation")
     public NodeAnnotationEnt getAnnotation();
     
@@ -173,6 +177,10 @@ public interface NodeEntMixIn extends NodeEnt {
         @Override
         @JsonProperty("outPorts")
         public NodeEntMixInBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts);
+        
+        @Override
+        @JsonProperty("hasView")
+        public NodeEntMixInBuilder setHasView(final Boolean hasView);
         
         @Override
         @JsonProperty("annotation")

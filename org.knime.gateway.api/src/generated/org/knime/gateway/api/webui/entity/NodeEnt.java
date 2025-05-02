@@ -131,6 +131,12 @@ public interface NodeEnt extends GatewayEntity {
   public java.util.List<? extends NodePortEnt> getOutPorts();
 
   /**
+   * Indicates whether the node has a view.
+   * @return hasView , never <code>null</code>
+   **/
+  public Boolean hasView();
+
+  /**
    * Get annotation
    * @return annotation 
    **/
@@ -180,6 +186,7 @@ public interface NodeEnt extends GatewayEntity {
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
       valueConsumer.accept("annotation", Pair.create(getAnnotation(), e.getAnnotation()));
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
@@ -217,6 +224,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
+        
+        /**
+         * Indicates whether the node has a view.
+         * 
+         * @param hasView the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setHasView(Boolean hasView);
         
         /**
    		 * Set annotation

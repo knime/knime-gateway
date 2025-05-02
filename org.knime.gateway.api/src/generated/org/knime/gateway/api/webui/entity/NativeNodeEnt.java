@@ -97,12 +97,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
   public java.util.Map<String, PortGroupEnt> getPortGroups();
 
   /**
-   * Indicates whether the node has a view. Not present, if the node has no view.
-   * @return hasView 
-   **/
-  public Boolean hasView();
-
-  /**
    * Indicates whether the node can re-execute itself (e.g. within a page of a data app). It&#39;s absent if the node isn&#39;t re-executable at all (i.e. it can&#39;t even be configured to be re-executable).
    * @return isReexecutable 
    **/
@@ -116,6 +110,7 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
+      valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
       valueConsumer.accept("annotation", Pair.create(getAnnotation(), e.getAnnotation()));
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
@@ -127,7 +122,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("loopInfo", Pair.create(getLoopInfo(), e.getLoopInfo()));
       valueConsumer.accept("portGroups", Pair.create(getPortGroups(), e.getPortGroups()));
-      valueConsumer.accept("hasView", Pair.create(hasView(), e.hasView()));
       valueConsumer.accept("isReexecutable", Pair.create(isReexecutable(), e.isReexecutable()));
   }
 
@@ -159,6 +153,14 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setOutPorts(java.util.List<? extends NodePortEnt> outPorts);
+        
+        /**
+         * Indicates whether the node has a view.
+         * 
+         * @param hasView the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        NativeNodeEntBuilder setHasView(Boolean hasView);
         
         /**
    		 * Set annotation
@@ -247,14 +249,6 @@ public interface NativeNodeEnt extends GatewayEntity, NodeEnt {
          * @return this entity builder for chaining
          */
         NativeNodeEntBuilder setPortGroups(java.util.Map<String, PortGroupEnt> portGroups);
-        
-        /**
-         * Indicates whether the node has a view. Not present, if the node has no view.
-         * 
-         * @param hasView the property value,  
-         * @return this entity builder for chaining
-         */
-        NativeNodeEntBuilder setHasView(Boolean hasView);
         
         /**
          * Indicates whether the node can re-execute itself (e.g. within a page of a data app). It&#39;s absent if the node isn&#39;t re-executable at all (i.e. it can&#39;t even be configured to be re-executable).

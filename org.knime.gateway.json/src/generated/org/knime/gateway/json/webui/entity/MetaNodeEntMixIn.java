@@ -90,6 +90,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public java.util.List<MetaNodePortEnt> getOutPorts();
     
     @Override
+    @JsonProperty("hasView")
+    public Boolean hasView();
+    
+    @Override
     @JsonProperty("annotation")
     public NodeAnnotationEnt getAnnotation();
     
@@ -157,6 +161,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("outPorts")
         public MetaNodeEntMixInBuilder setOutPorts(final java.util.List<MetaNodePortEnt> outPorts);
+        
+        @Override
+        @JsonProperty("hasView")
+        public MetaNodeEntMixInBuilder setHasView(final Boolean hasView);
         
         @Override
         @JsonProperty("annotation")

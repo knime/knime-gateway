@@ -91,6 +91,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public java.util.List<? extends NodePortEnt> getOutPorts();
     
     @Override
+    @JsonProperty("hasView")
+    public Boolean hasView();
+    
+    @Override
     @JsonProperty("annotation")
     public NodeAnnotationEnt getAnnotation();
     
@@ -135,10 +139,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
     public java.util.Map<String, PortGroupEnt> getPortGroups();
     
     @Override
-    @JsonProperty("hasView")
-    public Boolean hasView();
-    
-    @Override
     @JsonProperty("isReexecutable")
     public Boolean isReexecutable();
     
@@ -166,6 +166,10 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("outPorts")
         public NativeNodeEntMixInBuilder setOutPorts(final java.util.List<? extends NodePortEnt> outPorts);
+        
+        @Override
+        @JsonProperty("hasView")
+        public NativeNodeEntMixInBuilder setHasView(final Boolean hasView);
         
         @Override
         @JsonProperty("annotation")
@@ -210,10 +214,6 @@ public interface NativeNodeEntMixIn extends NativeNodeEnt {
         @Override
         @JsonProperty("portGroups")
         public NativeNodeEntMixInBuilder setPortGroups(final java.util.Map<String, PortGroupEnt> portGroups);
-        
-        @Override
-        @JsonProperty("hasView")
-        public NativeNodeEntMixInBuilder setHasView(final Boolean hasView);
         
         @Override
         @JsonProperty("isReexecutable")
