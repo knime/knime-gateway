@@ -55,6 +55,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 import org.knime.core.node.port.MetaPortInfo;
+import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -78,6 +79,8 @@ final class EditContainerNodePorts implements EditPorts {
     private final PortCommandEnt m_portCommandEnt;
 
     private MetaPortInfo[] m_reverseInfos;
+
+    private ComponentMetadata m_reverseMetadata;
 
     private MetaPortInfo[] m_newPortInfos;
 
@@ -118,16 +121,18 @@ final class EditContainerNodePorts implements EditPorts {
         }
         // when removing a port other than the last one from a component
         // port metadata is at some point just truncated to the right length
-        // reordering ports in metadata ensures correct port is removed from metadata
-        if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove != newPortInfos.size()) {
+        // remove correct port from metadata here to avoid that
+        if (getContainerType() == CoreUtil.ContainerType.COMPONENT) {
             SubNodeContainer container = m_wfm.getNodeContainer(getNodeId(), SubNodeContainer.class, true);
-            var updatedMetadata = container.getMetadata();
+            //record component metadata for operation reversal
+            m_reverseMetadata = container.getMetadata();
+            ComponentMetadata updatedMetadata;
             if (m_portCommandEnt.getSide() == PortCommandEnt.SideEnum.INPUT) {
                 // offset index by one to account for flow variable port
-                updatedMetadata.reorderInputPorts(indexToRemove - 1);
+                updatedMetadata = container.getMetadata().removeInputPort(indexToRemove - 1);
             } else {
                 // offset index by one to account for flow variable port
-                updatedMetadata.reorderOutputPorts(indexToRemove - 1);
+                updatedMetadata = container.getMetadata().removeOutputPort(indexToRemove - 1);
             }
             container.setMetadata(updatedMetadata);
         }
@@ -137,6 +142,11 @@ final class EditContainerNodePorts implements EditPorts {
     @Override
     public void undo() {
         updatePorts(m_reverseInfos);
+        //restore metadata
+        if (getContainerType() == CoreUtil.ContainerType.COMPONENT && m_reverseMetadata != null) {
+            SubNodeContainer container = m_wfm.getNodeContainer(getNodeId(), SubNodeContainer.class, true);
+            container.setMetadata(m_reverseMetadata);
+        }
         m_reverseInfos = null;
         m_newPortInfos = null;
     }
