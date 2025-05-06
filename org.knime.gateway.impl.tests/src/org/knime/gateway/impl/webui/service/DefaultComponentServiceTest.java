@@ -74,7 +74,8 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
     private final ObjectMapper m_mapper = new ObjectMapper();
 
     /**
-     * Makes sure that {@link ComponentService#reexecuteComponentNode(String, NodeIDEnt, NodeIDEnt, String, Map)} works
+     * Makes sure that {@link ComponentService#triggerComponentReexecution(String, NodeIDEnt, NodeIDEnt, String, Map)}
+     * works
      *
      * @throws Exception
      */
@@ -100,9 +101,9 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         assertTrue("yAxisLabel should not exist before re-execution",
             scatterPlotBefore.at(scatterPlotYAxisLabelPath).isMissingNode());
 
-        cs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),"3:0:4",
-           Map.of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
-        var reexecutionStatus = cs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),"3:0:4");
+        cs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
+            .of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
+        cs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4");
 
         wfm.executeAllAndWaitUntilDone();
 
@@ -117,8 +118,57 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         // after re-execution: `yAxisLabel` should exist and have value "CustomLabel"
         assertFalse("yAxisLabel should exist after re-execution",
             scatterPlotAfter.at(scatterPlotYAxisLabelPath).isMissingNode());
-        assertThat("yAxisLabel should have value 'test'",
-            scatterPlotAfter.at(scatterPlotYAxisLabelPath).asText(), is("test"));
+        assertThat("yAxisLabel should have value 'test'", scatterPlotAfter.at(scatterPlotYAxisLabelPath).asText(),
+            is("test"));
+    }
+
+    /**
+     * Makes sure that {@link ComponentService#triggerCompleteComponentReexecution(String, NodeIDEnt, NodeIDEnt, Map)}
+     * works
+     *
+     * @throws Exception
+     */
+    @Test
+    public void reexecuteCompleteComponentViaBooleanWidget() throws Exception {
+        var projectId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.COMPONENT_REEXECUTION, projectId);
+        var cs = new DefaultComponentService();
+
+        var widgetBooleanPath = "/webNodes/3:0:4/viewRepresentation/currentValue/boolean";
+        var scatterPlotInitialDataPath = "/nodeViews/3:0:3/initialData";
+        var scatterPlotYAxisLabelPath = "/result/settings/yAxisLabel";
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var compositeViewPage =
+            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+        var beforeJson = m_mapper.readTree(compositeViewPage);
+        var beforeBoolean = beforeJson.at(widgetBooleanPath);
+        var scatterPlotBefore = m_mapper.readTree(beforeJson.at(scatterPlotInitialDataPath).asText());
+
+        // before re-execution: `yAxisLabel` should NOT exist
+        assertTrue("yAxisLabel should not exist before re-execution",
+            scatterPlotBefore.at(scatterPlotYAxisLabelPath).isMissingNode());
+
+        cs.triggerCompleteComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), Map
+            .of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
+        cs.pollCompleteComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var compositeViewPageAfterReexecution =
+            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+        var afterJson = m_mapper.readTree(compositeViewPageAfterReexecution);
+        var afterBoolean = afterJson.at(widgetBooleanPath);
+        var scatterPlotAfter = m_mapper.readTree(afterJson.at(scatterPlotInitialDataPath).asText());
+
+        assertThat("Boolean value should have changed after re-execution", afterBoolean, not(is(beforeBoolean)));
+
+        // after re-execution: `yAxisLabel` should exist and have value "CustomLabel"
+        assertFalse("yAxisLabel should exist after re-execution",
+            scatterPlotAfter.at(scatterPlotYAxisLabelPath).isMissingNode());
+        assertThat("yAxisLabel should have value 'test'", scatterPlotAfter.at(scatterPlotYAxisLabelPath).asText(),
+            is("test"));
     }
 
 }
