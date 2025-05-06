@@ -125,9 +125,9 @@ public interface NodeService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.NodeDescriptionNotAvailableException A description for a given node could not be determined.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    NativeNodeDescriptionEnt getNodeDescription(NodeFactoryKeyEnt nodeFactoryKey)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException;
+    NativeNodeDescriptionEnt getNodeDescription(NodeFactoryKeyEnt nodeFactoryKey)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException;
         
     /**
      * Returns all the information on a node dialog required to render it.
