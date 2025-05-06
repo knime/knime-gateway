@@ -82,8 +82,8 @@ public interface CompositeViewDataProvider {
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
 
     /**
-     * Will start the re-execution process by updating the values provided by stateUpdates and returns the page (maybe
-     * null), the nodes that are reset and re-executed
+     * Will start the re-execution process for resetNode and down-stream nodes by updating the values provided by
+     * viewValues and returns the page (maybe null), the nodes that are reset and re-executed
      *
      * @param snc the sub-node component container that should be re-executed
      * @param resetNodeIdSuffix The nodeId suffix, i.e., not starting with root, that triggered the re-execution
@@ -98,6 +98,21 @@ public interface CompositeViewDataProvider {
         throws IOException;
 
     /**
+     * Will start the re-execution process by updating the values provided by viewValues and returns the page (maybe
+     * null), the nodes that are reset and re-executed
+     *
+     * @param snc the sub-node component container that should be re-executed
+     * @param viewValues updates of the in-component-nodes
+     * @param createNodeViewEnt function to generate the view of a native
+     * @return the re-executed or re-executing page. This will be used to handle the partial re-execution to show
+     *         already views of nodes that are already executed
+     * @throws IOException if re-execution cannot be triggered
+     *
+     */
+    PageContainer triggerCompleteComponentReexecution(final SubNodeContainer snc, final Map<String, String> viewValues,
+        final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    /**
      * Query the current page while reexecuting
      *
      * @param snc the container of the component to reexecute
@@ -109,6 +124,19 @@ public interface CompositeViewDataProvider {
      *
      */
     PageContainer pollComponentReexecutionStatus(final SubNodeContainer snc, final String nodeIdThatTriggered,
+        final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
+
+    /**
+     * Query the complete, current page while reexecuting
+     *
+     * @param snc the container of the component to reexecute
+     * @param createNodeViewEnt A function that creates a NodeViewEntity from a native node container
+     * @return the re-executed or re-executing page. This will be used to handle the partial re-execution to show
+     *         already views of nodes that are already executed
+     * @throws IOException if reexecution status cannot be polled
+     *
+     */
+    PageContainer pollCompleteComponentReexecutionStatus(final SubNodeContainer snc,
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
 
     // TODO(NXT-3423): Duplicated from org.knime.core.wizard.rpc.PageContainer. Needs deduplication

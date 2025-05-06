@@ -126,6 +126,21 @@ public class DefaultComponentService implements ComponentService {
     }
 
     @Override
+    public Object triggerCompleteComponentReexecution(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId, final Map<String, String> viewValues) throws ServiceCallException {
+        LOGGER.info("reexecuteCompleteCompositeViewPage: " + projectId + " " + workflowId + " " + nodeId);
+
+        try {
+            var snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            return getViewDataProvider().triggerCompleteComponentReexecution(snc, viewValues,
+                getNodeViewCreator(projectId));
+        } catch (IOException | NodeNotFoundException ex) {
+            throw new ServiceCallException("Could not reexecute complete component. " + ex.getMessage(), ex);
+        }
+
+    }
+
+    @Override
     public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
         final String versionId, final NodeIDEnt nodeId) throws ServiceCallException {
         var version = VersionId.parse(versionId);
@@ -147,7 +162,20 @@ public class DefaultComponentService implements ComponentService {
         } catch (NodeNotFoundException | IOException ex) {
             throw new ServiceCallException("Could not get reexecuting page. " + ex.getMessage(), ex);
         }
+    }
 
+    @Override
+    public Object pollCompleteComponentReexecutionStatus(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws ServiceCallException {
+
+        LOGGER.info("getCompleteReexecutingPage: " + projectId + " " + workflowId + " " + nodeId);
+
+        try {
+            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            return getViewDataProvider().pollCompleteComponentReexecutionStatus(snc, getNodeViewCreator(projectId));
+        } catch (NodeNotFoundException | IOException ex) {
+            throw new ServiceCallException("Could not get reexecuting page. " + ex.getMessage(), ex);
+        }
     }
 
     private static CompositeViewDataProvider getViewDataProvider() {
