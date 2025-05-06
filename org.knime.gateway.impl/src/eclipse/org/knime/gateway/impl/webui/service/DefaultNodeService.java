@@ -85,6 +85,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
@@ -348,7 +349,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey)
-        throws NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
+        throws NodeNotFoundException, ServiceCallException {
         if (!m_nodeDescriptionCache.containsKey(factoryKey)) {
             NodeFactory<NodeModel> fac;
             try {
@@ -360,7 +361,7 @@ public final class DefaultNodeService implements NodeService {
             }
 
             final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports
-                .orElseThrow(() -> new ServiceExceptions.NodeDescriptionNotAvailableException(
+                .orElseThrow(() -> new ServiceExceptions.ServiceCallException(
                     "Could not create instance of node"));
             var description = EntityFactory.NodeTemplateAndDescription.buildNativeNodeDescriptionEnt(coreNode);
             m_nodeDescriptionCache.put(factoryKey, description);
