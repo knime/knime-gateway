@@ -106,31 +106,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * A description for a given node could not be determined.
-    */
-    public static class NodeDescriptionNotAvailableException extends GatewayException {
-        
-        public NodeDescriptionNotAvailableException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public NodeDescriptionNotAvailableException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NodeDescriptionNotAvailableException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
     * The requested node was not found.
     */
     public static class NodeNotFoundException extends GatewayException {

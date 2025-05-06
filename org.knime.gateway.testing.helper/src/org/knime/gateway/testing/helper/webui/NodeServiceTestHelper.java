@@ -82,10 +82,10 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeDescriptionNotAvailableException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -385,9 +385,10 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * Tests {@link NodeService#getNodeDescription(NodeFactoryKeyEnt)}.
      *
      * @throws NodeNotFoundException
+     * @throws ServiceCallException
      * @throws NodeDescriptionNotAvailableException
      */
-    public void testGetNodeDescription() throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+    public void testGetNodeDescription() throws NodeNotFoundException, ServiceCallException {
         // example for elements in 4.1 schema and rich formatting
         testNodeDescriptionSnapshot(DummyNodeFactory_v41.class.getName());
 
@@ -416,12 +417,12 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void testNodeDescriptionSnapshot(final String classname)
-        throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+        throws NodeNotFoundException, ServiceCallException {
         testNodeDescriptionSnapshot(classname, null, null);
     }
 
     private void testNodeDescriptionSnapshot(final String classname, final String settings,
-        final String settingsReadable) throws NodeNotFoundException, NodeDescriptionNotAvailableException {
+        final String settingsReadable) throws NodeNotFoundException, ServiceCallException {
         NodeFactoryKeyEnt keyEnt = builder(NodeFactoryKeyEntBuilder.class) //
             .setClassName(classname) //
             .setSettings(settings) //

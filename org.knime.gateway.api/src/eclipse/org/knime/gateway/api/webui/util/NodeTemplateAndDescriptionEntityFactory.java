@@ -95,6 +95,7 @@ import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescrip
 import org.knime.gateway.api.webui.entity.VendorEnt;
 import org.knime.gateway.api.webui.entity.VendorEnt.VendorEntBuilder;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * See {@link EntityFactory}.
@@ -132,14 +133,15 @@ public final class NodeTemplateAndDescriptionEntityFactory {
      * @param coreNode The node instance to obtain information from.
      * @return an entity representing the node description.
      * @throws ServiceExceptions.NodeDescriptionNotAvailableException if node description could not be obtained.
+     * @throws ServiceCallException
      */
     public NativeNodeDescriptionEnt buildNativeNodeDescriptionEnt(final Node coreNode)
-        throws ServiceExceptions.NodeDescriptionNotAvailableException {
+        throws ServiceExceptions.ServiceCallException {
 
         var nodeDescription = coreNode.invokeGetNodeDescription();
         if (nodeDescription instanceof NoDescriptionProxy) {
             // This will be the case when node description could not be read, cf. NodeDescription#init
-            throw new ServiceExceptions.NodeDescriptionNotAvailableException("Could not read node description");
+            throw new ServiceExceptions.ServiceCallException("Could not read node description");
         }
 
         // intro and short description
@@ -209,7 +211,7 @@ public final class NodeTemplateAndDescriptionEntityFactory {
             .setInPorts(buildNodePortTemplateEnts(nodeSpec.ports().getInputPortTypes()))//
             .setOutPorts(buildNodePortTemplateEnts(nodeSpec.ports().getOutputPortTypes()))//
             .setIcon(WorkflowEntityFactory.createIconDataURL(nodeSpec.icon()))//
-            .setNodeFactory(EntityFactory.Workflow.buildNodeFactoryKeyEnt(nodeSpec.factory()))//
+            .setNodeFactory(WorkflowEntityFactory.buildNodeFactoryKeyEnt(nodeSpec.factory()))//
             .setExtension(buildExtensionEnt(nodeSpec.metadata().vendor())).build();
     }
 

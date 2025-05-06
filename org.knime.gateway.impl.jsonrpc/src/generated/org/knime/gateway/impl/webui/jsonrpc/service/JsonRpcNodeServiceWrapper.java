@@ -140,10 +140,10 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NodeDescriptionNotAvailableException.class, code = -32600,
-            data = "NodeDescriptionNotAvailableException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public NativeNodeDescriptionEnt getNodeDescription(@JsonRpcParam(value="nodeFactoryKey") NodeFactoryKeyEnt nodeFactoryKey)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
+    public NativeNodeDescriptionEnt getNodeDescription(@JsonRpcParam(value="nodeFactoryKey") NodeFactoryKeyEnt nodeFactoryKey)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeDescription(nodeFactoryKey);    
     }
 
