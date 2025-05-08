@@ -92,6 +92,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
@@ -385,10 +386,10 @@ public final class WorkflowMiddleware {
      * -
      *
      * @param wfKey -
-     * @return the {@link ComponentLoader} instance for the given workflow
+     * @return the {@link ComponentLoadJobManager} instance for the given workflow
      */
-    public ComponentLoader getComponentLoader(final WorkflowKey wfKey) {
-        return getWorkflowState(wfKey).componentLoader();
+    public ComponentLoadJobManager getComponentLoader(final WorkflowKey wfKey) {
+        return getWorkflowState(wfKey).componentLoadJobManager();
     }
 
     /**
@@ -399,7 +400,8 @@ public final class WorkflowMiddleware {
     }
 
     private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey) {
-        final var state = new WorkflowState(wfKey);
+        final var state =
+            new WorkflowState(wfKey, m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())));
         final var wfm = state.m_wfm;
         if (!wfm.isProject()) {
             var nc = getNodeContainerOf(wfm); // component or metanode
@@ -435,15 +437,19 @@ public final class WorkflowMiddleware {
 
         private final WorkflowManager m_wfm;
 
+        private final SpaceProviders m_spaceProviders;
+
         private CachedDependentNodeProperties m_depNodeProperties;
 
         private WorkflowChangesListener m_changesListener;
 
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
-        private ComponentLoader m_componentLoader;
+        private ComponentLoadJobManager m_componentLoader;
 
-        private WorkflowState(final WorkflowKey wfKey) {
+
+        private WorkflowState(final WorkflowKey wfKey, final SpaceProviders spaceProviders) {
+            m_spaceProviders = spaceProviders;
             m_wfm = WorkflowManagerResolver.load(wfKey.getProjectId(), wfKey.getWorkflowId(), wfKey.getVersionId());
         }
 
@@ -469,9 +475,9 @@ public final class WorkflowMiddleware {
             return m_changesListenerForWorkflowMonitor;
         }
 
-        ComponentLoader componentLoader() {
+        ComponentLoadJobManager componentLoadJobManager() {
             if (m_componentLoader == null) {
-                m_componentLoader = new ComponentLoader(changesListener());
+                m_componentLoader = new ComponentLoadJobManager(m_wfm, changesListener(), m_spaceProviders);
             }
             return m_componentLoader;
         }

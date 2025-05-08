@@ -355,6 +355,11 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="getNodeContainer(String, VersionId, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="getProjectWfm(String)"/>
             </message_arguments>
         </filter>
@@ -418,10 +423,10 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/ComponentLoader.java" type="org.knime.gateway.impl.webui.ComponentLoader">
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/ComponentLoadJobManager.java" type="org.knime.gateway.impl.webui.ComponentLoadJobManager">
         <filter id="1110441988">
             <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.ComponentLoader"/>
+                <message_argument value="org.knime.gateway.impl.webui.ComponentLoadJobManager"/>
             </message_arguments>
         </filter>
     </resource>
