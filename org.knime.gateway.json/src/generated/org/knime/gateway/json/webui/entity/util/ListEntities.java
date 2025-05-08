@@ -85,6 +85,7 @@ import org.knime.gateway.json.webui.entity.CopyResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CustomJobManagerEntMixIn;
 import org.knime.gateway.json.webui.entity.CutCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DeleteCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.DeleteComponentPlaceholderCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.DynamicPortGroupDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.EditableMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.EventEntMixIn;
@@ -256,6 +257,7 @@ public class ListEntities {
         res.add(CustomJobManagerEntMixIn.class);
         res.add(CutCommandEntMixIn.class);
         res.add(DeleteCommandEntMixIn.class);
+        res.add(DeleteComponentPlaceholderCommandEntMixIn.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.class);
         res.add(EditableMetadataEntMixIn.class);
         res.add(EventEntMixIn.class);
@@ -413,6 +415,7 @@ public class ListEntities {
         res.add(CustomJobManagerEntMixIn.CustomJobManagerEntMixInBuilder.class);
         res.add(CutCommandEntMixIn.CutCommandEntMixInBuilder.class);
         res.add(DeleteCommandEntMixIn.DeleteCommandEntMixInBuilder.class);
+        res.add(DeleteComponentPlaceholderCommandEntMixIn.DeleteComponentPlaceholderCommandEntMixInBuilder.class);
         res.add(DynamicPortGroupDescriptionEntMixIn.DynamicPortGroupDescriptionEntMixInBuilder.class);
         res.add(EditableMetadataEntMixIn.EditableMetadataEntMixInBuilder.class);
         res.add(EventEntMixIn.EventEntMixInBuilder.class);

@@ -400,8 +400,8 @@ public final class WorkflowMiddleware {
     }
 
     private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey) {
-        final var state =
-            new WorkflowState(wfKey, m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())));
+        final var state = new WorkflowState(wfKey, m_spaceProvidersManager == null ? null
+            : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())));
         final var wfm = state.m_wfm;
         if (!wfm.isProject()) {
             var nc = getNodeContainerOf(wfm); // component or metanode

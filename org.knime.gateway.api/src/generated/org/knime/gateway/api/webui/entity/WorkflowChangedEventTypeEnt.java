@@ -44,11 +44,16 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.EventTypeEnt;
+
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Event type to register for &#39;WorkflowChangedEvent&#39;s.

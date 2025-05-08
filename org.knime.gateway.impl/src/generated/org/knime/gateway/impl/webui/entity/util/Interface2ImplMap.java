@@ -126,6 +126,8 @@ import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
+import org.knime.gateway.api.webui.entity.DeleteComponentPlaceholderCommandEnt.DeleteComponentPlaceholderCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultDeleteComponentPlaceholderCommandEnt;
 import org.knime.gateway.api.webui.entity.DynamicPortGroupDescriptionEnt.DynamicPortGroupDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultDynamicPortGroupDescriptionEnt;
 import org.knime.gateway.api.webui.entity.EditableMetadataEnt.EditableMetadataEntBuilder;
@@ -484,6 +486,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == DeleteCommandEntBuilder.class) {
             return (B)new DefaultDeleteCommandEnt.DefaultDeleteCommandEntBuilder();
+        }        
+        if(clazz == DeleteComponentPlaceholderCommandEntBuilder.class) {
+            return (B)new DefaultDeleteComponentPlaceholderCommandEnt.DefaultDeleteComponentPlaceholderCommandEntBuilder();
         }        
         if(clazz == DynamicPortGroupDescriptionEntBuilder.class) {
             return (B)new DefaultDynamicPortGroupDescriptionEnt.DefaultDynamicPortGroupDescriptionEntBuilder();

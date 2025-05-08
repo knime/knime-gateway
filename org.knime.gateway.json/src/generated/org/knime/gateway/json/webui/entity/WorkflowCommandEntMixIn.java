@@ -89,6 +89,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationComman
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultConnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTransformWorkflowAnnotationCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultDeleteComponentPlaceholderCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 
 /**
@@ -118,6 +119,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultAddComponentCommandEnt.class, name = "add_component")
+,
+  @Type(value = DefaultDeleteComponentPlaceholderCommandEnt.class, name = "delete_component_placeholder")
 ,
   @Type(value = DefaultReplaceNodeCommandEnt.class, name = "replace_node")
 ,
@@ -204,6 +207,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddNodeCommandEnt.class, name = "add_node")
 ,
   @Type(value = DefaultAddComponentCommandEnt.class, name = "add_component")
+,
+  @Type(value = DefaultDeleteComponentPlaceholderCommandEnt.class, name = "delete_component_placeholder")
 ,
   @Type(value = DefaultReplaceNodeCommandEnt.class, name = "replace_node")
 ,

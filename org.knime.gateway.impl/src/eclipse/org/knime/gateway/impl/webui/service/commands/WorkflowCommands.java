@@ -71,6 +71,7 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
+import org.knime.gateway.api.webui.entity.DeleteComponentPlaceholderCommandEnt;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
@@ -192,6 +193,8 @@ public final class WorkflowCommands {
             command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
         } else if (commandEnt instanceof AddComponentCommandEnt ce) {
             command = new AddComponent(ce, workflowMiddleware);
+        } else if (commandEnt instanceof DeleteComponentPlaceholderCommandEnt ce) {
+            command = new DeleteComponentPlaceholder(ce, workflowMiddleware);
         } else if (commandEnt instanceof ReplaceNodeCommandEnt ce) {
             command = new ReplaceNode(ce);
         } else if (commandEnt instanceof InsertNodeCommandEnt ce) {

@@ -120,7 +120,7 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
     public Object pollCompleteComponentReexecutionStatus(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
-        return m_service.get().pollCompleteComponentReexecutionStatus(projectId, workflowId, nodeId);
+        return m_service.get().pollCompleteComponentReexecutionStatus(projectId, workflowId, nodeId);    
     }
 
 	/**
@@ -146,7 +146,7 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
     public Object triggerCompleteComponentReexecution(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException {
-        return m_service.get().triggerCompleteComponentReexecution(projectId, workflowId, nodeId, viewValues);
+        return m_service.get().triggerCompleteComponentReexecution(projectId, workflowId, nodeId, viewValues);    
     }
 
 	/**
@@ -159,7 +159,7 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
     public Object triggerComponentReexecution(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="resetNodeIdSuffix") String resetNodeIdSuffix, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException {
-        return m_service.get().triggerComponentReexecution(projectId, workflowId, nodeId, resetNodeIdSuffix, viewValues);
+        return m_service.get().triggerComponentReexecution(projectId, workflowId, nodeId, resetNodeIdSuffix, viewValues);    
     }
 
 }

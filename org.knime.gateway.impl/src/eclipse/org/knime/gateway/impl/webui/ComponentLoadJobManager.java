@@ -211,10 +211,16 @@ public final class ComponentLoadJobManager {
      * Cancels the load operation for the given id and removes it.
      *
      * @param id the id of the load job to cancel and remove
+     * @return the command entity that was used to create the load job or null if no such job was found
      */
-    public void cancelAndRemoveLoadJob(final String id) {
-        cancelLoadJob(m_loadJobs.remove(id));
+    public AddComponentCommandEnt cancelAndRemoveLoadJob(final String id) {
+        var loadJob = m_loadJobs.remove(id);
+        if (loadJob == null) {
+            return null;
+        }
+        cancelLoadJob(loadJob);
         m_workflowChangesListener.trigger(null);
+        return loadJob.commandEnt();
     }
 
     /**

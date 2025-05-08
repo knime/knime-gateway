@@ -107,7 +107,7 @@ public interface ComponentService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
     Object pollCompleteComponentReexecutionStatus(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
-
+        
     /**
      * Query the current page while reexecuting
      *
@@ -127,13 +127,13 @@ public interface ComponentService extends GatewayService {
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param viewValues
+     * @param viewValues 
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
     Object triggerCompleteComponentReexecution(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException;
-
+        
     /**
      * Triggers the re-execution process (and updates the viewValues).
      *
@@ -141,7 +141,7 @@ public interface ComponentService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      * @param resetNodeIdSuffix The ID of the node that triggered the reexecution from within a component, i.e., there is no leading root.
-     * @param viewValues
+     * @param viewValues 
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
