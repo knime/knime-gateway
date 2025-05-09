@@ -65,6 +65,7 @@ import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil.ProjectVersionException;
@@ -92,8 +93,9 @@ public class WorkflowChangedEventSourceTest {
     public void testRemoveListenerWhenProjectIsRemoved() throws IOException {
         var projectManager = ProjectManager.getInstance();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        projectManager.addProject(Project.builder().setWfm(wfm).setId("id1").build());
-        projectManager.addProject(Project.builder().setWfm(wfm).setId("id2").build());
+        var origin = new Origin("providerId", "spaceId", "itemId");
+        projectManager.addProject(Project.builder().setWfm(wfm).setId("id1").setOrigin(origin).build());
+        projectManager.addProject(Project.builder().setWfm(wfm).setId("id2").setOrigin(origin).build());
 
         // create event source
         var workflowMiddleware = new WorkflowMiddleware(projectManager);
