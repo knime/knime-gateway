@@ -575,6 +575,24 @@ public interface Space {
     }
 
     /**
+     * Saves a workflow in the yellow bar editor back to the associated Hub/Server space.
+     *
+     * @param localWorkflow the path of the local workflow
+     * @param targetURI the URI to the target
+     * @param excludeDataInWorkflows <code>true</code> if internal workflow data should be excluded
+     * @param progressMonitor progress monitor
+     * @return {@code true} if the upload succeeded, {@code false} if it was canceled
+     * @throws IOException if the upload failed
+     * @throws UnsupportedOperationException if invoked on a something other than a Hub or Server space
+     * @since 5.5
+     */
+    default boolean saveBackTo(final Path localWorkflow, final URI targetURI, final boolean excludeDataInWorkflows,
+        final IProgressMonitor progressMonitor)
+        throws IOException, UnsupportedOperationException {
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
+    }
+
+    /**
      * Generates unique space item names, preserves file extensions.
      *
      * @param taken predicate for determining whether a name is already taken in a space
