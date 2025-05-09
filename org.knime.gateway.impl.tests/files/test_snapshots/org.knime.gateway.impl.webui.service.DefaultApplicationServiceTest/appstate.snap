@@ -55,7 +55,8 @@
       "itemId" : "PLACEHOLDER_FOR_ITEM_ID",
       "projectType" : "Workflow",
       "providerId" : "Provider ID for testing",
-      "spaceId" : "Space ID for testing"
+      "spaceId" : "Space ID for testing",
+      "versionId" : "current-state"
     },
     "projectId" : "the_workflow_project_id"
   } ],
