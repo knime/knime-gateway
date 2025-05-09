@@ -50,7 +50,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -198,15 +197,14 @@ public final class ProjectManager {
             return true;
         }
 
+        var thisProject = m_activeProjectId;
         var thisVersion = Optional.ofNullable(m_projectsMap.get(m_activeProjectId)) //
             .map(ProjectInternal::project) //
             .flatMap(Project::getOrigin) //
-            .flatMap(Origin::versionId).orElse(null);
-        var thatVersion = Optional.ofNullable(m_projectsMap.get(projectId)) //
-            .map(ProjectInternal::project) //
-            .flatMap(Project::getOrigin) //
-            .flatMap(Origin::versionId).orElse(null);
-        return m_activeProjectId.equals(projectId) && Objects.equals(thisVersion, thatVersion);
+            .flatMap(Origin::versionId) //
+            .orElse(VersionId.currentState());
+
+        return thisProject.equals(projectId) && thisVersion.equals(versionId);
     }
 
     /**
