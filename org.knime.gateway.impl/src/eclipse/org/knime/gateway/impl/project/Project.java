@@ -114,8 +114,7 @@ public final class Project {
             originalProject.m_name, //
             newOrigin, //
             originalProject.m_projectWfmCache, //
-            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
-            }), //
+            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {}), //
             originalProject.m_generateReport //
         );
     }

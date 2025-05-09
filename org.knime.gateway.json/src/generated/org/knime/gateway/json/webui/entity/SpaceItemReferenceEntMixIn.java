@@ -87,6 +87,10 @@ public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
     public ProjectTypeEnum getProjectType();
     
     @Override
+    @JsonProperty("versionId")
+    public String getVersionId();
+    
+    @Override
     @JsonProperty("version")
     public SpaceItemVersionEnt getVersion();
     
@@ -122,6 +126,10 @@ public interface SpaceItemReferenceEntMixIn extends SpaceItemReferenceEnt {
         @Override
         @JsonProperty("projectType")
         public SpaceItemReferenceEntMixInBuilder setProjectType(final ProjectTypeEnum projectType);
+        
+        @Override
+        @JsonProperty("versionId")
+        public SpaceItemReferenceEntMixInBuilder setVersionId(final String versionId);
         
         @Override
         @JsonProperty("version")

@@ -68,6 +68,7 @@ import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
@@ -354,7 +355,8 @@ public final class AppStateEntityFactory {
             .setSpaceId(origin.spaceId()) //
             .setItemId(origin.itemId()) //
             .setProjectType(origin.projectType().orElse(null)) //
-            .setVersion(origin.itemVersion().orElse(null))
+            .setVersionId(origin.versionId().map(VersionId::toString).orElse(null)) //
+            .setVersion(origin.itemVersion().orElse(null)) //
             .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();
     }

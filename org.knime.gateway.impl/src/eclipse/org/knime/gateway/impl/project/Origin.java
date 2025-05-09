@@ -49,6 +49,7 @@ package org.knime.gateway.impl.project;
 import java.util.Optional;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -60,6 +61,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
  * @param spaceId The space ID of the workflow/component project
  * @param itemId The item ID of the workflow/component project
  * @param projectType The project type of the space item
+ * @param versionId The version ID of the workflow/component project, or absent for latest version
  * @param itemVersion The item version of the workflow/component project, or absent for latest version
  */
 public record Origin(//
@@ -67,14 +69,15 @@ public record Origin(//
     String spaceId, //
     String itemId, //
     Optional<SpaceItemReferenceEnt.ProjectTypeEnum> projectType, //
-    Optional<SpaceItemVersionEnt> itemVersion) {
+    Optional<VersionId> versionId, //
+    Optional<SpaceItemVersionEnt> itemVersion) { // TODO NXT-3701: Remove itemVersion from this record
 
     /**
      * @see Origin
      */
     @SuppressWarnings("java:S1176")
     public Origin(final String providerId, final String spaceId, final String itemId) {
-        this(providerId, spaceId, itemId, Optional.empty(), Optional.empty());
+        this(providerId, spaceId, itemId, Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     /**
@@ -83,7 +86,20 @@ public record Origin(//
     @SuppressWarnings("java:S1176")
     public Origin(final String providerId, final String spaceId, final String itemId,
         final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
-        this(providerId, spaceId, itemId, Optional.ofNullable(projectType), Optional.empty());
+        this(providerId, spaceId, itemId, Optional.ofNullable(projectType), Optional.empty(), Optional.empty());
+    }
+
+    /**
+     * -
+     *
+     * @param originalOrigin -
+     * @param versionId -
+     *
+     * @return A new instance with same property values and updated 'versionId' property.
+     */
+    public static Origin updateVersionId(final Origin originalOrigin, final VersionId versionId) {
+        return new Origin(originalOrigin.providerId, originalOrigin.spaceId, originalOrigin.itemId,
+            originalOrigin.projectType, Optional.ofNullable(versionId), originalOrigin.itemVersion);
     }
 
     /**

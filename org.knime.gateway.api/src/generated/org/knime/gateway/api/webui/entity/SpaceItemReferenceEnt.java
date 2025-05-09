@@ -110,6 +110,12 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
   public ProjectTypeEnum getProjectType();
 
   /**
+   * Get versionId
+   * @return versionId 
+   **/
+  public String getVersionId();
+
+  /**
    * Get version
    * @return version 
    **/
@@ -130,6 +136,7 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
       valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
       valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
       valueConsumer.accept("projectType", Pair.create(getProjectType(), e.getProjectType()));
+      valueConsumer.accept("versionId", Pair.create(getVersionId(), e.getVersionId()));
       valueConsumer.accept("version", Pair.create(getVersion(), e.getVersion()));
       valueConsumer.accept("ancestorItemIds", Pair.create(getAncestorItemIds(), e.getAncestorItemIds()));
   }
@@ -170,6 +177,14 @@ public interface SpaceItemReferenceEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceItemReferenceEntBuilder setProjectType(ProjectTypeEnum projectType);
+        
+        /**
+   		 * Set versionId
+         * 
+         * @param versionId the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceItemReferenceEntBuilder setVersionId(String versionId);
         
         /**
    		 * Set version

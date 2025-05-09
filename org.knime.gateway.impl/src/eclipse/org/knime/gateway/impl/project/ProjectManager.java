@@ -50,6 +50,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -86,7 +87,7 @@ public final class ProjectManager {
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
     // Note: We want to support multiple active projects in the future.
-    private ProjectIdAndVersionId m_activeProject;
+    private String m_activeProjectId;
 
     private ProjectManager() {
         // singleton
@@ -149,12 +150,23 @@ public final class ProjectManager {
      * @param versionId the version id to set as active
      */
     public void setProjectActive(final String projectId, final VersionId versionId) {
-        // Note: We want to support multiple active projects in the future.
         var project = m_projectsMap.get(projectId);
-        if (project != null && !project.hasUIConsumer) {
+        if (project == null) {
+            m_activeProjectId = null;
+            return; // No project active
+        }
+
+        if (!project.hasUIConsumer) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
-        m_activeProject = new ProjectIdAndVersionId(projectId, versionId);
+
+        project.project.getOrigin().ifPresent(originalOrigin -> {
+            var newOrigin = Origin.updateVersionId(originalOrigin, versionId);
+            var updatedProject = Project.updateOrigin(project.project(), newOrigin);
+            addProject(updatedProject);
+        });
+
+        m_activeProjectId = projectId;
     }
 
     /**
@@ -165,13 +177,10 @@ public final class ProjectManager {
      */
     public boolean isActiveProject(final String projectId) {
         // Note: We want to support multiple active projects in the future.
-        if (m_activeProject == null) {
+        if (m_activeProjectId == null) {
             return false;
         }
-        if (m_activeProject.projectId() == null) {
-            return false;
-        }
-        return m_activeProject.projectId().equals(projectId);
+        return m_activeProjectId.equals(projectId);
     }
 
     /**
@@ -185,13 +194,19 @@ public final class ProjectManager {
     public boolean isActiveProjectVersion(final String projectId, final VersionId versionId) {
         // If no active project is set, we assume the active version wasn't set. In that case we return 'true', since
         // we are most likely in the browser context, where the concept of an active project doesn't exist.
-        if (m_activeProject == null) {
+        if (m_activeProjectId == null) {
             return true;
         }
-        if (m_activeProject.projectId() == null) {
-            return false;
-        }
-        return m_activeProject.projectId().equals(projectId) && m_activeProject.versionId().equals(versionId);
+
+        var thisVersion = Optional.ofNullable(m_projectsMap.get(m_activeProjectId)) //
+            .map(ProjectInternal::project) //
+            .flatMap(Project::getOrigin) //
+            .flatMap(Origin::versionId).orElse(null);
+        var thatVersion = Optional.ofNullable(m_projectsMap.get(projectId)) //
+            .map(ProjectInternal::project) //
+            .flatMap(Project::getOrigin) //
+            .flatMap(Origin::versionId).orElse(null);
+        return m_activeProjectId.equals(projectId) && Objects.equals(thisVersion, thatVersion);
     }
 
     /**
@@ -285,10 +300,8 @@ public final class ProjectManager {
             m_projectRemovedListeners.forEach(l -> l.accept(projectId));
 
             // Note: We want to support multiple active projects in the future.
-            if (m_activeProject != null && m_activeProject.projectId() != null
-                && m_activeProject.projectId().equals(projectId)) {
-                // To indicate that there's no active project anymore
-                m_activeProject = new ProjectIdAndVersionId();
+            if (m_activeProjectId != null && m_activeProjectId.equals(projectId)) {
+                m_activeProjectId = null; // To indicate there's no active project anymore
             }
         } else {
             m_projectsMap.put(projectId, projectInternal);
@@ -380,7 +393,7 @@ public final class ProjectManager {
      * Clears the entire state. For testing purposes only.
      */
     void clearState() {
-        m_activeProject = null;
+        m_activeProjectId = null;
         m_projectsMap.clear();
         m_projectRemovedListeners.clear();
     }
@@ -402,6 +415,7 @@ public final class ProjectManager {
              * If a project is consumed by the UI. There can only be one UI-consumer.
              */
             UI,
+
             /**
              * If a project is consumed in order to execute a workflow called by a workflow service node.
              */
@@ -428,13 +442,5 @@ public final class ProjectManager {
         }
 
     }
-
-    private record ProjectIdAndVersionId(String projectId, VersionId versionId) {
-
-        ProjectIdAndVersionId() {
-            this(null, null);
-        }
-
-   }
 
 }
