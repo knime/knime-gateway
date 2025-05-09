@@ -253,7 +253,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
             }
 
             @Override
-            public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
+            public SpaceGroup<Space> getSpaceGroup(final String spaceGroupName) {
                 throw new UnsupportedOperationException();
             }
         };

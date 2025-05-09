@@ -100,6 +100,8 @@ public interface SpaceProvider {
     String getName();
 
     /**
+     * Retrieves the space with the given ID from this provider.
+     *
      * @param spaceId space ID
      * @return space with the given ID
      * @throws NoSuchElementException if no space with the given ID exists
@@ -107,12 +109,14 @@ public interface SpaceProvider {
     Space getSpace(String spaceId);
 
     /**
+     * Returns the space groups of this provider.
+     *
      * @param spaceGroupName The name of the space group to obtain
      * @return spaceGroup The associated space group
      * @throws NoSuchElementException if no group with the given name exists
      */
-    @SuppressWarnings({"java:S3740", "rawtypes"})
-    SpaceGroup getSpaceGroup(String spaceGroupName);
+    @SuppressWarnings("java:S1452") // wildcard is needed so `HubSpaceGroup implements SpaceGroup<HubSpace>` works here
+    SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName);
 
     /**
      * Returns the server address of the current space provider
@@ -135,7 +139,6 @@ public interface SpaceProvider {
      *
      * @param localWorkflow workflow directory
      * @param targetUri target KNIME URL
-     * @param spaceId the ID of the parent space
      * @param deleteSource flag indicating that the operation is a move instead of a copy operation
      * @param excludeDataInWorkflows data exclusion flag
      * @param progressMonitor monitor for aborting or receiving progress updates
@@ -143,8 +146,8 @@ public interface SpaceProvider {
      * @throws IOException if I/O errors occur during upload
      * @throws UnsupportedOperationException for local space providers
      */
-    default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri, final String spaceId,
-        final boolean deleteSource, final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
+    default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri, final boolean deleteSource,
+        final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
         throws CoreException, IOException {
         throw new UnsupportedOperationException();
     }
