@@ -88,6 +88,9 @@ public final class ServiceDependencies {
 
     private static final Map<Class<?>, Object> DEPENDENCIES = synchronizedMap(new HashMap<>());
 
+    // Hack - to be removed with NXT-3420
+    public static boolean allowDependencyOverwrite = false;
+
     private ServiceDependencies() {
         // Utility class
     }
@@ -116,13 +119,14 @@ public final class ServiceDependencies {
      * @param clazz The class characterizing the dependency
      * @param impl The implementation of `clazz` to be served as the dependency
      * @param <T> The concrete type of the dependency instance
+     * @throws IllegalStateException if the dependency is already set or if the services are already initialized
      */
     public static <T> void setServiceDependency(final Class<T> clazz, final T impl) {
         if (ServiceInstances.areServicesInitialized()) {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore.");
         }
-        if (DEPENDENCIES.get(clazz) != null) {
+        if (!allowDependencyOverwrite && DEPENDENCIES.get(clazz) != null) {
             throw new IllegalStateException("Only one dependency can be registered at a time");
         }
         DEPENDENCIES.put(clazz, impl);
@@ -133,6 +137,7 @@ public final class ServiceDependencies {
      */
     public static void disposeAllServicesDependencies() {
         DEPENDENCIES.clear();
+        allowDependencyOverwrite = false;
     }
 
     /**

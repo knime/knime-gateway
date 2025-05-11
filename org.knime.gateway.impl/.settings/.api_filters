@@ -756,6 +756,11 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="allowDependencyOverwrite"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProviders, UpdateStateProvider, PreferencesProvider, NodeFactoryProvider, KaiHandler, NodeCollections, NodeRepository, NodeCategoryExtensions, SelectionEventBus)"/>
             </message_arguments>
         </filter>

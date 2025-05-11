@@ -71,6 +71,8 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -234,6 +236,8 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
         var events = Collections.synchronizedList(new ArrayList<Object>());
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(ProjectManager.getInstance(), spaceProviderManager));
 
         final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
         var command = builder(AddComponentCommandEntBuilder.class) //

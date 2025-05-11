@@ -222,6 +222,7 @@ public class GatewayDefaultServiceTests {
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(NodeRepository.class, new NodeRepository());
         ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, () -> Map.of());
+        ServiceDependencies.allowDependencyOverwrite = true;
     }
 
     @SuppressWarnings("javadoc")

@@ -47,6 +47,8 @@ public final class GatewayTestCollection {
         ConnectCommandsTestHelper.class, //
         CutCopyPasteCommandsTestHelper.class, //
         DeleteCommandTestHelper.class, //
+        DeleteComponentPlaceholderCommandTestHelper.class, //
+        EditPortsTestHelper.class, //
         EventServiceTestHelper.class, //
         NodeRecommendationsTestHelper.class, //
         NodeServiceTestHelper.class, //
@@ -54,8 +56,7 @@ public final class GatewayTestCollection {
         SpaceServiceTestHelper.class, //
         StreamingExecutionTestHelper.class, //
         TranslateCommandTestHelper.class, //
-        WorkflowServiceTestHelper.class, //
-        EditPortsTestHelper.class
+        WorkflowServiceTestHelper.class //
     );
 
     private GatewayTestCollection() {

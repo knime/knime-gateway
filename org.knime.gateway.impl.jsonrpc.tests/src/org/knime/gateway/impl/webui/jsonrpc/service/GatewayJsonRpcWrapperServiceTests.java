@@ -247,6 +247,7 @@ public class GatewayJsonRpcWrapperServiceTests {
         ServiceDependencies.setServiceDependency(PreferencesProvider.class, Mockito.mock(PreferencesProvider.class));
         ServiceDependencies.setServiceDependency(NodeRepository.class, new NodeRepository());
         ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, () -> Map.of());
+        ServiceDependencies.allowDependencyOverwrite = true;
     }
 
     @SuppressWarnings("javadoc")
