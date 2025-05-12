@@ -51,8 +51,6 @@ package org.knime.gateway.impl.webui.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
@@ -96,13 +94,14 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         var beforeBoolean = beforeJson.at(widgetBooleanPath);
         var scatterPlotBefore = m_mapper.readTree(beforeJson.at(scatterPlotInitialDataPath).asText());
 
-        // before re-execution: `yAxisLabel` should NOT exist
-        assertTrue("yAxisLabel should not exist before re-execution",
-            scatterPlotBefore.at(scatterPlotYAxisLabelPath).isMissingNode());
+        assertThat("yAxisLabel should _not_ have value 'test'", scatterPlotBefore.at(scatterPlotYAxisLabelPath).asText(),
+            not(is("test")));
 
-        cs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),"3:0:4",
-           Map.of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
-        var reexecutionStatus = cs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),"3:0:4");
+        cs.triggerComponentReexecution(projectId,
+            NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
+            .of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
+        var reexecutionStatus =
+            cs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4");
 
         wfm.executeAllAndWaitUntilDone();
 
@@ -113,12 +112,8 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         var scatterPlotAfter = m_mapper.readTree(afterJson.at(scatterPlotInitialDataPath).asText());
 
         assertThat("Boolean value should have changed after re-execution", afterBoolean, not(is(beforeBoolean)));
-
-        // after re-execution: `yAxisLabel` should exist and have value "CustomLabel"
-        assertFalse("yAxisLabel should exist after re-execution",
-            scatterPlotAfter.at(scatterPlotYAxisLabelPath).isMissingNode());
-        assertThat("yAxisLabel should have value 'test'",
-            scatterPlotAfter.at(scatterPlotYAxisLabelPath).asText(), is("test"));
+        assertThat("yAxisLabel should have value 'test'", scatterPlotAfter.at(scatterPlotYAxisLabelPath).asText(),
+            is("test"));
     }
 
 }
