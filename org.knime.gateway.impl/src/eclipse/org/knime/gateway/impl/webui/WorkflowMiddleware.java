@@ -302,7 +302,7 @@ public final class WorkflowMiddleware {
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
                 .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey))//
-                .setComponentPlaceholders(getComponentLoader(wfKey).getComponentPlaceholdersAndCleanUp());
+                .setComponentPlaceholders(getComponentLoadJobManager(wfKey).getComponentPlaceholdersAndCleanUp());
         }
         if (m_spaceProvidersManager != null) {
             buildContextBuilder.setSpaceProviderTypes(
@@ -387,8 +387,9 @@ public final class WorkflowMiddleware {
      *
      * @param wfKey -
      * @return the {@link ComponentLoadJobManager} instance for the given workflow
+     * @since 5.5
      */
-    public ComponentLoadJobManager getComponentLoader(final WorkflowKey wfKey) {
+    public ComponentLoadJobManager getComponentLoadJobManager(final WorkflowKey wfKey) {
         return getWorkflowState(wfKey).componentLoadJobManager();
     }
 

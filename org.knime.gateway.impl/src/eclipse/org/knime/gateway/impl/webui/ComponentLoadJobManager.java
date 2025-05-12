@@ -122,10 +122,10 @@ public final class ComponentLoadJobManager {
             .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
             .build();
 
-        var loader = new LoadJobInternal(loadJob, placeholder, exec, commandEnt);
-        m_loadJobs.put(placeholderId, loader);
+        var loadJobInternal = new LoadJobInternal(loadJob, placeholder, exec, commandEnt);
+        m_loadJobs.put(placeholderId, loadJobInternal);
         m_workflowChangesListener.trigger(WorkflowChange.COMPONENT_PLACEHOLDER_ADDED);
-        return loader.loadJob();
+        return loadJobInternal.loadJob();
     }
 
     private LoadJob createLoadJob(final String placeholderId, final ExecutionMonitor exec,
@@ -197,13 +197,14 @@ public final class ComponentLoadJobManager {
     }
 
     private void replacePlaceholderEnt(final String id, final UnaryOperator<ComponentPlaceholderEnt> replacer) {
-        var loader = m_loadJobs.get(id);
-        if (loader == null) {
+        var loadJobInternal = m_loadJobs.get(id);
+        if (loadJobInternal == null) {
             return;
         }
-        var placeholder = loader.placeholder();
+        var placeholder = loadJobInternal.placeholder();
         var newPlaceholder = replacer.apply(placeholder);
-        m_loadJobs.put(id, new LoadJobInternal(loader.loadJob(), newPlaceholder, loader.exec(), loader.commandEnt()));
+        m_loadJobs.put(id, new LoadJobInternal(loadJobInternal.loadJob(), newPlaceholder, loadJobInternal.exec(),
+            loadJobInternal.commandEnt()));
         m_workflowChangesListener.trigger(null);
     }
 
@@ -232,9 +233,9 @@ public final class ComponentLoadJobManager {
         cancelLoadJob(m_loadJobs.get(id));
     }
 
-    private static void cancelLoadJob(final LoadJobInternal loader) {
-        if (loader != null && !loader.loadJob().future().isDone()) {
-            loader.exec().getProgressMonitor().setExecuteCanceled();
+    private static void cancelLoadJob(final LoadJobInternal loadJobInternal) {
+        if (loadJobInternal != null && !loadJobInternal.loadJob().future().isDone()) {
+            loadJobInternal.exec().getProgressMonitor().setExecuteCanceled();
         }
     }
 
@@ -244,13 +245,14 @@ public final class ComponentLoadJobManager {
      * @param id -
      */
     public void rerunLoadJob(final String id) {
-        var loader = m_loadJobs.get(id);
-        if (loader == null || !loader.loadJob().future().isDone()) {
+        var loadJobInternal = m_loadJobs.get(id);
+        if (loadJobInternal == null || !loadJobInternal.loadJob().future().isDone()) {
             return;
         }
         var exec = new ExecutionMonitor();
-        var loadJob = createLoadJob(id, exec, loader.commandEnt());
-        m_loadJobs.put(id, new LoadJobInternal(loadJob, loader.placeholder(), exec, loader.commandEnt()));
+        var loadJob = createLoadJob(id, exec, loadJobInternal.commandEnt());
+        m_loadJobs.put(id,
+            new LoadJobInternal(loadJob, loadJobInternal.placeholder(), exec, loadJobInternal.commandEnt()));
 
     }
 
@@ -262,7 +264,7 @@ public final class ComponentLoadJobManager {
      */
     public Collection<ComponentPlaceholderEnt> getComponentPlaceholdersAndCleanUp() {
         var placeholders = m_loadJobs.values().stream().map(LoadJobInternal::placeholder).toList();
-        m_loadJobs.values().removeIf(loader -> !isVisiblePlaceholder(loader.placeholder()));
+        m_loadJobs.values().removeIf(loadJobInternal -> !isVisiblePlaceholder(loadJobInternal.placeholder()));
         return placeholders;
     }
 

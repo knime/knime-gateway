@@ -227,7 +227,7 @@ public class DefaultComponentService implements ComponentService {
     public void cancelOrRetryComponentLoadJob(final String projectId, final NodeIDEnt workflowId,
         final String placeholderId, final String action) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var componentLoader = m_workflowMiddleware.getComponentLoader(new WorkflowKey(projectId, workflowId));
+        var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(new WorkflowKey(projectId, workflowId));
         if ("cancel".equals(action)) {
             componentLoader.cancelLoadJob(placeholderId);
         } else if ("retry".equals(action)) {

@@ -91,7 +91,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
      */
     @Override
     public boolean executeWithWorkflowContext() throws ServiceCallException {
-        var componentLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
+        var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
         m_loadJob = componentLoader.startLoadJob(m_commandEnt);
         return true;
     }
@@ -106,7 +106,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     public void undo() throws ServiceCallException {
         var componentId = getComponentId();
         if (componentId == null) {
-            var workflowElementLoader = m_workflowMiddleware.getComponentLoader(getWorkflowKey());
+            var workflowElementLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
             workflowElementLoader.cancelAndRemoveLoadJob(m_loadJob.id());
         } else {
             getWorkflowManager().removeNode(componentId);

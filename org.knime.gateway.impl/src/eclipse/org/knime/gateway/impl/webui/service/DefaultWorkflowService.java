@@ -131,7 +131,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
                 .setSpaceProviderTypes(providerTypes) //
                 .setComponentPlaceholders(
-                    m_workflowMiddleware.getComponentLoader(wfKey).getComponentPlaceholdersAndCleanUp());
+                    m_workflowMiddleware.getComponentLoadJobManager(wfKey).getComponentPlaceholdersAndCleanUp());
         } else {
             buildContext.includeInteractionInfo(false);
         }
