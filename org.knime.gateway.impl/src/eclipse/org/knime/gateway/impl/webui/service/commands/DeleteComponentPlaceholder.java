@@ -80,8 +80,8 @@ class DeleteComponentPlaceholder extends AbstractWorkflowCommand {
      */
     @Override
     protected boolean executeWithWorkflowContext() throws ServiceCallException {
-        var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
-        m_addComponentCommandEnt = componentLoader.cancelAndRemoveLoadJob(m_placeholderId);
+        m_addComponentCommandEnt = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey()) //
+            .cancelAndRemoveLoadJob(m_placeholderId);
         return m_addComponentCommandEnt != null;
     }
 
@@ -90,8 +90,8 @@ class DeleteComponentPlaceholder extends AbstractWorkflowCommand {
      */
     @Override
     public void undo() throws ServiceCallException {
-        var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
-        componentLoader.startLoadJob(m_addComponentCommandEnt);
+        m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey()) //
+            .startLoadJob(m_addComponentCommandEnt);
     }
 
 }

@@ -104,12 +104,11 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     public void undo() throws ServiceCallException {
-        var componentId = getComponentId();
-        if (componentId == null) {
+        if (!m_loadJob.future().isDone()) {
             var workflowElementLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
             workflowElementLoader.cancelAndRemoveLoadJob(m_loadJob.id());
         } else {
-            getWorkflowManager().removeNode(componentId);
+            getWorkflowManager().removeNode(getComponentId());
         }
         m_loadJob = null;
     }
@@ -117,9 +116,9 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     private NodeID getComponentId() {
         var future = m_loadJob.future();
         try {
-            var res = future.getNow(null);
-            if (res != null) {
-                return res.componentId();
+            var loadResult = future.getNow(null);
+            if (loadResult != null) {
+                return loadResult.componentId();
             }
         } catch (CompletionException | CancellationException e) { // NOSONAR
             //
@@ -129,8 +128,10 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     public CommandResultEnt buildEntity(final String snapshotId) {
-        return builder(AddComponentPlaceholderResultEntBuilder.class).setKind(KindEnum.ADD_COMPONENT_PLACEHOLDER_RESULT)
-            .setNewPlaceholderId(m_loadJob.id()).setSnapshotId(snapshotId).build();
+        return builder(AddComponentPlaceholderResultEntBuilder.class) //
+            .setKind(KindEnum.ADD_COMPONENT_PLACEHOLDER_RESULT) //
+            .setNewPlaceholderId(m_loadJob.id()) //
+            .setSnapshotId(snapshotId).build();
     }
 
     @Override

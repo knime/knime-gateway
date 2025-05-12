@@ -92,7 +92,6 @@ public final class ComponentLoadJobManager {
 
     private final SpaceProviders m_spaceProviders;
 
-
     ComponentLoadJobManager(final WorkflowManager wfm, final WorkflowChangesListener workflowChangesListener,
         final SpaceProviders spaceProviders) {
         m_wfm = wfm;
@@ -103,7 +102,7 @@ public final class ComponentLoadJobManager {
     /**
      * Creates a new component loading job.
      *
-     * @param commandEnt the commmand-entity carrying all the infos required to load the component
+     * @param commandEnt the command-entity carrying all the infos required to load the component
      *
      * @return the job/placeholder id
      */
@@ -197,14 +196,16 @@ public final class ComponentLoadJobManager {
     }
 
     private void replacePlaceholderEnt(final String id, final UnaryOperator<ComponentPlaceholderEnt> replacer) {
-        var loadJobInternal = m_loadJobs.get(id);
-        if (loadJobInternal == null) {
+        var originalJob = m_loadJobs.get(id);
+        if (originalJob == null) {
             return;
         }
-        var placeholder = loadJobInternal.placeholder();
-        var newPlaceholder = replacer.apply(placeholder);
-        m_loadJobs.put(id, new LoadJobInternal(loadJobInternal.loadJob(), newPlaceholder, loadJobInternal.exec(),
-            loadJobInternal.commandEnt()));
+        m_loadJobs.put(id, new LoadJobInternal( //
+            originalJob.loadJob(), //
+            replacer.apply(originalJob.placeholder()), //
+            originalJob.exec(), //
+            originalJob.commandEnt()) //
+        );
         m_workflowChangesListener.trigger(null);
     }
 
@@ -245,14 +246,14 @@ public final class ComponentLoadJobManager {
      * @param id -
      */
     public void rerunLoadJob(final String id) {
-        var loadJobInternal = m_loadJobs.get(id);
-        if (loadJobInternal == null || !loadJobInternal.loadJob().future().isDone()) {
+        var originalJob = m_loadJobs.get(id);
+        if (originalJob == null || !originalJob.loadJob().future().isDone()) {
             return;
         }
         var exec = new ExecutionMonitor();
-        var loadJob = createLoadJob(id, exec, loadJobInternal.commandEnt());
+        var loadJob = createLoadJob(id, exec, originalJob.commandEnt());
         m_loadJobs.put(id,
-            new LoadJobInternal(loadJob, loadJobInternal.placeholder(), exec, loadJobInternal.commandEnt()));
+            new LoadJobInternal(loadJob, originalJob.placeholder(), exec, originalJob.commandEnt()));
 
     }
 
@@ -274,7 +275,7 @@ public final class ComponentLoadJobManager {
     }
 
     private record LoadJobInternal(LoadJob loadJob, ComponentPlaceholderEnt placeholder, ExecutionMonitor exec,
-        AddComponentCommandEnt commandEnt) {
+            AddComponentCommandEnt commandEnt) {
 
     }
 

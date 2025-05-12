@@ -138,7 +138,6 @@ public class DeleteComponentPlaceholderCommandTestHelper extends WebUIGatewaySer
         assertThat(placeholder.getState(), is(StateEnum.LOADING));
         assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
         assertThat(placeholder.getName(), is("component name"));
-        // assertThat(placeholder.getState(), is(StateEnum.LOADING));
         events.clear();
 
         // the actual test -> cancel and delete placeholder
@@ -155,9 +154,6 @@ public class DeleteComponentPlaceholderCommandTestHelper extends WebUIGatewaySer
         ws().undoWorkflowCommand(projectId, getRootID());
         patch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders", events);
         assertThat(patch.getOp(), is(OpEnum.ADD));
-        //        assertThat(statePatch.getValue(), is(StateEnum.SUCCESS));
-        //        messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
-        //        assertThat(messagePatch.getOp(), is(OpEnum.REMOVE));
     }
 
 }

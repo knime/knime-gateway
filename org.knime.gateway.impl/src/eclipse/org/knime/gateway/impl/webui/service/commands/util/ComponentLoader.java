@@ -77,9 +77,7 @@ import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
-import org.knime.core.util.LoadVersion;
 import org.knime.core.util.Pair;
-import org.knime.core.util.Version;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -180,7 +178,6 @@ public final class ComponentLoader {
         if (snc == null) {
             throw new IllegalStateException("No component returned by load routine, see log for details");
         }
-        // create extra info and set it
         var info = NodeUIInformation.builder().setNodeLocation(position.x(), position.y(), -1, -1)
             .setHasAbsoluteCoordinates(false).setSnapToGrid(false).setIsDropLocation(true).build();
         snc.setUIInformation(info);
@@ -188,15 +185,8 @@ public final class ComponentLoader {
     }
 
     private static WorkflowLoadHelper createWorkflowLoadHelper() {
-        // TODO implement; see, e.g., GUIWorkflowLoadHelper - NXT-3388
+        // TODO implement; see, e.g., GUIWorkflowLoadHelper - NXT-3388 (NOSONAR)
         return new WorkflowLoadHelper(true, false, null) {
-
-            @Override
-            public UnknownKNIMEVersionLoadPolicy getUnknownKNIMEVersionLoadPolicy(
-                final LoadVersion workflowKNIMEVersion, final Version createdByKNIMEVersion,
-                final boolean isNightlyBuild) {
-                return UnknownKNIMEVersionLoadPolicy.Abort;
-            }
 
             @Override
             protected List<Credentials> loadCredentials(final List<Credentials> credentials) {
@@ -205,25 +195,22 @@ public final class ComponentLoader {
         };
     }
 
-    private static class LoadResultInternal {
+    private static class LoadResultInternal { // NOSONAR
 
         private static final String MESSAGE_NESTING_INDENT = " ".repeat(2);
 
-        private List<LoadResultInternal> m_childLoadResults;
+        private final List<LoadResultInternal> m_childLoadResults;
 
         private final Status m_status;
 
         private final String m_message;
 
-        private final int m_nestingLevel;
-
         private LoadResultInternal(final LoadResultEntry loadResult, final int nestingLevel,
             final boolean treatDataLoadErrorsAsOK) {
-            m_nestingLevel = nestingLevel;
             m_childLoadResults = Arrays.stream(loadResult.getChildren())
                 .map(child -> new LoadResultInternal(child, nestingLevel + 1, treatDataLoadErrorsAsOK)).toList();
             m_status = mapLoadResultEntryTypeToStatus(loadResult, treatDataLoadErrorsAsOK, false);
-            m_message = MESSAGE_NESTING_INDENT.repeat(m_nestingLevel) + loadResult.getMessage();
+            m_message = MESSAGE_NESTING_INDENT.repeat(nestingLevel) + loadResult.getMessage();
         }
 
         private static Status mapLoadResultEntryTypeToStatus(final LoadResultEntry loadResult,
@@ -232,8 +219,9 @@ public final class ComponentLoader {
                 case DataLoadError -> treatDataLoadErrorsAsOK ? Status.OK : Status.ERROR;
                 case Error -> Status.ERROR;
                 case Warning -> {
-                    if (treatStateChangeWarningsAsOK && loadResult.getCause().isPresent()
-                        && loadResult.getCause().get() == LoadResultEntry.LoadResultEntryCause.NodeStateChanged) {
+                    var nodeStateChanged = loadResult.getCause()
+                        .map(cause -> cause == LoadResultEntry.LoadResultEntryCause.NodeStateChanged).orElse(false);
+                    if (nodeStateChanged && treatStateChangeWarningsAsOK) {
                         yield Status.OK;
                     } else {
                         yield Status.WARNING;
@@ -320,7 +308,7 @@ public final class ComponentLoader {
          */
         private static String determineMissingPrefix(final List<NodeAndBundleInformationPersistor> missingNodes,
             final List<TableStoreFormatInformation> missingTableFormats) {
-            StringBuilder b = new StringBuilder();
+            var b = new StringBuilder();
             if (missingNodes.size() + missingTableFormats.size() == 1) {
                 b.append("a ");
             }
