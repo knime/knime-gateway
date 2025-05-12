@@ -1005,8 +1005,7 @@ public final class WorkflowEntityFactory {
                 var portGroupId = getPortGroupNameForDynamicNativeNodePort(nc, i, false, buildContext);
                 var pt = outPort.getPortType();
                 final var isReportPort = isComponentReportPort(nc, i, isInputPorts);
-                var portContentVersion =
-                    buildContext.includeInteractionInfo() ? ContentVersions.getPortContentVersion(outPort) : null;
+                var portContentVersion = ContentVersions.getPortContentVersion(outPort);
                 res.add(buildNodePortEnt(pt, outPort.getPortName(), outPort.getPortSummary(), i, null,
                     outPort.isInactive() ? outPort.isInactive() : null, canRemovePort, isReportPort, connections,
                     portContentVersion, portGroupId, buildContext));
