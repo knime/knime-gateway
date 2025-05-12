@@ -55,6 +55,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.UnsupportedWorkflowVersionException;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -108,6 +109,7 @@ public interface WorkflowManagerLoader {
             return loadResult.getWorkflowManager();
         } catch (IOException | InvalidSettingsException | CanceledExecutionException
                 | UnsupportedWorkflowVersionException | LockFailedException e) {
+            NodeLogger.getLogger(WorkflowManagerLoader.class).error(e);
             return null;
         }
     }

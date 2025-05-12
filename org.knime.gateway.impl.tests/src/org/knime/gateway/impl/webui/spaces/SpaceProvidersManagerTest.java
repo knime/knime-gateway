@@ -116,7 +116,7 @@ public class SpaceProvidersManagerTest {
         spaceProvidersManager.remove(Key.of(projectId));
         assertThrows(NoSuchElementException.class, () -> spaceProvidersManager.getSpaceProviders(Key.of(projectId)));
 
-        // several SpaceProvider instances are handled property
+        // several SpaceProvider instances are handled properly
         when(spaceProvidersFactory.createSpaceProviders()).thenReturn(List.of(spacerProvider1, spacerProvider2));
         spaceProvidersManager.update();
         assertThat(spaceProvidersManager.getSpaceProviders(Key.of(projectId)).getSpaceProvider("1").getId(), is("1"));
